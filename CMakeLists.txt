@@ -1,0 +1,86 @@
+#  :copyright: (c) 2015-2016 The Regents of the University of California.
+#  :license: MIT, see LICENSE.md for more details.
+
+set(CMAKE_LEGACY_CYGWIN_WIN32 1)
+cmake_minimum_required(VERSION 2.8)
+project(crosscxx CXX)
+enable_testing()
+
+# FLAGS
+# -----
+
+set(CMAKE_CXX_STANDARD 11)
+set(CXX_STANDARD TRUE)
+
+option(BUILD_STATIC "Build static library" ON)
+option(BUILD_TESTS "Build crosscxx library tests" OFF)
+
+if(BUILD_STATIC)
+    if(UNIX)
+        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+        add_definitions(-fPIC)
+    elseif(MINGW)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
+    elseif(MSVC)
+        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /O0 /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /Ox /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+        set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MT /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+        set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+    endif()
+endif()
+
+# Need to manually set compiler flags for Travis CI
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+endif()
+
+# LIBRARY
+# -------
+
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+
+set(SOURCE_FILES
+    src/getline.cc
+)
+
+if(BUILD_STATIC)
+    add_library(crosscxx STATIC ${SOURCE_FILES})
+else()
+    add_library(crosscxx SHARED ${SOURCE_FILES})
+endif()
+set(CROSSCXX_LIBRARIES crosscxx)
+
+# TESTS
+# -----
+
+set(TEST_FILES
+    test/main.cc
+    test/getline.cc
+)
+
+if(BUILD_TESTS)
+    if(NOT TARGET gtest)
+        add_subdirectory(googletest)
+    endif()
+    include_directories(googletest/googletest/include)
+
+    add_executable(crosscxx_tests ${TEST_FILES})
+    target_link_libraries(crosscxx_tests
+        gtest
+        gtest_main
+        ${LEXI_LIBRARIES}
+    )
+    # Need to specify proper exception handling for Windows.
+    if(MSVC)
+        set_target_properties(crosscxx_tests PROPERTIES
+            COMPILE_OPTIONS "/EHsc"
+        )
+    endif()
+
+    add_test(NAME crosscxx_tests
+        COMMAND crosscxx_tests
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+endif()
