@@ -42,7 +42,10 @@ endif()
 include_directories(src)
 
 set(SOURCE_FILES
+    src/fstream.cc
     src/getline.cc
+    src/punycode.cc
+    src/unicode.cc
 )
 
 if(BUILD_STATIC)
@@ -57,8 +60,11 @@ set(CROSSCXX_LIBRARIES crosscxx)
 
 set(TEST_FILES
     test/main.cc
+    test/fstream.cc
     test/getline.cc
     test/ordering.cc
+    test/punycode.cc
+    test/unicode.cc
 )
 
 if(BUILD_TESTS)

@@ -1,5 +1,5 @@
 //  :copyright: (c) 2017 Alex Huszagh.
-//  :license: MIT, see LICENSE.md for more details.
+//  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup crosscxx
  *  \brief Cross-platform getline implementation.
