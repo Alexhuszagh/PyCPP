@@ -39,7 +39,7 @@ endif()
 # LIBRARY
 # -------
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include")
+include_directories(src)
 
 set(SOURCE_FILES
     src/getline.cc
@@ -70,7 +70,7 @@ if(BUILD_TESTS)
     target_link_libraries(crosscxx_tests
         gtest
         gtest_main
-        ${LEXI_LIBRARIES}
+        ${CROSSCXX_LIBRARIES}
     )
     # Need to specify proper exception handling for Windows.
     if(MSVC)

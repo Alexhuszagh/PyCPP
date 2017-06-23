@@ -5,6 +5,9 @@
  *  \brief Cross-platform getline implementation.
  */
 
+#include <istream>
+
+
 // FUNCTIONS
 // ---------
 

@@ -15,7 +15,7 @@ std::istream& getline(std::istream& stream, std::string& line)
     std::streambuf* buffer = stream.rdbuf();
 
     for(;;) {
-        uint8_t c = buffer->sbumpc();
+        int8_t c = buffer->sbumpc();
         switch (c) {
         case '\n':
             return stream;
@@ -28,7 +28,7 @@ std::istream& getline(std::istream& stream, std::string& line)
 
         case EOF:
             if(line.empty()) {
-                stream.setstate(std::ios::eofbit);
+                stream.setstate(std::ios::failbit);
             }
             return stream;
 
