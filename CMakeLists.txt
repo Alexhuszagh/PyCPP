@@ -58,6 +58,7 @@ set(CROSSCXX_LIBRARIES crosscxx)
 set(TEST_FILES
     test/main.cc
     test/getline.cc
+    test/ordering.cc
 )
 
 if(BUILD_TESTS)

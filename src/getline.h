@@ -5,6 +5,8 @@
  *  \brief Cross-platform getline implementation.
  */
 
+#pragma once
+
 #include <istream>
 
 
