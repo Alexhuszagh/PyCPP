@@ -18,11 +18,14 @@ Utilities for cross-platform C++ development.
 
 ## Features
 
-- `getline` that recognizes '\r', '\n', and '\r\n'.
+- Compiler, OS, processor, system architecture, and endian detection macros.
+- Thread-local storage
 - Unicode code point conversions (UTF8, UTF16, and UTF32).
 - Punycode encoding and decoding.
-- Thread-local storage
-- Compiler, OS, processor, system architecture, and endian detection macros.
+- Url encoding and decoding
+- `getline` that recognizes '\r', '\n', and '\r\n'.
+- Cross-platform `gettimeofday`.
+- Cross-compiler wide string stream overloads for Windows.
 
 ## Building
 
