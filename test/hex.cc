@@ -5,7 +5,7 @@
  *  \brief Hex representation unittests.
  */
 
-#include "endian.h"
+#include "byteorder.h"
 #include "hex.h"
 #include <gtest/gtest.h>
 

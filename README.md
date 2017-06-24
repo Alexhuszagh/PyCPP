@@ -19,9 +19,11 @@ Utilities for cross-platform C++ development.
 ## Features
 
 - Compiler, OS, processor, system architecture, and endian detection macros.
-- Thread-local storage
+- Thread-local storage.
 - Unicode code point conversions (UTF8, UTF16, and UTF32).
 - Punycode encoding and decoding.
+- Hex-encoding.
+- Base16, base32, and base64 encoding.
 - Url encoding and decoding
 - `getline` that recognizes '\r', '\n', and '\r\n'.
 - Cross-platform `gettimeofday`.

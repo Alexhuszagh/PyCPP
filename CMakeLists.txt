@@ -48,6 +48,7 @@ set(SOURCE_FILES
     src/hex.cc
     src/punycode.cc
     src/unicode.cc
+    src/url.cc
 )
 
 if(BUILD_STATIC)
@@ -75,6 +76,7 @@ set(TEST_FILES
     test/punycode.cc
     test/tls.cc
     test/unicode.cc
+    test/url.cc
 )
 
 if(BUILD_TESTS)
