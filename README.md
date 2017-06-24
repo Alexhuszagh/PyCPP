@@ -22,7 +22,7 @@ Utilities for cross-platform C++ development.
 - Unicode code point conversions (UTF8, UTF16, and UTF32).
 - Punycode encoding and decoding.
 - Thread-local storage
-- Compile, system architecture, and endian detection macros.
+- Compiler, OS, processor, system architecture, and endian detection macros.
 
 ## Building
 

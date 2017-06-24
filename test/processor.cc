@@ -2,10 +2,10 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief Architecture unittests.
+ *  \brief Processor detection unittests.
  */
 
-#include "architecture.h"
+#include "processor.h"
 #include <gtest/gtest.h>
 
 
@@ -13,9 +13,9 @@
 // -----
 
 
-TEST(architecture, system_architecture)
+TEST(processor, system_architecture)
 {
-#ifndef SYSTEM_ARCHITECTURE
-#   error System architecture not detected.
+#ifndef PROCESSOR_DETECTED
+#   error Processor not detected.
 #endif
 }

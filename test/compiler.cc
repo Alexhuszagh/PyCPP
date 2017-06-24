@@ -13,8 +13,21 @@
 // -----
 
 
-// TODO: here...
-//TEST(architecture, system_architecture)
-//{
-//    EXPECT_EQ(SYSTEM_ARCHITECTURE, SYSTEM_ARCHITECTURE);
-//}
+TEST(compiler, compiler)
+{
+#ifndef COMPILER_DETECTED
+#   error Compiler not detected.
+#endif
+
+#ifndef COMPILER_MAJOR_VERSION
+#   error Compiler major version not detected.
+#endif
+
+#ifndef COMPILER_MINOR_VERSION
+#   error Compiler minor version not detected.
+#endif
+
+#ifndef COMPILER_PATCH_VERSION
+#   error Compiler patch version not detected.
+#endif
+}

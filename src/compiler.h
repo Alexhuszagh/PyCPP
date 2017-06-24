@@ -10,9 +10,9 @@
 // MSVC
 // ----
 
-#if !defined(COMPILER) && defined(_MSC_VER)
+#if !defined(COMPILER_DETECTED) && defined(_MSC_VER)
 #   define HAVE_MSVC 1
-#   define COMPILER HAVE_MSVC
+#   define COMPILER_DETECTED HAVE_MSVC
 #   define COMPILER_PATCH_VERSION 0
 #   if _MSC_VER == 1910
 #      define HAVE_MSVC_14 1
@@ -64,9 +64,9 @@
 // GCC
 // ---
 
-#if !defined(COMPILER) && defined(__GNUC__)
+#if !defined(COMPILER_DETECTED) && defined(__GNUC__)
 #   define HAVE_GCC 1
-#   define COMPILER HAVE_GCC
+#   define COMPILER_DETECTED HAVE_GCC
 #   define COMPILER_MAJOR_VERSION __GNUC__
 #   define COMPILER_MINOR_VERSION __GNUC_MINOR__
 #   define COMPILER_PATCH_VERSION __GNUC_PATCHLEVEL__
@@ -86,9 +86,9 @@
 // CLANG
 // -----
 
-#if !defined(COMPILER) && defined(__clang__)
+#if !defined(COMPILER_DETECTED) && defined(__clang__)
 #   define HAVE_CLANG 1
-#   define COMPILER HAVE_CLANG
+#   define COMPILER_DETECTED HAVE_CLANG
 #   define COMPILER_MAJOR_VERSION __clang_major__
 #   define COMPILER_MINOR_VERSION __clang_minor__
 #   define COMPILER_PATCH_VERSION __clang_patchlevel__

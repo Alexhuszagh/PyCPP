@@ -65,7 +65,7 @@ set(TEST_FILES
     test/compiler.cc
     test/fstream.cc
     test/getline.cc
-    test/platform.cc
+    test/processor.cc
     test/ordering.cc
     test/os.cc
     test/punycode.cc
