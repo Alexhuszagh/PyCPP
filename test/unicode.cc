@@ -1,6 +1,6 @@
-//  :copyright: (c) 2015 Markus Kuhn.
 //  :copyright: (c) 2017 Alex Huszagh.
-//  :license: MIT, see LICENSE.md for more details.
+//  :license: MIT, see licenses/mit.md for more details.
+//  :copyright: (c) 2015 Markus Kuhn.
 //  :license: CC By 4.0, see licenses/cc-by-4.0.md for more details.
 /*
  *  \addtogroup Tests

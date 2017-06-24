@@ -1,3 +1,6 @@
 [submodule "googletest"]
 	path = googletest
 	url = https://github.com/Alexhuszagh/googletest
+[submodule "warnings"]
+	path = warnings
+	url = https://github.com/Alexhuszagh/warnings.git

@@ -61,6 +61,24 @@
 #   endif
 #endif
 
+// CLANG
+// -----
+
+#if !defined(COMPILER_DETECTED) && defined(__clang__)
+#   define HAVE_CLANG 1
+#   define COMPILER_DETECTED HAVE_CLANG
+#   define COMPILER_MAJOR_VERSION __clang_major__
+#   define COMPILER_MINOR_VERSION __clang_minor__
+#   define COMPILER_PATCH_VERSION __clang_patchlevel__
+#   if COMPILER_MAJOR_VERSION == 4
+#      define HAVE_CLANG_4 1
+#   elif COMPILER_MAJOR_VERSION == 3
+#      define HAVE_CLANG_3 1
+#   elif COMPILER_MAJOR_VERSION == 2
+#      define HAVE_CLANG_2 1
+#   endif
+#endif
+
 // GCC
 // ---
 
@@ -80,23 +98,5 @@
 #      define HAVE_GCC_4 1
 #   elif COMPILER_MAJOR_VERSION == 3
 #      define HAVE_GCC_3 1
-#   endif
-#endif
-
-// CLANG
-// -----
-
-#if !defined(COMPILER_DETECTED) && defined(__clang__)
-#   define HAVE_CLANG 1
-#   define COMPILER_DETECTED HAVE_CLANG
-#   define COMPILER_MAJOR_VERSION __clang_major__
-#   define COMPILER_MINOR_VERSION __clang_minor__
-#   define COMPILER_PATCH_VERSION __clang_patchlevel__
-#   if COMPILER_MAJOR_VERSION == 4
-#      define HAVE_CLANG_4 1
-#   elif COMPILER_MAJOR_VERSION == 3
-#      define HAVE_CLANG_3 1
-#   elif COMPILER_MAJOR_VERSION == 2
-#      define HAVE_CLANG_2 1
 #   endif
 #endif

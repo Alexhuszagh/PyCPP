@@ -1,7 +1,3 @@
-# WARNING: Temporarily disabled.
-# Disable all builds, since Tea-CI provides better integration
-# with MinGW.
-
 language: cpp
 notifications:
   email:

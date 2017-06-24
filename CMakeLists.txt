@@ -1,5 +1,5 @@
-#  :copyright: (c) 2015-2016 The Regents of the University of California.
-#  :license: MIT, see LICENSE.md for more details.
+#  :copyright: (c) 2017 Alex Huszagh.
+#  :license: MIT, see licenses/mit.md for more details.
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 1)
 cmake_minimum_required(VERSION 2.8)
@@ -42,6 +42,7 @@ endif()
 include_directories(src)
 
 set(SOURCE_FILES
+    src/codec.cc
     src/fstream.cc
     src/getline.cc
     src/gettimeofday.cc
@@ -65,6 +66,7 @@ set(TEST_FILES
     test/main.cc
     test/architecture.cc
     test/byteorder.cc
+    test/codec.cc
     test/compiler.cc
     test/fstream.cc
     test/getline.cc
@@ -83,7 +85,7 @@ if(BUILD_TESTS)
     if(NOT TARGET gtest)
         add_subdirectory(googletest)
     endif()
-    include_directories(googletest/googletest/include)
+    include_directories(googletest/googletest/include warnings/src)
 
     add_executable(crosscxx_tests ${TEST_FILES})
     target_link_libraries(crosscxx_tests
