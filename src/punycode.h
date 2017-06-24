@@ -16,24 +16,24 @@
 
 /** \brief Convert UTF8-encoded data to Punycode.
  */
-std::string utf8_to_punycode(const std::string &string);
+std::string utf8_to_punycode(const std::string &str);
 
 /** \brief Convert UTF16-encoded data to Punycode.
  */
-std::string utf16_to_punycode(const std::string &string);
+std::string utf16_to_punycode(const std::string &str);
 
 /** \brief Convert UTF32-encoded data to Punycode.
  */
-std::string utf32_to_punycode(const std::string &string);
+std::string utf32_to_punycode(const std::string &str);
 
 /** \brief Convert Punycode to UTF-8.
  */
-std::string punycode_to_utf8(const std::string &string);
+std::string punycode_to_utf8(const std::string &str);
 
 /** \brief Convert Punycode to UTF-16.
  */
-std::string punycode_to_utf16(const std::string &string);
+std::string punycode_to_utf16(const std::string &str);
 
 /** \brief Convert Punycode to UTF-32.
  */
-std::string punycode_to_utf32(const std::string &string);
+std::string punycode_to_utf32(const std::string &str);

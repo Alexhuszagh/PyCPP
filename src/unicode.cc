@@ -191,7 +191,7 @@ size_t utf8_to_utf32(uint32_t& c, Iter8 &first, Iter8 last, bool strict)
 
     // check source buffer, check whether or not we have space to replace
     if (first + bytes >= last) {
-        throw std::runtime_error("Not enough input characters for a full code point.");
+        return 0;
     }
 
     // get our UTF-32 character
@@ -216,7 +216,7 @@ size_t utf8_to_utf32(uint32_t& c, Iter8 &first, Iter8 last, bool strict)
     }
     c -= UTF8_OFFSETS[bytes];
 
-    return bytes;
+    return bytes + 1;
 }
 
 
@@ -427,16 +427,16 @@ template <typename Char1, typename Char2>
 struct to_wide
 {
     template <typename Function>
-    std::string operator()(const std::string &string, Function function)
+    std::string operator()(const std::string &str, Function function)
     {
         // types
         constexpr size_t size1 = sizeof(Char1);
         constexpr size_t size2 = sizeof(Char2);
 
         // arguments
-        const size_t srclen = string.size() / size1;
+        const size_t srclen = str.size() / size1;
         const size_t dstlen = srclen;
-        auto *src_first = reinterpret_cast<const Char1*>(string.data());
+        auto *src_first = reinterpret_cast<const Char1*>(str.data());
         auto *src_last = src_first + srclen;
         auto *dst_first = reinterpret_cast<Char2*>(malloc(dstlen * size2));
         auto *dst_last = dst_first + dstlen;
@@ -457,16 +457,16 @@ template <typename Char1, typename Char2>
 struct to_narrow
 {
     template <typename Function>
-    std::string operator()(const std::string &string, Function function)
+    std::string operator()(const std::string &str, Function function)
     {
         // types
         constexpr size_t size1 = sizeof(Char1);
         constexpr size_t size2 = sizeof(Char2);
 
         // arguments
-        const size_t srclen = string.size() / size1;
+        const size_t srclen = str.size() / size1;
         const size_t dstlen = srclen * 4;
-        auto *src_first = reinterpret_cast<const Char1*>(string.data());
+        auto *src_first = reinterpret_cast<const Char1*>(str.data());
         auto *src_last = src_first + srclen;
         auto *dst_first = reinterpret_cast<Char2*>(malloc(dstlen * size2));
         auto *dst_last = dst_first + dstlen;
@@ -483,9 +483,9 @@ struct to_narrow
 // ---------
 
 
-bool is_unicode(const std::string &string)
+bool is_unicode(const std::string &str)
 {
-    return std::any_of(string.cbegin(), string.cend(), [](char c) {
+    return std::any_of(str.cbegin(), str.cend(), [](char c) {
         return c < 0;
     });
 }
@@ -496,7 +496,7 @@ size_t utf8_to_utf16(const void *src, size_t srclen, void* dst, size_t dstlen)
     auto src_first = reinterpret_cast<const uint8_t*>(src);
     auto src_last = src_first + srclen;
     auto dst_first = reinterpret_cast<uint16_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 2);
+    auto dst_last = dst_first + (dstlen * 2);
 
     return utf8_to_utf16_ptr(src_first, src_last, dst_first, dst_last);
 }
@@ -513,7 +513,7 @@ size_t utf8_to_utf32(const void *src, size_t srclen, void* dst, size_t dstlen)
     auto src_first = reinterpret_cast<const uint8_t*>(src);
     auto src_last = src_first + srclen;
     auto dst_first = reinterpret_cast<uint32_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 4);
+    auto dst_last = dst_first + (dstlen * 4);
 
     return utf8_to_utf32_ptr(src_first, src_last, dst_first, dst_last);
 }
@@ -547,7 +547,7 @@ size_t utf16_to_utf32(const void *src, size_t srclen, void* dst, size_t dstlen)
     auto src_first = reinterpret_cast<const uint16_t*>(src);
     auto src_last = src_first + (srclen / 2);
     auto dst_first = reinterpret_cast<uint32_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 4);
+    auto dst_last = dst_first + (dstlen * 4);
 
     return utf16_to_utf32_ptr(src_first, src_last, dst_first, dst_last);
 }
@@ -581,7 +581,7 @@ size_t utf32_to_utf16(const void *src, size_t srclen, void* dst, size_t dstlen)
     auto src_first = reinterpret_cast<const uint32_t*>(src);
     auto src_last = src_first + (srclen / 4);
     auto dst_first = reinterpret_cast<uint16_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 2);
+    auto dst_last = dst_first + (dstlen * 2);
 
     return utf32_to_utf16_ptr(src_first, src_last, dst_first, dst_last);
 }

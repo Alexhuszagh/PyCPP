@@ -22,7 +22,7 @@
  *  data is likely Unicode, if not, the data is almost certainly
  *  ASCII.
  */
-bool is_unicode(const std::string &string);
+bool is_unicode(const std::string &str);
 
 /** \brief Convert UTF-8 to UTF-16. Returns number of bytes converted.
  */
