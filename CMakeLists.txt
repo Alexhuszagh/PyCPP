@@ -60,10 +60,16 @@ set(CROSSCXX_LIBRARIES crosscxx)
 
 set(TEST_FILES
     test/main.cc
+    test/architecture.cc
+    test/byteorder.cc
+    test/compiler.cc
     test/fstream.cc
     test/getline.cc
+    test/platform.cc
     test/ordering.cc
+    test/os.cc
     test/punycode.cc
+    test/tls.cc
     test/unicode.cc
 )
 
