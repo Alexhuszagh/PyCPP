@@ -45,6 +45,7 @@ set(SOURCE_FILES
     src/fstream.cc
     src/getline.cc
     src/gettimeofday.cc
+    src/hex.cc
     src/punycode.cc
     src/unicode.cc
 )
@@ -67,6 +68,7 @@ set(TEST_FILES
     test/fstream.cc
     test/getline.cc
     test/gettimeofday.cc
+    test/hex.cc
     test/processor.cc
     test/ordering.cc
     test/os.cc

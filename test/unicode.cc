@@ -18,7 +18,6 @@ static const std::string UTF8 = {-19, -107, -100, -22, -75, -83, -20, -106, -76}
 static const std::string UTF16 = {92, -43, 109, -83, -76, -59};
 static const std::string UTF32 = {92, -43, 0, 0, 109, -83, 0, 0, -76, -59, 0, 0};
 
-
 // TESTS
 // -----
 
