@@ -35,8 +35,12 @@ TEST(unicode, is_unicode)
 TEST(unicode, codepoint_conversions)
 {
     // FROM UTF8
+    EXPECT_EQ(UTF32, utf8_to_utf32(UTF8));
+    EXPECT_EQ(UTF16, utf8_to_utf16(UTF8));
 
     // FROM UTF16
+    EXPECT_EQ(UTF8, utf32_to_utf8(UTF32));
+    EXPECT_EQ(UTF16, utf32_to_utf16(UTF32));
 
     // FROM UTF32
     EXPECT_EQ(UTF8, utf32_to_utf8(UTF32));

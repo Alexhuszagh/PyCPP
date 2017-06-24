@@ -137,8 +137,165 @@ size_t utf32_to_utf8(uint32_t c, Iter8& first, Iter8 last, bool strict)
 }
 
 
+/**
+ *  \brief Convert UTF16 characters to UTF32.
+ *
+ *  Returns the number of characters converted.
+ */
+template <typename Iter16>
+size_t utf16_to_utf32(uint32_t& c, Iter16 &first, Iter16 last, bool strict)
+{
+    // limits
+    static constexpr uint32_t high_begin = 0xD800;
+    static constexpr uint32_t high_end = 0xDBFF;
+    static constexpr uint32_t low_begin = 0xDC00;
+    static constexpr uint32_t low_end = 0xDFFF;
+    static constexpr int shift = 10;
+    static constexpr uint32_t base = 0x0010000UL;
+
+    const uint32_t c1 = *first++;
+    if (c1 >= high_begin && c1 <= high_end) {
+        // check source buffer, check whether or not we have space to replace
+        if (first + 1 >= last) {
+            throw std::runtime_error("Not enough input characters for a full code point.");
+        }
+
+        // surrogate pairs
+        const uint32_t c2 = *first++;
+        if (c2 >= low_begin && c2 <= low_end) {
+            c = ((c1 - high_begin) << shift) + (c2 - low_begin) + base;
+        } else {
+            c = assert_strict(strict);
+        }
+        return 2;
+    } else if (c1 >= low_begin && c1 <= low_end) {
+        c = assert_strict(strict);
+    } else {
+        c = c1;
+    }
+
+    return 1;
+}
+
+
+/**
+ *  \brief Convert UTF-8 character to UTF-32.
+ *
+ *  Returns the number of characters converted.
+ */
+template <typename Iter8>
+size_t utf8_to_utf32(uint32_t& c, Iter8 &first, Iter8 last, bool strict)
+{
+    c = 0;
+    uint8_t bytes = UTF8_BYTES[*first];
+
+    // check source buffer, check whether or not we have space to replace
+    if (first + bytes >= last) {
+        throw std::runtime_error("Not enough input characters for a full code point.");
+    }
+
+    // get our UTF-32 character
+    switch (bytes) {
+        case 5:
+            c = assert_strict(strict);
+            c <<= 6;
+        case 4:
+            c = assert_strict(strict);
+            c <<= 6;
+        case 3:
+            c += *first++;
+            c <<= 6;
+        case 2:
+            c += *first++;
+            c <<= 6;
+        case 1:
+            c += *first++;
+            c <<= 6;
+        case 0:
+            c += *first++;
+    }
+    c -= UTF8_OFFSETS[bytes];
+
+    return bytes;
+}
+
+
 // HELPERS -- ARRAYS
 // -----------------
+
+
+/**
+ *  \brief Convert UTF8 to UTF16.
+ *
+ *  \return     Number of bytes written to dst.
+ */
+template <typename Iter8, typename Iter16>
+size_t utf8_to_utf16_array(Iter8 src_first, Iter8 src_last,
+                           Iter16 dst_first, Iter16 dst_last,
+                           bool strict = true)
+{
+    auto src = src_first;
+    auto dst = dst_first;
+    while (src < src_last && dst < dst_last) {
+        uint32_t c;
+        if (!utf8_to_utf32(c, src, src_last, strict)) {
+            break;
+        }
+        if (!utf32_to_utf16(c, dst, dst_last, strict)) {
+            break;
+        }
+    }
+
+    return dst - dst_first;
+}
+
+
+/**
+ *  \brief Convert UTF8 to UTF32.
+ *
+ *  \return     Number of bytes written to dst.
+ */
+template <typename Iter8, typename Iter32>
+size_t utf8_to_utf32_array(Iter8 src_first, Iter8 src_last,
+                           Iter32 dst_first, Iter32 dst_last,
+                           bool strict = true)
+{
+    auto src = src_first;
+    auto dst = dst_first;
+    while (src < src_last && dst < dst_last) {
+        if (!utf8_to_utf32(*dst++, src, src_last, strict)) {
+            break;
+        }
+    }
+
+    return dst - dst_first;
+}
+
+
+/**
+ *  \brief Convert UTF16 to UTF8.
+ *
+ *  \return     Number of bytes written to dst.
+ */
+template <typename Iter16, typename Iter8>
+size_t utf16_to_utf8_array(Iter16 src_first, Iter16 src_last,
+                           Iter8 dst_first, Iter8 dst_last,
+                           bool strict = true)
+{
+    auto src = src_first;
+    auto dst = dst_first;
+    while (src < src_last && dst < dst_last) {
+        uint32_t c;
+        if (!utf16_to_utf32(c, src, src_last, strict)) {
+            break;
+        }
+        if (!utf32_to_utf8(c, dst, dst_last, strict)) {
+            break;
+        }
+    }
+
+    return dst - dst_first;
+}
 
 
 /**
@@ -154,7 +311,9 @@ size_t utf16_to_utf32_array(Iter16 src_first, Iter16 src_last,
     auto src = src_first;
     auto dst = dst_first;
     while (src < src_last && dst < dst_last) {
-//        *dst++ = utf16_to_utf32(src, src_last, strict);
+        if (!utf16_to_utf32(*dst++, src, src_last, strict)) {
+            break;
+        }
     }
 
     return dst - dst_first;
@@ -174,7 +333,9 @@ size_t utf32_to_utf8_array(Iter32 src_first, Iter32 src_last,
     auto src = src_first;
     auto dst = dst_first;
     while (src < src_last && dst < dst_last) {
-        utf32_to_utf8(*src++, dst, dst_last, strict);
+        if (!utf32_to_utf8(*src++, dst, dst_last, strict)) {
+            break;
+        }
     }
 
     return dst - dst_first;
@@ -194,7 +355,9 @@ size_t utf32_to_utf16_array(Iter32 src_first, Iter32 src_last,
     auto src = src_first;
     auto dst = dst_first;
     while (src < src_last && dst < dst_last) {
-        utf32_to_utf16(*src++, dst, dst_last, strict);
+        if (!utf32_to_utf16(*src++, dst, dst_last, strict)) {
+            break;
+        }
     }
 
     return dst - dst_first;
@@ -203,6 +366,30 @@ size_t utf32_to_utf16_array(Iter32 src_first, Iter32 src_last,
 
 // HELPERS -- POINTERS
 // -------------------
+
+
+size_t utf8_to_utf16_ptr(const uint8_t *src_first, const uint8_t* src_last,
+                         uint16_t* dst_first, uint16_t* dst_last,
+                         bool strict = true)
+{
+    return utf8_to_utf16_array(src_first, src_last, dst_first, dst_last, strict);
+}
+
+
+size_t utf8_to_utf32_ptr(const uint8_t *src_first, const uint8_t* src_last,
+                         uint32_t* dst_first, uint32_t* dst_last,
+                         bool strict = true)
+{
+    return utf8_to_utf32_array(src_first, src_last, dst_first, dst_last, strict);
+}
+
+
+size_t utf16_to_utf8_ptr(const uint16_t *src_first, const uint16_t* src_last,
+                         uint8_t* dst_first, uint8_t* dst_last,
+                         bool strict = true)
+{
+    return utf16_to_utf8_array(src_first, src_last, dst_first, dst_last, strict);
+}
 
 
 size_t utf16_to_utf32_ptr(const uint16_t *src_first, const uint16_t* src_last,
@@ -306,43 +493,52 @@ bool is_unicode(const std::string &string)
 
 size_t utf8_to_utf16(const void *src, size_t srclen, void* dst, size_t dstlen)
 {
-    throw std::runtime_error("");
-    return 0;
+    auto src_first = reinterpret_cast<const uint8_t*>(src);
+    auto src_last = src_first + srclen;
+    auto dst_first = reinterpret_cast<uint16_t*>(dst);
+    auto dst_last = dst_first + (dstlen / 2);
+
+    return utf8_to_utf16_ptr(src_first, src_last, dst_first, dst_last);
 }
 
 
 std::string utf8_to_utf16(const std::string& str)
 {
-    throw std::runtime_error("");
-    return "";
+    return to_wide<uint8_t, uint16_t>()(str, utf8_to_utf16_ptr);
 }
 
 
 size_t utf8_to_utf32(const void *src, size_t srclen, void* dst, size_t dstlen)
 {
-    throw std::runtime_error("");
-    return 0;
+    auto src_first = reinterpret_cast<const uint8_t*>(src);
+    auto src_last = src_first + srclen;
+    auto dst_first = reinterpret_cast<uint32_t*>(dst);
+    auto dst_last = dst_first + (dstlen / 4);
+
+    return utf8_to_utf32_ptr(src_first, src_last, dst_first, dst_last);
 }
 
 
 std::string utf8_to_utf32(const std::string& str)
 {
-    throw std::runtime_error("");
-    return "";
+    return to_wide<uint8_t, uint32_t>()(str, utf8_to_utf32_ptr);
 }
 
 
 size_t utf16_to_utf8(const void *src, size_t srclen, void* dst, size_t dstlen)
 {
-    throw std::runtime_error("");
-    return 0;
+    auto src_first = reinterpret_cast<const uint16_t*>(src);
+    auto src_last = src_first + (srclen / 2);
+    auto dst_first = reinterpret_cast<uint8_t*>(dst);
+    auto dst_last = dst_first + dstlen;
+
+    return utf16_to_utf8_ptr(src_first, src_last, dst_first, dst_last);
 }
 
 
 std::string utf16_to_utf8(const std::string& str)
 {
-    throw std::runtime_error("");
-    return "";
+    return to_narrow<uint16_t, uint8_t>()(str, utf16_to_utf8_ptr);
 }
 
 
@@ -353,24 +549,22 @@ size_t utf16_to_utf32(const void *src, size_t srclen, void* dst, size_t dstlen)
     auto dst_first = reinterpret_cast<uint32_t*>(dst);
     auto dst_last = dst_first + (dstlen / 4);
 
-    // TODO: restore
-//    return utf16_to_utf32_ptr(src_first, src_last, dst_first, dst_last);
+    return utf16_to_utf32_ptr(src_first, src_last, dst_first, dst_last);
 }
 
 
 std::string utf16_to_utf32(const std::string& str)
 {
-    // TODO: restore
-//    return to_wide<uint16_t, uint32_t>()(str, utf16_to_utf32_ptr);
+    return to_wide<uint16_t, uint32_t>()(str, utf16_to_utf32_ptr);
 }
 
 
 size_t utf32_to_utf8(const void *src, size_t srclen, void* dst, size_t dstlen)
 {
     auto src_first = reinterpret_cast<const uint32_t*>(src);
-    auto src_last = src_first + (srclen / 2);
+    auto src_last = src_first + (srclen / 4);
     auto dst_first = reinterpret_cast<uint8_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 4);
+    auto dst_last = dst_first + dstlen;
 
     return utf32_to_utf8_ptr(src_first, src_last, dst_first, dst_last);
 }
@@ -385,9 +579,9 @@ std::string utf32_to_utf8(const std::string& str)
 size_t utf32_to_utf16(const void *src, size_t srclen, void* dst, size_t dstlen)
 {
     auto src_first = reinterpret_cast<const uint32_t*>(src);
-    auto src_last = src_first + (srclen / 2);
+    auto src_last = src_first + (srclen / 4);
     auto dst_first = reinterpret_cast<uint16_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 4);
+    auto dst_last = dst_first + (dstlen / 2);
 
     return utf32_to_utf16_ptr(src_first, src_last, dst_first, dst_last);
 }
