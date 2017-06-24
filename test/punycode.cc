@@ -31,6 +31,9 @@ TEST(punycode, punycode)
     EXPECT_EQ(utf8_to_punycode(UTF8), expected);
     EXPECT_EQ(utf16_to_punycode(UTF16), expected);
     EXPECT_EQ(utf32_to_punycode(UTF32), expected);
+//    EXPECT_EQ(punycode_to_utf8(expected), UTF8);
+//    EXPECT_EQ(punycode_to_utf16(expected), UTF16);
+//    EXPECT_EQ(punycode_to_utf32(expected), UTF32);
 
     expected = "rksmrgs-5wao1o";
     EXPECT_EQ(utf8_to_punycode(UTF8_2), expected);

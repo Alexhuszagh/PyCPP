@@ -45,6 +45,62 @@ static uint32_t assert_strict(bool strict)
 }
 
 
+static bool is_nth_bit_set(uint8_t c, int n)
+{
+    return (1 << n) & c;
+}
+
+
+/**
+ *  \brief Determine if byte is a start byte.
+ *
+ *  Start bytes initialize with a 11 bit pattern.
+ */
+static bool is_start_byte(uint8_t c)
+{
+    return c > 0xbf;
+}
+
+
+/**
+ *  \brief Determine if byte is a continuation byte.
+ *
+ *  Continuation bytes initialize with a 10 bit pattern.
+ */
+static bool is_continuation_byte(uint8_t c)
+{
+    return c >= 0x80 && c<= 0xbf;
+}
+
+
+/**
+ *  \brief Check if the byte is a valid sequence.
+ *
+ *  Valid bytes are either the start and < 128 (ASCII) or a start byte,
+ *  or a continuation byte.
+ */
+static bool is_valid_byte(uint8_t byte, bool is_continuation)
+{
+    if (is_continuation) {
+        return is_continuation_byte(byte);
+    }
+    return byte < 0x80 || is_start_byte(byte);
+}
+
+
+/**
+ *  \brief Check if the byte is a valid sequence.
+ */
+static bool is_valid_byte(uint8_t byte, bool is_continuation, bool strict)
+{
+    bool status = is_valid_byte(byte, is_continuation);
+    if (!status && strict) {
+        throw std::runtime_error("Invalid byte encounter.");
+    }
+    return status;
+}
+
+
 /** \brief Convert UTF-32 character to UTF-16.
  *
  *  Returns the number of characters converted.
@@ -191,7 +247,7 @@ size_t utf8_to_utf32(uint32_t& c, Iter8 &first, Iter8 last, bool strict)
 
     // check source buffer, check whether or not we have space to replace
     if (first + bytes >= last) {
-        return 0;
+        goto fail;
     }
 
     // get our UTF-32 character
@@ -203,20 +259,32 @@ size_t utf8_to_utf32(uint32_t& c, Iter8 &first, Iter8 last, bool strict)
             c = assert_strict(strict);
             c <<= 6;
         case 3:
+            if (!is_valid_byte(*first, c, strict))
+                goto fail;
             c += *first++;
             c <<= 6;
         case 2:
+            if (!is_valid_byte(*first, c, strict))
+                goto fail;
             c += *first++;
             c <<= 6;
         case 1:
+            if (!is_valid_byte(*first, c, strict))
+                goto fail;
             c += *first++;
             c <<= 6;
         case 0:
+            if (!is_valid_byte(*first, c, strict))
+                goto fail;
             c += *first++;
     }
     c -= UTF8_OFFSETS[bytes];
 
     return bytes + 1;
+
+fail:
+    c = 0;
+    return 0;
 }
 
 
