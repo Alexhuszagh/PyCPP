@@ -8,14 +8,11 @@
 #pragma once
 
 #include "compiler.h"
-#include "os.h"
-
 #include <fstream>
-#include <iostream>
-#include <string>
-
 #if defined(HAVE_GCC)
+#   include "os.h"
 #   include <ext/stdio_filebuf.h>
+#   include <iostream>
 #endif
 
 

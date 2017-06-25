@@ -18,10 +18,16 @@
 
 TEST(gettimeofday, gettimeofday)
 {
-    struct timeval t1, t2;
-    gettimeofday(&t1, NULL);
-    std::this_thread::sleep_for(std::chrono::microseconds(500));
-    gettimeofday(&t2, NULL);
+    typedef std::chrono::high_resolution_clock Clock;
 
-    EXPECT_GE(t2.tv_usec - t1.tv_usec, 500);
+    struct timeval tv1, tv2;
+    auto tc1 = Clock::now();
+    gettimeofday(&tv1, NULL);
+    std::this_thread::sleep_for(std::chrono::microseconds(500));
+    auto tc2 = Clock::now();
+    gettimeofday(&tv2, NULL);
+
+    // just want them in the same ballpark...
+    auto highres = std::chrono::duration_cast<std::chrono::microseconds>(tc2 - tc1).count();
+    EXPECT_NEAR(tv2.tv_usec - tv1.tv_usec, highres, 0.5*highres);
 }

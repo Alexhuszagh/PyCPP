@@ -42,7 +42,7 @@
 #       define OS_VERSION_MAJOR 10
 #       define OS_VERSION_MINOR 0
 #       define OS_VERSION_PATCH 0
-#   else
+#   elif defined(__APPLE__) || defined(macintosh)
 #       define OS_VERSION_MAJOR 9
 #       define OS_VERSION_MINOR 0
 #       define OS_VERSION_PATCH 0

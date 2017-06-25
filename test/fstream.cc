@@ -5,17 +5,103 @@
  *  \brief File-based stream unittests.
  */
 
+#include "byteorder.h"
+#include "os.h"
 #include "fstream.h"
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 #include <gtest/gtest.h>
+#if defined(OS_WINDOWS)
+#   include <io.h>
+#endif
 
+// CONSTANTS
+// ---------
+
+static const std::string UTF8_ENGLISH = {69, 110, 103, 108, 105, 115, 104};
+static const std::string UTF8_KOREAN = {-19, -107, -100, -22, -75, -83, -20, -106, -76};
+#if defined(OS_WINDOWS)
+#if BYTE_ORDER == LITTLE_ENDIAN
+static const std::wstring UTF16_ENGLISH = {69, 110, 103, 108, 105, 115, 104};
+static const std::wstring UTF16_KOREAN = {-10916, -21139, -14924};
+#else
+static const std::wstring UTF16_ENGLISH = {23765, 28077, -19259};
+static const std::wstring UTF16_KOREAN = {23765,  28077, -19259};
+#endif
+#endif
+
+// HELPERS
+// -------
+
+template <typename IStream, typename OStream>
+struct test_stream
+{
+    template <typename String, typename RemoveFile>
+    void operator()(const String &path, RemoveFile remove_file)
+    {
+        std::string expected = "Single line";
+
+        OStream ostream(path, std::ios_base::out);
+        ostream << expected << std::endl;
+        ostream.close();
+
+        IStream istream(path, std::ios_base::in);
+        std::string result;
+        std::getline(istream, result);
+        istream.close();
+
+        EXPECT_EQ(result, expected);
+        EXPECT_TRUE(remove_file(path));
+    }
+};
 
 // TESTS
 // -----
 
 
-//TEST(hex, hex8)
-//{
-//    std::string bytes = {0, 1, 2, 3, 4, 5, 6, 7};
-//    std::string expected = "0001020304050607";
-//    EXPECT_EQ(hex(bytes, 1), expected);
-//}
+TEST(fstream, fstream)
+{
+    typedef test_stream<fstream, fstream> tester;
+
+    tester()(UTF8_ENGLISH, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+
+#if defined(OS_WINDOWS)         // WINDOWS
+    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+    tester()(UTF16_KOREAN, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+#else                           // POSIX
+    tester()(UTF8_KOREAN, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+#endif
+}
+
+
+TEST(fstream, iofstream)
+{
+    typedef test_stream<ifstream, ofstream> tester;
+
+    tester()(UTF8_ENGLISH, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+
+#if defined(OS_WINDOWS)         // WINDOWS
+    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+    tester()(UTF16_KOREAN, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+#else                           // POSIX
+    tester()(UTF8_KOREAN, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+#endif
+}
+
+#include <warnings/pop.h>

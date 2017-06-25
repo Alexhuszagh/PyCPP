@@ -60,6 +60,12 @@ else()
 endif()
 set(CROSSCXX_LIBRARIES crosscxx)
 
+if(MSVC)
+    list(APPEND CROSSCXX_LIBRARIES ws2_32.lib)
+elseif(MINGW OR MSYS)
+    list(APPEND CROSSCXX_LIBRARIES -lws2_32)
+endif()
+
 # TESTS
 # -----
 
