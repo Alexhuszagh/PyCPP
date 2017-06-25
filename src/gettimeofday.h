@@ -12,23 +12,6 @@
 #else
 #   include <winsock2.h>
 
-// OBJECTS
-// -------
-
-#ifndef _TIMEVAL_DEFINED
-#   define _TIMEVAL_DEFINED
-#endif
-#ifndef timeval
-
-struct timeval
-{
-    long tv_sec;
-    long tv_usec;
-};
-
-#endif
-
-
 // FUNCTIONS
 // ---------
 
