@@ -60,7 +60,7 @@ TEST(base16, fuzz)
 {
     std::random_device device;
     std::default_random_engine engine(device());
-    std::uniform_int_distribution<char> dist(-128, 127);
+    std::uniform_int_distribution<int8_t> dist(-128, 127);
     for (size_t i = 0; i < 50; i++) {
         const size_t length = rand() % 1000;
         std::string input;
