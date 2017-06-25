@@ -62,6 +62,13 @@ else()
 endif()
 set(CROSSCXX_LIBRARIES crosscxx)
 
+# Need to specify proper exception handling for Windows.
+if(MSVC)
+    set_target_properties(crosscxx PROPERTIES
+        COMPILE_OPTIONS "/EHsc"
+    )
+endif()
+
 if(MSVC)
     list(APPEND CROSSCXX_LIBRARIES ws2_32.lib)
 elseif(MINGW OR MSYS)

@@ -4,12 +4,22 @@
 #include "gettimeofday.h"
 
 #ifdef _MSC_VER
+#   include <cstdint>
 
 // CONSTANTS
 // ---------
 
 #define EPOCH_TIME 116444736000000000ull
 #define HECTONANOSEC_PER_SEC 10000000ull
+
+// UNIONS
+// ------
+
+union TimeUnion
+{
+    uint64_t ns100;
+    FILETIME file_time;
+};
 
 // FUNCTIONS
 // ---------
@@ -18,10 +28,7 @@
 int gettimeofday(struct timeval* tp, void* tz)
 {
     int res = 0;
-    union {
-        uint64_t ns100;
-        FILETIME file_time;
-    } now;
+    TimeUnion now;
     SYSTEMTIME system_time;
     uint64_t value;
 
