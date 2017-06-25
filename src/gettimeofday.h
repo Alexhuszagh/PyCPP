@@ -10,14 +10,15 @@
 #ifndef _MSC_VER
 #   include "sys/time.h"
 #else
-#   include <cstdint>
-#   include <windows.h>
+#   include <winsock2.h>
 
 // OBJECTS
 // -------
 
 #ifndef _TIMEVAL_DEFINED
 #   define _TIMEVAL_DEFINED
+#endif
+#ifndef timeval
 
 struct timeval
 {
