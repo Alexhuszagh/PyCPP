@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <iterator>
 #include <stdexcept>
 
 // CONSTANTS

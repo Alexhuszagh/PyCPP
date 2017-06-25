@@ -5,7 +5,7 @@ Independent, lightweight utilities for cross-platform C++ development.
 
 [![Build Status](https://travis-ci.org/Alexhuszagh/crosscxx.svg?branch=master)](https://trAlexhuszagh/csv_parseravis-ci.org/Alexhuszagh/crosscxx)
 [![Build Status](https://tea-ci.org/api/badges/Alexhuszagh/crosscxx/status.svg)](https://tea-ci.org/Alexhuszagh/crosscxx)
-[![Build status](https://ci.appveyor.com/api/projects/status/jx4mmgo25myx9u9i?svg=true)](https://ci.appveyor.com/project/Alexhuszagh/crosscxx)
+[![Build status](https://ci.appveyor.com/api/projects/status/b8fh8431rcu3wc3q?svg=true)](https://ci.appveyor.com/project/Alexhuszagh/crosscxx)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Alexhuszagh/crosscxx/blob/master/LICENSE.md)
 
 **Table of Contents**

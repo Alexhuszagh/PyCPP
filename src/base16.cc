@@ -3,6 +3,8 @@
 
 #include "base16.h"
 
+#include <iterator>
+
 // CONSTANTS
 // ---------
 

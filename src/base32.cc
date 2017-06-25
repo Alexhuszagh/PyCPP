@@ -4,6 +4,7 @@
 #include "base32.h"
 
 #include <cmath>
+#include <iterator>
 
 // CONSTANTS
 // ---------
