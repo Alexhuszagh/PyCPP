@@ -14,7 +14,7 @@
 // STORAGE
 // -------
 
-thread_local_storage int LOCAL_VARIABLE = 0;
+thread_local_storage int tls = 0;
 
 // FUNCTIONS
 // ---------
@@ -22,8 +22,8 @@ thread_local_storage int LOCAL_VARIABLE = 0;
 
 void test_value()
 {
-    EXPECT_EQ(LOCAL_VARIABLE, 0);
-    LOCAL_VARIABLE = 5;
+    EXPECT_EQ(tls, 0);
+    tls = 5;
 }
 
 // TESTS

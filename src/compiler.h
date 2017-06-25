@@ -14,7 +14,12 @@
 #   define HAVE_MSVC 1
 #   define COMPILER_DETECTED HAVE_MSVC
 #   define COMPILER_PATCH_VERSION 0
-#   if _MSC_VER == 1910
+#   if _MSC_VER >= 1911
+#      define HAVE_MSVC_14 1
+#      define COMPILER_MAJOR_VERSION 15
+#      define COMPILER_MINOR_VERSION 1
+#      define COMPILER_PATCH_VERSION 3
+#   elif _MSC_VER == 1910
 #      define HAVE_MSVC_14 1
 #      define COMPILER_MAJOR_VERSION 14
 #      define COMPILER_MINOR_VERSION 1
