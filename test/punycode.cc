@@ -53,29 +53,32 @@ static const std::string UTF32_3 = {0, 0, 0, 109, 0, 0, 0, -22, 0, 0, 0, 109, 0,
 
 TEST(punycode, punycode)
 {
-    std::string expected = "3e0bk47br7k";
+    std::string expected = "Hangul-";
+    EXPECT_EQ(utf8_to_punycode(ASCII), expected);
+
+    expected = "3e0bk47br7k";
     EXPECT_EQ(utf8_to_punycode(UTF8), expected);
     EXPECT_EQ(utf16_to_punycode(UTF16), expected);
     EXPECT_EQ(utf32_to_punycode(UTF32), expected);
-//    EXPECT_EQ(punycode_to_utf8(expected), UTF8);
-//    EXPECT_EQ(punycode_to_utf16(expected), UTF16);
-//    EXPECT_EQ(punycode_to_utf32(expected), UTF32);
+    EXPECT_EQ(punycode_to_utf8(expected), UTF8);
+    EXPECT_EQ(punycode_to_utf16(expected), UTF16);
+    EXPECT_EQ(punycode_to_utf32(expected), UTF32);
 
     expected = "rksmrgs-5wao1o";
     EXPECT_EQ(utf8_to_punycode(UTF8_2), expected);
     EXPECT_EQ(utf16_to_punycode(UTF16_2), expected);
     EXPECT_EQ(utf32_to_punycode(UTF32_2), expected);
-//    EXPECT_EQ(punycode_to_utf8(expected), UTF8);
-//    EXPECT_EQ(punycode_to_utf16(expected), UTF16);
-//    EXPECT_EQ(punycode_to_utf32(expected), UTF32);
+    EXPECT_EQ(punycode_to_utf8(expected), UTF8_2);
+    EXPECT_EQ(punycode_to_utf16(expected), UTF16_2);
+    EXPECT_EQ(punycode_to_utf32(expected), UTF32_2);
 
     expected = "mme-fma";
     EXPECT_EQ(utf8_to_punycode(UTF8_3), expected);
     EXPECT_EQ(utf16_to_punycode(UTF16_3), expected);
     EXPECT_EQ(utf32_to_punycode(UTF32_3), expected);
-//    EXPECT_EQ(punycode_to_utf8(expected), UTF8);s
-//    EXPECT_EQ(punycode_to_utf16(expected), UTF16);
-//    EXPECT_EQ(punycode_to_utf32(expected), UTF32);
+    EXPECT_EQ(punycode_to_utf8(expected), UTF8_3);
+    EXPECT_EQ(punycode_to_utf16(expected), UTF16_3);
+    EXPECT_EQ(punycode_to_utf32(expected), UTF32_3);
 }
 
 
@@ -298,6 +301,6 @@ TEST(punycode, sequences)
 
     for (const auto &pair: tests) {
         EXPECT_EQ(utf8_to_punycode(pair.first), pair.second);
-        // TODO: punycode_to_utf8
+        EXPECT_EQ(punycode_to_utf8(pair.second), pair.first);
     }
 }

@@ -5,7 +5,10 @@
 #include "punycode.h"
 #include "unicode.h"
 
-#include <cstring>          // TODO: remove
+#include <algorithm>
+#include <cmath>
+#include <cstring>
+#include <limits>
 #include <stdexcept>
 
 // HELPERS
@@ -81,19 +84,23 @@ static uint8_t encode_byte(uint8_t c)
  */
 static uint32_t decode_byte(uint8_t c)
 {
+    // limits
+    static constexpr uint32_t base = 36;
+
     if ((c >= 48) && (c <= 57)) {
-        return 22 + (c - '0');              // '0'..'9'
+        return c - 22;                      // '0'..'9'
     } else if ((c >= 97) && (c <= 122)) {
         return c - 'a';                     // 'a'..'z'
     } else if ((c >= 65) && (c <= 90)) {
         return c - 'A';                     // 'A'..'Z'
     }
-    throw std::out_of_range("Character to decode is out of range\n");
+
+    return base;
 }
 
 
 /**
- *  \brief Encode single UTF-32 code point to Punycode.
+ *  \brief Encode single UTF32 code point to Punycode.
  */
 template <typename Iter8>
 size_t encode_character(uint32_t bias, uint32_t delta, Iter8 &first, Iter8 last)
@@ -127,7 +134,7 @@ size_t encode_character(uint32_t bias, uint32_t delta, Iter8 &first, Iter8 last)
 }
 
 
-/** \brief Encode UTF-32 array to Punycode.
+/** \brief Encode UTF32 array to Punycode.
  */
 template <typename Iter32, typename Iter8>
 size_t encode_impl(Iter32 src_first, Iter32 src_last,
@@ -197,110 +204,80 @@ size_t encode_impl(Iter32 src_first, Iter32 src_last,
     return dst - dst_first;
 }
 
-// TODO: need decoding routines...
 
-//// TODO: significantly modify this....
-//
-//size_t decode_impl(const char *const src, const size_t srclen, uint32_t *const dst, size_t *const dstlen) {
-//    #define BASE 36
-//    #define INITIAL_N 128
-//    #define INITIAL_BIAS 72
-//    #define TMIN 1
-//    #define TMAX 26
-//
-//  const char *p;
-//  size_t b, n, t;
-//  size_t i, k, w;
-//  size_t si, di;
-//  size_t digit;
-//  size_t org_i;
-//  size_t bias;
-//
-//  /* Ensure that the input contains only ASCII characters. */
-//  for (si = 0; si < srclen; si++) {
-//    if (src[si] & 0x80) {
-//      *dstlen = 0;
-//      return 0;
-//    }
-//  }
-//
-//  /* Reverse-search for delimiter in input. */
-//  for (p = src + srclen - 1; p > src && *p != '-'; p--);
-//  b = p - src;
-//
-//  /* Copy basic code points to output. */
-//  di = std::min(b, *dstlen);
-//
-//  for (i = 0; i < di; i++) {
-//    dst[i] = src[i];
-//  }
-//
-//  i = 0;
-//  n = INITIAL_N;
-//  bias = INITIAL_BIAS;
-//
-//  for (si = b + (b > 0); si < srclen && di < *dstlen; di++) {
-//    org_i = i;
-//
-//    for (w = 1, k = BASE; di < *dstlen; k += BASE) {
-//      digit = decode_byte(src[si++]);
-//
-//      if (digit == SIZE_MAX) {
-//        goto fail;
-//      }
-//
-//      if (digit > (SIZE_MAX - i) / w) {
-//        /* OVERFLOW */
-////        assert(0 && "OVERFLOW");
-//        goto fail;
-//      }
-//
-//      i += digit * w;
-//
-//      if (k <= bias) {
-//        t = TMIN;
-//      }
-//      else if (k >= bias + TMAX) {
-//        t = TMAX;
-//      }
-//      else {
-//        t = k - bias;
-//      }
-//
-//      if (digit < t) {
-//        break;
-//      }
-//
-//      if (w > SIZE_MAX / (BASE - t)) {
-//        /* OVERFLOW */
-////        assert(0 && "OVERFLOW");
-//        goto fail;
-//      }
-//
-//      w *= BASE - t;
-//    }
-//
-//    bias = adapt_bias(i - org_i, di + 1, org_i == 0);
-//
-//    if (i / (di + 1) > SIZE_MAX - n) {
-//      /* OVERFLOW */
-////      assert(0 && "OVERFLOW");
-//      goto fail;
-//    }
-//
-//    n += i / (di + 1);
-//    i %= (di + 1);
-//
-//    memmove(dst + i + 1, dst + i, (di - i) * sizeof(uint32_t));
-//    dst[i++] = n;
-//  }
-//
-//fail:
-//  /* Tell the caller how many bytes were written to the output buffer. */
-//  *dstlen = di;
-//
-//  return si;
-//}
+/** \brief Encode Punycode array to UTF32.
+ */
+template <typename Iter8, typename Iter32>
+size_t decode_impl(Iter8 src, size_t srclen, Iter32 dst, size_t dstlen)
+{
+    static constexpr uint32_t int32_max = std::numeric_limits<int32_t>::max();
+    static constexpr uint32_t base = 36;
+    static constexpr size_t initial_n = 128;
+    static constexpr size_t initial_bias = 72;
+    static constexpr size_t tmin = 1;
+    static constexpr size_t tmax = 26;
+
+    // parameters
+    size_t i = 0;
+    size_t n = initial_n;
+    size_t bias = initial_bias;
+
+    // check for unicode characters
+    if (std::any_of(src, src+srclen, [](char c) {
+        return !is_ascii(c);
+    })) {
+        return 0;
+    }
+
+    // reverse search for delimiter
+    Iter8 ptr;
+    for (ptr = src+srclen-1; ptr > src && *ptr != '-'; --ptr);
+    size_t basic = ptr - src;
+    size_t di = std::min(basic, dstlen);
+    std::copy(src, src+di, dst);
+
+    for (size_t si = basic + (basic > 0); si < srclen && di < dstlen; di++) {
+        size_t oldi = i;
+        for (size_t w = 1, k = base; di < dstlen; k += base) {
+            auto digit = decode_byte(src[si++]);
+            if (digit >= base || digit > (int32_max - i) / w) {
+                throw std::overflow_error("Overflow in Punycode decode.");
+            }
+
+            i += digit * w;
+            size_t t;
+            if (k <= bias) {
+                t = tmin;
+            } else if (k >= bias + tmax) {
+                t = tmax;
+            } else {
+                t = k - bias;
+            }
+
+            if (digit < t) {
+                break;
+            }
+
+            if (w > INT32_MAX / (base - t)) {
+                throw std::overflow_error("Overflow in Punycode decode.");
+            }
+            w *= (base - t);
+        }
+
+        size_t x = di + 1;
+        bias = adapt_bias(i - oldi, x, oldi == 0);
+        if (i / x > INT32_MAX - n) {
+            throw std::overflow_error("Overflow in Punycode decode.");
+        }
+
+        n += i / x;
+        i %= x;
+        memmove(dst + i + 1, dst + i, (di - i) * 4);
+        dst[i++] = n;
+    }
+
+    return di;
+}
 
 // FUNCTIONS
 // ---------
@@ -352,18 +329,14 @@ std::string punycode_to_utf16(const std::string &str)
 std::string punycode_to_utf32(const std::string &str)
 {
     // arguments
-    const size_t srclen = str.size();
+    auto *src = str.data();
+    size_t srclen = str.size();
     size_t dstlen = srclen;
-//    const size_t dstlen = srclen;
-    auto *src_first = reinterpret_cast<const char*>(str.data());
-//    auto *src_last = src_first + srclen;
-    auto *dst_first = reinterpret_cast<uint32_t*>(malloc(dstlen));
-//    auto *dst_last = dst_first + dstlen;
+    auto *dst = reinterpret_cast<uint32_t*>(malloc(dstlen * 4));
 
-//    size_t out = decode_impl(src_first, srclen, dst_first, &dstlen);
-//    std::string output(reinterpret_cast<const char*>(dst_first), dstlen * 4);
-    free(dst_first);
+    size_t out = decode_impl(src, srclen, dst, dstlen);
+    std::string output(reinterpret_cast<const char*>(dst), out * 4);
+    free(dst);
 
-//    return output;
-    return "";
+    return output;
 }
