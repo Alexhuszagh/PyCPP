@@ -19,6 +19,10 @@
 #include "codec.h"
 #include "fstream.h"
 
+#if defined(HAVE_GCC) && defined(OS_WINDOWS)
+#   include <stdio.h>
+#endif
+
 
 #if HAVE_GCC                    // GCC
 
