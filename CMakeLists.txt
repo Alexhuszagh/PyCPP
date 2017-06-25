@@ -29,8 +29,10 @@ if(BUILD_STATIC)
     endif()
 endif()
 
-# Need to manually set compiler flags for Travis CI
-if(NOT MSVC)
+# Need to manually set compiler flags for Travis CI & Appveyor
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
+else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
