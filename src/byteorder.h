@@ -3,7 +3,7 @@
 //  :license: Public Domain/MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup crosscxx
- *  \brief System endianess detction macros.
+ *  \brief System endianess detection macros and byteswap routines.
  */
 
 #pragma once
@@ -16,11 +16,13 @@
 #   define bswap16 _byteswap_ushort
 #   define bswap32 _byteswap_ulong
 #   define bswap64 _byteswap_uint64
-#else
+#elif defined(__clang__) || defined(__GNUC__)
 /* Clang, GCC */
 #   define bswap16 __builtin_bswap16
 #   define bswap32 __builtin_bswap32
 #   define bswap64 __builtin_bswap64
+#else
+#   define NEED_BSWAPXX
 #endif
 
 #if (defined(_WIN16) || defined(_WIN32) || defined(_WIN64)) && !defined(__WINDOWS__)
@@ -154,4 +156,48 @@
 
 #ifndef FLOAT_WORD_ORDER
     #define FLOAT_WORD_ORDER    __FLOAT_WORD_ORDER
+#endif
+
+// FUNCTIONS
+// ---------
+
+/**
+ *  \brief Swap bytes in-place of type sizeof(T) == width.
+ */
+void bswap(void* buf, int width);
+
+/**
+ *  \brief Swap bytes from src into dst of type sizeof(T) == width.
+ */
+void bswap(void* dst, void* src, int width);
+
+
+#if BYTE_ORDER == LITTLE_ENDIAN
+
+#   define htobe(buf, i) bswap(buf, i)
+#   define htole(buf, i) (buf)
+#   define betoh(buf, i) bswap(buf, i)
+#   define letoh(buf, i) (buf)
+
+#elif BYTE_ORDER == BIG_ENDIAN
+
+#   define htobe(buf, i) (buf)
+#   define htole(buf, i) bswap(buf, i)
+#   define betoh(buf, i) (buf)
+#   define letoh(buf, i) bswap(buf, i)
+
+#else
+
+#   error byte order not supported
+
+#endif
+
+
+#if defined(NEED_BSWAPXX)
+#   include <stdint.h>
+
+uint16_t bswap16(uint16_t i);
+uint32_t bswap32(uint32_t i);
+uint64_t bswap64(uint64_t i);
+
 #endif
