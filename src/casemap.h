@@ -32,12 +32,11 @@ std::string ascii_toupper(const std::string &str);
 
 /** \brief Convert ASCII string to title-case. Returns number of bytes converted.
  */
-//size_t ascii_totitle(const void *src, size_t srclen, void* dst, size_t dstlen);
+size_t ascii_totitle(const void *src, size_t srclen, void* dst, size_t dstlen);
 
 /** \brief Convert ASCII string to title-case.
  */
-// TODO: need to tokenize whitespace/characters...
-//std::string ascii_totitle(const std::string &str);
+std::string ascii_totitle(const std::string &str);
 
 // UTF8
 
@@ -59,15 +58,49 @@ std::string utf8_toupper(const std::string &str);
 
 /** \brief Convert UTF8 string to title-case. Returns number of bytes converted.
  */
-//size_t utf8_totitle(const void *src, size_t srclen, void* dst, size_t dstlen);
+size_t utf8_totitle(const void *src, size_t srclen, void* dst, size_t dstlen);
 
 /** \brief Convert UTF8 string to title-case.
  */
-// TODO: need to tokenize whitespace/characters...
-//std::string utf8_totitle(const std::string &str);
+std::string utf8_totitle(const std::string &str);
 
 // UTF16
 
+/** \brief Convert UTF16 string to lower-case. Returns number of bytes converted.
+ */
+size_t utf16_tolower(const void *src, size_t srclen, void* dst, size_t dstlen);
+
+/** \brief Convert UTF16 string to lower-case.
+ */
+std::string utf16_tolower(const std::string &str);
+
+/** \brief Convert UTF16 string to lower-case.
+ */
+std::u16string utf16_tolower(const std::u16string &str);
+
+/** \brief Convert UTF16 string to upper-case. Returns number of bytes converted.
+ */
+size_t utf16_toupper(const void *src, size_t srclen, void* dst, size_t dstlen);
+
+/** \brief Convert UTF16 string to upper-case.
+ */
+std::string utf16_toupper(const std::string &str);
+
+/** \brief Convert UTF16 string to upper-case.
+ */
+std::u16string utf16_toupper(const std::u16string &str);
+
+/** \brief Convert UTF16 string to title-case. Returns number of bytes converted.
+ */
+size_t utf16_totitle(const void *src, size_t srclen, void* dst, size_t dstlen);
+
+/** \brief Convert UTF16 string to title-case.
+ */
+std::string utf16_totitle(const std::string &str);
+
+/** \brief Convert UTF16 string to title-case.
+ */
+std::u16string utf16_totitle(const std::u16string &str);
 
 // UTF32
 
@@ -97,14 +130,12 @@ std::u32string utf32_toupper(const std::u32string &str);
 
 /** \brief Convert UTF32 string to title-case. Returns number of bytes converted.
  */
-//size_t utf32_totitle(const void *src, size_t srclen, void* dst, size_t dstlen);
+size_t utf32_totitle(const void *src, size_t srclen, void* dst, size_t dstlen);
 
 /** \brief Convert UTF32 string to title-case.
  */
-// TODO: need to tokenize whitespace/characters...
-//std::string utf32_totitle(const std::string &str);
+std::string utf32_totitle(const std::string &str);
 
 /** \brief Convert UTF32 string to title-case.
  */
-// TODO: need to tokenize whitespace/characters...
-//std::u32string utf32_totitle(const std::u32string &str);
+std::u32string utf32_totitle(const std::u32string &str);

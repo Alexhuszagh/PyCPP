@@ -18,6 +18,7 @@
 
 // 한국어
 static const std::string ASCII = {'H', 'a', 'n', 'g', 'u', 'l'};
+static const std::string HAS_NULL = {'\0', 'a', 'n', 'g', 'u', 'l'};
 static const std::string UTF8 = {-19, -107, -100, -22, -75, -83, -20, -106, -76};
 #if BYTE_ORDER == LITTLE_ENDIAN
 static const std::string UTF16 = {92, -43, 109, -83, -76, -59};
@@ -51,9 +52,40 @@ static const std::string UTF32_3 = {0, 0, 0, 109, 0, 0, 0, -22, 0, 0, 0, 109, 0,
 // -----
 
 
+TEST(unicode, is_ascii)
+{
+    EXPECT_TRUE(is_ascii(0x00));
+    EXPECT_TRUE(is_ascii(0x7f));
+    EXPECT_FALSE(is_ascii(0xff));
+    EXPECT_FALSE(is_ascii(0x100));
+    EXPECT_FALSE(is_ascii(0x10FFFF));
+    EXPECT_FALSE(is_ascii(0x1FFFFF));
+
+    EXPECT_TRUE(is_ascii(ASCII));
+    EXPECT_FALSE(is_ascii(HAS_NULL));
+    EXPECT_FALSE(is_ascii(UTF8));
+    EXPECT_FALSE(is_ascii(UTF16));
+    EXPECT_FALSE(is_ascii(UTF32));
+    EXPECT_FALSE(is_ascii(UTF8_2));
+    EXPECT_FALSE(is_ascii(UTF16_2));
+    EXPECT_FALSE(is_ascii(UTF32_2));
+    EXPECT_FALSE(is_ascii(UTF8_3));
+    EXPECT_FALSE(is_ascii(UTF16_3));
+    EXPECT_FALSE(is_ascii(UTF32_3));
+}
+
+
 TEST(unicode, is_unicode)
 {
+    EXPECT_TRUE(is_unicode(0x00));
+    EXPECT_TRUE(is_unicode(0x7f));
+    EXPECT_TRUE(is_unicode(0xff));
+    EXPECT_TRUE(is_unicode(0x100));
+    EXPECT_TRUE(is_unicode(0x10FFFF));
+    EXPECT_FALSE(is_unicode(0x1FFFFF));
+
     EXPECT_FALSE(is_unicode(ASCII));
+    EXPECT_TRUE(is_unicode(HAS_NULL));
     EXPECT_TRUE(is_unicode(UTF8));
     EXPECT_TRUE(is_unicode(UTF16));
     EXPECT_TRUE(is_unicode(UTF32));
@@ -63,6 +95,126 @@ TEST(unicode, is_unicode)
     EXPECT_TRUE(is_unicode(UTF8_3));
     EXPECT_TRUE(is_unicode(UTF16_3));
     EXPECT_TRUE(is_unicode(UTF32_3));
+}
+
+
+TEST(unicode, is_alnum)
+{
+    EXPECT_FALSE(is_alnum(0x00));       // NULL
+    EXPECT_FALSE(is_alnum(0x20));       // " "
+    EXPECT_FALSE(is_alnum(0x2e));       // .
+    EXPECT_TRUE(is_alnum(0x30));        // 0
+    EXPECT_TRUE(is_alnum(0x41));        // A
+    EXPECT_FALSE(is_alnum(0x7f));       // control (delete)
+    EXPECT_TRUE(is_alnum(0xff));        // ÿ
+    EXPECT_TRUE(is_alnum(0x100));       // Ā
+    EXPECT_FALSE(is_alnum(0x2008));     // space
+    EXPECT_FALSE(is_alnum(0x10FFFF));   // unassigned
+}
+
+
+TEST(unicode, is_alpha)
+{
+    EXPECT_FALSE(is_alpha(0x00));       // NULL
+    EXPECT_FALSE(is_alpha(0x20));       // " "
+    EXPECT_FALSE(is_alpha(0x2e));       // .
+    EXPECT_FALSE(is_alpha(0x30));       // 0
+    EXPECT_TRUE(is_alpha(0x41));        // A
+    EXPECT_FALSE(is_alpha(0x7f));       // control (delete)
+    EXPECT_TRUE(is_alpha(0xff));        // ÿ
+    EXPECT_TRUE(is_alpha(0x100));       // Ā
+    EXPECT_FALSE(is_alpha(0x2008));     // space
+    EXPECT_FALSE(is_alpha(0x10FFFF));   // unassigned
+}
+
+
+TEST(unicode, is_digit)
+{
+    EXPECT_FALSE(is_digit(0x00));       // NULL
+    EXPECT_FALSE(is_digit(0x20));       // " "
+    EXPECT_FALSE(is_digit(0x2e));       // .
+    EXPECT_TRUE(is_digit(0x30));        // 0
+    EXPECT_FALSE(is_digit(0x41));       // A
+    EXPECT_FALSE(is_digit(0x7f));       // control (delete)
+    EXPECT_FALSE(is_digit(0xff));       // ÿ
+    EXPECT_FALSE(is_digit(0x100));      // Ā
+    EXPECT_FALSE(is_digit(0x2008));     // space
+    EXPECT_FALSE(is_digit(0x10FFFF));   // unassigned
+}
+
+
+TEST(unicode, is_lower)
+{
+    EXPECT_FALSE(is_lower(0x00));       // NULL
+    EXPECT_FALSE(is_lower(0x20));       // " "
+    EXPECT_FALSE(is_lower(0x2e));       // .
+    EXPECT_FALSE(is_lower(0x30));       // 0
+    EXPECT_FALSE(is_lower(0x41));       // A
+    EXPECT_FALSE(is_lower(0x7f));       // control (delete)
+    EXPECT_TRUE(is_lower(0xff));        // ÿ
+    EXPECT_FALSE(is_lower(0x100));      // Ā
+    EXPECT_FALSE(is_lower(0x2008));     // space
+    EXPECT_FALSE(is_lower(0x10FFFF));   // unassigned
+}
+
+
+TEST(unicode, is_upper)
+{
+    EXPECT_FALSE(is_upper(0x00));       // NULL
+    EXPECT_FALSE(is_upper(0x20));       // " "
+    EXPECT_FALSE(is_upper(0x2e));       // .
+    EXPECT_FALSE(is_upper(0x30));       // 0
+    EXPECT_TRUE(is_upper(0x41));        // A
+    EXPECT_FALSE(is_upper(0x7f));       // control (delete)
+    EXPECT_FALSE(is_upper(0xff));       // ÿ
+    EXPECT_TRUE(is_upper(0x100));       // Ā
+    EXPECT_FALSE(is_upper(0x2008));     // space
+    EXPECT_FALSE(is_upper(0x10FFFF));   // unassigned
+}
+
+
+TEST(unicode, is_space)
+{
+    EXPECT_FALSE(is_space(0x00));       // NULL
+    EXPECT_TRUE(is_space(0x20));        // " "
+    EXPECT_FALSE(is_space(0x2e));       // .
+    EXPECT_FALSE(is_space(0x30));       // 0
+    EXPECT_FALSE(is_space(0x41));       // A
+    EXPECT_FALSE(is_space(0x7f));       // control (delete)
+    EXPECT_FALSE(is_space(0xff));       // ÿ
+    EXPECT_FALSE(is_space(0x100));      // Ā
+    EXPECT_TRUE(is_space(0x2008));      // space
+    EXPECT_FALSE(is_space(0x10FFFF));   // unassigned
+}
+
+
+TEST(unicode, is_blank)
+{
+    EXPECT_FALSE(is_blank(0x00));       // NULL
+    EXPECT_TRUE(is_blank(0x20));        // " "
+    EXPECT_FALSE(is_blank(0x2e));       // .
+    EXPECT_FALSE(is_blank(0x30));       // 0
+    EXPECT_FALSE(is_blank(0x41));       // A
+    EXPECT_FALSE(is_blank(0x7f));       // control (delete)
+    EXPECT_FALSE(is_blank(0xff));       // ÿ
+    EXPECT_FALSE(is_blank(0x100));      // Ā
+    EXPECT_TRUE(is_blank(0x2008));      // space
+    EXPECT_FALSE(is_blank(0x10FFFF));   // unassigned
+}
+
+
+TEST(unicode, is_punctuation)
+{
+    EXPECT_FALSE(is_punctuation(0x00));         // NULL
+    EXPECT_FALSE(is_punctuation(0x20));         // " "
+    EXPECT_TRUE(is_punctuation(0x2e));          // .
+    EXPECT_FALSE(is_punctuation(0x30));         // 0
+    EXPECT_FALSE(is_punctuation(0x41));         // A
+    EXPECT_FALSE(is_punctuation(0x7f));         // control (delete)
+    EXPECT_FALSE(is_punctuation(0xff));         // ÿ
+    EXPECT_FALSE(is_punctuation(0x100));        // Ā
+    EXPECT_FALSE(is_punctuation(0x2008));       // space
+    EXPECT_FALSE(is_punctuation(0x10FFFF));     // unassigned
 }
 
 
