@@ -95,7 +95,8 @@ static bool is_valid_byte(uint8_t byte, bool is_continuation, bool strict)
 {
     bool status = is_valid_byte(byte, is_continuation);
     if (!status && strict) {
-        throw std::runtime_error("Invalid byte encounter.");
+        printf("%d\n", byte);
+        throw std::runtime_error("Invalid byte encountered.");
     }
     return status;
 }

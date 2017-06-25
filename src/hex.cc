@@ -87,7 +87,7 @@ static std::string formatter(size_t width)
     const size_t size = length + 4;
     char *buffer = new char[size];
 
-    snprintf(buffer, size, "%%0%dx", width);
+    snprintf(buffer, size, "%%0%dx", static_cast<int>(width));
     std::string output(buffer, size - 1);
     delete[] buffer;
 
@@ -104,7 +104,7 @@ static size_t hex_impl(Iter1 src_first, Iter1 src_last,
     auto src = src_first;
     auto dst = dst_first;
     auto format = formatter(shift);
-    while (src < src_last && dst + shift < dst_last) {
+    while (src < src_last && dst + shift <= dst_last) {
         snprintf(dst, shift+1, format.data(), function(src, width));
         src += width;
         dst += shift;

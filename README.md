@@ -21,6 +21,7 @@ Independent, lightweight utilities for cross-platform C++ development.
 - Compiler, OS, processor, system architecture, and endian detection macros.
 - Thread-local storage.
 - Codec conversions (UTF8, UTF16, and UTF32).
+- Unicode-aware case conversions (lowercase, uppercase, titlecase).
 - Punycode encoding and decoding.
 - Hex-encoding.
 - Base16, base32, and base64 encoding.

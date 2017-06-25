@@ -8,6 +8,7 @@
 #pragma once
 
 #include "compiler.h"
+#include "os.h"
 
 #include <fstream>
 #include <iostream>
@@ -39,9 +40,12 @@ public:
     fstream & operator=(fstream &&other);
 
     fstream(const std::string &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    fstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::string &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+
+#if defined(OS_WINDOWS)
+    fstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+#endif
 
     // DATA
     std::basic_filebuf<char>* rdbuf() const;
@@ -77,9 +81,12 @@ public:
     ifstream & operator=(ifstream &&other);
 
     ifstream(const std::string &name, std::ios_base::openmode mode = std::ios_base::in);
-    ifstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::string &name, std::ios_base::openmode mode = std::ios_base::in);
+
+#if defined(OS_WINDOWS)
+    ifstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in);
+#endif
 
     std::basic_filebuf<char>* rdbuf() const;
     void rdbuf(std::basic_filebuf<char> *buffer);
@@ -114,9 +121,12 @@ public:
     ofstream & operator=(ofstream &&other);
 
     ofstream(const std::string &name, std::ios_base::openmode mode = std::ios_base::out);
-    ofstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::string &name, std::ios_base::openmode mode = std::ios_base::out);
+
+#if defined(OS_WINDOWS)
+    ofstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::out);
+#endif
 
     std::basic_filebuf<char>* rdbuf() const;
     void rdbuf(std::basic_filebuf<char> *buffer);
@@ -135,13 +145,10 @@ private:
     typedef typename traits_type::off_type off_type;
 };
 
-
-#elif HAVE_MSVC                 // MSVC
+#else                   // NON-GCC COMPILER
 
 typedef std::fstream fstream;
 typedef std::ifstream ifstream;
 typedef std::ofstream ofstream;
 
-#else
-#   error Unknown compiler
 #endif

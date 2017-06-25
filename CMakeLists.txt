@@ -42,6 +42,7 @@ endif()
 include_directories(src)
 
 set(SOURCE_FILES
+    src/casemap.cc
     src/codec.cc
     src/fstream.cc
     src/getline.cc
@@ -66,6 +67,7 @@ set(TEST_FILES
     test/main.cc
     test/architecture.cc
     test/byteorder.cc
+    test/casemap.cc
     test/codec.cc
     test/compiler.cc
     test/fstream.cc
