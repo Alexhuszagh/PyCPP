@@ -60,13 +60,13 @@ TEST(base32, fuzz)
 {
     std::random_device device;
     std::default_random_engine engine(device());
-    std::uniform_int_distribution<int8_t> dist(-128, 127);
+    std::uniform_int_distribution<> dist(-128, 127);
     for (size_t i = 0; i < 50; i++) {
         const size_t length = rand() % 1000;
         std::string input;
         input.reserve(length);
         for (size_t i = 0; i < length; ++i) {
-            input.push_back(dist(engine));
+            input.push_back(static_cast<char>(dist(engine)));
         }
         auto encoded = base32_encode(input);
         EXPECT_EQ(base32_decode(encoded), input);
