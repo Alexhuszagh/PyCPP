@@ -25,14 +25,7 @@ TEST(hex, hex8)
 
 TEST(hex, hex32)
 {
-#if BYTE_ORDER == LITTLE_ENDIAN
-    // 50462976, 117835012
-    std::string expected = "0302010007060504";
-#else
-    // 66051, 67438087
-    std::string expected = "0001020304050607";
-#endif
-
+std::string expected = "0302010007060504";
     std::string bytes = {0, 1, 2, 3, 4, 5, 6, 7};
     EXPECT_EQ(hex(bytes, 4), expected);
     EXPECT_EQ(hex_i32(bytes), expected);
@@ -50,14 +43,7 @@ TEST(unhex, unhex8)
 
 TEST(unhex, unhex32)
 {
-#if BYTE_ORDER == LITTLE_ENDIAN
-    // 50462976, 117835012
     std::string bytes = "0302010007060504";
-#else
-    // 66051, 67438087
-    std::string bytes = "0001020304050607";
-#endif
-
     std::string expected = {0, 1, 2, 3, 4, 5, 6, 7};
     EXPECT_EQ(unhex(bytes, 4), expected);
     EXPECT_EQ(unhex_i32(bytes), expected);
