@@ -4,8 +4,6 @@
 #include "gettimeofday.h"
 
 #ifdef _MSC_VER
-#   include <cstdint>
-#   include <windows.h>
 
 // CONSTANTS
 // ---------

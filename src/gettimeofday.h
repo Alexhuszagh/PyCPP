@@ -10,6 +10,8 @@
 #ifndef _MSC_VER
 #   include "sys/time.h"
 #else
+#   include <cstdint>
+#   include <windows.h>
 
 // OBJECTS
 // -------
