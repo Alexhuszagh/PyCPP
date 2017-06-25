@@ -167,7 +167,7 @@ static char uppercase_ascii(char c)
 
 static bool is_ascii_boundary(char c)
 {
-    if (c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c<= 'Z') {
+    if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c<= 'Z')) {
         return false;
     }
     return true;

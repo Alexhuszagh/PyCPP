@@ -15,7 +15,7 @@
 #if defined(HAVE_CLANG) || defined(HAVE_GCC)
 #   define thread_local_storage __thread
 #elif defined(HAVE_MSVC)
-#   define thread_local_storage __declspec(thread)
+#   define thread_local_storage __declspec( thread )
 #else
 #   error Compiler does not support thread-local storage.
 #endif
