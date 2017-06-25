@@ -19,12 +19,6 @@
 #include "codec.h"
 #include "fstream.h"
 
-#if defined(HAVE_GCC) && defined(OS_WINDOWS)
-#   pragma message("Including stdio.h and wchar.h. LOLS.")
-#   include <stdio.h>
-#   include <wchar.h>
-#endif
-
 
 #if defined(HAVE_GCC)                   // GCC
 
@@ -92,7 +86,7 @@ FILE * get_c_file(const std::string &narrow, std::ios_base::openmode mode)
 }
 
 
-#ifdef OS_WINDOWS
+#ifdef HAVE_WFOPEN
 
 /** \brief Get C FILE pointer from wide filename.
  */
@@ -154,7 +148,7 @@ void fstream::open(const std::string &name, std::ios_base::openmode mode)
     std::ios::rdbuf(&buffer);
 }
 
-#ifdef OS_WINDOWS
+#ifdef HAVE_WFOPEN
 
 fstream::fstream(const std::wstring &name, std::ios_base::openmode mode)
 {
@@ -253,7 +247,7 @@ void ifstream::open(const std::string &name, std::ios_base::openmode mode)
     std::ios::rdbuf(&buffer);
 }
 
-#ifdef OS_WINDOWS
+#ifdef HAVE_WFOPEN
 
 ifstream::ifstream(const std::wstring &name, std::ios_base::openmode mode)
 {
@@ -349,7 +343,7 @@ void ofstream::open(const std::string &name, std::ios_base::openmode mode)
     std::ios::rdbuf(&buffer);
 }
 
-#ifdef OS_WINDOWS
+#ifdef HAVE_WFOPEN
 
 ofstream::ofstream(const std::wstring &name, std::ios_base::openmode mode)
 {
