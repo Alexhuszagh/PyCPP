@@ -20,11 +20,13 @@
 #include "fstream.h"
 
 #if defined(HAVE_GCC) && defined(OS_WINDOWS)
+#   pragma message("Including stdio.h and wchar.h. LOLS.")
 #   include <stdio.h>
+#   include <wchar.h>
 #endif
 
 
-#if HAVE_GCC                    // GCC
+#if defined(HAVE_GCC)                   // GCC
 
 // MACROS
 // ------
