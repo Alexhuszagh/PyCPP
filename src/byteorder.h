@@ -175,15 +175,15 @@ void bswap(void* dst, void* src, int width);
 #if BYTE_ORDER == LITTLE_ENDIAN
 
 #   define htobe(buf, i) bswap(buf, i)
-#   define htole(buf, i) (buf)
+#   define htole(buf, i)
 #   define betoh(buf, i) bswap(buf, i)
-#   define letoh(buf, i) (buf)
+#   define letoh(buf, i)
 
 #elif BYTE_ORDER == BIG_ENDIAN
 
-#   define htobe(buf, i) (buf)
+#   define htobe(buf, i)
 #   define htole(buf, i) bswap(buf, i)
-#   define betoh(buf, i) (buf)
+#   define betoh(buf, i)
 #   define letoh(buf, i) bswap(buf, i)
 
 #else

@@ -5,7 +5,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include <stdio.h>          // TODO: remove
 
 // HELPERS
 // -------
@@ -54,6 +53,7 @@ uint16_t bswap16(uint16_t i)
 {
     uint16_t v = i;
     bswap(&v, 2);
+    return v;
 }
 
 
@@ -61,6 +61,7 @@ uint32_t bswap32(uint32_t i)
 {
     uint32_t v = i;
     bswap(&v, 4);
+    return v;
 }
 
 
@@ -68,6 +69,7 @@ uint64_t bswap64(uint64_t i)
 {
     uint64_t v = i;
     bswap(&v, 8);
+    return v;
 }
 
 #endif
