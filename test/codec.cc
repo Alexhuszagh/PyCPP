@@ -14,33 +14,18 @@
 
 // 한국어
 static const std::string UTF8 = {-19, -107, -100, -22, -75, -83, -20, -106, -76};
-#if BYTE_ORDER == LITTLE_ENDIAN
 static const std::u16string UTF16 = {54620, 44397, 50612};
 static const std::u32string UTF32 = {54620, 44397, 50612};
-#else
-static const std::u16string UTF16 = {23765, 28077, 46277};
-static const std::u32string UTF32 = {1557463040, 1840054272, 3032809472};
-#endif
 
 // räksmörgås
 static const std::string UTF8_2 = {114, -61, -92, 107, 115, 109, -61, -74, 114, 103, -61, -91, 115};
-#if BYTE_ORDER == LITTLE_ENDIAN
 static const std::u16string UTF16_2 = {114,  228,  107,  115,  109,  246,  114,  103,  229,  115};
 static const std::u32string UTF32_2 = {114, 228, 107, 115, 109, 246, 114, 103, 229, 115};
-#else
-static const std::u16string UTF16_2 = {29184, 58368, 27392, 29440, 27904, 62976, 29184, 26368, 58624, 29440};
-static const std::u32string UTF32_2 = {1912602624, 3825205248, 1795162112, 1929379840, 1828716544, 4127195136, 1912602624, 1728053248, 3841982464, 1929379840};
-#endif
 
 // "Même"
 static const std::string UTF8_3 = {77, -61, -86, 109, 101};
-#if BYTE_ORDER == LITTLE_ENDIAN
 static const std::u16string UTF16_3 = {77, 234, 109, 101};
 static const std::u32string UTF32_3 = {77, 234, 109, 101};
-#else
-static const std::u16string UTF16_3 = {19712, 59904, 27904, 25856};
-static const std::u32string UTF32_3 = {1291845632, 3925868544, 1828716544, 1694498816};
-#endif
 
 // TESTS
 // -----
