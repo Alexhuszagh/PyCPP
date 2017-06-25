@@ -7,22 +7,15 @@
 
 #pragma once
 
+#include "compiler.h"
+
 // MACROS
 // ------
 
-//#if defined(__MINGW32__) || defined(__APPLE__)
-//#   define USE_CUSTOM_TLS
-////#   include <boost/thread/tss.hpp>
-//#elif (_MSC_VER >= 1400)
-//# ifndef thread_local
-//#   define thread_local __declspec(thread)
-//# endif
-//#else
-//#   define USE_CXX11_TLS
-//#endif
-
-// CLEANUP
-// -------
-
-#undef USE_CUSTOM_TLS
-#undef USE_CXX11_TLS
+#if defined(HAVE_CLANG) || defined(HAVE_GCC)
+#   define thread_local_storage __thread
+#elif defined(HAVE_MSVC)
+#   define thread_local_storage __declspec(thread)
+#else
+#   error Compiler does not support thread-local storage.
+#endif
