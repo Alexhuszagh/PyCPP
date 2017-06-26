@@ -15,15 +15,6 @@
 // MACROS
 // -------
 
-#if defined(OS_WINDOWS)         // WINDOWS
-#   ifndef stat
-#      define stat _stat
-#   endif
-#   ifndef wstat
-#      define wstat _wstat
-#   endif
-#endif
-
 #ifndef S_IFLNK
 #   define S_IFLNK 0120000
 #endif
@@ -93,16 +84,106 @@ static void handle_error(int code)
 
 #if defined(OS_WINDOWS)         // WINDOWS
 
-#ifndef stat
-#   define stat _stat
-#endif
 
-#ifndef wstat
-#   define wstat _wstat
-#endif
+//HANDLE get_file_handle(const std::string &path,
+//    DWORD dwDesiredAccess = 0,
+//    DWORD dwShareMode = SHARE_ALL,
+//    LPSECURITY_ATTRIBUTES lpSecurityAttributes = nullptr,
+//    DWORD dwCreationDisposition = OPEN_EXISTING,
+//    DWORD dwFlagsAndAttributes = FILE_FLAG_BACKUP_SEMANTICS,
+//    HANDLE hTemplateFile = nullptr);
+//HANDLE get_file_handle(const std::string &path,
+//    DWORD dwDesiredAccess,
+//    DWORD dwShareMode,
+//    LPSECURITY_ATTRIBUTES lpSecurityAttributes,
+//    DWORD dwCreationDisposition,
+//    DWORD dwFlagsAndAttributes,
+//    HANDLE hTemplateFile)
+//{
+//    return CreateFileW(WIDE(path).data(), dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
+//}
+//
+///** Create file handle with attribute-only permissions and read
+// *  device information.
+// */
+//BY_HANDLE_FILE_INFORMATION get_file_info(const std::string &path)
+//{
+//    BY_HANDLE_FILE_INFORMATION info;
+//    auto handle = get_file_handle(path);
+//    if(handle != INVALID_HANDLE_VALUE) {
+//        GetFileInformationByHandle(handle, &info);
+//    }
+//
+//    return info;
+//}
 
 
-static void copy_native(const struct stat& src, stat_t& dst)
+
+static int stat(const char* path, stat_t* buffer, bool do_lstat)
+{
+    // TODO: here..
+}
+
+
+static int wstat(const wchar_t* path, stat_t* buffer, bool do_lstat)
+{
+    // TODO: here..
+}
+
+    // GetFileInformationByHandle
+    // TODO: here...
+//    code = stat(path.data(), &sb);
+//    handle_error(code);
+//    copy_native(sb, data);
+
+// TODO: need to check here...
+// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
+// https://github.com/joyent/libuv/blob/1dc2709b999a84520ab1b3c56c0e082bf8617c1f/src/win/fs.c#L971
+
+
+//INLINE static void fs__stat_impl(uv_fs_t* req, int do_lstat) {
+//  HANDLE handle;
+//  DWORD flags;
+//
+//  flags = FILE_FLAG_BACKUP_SEMANTICS;
+//  if (do_lstat) {
+//    flags |= FILE_FLAG_OPEN_REPARSE_POINT;
+//  }
+//
+//  handle = CreateFileW(req->pathw,
+//                       FILE_READ_ATTRIBUTES,
+//                       FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+//                       NULL,
+//                       OPEN_EXISTING,
+//                       flags,
+//                       NULL);
+//  if (handle == INVALID_HANDLE_VALUE) {
+//    SET_REQ_WIN32_ERROR(req, GetLastError());
+//    return;
+//  }
+//
+//  if (fs__stat_handle(handle, &req->statbuf) != 0) {
+//    DWORD error = GetLastError();
+//    if (do_lstat && error == ERROR_SYMLINK_NOT_SUPPORTED) {
+//      /* We opened a reparse point but it was not a symlink. Try again. */
+//      fs__stat_impl(req, 0);
+//
+//    } else {
+//      /* Stat failed. */
+//      SET_REQ_WIN32_ERROR(req, GetLastError());
+//    }
+//
+//    CloseHandle(handle);
+//    return;
+//  }
+//
+//  req->ptr = &req->statbuf;
+//  req->result = 0;
+//  CloseHandle(handle);
+//}
+
+
+static void copy_native(const struct _stat& src, stat_t& dst)
 {
     dst.st_dev = src.st_dev;
     dst.st_ino = src.st_ino;
@@ -120,14 +201,12 @@ static void copy_native(const struct stat& src, stat_t& dst)
 
 stat_t stat(const path_t& path)
 {
-    struct stat sb;
     stat_t data;
     int code;
 
     auto buffer = reinterpret_cast<const wchar_t*>(path.data());
-    code = ::wstat(buffer, &sb);
+    code = wstat(buffer, &data, false);
     handle_error(code);
-    copy_native(sb, data);
 
     return data;
 }
@@ -136,20 +215,11 @@ stat_t stat(const path_t& path)
 stat_t lstat(const path_t& path)
 {
     stat_t data;
-    DWORD code;
+    int code;
 
     auto buffer = reinterpret_cast<const wchar_t*>(path.data());
-    code = GetFileAttributesW(buffer);
-    // GetFileInformationByHandle
-    // TODO: here...
-//    code = ::stat(path.data(), &sb);
-//    handle_error(code);
-//    copy_native(sb, data);
-
-// TODO: need to check here...
-// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
-// https://github.com/joyent/libuv/blob/1dc2709b999a84520ab1b3c56c0e082bf8617c1f/src/win/fs.c#L971
-
+    code = wstat(buffer, &data, true);
+    handle_error(code);
 
     return data;
 }
@@ -208,13 +278,11 @@ stat_t lstat(const path_t& path)
 
 stat_t stat(const backup_path_t& path)
 {
-    struct stat sb;
     stat_t data;
     int code;
 
-    code = ::stat(path.data(), &sb);
+    code = stat(path.data(), &data, false);
     handle_error(code);
-    copy_native(sb, data);
 
     return data;
 }
@@ -223,9 +291,10 @@ stat_t stat(const backup_path_t& path)
 stat_t lstat(const backup_path_t& path)
 {
     stat_t data;
-    DWORD code;
+    int code;
 
-    code = GetFileAttributes(path.data());
+    code = stat(path.data(), &data, false);
+    handle_error(code);
 
     return data;
 }
