@@ -12,3 +12,22 @@
 // TESTS
 // -----
 
+
+TEST(stat, stat)
+{}
+
+
+TEST(stat, getatime)
+{}
+
+
+TEST(stat, getmtime)
+{}
+
+
+TEST(stat, getctime)
+{}
+
+
+TEST(stat, getsize)
+{}

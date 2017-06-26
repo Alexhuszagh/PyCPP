@@ -2,40 +2,40 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include "filesystem.h"
+#include "filesystem/exception.h"
 
 #include <errno.h>
 #include <sys/stat.h>
-#include <stdexcept>
 
+// MACROS
+// -------
+
+#if defined(OS_WINDOWS)
+    // TODO: expand on this...
+    #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+    #define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#endif
 
 // HELPERS
 // -------
 
+// STAT
 
-template <typename Path, typename ToString>
-static void handle_error(const Path& path, int code, ToString tostring)
+
+static void handle_error(int code)
 {
     switch (code) {
         case 0:
             return;
         case ENOENT:
-            throw std::runtime_error("File not found: " + tostring(path));
+            throw filesystem_error(filesystem_file_not_found);
          case EINVAL:
-            throw std::runtime_error("Invalid parameter to _stat: " + tostring(path));
+            throw filesystem_error(filesystem_invalid_parameter);
         case ENOMEM:
-            throw std::runtime_error("Out of memory: " + tostring(path));
+            throw filesystem_error(filesystem_out_of_memory);
          default:
-            throw std::runtime_error("Unexpected error in stat: " + tostring(path));
+            throw filesystem_error(filesystem_unexpected_error);
     }
-}
-
-
-template <typename Path>
-static void handle_error(const Path& path, int code)
-{
-    return handle_error(path, code, [](const Path& path) {
-        return path;
-    });
 }
 
 
@@ -66,7 +66,7 @@ stat_t stat(const path_t& path)
 
     auto buffer = reinterpret_cast<const wchar_t*>(path.data());
     code = ::_wstat(buffer, &sb);
-    handle_error(path, code, codec_utf16_utf8);
+    handle_error(code);
     copy_native(sb, data);
 
     return data;
@@ -101,7 +101,7 @@ stat_t stat(const path_t& path)
     int code;
 
     code = ::stat(path.c_str(), &sb);
-    handle_error(path, code);
+    handle_error(code);
     copy_native(sb, data);
 
     return data;
@@ -118,7 +118,7 @@ stat_t stat(const backup_path_t& path)
     int code;
 
     code = ::_stat(path.data(), &sb);
-    handle_error(path, code);
+    handle_error(code);
     copy_native(sb, data);
 
     return data;
@@ -126,31 +126,133 @@ stat_t stat(const backup_path_t& path)
 
 #endif
 
+// STAT PROPERTIES
+
+static time_t getatime(const stat_t& s)
+{
+    return s.st_atim.tv_sec;
+}
+
+
+static time_t getmtime(const stat_t& s)
+{
+    return s.st_mtim.tv_sec;
+}
+
+
+static time_t getctime(const stat_t& s)
+{
+    return s.st_ctim.tv_sec;
+}
+
+
+static off_t getsize(const stat_t& s)
+{
+    return s.st_size;
+}
+
+
+static bool exists_stat(const stat_t& s)
+{
+    return true;
+}
+
+
+static bool isfile_stat(const stat_t& s)
+{
+    return S_ISREG(s.st_mode);
+}
+
+
+static bool isdir_stat(const stat_t& s)
+{
+    return S_ISDIR(s.st_mode);
+}
+
+// PATH PROPERTIES
+
+
+template <typename Path, typename Function>
+static bool check_impl(const Path& path, Function function)
+{
+    try {
+        auto s = stat(path);
+        return function(s);
+    } catch (filesystem_error& error) {
+        if (error.code() == filesystem_file_not_found) {
+            return false;
+        }
+        throw;
+    }
+}
+
+
+template <typename Path>
+static bool exists_impl(const Path& path)
+{
+    return check_impl(path, exists_stat);
+}
+
+
+template <typename Path>
+static bool isfile_impl(const Path& path)
+{
+    return check_impl(path, isfile_stat);
+}
+
+
+template <typename Path>
+static bool isdir_impl(const Path& path)
+{
+    return check_impl(path, isdir_stat);
+}
+
 // FUNCTIONS
 // ---------
 
 
 time_t getatime(const path_t& path)
 {
-    return stat(path).st_atim.tv_sec;
+    return getatime(stat(path));
 }
 
 
 time_t getmtime(const path_t& path)
 {
-    return stat(path).st_mtim.tv_sec;
+    return getmtime(stat(path));
 }
 
 
 time_t getctime(const path_t& path)
 {
-    return stat(path).st_ctim.tv_sec;
+    return getctime(stat(path));
 }
 
 
 off_t getsize(const path_t& path)
 {
-    return stat(path).st_size;
+    return getsize(stat(path));
+}
+
+
+bool isfile(const path_t& path)
+{
+    return isfile_impl(path);
+}
+
+
+bool isdir(const path_t& path)
+{
+    return isdir_impl(path);
+}
+
+
+//bool islink(const path_t& path);
+////bool ismount(const path_t& path);
+
+bool exists(const path_t& path)
+{
+    return exists_impl(path);
 }
 
 
@@ -159,25 +261,45 @@ off_t getsize(const path_t& path)
 
 time_t getatime(const backup_path_t& path)
 {
-    return stat(path).st_atim.tv_sec;
+    return getatime(stat(path));
 }
 
 
 time_t getmtime(const backup_path_t& path)
 {
-    return stat(path).st_mtim.tv_sec;
+    return getmtime(stat(path));
 }
 
 
 time_t getctime(const backup_path_t& path)
 {
-    return stat(path).st_ctim.tv_sec;
+    return getctime(stat(path));
 }
 
 
 off_t getsize(const backup_path_t& path)
 {
-    return stat(path).st_size;
+    return getmtime(stat(path));
+}
+
+
+bool isfile(const backup_path_t& path)
+{
+    return isfile_impl(path);
+}
+
+
+bool isdir(const backup_path_t& path)
+{
+    return isdir_impl(path);
+}
+
+//bool islink(const backup_path_t& path);
+////bool ismount(const backup_path_t& path);
+
+bool exists(const backup_path_t& path)
+{
+    return exists_impl(path);
 }
 
 #endif

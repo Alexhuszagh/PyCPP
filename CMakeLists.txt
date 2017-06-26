@@ -42,6 +42,7 @@ endif()
 include_directories(src)
 
 set(SOURCE_FILES
+    src/filesystem/exception.cc
     src/filesystem/stat.cc
     src/hashlib/md5.cc
     src/hashlib/sha1.cc
