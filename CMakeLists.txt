@@ -53,6 +53,7 @@ set(SOURCE_FILES
     src/gettimeofday.cc
     src/hex.cc
     src/punycode.cc
+    src/safe_stdlib.cc
     src/unicode.cc
     src/url.cc
 )
@@ -90,6 +91,7 @@ set(TEST_FILES
     test/casemap.cc
     test/codec.cc
     test/compiler.cc
+    test/enum.cc
     test/fstream.cc
     test/getline.cc
     test/gettimeofday.cc
@@ -98,6 +100,7 @@ set(TEST_FILES
     test/ordering.cc
     test/os.cc
     test/punycode.cc
+    test/safe_stdlib.cc
     test/tls.cc
     test/unicode.cc
     test/url.cc

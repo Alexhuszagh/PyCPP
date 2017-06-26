@@ -5,6 +5,7 @@
 //  :copyright: (c) Copyright 2001-2011 Joel de Guzman.
 //  :license: Boost, see licenses/boost.md for more details.
 
+#include "safe_stdlib.h"
 #include "unicode.h"
 
 #include <algorithm>
@@ -585,12 +586,12 @@ struct to_wide
         const size_t dstlen = srclen;
         auto *src_first = reinterpret_cast<const Char1*>(str.data());
         auto *src_last = src_first + srclen;
-        auto *dst_first = reinterpret_cast<Char2*>(malloc(dstlen * size2));
+        auto *dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
         auto *dst_last = dst_first + dstlen;
 
         size_t out = function(src_first, src_last, dst_first, dst_last, true);
         std::string output(reinterpret_cast<const char*>(dst_first), out * size2);
-        free(dst_first);
+        safe_free(dst_first);
 
         return output;
     }
@@ -615,12 +616,12 @@ struct to_narrow
         const size_t dstlen = srclen * 4;
         auto *src_first = reinterpret_cast<const Char1*>(str.data());
         auto *src_last = src_first + srclen;
-        auto *dst_first = reinterpret_cast<Char2*>(malloc(dstlen * size2));
+        auto *dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
         auto *dst_last = dst_first + dstlen;
 
         size_t out = function(src_first, src_last, dst_first, dst_last, true);
         std::string output(reinterpret_cast<const char*>(dst_first), out * size2);
-        free(dst_first);
+        safe_free(dst_first);
 
         return output;
     }

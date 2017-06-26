@@ -3,6 +3,7 @@
 //  :license: Unicode, see licenses/mit.md for more details.
 
 #include "punycode.h"
+#include "safe_stdlib.h"
 #include "unicode.h"
 
 #include <algorithm>
@@ -302,12 +303,12 @@ std::string utf32_to_punycode(const std::string &str)
     const size_t dstlen = srclen * 6;
     auto *src_first = reinterpret_cast<const uint32_t*>(str.data());
     auto *src_last = src_first + srclen;
-    auto *dst_first = reinterpret_cast<uint8_t*>(malloc(dstlen));
+    auto *dst_first = reinterpret_cast<uint8_t*>(safe_malloc(dstlen));
     auto *dst_last = dst_first + dstlen;
 
     size_t out = encode_impl(src_first, src_last, dst_first, dst_last);
     std::string output(reinterpret_cast<const char*>(dst_first), out);
-    free(dst_first);
+    safe_free(dst_first);
 
     return output;
 }
@@ -316,7 +317,6 @@ std::string utf32_to_punycode(const std::string &str)
 std::string punycode_to_utf8(const std::string &str)
 {
     return utf32_to_utf8(punycode_to_utf32(str));
-
 }
 
 
@@ -332,11 +332,11 @@ std::string punycode_to_utf32(const std::string &str)
     auto *src = str.data();
     size_t srclen = str.size();
     size_t dstlen = srclen;
-    auto *dst = reinterpret_cast<uint32_t*>(malloc(dstlen * 4));
+    auto *dst = reinterpret_cast<uint32_t*>(safe_malloc(dstlen * 4));
 
     size_t out = decode_impl(src, srclen, dst, dstlen);
     std::string output(reinterpret_cast<const char*>(dst), out * 4);
-    free(dst);
+    safe_free(dst);
 
     return output;
 }
