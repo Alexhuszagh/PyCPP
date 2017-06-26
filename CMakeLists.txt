@@ -42,6 +42,7 @@ endif()
 include_directories(src)
 
 set(SOURCE_FILES
+    src/filesystem/stat.cc
     src/hashlib/md5.cc
     src/hashlib/sha1.cc
     src/random/pseudorandom.cc
@@ -96,6 +97,7 @@ set(TEST_FILES
     test/codec.cc
     test/compiler.cc
     test/enum.cc
+    test/filesystem.cc
     test/fstream.cc
     test/getline.cc
     test/gettimeofday.cc
