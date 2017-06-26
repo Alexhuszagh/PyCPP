@@ -10,6 +10,9 @@
 
 #if defined(OS_WINDOWS)
 #   include "windows.h"
+#   if defined(__STRICT_ANSI__)
+#       error Cannot support strict ANSI... LOLS
+#   endif
 #endif
 
 // MACROS
