@@ -1,10 +1,7 @@
 //  :copyright: (c) 2001 Alexander Peslyak <solar@openwall.com>.
-//  :copyright: (c) 2016 The Regents of the University of California.
+//  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /*
- *  \addtogroup crosscxx
- *  \brief MD5 hash function.
- *
  *  [reference] http://openwall.info/wiki/people/solar/software/public-domain-source-code/md5
  */
 
@@ -301,7 +298,7 @@ size_t md5_hash(const void* src, size_t srclen, void* dst, size_t dstlen)
 
     MD5_CTX context;
     long length = srclen;
-    const char* first = reinterpret_cast<const char*>(src);
+    const int8_t* first = reinterpret_cast<const int8_t*>(src);
 
     md5_init(&context);
     while (length > 0) {
@@ -329,7 +326,7 @@ std::string md5_hash(const std::string &str)
 
 size_t md5_digest(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
-    char* hash = new char[MD5_HASH_SIZE];
+    int8_t* hash = new int8_t[MD5_HASH_SIZE];
     md5_hash(src, srclen, hash, MD5_HASH_SIZE);
     auto size = hex_i8(hash, MD5_HASH_SIZE, dst, dstlen);
     delete[] hash;

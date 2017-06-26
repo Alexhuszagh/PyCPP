@@ -74,3 +74,63 @@ TEST(md5, fuzz)
         EXPECT_EQ(md5_digest(input).size(), 32);
     }
 }
+
+
+TEST(sha1, digest)
+{
+    std::vector<std::pair<std::string, std::string>> tests = {
+        {
+            "LOWER",
+            "E2B5C793D8E006E471A5275E68ADFB98FE059DC4"
+        },
+        {
+            "lower-/",
+            "E0EF66C0EFC8DEC254491C7FC6D0D63D272094A4"
+        },
+        {
+            "012345",
+            "FDF8BC5814536F66012884E146A8887A44709A56"
+        },
+        {
+            "aaaAA0aa",
+            "B5E88447D8D3C41D1A02CC717E2595F08A83BB29"
+        },
+        {
+            "This is a long message",
+            "57846FFA4ABAD11215011F5B5D1452F949123762"
+        },
+        {
+            std::string {-19, -107, -100, -22, -75, -83, -20, -106, -76},
+            "6E081B5948EFD1A97CECEE33A5186C2D9195A93A",
+        },
+        {
+            std::string {114, -61, -92, 107, 115, 109, -61, -74, 114, 103, -61, -91, 115},
+            "95E2FEA39A4E4BB3A73B7CFBF82C817E91F7F5DB",
+        },
+        {
+            std::string {77, -61, -86, 109, 101},
+            "35F7E32CF0651E8E38CCDFCECE594D4DFA34EE2B",
+        },
+    };
+
+    for (const auto &pair: tests) {
+        EXPECT_EQ(sha1_digest(pair.first), pair.second);
+    }
+}
+
+
+TEST(sha1, fuzz)
+{
+    std::random_device device;
+    std::default_random_engine engine(device());
+    std::uniform_int_distribution<> dist(-128, 127);
+    for (size_t i = 0; i < 50; i++) {
+        const size_t length = rand() % 1000;
+        std::string input;
+        input.reserve(length);
+        for (size_t i = 0; i < length; ++i) {
+            input.push_back(static_cast<char>(dist(engine)));
+        }
+        EXPECT_EQ(sha1_digest(input).size(), 40);
+    }
+}

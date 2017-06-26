@@ -43,6 +43,7 @@ include_directories(src)
 
 set(SOURCE_FILES
     src/hashlib/md5.cc
+    src/hashlib/sha1.cc
     src/base16.cc
     src/base32.cc
     src/base64.cc
