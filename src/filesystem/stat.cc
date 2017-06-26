@@ -18,6 +18,14 @@
 // MACROS
 // -------
 
+#ifndef S_IREAD
+#   define S_IREAD _S_IREAD
+#endif
+
+#ifndef S_IWRITE
+#   define S_IWRITE _S_IWRITE
+#endif
+
 #ifndef S_IFLNK
 #   define S_IFLNK 0120000
 #endif
@@ -166,9 +174,9 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
     buffer->st_mode = 0;
     int mode;
     if (info.dwFileAttributes & FILE_ATTRIBUTE_READONLY) {
-        mode = _S_IREAD;
+        mode = S_IREAD;
     } else {
-        mode = _S_IREAD | _S_IWRITE;
+        mode = S_IREAD | S_IWRITE;
     }
     buffer->st_mode |= mode | (mode >> 3) | (mode >> 6);
 
