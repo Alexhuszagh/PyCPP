@@ -44,6 +44,8 @@ include_directories(src)
 set(SOURCE_FILES
     src/hashlib/md5.cc
     src/hashlib/sha1.cc
+    src/random/pseudorandom.cc
+    src/random/sysrandom.cc
     src/base16.cc
     src/base32.cc
     src/base64.cc
@@ -75,9 +77,9 @@ if(MSVC)
 endif()
 
 if(MSVC)
-    list(APPEND CROSSCXX_LIBRARIES ws2_32.lib)
+    list(APPEND CROSSCXX_LIBRARIES ws2_32.lib crypt32.lib)
 elseif(MINGW OR MSYS)
-    list(APPEND CROSSCXX_LIBRARIES -lws2_32)
+    list(APPEND CROSSCXX_LIBRARIES -lws2_32 -lcrypt32)
 endif()
 
 # TESTS
@@ -103,6 +105,7 @@ set(TEST_FILES
     test/ordering.cc
     test/os.cc
     test/punycode.cc
+    test/random.cc
     test/safe_stdlib.cc
     test/string_view.cc
     test/tls.cc
