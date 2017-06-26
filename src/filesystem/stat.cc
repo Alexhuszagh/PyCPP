@@ -15,6 +15,15 @@
 // MACROS
 // -------
 
+#if defined(OS_WINDOWS)         // WINDOWS
+#   ifndef stat
+#      define stat _stat
+#   endif
+#   ifndef wstat
+#      define wstat _wstat
+#   endif
+#endif
+
 #ifndef S_IFLNK
 #   define S_IFLNK 0120000
 #endif
@@ -84,13 +93,16 @@ static void handle_error(int code)
 
 #if defined(OS_WINDOWS)         // WINDOWS
 
+#ifndef stat
+#   define stat _stat
+#endif
 
-#if !defined(_stat)
-// TODO: shit, need _stat and _wstat
+#ifndef wstat
+#   define wstat _wstat
 #endif
 
 
-static void copy_native(const struct _stat& src, stat_t& dst)
+static void copy_native(const struct stat& src, stat_t& dst)
 {
     dst.st_dev = src.st_dev;
     dst.st_ino = src.st_ino;
@@ -108,12 +120,12 @@ static void copy_native(const struct _stat& src, stat_t& dst)
 
 stat_t stat(const path_t& path)
 {
-    struct _stat sb;
+    struct stat sb;
     stat_t data;
     int code;
 
     auto buffer = reinterpret_cast<const wchar_t*>(path.data());
-    code = ::_wstat(buffer, &sb);
+    code = ::wstat(buffer, &sb);
     handle_error(code);
     copy_native(sb, data);
 
@@ -130,7 +142,7 @@ stat_t lstat(const path_t& path)
     code = GetFileAttributesW(buffer);
     // GetFileInformationByHandle
     // TODO: here...
-//    code = ::_stat(path.data(), &sb);
+//    code = ::stat(path.data(), &sb);
 //    handle_error(code);
 //    copy_native(sb, data);
 
@@ -196,11 +208,11 @@ stat_t lstat(const path_t& path)
 
 stat_t stat(const backup_path_t& path)
 {
-    struct _stat sb;
+    struct stat sb;
     stat_t data;
     int code;
 
-    code = ::_stat(path.data(), &sb);
+    code = ::stat(path.data(), &sb);
     handle_error(code);
     copy_native(sb, data);
 
