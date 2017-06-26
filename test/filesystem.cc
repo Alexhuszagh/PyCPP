@@ -31,3 +31,23 @@ TEST(stat, getctime)
 
 TEST(stat, getsize)
 {}
+
+
+TEST(stat, isfile)
+{}
+
+
+TEST(stat, isdir)
+{}
+
+
+TEST(stat, islink)
+{}
+
+
+TEST(stat, ismount)
+{}
+
+
+TEST(stat, exists)
+{}

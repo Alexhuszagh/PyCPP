@@ -10,10 +10,44 @@
 // MACROS
 // -------
 
-#if defined(OS_WINDOWS)
-    // TODO: expand on this...
-    #define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
-    #define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#ifndef S_ISREG
+#   define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
+#endif
+
+#ifndef S_ISDIR
+#   define S_ISDIR(m) (((m) & S_IFMT) == S_IFDIR)
+#endif
+
+#ifndef S_ISCHR
+#   define S_ISCHR(m) (((m) & S_IFMT) == S_IFCHR)
+#endif
+
+#ifndef S_ISBLK
+#  define S_ISBLK(m) (((m) & S_IFMT) == S_IFBLK)
+#endif
+
+#ifndef S_ISFIFO
+#  define S_ISFIFO(m) (((m) & S_IFMT) == S_IFIFO)
+#endif
+
+#ifndef S_ISLNK
+#  define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
+#endif
+
+#ifndef S_ISSOCK
+#  define S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK)
+#endif
+
+#ifndef S_ISDOOR
+#  define S_ISDOOR(m) (0)
+#endif
+
+#ifndef S_ISPORT
+#  define S_ISPORT(m) (0)
+#endif
+
+#ifndef S_ISWHT
+#  define S_ISWHT(m) (0)
 #endif
 
 // HELPERS
@@ -169,6 +203,12 @@ static bool isdir_stat(const stat_t& s)
     return S_ISDIR(s.st_mode);
 }
 
+
+static bool islink_stat(const stat_t& s)
+{
+    return S_ISLNK(s.st_mode);
+}
+
 // PATH PROPERTIES
 
 
@@ -205,6 +245,13 @@ template <typename Path>
 static bool isdir_impl(const Path& path)
 {
     return check_impl(path, isdir_stat);
+}
+
+
+template <typename Path>
+static bool islink_impl(const Path& path)
+{
+    return check_impl(path, islink_stat);
 }
 
 // FUNCTIONS
@@ -247,7 +294,11 @@ bool isdir(const path_t& path)
 }
 
 
-//bool islink(const path_t& path);
+bool islink(const path_t& path)
+{
+    return islink_impl(path);
+}
+
 ////bool ismount(const path_t& path);
 
 bool exists(const path_t& path)
@@ -294,7 +345,12 @@ bool isdir(const backup_path_t& path)
     return isdir_impl(path);
 }
 
-//bool islink(const backup_path_t& path);
+
+bool islink(const backup_path_t& path)
+{
+    return islink_impl(path);
+}
+
 ////bool ismount(const backup_path_t& path);
 
 bool exists(const backup_path_t& path)
