@@ -23,13 +23,13 @@ Modern C++ development depends on a mix of archaic C-libraries with poorly docum
 
 ## Design
 
-crosscxx is broken down into 3 core parts:
+crosscxx is broken down into multiple core parts:
 
 1. A macro-driven abstraction library to detect compiler features.
 2. Encoding and decoding routines
-3. High-level features common in other standard libraries.
+4. High-level features common in other standard libraries.
 
-Combined, the library has less than 1500 total lines of C++ headers, with binary sizes of < 1MB, and each module has only a few dependencies, making it easy to extract individual modules for use in another project.
+Combined, the library has less than 1500 (is this still accurate??) total lines of C++ headers, with binary sizes of < 1MB, and each module has only a few dependencies, making it easy to extract individual modules for use in another project.
 
 **Abstraction Library**
 
@@ -54,6 +54,8 @@ Support features include
 - [Base16](/src/base16.h), [base32](/src/base32.h), and [Base64](/src/base64.h) encoding and decoding.
 - [Hex](/src/hex.h) encoding and decoding.
 - [Wide API streams](/src/fstream.h) for Windows.
+- [string_view](/str/string_view.h) and [vector_view](/src/vector_view.h)
+- [Hash](/src/hashlib.h) functions.
 
 ## Building
 

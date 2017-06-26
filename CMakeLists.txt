@@ -42,6 +42,7 @@ endif()
 include_directories(src)
 
 set(SOURCE_FILES
+    src/hashlib/md5.cc
     src/base16.cc
     src/base32.cc
     src/base64.cc
@@ -95,15 +96,18 @@ set(TEST_FILES
     test/fstream.cc
     test/getline.cc
     test/gettimeofday.cc
+    test/hashlib.cc
     test/hex.cc
     test/processor.cc
     test/ordering.cc
     test/os.cc
     test/punycode.cc
     test/safe_stdlib.cc
+    test/string_view.cc
     test/tls.cc
     test/unicode.cc
     test/url.cc
+    test/vector_view.cc
 )
 
 if(BUILD_TESTS)

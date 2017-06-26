@@ -3,6 +3,10 @@
 /**
  *  \addtogroup crosscxx
  *  \brief Detect processor for build.
+ *
+ *  Most of these macros can be found from:
+ *      https://sourceforge.net/p/predef/wiki/Architectures/
+ *      https://people.csail.mit.edu/jaffer/scm/Automatic-C-Preprocessor-Definitions.html
  */
 
 #pragma once
@@ -21,7 +25,7 @@
 
 // POWERPC
 #if !defined (PROCESSOR_DETECTED)
-#   if defined(__powerpc__) || defined(__ppc__) || defined(__PPC__)
+#   if defined(ppc) || defined(__powerpc__) || defined(__ppc__) || defined(__PPC__)
 #      define HAVE_POWERPC
 #      define PROCESSOR_DETECTED
 #       if defined(__powerpc64__) || defined(__ppc64__) || defined(__PPC64__) || defined(__64BIT__) || defined(_LP64) || defined(__LP64__)
@@ -178,5 +182,23 @@
 #       else
 #           define HAVE_SYSTEMZ32
 #       endif
+#   endif
+#endif
+
+// TAHOE
+#if !defined(PROCESSOR_DETECTED)
+#   if defined(tahoe)
+#       define HAVE_TAHOE
+#       define HAVE_TAHOE32
+#       define PROCESSOR_DETECTED
+#   endif
+#endif
+
+// VAX
+#if !defined(PROCESSOR_DETECTED)
+#   if defined(__vax__) || defined(vax) || defined(vaxc) || defined(VAXC) || defined(vax11c) || defined(VAX11)
+#       define HAVE_VAX
+#       define HAVE_VAX32
+#       define PROCESSOR_DETECTED
 #   endif
 #endif
