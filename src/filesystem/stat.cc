@@ -118,16 +118,53 @@ static void handle_error(int code)
 //}
 
 
+static void copy_stat(HANDLE handle, stat_t* buffer)
+{
+    // TODO: here...
+}
+
 
 static int stat(const char* path, stat_t* buffer, bool do_lstat)
 {
-    // TODO: here..
+    HANDLE handle;
+    DWORD access = 0;
+    DWORD share = 0;
+    LPSECURITY_ATTRIBUTES security = nullptr;
+    DWORD create = OPEN_EXISTING;
+    DWORD flags = FILE_FLAG_BACKUP_SEMANTICS;
+    HANDLE file = nullptr;
+    if (do_lstat) {
+        flags |= FILE_FLAG_OPEN_REPARSE_POINT;
+    }
+
+    handle = CreateFile(path, access, share, security, create, flags, file);
+    if (handle == INVALID_HANDLE_VALUE) {
+        // TODO: go to fail...
+    }
+    copy_stat(handle, buffer);
+
+    return 0;
 }
 
 
 static int wstat(const wchar_t* path, stat_t* buffer, bool do_lstat)
 {
-    // TODO: here..
+        HANDLE handle;
+    DWORD access = 0;
+    DWORD share = 0;
+    LPSECURITY_ATTRIBUTES security = nullptr;
+    DWORD create = OPEN_EXISTING;
+    DWORD flags = FILE_FLAG_BACKUP_SEMANTICS;
+    HANDLE file = nullptr;
+    if (do_lstat) {
+        flags |= FILE_FLAG_OPEN_REPARSE_POINT;
+    }
+
+    handle = CreateFileW(path, access, share, security, create, flags, file);
+    if (handle == INVALID_HANDLE_VALUE) {
+        // TODO: go to fail...
+    }
+    copy_stat(handle, buffer);
 }
 
     // GetFileInformationByHandle
