@@ -1,3 +1,4 @@
+//  :copyright: (c) 2017 Joyent, Inc. and other Node contributors.
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
@@ -10,6 +11,8 @@
 
 #if defined(OS_WINDOWS)
 #   include "windows.h"
+#   include "winerror.h"
+#   include <tuple>
 #endif
 
 // MACROS
@@ -59,6 +62,13 @@
 #   define S_ISWHT(m) (0)
 #endif
 
+
+#if defined(OS_WINDOWS)
+#   ifndef ERROR_SYMLINK_NOT_SUPPORTED
+#       define ERROR_SYMLINK_NOT_SUPPORTED 1464
+#   endif
+#endif
+
 // HELPERS
 // -------
 
@@ -85,46 +95,112 @@ static void handle_error(int code)
 #if defined(OS_WINDOWS)         // WINDOWS
 
 
-//HANDLE get_file_handle(const std::string &path,
-//    DWORD dwDesiredAccess = 0,
-//    DWORD dwShareMode = SHARE_ALL,
-//    LPSECURITY_ATTRIBUTES lpSecurityAttributes = nullptr,
-//    DWORD dwCreationDisposition = OPEN_EXISTING,
-//    DWORD dwFlagsAndAttributes = FILE_FLAG_BACKUP_SEMANTICS,
-//    HANDLE hTemplateFile = nullptr);
-//HANDLE get_file_handle(const std::string &path,
-//    DWORD dwDesiredAccess,
-//    DWORD dwShareMode,
-//    LPSECURITY_ATTRIBUTES lpSecurityAttributes,
-//    DWORD dwCreationDisposition,
-//    DWORD dwFlagsAndAttributes,
-//    HANDLE hTemplateFile)
-//{
-//    return CreateFileW(WIDE(path).data(), dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
-//}
-//
-///** Create file handle with attribute-only permissions and read
-// *  device information.
-// */
-//BY_HANDLE_FILE_INFORMATION get_file_info(const std::string &path)
-//{
-//    BY_HANDLE_FILE_INFORMATION info;
-//    auto handle = get_file_handle(path);
-//    if(handle != INVALID_HANDLE_VALUE) {
-//        GetFileInformationByHandle(handle, &info);
-//    }
-//
-//    return info;
-//}
+#define FILETIME_TO_UINT(filetime)                                          \
+   (*((uint64_t*) &(filetime)) - 116444736000000000ULL)
 
 
-static void copy_stat(HANDLE handle, stat_t* buffer)
+#define FILETIME_TO_TIME_T(filetime)                                        \
+   (FILETIME_TO_UINT(filetime) / 10000000ULL)
+
+#define FILETIME_TO_TIME_NS(filetime, secs)                                 \
+   ((FILETIME_TO_UINT(filetime) - (secs * 10000000ULL)) * 100)
+
+
+#define FILETIME_TO_TIMESPEC(ts, filetime)                                  \
+   do {                                                                     \
+     (ts).tv_sec = (long) FILETIME_TO_TIME_T(filetime);                     \
+     (ts).tv_nsec = (long) FILETIME_TO_TIME_NS(filetime, (ts).tv_sec);      \
+   } while(0)
+
+
+/**
+ *  \brief Map GetLastError to errno.
+ */
+static int get_error_code()
 {
-    // TODO: here...
+    DWORD error = GetLastError();
+    switch (error) {
+        case ERROR_FILE_NOT_FOUND:
+        case ERROR_PATH_NOT_FOUND:
+            return ENOENT;
+        case ERROR_BAD_ARGUMENTS:
+            return EINVAL;
+        case ERROR_TOO_MANY_OPEN_FILES:
+            return EMFILE;
+        case ERROR_ACCESS_DENIED:
+            return EACCES;
+        case ERROR_NOT_ENOUGH_MEMORY:
+        case ERROR_OUTOFMEMORY:
+            return ENOMEM;
+        default:
+            return -1;
+    }
 }
 
 
-static int stat(const char* path, stat_t* buffer, bool do_lstat)
+static int copy_stat(HANDLE handle, stat_t* buffer)
+{
+    BY_HANDLE_FILE_INFORMATION info;
+    if (GetFileInformationByHandle(handle, &info)) {
+        return get_error_code();
+    }
+
+    // set our information
+    buffer->st_dev = info.dwVolumeSerialNumber;
+
+    ULARGE_INTEGER ul;
+    if (info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
+        buffer->st_mode |= S_IFLNK;
+        buffer->st_size = 0;
+    } else if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        buffer->st_mode |= S_IFDIR;
+        buffer->st_size = 0;
+    } else {
+        ul.HighPart = info.nFileSizeHigh;
+        ul.LowPart = info.nFileSizeLow;
+        buffer->st_mode |= S_IFREG;
+        buffer->st_size = ul.QuadPart;
+    }
+
+    // get permissions
+    buffer->st_mode = 0;
+    int mode;
+    if (info.dwFileAttributes & FILE_ATTRIBUTE_READONLY) {
+        mode = _S_IREAD;
+    } else {
+        mode = _S_IREAD | _S_IWRITE;
+    }
+    buffer->st_mode |= mode | (mode >> 3) | (mode >> 6);
+
+    // get filetimes
+    FILETIME_TO_TIMESPEC(buffer->st_atim, info.ftLastAccessTime);
+    FILETIME_TO_TIMESPEC(buffer->st_mtim, info.ftLastWriteTime);
+
+    // set a reasonable default last changed time
+    auto atim = std::tie(buffer->st_atim.tv_sec, buffer->st_atim.tv_nsec);
+    auto mtim = std::tie(buffer->st_mtim.tv_sec, buffer->st_mtim.tv_nsec);
+    if (atim > mtim) {
+        buffer->st_ctim = buffer->st_atim;
+    } else {
+        buffer->st_ctim = buffer->st_mtim;
+    }
+
+    ul.HighPart = info.nFileIndexHigh;
+    ul.LowPart = info.nFileIndexLow;
+    buffer->st_ino = ul.QuadPart;
+    buffer->st_nlink = info.nNumberOfLinks;
+
+    // Windows doesn't define these values
+    buffer->st_gid = 0;
+    buffer->st_uid = 0;
+    buffer->st_rdev = 0;
+
+    return 0;
+}
+
+
+template <typename Pointer, typename Function>
+static int stat_impl(Pointer path, stat_t* buffer, bool do_lstat, Function function)
 {
     HANDLE handle;
     DWORD access = 0;
@@ -137,87 +213,33 @@ static int stat(const char* path, stat_t* buffer, bool do_lstat)
         flags |= FILE_FLAG_OPEN_REPARSE_POINT;
     }
 
-    handle = CreateFile(path, access, share, security, create, flags, file);
+    handle = function(path, access, share, security, create, flags, file);
     if (handle == INVALID_HANDLE_VALUE) {
-        // TODO: go to fail...
+        if (do_lstat && GetLastError() == ERROR_SYMLINK_NOT_SUPPORTED) {
+            return stat_impl(path, buffer, false, function);
+        }
+        return get_error_code();
     }
-    copy_stat(handle, buffer);
+    int status = copy_stat(handle, buffer);
+    CloseHandle(handle);
+    if (status) {
+        return get_error_code();
+    }
 
     return 0;
 }
 
 
-static int wstat(const wchar_t* path, stat_t* buffer, bool do_lstat)
+static int stat(const char* path, stat_t* buffer, bool do_lstat)
 {
-        HANDLE handle;
-    DWORD access = 0;
-    DWORD share = 0;
-    LPSECURITY_ATTRIBUTES security = nullptr;
-    DWORD create = OPEN_EXISTING;
-    DWORD flags = FILE_FLAG_BACKUP_SEMANTICS;
-    HANDLE file = nullptr;
-    if (do_lstat) {
-        flags |= FILE_FLAG_OPEN_REPARSE_POINT;
-    }
-
-    handle = CreateFileW(path, access, share, security, create, flags, file);
-    if (handle == INVALID_HANDLE_VALUE) {
-        // TODO: go to fail...
-    }
-    copy_stat(handle, buffer);
+    return stat_impl(path, buffer, do_lstat, CreateFile);
 }
 
-    // GetFileInformationByHandle
-    // TODO: here...
-//    code = stat(path.data(), &sb);
-//    handle_error(code);
-//    copy_native(sb, data);
 
-// TODO: need to check here...
-// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
-// https://github.com/joyent/libuv/blob/1dc2709b999a84520ab1b3c56c0e082bf8617c1f/src/win/fs.c#L971
-
-
-//INLINE static void fs__stat_impl(uv_fs_t* req, int do_lstat) {
-//  HANDLE handle;
-//  DWORD flags;
-//
-//  flags = FILE_FLAG_BACKUP_SEMANTICS;
-//  if (do_lstat) {
-//    flags |= FILE_FLAG_OPEN_REPARSE_POINT;
-//  }
-//
-//  handle = CreateFileW(req->pathw,
-//                       FILE_READ_ATTRIBUTES,
-//                       FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-//                       NULL,
-//                       OPEN_EXISTING,
-//                       flags,
-//                       NULL);
-//  if (handle == INVALID_HANDLE_VALUE) {
-//    SET_REQ_WIN32_ERROR(req, GetLastError());
-//    return;
-//  }
-//
-//  if (fs__stat_handle(handle, &req->statbuf) != 0) {
-//    DWORD error = GetLastError();
-//    if (do_lstat && error == ERROR_SYMLINK_NOT_SUPPORTED) {
-//      /* We opened a reparse point but it was not a symlink. Try again. */
-//      fs__stat_impl(req, 0);
-//
-//    } else {
-//      /* Stat failed. */
-//      SET_REQ_WIN32_ERROR(req, GetLastError());
-//    }
-//
-//    CloseHandle(handle);
-//    return;
-//  }
-//
-//  req->ptr = &req->statbuf;
-//  req->result = 0;
-//  CloseHandle(handle);
-//}
+static int wstat(const wchar_t* path, stat_t* buffer, bool do_lstat)
+{
+    return stat_impl(path, buffer, do_lstat, CreateFileW);
+}
 
 
 stat_t stat(const path_t& path)
