@@ -5,10 +5,19 @@
 #include "filesystem/exception.h"
 
 #include <errno.h>
+#include <sys/types.h>
 #include <sys/stat.h>
+
+#if defined(OS_WINDOWS)
+#   include "windows.h"
+#endif
 
 // MACROS
 // -------
+
+#ifndef S_IFLNK
+#   define S_IFLNK 0120000
+#endif
 
 #ifndef S_ISREG
 #   define S_ISREG(m) (((m) & S_IFMT) == S_IFREG)
@@ -23,31 +32,31 @@
 #endif
 
 #ifndef S_ISBLK
-#  define S_ISBLK(m) (((m) & S_IFMT) == S_IFBLK)
+#   define S_ISBLK(m) (((m) & S_IFMT) == S_IFBLK)
 #endif
 
 #ifndef S_ISFIFO
-#  define S_ISFIFO(m) (((m) & S_IFMT) == S_IFIFO)
+#   define S_ISFIFO(m) (((m) & S_IFMT) == S_IFIFO)
 #endif
 
 #ifndef S_ISLNK
-#  define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
+#   define S_ISLNK(m) (((m) & S_IFMT) == S_IFLNK)
 #endif
 
 #ifndef S_ISSOCK
-#  define S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK)
+#   define S_ISSOCK(m) (((m) & S_IFMT) == S_IFSOCK)
 #endif
 
 #ifndef S_ISDOOR
-#  define S_ISDOOR(m) (0)
+#   define S_ISDOOR(m) (0)
 #endif
 
 #ifndef S_ISPORT
-#  define S_ISPORT(m) (0)
+#   define S_ISPORT(m) (0)
 #endif
 
 #ifndef S_ISWHT
-#  define S_ISWHT(m) (0)
+#   define S_ISWHT(m) (0)
 #endif
 
 // HELPERS
@@ -107,6 +116,19 @@ stat_t stat(const path_t& path)
 }
 
 
+stat_t lstat(const path_t& path)
+{
+    stat_t data;
+    DWORD code;
+
+    auto buffer = reinterpret_cast<const wchar_t*>(path.data());
+    code = GetFileAttributesW(buffer);
+//    handle_error(code);
+//    copy_native(sb, data);
+
+    return data;
+}
+
 #else                           // POSIX
 
 
@@ -141,6 +163,20 @@ stat_t stat(const path_t& path)
     return data;
 }
 
+
+stat_t lstat(const path_t& path)
+{
+    struct stat sb;
+    stat_t data;
+    int code;
+
+    code = ::lstat(path.c_str(), &sb);
+    handle_error(code);
+    copy_native(sb, data);
+
+    return data;
+}
+
 #endif
 
 #if defined(backup_path_t)          // BACKUP PATH
@@ -154,6 +190,25 @@ stat_t stat(const backup_path_t& path)
     code = ::_stat(path.data(), &sb);
     handle_error(code);
     copy_native(sb, data);
+
+    return data;
+}
+
+
+stat_t lstat(const backup_path_t& path)
+{
+    stat_t data;
+    DWORD code;
+
+    code = GetFileAttributes(path.data());
+    // GetFileInformationByHandle
+    // TODO: here...
+//    code = ::_stat(path.data(), &sb);
+//    handle_error(code);
+//    copy_native(sb, data);
+
+// TODO: need to check here...
+// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
 
     return data;
 }

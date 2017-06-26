@@ -79,9 +79,9 @@ if(MSVC)
 endif()
 
 if(MSVC)
-    list(APPEND CROSSCXX_LIBRARIES ws2_32.lib crypt32.lib)
+    list(APPEND CROSSCXX_LIBRARIES ws2_32.lib crypt32.lib kernel32.lib)
 elseif(MINGW OR MSYS)
-    list(APPEND CROSSCXX_LIBRARIES -lws2_32 -lcrypt32)
+    list(APPEND CROSSCXX_LIBRARIES -lws2_32 -lcrypt32 -lkernel32)
 endif()
 
 # TESTS

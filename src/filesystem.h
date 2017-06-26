@@ -21,6 +21,11 @@
  */
 stat_t stat(const path_t& path);
 
+/**
+ * \brief POSIX-like lstat call.
+ */
+stat_t lstat(const path_t& path);
+
 /** \brief Get access time of file, as if by stat.
  */
 time_t getatime(const path_t& path);
@@ -63,6 +68,11 @@ bool exists(const path_t& path);
  * \brief POSIX-like stat call.
  */
 stat_t stat(const backup_path_t& path);
+
+/**
+ * \brief POSIX-like lstat call.
+ */
+stat_t lstat(const backup_path_t& path);
 
 /** \brief Get access time of file, as if by stat.
  */
