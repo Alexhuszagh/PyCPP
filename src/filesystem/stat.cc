@@ -10,9 +10,6 @@
 
 #if defined(OS_WINDOWS)
 #   include "windows.h"
-#   if defined(__STRICT_ANSI__)
-#       error Cannot support strict ANSI... LOLS
-#   endif
 #endif
 
 // MACROS
@@ -88,6 +85,11 @@ static void handle_error(int code)
 #if defined(OS_WINDOWS)         // WINDOWS
 
 
+#if !defined(_stat)
+// TODO: shit, need _stat and _wstat
+#endif
+
+
 static void copy_native(const struct _stat& src, stat_t& dst)
 {
     dst.st_dev = src.st_dev;
@@ -126,8 +128,16 @@ stat_t lstat(const path_t& path)
 
     auto buffer = reinterpret_cast<const wchar_t*>(path.data());
     code = GetFileAttributesW(buffer);
+    // GetFileInformationByHandle
+    // TODO: here...
+//    code = ::_stat(path.data(), &sb);
 //    handle_error(code);
 //    copy_native(sb, data);
+
+// TODO: need to check here...
+// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
+// https://github.com/joyent/libuv/blob/1dc2709b999a84520ab1b3c56c0e082bf8617c1f/src/win/fs.c#L971
+
 
     return data;
 }
@@ -204,14 +214,6 @@ stat_t lstat(const backup_path_t& path)
     DWORD code;
 
     code = GetFileAttributes(path.data());
-    // GetFileInformationByHandle
-    // TODO: here...
-//    code = ::_stat(path.data(), &sb);
-//    handle_error(code);
-//    copy_native(sb, data);
-
-// TODO: need to check here...
-// https://msdn.microsoft.com/en-us/library/windows/desktop/gg258117(v=vs.85).aspx
 
     return data;
 }
