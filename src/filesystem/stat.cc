@@ -183,22 +183,6 @@ static int wstat(const wchar_t* path, stat_t* buffer, bool do_lstat)
 //}
 
 
-static void copy_native(const struct _stat& src, stat_t& dst)
-{
-    dst.st_dev = src.st_dev;
-    dst.st_ino = src.st_ino;
-    dst.st_mode = src.st_mode;
-    dst.st_nlink = src.st_nlink;
-    dst.st_uid = src.st_uid;
-    dst.st_gid = src.st_gid;
-    dst.st_rdev = src.st_rdev;
-    dst.st_size = src.st_size;
-    dst.st_atim = {src.st_atime, 0};
-    dst.st_mtim = {src.st_mtime, 0};
-    dst.st_ctim = {src.st_ctime, 0};
-}
-
-
 stat_t stat(const path_t& path)
 {
     stat_t data;
