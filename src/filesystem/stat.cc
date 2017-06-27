@@ -302,7 +302,7 @@ stat_t stat(const path_t& path)
     stat_t data;
     int code;
 
-    code = ::stat(path.c_str(), &sb, false);
+    code = ::stat(path.c_str(), &sb);
     handle_error(code);
     copy_native(sb, data);
 
@@ -316,7 +316,7 @@ stat_t lstat(const path_t& path)
     stat_t data;
     int code;
 
-    code = ::lstat(path.c_str(), &sb, true);
+    code = ::lstat(path.c_str(), &sb);
     handle_error(code);
     copy_native(sb, data);
 
