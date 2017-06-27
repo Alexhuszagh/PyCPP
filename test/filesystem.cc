@@ -102,3 +102,154 @@ TEST(stat, exists)
     EXPECT_TRUE(exists("test/files/file"));
     EXPECT_FALSE(exists("test/files/missing"));
 }
+
+
+TEST(stat, samestat)
+{
+    auto s1 = stat("test/files");
+    auto s2 = stat("test/files");
+    auto s3 = stat("test/files/file");
+    auto s4 = stat("test/files/file");
+    EXPECT_TRUE(samestat(s1, s2));
+    EXPECT_TRUE(samestat(s3, s4));
+    EXPECT_FALSE(samestat(s1, s3));
+}
+
+
+TEST(path, isabs)
+{
+    EXPECT_TRUE(isabs("/usr"));
+    EXPECT_FALSE(isabs("test/files"));
+    EXPECT_FALSE(isabs("test/files/file"));
+}
+
+
+TEST(path, samefile)
+{
+    EXPECT_TRUE(samefile("test/files", "test/files"));
+    EXPECT_TRUE(samefile("test/files/file", "test/files/file"));
+    EXPECT_FALSE(samefile("test/files", "test/files/file"));
+}
+
+
+TEST(path, split)
+{
+    EXPECT_EQ(split("test").front(), "");
+    EXPECT_EQ(split("test").back(), "test");
+    EXPECT_EQ(split("test/").front(), "test");
+    EXPECT_EQ(split("test/").back(), "");
+    EXPECT_EQ(split("test/files").front(), "test");
+    EXPECT_EQ(split("test/files").back(), "files");
+    EXPECT_EQ(split("/usr/lib").front(), "/usr");
+    EXPECT_EQ(split("/usr/lib").back(), "lib");
+}
+
+
+TEST(path, splitdrive)
+{
+    EXPECT_EQ(splitdrive("test/files").front(), "");
+    EXPECT_EQ(splitdrive("test/files").back(), "test/files");
+    EXPECT_EQ(splitdrive("/usr/lib").front(), "");
+    EXPECT_EQ(splitdrive("/usr/lib").back(), "/usr/lib");
+
+#if defined(OS_WINDOWS)
+    EXPECT_EQ(splitdrive("c:/users").front(), "c:");
+    EXPECT_EQ(splitdrive("c:/users").back(), "/users");
+    EXPECT_EQ(splitdrive("\\\\localhost").front(), "");
+    EXPECT_EQ(splitdrive("\\\\localhost").back(), "\\\\localhost");
+    EXPECT_EQ(splitdrive("\\\\localhost\\x").front(), "\\\\localhost\\x");
+    EXPECT_EQ(splitdrive("\\\\localhost\\x").back(), "");
+#endif
+}
+
+
+TEST(path, splitext)
+{
+    EXPECT_EQ(splitext(".").front(), ".");
+    EXPECT_EQ(splitext(".").back(), "");
+    EXPECT_EQ(splitext(".dat").front(), ".dat");
+    EXPECT_EQ(splitext(".dat").back(), "");
+    EXPECT_EQ(splitext("file.").front(), "file");
+    EXPECT_EQ(splitext("file.").back(), ".");
+    EXPECT_EQ(splitext("test/files").front(), "test/files");
+    EXPECT_EQ(splitext("test/files").back(), "");
+    EXPECT_EQ(splitext("/usr/lib").front(), "/usr/lib");
+    EXPECT_EQ(splitext("/usr/lib").back(), "");
+    EXPECT_EQ(splitext("test/files.dat").front(), "test/files");
+    EXPECT_EQ(splitext("test/files.dat").back(), ".dat");
+    EXPECT_EQ(splitext("test/.dat").front(), "test/.dat");
+    EXPECT_EQ(splitext("test/.dat").back(), "");
+}
+
+
+TEST(path, splitunc)
+{
+#if defined(OS_WINDOWS)
+    EXPECT_EQ(splitunc("c:/users").front(), "");
+    EXPECT_EQ(splitunc("c:/users").back(), "c:/users");
+    EXPECT_EQ(splitunc("\\\\localhost").front(), "");
+    EXPECT_EQ(splitunc("\\\\localhost").back(), "\\\\localhost");
+    EXPECT_EQ(splitunc("\\\\localhost\\x").front(), "\\\\localhost\\x");
+    EXPECT_EQ(splitunc("\\\\localhost\\x").back(), "");
+#endif
+}
+
+
+TEST(path, abspath)
+{
+    EXPECT_EQ(abspath("/usr/lib"), "/usr/lib");
+    EXPECT_NE(abspath("usr/lib"), "usr/lib");
+}
+
+
+TEST(path, base_name)
+{
+    EXPECT_EQ(base_name("/usr/lib"), "lib");
+    EXPECT_EQ(base_name("/usr/lib.dat"), "lib.dat");
+    EXPECT_EQ(base_name("/usr/lib/"), "");
+}
+
+
+TEST(path, dir_name)
+{
+    EXPECT_EQ(dir_name("/usr/lib"), "/usr");
+    EXPECT_EQ(dir_name("/usr/lib.dat"), "/usr");
+    EXPECT_EQ(dir_name("/usr/lib/"), "/usr/lib");
+}
+
+
+TEST(path, expanduser)
+{
+    EXPECT_NE(expanduser("~/"), "~/");
+    EXPECT_EQ(expanduser("~."), "~.");
+    EXPECT_EQ(expanduser("~file"), "~file");
+}
+
+
+TEST(path, expandvars)
+{
+#if defined(OS_WINDOWS)             // WINDOWS
+    EXPECT_NE(expandvars("%HOME%/path"), "%HOME%/path");
+#else                               // POSIX
+    EXPECT_NE(expandvars("${HOME}/path"), "${HOME}/path");
+#endif
+}
+
+
+TEST(path, normcase)
+{
+    // TODO: implement....
+}
+
+
+TEST(path, normpath)
+{
+    // TODO: implement...
+}
+
+
+TEST(path, relpath)
+{
+    EXPECT_EQ(relpath("/usr/lib", "/usr/"), "lib");
+    EXPECT_EQ(relpath("/usr/lib", "/usr"), "lib");
+}

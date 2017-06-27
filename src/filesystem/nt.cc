@@ -102,7 +102,7 @@ static Path make_preferred(const Path& path)
     Path output;
     output.reserve(path.size());
     for (auto c: path) {
-        if (path_separators.find(c) == path_separators.npos) {
+        if (path_separators.find(c) != path_separators.npos) {
             output.push_back(path_separator);
         } else {
             output.push_back(c);
@@ -119,9 +119,10 @@ template <typename Path>
 static std::deque<Path> split_impl(const Path& path)
 {
     auto list = splitdrive(path);
-    auto it = stem_impl(list.back());
-    Path basename(it, list.back().cend());
-    Path dir(path.cbegin(), it);
+    Path &tail = list.back();
+    auto it = stem_impl(tail);
+    Path basename(it, tail.cend());
+    Path dir(tail.cbegin(), it);
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
         dir.erase(dir.length() - 1);
     }
@@ -146,13 +147,12 @@ static std::deque<Path> splitunc_impl(const Path& path)
         return {Path(), path};
     }
 
-    auto drive = path.substr(0, 2);
-    if (drive.back() == ':') {
+    if (path[1] == ':') {
         // have a drive letter
         return {Path(), path};
     }
-    auto p0 = path_separators.find(path[0]) == path_separators.npos;
-    auto p1 = path_separators.find(path[0]) == path_separators.npos;
+    auto p0 = path_separators.find(path[0]) != path_separators.npos;
+    auto p1 = path_separators.find(path[1]) != path_separators.npos;
     if (p0 && p1) {
         // have a UNC path
         auto norm = normcase(path);
@@ -161,6 +161,9 @@ static std::deque<Path> splitunc_impl(const Path& path)
             return {Path(), path};
         }
         index = norm.find(path_separator, index + 1);
+        if (index == norm.npos) {
+            return {path, Path()};
+        }
         return {path.substr(0, index), path.substr(index)};
     }
 
@@ -184,7 +187,7 @@ static std::deque<Path> splitdrive_impl(const Path& path)
     if (path.size() < 2) {
         return {Path(), path};
     } else if (path[1] == ':') {
-        return {Path(1, path.front()), path.substr(2)};
+        return {path.substr(0, 2), path.substr(2)};
     }
 
     return splitunc_impl(path);
@@ -194,7 +197,7 @@ static std::deque<Path> splitdrive_impl(const Path& path)
 
 
 template <typename Path>
-static Path basename_impl(const Path& path)
+static Path base_name_impl(const Path& path)
 {
     auto tail = splitdrive(path).back();
     return Path(stem_impl(tail), tail.cend());
@@ -202,7 +205,7 @@ static Path basename_impl(const Path& path)
 
 
 template <typename Path>
-static Path dirname_impl(const Path& path)
+static Path dir_name_impl(const Path& path)
 {
     auto tail = splitdrive(path).back();
     auto it = stem_impl(tail);
@@ -317,15 +320,15 @@ bool isabs(const path_t& path)
 }
 
 
-path_t basename(const path_t& path)
+path_t base_name(const path_t& path)
 {
-    return basename_impl(path);
+    return base_name_impl(path);
 }
 
 
-path_t dirname(const path_t& path)
+path_t dir_name(const path_t& path)
 {
-    return dirname_impl(path);
+    return dir_name_impl(path);
 }
 
 
@@ -389,15 +392,15 @@ backup_path_list_t splitunc(const backup_path_t& path)
 
 // NORMALIZATION
 
-backup_path_t basename(const backup_path_t& path)
+backup_path_t base_name(const backup_path_t& path)
 {
-    return basename_impl(path);
+    return base_name_impl(path);
 }
 
 
-backup_path_t dirname(const backup_path_t& path)
+backup_path_t dir_name(const backup_path_t& path)
 {
-    return dirname_impl(path);
+    return dir_name_impl(path);
 }
 
 

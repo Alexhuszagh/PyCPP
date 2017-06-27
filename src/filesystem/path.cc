@@ -21,17 +21,14 @@ static std::deque<Path> splitext_impl(const Path& path)
     typedef typename Path::value_type char_type;
 
     auto list = split(path);
-    auto it = std::find_if(list.back().cbegin(), list.back().cend(), [](char_type c) {
-        return c == path_extension;
-    });
-
-    Path root(list.back().cbegin(), it);
-    Path ext(it, list.back().cend());
-    if (root.size() > 1 && root.back() == path_extension) {
-        root.erase(root.length() - 1);
+    auto &tail = list.back();
+    size_t i = tail.rfind(path_extension);
+    if (i == 0 || i == tail.npos) {
+        return {path, Path()};
     }
 
-    return {list.front() + root, std::move(ext)};
+    auto index = path.size() - tail.size() + i;
+    return {path.substr(0, index), path.substr(index)};
 }
 
 
@@ -57,7 +54,7 @@ template <typename Path>
 static Path realpath_impl(const Path& path)
 {
     if (islink(path)) {
-        auto link = readlink(path);
+        auto link = read_link(path);
         if (isabs(link)) {
             return link;
         } else {
@@ -88,6 +85,12 @@ Path relpath_impl(const Path& path, const Path& start)
     auto l1 = f1 + length;
     auto f2 = start.begin();
     auto it = std::mismatch(f1, l1, f2).first;
+
+    if (it == path.end()) {
+        return Path();
+    } else if (path_separators.find(*it) != path_separators.npos) {
+        ++it;
+    }
 
     return Path(it, path.end());
 }

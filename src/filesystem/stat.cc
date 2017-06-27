@@ -292,7 +292,7 @@ static int stat_impl(Pointer path, stat_t* buffer, bool use_lstat, Function func
 }
 
 
-static path_t readlink_impl(HANDLE handle)
+static path_t read_link_impl(HANDLE handle)
 {
     typedef typename path_t::value_type Char;
 
@@ -359,7 +359,7 @@ stat_t lstat(const path_t& path)
 }
 
 
-path_t readlink(const path_t& path)
+path_t read_link(const path_t& path)
 {
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     HANDLE handle = get_handle(data, true, CreateFileW);
@@ -367,7 +367,7 @@ path_t readlink(const path_t& path)
         handle_error(get_error_code());
     }
 
-    return readlink_impl(handle);
+    return read_link_impl(handle);
 }
 
 #else                           // POSIX
@@ -419,7 +419,7 @@ stat_t lstat(const path_t& path)
 }
 
 
-path_t readlink(const path_t& path)
+path_t read_link(const path_t& path)
 {
     typedef typename path_t::value_type Char;
 
@@ -463,7 +463,7 @@ stat_t lstat(const backup_path_t& path)
 }
 
 
-backup_path_t readlink(const backup_path_t& path)
+backup_path_t read_link(const backup_path_t& path)
 {
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     HANDLE handle = get_handle(data, true, CreateFileW);
@@ -471,7 +471,7 @@ backup_path_t readlink(const backup_path_t& path)
         handle_error(get_error_code());
     }
 
-    return path_to_string(readlink_impl(handle));
+    return path_to_string(read_link_impl(handle));
 }
 
 #endif

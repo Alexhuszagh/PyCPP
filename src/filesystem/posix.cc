@@ -109,14 +109,14 @@ std::deque<Path> splitunc_impl(const Path& path)
 
 
 template <typename Path>
-static Path basename_impl(const Path& path)
+static Path base_name_impl(const Path& path)
 {
     return Path(stem_impl(path), path.cend());
 }
 
 
 template <typename Path>
-static Path dirname_impl(const Path& path)
+static Path dir_name_impl(const Path& path)
 {
     auto it = stem_impl(path);
     Path dir(path.cbegin(), it);
@@ -218,15 +218,15 @@ bool isabs(const path_t& path)
 }
 
 
-path_t basename(const path_t& path)
+path_t base_name(const path_t& path)
 {
-    return basename_impl(path);
+    return base_name_impl(path);
 }
 
 
-path_t dirname(const path_t& path)
+path_t dir_name(const path_t& path)
 {
-    return dirname_impl(path);
+    return dir_name_impl(path);
 }
 
 
@@ -289,15 +289,15 @@ backup_path_list_t splitunc(const backup_path_t& path)
 
 // NORMALIZATION
 
-backup_path_t basename(const backup_path_t& path)
+backup_path_t base_name(const backup_path_t& path)
 {
-    return basename_impl(path);
+    return base_name_impl(path);
 }
 
 
-backup_path_t dirname(const backup_path_t& path)
+backup_path_t dir_name(const backup_path_t& path)
 {
-    return dirname_impl(path);
+    return dir_name_impl(path);
 }
 
 

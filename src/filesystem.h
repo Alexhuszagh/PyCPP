@@ -10,7 +10,6 @@
 #include "filesystem/path.h"
 #include "filesystem/stat.h"
 
-
 // FUNCTIONS
 // ---------
 
@@ -155,7 +154,7 @@ path_list_t splitunc(const path_t& path);
 /**
  *  \brief Read value of a symlink.
  */
-path_t readlink(const path_t& path);
+path_t read_link(const path_t& path);
 
 /**
  *  \brief Return the absolute path relative to the base.
@@ -165,12 +164,12 @@ path_t abspath(const path_t& path);
 /**
  *  \brief Return name of file, relative to parent directory.
  */
-path_t basename(const path_t& path);
+path_t base_name(const path_t& path);
 
 /**
  *  \brief Return the path of the parent directory.
  */
-path_t dirname(const path_t& path);
+path_t dir_name(const path_t& path);
 
 /**
  *  \brief Convert first ~ to username if followed by path separator.
@@ -308,7 +307,7 @@ backup_path_list_t splitunc(const backup_path_t& path);
 /**
  *  \brief Read value of a symlink.
  */
-backup_path_t readlink(const backup_path_t& path);
+backup_path_t read_link(const backup_path_t& path);
 
 /**
  *  \brief Return the absolute path relative to the base.
@@ -318,12 +317,12 @@ backup_path_t abspath(const backup_path_t& path);
 /**
  *  \brief Return name of file, relative to parent directory.
  */
-backup_path_t basename(const backup_path_t& path);
+backup_path_t base_name(const backup_path_t& path);
 
 /**
  *  \brief Return the path of the parent directory.
  */
-backup_path_t dirname(const backup_path_t& path);
+backup_path_t dir_name(const backup_path_t& path);
 
 /**
  *  \brief Convert first ~ to username if followed by path separator.
