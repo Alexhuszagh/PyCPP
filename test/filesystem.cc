@@ -8,6 +8,15 @@
 #include "filesystem.h"
 #include <gtest/gtest.h>
 
+// CONSTANTS
+// ---------
+
+#if defined(OS_WINDOWS)
+#   define DIRECTORY_SIZE 0
+#else
+#   define DIRECTORY_SIZE 8
+#endif
+
 // TESTS
 // -----
 
@@ -37,31 +46,37 @@ TEST(stat, lstat)
 
 TEST(stat, getatime)
 {
-    EXPECT_LE(getatime("test/files"), 1498529140);
-    EXPECT_LE(getatime("test/files/file"), 1498520203);
+    EXPECT_GE(getatime("test/files"), 1498529140);
+    EXPECT_GE(getatime("test/files/file"), 1498520203);
 }
 
 
 TEST(stat, getmtime)
 {
-    EXPECT_LE(getmtime("test/files"), 1498529140);
-    EXPECT_LE(getmtime("test/files/file"), 1498520203);
+    EXPECT_GE(getmtime("test/files"), 1498529140);
+    EXPECT_GE(getmtime("test/files/file"), 1498520203);
 }
 
 
 TEST(stat, getctime)
 {
-    EXPECT_LE(getmtime("test/files"), 1498529140);
-    EXPECT_LE(getmtime("test/files/file"), 1498520203);
+    EXPECT_GE(getmtime("test/files"), 1498529140);
+    EXPECT_GE(getmtime("test/files/file"), 1498520203);
 }
 
 
 TEST(stat, getsize)
-{}
+{
+    EXPECT_EQ(getsize("test/files"), DIRECTORY_SIZE);
+    EXPECT_EQ(getsize("test/files/file"), 0);
+}
 
 
 TEST(stat, isfile)
-{}
+{
+    EXPECT_FALSE(isfile("test/files"));
+    EXPECT_TRUE(isfile("test/files/file"));
+}
 
 
 TEST(stat, isdir)

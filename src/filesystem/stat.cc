@@ -85,7 +85,6 @@
 
 static void handle_error(int code)
 {
-    printf("Code is %d\n", code);
     switch (code) {
         case 0:
             return;
@@ -159,15 +158,18 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
 
     ULARGE_INTEGER ul;
     buffer->st_mode = 0;
+    printf("Getting st_size\n");
     if (info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
         buffer->st_mode |= S_IFLNK;
         buffer->st_size = 0;
     } else if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+        printf("Is directory st_size\n");
         buffer->st_mode |= S_IFDIR;
         buffer->st_size = 0;
     } else {
         ul.HighPart = info.nFileSizeHigh;
         ul.LowPart = info.nFileSizeLow;
+        printf("Is directory %zu\n", ul.QuadPart);
         buffer->st_mode |= S_IFREG;
         buffer->st_size = ul.QuadPart;
     }
@@ -406,7 +408,6 @@ static bool check_impl(const Path& path, Function function, bool use_lstat = fal
         }
         return function(stat(path));
     } catch (filesystem_error& error) {
-        printf("Erro rcode is %d\n", error.code());
         if (error.code() == filesystem_file_not_found) {
             return false;
         }
@@ -518,7 +519,7 @@ time_t getctime(const backup_path_t& path)
 
 off_t getsize(const backup_path_t& path)
 {
-    return getmtime(stat(path));
+    return getsize(stat(path));
 }
 
 
