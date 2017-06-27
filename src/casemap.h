@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 /**
- *  \addtogroup crosscxx
+ *  \addtogroup funxx
  *  \brief Unicode-aware case conversion routines.
  */
 

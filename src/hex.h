@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Unicode, see licenses/unicode.md for more details.
 /**
- *  \addtogroup crosscxx
+ *  \addtogroup funxx
  *  \brief Hexadecimal conversions.
  */
 

@@ -122,6 +122,7 @@ set(TEST_FILES
     test/processor.cc
     test/ordering.cc
     test/os.cc
+    test/pimpl.cc
     test/punycode.cc
     test/random.cc
     test/safe_stdlib.cc
