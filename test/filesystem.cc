@@ -116,6 +116,43 @@ TEST(stat, samestat)
 }
 
 
+TEST(path, join)
+{
+    path_list_t list;
+    EXPECT_EQ(join(list), path_prefix(""));
+
+#if defined(OS_WINDOWS)             // WINDOWS
+
+    list = {u"\\tmp", u"path", u"to"};
+    EXPECT_EQ(join(list), u"\\tmp\\path\\to");
+
+    list = {u"\\tmp", u"\\path", u"to"};
+    EXPECT_EQ(join(list), u"\\path\\to");
+
+    list = {u"\\\\?\\D:", u"long"};
+    EXPECT_EQ(join(list), u"\\\\?\\D:long");
+
+    list = {u"\\\\?\\D:", u"\\long", u"\\x"};
+    EXPECT_EQ(join(list), u"\\\\?\\D:\\x");
+
+    list = {u"\\\\?\\D:", u"C:\\long", u"\\x"};
+    EXPECT_EQ(join(list), u"C:\\x");
+
+    list = {u"D:source", u"C:\\long", u"\\x"};
+    EXPECT_EQ(join(list), u"C:\\x");
+
+#else                               // POSIX
+
+    list = {"/path", "to", "file"};
+    EXPECT_EQ(join(list), "/path/to/file");
+
+    list = {"/path", "/to", "file"};
+    EXPECT_EQ(join(list), "/to/file");
+
+#endif
+}
+
+
 TEST(path, isabs)
 {
     EXPECT_TRUE(isabs("/usr"));

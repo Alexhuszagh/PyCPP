@@ -577,6 +577,13 @@ static bool exists_impl(const Path& path)
 
 
 template <typename Path>
+static bool lexists_impl(const Path& path)
+{
+    return check_impl(path, exists_stat, true);
+}
+
+
+template <typename Path>
 static bool isfile_impl(const Path& path)
 {
     return check_impl(path, isfile_stat);
@@ -648,6 +655,12 @@ bool exists(const path_t& path)
 }
 
 
+bool lexists(const path_t& path)
+{
+    return lexists_impl(path);
+}
+
+
 bool samefile(const path_t& p1, const path_t& p2)
 {
     return samestat(stat(p1), stat(p2));
@@ -708,6 +721,12 @@ bool islink(const backup_path_t& path)
 bool exists(const backup_path_t& path)
 {
     return exists_impl(path);
+}
+
+
+bool lexists(const backup_path_t& path)
+{
+    return lexists_impl(path);
 }
 
 

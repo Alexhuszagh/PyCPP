@@ -76,6 +76,33 @@ static typename Path::const_iterator stem_impl(const Path& path)
     }).base();
 }
 
+
+// RUNTIME
+
+/** \brief Join POSIX-compliant paths to create path to full file.
+ */
+template <typename List, typename ToPath>
+static typename List::value_type join_impl(const List &paths, ToPath topath)
+{
+    typename List::value_type path;
+    for (auto &item: paths) {
+        if (item.empty()) {
+        } else if (path_separators.find(item[0]) != path_separators.npos) {
+            path = item;
+        } else {
+            path += item;
+        }
+        path += topath(path_separator);
+    }
+
+    // clean up trailing separator
+    if (path.size()) {
+        path.erase(path.length() - 1);
+    }
+
+    return path;
+}
+
 // SPLIT
 
 template <typename Path>
@@ -190,6 +217,14 @@ path_t getcwd()
     return output;
 }
 
+
+path_t join(const path_list_t &paths)
+{
+    return join_impl(paths, [](char c) {
+        return c;
+    });
+}
+
 // SPLIT
 
 path_list_t split(const path_t& path)
@@ -260,6 +295,15 @@ path_t normcase(const path_t& path)
 
 
 #if defined(backup_path_t)          // BACKUP PATH
+
+// RUNTIME
+
+backup_path_t join(const backup_path_list_t &paths)
+{
+    return join_impl(paths, [](char c) {
+        return static_cast<char16_t>(c);
+    });
+}
 
 // STAT
 

@@ -20,6 +20,20 @@
  */
 path_t getcwd();
 
+/** \brief Join POSIX-compliant paths to create path to full file.
+ *
+ *  \warning Any intermediate elements from starting from the root
+ *  will reset the current root.
+ *
+ *  \code
+ *      join("/tmp", "path", "to")          // "/tmp/path/to"
+ *      join("/tmp", "/path", "to")         // "/path/to"
+ *
+ *  \param paths            Paths to join
+ *  \return                 Joined paths
+ */
+path_t join(const path_list_t &paths);
+
 // STAT
 
 /**
@@ -116,6 +130,11 @@ bool islink(const path_t& path);
  *  \brief Check if path exists on filesystem.
  */
 bool exists(const path_t& path);
+
+/**
+ *  \brief Check if path exists on filesystem as if by lstat.
+ */
+bool lexists(const path_t& path);
 
 /**
  *  \brief Check if path is absolute.
@@ -218,6 +237,22 @@ path_t relpath(const path_t& path, const path_t& start);
 
 #if defined(backup_path_t)          // BACKUP PATH
 
+// RUNTIME
+
+/** \brief Join POSIX-compliant paths to create path to full file.
+ *
+ *  \warning Any intermediate elements from starting from the root
+ *  will reset the current root.
+ *
+ *  \code
+ *      join("/tmp", "path", "to")          // "/tmp/path/to"
+ *      join("/tmp", "/path", "to")         // "/path/to"
+ *
+ *  \param paths            Paths to join
+ *  \return                 Joined paths
+ */
+backup_path_t join(const backup_path_list_t &paths);
+
 // STAT
 
 /**
@@ -269,6 +304,11 @@ bool islink(const backup_path_t& path);
  *  \brief Check if path exists on filesystem.
  */
 bool exists(const backup_path_t& path);
+
+/**
+ *  \brief Check if path exists on filesystem as if by lstat.
+ */
+bool lexists(const backup_path_t& path);
 
 /**
  *  \brief Check if path is absolute.

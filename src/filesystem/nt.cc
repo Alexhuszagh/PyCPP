@@ -112,6 +112,49 @@ static Path make_preferred(const Path& path)
     return output;
 }
 
+// RUNTIME
+
+/** Has support for multiple drives and UNC paths. A windows path is
+ *  comprised of 2 parts: a drive, and a path from the root.
+ *  Any absolute paths from the drive will replace previous roots,
+ *  and any new drives will replace the root and the path.
+ */
+template <typename List, typename ToPath>
+static typename List::value_type join_impl(const List &paths, ToPath topath)
+{
+    typedef typename List::value_type Path;
+
+    Path drive, path;
+    for (auto &item: paths) {
+        auto split = splitdrive(item);
+        if (split[0].size()) {
+            // new drive
+            drive = split[0];
+            path = split[1];
+            if (path.size()) {
+                // add only if non-empty, so join("D:", "temp") -> "D:temp"
+                path += topath(path_separator);
+            }
+        } else if (split[1].size()) {
+            // skip empty elements
+            auto &root = split[1];
+            if (path_separators.find(root[0]) != path_separators.npos) {
+                // new root
+                path = root;
+            } else {
+                path += root;
+            }
+            path += topath(path_separator);
+        }
+    }
+
+    // clean up trailing separator
+    if (path.size()) {
+        path.erase(path.length() - 1);
+    }
+
+    return drive + path;
+}
 
 // SPLIT
 
@@ -292,6 +335,14 @@ path_t getcwd()
     return output;
 }
 
+
+path_t join(const path_list_t &paths)
+{
+    return join_impl(paths, [](char16_t c) {
+        return c;
+    });
+}
+
 // SPLIT
 
 path_list_t split(const path_t& path)
@@ -363,6 +414,15 @@ path_t normcase(const path_t& path)
 
 
 #if defined(OS_WINDOWS) && defined(backup_path_t)       // BACKUP PATH
+
+// RUNTIME
+
+backup_path_t join(const backup_path_list_t &paths)
+{
+    return join_impl(paths, [](char16_t c) {
+        return static_cast<char>(c);
+    });
+}
 
 // STAT
 
