@@ -73,7 +73,7 @@ template <typename Path>
 static Path normpath_impl(const Path& path)
 {
     // TODO: implement
-    //return path;
+    return path;
 }
 
 

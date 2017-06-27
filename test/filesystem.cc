@@ -11,7 +11,7 @@
 // CONSTANTS
 // ---------
 
-#if defined(OS_WINDOWS)
+#if defined(OS_WINDOWS) || defined(OS_CYGWIN)
 #   define DIRECTORY_SIZE 0
 #else
 #   define DIRECTORY_SIZE 8
