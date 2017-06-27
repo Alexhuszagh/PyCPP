@@ -67,7 +67,7 @@ TEST(stat, getctime)
 
 TEST(stat, getsize)
 {
-    EXPECT_EQ(getsize("test/files"), DIRECTORY_SIZE);
+    EXPECT_GE(getsize("test/files"), DIRECTORY_SIZE);
     EXPECT_EQ(getsize("test/files/file"), 0);
 }
 
