@@ -247,7 +247,7 @@ static Path expandvars_impl(const Path& path, FromPath frompath, ToPath topath, 
         throw filesystem_error(filesystem_unexpected_error);
     }
 
-    Path output(topath(buf), length);
+    Path output(topath(buf, length-1));
     delete[] buf;
     return output;
 }
@@ -345,8 +345,8 @@ path_t expandvars(const path_t& path)
     auto frompath = [](const path_t& path) {
         return path;
     };
-    auto topath = [](wchar_t* str) {
-        return reinterpret_cast<char16_t*>(str);
+    auto topath = [](wchar_t* str, size_t l) {
+        return std::u16string(reinterpret_cast<char16_t*>(str), l);
     };
     return expandvars_impl(path, frompath, topath, ExpandEnvironmentStringsW);
 }
@@ -417,8 +417,8 @@ backup_path_t expandvars(const backup_path_t& path)
     auto frompath = [](const backup_path_t& path) {
         return backup_path_to_path(path);
     };
-    auto topath = [](wchar_t* str) {
-        return path_to_backup_path(reinterpret_cast<char16_t*>(str));
+    auto topath = [](wchar_t* str, size_t l) {
+        return path_to_backup_path(std::u16string(reinterpret_cast<char16_t*>(str), l));
     };
     return expandvars_impl(path, frompath, topath, ExpandEnvironmentStringsW);
 }

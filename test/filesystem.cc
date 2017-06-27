@@ -155,6 +155,8 @@ TEST(path, splitdrive)
 #if defined(OS_WINDOWS)
     EXPECT_EQ(splitdrive("c:/users").front(), "c:");
     EXPECT_EQ(splitdrive("c:/users").back(), "/users");
+    EXPECT_EQ(splitdrive("c:..").front(), "c:");
+    EXPECT_EQ(splitdrive("c:..").back(), "..");
     EXPECT_EQ(splitdrive("\\\\localhost").front(), "");
     EXPECT_EQ(splitdrive("\\\\localhost").back(), "\\\\localhost");
     EXPECT_EQ(splitdrive("\\\\localhost\\x").front(), "\\\\localhost\\x");
@@ -229,22 +231,45 @@ TEST(path, expanduser)
 TEST(path, expandvars)
 {
 #if defined(OS_WINDOWS)             // WINDOWS
-    EXPECT_NE(expandvars("%HOME%/path"), "%HOME%/path");
+    EXPECT_NE(expandvars("%SYSTEMROOT%/path"), "%SYSTEMROOT%/path");
+    EXPECT_EQ(expandvars("%UNSET%/path"), "%UNSET%/path");
 #else                               // POSIX
     EXPECT_NE(expandvars("${HOME}/path"), "${HOME}/path");
+    EXPECT_NE(expandvars("${UNSET}/path"), "${UNSET}/path");
 #endif
 }
 
 
 TEST(path, normcase)
 {
-    // TODO: implement....
+#if defined(OS_WINDOWS)             // WINDOWS
+    EXPECT_EQ(normcase("c:/users"), "c:\\users");
+    EXPECT_EQ(normcase("C:/Users"), "c:\\users");
+#else                               // POSIX
+    EXPECT_EQ(normcase("/usr/lib"), "/usr/lib");
+    EXPECT_EQ(normcase("/usr/Lib"), "/usr/Lib");
+#endif
 }
 
 
 TEST(path, normpath)
 {
-    // TODO: implement...
+#if defined(OS_WINDOWS)             // WINDOWS
+    EXPECT_EQ(normpath("C:\\.."), "C:\\");
+    EXPECT_EQ(normpath("C:.."), "C:..");
+    EXPECT_EQ(normpath("C:\\Users\\.."), "C:\\");
+#else                               // POSIX
+    EXPECT_EQ(normpath("/.."), "/");
+    EXPECT_EQ(normpath(".."), "..");
+    EXPECT_EQ(normpath("../."), "..");
+    EXPECT_EQ(normpath("."), ".");
+    EXPECT_EQ(normpath("./."), ".");
+    EXPECT_EQ(normpath("/usr/lib"), "/usr/lib");
+    EXPECT_EQ(normpath("/usr/lib/.."), "/usr");
+    EXPECT_EQ(normpath("/usr/./lib/.."), "/usr");
+    EXPECT_EQ(normpath("test/.."), ".");
+    EXPECT_EQ(normpath("test/../.."), "..");
+#endif
 }
 
 

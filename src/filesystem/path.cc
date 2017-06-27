@@ -6,6 +6,7 @@
  */
 
 #include "filesystem.h"
+#include "stringlib.h"
 
 #include <algorithm>
 
@@ -66,11 +67,66 @@ static Path realpath_impl(const Path& path)
 }
 
 
-template <typename Path>
-static Path normpath_impl(const Path& path)
+template <typename Path, typename ToPath, typename FromPath>
+static Path normpath_impl(const Path& path, ToPath topath, FromPath frompath)
 {
-    // TODO: implement
-    return path;
+    // get drive/root components
+    Path root;
+    auto list = splitdrive(path);
+    auto &drive = list.front();
+    auto &tail = list.back();
+    if (!tail.empty() && path_separators.find(tail.front()) != path_separators.npos) {
+        root += path_separator;
+        tail = tail.substr(1);
+    }
+
+    // get directory components
+    auto dirs = split(frompath(tail), path_to_string(path_separators));
+    std::vector<std::string> buffer;
+    for (auto it = dirs.begin(); it != dirs.end(); ++it) {
+        if (*it == current_directory) {
+            if (root.empty() && buffer.empty() && std::distance(it, dirs.end()) == 1) {
+                buffer.push_back(*it);
+            }
+        } else if (*it == parent_directory) {
+            // Erase if the buffer is not empty and the last element is not ..
+            // otherwise, we have a relative path, and need to keep the item
+            // If the path is "./..", we just want "..".
+            // If the buffer is empty and it has a root path, we're already
+            // at the root, so skip the item. Otherwise, we have a relative
+            // path, so add the element.
+            if (!buffer.empty()) {
+                auto &parent = buffer.back();
+                if (parent == current_directory) {
+                    buffer.erase(buffer.end()-1);
+                    buffer.push_back(*it);
+                } else if (parent == parent_directory) {
+                    buffer.emplace_back(*it);
+                } else {
+                    buffer.erase(buffer.end()-1);
+                }
+            } else if (root.empty()) {
+                buffer.emplace_back(*it);
+            }
+        } else {
+            buffer.emplace_back(*it);
+        }
+    }
+
+    // create output
+    Path output = drive + root;
+    for (auto &item: buffer) {
+        output += topath(item);
+        output += path_separator;
+    }
+    if (!buffer.empty()) {
+        output.erase(output.size() - 1);
+    }
+    if (output.empty()) {
+        return topath(".");
+    }
+
+    return output;
 }
 
 
@@ -133,7 +189,16 @@ path_t realpath(const path_t& path)
 
 path_t normpath(const path_t& path)
 {
-    return normpath_impl(path);
+    auto topath = [](const std::string& str)
+    {
+        return string_to_path(str);
+    };
+    auto frompath = [](const path_t& p)
+    {
+        return path_to_string(p);
+    };
+
+    return normpath_impl(path, topath, frompath);
 }
 
 
@@ -177,7 +242,16 @@ backup_path_t realpath(const backup_path_t& path)
 
 backup_path_t normpath(const backup_path_t& path)
 {
-    return normpath_impl(path);
+    auto topath = [](const std::string& str)
+    {
+        return string_to_backup_path(str);
+    };
+    auto frompath = [](const backup_path_t& p)
+    {
+        return backup_path_to_string(p);
+    };
+
+    return normpath_impl(path, topath, frompath);
 }
 
 

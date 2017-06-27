@@ -58,6 +58,7 @@ set(SOURCE_FILES
     src/hex.cc
     src/punycode.cc
     src/safe_stdlib.cc
+    src/stringlib.cc
     src/unicode.cc
     src/url.cc
 )
@@ -125,6 +126,7 @@ set(TEST_FILES
     test/random.cc
     test/safe_stdlib.cc
     test/string_view.cc
+    test/stringlib.cc
     test/tls.cc
     test/unicode.cc
     test/url.cc
