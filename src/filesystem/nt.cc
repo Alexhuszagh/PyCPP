@@ -233,10 +233,27 @@ static Path expanduser_impl(const Path& path, ToPath topath)
 }
 
 
+template <typename Path, typename FromPath, typename ToPath, typename Function>
+static Path expandvars_impl(const Path& path, FromPath frompath, ToPath topath, Function function)
+{
+    wchar_t* buf = new wchar_t[MAX_PATH];
+    auto wide = frompath(path);
+    auto data = reinterpret_cast<const wchar_t*>(wide.data());
+    DWORD length = function(data, buf, MAX_PATH);
+    if (length == 0) {
+        throw filesystem_error(filesystem_unexpected_error);
+    }
+
+    Path output(topath(buf), length);
+    delete[] buf;
+    return output;
+}
+
+
 template <typename Path>
 static bool isabs_impl(const Path& path)
 {
-    auto tail = splitdrive(path).back();
+    auto tail = splitdrive_impl(path).back();
     if (tail.empty()) {
         return false;
     } else if (path_separators.find(tail.front()) != path_separators.npos) {
@@ -320,10 +337,94 @@ path_t expanduser(const path_t& path)
 }
 
 
+path_t expandvars(const path_t& path)
+{
+    auto frompath = [](const path_t& path) {
+        return path;
+    };
+    auto topath = [](wchar_t* str) {
+        return reinterpret_cast<char16_t*>(str);
+    };
+    return expandvars_impl(path, frompath, topath, ExpandEnvironmentStringsW);
+}
+
+
 path_t normcase(const path_t& path)
 {
     return normcase_impl(path, [](const path_t& p) {
         return utf16_tolower(p);
+    });
+}
+
+#endif
+
+
+#if defined(OS_WINDOWS) && defined(backup_path_t)       // BACKUP PATH
+
+// STAT
+
+bool isabs(const backup_path_t& path)
+{
+    return isabs_impl(path);
+}
+
+// SPLIT
+
+backup_path_list_t split(const backup_path_t& path)
+{
+    return split_impl(path);
+}
+
+
+backup_path_list_t splitdrive(const backup_path_t& path)
+{
+    return splitdrive_impl(path);
+}
+
+
+backup_path_list_t splitunc(const backup_path_t& path)
+{
+    return splitunc_impl(path);
+}
+
+// NORMALIZATION
+
+backup_path_t basename(const backup_path_t& path)
+{
+    return basename_impl(path);
+}
+
+
+backup_path_t dirname(const backup_path_t& path)
+{
+    return dirname_impl(path);
+}
+
+
+backup_path_t expanduser(const backup_path_t& path)
+{
+    return expanduser_impl(path, [](const std::wstring& str) {
+        return path_to_backup_path(reinterpret_cast<const char16_t*>(str.data()));
+    });
+}
+
+
+backup_path_t expandvars(const backup_path_t& path)
+{
+    auto frompath = [](const backup_path_t& path) {
+        return backup_path_to_path(path);
+    };
+    auto topath = [](wchar_t* str) {
+        return path_to_backup_path(reinterpret_cast<char16_t*>(str));
+    };
+    return expandvars_impl(path, frompath, topath, ExpandEnvironmentStringsW);
+}
+
+
+backup_path_t normcase(const backup_path_t& path)
+{
+    return normcase_impl(path, [](const backup_path_t& p) {
+        return utf8_tolower(p);
     });
 }
 

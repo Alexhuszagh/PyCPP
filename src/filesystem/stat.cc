@@ -710,4 +710,10 @@ bool exists(const backup_path_t& path)
     return exists_impl(path);
 }
 
+
+bool samefile(const backup_path_t& p1, const backup_path_t& p2)
+{
+    return samestat(stat(p1), stat(p2));
+}
+
 #endif

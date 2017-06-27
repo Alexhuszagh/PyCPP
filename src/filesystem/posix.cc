@@ -10,8 +10,11 @@
 #if defined(OS_POSIX)                           // POSIX & MACOS
 #include "filesystem.h"
 #include "filesystem/exception.h"
+#include "unicode.h"
 
+#include <limits.h>
 #include <unistd.h>
+#include <wordexp.h>
 #include <algorithm>
 
 // HELPERS
@@ -143,6 +146,20 @@ static Path expanduser_impl(const Path& path, ToPath topath)
 }
 
 
+template <typename Path, typename FromPath, typename ToPath>
+static Path expandvars_impl(const Path& path, FromPath frompath, ToPath topath)
+{
+    wordexp_t word;
+    wordexp(frompath(path).data(), &word, 0);
+    char** ptr = word.we_wordv;
+    if (word.we_wordc == 0) {
+        return path;
+    } else {
+        return topath(ptr[0]);
+    }
+}
+
+
 template <typename Path>
 bool isabs_impl(const Path& path)
 {
@@ -164,7 +181,7 @@ bool isabs_impl(const Path& path)
 path_t getcwd()
 {
     char* buf = new char[PATH_MAX];
-    if (!::getcwd(buf, MAX_PATH)) {
+    if (!::getcwd(buf, PATH_MAX)) {
         throw filesystem_error(filesystem_unexpected_error);
     }
 
@@ -221,6 +238,19 @@ path_t expanduser(const path_t& path)
 }
 
 
+path_t expandvars(const path_t& path)
+{
+    auto frompath = [](const path_t& p) {
+        return p;
+    };
+    auto topath = [](const char* p) {
+        return p;
+    };
+
+    return expandvars_impl(path, frompath, topath);
+}
+
+
 path_t normcase(const path_t& path)
 {
     return path;
@@ -229,7 +259,72 @@ path_t normcase(const path_t& path)
 #endif
 
 
-#if defined(OS_POSIX) && !defined(OS_MACOS)     // POSIX without MACOS
+#if defined(backup_path_t)          // BACKUP PATH
 
-// TODO: here...
+// STAT
+
+bool isabs(const backup_path_t& path)
+{
+    return isabs_impl(path);
+}
+
+// SPLIT
+
+backup_path_list_t split(const backup_path_t& path)
+{
+    return split_impl(path);
+}
+
+
+backup_path_list_t splitdrive(const backup_path_t& path)
+{
+    return splitdrive_impl(path);
+}
+
+
+backup_path_list_t splitunc(const backup_path_t& path)
+{
+    return splitunc_impl(path);
+}
+
+// NORMALIZATION
+
+backup_path_t basename(const backup_path_t& path)
+{
+    return basename_impl(path);
+}
+
+
+backup_path_t dirname(const backup_path_t& path)
+{
+    return dirname_impl(path);
+}
+
+
+path_t expanduser(const backup_path_t& path)
+{
+    return expanduser_impl(path, [](const backup_path_t& p) {
+        return path_to_backup_path(p);
+    });
+}
+
+
+backup_path_t expandvars(const backup_path_t& path)
+{
+    auto frompath = [](const backup_path_t& p) {
+        return backup_path_to_path(p);
+    };
+    auto topath = [](const char* p) {
+        return path_to_backup_path(p);
+    };
+
+    return expandvars_impl(path, frompath, topath);
+}
+
+
+backup_path_t normcase(const backup_path_t& path)
+{
+    return path;
+}
+
 #endif

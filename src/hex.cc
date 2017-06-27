@@ -24,7 +24,6 @@ static size_t hex_impl(Iter1 src_first, Iter1 src_last,
     while (src < src_last && dst + shift <= dst_last) {
 
         memcpy(buffer, src, width);
-        // TODO: is this fair??? Or is this wrong...
         bswap(buffer, width);
         base16_encode(buffer, width, dst, shift);
 

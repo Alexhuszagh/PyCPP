@@ -23,6 +23,8 @@
 #   define backup_path_list_t std::deque<backup_path_t>
 #   define path_to_string(s) codec_utf16_utf8(s)
 #   define backup_path_to_string(s) (s)
+#   define path_to_backup_path(s) path_to_string(s)
+#   define backup_path_to_path(s) codec_utf8_utf16(s)
 #   define path_prefix(p) u##p
 #else                               // POSIX
 #   define path_t std::string

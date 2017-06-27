@@ -105,6 +105,7 @@ TEST(unicode, is_alnum)
     EXPECT_FALSE(is_alnum(0x2e));       // .
     EXPECT_TRUE(is_alnum(0x30));        // 0
     EXPECT_TRUE(is_alnum(0x41));        // A
+    EXPECT_FALSE(is_alnum(0x5f));       // _
     EXPECT_FALSE(is_alnum(0x7f));       // control (delete)
     EXPECT_TRUE(is_alnum(0xff));        // ÿ
     EXPECT_TRUE(is_alnum(0x100));       // Ā
@@ -120,6 +121,7 @@ TEST(unicode, is_alpha)
     EXPECT_FALSE(is_alpha(0x2e));       // .
     EXPECT_FALSE(is_alpha(0x30));       // 0
     EXPECT_TRUE(is_alpha(0x41));        // A
+    EXPECT_FALSE(is_alpha(0x5f));       // _
     EXPECT_FALSE(is_alpha(0x7f));       // control (delete)
     EXPECT_TRUE(is_alpha(0xff));        // ÿ
     EXPECT_TRUE(is_alpha(0x100));       // Ā
@@ -135,6 +137,7 @@ TEST(unicode, is_digit)
     EXPECT_FALSE(is_digit(0x2e));       // .
     EXPECT_TRUE(is_digit(0x30));        // 0
     EXPECT_FALSE(is_digit(0x41));       // A
+    EXPECT_FALSE(is_digit(0x5f));       // _
     EXPECT_FALSE(is_digit(0x7f));       // control (delete)
     EXPECT_FALSE(is_digit(0xff));       // ÿ
     EXPECT_FALSE(is_digit(0x100));      // Ā
@@ -150,6 +153,7 @@ TEST(unicode, is_lower)
     EXPECT_FALSE(is_lower(0x2e));       // .
     EXPECT_FALSE(is_lower(0x30));       // 0
     EXPECT_FALSE(is_lower(0x41));       // A
+    EXPECT_FALSE(is_lower(0x5f));       // _
     EXPECT_FALSE(is_lower(0x7f));       // control (delete)
     EXPECT_TRUE(is_lower(0xff));        // ÿ
     EXPECT_FALSE(is_lower(0x100));      // Ā
@@ -165,6 +169,7 @@ TEST(unicode, is_upper)
     EXPECT_FALSE(is_upper(0x2e));       // .
     EXPECT_FALSE(is_upper(0x30));       // 0
     EXPECT_TRUE(is_upper(0x41));        // A
+    EXPECT_FALSE(is_upper(0x5f));       // _
     EXPECT_FALSE(is_upper(0x7f));       // control (delete)
     EXPECT_FALSE(is_upper(0xff));       // ÿ
     EXPECT_TRUE(is_upper(0x100));       // Ā
@@ -180,6 +185,7 @@ TEST(unicode, is_space)
     EXPECT_FALSE(is_space(0x2e));       // .
     EXPECT_FALSE(is_space(0x30));       // 0
     EXPECT_FALSE(is_space(0x41));       // A
+    EXPECT_FALSE(is_space(0x5f));       // _
     EXPECT_FALSE(is_space(0x7f));       // control (delete)
     EXPECT_FALSE(is_space(0xff));       // ÿ
     EXPECT_FALSE(is_space(0x100));      // Ā
@@ -195,6 +201,7 @@ TEST(unicode, is_blank)
     EXPECT_FALSE(is_blank(0x2e));       // .
     EXPECT_FALSE(is_blank(0x30));       // 0
     EXPECT_FALSE(is_blank(0x41));       // A
+    EXPECT_FALSE(is_blank(0x5f));       // _
     EXPECT_FALSE(is_blank(0x7f));       // control (delete)
     EXPECT_FALSE(is_blank(0xff));       // ÿ
     EXPECT_FALSE(is_blank(0x100));      // Ā
@@ -210,6 +217,7 @@ TEST(unicode, is_punctuation)
     EXPECT_TRUE(is_punctuation(0x2e));          // .
     EXPECT_FALSE(is_punctuation(0x30));         // 0
     EXPECT_FALSE(is_punctuation(0x41));         // A
+    EXPECT_TRUE(is_punctuation(0x5f));          // _
     EXPECT_FALSE(is_punctuation(0x7f));         // control (delete)
     EXPECT_FALSE(is_punctuation(0xff));         // ÿ
     EXPECT_FALSE(is_punctuation(0x100));        // Ā

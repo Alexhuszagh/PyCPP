@@ -39,14 +39,17 @@ static std::deque<Path> splitext_impl(const Path& path)
 
 
 template <typename Path, typename ToPath>
-static Path abspath_impl(const Path& path,ToPath topath)
+static Path abspath_impl(const Path& path, ToPath topath)
 {
+    typedef typename Path::value_type char_type;
+    static constexpr char_type separator(path_separator);
+
     if (isabs(path)) {
         return path;
     }
 
     auto list = splitdrive(path);
-    return list.front() + topath(getcwd()) + path_separator + normpath(path);
+    return list.front() + topath(getcwd()) + separator + normpath(path);
 }
 
 
@@ -90,10 +93,10 @@ Path relpath_impl(const Path& path, const Path& start)
 }
 
 
-template <typename Path>
-Path relpath_impl(const Path& path)
+template <typename Path, typename ToPath>
+Path relpath_impl(const Path& path, ToPath topath)
 {
-    return relpath_impl(path, getcwd());
+    return relpath_impl(path, topath(getcwd()));
 }
 
 
@@ -133,7 +136,9 @@ path_t normpath(const path_t& path)
 
 path_t relpath(const path_t& path)
 {
-    return relpath_impl(path);
+    return relpath_impl(path, [](const path_t& p) {
+        return p;
+    });
 }
 
 
@@ -141,3 +146,49 @@ path_t relpath(const path_t& path, const path_t& start)
 {
     return relpath_impl(path, start);
 }
+
+#if defined(backup_path_t)          // BACKUP PATH
+
+// SPLIT
+
+backup_path_list_t splitext(const backup_path_t& path)
+{
+    return splitext_impl(path);
+}
+
+// NORMALIZATION
+
+backup_path_t abspath(const backup_path_t& path)
+{
+    return abspath_impl(path, [](const path_t& p) {
+        return path_to_backup_path(p);
+    });
+}
+
+
+backup_path_t realpath(const backup_path_t& path)
+{
+    return realpath_impl(path);
+}
+
+
+backup_path_t normpath(const backup_path_t& path)
+{
+    return normpath_impl(path);
+}
+
+
+backup_path_t relpath(const backup_path_t& path)
+{
+    return relpath_impl(path, [](const path_t& p) {
+        return path_to_backup_path(p);
+    });
+}
+
+
+backup_path_t relpath(const backup_path_t& path, const backup_path_t& start)
+{
+    return relpath_impl(path, start);
+}
+
+#endif
