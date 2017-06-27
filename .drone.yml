@@ -7,6 +7,8 @@ build:
     - if [ $$arch = 64 ]; then target=x86_64; fi
     - pacman -S --needed --noconfirm --noprogressbar mingw-w64-${target}-pkg-config cmake
     - git submodule update --init --recursive
+    - ln -s test/files/file test/files/link
+    - ln -s test/files/broken test/files/broken_link
     - mkdir -p build
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON ..

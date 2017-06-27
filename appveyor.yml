@@ -17,9 +17,6 @@ matrix:
 init: []
 
 install:
-  - mklink test\files\link test\files\file
-  - mklink test\files\broken_link test\files\broken
-  - dir test\files
   - git submodule update --init --recursive
 
 build_script:
@@ -28,4 +25,6 @@ build_script:
   - cmake --build . --config Release
 
 test_script:
+  - mklink test\files\link test\files\file
+  - mklink test\files\broken_link test\files\broken
   - ctest -C Release -V

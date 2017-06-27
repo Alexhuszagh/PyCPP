@@ -34,7 +34,7 @@ TEST(stat, lstat)
 //    EXPECT_GE(s.st_mode, 0);
 
 //    auto s = lstat("test/files/link");
-    EXPECT_GE(s.st_mode, 0);
+//    EXPECT_GE(s.st_mode, 0);
 
 //// TODO: here...
 ////    s = lstat("test/files/broken_link");
@@ -83,7 +83,7 @@ TEST(stat, islink)
 //    EXPECT_FALSE(islink("test/files"));
 //    EXPECT_FALSE(isdir("test/files/file"));
 //    // TODO: this is failing...
-//    EXPECT_TRUE(islink("test/files/link"));
+    EXPECT_TRUE(islink("test/files/link"));
 }
 
 

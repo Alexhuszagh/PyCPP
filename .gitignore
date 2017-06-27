@@ -39,6 +39,10 @@ cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
 
+# Test files
+test/files/link
+test/files/broken_link
+
 # Build
 [bB]uild/*
 doc/*

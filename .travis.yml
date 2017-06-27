@@ -38,6 +38,8 @@ install:
   - if [ "$CXX" = "clang++" ] && [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX="clang++-3.9" CC="clang-3.9"; fi
 
 script:
+  - ln -s test/files/file test/files/link
+  - ln -s test/files/broken test/files/broken_link
   - mkdir -p build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON ..
