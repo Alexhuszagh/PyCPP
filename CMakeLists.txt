@@ -162,6 +162,6 @@ if(BUILD_TESTS)
 
     add_test(NAME crosscxx_tests
         COMMAND crosscxx_tests
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif()
