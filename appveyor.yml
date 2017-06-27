@@ -25,4 +25,7 @@ build_script:
   - cmake --build . --config Release
 
 test_script:
+  - dir .
+  - dir test
+  - dir test\files
   - ctest -C Release -V

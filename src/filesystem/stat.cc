@@ -149,7 +149,7 @@ static int get_error_code()
 static int copy_stat(HANDLE handle, stat_t* buffer)
 {
     BY_HANDLE_FILE_INFORMATION info;
-    if (GetFileInformationByHandle(handle, &info)) {
+    if (!GetFileInformationByHandle(handle, &info)) {
         return get_error_code();
     }
 
@@ -157,6 +157,7 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
     buffer->st_dev = info.dwVolumeSerialNumber;
 
     ULARGE_INTEGER ul;
+    buffer->st_mode = 0;
     if (info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
         buffer->st_mode |= S_IFLNK;
         buffer->st_size = 0;
@@ -171,7 +172,6 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
     }
 
     // get permissions
-    buffer->st_mode = 0;
     int mode;
     if (info.dwFileAttributes & FILE_ATTRIBUTE_READONLY) {
         mode = S_IREAD;
@@ -208,22 +208,22 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
 
 
 template <typename Pointer, typename Function>
-static int stat_impl(Pointer path, stat_t* buffer, bool do_lstat, Function function)
+static int stat_impl(Pointer path, stat_t* buffer, bool use_lstat, Function function)
 {
     HANDLE handle;
-    DWORD access = 0;
+    DWORD access = FILE_READ_ATTRIBUTES;
     DWORD share = 0;
     LPSECURITY_ATTRIBUTES security = nullptr;
     DWORD create = OPEN_EXISTING;
     DWORD flags = FILE_FLAG_BACKUP_SEMANTICS;
     HANDLE file = nullptr;
-    if (do_lstat) {
+    if (use_lstat) {
         flags |= FILE_FLAG_OPEN_REPARSE_POINT;
     }
 
     handle = function(path, access, share, security, create, flags, file);
     if (handle == INVALID_HANDLE_VALUE) {
-        if (do_lstat && GetLastError() == ERROR_SYMLINK_NOT_SUPPORTED) {
+        if (use_lstat && GetLastError() == ERROR_SYMLINK_NOT_SUPPORTED) {
             return stat_impl(path, buffer, false, function);
         }
         return get_error_code();
@@ -238,15 +238,15 @@ static int stat_impl(Pointer path, stat_t* buffer, bool do_lstat, Function funct
 }
 
 
-static int stat(const char* path, stat_t* buffer, bool do_lstat)
+static int stat(const char* path, stat_t* buffer, bool use_lstat)
 {
-    return stat_impl(path, buffer, do_lstat, CreateFile);
+    return stat_impl(path, buffer, use_lstat, CreateFile);
 }
 
 
-static int wstat(const wchar_t* path, stat_t* buffer, bool do_lstat)
+static int wstat(const wchar_t* path, stat_t* buffer, bool use_lstat)
 {
-    return stat_impl(path, buffer, do_lstat, CreateFileW);
+    return stat_impl(path, buffer, use_lstat, CreateFileW);
 }
 
 
@@ -302,7 +302,7 @@ stat_t stat(const path_t& path)
     stat_t data;
     int code;
 
-    code = ::stat(path.c_str(), &sb);
+    code = ::stat(path.c_str(), &sb, false);
     handle_error(code);
     copy_native(sb, data);
 
@@ -316,7 +316,7 @@ stat_t lstat(const path_t& path)
     stat_t data;
     int code;
 
-    code = ::lstat(path.c_str(), &sb);
+    code = ::lstat(path.c_str(), &sb, true);
     handle_error(code);
     copy_native(sb, data);
 
@@ -344,7 +344,7 @@ stat_t lstat(const backup_path_t& path)
     stat_t data;
     int code;
 
-    code = stat(path.data(), &data, false);
+    code = stat(path.data(), &data, true);
     handle_error(code);
 
     return data;
@@ -405,11 +405,13 @@ static bool islink_stat(const stat_t& s)
 
 
 template <typename Path, typename Function>
-static bool check_impl(const Path& path, Function function)
+static bool check_impl(const Path& path, Function function, bool use_lstat = false)
 {
     try {
-        auto s = stat(path);
-        return function(s);
+        if (use_lstat) {
+            return function(lstat(path));
+        }
+        return function(stat(path));
     } catch (filesystem_error& error) {
         if (error.code() == filesystem_file_not_found) {
             return false;
@@ -443,7 +445,7 @@ static bool isdir_impl(const Path& path)
 template <typename Path>
 static bool islink_impl(const Path& path)
 {
-    return check_impl(path, islink_stat);
+    return check_impl(path, islink_stat, true);
 }
 
 // FUNCTIONS
