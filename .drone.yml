@@ -8,8 +8,9 @@ build:
     - pacman -S --needed --noconfirm --noprogressbar mingw-w64-${target}-pkg-config cmake
     - git submodule update --init --recursive
     - pwd
-    - ln -s test/files/file test/files/link
-    - ln -s test/files/broken test/files/broken_link
+    - ls test/files
+    - ln -sf test/files/file test/files/link
+    - ln -sf test/files/broken test/files/broken_link
     - mkdir -p build
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON ..
