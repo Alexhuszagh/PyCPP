@@ -146,7 +146,6 @@
 // DETECTION
 #   if defined(__CYGWIN__)
 #       define OS_CYGWIN
-#       define OS_WINDOWS
 #       define OS_DETECTED
 #   endif
 #endif
@@ -650,7 +649,7 @@
 #endif
 
 // OS400
-// -------
+// -----
 
 #if !defined(OS_DETECTED)
 // DETECTION
@@ -781,5 +780,25 @@
 #   if defined(__unix__) || defined(__unix)
 #       define OS_UNIX
 #       define OS_DETECTED
+#   endif
+#endif
+
+// POSIX
+// -----
+
+// Check if we have a POSIX-like system.
+#if defined(OS_DETECTED)
+#   if defined(OS_LINUX) || defined(OS_MACOS) || defined(OS_BSD) || \
+        defined(OS_SOLARIS) || defined(OS_IRIX) || defined(OS_HPUX) || \
+        defined(OS_CYGWIN) || defined(OS_AIX) || defined(OS_QNX) || \
+        defined(OS_VMS) || defined(OS_ULTRIX) || defined(OS_RELIANT) || \
+        defined(OS_DYNIX) || defined(OS_EMX) || defined(OS_OSF) || \
+        defined(OS_DGUX) || defined(OS_LYNX) || defined(OS_SCO) || \
+        defined(OS_HURD) || defined(OS_UNIXWARE) || defined(AMDAHL) || \
+        defined(OS_AEGIS) || defined(OS_APOLLO) || defined(OS_MINIX) || \
+        defined(OS_MPEIX) || defined(OS_VOS) || defined(OS_SVR4) || \
+        defined(OS_UNICOS) || defined(OS_UNICOSMP) || defined(OS_ZOS) || \
+        defined(OS_UNIX)
+#       define OS_POSIX
 #   endif
 #endif

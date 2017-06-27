@@ -29,6 +29,8 @@ const char* filesystem_error::what() const throw ()
             return "Invalid parameter to _stat.";
         case filesystem_out_of_memory:
             return "Out of memory.";
+        case filesystem_not_a_symlink:
+            return "Not a symbolic link.";
          case filesystem_unexpected_error:
          default:
             return "Unexpected error in stat.";

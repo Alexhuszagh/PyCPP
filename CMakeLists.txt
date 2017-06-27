@@ -12,6 +12,8 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 11)
 set(CXX_STANDARD TRUE)
 
+option(BUILD_FILESYSTEM "Build filesystem library" ON)
+option(BUILD_HASHLIB "Build hash library" ON)
 option(BUILD_STATIC "Build static library" ON)
 option(BUILD_TESTS "Build crosscxx library tests" OFF)
 
@@ -42,10 +44,6 @@ endif()
 include_directories(src)
 
 set(SOURCE_FILES
-    src/filesystem/exception.cc
-    src/filesystem/stat.cc
-    src/hashlib/md5.cc
-    src/hashlib/sha1.cc
     src/random/pseudorandom.cc
     src/random/sysrandom.cc
     src/base16.cc
@@ -63,6 +61,24 @@ set(SOURCE_FILES
     src/unicode.cc
     src/url.cc
 )
+
+if (BUILD_FILESYSTEM)
+    list(APPEND SOURCE_FILES
+        src/filesystem/exception.cc
+        src/filesystem/mac.cc
+        src/filesystem/nt.cc
+        src/filesystem/path.cc
+        src/filesystem/posix.cc
+        src/filesystem/stat.cc
+    )
+endif()
+
+if (BUILD_HASHLIB)
+    list(APPEND SOURCE_FILES
+        src/hashlib/md5.cc
+        src/hashlib/sha1.cc
+    )
+endif()
 
 if(BUILD_STATIC)
     add_library(crosscxx STATIC ${SOURCE_FILES})
@@ -98,11 +114,9 @@ set(TEST_FILES
     test/codec.cc
     test/compiler.cc
     test/enum.cc
-    test/filesystem.cc
     test/fstream.cc
     test/getline.cc
     test/gettimeofday.cc
-    test/hashlib.cc
     test/hex.cc
     test/processor.cc
     test/ordering.cc
@@ -116,6 +130,14 @@ set(TEST_FILES
     test/url.cc
     test/vector_view.cc
 )
+
+if (BUILD_FILESYSTEM)
+    list(APPEND TEST_FILES test/filesystem.cc)
+endif()
+
+if (BUILD_HASHLIB)
+    list(APPEND TEST_FILES test/hashlib.cc)
+endif()
 
 if(BUILD_TESTS)
     if(NOT TARGET gtest)

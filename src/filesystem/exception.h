@@ -22,6 +22,7 @@ enum filesystem_code
     filesystem_file_not_found,
     filesystem_invalid_parameter,
     filesystem_out_of_memory,
+    filesystem_not_a_symlink,
     filesystem_unexpected_error,
 };
 

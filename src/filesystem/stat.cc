@@ -13,6 +13,9 @@
 #   include "windows.h"
 #   include "winerror.h"
 #   include <tuple>
+#else
+#   include <limits.h>
+#   include <unistd.h>
 #endif
 
 // MACROS
@@ -76,6 +79,42 @@
 #       define ERROR_SYMLINK_NOT_SUPPORTED 1464
 #   endif
 #endif
+
+
+// OBJECTS
+// -------
+
+
+#if defined(OS_WINDOWS)                 // WINDOWS
+
+typedef struct _REPARSE_DATA_BUFFER {
+  ULONG  ReparseTag;
+  USHORT ReparseDataLength;
+  USHORT Reserved;
+  union {
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      ULONG  Flags;
+      WCHAR  PathBuffer[1];
+    } SymbolicLinkReparseBuffer;
+    struct {
+      USHORT SubstituteNameOffset;
+      USHORT SubstituteNameLength;
+      USHORT PrintNameOffset;
+      USHORT PrintNameLength;
+      WCHAR  PathBuffer[1];
+    } MountPointReparseBuffer;
+    struct {
+      UCHAR DataBuffer[1];
+    } GenericReparseBuffer;
+  };
+} REPARSE_DATA_BUFFER, *PREPARSE_DATA_BUFFER;
+
+#endif
+
 
 // HELPERS
 // -------
@@ -158,18 +197,15 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
 
     ULARGE_INTEGER ul;
     buffer->st_mode = 0;
-    printf("Getting st_size\n");
     if (info.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) {
         buffer->st_mode |= S_IFLNK;
         buffer->st_size = 0;
     } else if (info.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-        printf("Is directory st_size\n");
         buffer->st_mode |= S_IFDIR;
         buffer->st_size = 0;
     } else {
         ul.HighPart = info.nFileSizeHigh;
         ul.LowPart = info.nFileSizeLow;
-        printf("Is directory %zu\n", ul.QuadPart);
         buffer->st_mode |= S_IFREG;
         buffer->st_size = ul.QuadPart;
     }
@@ -202,8 +238,9 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
 }
 
 
+
 template <typename Pointer, typename Function>
-static int stat_impl(Pointer path, stat_t* buffer, bool use_lstat, Function function)
+static HANDLE get_handle(Pointer path, bool use_lstat, Function function)
 {
     HANDLE handle;
     DWORD access = FILE_READ_ATTRIBUTES;
@@ -216,7 +253,29 @@ static int stat_impl(Pointer path, stat_t* buffer, bool use_lstat, Function func
         flags |= FILE_FLAG_OPEN_REPARSE_POINT;
     }
 
-    handle = function(path, access, share, security, create, flags, file);
+    return function(path, access, share, security, create, flags, file);
+}
+
+
+
+static DWORD get_ioctrl(HANDLE handle, REPARSE_DATA_BUFFER* buf)
+{
+    DWORD code = FSCTL_GET_REPARSE_POINT;
+    LPVOID in = 0;
+    DWORD in_size = 0;
+    LPVOID out = buf;
+    DWORD out_size = sizeof(REPARSE_DATA_BUFFER);
+    DWORD bytes;
+    LPOVERLAPPED overlapped = 0;
+
+    return DeviceIoControl(handle, code, in, in_size, out, out_size, &bytes, overlapped);
+}
+
+
+template <typename Pointer, typename Function>
+static int stat_impl(Pointer path, stat_t* buffer, bool use_lstat, Function function)
+{
+    HANDLE handle = get_handle(path, use_lstat, function);
     if (handle == INVALID_HANDLE_VALUE) {
         if (use_lstat && GetLastError() == ERROR_SYMLINK_NOT_SUPPORTED) {
             return stat_impl(path, buffer, false, function);
@@ -230,6 +289,35 @@ static int stat_impl(Pointer path, stat_t* buffer, bool use_lstat, Function func
     }
 
     return 0;
+}
+
+
+static path_t readlink_impl(HANDLE handle)
+{
+    typedef typename path_t::value_type Char;
+
+    // get our io control code
+    auto buf = new REPARSE_DATA_BUFFER;
+    DWORD io = get_ioctrl(handle, buf);
+    CloseHandle(handle);
+
+    // handle errors
+    if (io == 0) {
+        handle_error(get_error_code());
+    } else if (buf->ReparseTag != IO_REPARSE_TAG_SYMLINK) {
+        throw filesystem_error(filesystem_not_a_symlink);
+    }
+
+    // get data from link (length is stored in bytes, convert to u16)
+    auto link = buf->SymbolicLinkReparseBuffer.PathBuffer;
+    link += buf->SymbolicLinkReparseBuffer.PrintNameOffset;
+    auto length = buf->SymbolicLinkReparseBuffer.PrintNameLength / 2;
+
+    // create path
+    path_t out(reinterpret_cast<Char*>(link), length);
+    delete buf;
+
+    return out;
 }
 
 
@@ -268,6 +356,18 @@ stat_t lstat(const path_t& path)
     handle_error(code);
 
     return data;
+}
+
+
+path_t readlink(const path_t& path)
+{
+    auto data = reinterpret_cast<const wchar_t*>(path.data());
+    HANDLE handle = get_handle(data, true, CreateFileW);
+    if (handle == INVALID_HANDLE_VALUE) {
+        handle_error(get_error_code());
+    }
+
+    return readlink_impl(handle);
 }
 
 #else                           // POSIX
@@ -318,6 +418,23 @@ stat_t lstat(const path_t& path)
     return data;
 }
 
+
+path_t readlink(const path_t& path)
+{
+    typedef typename path_t::value_type Char;
+
+    auto buf = new Char[PATH_MAX];
+    auto length = ::readlink(path.data(), buf, PATH_MAX);
+    if (length == -1) {
+        handle_error(errno);
+    }
+
+    path_t link(buf, length);
+    delete[] buf;
+
+    return link;
+}
+
 #endif
 
 #if defined(backup_path_t)          // BACKUP PATH
@@ -345,55 +462,91 @@ stat_t lstat(const backup_path_t& path)
     return data;
 }
 
+
+backup_path_t readlink(const backup_path_t& path)
+{
+    auto data = reinterpret_cast<const wchar_t*>(path.data());
+    HANDLE handle = get_handle(data, true, CreateFileW);
+    if (handle == INVALID_HANDLE_VALUE) {
+        handle_error(get_error_code());
+    }
+
+    return path_to_string(readlink_impl(handle));
+}
+
 #endif
 
 // STAT PROPERTIES
 
-static time_t getatime(const stat_t& s)
+time_t getatime(const stat_t& s)
 {
     return s.st_atim.tv_sec;
 }
 
 
-static time_t getmtime(const stat_t& s)
+time_t getmtime(const stat_t& s)
 {
     return s.st_mtim.tv_sec;
 }
 
 
-static time_t getctime(const stat_t& s)
+time_t getctime(const stat_t& s)
 {
     return s.st_ctim.tv_sec;
 }
 
 
-static off_t getsize(const stat_t& s)
+off_t getsize(const stat_t& s)
 {
     return s.st_size;
 }
 
 
-static bool exists_stat(const stat_t& s)
+bool exists(const stat_t& s)
 {
     return true;
 }
 
 
-static bool isfile_stat(const stat_t& s)
+bool isfile(const stat_t& s)
 {
     return S_ISREG(s.st_mode);
 }
 
 
-static bool isdir_stat(const stat_t& s)
+bool isdir(const stat_t& s)
 {
     return S_ISDIR(s.st_mode);
 }
 
 
-static bool islink_stat(const stat_t& s)
+bool islink(const stat_t& s)
 {
     return S_ISLNK(s.st_mode);
+}
+
+
+static bool exists_stat(const stat_t& s)
+{
+    return exists(s);
+}
+
+
+static bool isfile_stat(const stat_t& s)
+{
+    return isfile(s);
+}
+
+
+static bool isdir_stat(const stat_t& s)
+{
+    return isdir(s);
+}
+
+
+static bool islink_stat(const stat_t& s)
+{
+    return islink(s);
 }
 
 // PATH PROPERTIES
@@ -488,11 +641,22 @@ bool islink(const path_t& path)
     return islink_impl(path);
 }
 
-////bool ismount(const path_t& path);
 
 bool exists(const path_t& path)
 {
     return exists_impl(path);
+}
+
+
+bool samefile(const path_t& p1, const path_t& p2)
+{
+    return samestat(stat(p1), stat(p2));
+}
+
+
+bool samestat(const stat_t& s1, const stat_t& s2)
+{
+    return s1.st_ino == s2.st_ino && s1.st_dev == s2.st_dev;
 }
 
 
@@ -540,7 +704,6 @@ bool islink(const backup_path_t& path)
     return islink_impl(path);
 }
 
-////bool ismount(const backup_path_t& path);
 
 bool exists(const backup_path_t& path)
 {

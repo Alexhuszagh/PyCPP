@@ -96,10 +96,6 @@ TEST(stat, islink)
 }
 
 
-TEST(stat, ismount)
-{}
-
-
 TEST(stat, exists)
 {
     EXPECT_TRUE(exists("test/files"));
