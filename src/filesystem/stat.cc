@@ -85,6 +85,7 @@
 
 static void handle_error(int code)
 {
+    printf("Code is %d\n", code);
     switch (code) {
         case 0:
             return;
@@ -181,17 +182,9 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
     buffer->st_mode |= mode | (mode >> 3) | (mode >> 6);
 
     // get filetimes
+    FILETIME_TO_TIMESPEC(buffer->st_ctim, info.ftCreationTime);
     FILETIME_TO_TIMESPEC(buffer->st_atim, info.ftLastAccessTime);
     FILETIME_TO_TIMESPEC(buffer->st_mtim, info.ftLastWriteTime);
-
-    // set a reasonable default last changed time
-    auto atim = std::tie(buffer->st_atim.tv_sec, buffer->st_atim.tv_nsec);
-    auto mtim = std::tie(buffer->st_mtim.tv_sec, buffer->st_mtim.tv_nsec);
-    if (atim > mtim) {
-        buffer->st_ctim = buffer->st_atim;
-    } else {
-        buffer->st_ctim = buffer->st_mtim;
-    }
 
     ul.HighPart = info.nFileIndexHigh;
     ul.LowPart = info.nFileIndexLow;
@@ -300,10 +293,10 @@ stat_t stat(const path_t& path)
 {
     struct stat sb;
     stat_t data;
-    int code;
 
-    code = ::stat(path.c_str(), &sb);
-    handle_error(code);
+    if (::stat(path.c_str(), &sb) == -1) {
+        handle_error(errno);
+    }
     copy_native(sb, data);
 
     return data;
@@ -314,10 +307,10 @@ stat_t lstat(const path_t& path)
 {
     struct stat sb;
     stat_t data;
-    int code;
 
-    code = ::lstat(path.c_str(), &sb);
-    handle_error(code);
+    if (::lstat(path.c_str(), &sb) == -1)  {
+        handle_error(errno);
+    }
     copy_native(sb, data);
 
     return data;
@@ -413,6 +406,7 @@ static bool check_impl(const Path& path, Function function, bool use_lstat = fal
         }
         return function(stat(path));
     } catch (filesystem_error& error) {
+        printf("Erro rcode is %d\n", error.code());
         if (error.code() == filesystem_file_not_found) {
             return false;
         }
