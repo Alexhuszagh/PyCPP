@@ -3,7 +3,7 @@
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 1)
 cmake_minimum_required(VERSION 2.8)
-project(crosscxx CXX)
+project(funxx CXX)
 enable_testing()
 
 # FLAGS
@@ -15,7 +15,7 @@ set(CXX_STANDARD TRUE)
 option(BUILD_FILESYSTEM "Build filesystem library" ON)
 option(BUILD_HASHLIB "Build hash library" ON)
 option(BUILD_STATIC "Build static library" ON)
-option(BUILD_TESTS "Build crosscxx library tests" OFF)
+option(BUILD_TESTS "Build funxx library tests" OFF)
 
 if(BUILD_STATIC)
     if(UNIX)
@@ -82,15 +82,15 @@ if (BUILD_HASHLIB)
 endif()
 
 if(BUILD_STATIC)
-    add_library(crosscxx STATIC ${SOURCE_FILES})
+    add_library(funxx STATIC ${SOURCE_FILES})
 else()
-    add_library(crosscxx SHARED ${SOURCE_FILES})
+    add_library(funxx SHARED ${SOURCE_FILES})
 endif()
-set(CROSSCXX_LIBRARIES crosscxx)
+set(CROSSCXX_LIBRARIES funxx)
 
 # Need to specify proper exception handling for Windows.
 if(MSVC)
-    set_target_properties(crosscxx PROPERTIES
+    set_target_properties(funxx PROPERTIES
         COMPILE_OPTIONS "/EHsc"
     )
 endif()
@@ -147,21 +147,21 @@ if(BUILD_TESTS)
     endif()
     include_directories(googletest/googletest/include warnings/src)
 
-    add_executable(crosscxx_tests ${TEST_FILES})
-    target_link_libraries(crosscxx_tests
+    add_executable(funxx_tests ${TEST_FILES})
+    target_link_libraries(funxx_tests
         gtest
         gtest_main
         ${CROSSCXX_LIBRARIES}
     )
     # Need to specify proper exception handling for Windows.
     if(MSVC)
-        set_target_properties(crosscxx_tests PROPERTIES
+        set_target_properties(funxx_tests PROPERTIES
             COMPILE_OPTIONS "/EHsc"
         )
     endif()
 
-    add_test(NAME crosscxx_tests
-        COMMAND crosscxx_tests
+    add_test(NAME funxx_tests
+        COMMAND funxx_tests
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif()
