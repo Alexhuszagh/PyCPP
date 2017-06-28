@@ -7,18 +7,18 @@
 // CONSTANTS
 // ---------
 
-const std::string ascii_letters = ascii_lowercase + ascii_uppercase;
-const std::string ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
-const std::string ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const std::string digits = "0123456789";
-const std::string hexdigits = "0123456789abcdefABCDEF";
-const std::string letters = lowercase + uppercase;
-const std::string lowercase = ascii_lowercase;
-const std::string octdigits = "01234567";
-const std::string punctuation = "!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~";
-const std::string printable = digits + letters + punctuation + whitespace;
-const std::string uppercase = ascii_uppercase;
-const std::string whitespace = " \t\n\r\v\f";
+const string_t ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
+const string_t ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const string_t ascii_letters = ascii_lowercase + ascii_uppercase;
+const string_t digits = "0123456789";
+const string_t hexdigits = "0123456789abcdefABCDEF";
+const string_t lowercase = ascii_lowercase;
+const string_t uppercase = ascii_uppercase;
+const string_t letters = lowercase + uppercase;
+const string_t octdigits = "01234567";
+const string_t punctuation = "!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~";
+const string_t whitespace = " \t\n\r\v\f";
+const string_t printable = digits + letters + punctuation + whitespace;
 
 // HELPERS
 // -------
@@ -50,10 +50,10 @@ static size_t split(Iter first, Iter last, IsSep issep, Store store)
 // ---------
 
 
-std::vector<std::string> split(const std::string& str, const std::string& sep)
+string_list_t split(const string_t& str, const string_t& sep)
 {
-    typedef typename std::string::const_iterator iterator;
-    std::vector<std::string> data;
+    typedef typename string_t::const_iterator iterator;
+    string_list_t data;
 
     auto issep = [&](char c)
     {
@@ -61,7 +61,7 @@ std::vector<std::string> split(const std::string& str, const std::string& sep)
     };
     auto store = [&](iterator first, iterator second)
     {
-        return data.emplace_back(std::string(first, second));
+        return data.emplace_back(string_t(first, second));
     };
 
     split(str.begin(), str.end(), issep, store);
