@@ -41,13 +41,21 @@ The files [os.h](/src/os.h), [compiler.h](/src/compiler.h), [architecture.h](/sr
 
 Any modern application should be Unicode aware, and fun++ includes routines for [code point conversions](/src/unicode.h) and [codec conversions](codec.h), as well as [Unicode-aware case conversions](/src/casemap.h). They provide two APIs: a modern wrapper for STL string conversions, and a C-API taking a src and dst buffer. 
 
-Support features include
+Supported features include:
 
 - UTF-8, UTF-16, and UTF-32 conversions
 - std::string, std::u16string, and std::u32string conversions.
 - Lowercase, uppercase, and titlecase Unicode conversions.
 
 **Fileystem**
+
+func++ includes a high-level filesystem library, a spiritual port of the `os.path` module from Python.
+
+Supported features include:
+
+- Portable stat and lstat
+- Path normalization
+- Environment variable expansion
 
 **High-Level Features**
 
@@ -60,6 +68,8 @@ Support features include
 - [Wide API streams](/src/fstream.h) for Windows.
 - [string_view](/str/string_view.h) and [vector_view](/src/vector_view.h)
 - [Hash](/src/hashlib.h) functions.
+- [Iterator adaptors](/src/iterator.h).
+- [Combinations, permutation](/src/itertools/sampling.h) and [cartesian products](/src/itertools/product.h).
 
 ## Building
 

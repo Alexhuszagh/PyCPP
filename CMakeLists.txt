@@ -119,6 +119,8 @@ set(TEST_FILES
     test/getline.cc
     test/gettimeofday.cc
     test/hex.cc
+    test/iterator.cc
+    test/itertools.cc
     test/processor.cc
     test/ordering.cc
     test/os.cc
