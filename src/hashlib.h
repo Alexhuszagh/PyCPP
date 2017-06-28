@@ -259,95 +259,95 @@ private:
 
 
 /**
-// *  \brief SHA3-224 hash context.
-// */
-//struct sha3_224_hash
-//{
-//public:
-//    sha3_224_hash();
-//    sha3_224_hash(const void* src, size_t srclen);
-//    sha3_224_hash(const string_view& str);
-//    ~sha3_224_hash();
-//
-//    void update(const void* src, size_t srclen);
-//    void update(const string_view& str);
-//    size_t digest(void* dst, size_t dstlen) const;
-//    size_t hexdigest(void* dst, size_t dstlen) const;
-//    std::string digest() const;
-//    std::string hexdigest() const;
-//
-//private:
-//    sha3_context* ctx;
-//};
-//
-//
-///**
-// *  \brief SHA3-256 hash context.
-// */
-//struct sha3_256_hash
-//{
-//public:
-//    sha3_256_hash();
-//    sha3_256_hash(const void* src, size_t srclen);
-//    sha3_256_hash(const string_view& str);
-//    ~sha3_256_hash();
-//
-//    void update(const void* src, size_t srclen);
-//    void update(const string_view& str);
-//    size_t digest(void* dst, size_t dstlen) const;
-//    size_t hexdigest(void* dst, size_t dstlen) const;
-//    std::string digest() const;
-//    std::string hexdigest() const;
-//
-//private:
-//    sha3_context* ctx;
-//};
-//
-//
-///**
-// *  \brief SHA3-384 hash context.
-// */
-//struct sha3_384_hash
-//{
-//public:
-//    sha3_384_hash();
-//    sha3_384_hash(const void* src, size_t srclen);
-//    sha3_384_hash(const string_view& str);
-//    ~sha3_384_hash();
-//
-//    void update(const void* src, size_t srclen);
-//    void update(const string_view& str);
-//    size_t digest(void* dst, size_t dstlen) const;
-//    size_t hexdigest(void* dst, size_t dstlen) const;
-//    std::string digest() const;
-//    std::string hexdigest() const;
-//
-//private:
-//    sha3_context* ctx;
-//};
-//
-//
-///**
-// *  \brief SHA3-512 hash context.
-// */
-//struct sha3_512_hash
-//{
-//public:
-//    sha3_512_hash();
-//    sha3_512_hash(const void* src, size_t srclen);
-//    sha3_512_hash(const string_view& str);
-//    ~sha3_512_hash();
-//
-//    void update(const void* src, size_t srclen);
-//    void update(const string_view& str);
-//    size_t digest(void* dst, size_t dstlen) const;
-//    size_t hexdigest(void* dst, size_t dstlen) const;
-//    std::string digest() const;
-//    std::string hexdigest() const;
-//
-//private:
-//    sha3_context* ctx;
-//};
+ *  \brief SHA3-224 hash context.
+ */
+struct sha3_224_hash
+{
+public:
+    sha3_224_hash();
+    sha3_224_hash(const void* src, size_t srclen);
+    sha3_224_hash(const string_view& str);
+    ~sha3_224_hash();
+
+    void update(const void* src, size_t srclen);
+    void update(const string_view& str);
+    size_t digest(void* dst, size_t dstlen) const;
+    size_t hexdigest(void* dst, size_t dstlen) const;
+    std::string digest() const;
+    std::string hexdigest() const;
+
+private:
+    sha3_context* ctx;
+};
+
+
+/**
+ *  \brief SHA3-256 hash context.
+ */
+struct sha3_256_hash
+{
+public:
+    sha3_256_hash();
+    sha3_256_hash(const void* src, size_t srclen);
+    sha3_256_hash(const string_view& str);
+    ~sha3_256_hash();
+
+    void update(const void* src, size_t srclen);
+    void update(const string_view& str);
+    size_t digest(void* dst, size_t dstlen) const;
+    size_t hexdigest(void* dst, size_t dstlen) const;
+    std::string digest() const;
+    std::string hexdigest() const;
+
+private:
+    sha3_context* ctx;
+};
+
+
+/**
+ *  \brief SHA3-384 hash context.
+ */
+struct sha3_384_hash
+{
+public:
+    sha3_384_hash();
+    sha3_384_hash(const void* src, size_t srclen);
+    sha3_384_hash(const string_view& str);
+    ~sha3_384_hash();
+
+    void update(const void* src, size_t srclen);
+    void update(const string_view& str);
+    size_t digest(void* dst, size_t dstlen) const;
+    size_t hexdigest(void* dst, size_t dstlen) const;
+    std::string digest() const;
+    std::string hexdigest() const;
+
+private:
+    sha3_context* ctx;
+};
+
+
+/**
+ *  \brief SHA3-512 hash context.
+ */
+struct sha3_512_hash
+{
+public:
+    sha3_512_hash();
+    sha3_512_hash(const void* src, size_t srclen);
+    sha3_512_hash(const string_view& str);
+    ~sha3_512_hash();
+
+    void update(const void* src, size_t srclen);
+    void update(const string_view& str);
+    size_t digest(void* dst, size_t dstlen) const;
+    size_t hexdigest(void* dst, size_t dstlen) const;
+    std::string digest() const;
+    std::string hexdigest() const;
+
+private:
+    sha3_context* ctx;
+};
 
 
 /**
