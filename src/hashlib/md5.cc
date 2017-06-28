@@ -89,7 +89,7 @@ struct md5_context
  * This processes one or more 64-byte data blocks, but does NOT update the bit
  * counters. There are no alignment requirements.
  */
-static const void * body(md5_context* ctx, const void *data, uint32_t size)
+static const void* body(md5_context* ctx, const void* data, uint32_t size)
 {
     const uint8_t* ptr;
     uint32_t a, b, c, d;
