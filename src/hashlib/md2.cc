@@ -94,6 +94,8 @@ static void md2_final(uint8_t* hash, md2_context* ctx)
     md2_transform(ctx, ctx->checksum);
 
     memcpy(hash, ctx->state, MD2_HASH_SIZE);
+
+    memset(ctx, 0, sizeof(*ctx));
 }
 
 
@@ -126,6 +128,7 @@ md2_hash::md2_hash(const string_view& str)
 
 md2_hash::~md2_hash()
 {
+    memset(ctx, 0, sizeof(*ctx));
     delete ctx;
 }
 

@@ -163,6 +163,8 @@ void sha256_final(uint8_t* hash, sha256_context* ctx)
         hash[i + 24] = (ctx->state[6] >> (24 - i * 8)) & 0x000000ff;
         hash[i + 28] = (ctx->state[7] >> (24 - i * 8)) & 0x000000ff;
     }
+
+    memset(ctx, 0, sizeof(*ctx));
 }
 
 // OBJECTS
@@ -194,6 +196,7 @@ sha256_hash::sha256_hash(const string_view& str)
 
 sha256_hash::~sha256_hash()
 {
+    memset(ctx, 0, sizeof(*ctx));
     delete ctx;
 }
 

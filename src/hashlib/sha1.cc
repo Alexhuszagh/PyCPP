@@ -236,18 +236,16 @@ void sha1_final(uint8_t digest[20], sha1_context* ctx)
     c = 0200;
     sha1_update(ctx, &c, 1);
     while ((ctx->count[0] & 504) != 448) {
-    c = 0000;
+        c = 0000;
         sha1_update(ctx, &c, 1);
     }
-    sha1_update(ctx, finalcount, 8);  /* Should cause a sha1_transform() */
+    sha1_update(ctx, finalcount, 8);
     for (i = 0; i < 20; i++) {
-        digest[i] = (uint8_t)
-         ((ctx->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
+        digest[i] = (uint8_t) ((ctx->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
     }
 
-    /* Wipe variables */
-    memset(ctx, '\0', sizeof(*ctx));
-    memset(&finalcount, '\0', sizeof(finalcount));
+    memset(ctx, 0, sizeof(*ctx));
+    memset(&finalcount, 0, sizeof(finalcount));
 }
 
 
@@ -280,6 +278,7 @@ sha1_hash::sha1_hash(const string_view& str)
 
 sha1_hash::~sha1_hash()
 {
+    memset(ctx, 0, sizeof(*ctx));
     delete ctx;
 }
 

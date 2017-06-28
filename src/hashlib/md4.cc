@@ -291,6 +291,7 @@ md4_hash::md4_hash(const string_view& str)
 
 md4_hash::~md4_hash()
 {
+    memset(ctx, 0, sizeof(*ctx));
     delete ctx;
 }
 

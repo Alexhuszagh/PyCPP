@@ -12,6 +12,7 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 11)
 set(CXX_STANDARD TRUE)
 
+option(BUILD_CIPHER "Build cipher library" ON)
 option(BUILD_FILESYSTEM "Build filesystem library" ON)
 option(BUILD_HASHLIB "Build hash library" ON)
 option(BUILD_STATIC "Build static library" ON)
@@ -62,6 +63,12 @@ set(SOURCE_FILES
     src/unicode.cc
     src/url.cc
 )
+
+if(BUILD_CIPHER)
+    list(APPEND SOURCE_FILES
+        src/cipher/aes.cc
+    )
+endif()
 
 if (BUILD_FILESYSTEM)
     list(APPEND SOURCE_FILES
@@ -138,6 +145,10 @@ set(TEST_FILES
     test/url.cc
     test/vector_view.cc
 )
+
+if (BUILD_CIPHER)
+    list(APPEND TEST_FILES test/cipher.cc)
+endif()
 
 if (BUILD_FILESYSTEM)
     list(APPEND TEST_FILES test/filesystem.cc)

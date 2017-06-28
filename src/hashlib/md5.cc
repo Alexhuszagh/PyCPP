@@ -318,6 +318,7 @@ md5_hash::md5_hash(const string_view& str)
 
 md5_hash::~md5_hash()
 {
+    memset(ctx, 0, sizeof(*ctx));
     delete ctx;
 }
 
