@@ -67,9 +67,11 @@ Supported features include:
 - [Hex](/src/hex.h) encoding and decoding.
 - [Wide API streams](/src/fstream.h) for Windows.
 - [string_view](/str/string_view.h) and [vector_view](/src/vector_view.h)
-- [Hash](/src/hashlib.h) functions.
+- [Cryptographic hash](/src/hashlib.h) functions.
 - [Iterator adaptors](/src/iterator.h).
 - [Combinations, permutation](/src/itertools/sampling.h) and [cartesian products](/src/itertools/product.h).
+
+**WARNING:** fun++ includes cryptographic hashes and ciphers, which are tested via fuzzing. The buffer containing these objects is reset upon object destruction, to minimize side-channel attacks. However, they should be assumed to be insecure, until audited.
 
 ## Building
 

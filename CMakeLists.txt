@@ -47,6 +47,7 @@ include_directories(src)
 set(SOURCE_FILES
     src/random/pseudorandom.cc
     src/random/sysrandom.cc
+    src/any.cc
     src/base16.cc
     src/base32.cc
     src/base64.cc
@@ -116,6 +117,7 @@ endif()
 
 set(TEST_FILES
     test/main.cc
+    test/any.cc
     test/architecture.cc
     test/base16.cc
     test/base32.cc

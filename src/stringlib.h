@@ -38,7 +38,12 @@ extern const string_t whitespace;
 /**
  *  \brief Split characters by delimiters into dst.
  */
-string_list_t split(const std::string& str, const std::string& sep);
+string_list_t split(const std::string& str, const std::string& sep, size_t maxsplit = SIZE_MAX);
+
+/**
+ *  \brief Same as split, except scanning in reverse order.
+ */
+string_list_t rsplit(const std::string& str, const std::string& sep, size_t maxsplit = SIZE_MAX);
 
 /**
  *  \brief Capitalize first letter of word.
@@ -113,7 +118,8 @@ struct string_wrapper: string_view
     //void upper();
 
     // TOKENS
-    std::vector<string_wrapper> split(const string_wrapper& sep) const;
+    std::vector<string_wrapper> split(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
+    std::vector<string_wrapper> rsplit(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
 
     // SEARCH
     size_t find(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;

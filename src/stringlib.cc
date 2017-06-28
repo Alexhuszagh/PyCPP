@@ -26,11 +26,11 @@ const string_t printable = digits + letters + punctuation + whitespace;
 
 
 template <typename Iter, typename IsSep, typename Store>
-static size_t split_impl(Iter first, Iter last, IsSep issep, Store store)
+static size_t split_impl(Iter first, Iter last, size_t maxsplit, IsSep issep, Store store)
 {
     size_t length = 0;
     auto interval = first;
-    for (; first != last && interval != last; ++interval) {
+    for (; first != last && interval != last && maxsplit; ++interval, --maxsplit) {
         if (issep(*interval)) {
             store(first, interval);
             ++length;
@@ -39,11 +39,34 @@ static size_t split_impl(Iter first, Iter last, IsSep issep, Store store)
     }
 
     if (first != interval) {
-        store(first, interval);
+        store(first, last);
         ++length;
     }
 
     return length;
+}
+
+
+template <typename Iter, typename IsSep, typename Store>
+static size_t rsplit_impl(Iter first, Iter last, size_t maxsplit, IsSep issep, Store store)
+{
+    // TODO: here...
+//    size_t length = 0;
+//    auto interval = first;
+//    for (; first != last && interval != last && maxsplit; ++interval, --maxsplit) {
+//        if (issep(*interval)) {
+//            store(first, interval);
+//            ++length;
+//            first = interval + 1;
+//        }
+//    }
+//
+//    if (first != interval) {
+//        store(first, last);
+//        ++length;
+//    }
+//
+//    return length;
 }
 
 
@@ -148,7 +171,7 @@ static size_t count_impl(const string_view& str, const string_view& sub, size_t 
 // ---------
 
 
-string_list_t split(const string_t& str, const string_t& sep)
+string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit)
 {
     typedef typename string_t::const_iterator iterator;
     string_list_t data;
@@ -162,7 +185,27 @@ string_list_t split(const string_t& str, const string_t& sep)
         return data.emplace_back(string_t(first, second));
     };
 
-    split_impl(str.begin(), str.end(), issep, store);
+    split_impl(str.begin(), str.end(), maxsplit, issep, store);
+
+    return data;
+}
+
+
+string_list_t rsplit(const string_t& str, const string_t& sep, size_t maxsplit)
+{
+    typedef typename string_t::const_iterator iterator;
+    string_list_t data;
+
+    auto issep = [&](char c)
+    {
+        return sep.find(c) != sep.npos;
+    };
+    auto store = [&](iterator first, iterator second)
+    {
+        return data.emplace_back(string_t(first, second));
+    };
+
+    rsplit_impl(str.begin(), str.end(), maxsplit, issep, store);
 
     return data;
 }
@@ -242,7 +285,7 @@ const string_view& string_wrapper::view() const
 }
 
 
-std::vector<string_wrapper> string_wrapper::split(const string_wrapper& sep) const
+std::vector<string_wrapper> string_wrapper::split(const string_wrapper& sep, size_t maxsplit) const
 {
     typedef typename string_wrapper::const_iterator iterator;
     std::vector<string_wrapper> data;
@@ -256,7 +299,27 @@ std::vector<string_wrapper> string_wrapper::split(const string_wrapper& sep) con
         return data.emplace_back(string_wrapper(first, second));
     };
 
-    split_impl(begin(), end(), issep, store);
+    split_impl(begin(), end(), maxsplit, issep, store);
+
+    return data;
+}
+
+
+std::vector<string_wrapper> string_wrapper::rsplit(const string_wrapper& sep, size_t maxsplit) const
+{
+    typedef typename string_wrapper::const_iterator iterator;
+    std::vector<string_wrapper> data;
+
+    auto issep = [&](char c)
+    {
+        return sep.view().find(c) != sep.npos;
+    };
+    auto store = [&](iterator first, iterator second)
+    {
+        return data.emplace_back(string_wrapper(first, second));
+    };
+
+    rsplit_impl(begin(), end(), maxsplit, issep, store);
 
     return data;
 }
