@@ -203,3 +203,59 @@ TEST(endian, bswap64)
     EXPECT_EQ(bswap64(0x100000000000000ULL), 1);
     EXPECT_EQ(bswap64(1), 0x100000000000000ULL);
 }
+
+
+TEST(endian, memcpy_bswapnn)
+{
+    uint16_t* h = new uint16_t[1];
+    uint16_t* s = new uint16_t[1];
+
+    h[0] = 0x100ULL;
+    memcpy_bswap(s, h, 2, 2);
+    EXPECT_EQ(s[0], 1);
+
+    delete[] h;
+    delete[] s;
+}
+
+
+TEST(endian, memcpy_bswap16)
+{
+    uint16_t* h = new uint16_t[1];
+    uint16_t* s = new uint16_t[1];
+
+    h[0] = 0x100ULL;
+    memcpy_bswap16(s, h, 2);
+    EXPECT_EQ(s[0], 1);
+
+    delete[] h;
+    delete[] s;
+}
+
+
+TEST(endian, memcpy_bswap32)
+{
+    uint32_t* h = new uint32_t[1];
+    uint32_t* s = new uint32_t[1];
+
+    h[0] = 0x1000000ULL;
+    memcpy_bswap32(s, h, 4);
+    EXPECT_EQ(s[0], 1);
+
+    delete[] h;
+    delete[] s;
+}
+
+
+TEST(endian, memcpy_bswap64)
+{
+    uint64_t* h = new uint64_t[1];
+    uint64_t* s = new uint64_t[1];
+
+    h[0] = 0x100000000000000ULL;
+    memcpy_bswap64(s, h, 8);
+    EXPECT_EQ(s[0], 1);
+
+    delete[] h;
+    delete[] s;
+}

@@ -52,3 +52,9 @@
 #       error Unknown system architecture.
 #   endif
 #endif
+
+// ALIGNMENT
+// ---------
+
+#define IS_ALIGNED_32(p) (0 == (3 & ((const char*)(p) - (const char*)0)))
+#define IS_ALIGNED_64(p) (0 == (7 & ((const char*)(p) - (const char*)0)))

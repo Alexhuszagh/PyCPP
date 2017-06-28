@@ -105,6 +105,7 @@ bool any::operator==(const any& other) const
         case 1:
             return false;
         case 2:
+        default:
             return true;
     }
 }

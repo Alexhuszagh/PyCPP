@@ -161,6 +161,8 @@
 // FUNCTIONS
 // ---------
 
+#include <stdlib.h>
+
 /**
  *  \brief Swap bytes in-place of type sizeof(T) == width.
  */
@@ -171,6 +173,26 @@ void bswap(void* buf, int width);
  */
 void bswap(void* dst, void* src, int width);
 
+/**
+ *  \brief memcpy() with byteswap for each 16-bit type.
+ */
+void memcpy_bswap16(void* dst, void* src, size_t bytes);
+
+/**
+ *  \brief memcpy() with byteswap for each 32-bit type.
+ */
+void memcpy_bswap32(void* dst, void* src, size_t bytes);
+
+/**
+ *  \brief memcpy() with byteswap for each 64-bit type.
+ */
+void memcpy_bswap64(void* dst, void* src, size_t bytes);
+
+/**
+ *  \brief memcpy() with byteswap for type sizeof(T) == width.
+ */
+void memcpy_bswap(void* dst, void* src, size_t bytes, int width);
+
 
 #if BYTE_ORDER == LITTLE_ENDIAN
 
@@ -179,12 +201,52 @@ void bswap(void* dst, void* src, int width);
 #   define betoh(buf, i) bswap(buf, i)
 #   define letoh(buf, i)
 
+#   define memcpy_htobe16(dst, src, n) memcpy_bswap16(dst, src, n)
+#   define memcpy_htole16(dst, src, n) memcpy(dst, src, n)
+#   define memcpy_be16toh(dst, src, n) memcpy_bswap16(dst, src, n)
+#   define memcpy_le16toh(dst, src, n) memcpy(dst, src, n)
+
+#   define memcpy_htobe32(dst, src, n) memcpy_bswap32(dst, src, n)
+#   define memcpy_htole32(dst, src, n) memcpy(dst, src, n)
+#   define memcpy_be32toh(dst, src, n) memcpy_bswap32(dst, src, n)
+#   define memcpy_le32toh(dst, src, n) memcpy(dst, src, n)
+
+#   define memcpy_htobe64(dst, src, n) memcpy_bswap64(dst, src, n)
+#   define memcpy_htole64(dst, src, n) memcpy(dst, src, n)
+#   define memcpy_be64toh(dst, src, n) memcpy_bswap64(dst, src, n)
+#   define memcpy_le64toh(dst, src, n) memcpy(dst, src, n)
+
+#   define memcpy_htobe(dst, src, n, i) memcpy_bswap(dst, src, n, i)
+#   define memcpy_htole(dst, src, n, i) memcpy(dst, src, n)
+#   define memcpy_betoh(dst, src, n, i) memcpy_bswap(dst, src, n, i)
+#   define memcpy_letoh(dst, src, n, i) memcpy(dst, src, n)
+
 #elif BYTE_ORDER == BIG_ENDIAN
 
 #   define htobe(buf, i)
 #   define htole(buf, i) bswap(buf, i)
 #   define betoh(buf, i)
 #   define letoh(buf, i) bswap(buf, i)
+
+#   define memcpy_htobe16(dst, src, n) memcpy(dst, src, n)
+#   define memcpy_htole16(dst, src, n) memcpy_bswap16(dst, src, n)
+#   define memcpy_be16toh(dst, src, n) memcpy(dst, src, n)
+#   define memcpy_le16toh(dst, src, n) memcpy_bswap16(dst, src, n)
+
+#   define memcpy_htobe32(dst, src, n) memcpy(dst, src, n)
+#   define memcpy_htole32(dst, src, n) memcpy_bswap32(dst, src, n)
+#   define memcpy_be32toh(dst, src, n) memcpy(dst, src, n)
+#   define memcpy_le32toh(dst, src, n) memcpy_bswap32(dst, src, n)
+
+#   define memcpy_htobe64(dst, src, n) memcpy(dst, src, n)
+#   define memcpy_htole64(dst, src, n) memcpy_bswap64(dst, src, n)
+#   define memcpy_be64toh(dst, src, n) memcpy(dst, src, n)
+#   define memcpy_le64toh(dst, src, n) memcpy_bswap64(dst, src, n)
+
+#   define memcpy_htobe(dst, src, n, i) memcpy(dst, src, n)
+#   define memcpy_htole(dst, src, n, i) memcpy_bswap(dst, src, n, i)
+#   define memcpy_betoh(dst, src, n, i) memcpy(dst, src, n)
+#   define memcpy_letoh(dst, src, n, i) memcpy_bswap(dst, src, n, i)
 
 #else
 

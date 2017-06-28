@@ -1,10 +1,12 @@
-//  :copyright: (c) 2012-2015 Brad Conte.
+//  :copyright: (c) 2011-2017 RHash.
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /*
- *  [reference] https://github.com/B-Con/crypto-algorithms
+ *  [reference] https://github.com/rhash/RHash
  */
 
+#include "architecture.h"
+#include "byteorder.h"
 #include "hashlib.h"
 #include "hex.h"
 #include "processor.h"
@@ -15,7 +17,9 @@
 // CONSTANTS
 // ---------
 
+static constexpr size_t SHA224_HASH_SIZE = 28;
 static constexpr size_t SHA256_HASH_SIZE = 32;
+static constexpr size_t SHA256_BLOCK_SIZE = 64;
 static constexpr uint32_t ENCODE[] = {0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2};
 
 // OBJECTS
@@ -23,185 +27,244 @@ static constexpr uint32_t ENCODE[] = {0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba
 
 /** \brief SHA256 context.
  */
-struct sha256_context
+struct sha2_256_context
 {
-    uint32_t datalen;
-    uint64_t bitlen;
-    uint8_t data[64];
-    uint32_t state[8];
+    uint64_t length;
+    uint32_t digest_length;
+    uint32_t message[16];
+    uint32_t hash[8];
 };
 
 // FUNCTIONS
 // ---------
 
+#define Ch(x,y,z)  ((z) ^ ((x) & ((y) ^ (z))))
+#define Maj(x,y,z) (((x) & (y)) ^ ((z) & ((x) ^ (y))))
 
-#define ROTLEFT(a,b) (((a) << (b)) | ((a) >> (32-(b))))
-#define ROTRIGHT(a,b) (((a) >> (b)) | ((a) << (32-(b))))
+#define ROTR32(dword, n) ((dword) >> (n) ^ ((dword) << (32 - (n))))
+#define Sigma0(x) (ROTR32((x), 2) ^ ROTR32((x), 13) ^ ROTR32((x), 22))
+#define Sigma1(x) (ROTR32((x), 6) ^ ROTR32((x), 11) ^ ROTR32((x), 25))
+#define sigma0(x) (ROTR32((x), 7) ^ ROTR32((x), 18) ^ ((x) >>  3))
+#define sigma1(x) (ROTR32((x),17) ^ ROTR32((x), 19) ^ ((x) >> 10))
 
-#define CH(x,y,z) (((x) & (y)) ^ (~(x) & (z)))
-#define MAJ(x,y,z) (((x) & (y)) ^ ((x) & (z)) ^ ((y) & (z)))
-#define EP0(x) (ROTRIGHT(x,2) ^ ROTRIGHT(x,13) ^ ROTRIGHT(x,22))
-#define EP1(x) (ROTRIGHT(x,6) ^ ROTRIGHT(x,11) ^ ROTRIGHT(x,25))
-#define SIG0(x) (ROTRIGHT(x,7) ^ ROTRIGHT(x,18) ^ ((x) >> 3))
-#define SIG1(x) (ROTRIGHT(x,17) ^ ROTRIGHT(x,19) ^ ((x) >> 10))
+#define RECALCULATE_W(W,n) (W[n] += \
+    (sigma1(W[(n - 2) & 15]) + W[(n - 7) & 15] + sigma0(W[(n - 15) & 15])))
+
+#define ROUND(a,b,c,d,e,f,g,h,k,data) { \
+    uint32_t T1 = h + Sigma1(e) + Ch(e,f,g) + k + (data); \
+    d += T1, h = T1 + Sigma0(a) + Maj(a,b,c); }
+
+#define ROUND_1_16(a,b,c,d,e,f,g,h,n) \
+    ROUND(a,b,c,d,e,f,g,h, ENCODE[n], W[n] = be32toh(block[n]))
+
+#define ROUND_17_64(a,b,c,d,e,f,g,h,n) \
+    ROUND(a,b,c,d,e,f,g,h, k[n], RECALCULATE_W(W, n))
 
 
-void sha256_transform(sha256_context* ctx, const uint8_t* data)
+/**
+ *  The core transformation. Process a 512-bit block.
+ */
+static void sha256_process_block(uint32_t* hash, uint32_t* block)
 {
-    uint32_t a, b, c, d, e, f, g, h, i, j, t1, t2, m[64];
+    uint32_t A, B, C, D, E, F, G, H;
+    uint32_t W[16];
+    const uint32_t *k;
+    int i;
 
-    for (i = 0, j = 0; i < 16; ++i, j += 4) {
-        m[i] = (data[j] << 24) | (data[j + 1] << 16) | (data[j + 2] << 8) | (data[j + 3]);
+    A = hash[0], B = hash[1], C = hash[2], D = hash[3];
+    E = hash[4], F = hash[5], G = hash[6], H = hash[7];
+
+    /* Compute SHA using alternate Method: FIPS 180-3 6.1.3 */
+    ROUND_1_16(A, B, C, D, E, F, G, H, 0);
+    ROUND_1_16(H, A, B, C, D, E, F, G, 1);
+    ROUND_1_16(G, H, A, B, C, D, E, F, 2);
+    ROUND_1_16(F, G, H, A, B, C, D, E, 3);
+    ROUND_1_16(E, F, G, H, A, B, C, D, 4);
+    ROUND_1_16(D, E, F, G, H, A, B, C, 5);
+    ROUND_1_16(C, D, E, F, G, H, A, B, 6);
+    ROUND_1_16(B, C, D, E, F, G, H, A, 7);
+    ROUND_1_16(A, B, C, D, E, F, G, H, 8);
+    ROUND_1_16(H, A, B, C, D, E, F, G, 9);
+    ROUND_1_16(G, H, A, B, C, D, E, F, 10);
+    ROUND_1_16(F, G, H, A, B, C, D, E, 11);
+    ROUND_1_16(E, F, G, H, A, B, C, D, 12);
+    ROUND_1_16(D, E, F, G, H, A, B, C, 13);
+    ROUND_1_16(C, D, E, F, G, H, A, B, 14);
+    ROUND_1_16(B, C, D, E, F, G, H, A, 15);
+
+    for (i = 16, k = &ENCODE[16]; i < 64; i += 16, k += 16) {
+        ROUND_17_64(A, B, C, D, E, F, G, H,  0);
+        ROUND_17_64(H, A, B, C, D, E, F, G,  1);
+        ROUND_17_64(G, H, A, B, C, D, E, F,  2);
+        ROUND_17_64(F, G, H, A, B, C, D, E,  3);
+        ROUND_17_64(E, F, G, H, A, B, C, D,  4);
+        ROUND_17_64(D, E, F, G, H, A, B, C,  5);
+        ROUND_17_64(C, D, E, F, G, H, A, B,  6);
+        ROUND_17_64(B, C, D, E, F, G, H, A,  7);
+        ROUND_17_64(A, B, C, D, E, F, G, H,  8);
+        ROUND_17_64(H, A, B, C, D, E, F, G,  9);
+        ROUND_17_64(G, H, A, B, C, D, E, F, 10);
+        ROUND_17_64(F, G, H, A, B, C, D, E, 11);
+        ROUND_17_64(E, F, G, H, A, B, C, D, 12);
+        ROUND_17_64(D, E, F, G, H, A, B, C, 13);
+        ROUND_17_64(C, D, E, F, G, H, A, B, 14);
+        ROUND_17_64(B, C, D, E, F, G, H, A, 15);
     }
-    for ( ; i < 64; ++i) {
-        m[i] = SIG1(m[i - 2]) + m[i - 7] + SIG0(m[i - 15]) + m[i - 16];
-    }
 
-    a = ctx->state[0];
-    b = ctx->state[1];
-    c = ctx->state[2];
-    d = ctx->state[3];
-    e = ctx->state[4];
-    f = ctx->state[5];
-    g = ctx->state[6];
-    h = ctx->state[7];
-
-    for (i = 0; i < 64; ++i) {
-        t1 = h + EP1(e) + CH(e,f,g) + ENCODE[i] + m[i];
-        t2 = EP0(a) + MAJ(a,b,c);
-        h = g;
-        g = f;
-        f = e;
-        e = d + t1;
-        d = c;
-        c = b;
-        b = a;
-        a = t1 + t2;
-    }
-
-    ctx->state[0] += a;
-    ctx->state[1] += b;
-    ctx->state[2] += c;
-    ctx->state[3] += d;
-    ctx->state[4] += e;
-    ctx->state[5] += f;
-    ctx->state[6] += g;
-    ctx->state[7] += h;
+    hash[0] += A, hash[1] += B, hash[2] += C, hash[3] += D;
+    hash[4] += E, hash[5] += F, hash[6] += G, hash[7] += H;
 }
 
 
-void sha256_init(sha256_context *ctx)
+static void sha224_init(sha2_256_context* ctx)
 {
-    ctx->datalen = 0;
-    ctx->bitlen = 0;
-    ctx->state[0] = 0x6a09e667;
-    ctx->state[1] = 0xbb67ae85;
-    ctx->state[2] = 0x3c6ef372;
-    ctx->state[3] = 0xa54ff53a;
-    ctx->state[4] = 0x510e527f;
-    ctx->state[5] = 0x9b05688c;
-    ctx->state[6] = 0x1f83d9ab;
-    ctx->state[7] = 0x5be0cd19;
+    /* Initial values from FIPS 180-3. These words were obtained by taking
+     * bits from 33th to 64th of the fractional parts of the square
+     * roots of ninth through sixteenth prime numbers. */
+    static const unsigned SHA224_H0[8] = {
+        0xc1059ed8, 0x367cd507, 0x3070dd17, 0xf70e5939,
+        0xffc00b31, 0x68581511, 0x64f98fa7, 0xbefa4fa4
+    };
+
+    ctx->length = 0;
+    ctx->digest_length = SHA224_HASH_SIZE;
+
+    memcpy(ctx->hash, SHA224_H0, sizeof(ctx->hash));
 }
 
 
-void sha256_update(sha256_context* ctx, const uint8_t* data, size_t len)
+static void sha256_init(sha2_256_context* ctx)
 {
-    for (uint32_t i = 0; i < len; ++i) {
-        ctx->data[ctx->datalen] = data[i];
-        ctx->datalen++;
-        if (ctx->datalen == 64) {
-            sha256_transform(ctx, ctx->data);
-            ctx->bitlen += 512;
-            ctx->datalen = 0;
+    /* Initial values. These words were obtained by taking the first 32
+     * bits of the fractional parts of the square roots of the first
+     * eight prime numbers. */
+    static const uint32_t SHA256_H0[8] = {
+        0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
+        0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19
+    };
+
+    ctx->length = 0;
+    ctx->digest_length = SHA256_HASH_SIZE;
+
+    /* initialize algorithm state */
+    memcpy(ctx->hash, SHA256_H0, sizeof(ctx->hash));
+}
+
+
+/**
+ *  Calculate message hash.
+ *  Can be called repeatedly with chunks of the message to be hashed.
+ */
+static void sha256_update(sha2_256_context *ctx, const uint8_t *msg, size_t size)
+{
+    size_t index = (size_t)ctx->length & 63;
+    ctx->length += size;
+
+    // fill partial block
+    if (index) {
+        size_t left = SHA256_BLOCK_SIZE - index;
+        memcpy((char*)ctx->message + index, msg, (size < left ? size : left));
+        if (size < left){
+            return;
         }
+
+        // process partial block
+        sha256_process_block(ctx->hash, (uint32_t*)ctx->message);
+        msg  += left;
+        size -= left;
+    }
+    while (size >= SHA256_BLOCK_SIZE) {
+        uint32_t* aligned_message_block;
+        if (IS_ALIGNED_32(msg)) {
+            /* the most common case is processing of an already aligned message
+            without copying it */
+            aligned_message_block = (uint32_t*)msg;
+        } else {
+            memcpy(ctx->message, msg, SHA256_BLOCK_SIZE);
+            aligned_message_block = (uint32_t*)ctx->message;
+        }
+
+        sha256_process_block(ctx->hash, aligned_message_block);
+        msg  += SHA256_BLOCK_SIZE;
+        size -= SHA256_BLOCK_SIZE;
+    }
+    if (size) {
+        memcpy(ctx->message, msg, size); /* save leftovers */
     }
 }
 
 
-void sha256_final(uint8_t* hash, sha256_context* ctx)
+/**
+ *  Store calculated hash into the given array.
+ */
+static void sha256_final(uint8_t* result, sha2_256_context *ctx)
 {
-    uint32_t i = ctx->datalen;
+    size_t index = ((uint32_t)ctx->length & 63) >> 2;
+    uint32_t shift = ((uint32_t)ctx->length & 3) * 8;
 
-    // Pad whatever data is left in the buffer.
-    if (ctx->datalen < 56) {
-        ctx->data[i++] = 0x80;
-        while (i < 56) {
-            ctx->data[i++] = 0x00;
+    /* pad message and run for last block */
+
+    /* append the byte 0x80 to the message */
+    ctx->message[index]   &= le32toh(~(0xFFFFFFFF << shift));
+    ctx->message[index++] ^= le32toh(0x80 << shift);
+
+    /* if no room left in the message to store 64-bit message length */
+    if (index > 14) {
+        /* then fill the rest with zeros and process it */
+        while (index < 16) {
+            ctx->message[index++] = 0;
         }
+        sha256_process_block(ctx->hash, ctx->message);
+        index = 0;
     }
-    else {
-        ctx->data[i++] = 0x80;
-        while (i < 64) {
-            ctx->data[i++] = 0x00;
-        }
-        sha256_transform(ctx, ctx->data);
-        memset(ctx->data, 0, 56);
+    while (index < 14) {
+        ctx->message[index++] = 0;
     }
+    ctx->message[14] = be32toh( (unsigned)(ctx->length >> 29) );
+    ctx->message[15] = be32toh( (unsigned)(ctx->length << 3) );
+    sha256_process_block(ctx->hash, ctx->message);
 
-    // Append to the padding the total message's length in bits and transform.
-    ctx->bitlen += ctx->datalen * 8;
-    ctx->data[63] = ctx->bitlen;
-    ctx->data[62] = ctx->bitlen >> 8;
-    ctx->data[61] = ctx->bitlen >> 16;
-    ctx->data[60] = ctx->bitlen >> 24;
-    ctx->data[59] = ctx->bitlen >> 32;
-    ctx->data[58] = ctx->bitlen >> 40;
-    ctx->data[57] = ctx->bitlen >> 48;
-    ctx->data[56] = ctx->bitlen >> 56;
-    sha256_transform(ctx, ctx->data);
-
-    // Since this implementation uses little endian byte ordering and SHA uses big endian,
-    // reverse all the bytes when copying the final state to the output hash.
-    for (i = 0; i < 4; ++i) {
-        hash[i]      = (ctx->state[0] >> (24 - i * 8)) & 0x000000ff;
-        hash[i + 4]  = (ctx->state[1] >> (24 - i * 8)) & 0x000000ff;
-        hash[i + 8]  = (ctx->state[2] >> (24 - i * 8)) & 0x000000ff;
-        hash[i + 12] = (ctx->state[3] >> (24 - i * 8)) & 0x000000ff;
-        hash[i + 16] = (ctx->state[4] >> (24 - i * 8)) & 0x000000ff;
-        hash[i + 20] = (ctx->state[5] >> (24 - i * 8)) & 0x000000ff;
-        hash[i + 24] = (ctx->state[6] >> (24 - i * 8)) & 0x000000ff;
-        hash[i + 28] = (ctx->state[7] >> (24 - i * 8)) & 0x000000ff;
+    if (result) {
+        memcpy_be32toh(result, ctx->hash, ctx->digest_length);
     }
-
-    memset(ctx, 0, sizeof(*ctx));
 }
+
 
 // OBJECTS
 // -------
 
 
-sha256_hash::sha256_hash()
+sha2_224_hash::sha2_224_hash()
 {
-    ctx = new sha256_context;
-    sha256_init(ctx);
+    ctx = new sha2_256_context;
+    sha224_init(ctx);
 }
 
 
-sha256_hash::sha256_hash(const void* src, size_t srclen)
+sha2_224_hash::sha2_224_hash(const void* src, size_t srclen)
 {
-    ctx = new sha256_context;
-    sha256_init(ctx);
+    ctx = new sha2_256_context;
+    sha224_init(ctx);
     update(src, srclen);
 }
 
 
-sha256_hash::sha256_hash(const string_view& str)
+sha2_224_hash::sha2_224_hash(const string_view& str)
 {
-    ctx = new sha256_context;
-    sha256_init(ctx);
+    ctx = new sha2_256_context;
+    sha224_init(ctx);
     update(str);
 }
 
 
-sha256_hash::~sha256_hash()
+sha2_224_hash::~sha2_224_hash()
 {
     memset(ctx, 0, sizeof(*ctx));
     delete ctx;
 }
 
 
-void sha256_hash::update(const void* src, size_t srclen)
+void sha2_224_hash::update(const void* src, size_t srclen)
 {
     long length = srclen;
     const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
@@ -215,25 +278,116 @@ void sha256_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha256_hash::update(const string_view& str)
+void sha2_224_hash::update(const string_view& str)
 {
     update(str.data(), str.size());
 }
 
 
-size_t sha256_hash::digest(void* dst, size_t dstlen) const
+size_t sha2_224_hash::digest(void* dst, size_t dstlen) const
+{
+    if (dstlen < SHA224_HASH_SIZE) {
+        throw std::runtime_error("dstlen not large enough to store SHA224 digest.");
+    }
+
+    sha2_256_context copy = *ctx;
+    sha256_final(reinterpret_cast<uint8_t*>(dst), &copy);
+    return SHA224_HASH_SIZE;
+}
+
+
+size_t sha2_224_hash::hexdigest(void* dst, size_t dstlen) const
+{
+    if (dstlen < 2 * SHA224_HASH_SIZE) {
+        throw std::runtime_error("dstlen not large enough to store SHA224 hex digest.");
+    }
+
+    int8_t* hash = new int8_t[SHA224_HASH_SIZE];
+    digest(hash, SHA224_HASH_SIZE);
+    return hex_i8(hash, SHA224_HASH_SIZE, dst, dstlen);
+}
+
+
+std::string sha2_224_hash::digest() const
+{
+    char* hash = new char[SHA224_HASH_SIZE];
+    digest(hash, SHA224_HASH_SIZE);
+
+    std::string output(hash, SHA224_HASH_SIZE);
+    delete[] hash;
+    return output;
+}
+
+
+std::string sha2_224_hash::hexdigest() const
+{
+    return hex_i8(digest());
+}
+
+
+sha2_256_hash::sha2_256_hash()
+{
+    ctx = new sha2_256_context;
+    sha256_init(ctx);
+}
+
+
+sha2_256_hash::sha2_256_hash(const void* src, size_t srclen)
+{
+    ctx = new sha2_256_context;
+    sha256_init(ctx);
+    update(src, srclen);
+}
+
+
+sha2_256_hash::sha2_256_hash(const string_view& str)
+{
+    ctx = new sha2_256_context;
+    sha256_init(ctx);
+    update(str);
+}
+
+
+sha2_256_hash::~sha2_256_hash()
+{
+    memset(ctx, 0, sizeof(*ctx));
+    delete ctx;
+}
+
+
+void sha2_256_hash::update(const void* src, size_t srclen)
+{
+    long length = srclen;
+    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
+
+    while (length > 0) {
+        long shift = length > 512 ? 512 : length;
+        sha256_update(ctx, first, shift);
+        length -= shift;
+        first += shift;
+    }
+}
+
+
+void sha2_256_hash::update(const string_view& str)
+{
+    update(str.data(), str.size());
+}
+
+
+size_t sha2_256_hash::digest(void* dst, size_t dstlen) const
 {
     if (dstlen < SHA256_HASH_SIZE) {
         throw std::runtime_error("dstlen not large enough to store SHA256 digest.");
     }
 
-    sha256_context copy = *ctx;
+    sha2_256_context copy = *ctx;
     sha256_final(reinterpret_cast<uint8_t*>(dst), &copy);
     return SHA256_HASH_SIZE;
 }
 
 
-size_t sha256_hash::hexdigest(void* dst, size_t dstlen) const
+size_t sha2_256_hash::hexdigest(void* dst, size_t dstlen) const
 {
     if (dstlen < 2 * SHA256_HASH_SIZE) {
         throw std::runtime_error("dstlen not large enough to store SHA256 hex digest.");
@@ -245,7 +399,7 @@ size_t sha256_hash::hexdigest(void* dst, size_t dstlen) const
 }
 
 
-std::string sha256_hash::digest() const
+std::string sha2_256_hash::digest() const
 {
     char* hash = new char[SHA256_HASH_SIZE];
     digest(hash, SHA256_HASH_SIZE);
@@ -256,7 +410,7 @@ std::string sha256_hash::digest() const
 }
 
 
-std::string sha256_hash::hexdigest() const
+std::string sha2_256_hash::hexdigest() const
 {
     return hex_i8(digest());
 }

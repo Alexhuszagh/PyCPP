@@ -176,7 +176,7 @@ void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 
     /* Wipe variables */
     a = b = c = d = e = 0;
-    memset(block, '\0', sizeof(block));
+    memset(block, 0, sizeof(block));
 }
 
 

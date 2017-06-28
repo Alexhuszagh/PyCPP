@@ -5,6 +5,7 @@
 
 #include <stdint.h>
 #include <string.h>
+#include <stdexcept>
 
 // HELPERS
 // -------
@@ -44,6 +45,72 @@ void bswap(void* dst, void* src, int width)
         memcpy(dst, src, width);
     }
     bswap(dst, width);
+}
+
+
+void memcpy_bswap16(void* dst, void* src, size_t bytes)
+{
+    // bounds check
+    if (bytes % 2) {
+        // not an interval of 2-bytes
+        throw std::runtime_error("Trailing data for memcpy_bswap16.");
+    }
+
+    // copy bytes
+    uint16_t* dst_ = reinterpret_cast<uint16_t*>(dst);
+    uint16_t* src_ = reinterpret_cast<uint16_t*>(src);
+    for (size_t i = 0; i < bytes / 2; ++i) {
+        dst_[i] = bswap16(src_[i]);
+    }
+}
+
+
+void memcpy_bswap32(void* dst, void* src, size_t bytes)
+{
+    // bounds check
+    if (bytes % 4) {
+        // not an interval of 4-bytes
+        throw std::runtime_error("Trailing data for memcpy_bswap32.");
+    }
+
+    // copy bytes
+    uint32_t* dst_ = reinterpret_cast<uint32_t*>(dst);
+    uint32_t* src_ = reinterpret_cast<uint32_t*>(src);
+    for (size_t i = 0; i < bytes / 4; ++i) {
+        dst_[i] = bswap32(src_[i]);
+    }
+}
+
+
+void memcpy_bswap64(void* dst, void* src, size_t bytes)
+{
+    // bounds check
+    if (bytes % 8) {
+        // not an interval of 8-bytes
+        throw std::runtime_error("Trailing data for memcpy_bswap64.");
+    }
+
+    // copy bytes
+    uint64_t* dst_ = reinterpret_cast<uint64_t*>(dst);
+    uint64_t* src_ = reinterpret_cast<uint64_t*>(src);
+    for (size_t i = 0; i < bytes / 8; ++i) {
+        dst_[i] = bswap64(src_[i]);
+    }
+}
+
+
+void memcpy_bswap(void* dst, void* src, size_t bytes, int width)
+{
+    // bounds check
+    if (bytes % width) {
+        // not an interval of width-bytes
+        throw std::runtime_error("Trailing data for memcpy_bswap.");
+    }
+
+    // copy bytes
+    for (size_t i = 0; i < bytes; i += width) {
+        bswap(dst, src, width);
+    }
 }
 
 

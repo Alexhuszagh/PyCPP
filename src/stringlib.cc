@@ -67,6 +67,8 @@ static size_t rsplit_impl(Iter first, Iter last, size_t maxsplit, IsSep issep, S
 //    }
 //
 //    return length;
+
+    return 0;
 }
 
 
