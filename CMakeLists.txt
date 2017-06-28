@@ -85,6 +85,7 @@ endif()
 if (BUILD_HASHLIB)
     list(APPEND SOURCE_FILES
         src/hashlib/crc32.cc
+        src/hashlib/hash.cc
         src/hashlib/md2.cc
         src/hashlib/md4.cc
         src/hashlib/md5.cc
