@@ -12,6 +12,24 @@
 // FUNCTIONS
 // ---------
 
+// CHARACTERS
+
+/** \brief Convert ASCII character to lower-case.
+ */
+uint8_t ascii_tolower(uint8_t c);
+
+/** \brief Convert ASCII character to upper-case.
+ */
+uint8_t ascii_toupper(uint8_t c);
+
+/** \brief Convert UTF32 character to lower-case.
+ */
+uint32_t utf32_tolower(uint32_t c);
+
+/** \brief Convert UTF32 character to upper-case.
+ */
+uint32_t utf32_toupper(uint32_t c);
+
 // ASCII
 
 /** \brief Convert ASCII string to lower-case. Returns number of bytes converted.

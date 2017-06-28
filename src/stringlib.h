@@ -48,7 +48,7 @@ std::string capitalize(const std::string& str);
 /**
  *  \brief Convert tabs to spaces, using the tabsize.
  */
-std::string expandtabs(const std::string& str, size_t tabsize = 8);
+//std::string expandtabs(const std::string& str, size_t tabsize = 8);
 
 /**
  *  \brief Find in substring in string.
@@ -58,7 +58,6 @@ std::string expandtabs(const std::string& str, size_t tabsize = 8);
  *  \return             Position of substr, or -1 on failure.
  */
 size_t find(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
-
 
 // OBJECTS
 // -------
@@ -70,4 +69,12 @@ struct string_wrapper: string_view
 {
     using string_view::string_view;
 
+    // BASE
+    string_view& view();
+    const string_view& view() const;
+
+    // DATA
+    std::vector<string_wrapper> split(const string_wrapper& sep) const;
+    void capitalize();
+    size_t find(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
 };

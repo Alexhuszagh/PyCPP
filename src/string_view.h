@@ -86,6 +86,8 @@ public:
     self& operator=(const_pointer str);
 
     // ITERATORS
+    iterator begin();
+    iterator end();
     const_iterator begin() const;
     const_iterator end() const;
     const_reverse_iterator rbegin() const;
@@ -734,6 +736,22 @@ basic_string_view<C, T>&  basic_string_view<C, T>::operator=(const C* str)
 {
     assign(str);
     return *this;
+}
+
+
+template <typename C, typename T>
+auto basic_string_view<C, T>::begin()
+    -> iterator
+{
+    return const_cast<iterator>(data_);
+}
+
+
+template <typename C, typename T>
+auto basic_string_view<C, T>::end()
+    -> iterator
+{
+    return begin() + length_;
 }
 
 

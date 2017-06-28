@@ -132,11 +132,20 @@ static uint8_t get_major_category(uint32_t c)
 
 
 /**
+ *  \brief Determine if byte is ASCII.
+ */
+bool is_ascii_byte(uint8_t c)
+{
+    return 0 == (c & ~0x7f);
+}
+
+
+/**
  *  \brief Determine if byte is a start byte.
  *
  *  Start bytes initialize with a 11 bit pattern.
  */
-static bool is_start_byte(uint8_t c)
+bool is_start_byte(uint8_t c)
 {
     return c > 0xbf;
 }
@@ -147,7 +156,7 @@ static bool is_start_byte(uint8_t c)
  *
  *  Continuation bytes initialize with a 10 bit pattern.
  */
-static bool is_continuation_byte(uint8_t c)
+bool is_continuation_byte(uint8_t c)
 {
     return c >= 0x80 && c<= 0xbf;
 }

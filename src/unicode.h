@@ -69,6 +69,21 @@ bool is_blank(uint32_t c);
 bool is_punctuation(uint32_t c);
 
 /**
+ *  \brief Check if a byte is an ASCII byte.
+ */
+bool is_ascii_byte(uint8_t c);
+
+/**
+ *  \brief Check if a byte is a UTF8 start byte.
+ */
+bool is_start_byte(uint8_t c);
+
+/**
+ *  \brief Check if a byte is a UTF8 continuation byte.
+ */
+bool is_continuation_byte(uint8_t c);
+
+/**
  *  \brief Check if string is likely not Unicode.
  */
 bool is_ascii(const std::string &str);

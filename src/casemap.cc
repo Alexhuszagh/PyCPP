@@ -204,6 +204,32 @@ static bool is_utf32_boundary(uint32_t c)
 // FUNCTIONS
 // ---------
 
+// CHARACTERS
+
+uint8_t ascii_tolower(uint8_t c)
+{
+    return lowercase_ascii(c);
+}
+
+
+uint8_t ascii_toupper(uint8_t c)
+{
+    return uppercase_ascii(c);
+}
+
+
+uint32_t utf32_tolower(uint32_t c)
+{
+    return lowercase_utf32(c);
+}
+
+uint32_t utf32_toupper(uint32_t c)
+{
+    return uppercase_utf32(c);
+}
+
+// ASCII
+
 
 size_t ascii_tolower(const void *src, size_t srclen, void* dst, size_t dstlen)
 {
@@ -292,6 +318,9 @@ std::string ascii_totitle(const std::string &str)
 
     return title;
 }
+
+
+// UNICODE
 
 
 size_t utf8_tolower(const void *src, size_t srclen, void* dst, size_t dstlen)
