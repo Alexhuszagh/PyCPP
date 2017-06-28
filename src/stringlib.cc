@@ -2,7 +2,23 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include "stringlib.h"
+#include "unicode.h"
 
+// CONSTANTS
+// ---------
+
+const std::string ascii_letters = ascii_lowercase + ascii_uppercase;
+const std::string ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
+const std::string ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const std::string digits = "0123456789";
+const std::string hexdigits = "0123456789abcdefABCDEF";
+const std::string letters = lowercase + uppercase;
+const std::string lowercase = ascii_lowercase;
+const std::string octdigits = "01234567";
+const std::string punctuation = "!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~";
+const std::string printable = digits + letters + punctuation + whitespace;
+const std::string uppercase = ascii_uppercase;
+const std::string whitespace = " \t\n\r\v\f";
 
 // HELPERS
 // -------

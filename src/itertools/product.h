@@ -50,6 +50,9 @@ using conditional_t = typename std::conditional<B, T, F>::type;
 template <bool B, typename T = void>
 using enable_if_t = typename std::enable_if<B, T>::type;
 
+template <typename...>
+using void_t = void;
+
 template <typename T>
 struct is_reference_wrapper: std::false_type
 {};
@@ -332,7 +335,7 @@ struct is_detected: std::false_type
 {};
 
 template<typename T, template <typename> class F>
-struct is_detected<T, F, std::void_t<F<T>>>: std::true_type
+struct is_detected<T, F, void_t<F<T>>>: std::true_type
 {};
 
 template <typename T>
