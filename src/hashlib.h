@@ -7,51 +7,59 @@
 
 #pragma once
 
+#include "string_view.h"
 #include <string>
 
-// FUNCTIONS
-// ---------
+// FORWARD
+// -------
 
-// MD5
+struct md5_context;
+struct sha1_context;
 
-/**
- *  \brief Calculate MD5 hash.
- */
-size_t md5_hash(const void* src, size_t srclen, void* dst, size_t dstlen);
-
-/**
- *  \brief Calculate MD5 hash.
- */
-std::string md5_hash(const std::string& str);
+// OBJECTS
+// -------
 
 /**
- *  \brief Calculate hex digest of MD5 hash.
+ *  \brief MD5 hash context.
  */
-size_t md5_digest(const void* src, size_t srclen, void* dst, size_t dstlen);
+struct md5_hash
+{
+public:
+    md5_hash();
+    md5_hash(const void* src, size_t srclen);
+    md5_hash(const string_view& str);
+    ~md5_hash();
+
+    void update(const void* src, size_t srclen);
+    void update(const string_view& str);
+    size_t digest(void* dst, size_t dstlen) const;
+    size_t hexdigest(void* dst, size_t dstlen) const;
+    std::string digest() const;
+    std::string hexdigest() const;
+
+private:
+    md5_context* ctx;
+};
+
 
 /**
- *  \brief Calculate hex digest of MD5 hash.
+ *  \brief SHA1 hash context.
  */
-std::string md5_digest(const std::string& str);
+struct sha1_hash
+{
+public:
+    sha1_hash();
+    sha1_hash(const void* src, size_t srclen);
+    sha1_hash(const string_view& str);
+    ~sha1_hash();
 
-// SHA1
+    void update(const void* src, size_t srclen);
+    void update(const string_view& str);
+    size_t digest(void* dst, size_t dstlen) const;
+    size_t hexdigest(void* dst, size_t dstlen) const;
+    std::string digest() const;
+    std::string hexdigest() const;
 
-/**
- *  \brief Calculate SHA1 hash.
- */
-size_t sha1_hash(const void* src, size_t srclen, void* dst, size_t dstlen);
-
-/**
- *  \brief Calculate SHA1 hash.
- */
-std::string sha1_hash(const std::string& str);
-
-/**
- *  \brief Calculate hex digest of SHA1 hash.
- */
-size_t sha1_digest(const void* src, size_t srclen, void* dst, size_t dstlen);
-
-/**
- *  \brief Calculate hex digest of SHA1 hash.
- */
-std::string sha1_digest(const std::string& str);
+private:
+    sha1_context* ctx;
+};

@@ -31,7 +31,7 @@ union Char64Union
 
 /** \brief SHA1 context.
  */
-struct SHA1_CTX
+struct sha1_context
 {
     uint32_t state[5];
     uint32_t count[2];
@@ -183,7 +183,7 @@ void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 /**
  *  \brief Initialize SHA1 context.
  */
-void sha1_init(SHA1_CTX* ctx)
+void sha1_init(sha1_context* ctx)
 {
     ctx->state[0] = 0x67452301;
     ctx->state[1] = 0xefcdab89;
@@ -197,7 +197,7 @@ void sha1_init(SHA1_CTX* ctx)
 /**
  *  \brief Update hash with data.
  */
-void sha1_update(SHA1_CTX* ctx, const uint8_t* data, uint32_t len)
+void sha1_update(sha1_context* ctx, const uint8_t* data, uint32_t len)
 {
     uint32_t i, j;
 
@@ -222,7 +222,7 @@ void sha1_update(SHA1_CTX* ctx, const uint8_t* data, uint32_t len)
 /**
  *  \brief Add padding and return the message digest.
  */
-void sha1_final(uint8_t digest[20], SHA1_CTX* ctx)
+void sha1_final(uint8_t digest[20], sha1_context* ctx)
 {
     unsigned i;
     uint8_t finalcount[8];
@@ -251,33 +251,87 @@ void sha1_final(uint8_t digest[20], SHA1_CTX* ctx)
 }
 
 
-size_t sha1_hash(const void* src, size_t srclen, void* dst, size_t dstlen)
-{
-    if (dstlen < SHA1_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA1 hash.");
-    }
+// OBJECTS
+// -------
 
-    SHA1_CTX context;
+
+sha1_hash::sha1_hash()
+{
+    ctx = new sha1_context;
+    sha1_init(ctx);
+}
+
+
+sha1_hash::sha1_hash(const void* src, size_t srclen)
+{
+    ctx = new sha1_context;
+    sha1_init(ctx);
+    update(src, srclen);
+}
+
+
+sha1_hash::sha1_hash(const string_view& str)
+{
+    ctx = new sha1_context;
+    sha1_init(ctx);
+    update(str);
+}
+
+
+sha1_hash::~sha1_hash()
+{
+    delete ctx;
+}
+
+
+void sha1_hash::update(const void* src, size_t srclen)
+{
     long length = srclen;
     const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
 
-    sha1_init(&context);
     while (length > 0) {
         long shift = length > 512 ? 512 : length;
-        sha1_update(&context, first, shift);
+        sha1_update(ctx, first, shift);
         length -= shift;
         first += shift;
     }
-    sha1_final(reinterpret_cast<uint8_t*>(dst), &context);
+}
 
+
+void sha1_hash::update(const string_view& str)
+{
+    update(str.data(), str.size());
+}
+
+
+size_t sha1_hash::digest(void* dst, size_t dstlen) const
+{
+    if (dstlen < SHA1_HASH_SIZE) {
+        throw std::runtime_error("dstlen not large enough to store SHA1 digest.");
+    }
+
+    sha1_context copy = *ctx;
+    sha1_final(reinterpret_cast<uint8_t*>(dst), &copy);
     return SHA1_HASH_SIZE;
 }
 
 
-std::string sha1_hash(const std::string &str)
+size_t sha1_hash::hexdigest(void* dst, size_t dstlen) const
+{
+    if (dstlen < 2 * SHA1_HASH_SIZE) {
+        throw std::runtime_error("dstlen not large enough to store SHA1 hex digest.");
+    }
+
+    int8_t* hash = new int8_t[SHA1_HASH_SIZE];
+    digest(hash, SHA1_HASH_SIZE);
+    return hex_i8(hash, SHA1_HASH_SIZE, dst, dstlen);
+}
+
+
+std::string sha1_hash::digest() const
 {
     char* hash = new char[SHA1_HASH_SIZE];
-    sha1_hash(str.data(), str.size(), hash, SHA1_HASH_SIZE);
+    digest(hash, SHA1_HASH_SIZE);
 
     std::string output(hash, SHA1_HASH_SIZE);
     delete[] hash;
@@ -285,19 +339,9 @@ std::string sha1_hash(const std::string &str)
 }
 
 
-size_t sha1_digest(const void* src, size_t srclen, void* dst, size_t dstlen)
+std::string sha1_hash::hexdigest() const
 {
-    char* hash = new char[SHA1_HASH_SIZE];
-    sha1_hash(src, srclen, hash, SHA1_HASH_SIZE);
-    auto size = hex_i8(hash, SHA1_HASH_SIZE, dst, dstlen);
-    delete[] hash;
-    return size;
-}
-
-
-std::string sha1_digest(const std::string& str)
-{
-    return hex_i8(sha1_hash(str));
+    return hex_i8(digest());
 }
 
 // CLEANUP

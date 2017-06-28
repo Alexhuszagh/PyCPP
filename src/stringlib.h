@@ -59,6 +59,40 @@ std::string capitalize(const std::string& str);
  */
 size_t find(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
 
+/**
+ *  \brief Like find, but find last position of substring in string.
+ */
+size_t rfind(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
+
+/**
+ *  \brief Like find, but raise error if substring not found.
+ */
+size_t index(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
+
+/**
+ *  \brief Like rfind, but raise error if substring not found.
+ */
+size_t rindex(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
+
+/**
+ *  \brief Count instances of substring in string.
+ */
+size_t count(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
+
+/**
+ *  \brief Convert all uppercase characters to lowercase in string.
+ *
+ *  This function **this** Unicode aware.
+ */
+std::string lower(const std::string& str);
+
+/**
+ *  \brief Convert all uppercase characters to uppercase in string.
+ *
+ *  This function **this** Unicode aware.
+ */
+//std::string upper(const std::string& str);
+
 // OBJECTS
 // -------
 
@@ -73,8 +107,18 @@ struct string_wrapper: string_view
     string_view& view();
     const string_view& view() const;
 
-    // DATA
-    std::vector<string_wrapper> split(const string_wrapper& sep) const;
+    // MODIFIERS
     void capitalize();
+    void lower();
+    //void upper();
+
+    // TOKENS
+    std::vector<string_wrapper> split(const string_wrapper& sep) const;
+
+    // SEARCH
     size_t find(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
+    size_t rfind(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
+    size_t index(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
+    size_t rindex(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
+    size_t count(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
 };

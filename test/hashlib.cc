@@ -54,8 +54,18 @@ TEST(md5, digest)
     };
 
     for (const auto &pair: tests) {
-        EXPECT_EQ(md5_digest(pair.first), pair.second);
+        EXPECT_EQ(md5_hash(pair.first).hexdigest(), pair.second);
     }
+}
+
+
+TEST(md5, update)
+{
+    md5_hash hash("x");
+    EXPECT_EQ(hash.hexdigest(), "9DD4E461268C8034F5C8564E155C67A6");
+
+    hash.update("x");
+    EXPECT_EQ(hash.hexdigest(), "9336EBF25087D91C818EE6E9EC29F8C1");
 }
 
 
@@ -71,7 +81,7 @@ TEST(md5, fuzz)
         for (size_t i = 0; i < length; ++i) {
             input.push_back(static_cast<char>(dist(engine)));
         }
-        EXPECT_EQ(md5_digest(input).size(), 32);
+        EXPECT_EQ(md5_hash(input).hexdigest().size(), 32);
     }
 }
 
@@ -114,8 +124,18 @@ TEST(sha1, digest)
     };
 
     for (const auto &pair: tests) {
-        EXPECT_EQ(sha1_digest(pair.first), pair.second);
+        EXPECT_EQ(sha1_hash(pair.first).hexdigest(), pair.second);
     }
+}
+
+
+TEST(sha1, update)
+{
+    sha1_hash hash("x");
+    EXPECT_EQ(hash.hexdigest(), "11F6AD8EC52A2984ABAAFD7C3B516503785C2072");
+
+    hash.update("x");
+    EXPECT_EQ(hash.hexdigest(), "DD7B7B74EA160E049DD128478E074CE47254BDE8");
 }
 
 
@@ -131,6 +151,6 @@ TEST(sha1, fuzz)
         for (size_t i = 0; i < length; ++i) {
             input.push_back(static_cast<char>(dist(engine)));
         }
-        EXPECT_EQ(sha1_digest(input).size(), 40);
+        EXPECT_EQ(sha1_hash(input).hexdigest().size(), 40);
     }
 }

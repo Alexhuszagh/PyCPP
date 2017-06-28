@@ -75,9 +75,72 @@ static size_t find_impl(const string_view& str, const string_view& sub, size_t s
 {
     if (end < start) {
         return -1;
+    } else if (end == SIZE_MAX) {
+        return str.substr(start).find(sub);
     }
+
     size_t length = end - start;
     return str.substr(start, length).find(sub);
+}
+
+
+static size_t rfind_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
+{
+    if (end < start) {
+        return -1;
+    } else if (end == SIZE_MAX) {
+        return str.substr(start).rfind(sub);
+    }
+
+    size_t length = end - start;
+    return str.substr(start, length).rfind(sub);
+}
+
+
+static size_t index_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
+{
+    size_t i = find_impl(str, sub, start, end);
+    if (i == SIZE_MAX) {
+        throw std::out_of_range("Substring not found in wrapper.");
+    }
+    return i;
+}
+
+
+static size_t rindex_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
+{
+    size_t i = rfind_impl(str, sub, start, end);
+    if (i == SIZE_MAX) {
+        throw std::out_of_range("Substring not found in wrapper.");
+    }
+    return i;
+}
+
+
+static size_t count_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
+{
+    string_view substr;
+    if (end < start) {
+        return 0;
+    } else if (end == SIZE_MAX) {
+        substr = str.substr(start);
+    } else {
+        substr = str;
+    }
+
+    // our extracted substring is too small, cannot contain item
+    if (substr.size() < sub.size()) {
+        return 0;
+    }
+
+    // count elements
+    size_t count = 0;
+    size_t diff = substr.size() - sub.size();
+    for (auto it = str.begin(); it <= str.begin()+diff; ++it) {
+        count += std::equal(it, str.end(), sub.begin());
+    }
+
+    return count;
 }
 
 
@@ -118,6 +181,48 @@ std::string capitalize(const std::string& str)
 //{
 //    // TODO: here...
 //    // Need to replace characters...
+//}
+
+
+size_t find(const std::string&str, const std::string& sub, size_t start, size_t end)
+{
+    return find_impl(str, sub, start, end);
+}
+
+
+size_t rfind(const std::string&str, const std::string& sub, size_t start, size_t end)
+{
+    return rfind_impl(str, sub, start, end);
+}
+
+
+size_t index(const std::string&str, const std::string& sub, size_t start, size_t end)
+{
+    return index_impl(str, sub, start, end);
+}
+
+
+size_t rindex(const std::string&str, const std::string& sub, size_t start, size_t end)
+{
+    return rindex_impl(str, sub, start, end);
+}
+
+
+size_t count(const std::string&str, const std::string& sub, size_t start, size_t end)
+{
+    return count_impl(str, sub, start, end);
+}
+
+
+//std::string lower(const std::string& str)
+//{
+//    lower_impl(str);
+//}
+//
+//
+//std::string upper(const std::string& str)
+//{
+//    upper_impl(str);
 //}
 
 
@@ -163,7 +268,43 @@ void string_wrapper::capitalize()
 }
 
 
+//void string_wrapper::lower()
+//{
+//    lower_impl(*this);
+//}
+
+//
+//void string_wrapper::upper()
+//{
+//    upper_impl(*this);
+//}
+
+
 size_t string_wrapper::find(const string_wrapper& sub, size_t start, size_t end) const
 {
     return find_impl(*this, sub, start, end);
+}
+
+
+size_t string_wrapper::rfind(const string_wrapper& sub, size_t start, size_t end) const
+{
+    return rfind_impl(*this, sub, start, end);
+}
+
+
+size_t string_wrapper::index(const string_wrapper& sub, size_t start, size_t end) const
+{
+    return index_impl(*this, sub, start, end);
+}
+
+
+size_t string_wrapper::rindex(const string_wrapper& sub, size_t start, size_t end) const
+{
+    return rindex_impl(*this, sub, start, end);
+}
+
+
+size_t string_wrapper::count(const string_wrapper& sub, size_t start, size_t end) const
+{
+    return count_impl(*this, sub, start, end);
 }
