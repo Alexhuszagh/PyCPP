@@ -3,6 +3,9 @@
 /**
  *  \addtogroup funxx
  *  \brief Hash functions.
+ *
+ *  \TODO all of these need to use a secure_string implementation, since
+ *  std::string does not clear its buffer.
  */
 
 #pragma once
@@ -60,6 +63,11 @@ public:
     hash(hash_algorithm algorithm, const void* src, size_t srclen);
     hash(hash_algorithm algorithm, const string_view& str);
 
+    hash(const hash&);
+    hash& operator=(const hash&);
+    hash(hash&&);
+    hash& operator=(hash&&);
+
     void update(const void* src, size_t srclen);
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
@@ -68,8 +76,8 @@ public:
     std::string hexdigest() const;
 
 private:
-    hash_algorithm algorithm;
     typedef typename std::aligned_storage<sizeof(uintptr_t)>::type memory_type;
+    hash_algorithm algorithm;
     memory_type mem;
 };
 

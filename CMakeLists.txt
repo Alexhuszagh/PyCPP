@@ -60,6 +60,7 @@ set(SOURCE_FILES
     src/hex.cc
     src/punycode.cc
     src/safe_stdlib.cc
+    src/secure_string.cc
     src/stringlib.cc
     src/unicode.cc
     src/url.cc

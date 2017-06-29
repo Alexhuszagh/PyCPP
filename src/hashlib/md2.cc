@@ -190,5 +190,6 @@ std::string md2_hash::digest() const
 
 std::string md2_hash::hexdigest() const
 {
+    printf("md2::digest() %s\n", hex_i8(digest()).data());
     return hex_i8(digest());
 }

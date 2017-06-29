@@ -19,7 +19,7 @@ struct allocate_hash
     template <typename Hash>
     void operator()(Hash& hash)
     {
-        hash = Hash();
+        new (&hash) Hash();
     }
 };
 
@@ -51,7 +51,7 @@ struct digest_cstring
     template <typename Hash>
     void operator()(Hash& hash)
     {
-        length = hash.digest(dst, dstlen);
+        this->length = hash.digest(dst, dstlen);
     }
 };
 
@@ -68,7 +68,7 @@ struct hexdigest_cstring
     template <typename Hash>
     void operator()(Hash& hash)
     {
-        length = hash.hexdigest(dst, dstlen);
+        this->length = hash.hexdigest(dst, dstlen);
     }
 };
 
@@ -83,7 +83,7 @@ struct digest_stl
     template <typename Hash>
     void operator()(Hash& hash)
     {
-        str = hash.digest();
+        this->str = hash.digest();
     }
 };
 
@@ -98,7 +98,7 @@ struct hexdigest_stl
     template <typename Hash>
     void operator()(Hash& hash)
     {
-        str = hash.hexdigest();
+        this->str = hash.hexdigest();
     }
 };
 
@@ -191,6 +191,34 @@ hash::hash(hash_algorithm algorithm, const string_view& str):
 }
 
 
+hash::hash(const hash& other):
+    algorithm(other.algorithm),
+    mem(other.mem)
+{}
+
+
+hash& hash::operator=(const hash& other)
+{
+    algorithm = other.algorithm;
+    mem = other.mem;
+    return *this;
+}
+
+
+hash::hash(hash&& other):
+    algorithm(std::move(other.algorithm)),
+    mem(std::move(other.mem))
+{}
+
+
+hash& hash::operator=(hash&& other)
+{
+    algorithm = std::move(other.algorithm);
+    mem = std::move(other.mem);
+    return *this;
+}
+
+
 void hash::update(const void* src, size_t srclen)
 {
     update(string_view(reinterpret_cast<const char*>(src), srclen));
@@ -224,7 +252,7 @@ std::string hash::digest() const
 {
     digest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
-    return std::move(functor.str);
+    return functor.str;
 }
 
 
@@ -232,5 +260,5 @@ std::string hash::hexdigest() const
 {
     hexdigest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
-    return std::move(functor.str);
+    return functor.str;
 }

@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <algorithm>
+#include "string/find.h"
 #include <cassert>
 #include <stdexcept>
 #include <string>
@@ -18,7 +18,8 @@
 // -----------
 
 
-/** \brief STL string wrapper.
+/**
+ *  \brief STL string wrapper.
  *
  *  Binds a pointer and the string length, accepting either a C++
  *  string, a null-terminated string, a character array and length,
@@ -28,10 +29,7 @@
  *  The wrapper has **no** ownership, and is merely an STL-like wrapper
  *  for performance reasons.
  */
-template <
-    typename Char,
-    typename Traits = std::char_traits<Char>
->
+template <typename Char, typename Traits = std::char_traits<Char>>
 class basic_string_view
 {
 public:
@@ -300,113 +298,6 @@ private:
     template <typename C, typename T>
     friend bool operator>=(const view<C, T>& lhs, const C* rhs);
 };
-
-// FUNCTIONS
-// ---------
-
-
-template <typename Iter1, typename Iter2>
-Iter1 find(Iter1 first, size_t length, Iter2 substr, size_t sublen) noexcept
-{
-    auto substr_first = substr;
-    auto substr_last = substr_first + sublen;
-    for (; length >= sublen; --length, ++first) {
-        if (std::equal(substr_first, substr_last, first)) {
-            return first;
-        }
-    }
-    return nullptr;
-}
-
-
-template <typename Iter1, typename Iter2>
-Iter1 find_of(Iter1 first, size_t length, Iter2 substr, size_t sublen) noexcept
-{
-    typedef typename std::iterator_traits<Iter1>::value_type Char;
-
-    auto substr_first = substr;
-    auto substr_last = substr_first + sublen;
-    for (; length; --length, ++first) {
-        if (std::any_of(substr_first, substr_last, [first](Char c) {
-            return *first == c;
-        })) {
-            return first;
-        }
-    }
-    return nullptr;
-}
-
-
-template <typename Iter1, typename Iter2>
-Iter1 find_not_of(Iter1 first, size_t length, Iter2 substr, size_t sublen)
-{
-    typedef typename std::iterator_traits<Iter1>::value_type Char;
-
-    auto substr_first = substr;
-    auto substr_last = substr_first + sublen;
-    for (; length; --length, ++first) {
-        if (std::none_of(substr_first, substr_last, [first](Char c) {
-            return *first == c;
-        })) {
-            return first;
-        }
-    }
-    return nullptr;
-}
-
-
-template <typename Iter1, typename Iter2>
-Iter1 rfind(Iter1 last, size_t length, Iter2 substr, size_t sublen)
-{
-    auto substr_first = substr;
-    auto substr_last = substr_first + sublen;
-    last -= sublen;
-    for (; length >= sublen; --length) {
-        if (std::equal(substr_first, substr_last, --last)) {
-            return last;
-        }
-    }
-
-    return nullptr;
-}
-
-
-template <typename Iter1, typename Iter2>
-Iter1 rfind_of(Iter1 last, size_t length, Iter2 substr, size_t sublen)
-{
-    typedef typename std::iterator_traits<Iter1>::value_type Char;
-
-    auto substr_first = substr;
-    auto substr_last = substr_first + sublen;
-    for (; length; --length) {
-        --last;
-        if (std::any_of(substr_first, substr_last, [last](Char c) {
-            return *last == c;
-        })) {
-            return last;
-        }
-    }
-    return nullptr;
-}
-
-
-template <typename Iter1, typename Iter2>
-Iter1 rfind_not_of(Iter1 last, size_t length, Iter2 substr, size_t sublen)
-{
-    typedef typename std::iterator_traits<Iter1>::value_type Char;
-
-    auto substr_first = substr;
-    auto substr_last = substr_first + sublen;
-    for (; length; --length) {
-        --last;
-        if (std::none_of(substr_first, substr_last, [last](Char c) {
-            return *last == c;
-        })) {
-            return last;
-        }
-    }
-    return nullptr;
-}
 
 // IMPLEMENTATION
 // --------------
@@ -740,94 +631,84 @@ basic_string_view<C, T>&  basic_string_view<C, T>::operator=(const C* str)
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::begin()
-    -> iterator
+auto basic_string_view<C, T>::begin() -> iterator
 {
     return const_cast<iterator>(data_);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::end()
-    -> iterator
+auto basic_string_view<C, T>::end() -> iterator
 {
     return begin() + length_;
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::begin() const
-    -> const_iterator
+auto basic_string_view<C, T>::begin() const -> const_iterator
 {
     return data_;
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::end() const
-    -> const_iterator
+auto basic_string_view<C, T>::end() const -> const_iterator
 {
     return data_ + length_;
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::rbegin() const
-    -> const_reverse_iterator
+auto basic_string_view<C, T>::rbegin() const -> const_reverse_iterator
 {
     return const_reverse_iterator(end());
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::rend() const
-    -> const_reverse_iterator
+auto basic_string_view<C, T>::rend() const -> const_reverse_iterator
 {
     return const_reverse_iterator(begin());
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::cbegin() const
-    -> const_iterator
+auto basic_string_view<C, T>::cbegin() const -> const_iterator
 {
     return begin();
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::cend() const
-    -> const_iterator
+auto basic_string_view<C, T>::cend() const -> const_iterator
 {
     return end();
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::crbegin() const
-    -> const_reverse_iterator
+auto basic_string_view<C, T>::crbegin() const -> const_reverse_iterator
 {
     return rbegin();
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::crend() const
-    -> const_reverse_iterator
+auto basic_string_view<C, T>::crend() const -> const_reverse_iterator
 {
     return rend();
 }
 
 
 template <typename C, typename T>
-size_t basic_string_view<C, T>::size() const
+auto basic_string_view<C, T>::size() const -> size_type
 {
     return length_;
 }
 
 
 template <typename C, typename T>
-size_t basic_string_view<C, T>::length() const
+auto basic_string_view<C, T>::length() const -> size_type
 {
     return length_;
 }

@@ -180,9 +180,12 @@ static Path expandvars_impl(const Path& path, FromPath frompath, ToPath topath)
     wordexp(frompath(path).data(), &word, 0);
     char** ptr = word.we_wordv;
     if (word.we_wordc == 0) {
+        wordfree(&word);
         return path;
     } else {
-        return topath(ptr[0]);
+        auto out = topath(ptr[0]);
+        wordfree(&word);
+        return out;
     }
 }
 
