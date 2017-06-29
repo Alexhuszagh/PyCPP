@@ -410,6 +410,13 @@ path_t normcase(const path_t& path)
     });
 }
 
+// MANIPULATION
+
+bool remove_file(const path_t& path)
+{
+    return DeleteFileW(reinterpret_cast<const wchar_t*>(path.data()));
+}
+
 #endif
 
 
@@ -491,5 +498,11 @@ backup_path_t normcase(const backup_path_t& path)
     });
 }
 
+// MANIPULATION
+
+bool remove_file(const backup_path_t& path)
+{
+    return DeleteFile(path.data());
+}
 
 #endif

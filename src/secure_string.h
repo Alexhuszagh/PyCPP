@@ -222,7 +222,7 @@ auto secure_basic_string<C, T, A>::operator=(const self& str) -> self&
 {
     reset();
     capacity_ = str.capacity_;
-    length = str.length_;
+    length_ = str.length_;
     data_ = allocator_type().allocate(str.capacity_);
     memcpy(data_, str.data_, capacity_ * sizeof(value_type));
     return *this;
@@ -405,7 +405,7 @@ void secure_basic_string<C, T, A>::resize(size_type n, value_type c)
 //        append(__n - __sz, __c);
     } else {
         length_ = n;
-        data[n] = value_type();
+        data_[n] = value_type();
     }
 }
 

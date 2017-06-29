@@ -294,6 +294,13 @@ path_t normcase(const path_t& path)
     return path;
 }
 
+// MANIPULATION
+
+bool remove_file(const path_t& path)
+{
+    return unlink(path.data()) == 0;
+}
+
 #endif
 
 
@@ -372,6 +379,15 @@ backup_path_t expandvars(const backup_path_t& path)
 backup_path_t normcase(const backup_path_t& path)
 {
     return path;
+}
+
+
+// MANIPULATION
+
+
+bool remove_file(const path_t& path)
+{
+    return remove_file(backup_path_to_path(path));
 }
 
 #endif
