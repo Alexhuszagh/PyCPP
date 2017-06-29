@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include "string_view.h"
+#include "secure_string.h"
 #include <string>
 #include <utility>
 

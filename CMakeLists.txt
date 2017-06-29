@@ -146,6 +146,7 @@ set(TEST_FILES
     test/punycode.cc
     test/random.cc
     test/safe_stdlib.cc
+    test/secure_string.cc
     test/string_view.cc
     test/stringlib.cc
     test/tls.cc

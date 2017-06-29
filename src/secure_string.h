@@ -17,7 +17,15 @@
 
 #include "string_view.h"
 
-#include <cstring>
+// FUNCTIONS
+// ---------
+
+/**
+ *  \brief Securely clear buffer, preventing compiler optimizations.
+ *
+ *  Use this rather memset.
+ */
+void secure_zero(void* dst, size_t bytes);
 
 // OBJECTS
 // -------
@@ -203,7 +211,7 @@ secure_basic_string<C, T, A>::secure_basic_string():
     data_(allocator_type().allocate(15))
 {
     // clear buffer on initialization
-    memset(data_, 0, capacity_ * sizeof(value_type));
+    secure_zero(data_, capacity_ * sizeof(value_type));
 }
 
 
@@ -213,7 +221,7 @@ secure_basic_string<C, T, A>::secure_basic_string(const self& str):
     length_(str.length_),
     data_(allocator_type().allocate(str.capacity_))
 {
-    memcpy(data_, str.data_, capacity_ * sizeof(value_type));
+    traits_type::copy(data_, str.data_, capacity_);
 }
 
 
@@ -224,7 +232,7 @@ auto secure_basic_string<C, T, A>::operator=(const self& str) -> self&
     capacity_ = str.capacity_;
     length_ = str.length_;
     data_ = allocator_type().allocate(str.capacity_);
-    memcpy(data_, str.data_, capacity_ * sizeof(value_type));
+    traits_type::copy(data_, str.data_, capacity_);
     return *this;
 }
 
@@ -877,7 +885,7 @@ void secure_basic_string<C, T, A>::init()
     capacity_ = 15;
     length_ = 0;
     data_ = allocator_type().allocate(15);
-    memset(data_, 0, capacity_ * sizeof(value_type));
+    secure_zero(data_, capacity_ * sizeof(value_type));
 }
 
 
@@ -885,7 +893,7 @@ template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::reset()
 {
     // clear our buffer before deallocating it
-    memset(data_, 0, capacity_ * sizeof(value_type));
+    secure_zero(data_, capacity_ * sizeof(value_type));
     allocator_type().deallocate(data_, capacity_);
     capacity_ = length_ = 0;
 }
@@ -899,7 +907,7 @@ void secure_basic_string<C, T, A>::reallocate(size_type n)
     traits_type::copy(buf, data_, length_+1);
 
     // clear existing buffer
-    memset(data_, 0, capacity_ * sizeof(value_type));
+    secure_zero(data_, capacity_ * sizeof(value_type));
     allocator_type().deallocate(data_, capacity_);
 
     // store data

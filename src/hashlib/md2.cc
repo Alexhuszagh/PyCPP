@@ -39,7 +39,6 @@ static void md2_transform(md2_context *ctx, uint8_t* data)
 {
     int j,k,t;
 
-    //memcpy(&ctx->state[16], data);
     for (j=0; j < 16; ++j) {
         ctx->state[j + 16] = data[j];
         ctx->state[j + 32] = (ctx->state[j+16] ^ ctx->state[j]);
@@ -190,6 +189,5 @@ std::string md2_hash::digest() const
 
 std::string md2_hash::hexdigest() const
 {
-    printf("md2::digest() %s\n", hex_i8(digest()).data());
     return hex_i8(digest());
 }
