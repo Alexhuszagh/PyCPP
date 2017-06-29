@@ -319,8 +319,8 @@ static Path normcase_impl(const Path& path, NormCase normcase)
 
 // MANIPULATION
 
-template <typename Path>
-static void check_file(const Path& src, const Path& dst, bool replace)
+template <typename Path, typename MoveFile>
+static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveFile move)
 {
     auto dst_dir = dir_name(dst);
 
@@ -340,13 +340,6 @@ static void check_file(const Path& src, const Path& dst, bool replace)
             throw filesystem_error(filesystem_destination_exists);
         }
     }
-}
-
-
-template <typename Path, typename MoveFile>
-static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveFile move)
-{
-    check_file(src, dst, replace);
 
     // Windows MoveFileW can handle different filesystems
     // don't worry about st_dev.
@@ -358,9 +351,18 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 template <typename Path, typename CopyFile>
 static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyFile copy)
 {
-    check_file(src, dst, replace);
+    auto dst_dir = dir_name(dst);
 
-    return copy(src, dst);
+    // ensure we have a file and a dest directory
+    auto src_stat = stat(src);
+    auto dst_stat = stat(dst_dir);
+    if (!isfile(src)) {
+        throw filesystem_error(filesystem_not_a_file);
+    } else if (!exists(dst_stat)) {
+        throw filesystem_error(filesystem_no_such_directory);
+    }
+
+    return copy(src, dst, replace);
 }
 
 
@@ -469,13 +471,15 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 }
 
 
-bool copy_file(const path_t& src, const path_t& dst, bool replace)
+bool copy_file(const path_t& src, const path_t& dst, bool replace, bool copystat)
 {
-    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst, bool replace) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
-        return CopyFileW(s, d);
+        return CopyFileW(s, d, replace);
     });
+
+    // TODOL copystate
 }
 
 
@@ -576,11 +580,13 @@ bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
 }
 
 
-bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
+bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace, bool copystat)
 {
-    return copy_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst) {
-        return CopyFile(src.data(), dst.data());
+    return copy_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst, bool replace) {
+        return CopyFile(src.data(), dst.data(), replace);
     });
+
+    // TODO: copystat
 }
 
 

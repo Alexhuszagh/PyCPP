@@ -244,8 +244,11 @@ bool move_file(const path_t& src, const path_t& dst, bool replace = false);
 
 /**
  *  \brief Copy file, and copy was successful.
+ *
+ *  \param replace          Replace dst if it exists.
+ *  \param copystat         Copy stat date from src to dst.
  */
-bool copy_file(const path_t& src, const path_t& dst, bool replace = false);
+bool copy_file(const path_t& src, const path_t& dst, bool replace = false, bool copystat = false);
 
 /**
  *  \brief Remove file, return if file was successfully removed.
@@ -450,8 +453,11 @@ bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace 
 
 /**
  *  \brief Copy file, and copy was successful.
+ *
+ *  \param replace          Replace dst if it exists.
+ *  \param copystat         Copy stat date from src to dst.
  */
-bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
+bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false, bool copystat = false);
 
 /**
  *  \brief Remove file, return if file was successfully removed.

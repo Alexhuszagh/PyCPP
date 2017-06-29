@@ -394,11 +394,13 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 }
 
 
-bool copy_file(const path_t& src, const path_t& dst, bool replace)
+bool copy_file(const path_t& src, const path_t& dst, bool replace, bool copystat)
 {
     return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
         return copy_file_buffer(src, dst);
     });
+
+    // TODO: copy stat
 }
 
 
