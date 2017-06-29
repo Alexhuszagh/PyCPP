@@ -72,9 +72,11 @@ public:
     secure_basic_string& operator=(self&& str);
     ~secure_basic_string();
 
-    // TODO: need constructors...
-//    secure_basic_string(const self& str, size_t pos, size_t len = npos);
-//    secure_basic_string& operator=(const self& str, size_t pos, size_t len = npos);
+    secure_basic_string(const self& str, size_t pos, size_t len = npos);
+    secure_basic_string(const_pointer s);
+    secure_basic_string(const_pointer s, size_t n);
+    secure_basic_string(size_t n, value_type c);
+    template <typename Iter> secure_basic_string(Iter first, Iter last);
 
     // ITERATORS
     iterator begin();
@@ -111,13 +113,29 @@ public:
     const_reference back() const;
 
     // MODIFIERS
-//    operator+=();
+    self& operator+=(const self& str);
+    self& operator+=(const view& str);
+    self& operator+=(const_pointer s);
     self& operator+=(value_type c);
-//    append();
+    self& operator+=(std::initializer_list<value_type> list);
+    self& append(const self& str);
+    self& append(const view& str);
+    self& append(const self& str, size_t subpos, size_t sublen);
+    self& append(const_pointer s);
+    self& append(const_pointer s, size_t n);
+    self& append(size_t n, char c);
+    template <typename Iter> self& append(Iter first, Iter last);
+    self& append(std::initializer_list<value_type> list);
     void push_back(value_type c);
-//    self& assign(const self& str, size_type subpos, size_type sublen);
-//    self& assign(const_pointer s);
-//    self& assign(const_pointer s, size_type n);
+    self& assign(const self& str);
+    self& assign(const view& str);
+    self& assign(const self& str, size_t subpos, size_t sublen = npos);
+    self& assign(const_pointer s);
+    self& assign(const_pointer s, size_t n);
+    self& assign(size_t n, value_type c);
+    template <typename Iter> self& assign(Iter first, Iter last);
+    self& assign(std::initializer_list<value_type> list);
+    self& assign(self&& str) noexcept;
 //    insert();
 //    erase();
 //    replace();
@@ -183,7 +201,7 @@ public:
     int compare(size_type pos, size_type len, const_pointer s) const;
     int compare(size_type pos, size_type len, const_pointer s, size_type n) const;
 
-//    self substr(size_type pos = 0, size_type len = npos) const;
+    self substr(size_type pos = 0, size_type len = npos) const;
 
     // CONVERSIONS
     explicit operator bool() const;
@@ -197,6 +215,8 @@ private:
     void init();
     void reset();
     void reallocate(size_type n);
+
+    // TODO: need the remaining operators...
 };
 
 
@@ -259,6 +279,69 @@ template <typename C, typename T, typename A>
 secure_basic_string<C, T, A>::~secure_basic_string()
 {
     reset();
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A>::secure_basic_string(const self& str, size_t pos, size_t len)
+{
+    size_type n = str.size();
+    if (pos > n) {
+        throw std::out_of_range("secure_basic_string::secure_basic_string().");
+    }
+
+    length_ = std::min(len, n - pos);
+    capacity_ = length_ + 1;
+    data_ = allocator_type().allocate(capacity_);
+    traits_type::copy(data_, str.data() + pos, length_);
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A>::secure_basic_string(const_pointer s)
+{
+    length_ = traits_type::length(s);
+    capacity_ = length_ + 1;
+    data_ = allocator_type().allocate(capacity_);
+    traits_type::copy(data_, s, length_);
+    data_[length_] = value_type();
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A>::secure_basic_string(const_pointer s, size_t n)
+{
+    length_ = n;
+    capacity_ = length_ + 1;
+    data_ = allocator_type().allocate(capacity_);
+    traits_type::copy(data_, s, n);
+    data_[length_] = value_type();
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A>::secure_basic_string(size_t n, value_type c)
+{
+    length_ = n;
+    capacity_ = length_ + 1;
+    data_ = allocator_type().allocate(capacity_);
+    traits_type::assign(data_, n, c);
+    data_[n] = value_type();
+}
+
+
+template <typename C, typename T, typename A>
+template <typename Iter>
+secure_basic_string<C, T, A>::secure_basic_string(Iter first, Iter last)
+{
+    length_ = std::distance(first, last);
+    capacity_ = length_ + 1;
+    data_ = allocator_type().allocate(capacity_);
+
+    for (; first != last; ++first) {
+        data_[length_++] = *first;
+    }
+    data_[length_] = value_type();
 }
 
 
@@ -409,8 +492,7 @@ template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::resize(size_type n, value_type c)
 {
     if (n > length()) {
-    // TODO: need to add data...
-//        append(__n - __sz, __c);
+        append(n - length(), c);
     } else {
         length_ = n;
         data_[n] = value_type();
@@ -481,10 +563,123 @@ auto secure_basic_string<C, T, A>::back() const -> const_reference
 
 
 template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::operator+=(const self& str) -> self&
+{
+    return append(str);
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::operator+=(const view& str) -> self&
+{
+    return append(str);
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::operator+=(const_pointer s) -> self&
+{
+    return append(s);
+}
+
+
+template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::operator+=(value_type c) -> self&
 {
     push_back(c);
     return *this;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::operator+=(std::initializer_list<value_type> list) -> self&
+{
+    return append(list);
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::append(const self& str) -> self&
+{
+    return append(view(str));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::append(const view& str) -> self&
+{
+    size_t n = str.length();
+    size_t r = length() + n;
+    if (r > capacity()) {
+        reallocate(std::max(r, 2 * capacity()));
+    }
+
+    traits_type::copy(data() + length(), str.data(), n);
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::append(const self& str, size_t subpos, size_t sublen) -> self&
+{
+    return append(view(str).substr(subpos, sublen));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::append(const_pointer s) -> self&
+{
+    return append(view(s));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::append(const_pointer s, size_t n) -> self&
+{
+    return append(view(s, n));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::append(size_t n, char c) -> self&
+{
+    size_t r = length() + n;
+    if (r > capacity()) {
+        reallocate(std::max(r, 2 * capacity()));
+    }
+
+    while (n--) {
+        data_[length_++] = c;
+    }
+    data_[length_] = value_type();
+
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+template <typename Iter>
+auto secure_basic_string<C, T, A>::append(Iter first, Iter last) -> self&
+{
+    size_t n = std::distance(first, last);
+    size_t r = length() + n;
+    if (r > capacity()) {
+        reallocate(std::max(r, 2 * capacity()));
+    }
+
+    for (; first != last; ++first) {
+        data_[length_++] = *first;
+    }
+    data_[length_] = value_type();
+
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::append(std::initializer_list<value_type> list) -> self&
+{
+    return append(list.begin(), list.size());
 }
 
 
@@ -500,6 +695,90 @@ void secure_basic_string<C, T, A>::push_back(value_type c)
     // assign
     data_[length_++] = c;
     data_[length_] = value_type();
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::assign(const self& str) -> self&
+{
+    return assign(view(str));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::assign(const view& str) -> self&
+{
+    size_t n = str.length();
+    size_t r = length() + n;
+    if (r > capacity()) {
+        reallocate(std::max(r, 2 * capacity()));
+    }
+
+    length_ = n;
+    traits_type::assign(data_, str.data(), n);
+    traits_type::assign(data_[n], value_type());
+
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::assign(const self& str, size_t subpos, size_t sublen) -> self&
+{
+    return assign(view(str).substr(subpos, sublen));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::assign(const_pointer s) -> self&
+{
+    return assign(view(s));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::assign(const_pointer s, size_t n) -> self&
+{
+    return assign(view(s, n));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::assign(size_t n, value_type c) -> self&
+{
+    size_t r = length() + n;
+    if (r > capacity()) {
+        reallocate(std::max(r, 2 * capacity()));
+    }
+
+    length_ = n;
+    traits_type::assign(data_, n, c);
+    traits_type::assign(data_[n], value_type());
+
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+template <typename Iter>
+auto secure_basic_string<C, T, A>::assign(Iter first, Iter last) -> self&
+{
+    return assign(self(first, last));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::assign(std::initializer_list<value_type> list) -> self&
+{
+    return assign(list.begin(), list.size());
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::assign(self&& str) noexcept -> self&
+{
+    swap(str);
+    return *this;
 }
 
 
@@ -862,6 +1141,13 @@ template <typename C, typename T, typename A>
 int secure_basic_string<C, T, A>::compare(size_type pos, size_type len, const_pointer s, size_type n) const
 {
     return view(*this, pos, len).compare(s, n);
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::substr(size_type pos, size_type len) const -> self
+{
+    return self(*this, pos, len);
 }
 
 
