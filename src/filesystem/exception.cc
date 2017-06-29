@@ -31,8 +31,14 @@ const char* filesystem_error::what() const throw ()
             return "Out of memory.";
         case filesystem_not_a_symlink:
             return "Not a symbolic link.";
-         case filesystem_unexpected_error:
-         default:
+        case filesystem_not_a_file:
+            return "Not a file.";
+        case filesystem_no_such_directory:
+            return "No such directory.";
+        case filesystem_destination_exists:
+            return "Destination already exists.";
+        case filesystem_unexpected_error:
+        default:
             return "Unexpected error in stat.";
     }
 }

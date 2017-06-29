@@ -202,6 +202,66 @@ bool isabs_impl(const Path& path)
     return false;
 }
 
+// MANIPULATION
+
+
+template <typename Path, typename MoveFile>
+static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveFile move)
+{
+    auto dst_dir = dir_name(dst);
+
+    // ensure we have a file and a dest directory
+    auto src_stat = stat(src);
+    auto dst_stat = stat(dst_dir);
+    if (!isfile(src)) {
+        throw filesystem_error(filesystem_not_a_file);
+    } else if (!exists(dst_stat)) {
+        throw filesystem_error(filesystem_no_such_directory);
+    }
+
+    // POSIX rename doesn't work accross filesystems
+    if (src_stat.st_dev != dst_stat.st_dev) {
+        // TODO: implement.
+        //return copy_file(src, dst, replace);
+    }
+
+    if (exists(dst)) {
+        if (replace) {
+            remove_file(dst);
+        } else {
+            throw filesystem_error(filesystem_destination_exists);
+        }
+    }
+
+    return move(src, dst);
+}
+
+
+template <typename Path, typename CopyFile>
+static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyFile copy)
+{
+    auto dst_dir = dir_name(dst);
+
+    // ensure we have a file and a dest directory
+    auto src_stat = stat(src);
+    auto dst_stat = stat(dst_dir);
+    if (!isfile(src)) {
+        throw filesystem_error(filesystem_not_a_file);
+    } else if (!exists(dst_stat)) {
+        throw filesystem_error(filesystem_no_such_directory);
+    }
+
+    if (exists(dst)) {
+        if (replace) {
+            remove_file(dst);
+        } else {
+            throw filesystem_error(filesystem_destination_exists);
+        }
+    }
+
+    return copy(src, dst);
+}
+
 
 // FUNCTIONS
 // ---------
@@ -295,6 +355,14 @@ path_t normcase(const path_t& path)
 }
 
 // MANIPULATION
+
+bool move_file(const path_t& src, const path_t& dst, bool replace)
+{
+    return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+        return rename(src.data(), dst.data()) == 0;
+    });
+}
+
 
 bool remove_file(const path_t& path)
 {

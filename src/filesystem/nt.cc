@@ -317,6 +317,53 @@ static Path normcase_impl(const Path& path, NormCase normcase)
 }
 
 
+// MANIPULATION
+
+template <typename Path>
+static void check_file(const Path& src, const Path& dst, bool replace)
+{
+    auto dst_dir = dir_name(dst);
+
+    // ensure we have a file and a dest directory
+    auto src_stat = stat(src);
+    auto dst_stat = stat(dst_dir);
+    if (!isfile(src)) {
+        throw filesystem_error(filesystem_not_a_file);
+    } else if (!exists(dst_stat)) {
+        throw filesystem_error(filesystem_no_such_directory);
+    }
+
+    if (exists(dst)) {
+        if (replace) {
+            remove_file(dst);
+        } else {
+            throw filesystem_error(filesystem_destination_exists);
+        }
+    }
+}
+
+
+template <typename Path, typename MoveFile>
+static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveFile move)
+{
+    check_file(src, dst, replace);
+
+    // Windows MoveFileW can handle different filesystems
+    // don't worry about st_dev.
+    return move(src, dst);
+}
+
+
+
+template <typename Path, typename CopyFile>
+static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyFile copy)
+{
+    check_file(src, dst, replace);
+
+    return copy(src, dst);
+}
+
+
 // FUNCTIONS
 // ---------
 
@@ -412,6 +459,16 @@ path_t normcase(const path_t& path)
 
 // MANIPULATION
 
+bool move_file(const path_t& src, const path_t& dst, bool replace)
+{
+    return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+        auto s = reinterpret_cast<const wchar_t*>(src.data());
+        auto d = reinterpret_cast<const wchar_t*>(dst.data());
+        return MoveFileW(s, d);
+    });
+}
+
+
 bool remove_file(const path_t& path)
 {
     return DeleteFileW(reinterpret_cast<const wchar_t*>(path.data()));
@@ -499,6 +556,15 @@ backup_path_t normcase(const backup_path_t& path)
 }
 
 // MANIPULATION
+
+
+bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
+{
+    return move_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst) {
+        return MoveFile(src.data(), dst.data());
+    });
+}
+
 
 bool remove_file(const backup_path_t& path)
 {
