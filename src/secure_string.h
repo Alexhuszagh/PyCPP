@@ -216,12 +216,349 @@ private:
     void reset();
     void reallocate(size_type n);
 
-    // TODO: need the remaining operators...
+    // NON-MEMBER FUNCTIONS
+    // --------------------
+    template <typename C, typename T, typename A>
+    friend void swap(secure_basic_string<C, T, A>& lhs, secure_basic_string<C, T, A>& rhs);
+
+//    template <typename C, typename T, typename A>
+//    friend istream<C, T>& operator>>(istream<C, T>& stream, secure_basic_string<C, T, A>& str);
+//
+//    template <typename C, typename T, typename A>
+//    friend ostream<C, T>& operator<<(ostream<C, T>& stream, secure_basic_string<C, T, A>& str);
+//
+//    // RELATIONAL OPERATORS
+//    template <typename C, typename T, typename A>
+//    friend bool operator==(const secure_basic_string<C, T, A>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator==(const basic_string_view<C, T>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator==(const secure_basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator==(const C* lhs, const secure_basic_string<C, T, A>& rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator==(const secure_basic_string<C, T, A>& lhs, const C* rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator!=(const secure_basic_string<C, T, A>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator!=(const basic_string_view<C, T>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator!=(const secure_basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator!=(const C* lhs, const secure_basic_string<C, T, A>& rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator!=(const secure_basic_string<C, T, A>& lhs, const C* rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<(const secure_basic_string<C, T, A>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<(const basic_string_view<C, T>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<(const secure_basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<(const C* lhs, const secure_basic_string<C, T, A>& rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<(const secure_basic_string<C, T, A>& lhs, const C* rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<=(const secure_basic_string<C, T, A>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<=(const basic_string_view<C, T>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<=(const secure_basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<=(const C* lhs, const secure_basic_string<C, T, A>& rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator<=(const secure_basic_string<C, T, A>& lhs, const C* rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>(const secure_basic_string<C, T, A>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>(const basic_string_view<C, T>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>(const secure_basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>(const C* lhs, const secure_basic_string<C, T, A>& rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>(const secure_basic_string<C, T, A>& lhs, const C* rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>=(const secure_basic_string<C, T, A>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>=(const basic_string_view<C, T>& lhs, const secure_basic_string<C, T, A>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>=(const secure_basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept;
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>=(const C* lhs, const secure_basic_string<C, T, A>& rhs);
+//
+//    template <typename C, typename T, typename A>
+//    friend bool operator>=(const secure_basic_string<C, T, A>& lhs, const C* rhs);
 };
 
 
 // IMPLEMENTATION
 // --------------
+
+
+template <typename C, typename T, typename A>
+const typename secure_basic_string<C, T, A>::size_type secure_basic_string<C, T, A>::npos;
+
+template <typename C, typename T, typename A>
+void swap(secure_basic_string<C, T, A>& lhs, secure_basic_string<C, T, A>& rhs)
+{
+    lhs.swap(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+std::basic_istream<C, T> & operator>>(std::basic_istream<C, T> &stream, secure_basic_string<C, T, A>& str)
+{
+    return stream.read(const_cast<char*>(str.data_), str.length_);
+}
+
+
+template <typename C, typename T, typename A>
+std::basic_ostream<C, T> & operator<<(std::basic_ostream<C, T> &stream, secure_basic_string<C, T, A>& str)
+{
+    return stream.write(str.data(), str.length());
+}
+
+
+template <typename C, typename T, typename A>
+bool operator==(const secure_basic_string<C, T, A>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    size_t left_size = left.size();
+    return left_size == rhs.size() && T::compare(left.data(), rhs.data(), left_size) == 0;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator==(const basic_string_view<C, T>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return secure_basic_string<C, T, A>(left) == rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator==(const secure_basic_string<C, T, A>& left, const basic_string_view<C, T>& rhs) noexcept
+{
+    return left == secure_basic_string<C, T, A>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator==(const C* left, const secure_basic_string<C, T, A>& rhs)
+{
+    return secure_basic_string<C, T, A>(left) == rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator==(const secure_basic_string<C, T, A>& left, const C* rhs)
+{
+    return left == secure_basic_string<C, T, A>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator!=(const secure_basic_string<C, T, A>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+
+    return !(left == rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator!=(const basic_string_view<C, T>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return !(left == rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator!=(const secure_basic_string<C, T, A>& left,
+    const basic_string_view<C, T>& rhs) noexcept
+{
+    return !(left == rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator!=(const C* left, const secure_basic_string<C, T, A>& rhs)
+{
+    return !(left == rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator!=(const secure_basic_string<C, T, A>& left, const C* rhs)
+{
+    return !(left == rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<(const secure_basic_string<C, T, A>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return left.compare(rhs) < 0;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<(const basic_string_view<C, T>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return secure_basic_string<C, T, A>(left) < rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<(const secure_basic_string<C, T, A>& left, const basic_string_view<C, T>& rhs) noexcept
+{
+    return left < secure_basic_string<C, T, A>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<(const C* left, const secure_basic_string<C, T, A>& rhs)
+{
+    return secure_basic_string<C, T, A>(left) < rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<(const secure_basic_string<C, T, A>& left, const C* rhs)
+{
+    return left < secure_basic_string<C, T, A>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<=(const secure_basic_string<C, T, A>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return !(rhs < left);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<=(const basic_string_view<C, T>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return secure_basic_string<C, T, A>(left) <= rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<=(const secure_basic_string<C, T, A>& left, const basic_string_view<C, T>& rhs) noexcept
+{
+    return left <= secure_basic_string<C, T, A>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<=(const C* left, const secure_basic_string<C, T, A>& rhs)
+{
+    return secure_basic_string<C, T, A>(left) <= rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator<=(const secure_basic_string<C, T, A>& left, const C* rhs)
+{
+    return left <= secure_basic_string<C, T, A>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>(const secure_basic_string<C, T, A>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return rhs < left;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>(const basic_string_view<C, T>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return secure_basic_string<C, T, A>(left) > rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>(const secure_basic_string<C, T, A>& left, const basic_string_view<C, T>& rhs) noexcept
+{
+    return left > secure_basic_string<C, T, A>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>(const C* left, const secure_basic_string<C, T, A>& rhs)
+{
+    return secure_basic_string<C, T, A>(left) > rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>(const secure_basic_string<C, T, A>& left, const C* rhs)
+{
+    return left > secure_basic_string<C, T, A>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>=(const secure_basic_string<C, T, A>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return !(left < rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>=(const basic_string_view<C, T>& left, const secure_basic_string<C, T, A>& rhs) noexcept
+{
+    return secure_basic_string<C, T, A>(left) >= rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>=(const secure_basic_string<C, T, A>& left, const basic_string_view<C, T>& rhs) noexcept
+{
+    return left >= secure_basic_string<C, T, A>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>=(const C* left, const secure_basic_string<C, T, A>& rhs)
+{
+    return secure_basic_string<C, T, A>(left) >= rhs;
+}
+
+
+template <typename C, typename T, typename A>
+bool operator>=(const secure_basic_string<C, T, A>& left, const C* rhs)
+{
+    return left >= secure_basic_string<C, T, A>(rhs);
+}
 
 
 template <typename C, typename T, typename A>
@@ -338,8 +675,9 @@ secure_basic_string<C, T, A>::secure_basic_string(Iter first, Iter last)
     capacity_ = length_ + 1;
     data_ = allocator_type().allocate(capacity_);
 
+    size_t n = 0;
     for (; first != last; ++first) {
-        data_[length_++] = *first;
+        data_[n++] = *first;
     }
     data_[length_] = value_type();
 }

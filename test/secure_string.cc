@@ -37,5 +37,5 @@ TEST(secure_string, secure_string)
     secure_string str2(str.begin(), str.end());
     EXPECT_EQ(str2.size(), 15);
     EXPECT_GT(str2.capacity(), 15);
-//    EXPECT_EQ(str, str2);
+    EXPECT_EQ(str, str2);
 }
