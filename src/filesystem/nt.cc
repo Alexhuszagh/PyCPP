@@ -469,6 +469,16 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 }
 
 
+bool copy_file(const path_t& src, const path_t& dst, bool replace)
+{
+    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+        auto s = reinterpret_cast<const wchar_t*>(src.data());
+        auto d = reinterpret_cast<const wchar_t*>(dst.data());
+        return CopyFileW(s, d);
+    });
+}
+
+
 bool remove_file(const path_t& path)
 {
     return DeleteFileW(reinterpret_cast<const wchar_t*>(path.data()));
@@ -562,6 +572,14 @@ bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
 {
     return move_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst) {
         return MoveFile(src.data(), dst.data());
+    });
+}
+
+
+bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
+{
+    return copy_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst) {
+        return CopyFile(src.data(), dst.data());
     });
 }
 

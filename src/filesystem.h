@@ -242,10 +242,10 @@ path_t relpath(const path_t& path, const path_t& start);
  */
 bool move_file(const path_t& src, const path_t& dst, bool replace = false);
 
-///**
-// *  \brief Copy file, and copy was successful.
-// */
-//bool copy_file(const path_t& src, const path_t& dst, bool replace = false);
+/**
+ *  \brief Copy file, and copy was successful.
+ */
+bool copy_file(const path_t& src, const path_t& dst, bool replace = false);
 
 /**
  *  \brief Remove file, return if file was successfully removed.
@@ -448,10 +448,10 @@ backup_path_t relpath(const backup_path_t& path, const backup_path_t& start);
  */
 bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
 
-///**
-// *  \brief Copy file, and copy was successful.
-// */
-//bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
+/**
+ *  \brief Copy file, and copy was successful.
+ */
+bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
 
 /**
  *  \brief Remove file, return if file was successfully removed.

@@ -205,6 +205,37 @@ bool isabs_impl(const Path& path)
 // MANIPULATION
 
 
+/**
+ *  \brief Use C FILE descriptors for high performance file copying.
+ */
+static bool copy_file_buffer(const path_t& src, const path_t& dst)
+{
+    static constexpr size_t length = 4096;
+
+    FILE *in = fopen(src.data(), "rb");
+    if (!in) {
+        return false;
+    }
+    FILE *out = fopen(dst.data(), "wb");
+    if (!out) {
+        return false;
+    }
+
+    char* buf = new char[length];
+    int read = 0;
+    while ((read = fread(buf, 1, length, in)) == length) {
+        fwrite(buf, 1, length, out);
+    }
+    fwrite(buf, 1, read, out);
+
+    delete[] buf;
+    fclose(out);
+    fclose(in);
+
+    return true;
+}
+
+
 template <typename Path, typename MoveFile>
 static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveFile move)
 {
@@ -221,8 +252,7 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 
     // POSIX rename doesn't work accross filesystems
     if (src_stat.st_dev != dst_stat.st_dev) {
-        // TODO: implement.
-        //return copy_file(src, dst, replace);
+        return copy_file(src, dst, replace);
     }
 
     if (exists(dst)) {
@@ -364,6 +394,14 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 }
 
 
+bool copy_file(const path_t& src, const path_t& dst, bool replace)
+{
+    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+        return copy_file_buffer(src, dst);
+    });
+}
+
+
 bool remove_file(const path_t& path)
 {
     return unlink(path.data()) == 0;
@@ -447,15 +485,6 @@ backup_path_t expandvars(const backup_path_t& path)
 backup_path_t normcase(const backup_path_t& path)
 {
     return path;
-}
-
-
-// MANIPULATION
-
-
-bool remove_file(const path_t& path)
-{
-    return remove_file(backup_path_to_path(path));
 }
 
 #endif
