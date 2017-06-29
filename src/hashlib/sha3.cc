@@ -47,7 +47,7 @@ static void keccak_init(sha3_context* ctx, uint32_t bits)
     /* NB: The Keccak capacity parameter = bits * 2 */
     uint32_t rate = 1600 - bits * 2;
 
-    memset(ctx, 0, sizeof(sha3_context));
+    secure_zero(ctx, sizeof(sha3_context));
     ctx->block_size = rate / 8;
     assert(rate <= 1600 && (rate % 64) == 0);
 }

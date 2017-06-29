@@ -266,13 +266,13 @@ void md5_final(uint8_t* result, md5_context* ctx)
     available = 64 - used;
 
     if (available < 8) {
-        memset(&ctx->buffer[used], 0, available);
+        secure_zero(&ctx->buffer[used], available);
         body(ctx, ctx->buffer, 64);
         used = 0;
         available = 64;
     }
 
-    memset(&ctx->buffer[used], 0, available - 8);
+    secure_zero(&ctx->buffer[used], available - 8);
 
     ctx->lo <<= 3;
     MD5_OUT(&ctx->buffer[56], ctx->lo)
@@ -285,7 +285,7 @@ void md5_final(uint8_t* result, md5_context* ctx)
     MD5_OUT(&result[8], ctx->c)
     MD5_OUT(&result[12], ctx->d)
 
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
 }
 
 
@@ -318,7 +318,7 @@ md5_hash::md5_hash(const string_view& str)
 
 md5_hash::~md5_hash()
 {
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
     delete ctx;
 }
 

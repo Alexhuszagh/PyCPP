@@ -240,13 +240,13 @@ void md4_final(unsigned char *result, md4_context *ctx)
     available = 64 - used;
 
     if (available < 8) {
-        memset(&ctx->buffer[used], 0, available);
+        secure_zero(&ctx->buffer[used], available);
         body(ctx, ctx->buffer, 64);
         used = 0;
         available = 64;
     }
 
-    memset(&ctx->buffer[used], 0, available - 8);
+    secure_zero(&ctx->buffer[used], available - 8);
 
     ctx->lo <<= 3;
     OUT(&ctx->buffer[56], ctx->lo)
@@ -259,7 +259,7 @@ void md4_final(unsigned char *result, md4_context *ctx)
     OUT(&result[8], ctx->c)
     OUT(&result[12], ctx->d)
 
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
 }
 
 // OBJECTS
@@ -291,7 +291,7 @@ md4_hash::md4_hash(const string_view& str)
 
 md4_hash::~md4_hash()
 {
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
     delete ctx;
 }
 

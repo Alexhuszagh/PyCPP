@@ -260,7 +260,7 @@ void sha512_final(uint8_t* result, sha2_512_context *ctx)
         memcpy_be64toh(result, ctx->hash, ctx->digest_length);
     }
 
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
 }
 
 
@@ -293,7 +293,7 @@ sha2_384_hash::sha2_384_hash(const string_view& str)
 
 sha2_384_hash::~sha2_384_hash()
 {
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
     delete ctx;
 }
 
@@ -384,7 +384,7 @@ sha2_512_hash::sha2_512_hash(const string_view& str)
 
 sha2_512_hash::~sha2_512_hash()
 {
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
     delete ctx;
 }
 

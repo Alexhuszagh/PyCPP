@@ -176,7 +176,7 @@ void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 
     /* Wipe variables */
     a = b = c = d = e = 0;
-    memset(block, 0, sizeof(block));
+    secure_zero(block, sizeof(block));
 }
 
 
@@ -244,8 +244,8 @@ void sha1_final(uint8_t digest[20], sha1_context* ctx)
         digest[i] = (uint8_t) ((ctx->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
     }
 
-    memset(ctx, 0, sizeof(*ctx));
-    memset(&finalcount, 0, sizeof(finalcount));
+    secure_zero(ctx, sizeof(*ctx));
+    secure_zero(&finalcount, sizeof(finalcount));
 }
 
 
@@ -278,7 +278,7 @@ sha1_hash::sha1_hash(const string_view& str)
 
 sha1_hash::~sha1_hash()
 {
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
     delete ctx;
 }
 

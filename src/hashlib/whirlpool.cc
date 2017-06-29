@@ -660,7 +660,7 @@ static void whirlpool_process_block(uint64_t* hash, uint64_t* block)
 static void whirlpool_init(whirlpool_context* ctx)
 {
     ctx->length = 0;
-    memset(ctx->hash, 0, sizeof(ctx->hash));
+    secure_zero(ctx->hash, sizeof(ctx->hash));
 }
 
 
@@ -736,7 +736,7 @@ static void whirlpool_final(uint8_t* result, whirlpool_context *ctx)
     /* save result hash */
     memcpy_be64toh(result, ctx->hash, 64);
 
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
 }
 
 
@@ -769,7 +769,7 @@ whirlpool_hash::whirlpool_hash(const string_view& str)
 
 whirlpool_hash::~whirlpool_hash()
 {
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
     delete ctx;
 }
 

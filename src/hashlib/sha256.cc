@@ -259,7 +259,7 @@ sha2_224_hash::sha2_224_hash(const string_view& str)
 
 sha2_224_hash::~sha2_224_hash()
 {
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
     delete ctx;
 }
 
@@ -350,7 +350,7 @@ sha2_256_hash::sha2_256_hash(const string_view& str)
 
 sha2_256_hash::~sha2_256_hash()
 {
-    memset(ctx, 0, sizeof(*ctx));
+    secure_zero(ctx, sizeof(*ctx));
     delete ctx;
 }
 
