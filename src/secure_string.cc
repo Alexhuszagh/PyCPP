@@ -26,7 +26,7 @@
 
 static void secure_zero_memory(void* ptr, size_t len)
 {
-    SecureZeroMemory(dst, bytes);
+    SecureZeroMemory(ptr, len);
 }
 
 #else                                   // POSIX
