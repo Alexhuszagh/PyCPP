@@ -327,216 +327,216 @@ std::basic_ostream<C, T> & operator<<(std::basic_ostream<C, T> &stream, basic_st
 
 
 template <typename C, typename T>
-bool operator==(const basic_string_view<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator==(const basic_string_view<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    size_t left_size = left.size();
-    return left_size == rhs.size() && T::compare(left.data(), rhs.data(), left_size) == 0;
+    size_t lhs_size = lhs.size();
+    return lhs_size == rhs.size() && T::compare(lhs.data(), rhs.data(), lhs_size) == 0;
 }
 
 
 template <typename C, typename T>
-bool operator==(const std::basic_string<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator==(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    return basic_string_view<C, T>(left) == rhs;
+    return basic_string_view<C, T>(lhs) == rhs;
 }
 
 
 template <typename C, typename T>
-bool operator==(const basic_string_view<C, T>& left, const std::basic_string<C, T>& rhs) noexcept
+bool operator==(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
 {
-    return left == basic_string_view<C, T>(rhs);
+    return lhs == basic_string_view<C, T>(rhs);
 }
 
 
 template <typename C, typename T>
-bool operator==(const C* left, const basic_string_view<C, T>& rhs)
+bool operator==(const C* lhs, const basic_string_view<C, T>& rhs)
 {
-    return basic_string_view<C, T>(left) == rhs;
+    return basic_string_view<C, T>(lhs) == rhs;
 }
 
 
 template <typename C, typename T>
-bool operator==(const basic_string_view<C, T>& left, const C* rhs)
+bool operator==(const basic_string_view<C, T>& lhs, const C* rhs)
 {
-    return left == basic_string_view<C, T>(rhs);
+    return lhs == basic_string_view<C, T>(rhs);
 }
 
 
 template <typename C, typename T>
-bool operator!=(const basic_string_view<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator!=(const basic_string_view<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
 
-    return !(left == rhs);
+    return !(lhs == rhs);
 }
 
 
 template <typename C, typename T>
-bool operator!=(const std::basic_string<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator!=(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    return !(left == rhs);
+    return !(lhs == rhs);
 }
 
 
 template <typename C, typename T>
-bool operator!=(const basic_string_view<C, T>& left,
+bool operator!=(const basic_string_view<C, T>& lhs,
     const std::basic_string<C, T>& rhs) noexcept
 {
-    return !(left == rhs);
+    return !(lhs == rhs);
 }
 
 
 template <typename C, typename T>
-bool operator!=(const C* left, const basic_string_view<C, T>& rhs)
+bool operator!=(const C* lhs, const basic_string_view<C, T>& rhs)
 {
-    return !(left == rhs);
+    return !(lhs == rhs);
 }
 
 
 template <typename C, typename T>
-bool operator!=(const basic_string_view<C, T>& left, const C* rhs)
+bool operator!=(const basic_string_view<C, T>& lhs, const C* rhs)
 {
-    return !(left == rhs);
+    return !(lhs == rhs);
 }
 
 
 template <typename C, typename T>
-bool operator<(const basic_string_view<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator<(const basic_string_view<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    return left.compare(rhs) < 0;
+    return lhs.compare(rhs) < 0;
 }
 
 
 template <typename C, typename T>
-bool operator<(const std::basic_string<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator<(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    return basic_string_view<C, T>(left) < rhs;
+    return basic_string_view<C, T>(lhs) < rhs;
 }
 
 
 template <typename C, typename T>
-bool operator<(const basic_string_view<C, T>& left, const std::basic_string<C, T>& rhs) noexcept
+bool operator<(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
 {
-    return left < basic_string_view<C, T>(rhs);
+    return lhs < basic_string_view<C, T>(rhs);
 }
 
 
 template <typename C, typename T>
-bool operator<(const C* left, const basic_string_view<C, T>& rhs)
+bool operator<(const C* lhs, const basic_string_view<C, T>& rhs)
 {
-    return basic_string_view<C, T>(left) < rhs;
+    return basic_string_view<C, T>(lhs) < rhs;
 }
 
 
 template <typename C, typename T>
-bool operator<(const basic_string_view<C, T>& left, const C* rhs)
+bool operator<(const basic_string_view<C, T>& lhs, const C* rhs)
 {
-    return left < basic_string_view<C, T>(rhs);
+    return lhs < basic_string_view<C, T>(rhs);
 }
 
 
 template <typename C, typename T>
-bool operator<=(const basic_string_view<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator<=(const basic_string_view<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    return !(rhs < left);
+    return !(rhs < lhs);
 }
 
 
 template <typename C, typename T>
-bool operator<=(const std::basic_string<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator<=(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    return basic_string_view<C, T>(left) <= rhs;
+    return basic_string_view<C, T>(lhs) <= rhs;
 }
 
 
 template <typename C, typename T>
-bool operator<=(const basic_string_view<C, T>& left, const std::basic_string<C, T>& rhs) noexcept
+bool operator<=(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
 {
-    return left <= basic_string_view<C, T>(rhs);
+    return lhs <= basic_string_view<C, T>(rhs);
 }
 
 
 template <typename C, typename T>
-bool operator<=(const C* left, const basic_string_view<C, T>& rhs)
+bool operator<=(const C* lhs, const basic_string_view<C, T>& rhs)
 {
-    return basic_string_view<C, T>(left) <= rhs;
+    return basic_string_view<C, T>(lhs) <= rhs;
 }
 
 
 template <typename C, typename T>
-bool operator<=(const basic_string_view<C, T>& left, const C* rhs)
+bool operator<=(const basic_string_view<C, T>& lhs, const C* rhs)
 {
-    return left <= basic_string_view<C, T>(rhs);
+    return lhs <= basic_string_view<C, T>(rhs);
 }
 
 
 template <typename C, typename T>
-bool operator>(const basic_string_view<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator>(const basic_string_view<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    return rhs < left;
+    return rhs < lhs;
 }
 
 
 template <typename C, typename T>
-bool operator>(const std::basic_string<C, T>& left,
+bool operator>(const std::basic_string<C, T>& lhs,
     const basic_string_view<C, T>& rhs) noexcept
 {
-    return basic_string_view<C, T>(left) > rhs;
+    return basic_string_view<C, T>(lhs) > rhs;
 }
 
 
 template <typename C, typename T>
-bool operator>(const basic_string_view<C, T>& left, const std::basic_string<C, T>& rhs) noexcept
+bool operator>(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
 {
-    return left > basic_string_view<C, T>(rhs);
+    return lhs > basic_string_view<C, T>(rhs);
 }
 
 
 template <typename C, typename T>
-bool operator>(const C* left, const basic_string_view<C, T>& rhs)
+bool operator>(const C* lhs, const basic_string_view<C, T>& rhs)
 {
-    return basic_string_view<C, T>(left) > rhs;
+    return basic_string_view<C, T>(lhs) > rhs;
 }
 
 
 template <typename C, typename T>
-bool operator>(const basic_string_view<C, T>& left, const C* rhs)
+bool operator>(const basic_string_view<C, T>& lhs, const C* rhs)
 {
-    return left > basic_string_view<C, T>(rhs);
+    return lhs > basic_string_view<C, T>(rhs);
 }
 
 
 template <typename C, typename T>
-bool operator>=(const basic_string_view<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator>=(const basic_string_view<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    return !(left < rhs);
+    return !(lhs < rhs);
 }
 
 
 template <typename C, typename T>
-bool operator>=(const std::basic_string<C, T>& left, const basic_string_view<C, T>& rhs) noexcept
+bool operator>=(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
-    return basic_string_view<C, T>(left) >= rhs;
+    return basic_string_view<C, T>(lhs) >= rhs;
 }
 
 
 template <typename C, typename T>
-bool operator>=(const basic_string_view<C, T>& left, const std::basic_string<C, T>& rhs) noexcept
+bool operator>=(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
 {
-    return left >= basic_string_view<C, T>(rhs);
+    return lhs >= basic_string_view<C, T>(rhs);
 }
 
 
 template <typename C, typename T>
-bool operator>=(const C* left, const basic_string_view<C, T>& rhs)
+bool operator>=(const C* lhs, const basic_string_view<C, T>& rhs)
 {
-    return basic_string_view<C, T>(left) >= rhs;
+    return basic_string_view<C, T>(lhs) >= rhs;
 }
 
 
 template <typename C, typename T>
-bool operator>=(const basic_string_view<C, T>& left, const C* rhs)
+bool operator>=(const basic_string_view<C, T>& lhs, const C* rhs)
 {
-    return left >= basic_string_view<C, T>(rhs);
+    return lhs >= basic_string_view<C, T>(rhs);
 }
 
 
@@ -1210,14 +1210,14 @@ auto basic_string_view<C, T>::find_last_not_of(value_type c, size_type pos) cons
 template <typename C, typename T>
 int basic_string_view<C, T>::compare(const self& str) const noexcept
 {
-    size_type left_size = size();
-    size_type right_size = str.size();
-    int result = traits_type::compare(data(), str.data(), std::min(left_size, right_size));
+    size_type lhs_size = size();
+    size_type rhs_size = str.size();
+    int result = traits_type::compare(data(), str.data(), std::min(lhs_size, rhs_size));
     if (result != 0) {
         return result;
-    } else if (left_size < right_size) {
+    } else if (lhs_size < rhs_size) {
         return -1;
-    } else if (left_size > right_size) {
+    } else if (lhs_size > rhs_size) {
         return 1;
     }
     return 0;
