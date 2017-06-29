@@ -238,6 +238,11 @@ path_t relpath(const path_t& path, const path_t& start);
 // MANIPULATION
 
 /**
+ *  \brief Copy file metadata from src to dst.
+ */
+bool copystat(const path_t& src, const path_t& dst);
+
+/**
  *  \brief Move file, as if by rename, and return if rename was successful.
  */
 bool move_file(const path_t& src, const path_t& dst, bool replace = false);
@@ -445,6 +450,11 @@ backup_path_t relpath(const backup_path_t& path);
 backup_path_t relpath(const backup_path_t& path, const backup_path_t& start);
 
 // MANIPULATION
+
+/**
+ *  \brief Copy file metadata from src to dst.
+ */
+bool copystat(const backup_path_t& src, const backup_path_t& dst);
 
 /**
  *  \brief Move file, as if by rename, and return if rename was successful.

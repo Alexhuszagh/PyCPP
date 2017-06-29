@@ -160,6 +160,17 @@ static void handle_error(int code)
    } while(0)
 
 
+#define TIME_T_TO_FILETIME(time, filetime)                                      \
+  do {                                                                          \
+    uint64_t bigtime = ((int64_t) (time) * 10000000LL) + 116444736000000000ULL; \
+    (filetime).dwLowDateTime = bigtime & 0xFFFFFFFF;                            \
+    (filetime).dwHighDateTime = bigtime >> 32;                                  \
+  } while(0)
+
+// TODO: check here for how to do it
+// https://github.com/joyent/libuv/blob/1dc2709b999a84520ab1b3c56c0e082bf8617c1f/src/win/fs.c#L1206
+
+
 /**
  *  \brief Map GetLastError to errno.
  */
@@ -235,6 +246,13 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
     buffer->st_rdev = 0;
 
     return 0;
+}
+
+
+static int set_stat(HANDLE handle, stat_t* data)
+{
+    // TODO: this will set the stat data.
+    // get_handle(path, false, [](){});
 }
 
 
@@ -603,6 +621,24 @@ static bool islink_impl(const Path& path)
     return check_impl(path, islink_stat, true);
 }
 
+template <typename Path>
+static bool copy_stat_impl(const Path& src, const Path& dst)
+{
+    auto src_stat = stat(src);
+    auto dst_stat = stat(dst);
+
+    // Need a set_stat_impl
+
+    // WINDOWS
+    // TODO: need to convert thestat data
+    // SetFileTime(filename, &thefiletime, (LPFILETIME) NULL,(LPFILETIME) NULL);
+
+    // LINUX
+    // use utime
+
+    return false;
+}
+
 // FUNCTIONS
 // ---------
 
@@ -672,6 +708,11 @@ bool samestat(const stat_t& s1, const stat_t& s2)
     return s1.st_ino == s2.st_ino && s1.st_dev == s2.st_dev;
 }
 
+bool copystat(const path_t& src, const path_t& dst)
+{
+    return copy_stat_impl(src, dst);
+}
+
 
 #if defined(backup_path_t)          // BACKUP PATH
 
@@ -733,6 +774,12 @@ bool lexists(const backup_path_t& path)
 bool samefile(const backup_path_t& p1, const backup_path_t& p2)
 {
     return samestat(stat(p1), stat(p2));
+}
+
+
+bool copystat(const backup_path_t& src, const backup_path_t& dst)
+{
+    return copy_stat_impl(src, dst);
 }
 
 #endif

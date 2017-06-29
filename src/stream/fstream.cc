@@ -17,7 +17,7 @@
  */
 
 #include "codec.h"
-#include "fstream.h"
+#include "stream/fstream.h"
 
 
 #if defined(HAVE_GCC)                   // GCC

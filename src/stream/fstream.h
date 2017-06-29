@@ -58,12 +58,6 @@ public:
 private:
     FILE *file = nullptr;
     std::basic_filebuf<char> buffer;
-
-    typedef char                          char_type;
-    typedef std::char_traits<char>        traits_type;
-    typedef typename traits_type::int_type int_type;
-    typedef typename traits_type::pos_type pos_type;
-    typedef typename traits_type::off_type off_type;
 };
 
 
@@ -98,12 +92,6 @@ public:
 private:
     FILE *file = nullptr;
     std::basic_filebuf<char> buffer;
-
-    typedef char                          char_type;
-    typedef std::char_traits<char>        traits_type;
-    typedef typename traits_type::int_type int_type;
-    typedef typename traits_type::pos_type pos_type;
-    typedef typename traits_type::off_type off_type;
 };
 
 
@@ -138,12 +126,6 @@ public:
 private:
     FILE *file = nullptr;
     std::basic_filebuf<char> buffer;
-
-    typedef char                          char_type;
-    typedef std::char_traits<char>        traits_type;
-    typedef typename traits_type::int_type int_type;
-    typedef typename traits_type::pos_type pos_type;
-    typedef typename traits_type::off_type off_type;
 };
 
 #else                   // NON-GCC COMPILER

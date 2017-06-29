@@ -12,11 +12,28 @@ enable_testing()
 set(CMAKE_CXX_STANDARD 11)
 set(CXX_STANDARD TRUE)
 
+# MODULES
 option(BUILD_CIPHER "Build cipher library" ON)
 option(BUILD_FILESYSTEM "Build filesystem library" ON)
 option(BUILD_HASHLIB "Build hash library" ON)
+option(BUILD_STREAM "Build stream library" ON)
+
+# WITH MODULE
+option(WITH_CIPHER "Build (only) cipher library" OFF)
+option(WITH_FILESYSTEM "Build (only) filesystem library" OFF)
+option(WITH_HASHLIB "Build (only) hash library" OFF)
+option(WITH_STREAM "Build (only) stream library" OFF)
+
+# OPTIONS
 option(BUILD_STATIC "Build static library" ON)
 option(BUILD_TESTS "Build funxx library tests" OFF)
+
+if(WITH_CIPHER OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_STREAM)
+    set(BUILD_CIPHER ${WITH_CIPHER})
+    set(BUILD_FILESYSTEM ${WITH_FILESYSTEM})
+    set(BUILD_HASHLIB ${WITH_HASHLIB})
+    set(BUILD_STREAM ${WITH_STREAM})
+endif()
 
 if(BUILD_STATIC)
     if(UNIX)
@@ -54,7 +71,6 @@ set(SOURCE_FILES
     src/byteorder.cc
     src/casemap.cc
     src/codec.cc
-    src/fstream.cc
     src/getline.cc
     src/gettimeofday.cc
     src/hex.cc
@@ -98,6 +114,13 @@ if (BUILD_HASHLIB)
     )
 endif()
 
+if(BUILD_STREAM)
+    list(APPEND SOURCE_FILES
+        src/stream/fstream.cc
+        src/stream/transform.cc
+    )
+endif()
+
 if(BUILD_STATIC)
     add_library(funxx STATIC ${SOURCE_FILES})
 else()
@@ -133,7 +156,6 @@ set(TEST_FILES
     test/codec.cc
     test/compiler.cc
     test/enum.cc
-    test/fstream.cc
     test/getline.cc
     test/gettimeofday.cc
     test/hex.cc
@@ -166,6 +188,14 @@ endif()
 if (BUILD_HASHLIB)
     list(APPEND TEST_FILES test/hashlib.cc)
 endif()
+
+if (BUILD_STREAM)
+    list(APPEND TEST_FILES
+        test/stream/fstream.cc
+        test/stream/transform.cc
+    )
+endif()
+
 
 if(BUILD_TESTS)
     if(NOT TARGET gtest)

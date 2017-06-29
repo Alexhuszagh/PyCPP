@@ -251,8 +251,9 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
     }
 
     // POSIX rename doesn't work accross filesystems
+    // make sure stat data looks like the file was moved
     if (src_stat.st_dev != dst_stat.st_dev) {
-        return copy_file(src, dst, replace);
+        return copy_file(src, dst, replace, true);
     }
 
     if (exists(dst)) {
@@ -268,7 +269,7 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 
 
 template <typename Path, typename CopyFile>
-static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyFile copy)
+static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool copystat, CopyFile copy)
 {
     auto dst_dir = dir_name(dst);
 
@@ -289,7 +290,11 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyF
         }
     }
 
-    return copy(src, dst);
+    bool status = copy(src, dst);
+    if (status && copystat) {
+        return ::copystat(src, dst);
+    }
+    return status;
 }
 
 
@@ -396,11 +401,9 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 
 bool copy_file(const path_t& src, const path_t& dst, bool replace, bool copystat)
 {
-    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+    return copy_file_impl(src, dst, replace, copystat, [](const path_t& src, const path_t& dst) {
         return copy_file_buffer(src, dst);
     });
-
-    // TODO: copy stat
 }
 
 

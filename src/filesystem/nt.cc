@@ -349,7 +349,7 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 
 
 template <typename Path, typename CopyFile>
-static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyFile copy)
+static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool copystat, CopyFile copy)
 {
     auto dst_dir = dir_name(dst);
 
@@ -362,7 +362,11 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyF
         throw filesystem_error(filesystem_no_such_directory);
     }
 
-    return copy(src, dst, replace);
+    bool status = copy(src, dst, replace);
+    if (status && copystat) {
+        return ::copystat(src, dst);
+    }
+    return status;
 }
 
 
@@ -461,6 +465,7 @@ path_t normcase(const path_t& path)
 
 // MANIPULATION
 
+
 bool move_file(const path_t& src, const path_t& dst, bool replace)
 {
     return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
@@ -473,13 +478,11 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 
 bool copy_file(const path_t& src, const path_t& dst, bool replace, bool copystat)
 {
-    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst, bool replace) {
+    return copy_file_impl(src, dst, replace, copystat, [](const path_t& src, const path_t& dst, bool replace) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
         return CopyFileW(s, d, replace);
     });
-
-    // TODOL copystate
 }
 
 
@@ -582,11 +585,9 @@ bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
 
 bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace, bool copystat)
 {
-    return copy_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst, bool replace) {
+    return copy_file_impl(src, dst, replace, copystat, [](const backup_path_t& src, const backup_path_t& dst, bool replace) {
         return CopyFile(src.data(), dst.data(), replace);
     });
-
-    // TODO: copystat
 }
 
 
