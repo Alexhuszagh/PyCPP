@@ -34,7 +34,7 @@ TEST(secure_string, secure_string)
     EXPECT_GT(str.capacity(), 8);
 
     // move + fill
-    str = secure_string('0', 15);
+    str = secure_string(15, '0');
     EXPECT_EQ(str.size(), 15);
     EXPECT_GT(str.capacity(), 15);
 
@@ -134,6 +134,22 @@ TEST(secure_string, capacity)
 
     EXPECT_FALSE(str.empty());
     EXPECT_TRUE(other.empty());
+
+    str.clear();
+    EXPECT_TRUE(str.empty());
+    EXPECT_GT(str.capacity(), 0);
+
+    str.reserve(50);
+    EXPECT_TRUE(str.empty());
+    EXPECT_GE(str.capacity(), 50);
+
+    str.shrink_to_fit();
+    EXPECT_TRUE(str.empty());
+    EXPECT_LT(str.capacity(), 50);
+
+    str.resize(50);
+    EXPECT_EQ(str.size(), 50);
+    EXPECT_GT(str.capacity(), 50);
 }
 
 
@@ -148,9 +164,6 @@ TEST(secure_string, element)
     EXPECT_EQ(str.front(), '\0');
     EXPECT_EQ(str.back(), '\n');
 }
-
-
-// TODO: need tests for push_back, append, operator+=, etc.
 
 
 TEST(secure_string, modifier)
@@ -172,6 +185,38 @@ TEST(secure_string, modifier)
 
     str.assign(data.data(), data.size());
     EXPECT_EQ(str.size(), 14);
+
+    str.push_back('\0');
+    EXPECT_EQ(str.size(), 15);
+    EXPECT_EQ(str.back(), '\0');
+
+    str += '\0';
+    EXPECT_EQ(str.size(), 16);
+    EXPECT_EQ(str.back(), '\0');
+
+    str += secure_string("hello");
+    EXPECT_EQ(str.size(), 21);
+
+    str += "xy";
+    EXPECT_EQ(str.size(), 23);
+
+    str += {'a', 'b', 'c'};
+    EXPECT_EQ(str.size(), 26);
+
+    str.append(secure_string("de"));
+    EXPECT_EQ(str.size(), 28);
+
+    str.append(data.view());
+    EXPECT_EQ(str.size(), 42);
+
+    str.append(data, 5, 5);
+    EXPECT_EQ(str.size(), 47);
+
+    str.append("xyz\0");
+    EXPECT_EQ(str.size(), 50);
+
+    str.append("xyz\0", 4);
+    EXPECT_EQ(str.size(), 54);
 }
 
 

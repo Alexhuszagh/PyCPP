@@ -327,20 +327,33 @@ size_t sha1_hash::hexdigest(void* dst, size_t dstlen) const
 }
 
 
-std::string sha1_hash::digest() const
+secure_string sha1_hash::digest() const
 {
-    char* hash = new char[SHA1_HASH_SIZE];
-    digest(hash, SHA1_HASH_SIZE);
+    static constexpr size_t size = SHA1_HASH_SIZE;
 
-    std::string output(hash, SHA1_HASH_SIZE);
+    char* hash = new char[size];
+    digest(hash, size);
+    secure_string output(hash, size);
+
+    secure_zero(hash, size);
     delete[] hash;
+
     return output;
 }
 
 
-std::string sha1_hash::hexdigest() const
+secure_string sha1_hash::hexdigest() const
 {
-    return hex_i8(digest());
+    static constexpr size_t size = 2 * SHA1_HASH_SIZE;
+
+    char* dst = new char[size];
+    hexdigest(dst, size);
+    secure_string output(dst, size);
+
+    secure_zero(dst, size);
+    delete[] dst;
+
+    return output;
 }
 
 // CLEANUP

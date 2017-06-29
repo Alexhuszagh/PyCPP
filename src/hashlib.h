@@ -3,9 +3,6 @@
 /**
  *  \addtogroup funxx
  *  \brief Hash functions.
- *
- *  \TODO all of these need to use a secure_string implementation, since
- *  std::string does not clear its buffer.
  */
 
 #pragma once
@@ -72,8 +69,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     typedef typename std::aligned_storage<sizeof(uintptr_t)>::type memory_type;
@@ -97,8 +94,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     md2_context* ctx;
@@ -120,8 +117,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     md4_context* ctx;
@@ -143,8 +140,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     md5_context* ctx;
@@ -166,8 +163,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     sha1_context* ctx;
@@ -189,8 +186,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     sha2_256_context* ctx;
@@ -212,8 +209,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     sha2_256_context* ctx;
@@ -235,8 +232,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     sha2_512_context* ctx;
@@ -258,8 +255,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     sha2_512_context* ctx;
@@ -281,8 +278,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     sha3_context* ctx;
@@ -304,8 +301,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     sha3_context* ctx;
@@ -327,8 +324,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     sha3_context* ctx;
@@ -350,8 +347,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     sha3_context* ctx;
@@ -373,8 +370,8 @@ public:
     void update(const string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
-    std::string digest() const;
-    std::string hexdigest() const;
+    secure_string digest() const;
+    secure_string hexdigest() const;
 
 private:
     whirlpool_context* ctx;

@@ -340,20 +340,33 @@ size_t md4_hash::hexdigest(void* dst, size_t dstlen) const
 }
 
 
-std::string md4_hash::digest() const
+secure_string md4_hash::digest() const
 {
-    char* hash = new char[MD4_HASH_SIZE];
-    digest(hash, MD4_HASH_SIZE);
+    static constexpr size_t size = MD4_HASH_SIZE;
 
-    std::string output(hash, MD4_HASH_SIZE);
+    char* hash = new char[size];
+    digest(hash, size);
+    secure_string output(hash, size);
+
+    secure_zero(hash, size);
     delete[] hash;
+
     return output;
 }
 
 
-std::string md4_hash::hexdigest() const
+secure_string md4_hash::hexdigest() const
 {
-    return hex_i8(digest());
+    static constexpr size_t size = 2 * MD4_HASH_SIZE;
+
+    char* dst = new char[size];
+    hexdigest(dst, size);
+    secure_string output(dst, size);
+
+    secure_zero(dst, size);
+    delete[] dst;
+
+    return output;
 }
 
 

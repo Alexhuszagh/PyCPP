@@ -342,20 +342,33 @@ size_t sha2_384_hash::hexdigest(void* dst, size_t dstlen) const
 }
 
 
-std::string sha2_384_hash::digest() const
+secure_string sha2_384_hash::digest() const
 {
-    char* hash = new char[SHA384_HASH_SIZE];
-    digest(hash, SHA384_HASH_SIZE);
+    static constexpr size_t size = SHA384_HASH_SIZE;
 
-    std::string output(hash, SHA384_HASH_SIZE);
+    char* hash = new char[size];
+    digest(hash, size);
+    secure_string output(hash, size);
+
+    secure_zero(hash, size);
     delete[] hash;
+
     return output;
 }
 
 
-std::string sha2_384_hash::hexdigest() const
+secure_string sha2_384_hash::hexdigest() const
 {
-    return hex_i8(digest());
+    static constexpr size_t size = 2 * SHA384_HASH_SIZE;
+
+    char* dst = new char[size];
+    hexdigest(dst, size);
+    secure_string output(dst, size);
+
+    secure_zero(dst, size);
+    delete[] dst;
+
+    return output;
 }
 
 
@@ -433,18 +446,31 @@ size_t sha2_512_hash::hexdigest(void* dst, size_t dstlen) const
 }
 
 
-std::string sha2_512_hash::digest() const
+secure_string sha2_512_hash::digest() const
 {
-    char* hash = new char[SHA512_HASH_SIZE];
-    digest(hash, SHA512_HASH_SIZE);
+    static constexpr size_t size = SHA512_HASH_SIZE;
 
-    std::string output(hash, SHA512_HASH_SIZE);
+    char* hash = new char[size];
+    digest(hash, size);
+    secure_string output(hash, size);
+
+    secure_zero(hash, size);
     delete[] hash;
+
     return output;
 }
 
 
-std::string sha2_512_hash::hexdigest() const
+secure_string sha2_512_hash::hexdigest() const
 {
-    return hex_i8(digest());
+    static constexpr size_t size = 2 * SHA512_HASH_SIZE;
+
+    char* dst = new char[size];
+    hexdigest(dst, size);
+    secure_string output(dst, size);
+
+    secure_zero(dst, size);
+    delete[] dst;
+
+    return output;
 }

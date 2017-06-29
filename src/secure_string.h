@@ -137,8 +137,12 @@ public:
     template <typename Iter> self& assign(Iter first, Iter last);
     self& assign(std::initializer_list<value_type> list);
     self& assign(self&& str) noexcept;
+    // TODO: implement
 //    insert();
-//    erase();
+    self& erase(size_t pos = 0, size_t len = npos);
+    const_iterator erase(const_iterator p);
+    const_iterator erase(const_iterator first, const_iterator last);
+    // TODO: implement
 //    replace();
     void pop_back();
     void swap(self& other);
@@ -960,11 +964,12 @@ auto secure_basic_string<C, T, A>::append(const view_type& str) -> self&
 {
     size_t n = str.length();
     size_t r = length() + n;
-    if (r > capacity()) {
-        reallocate(std::max(r, 2 * capacity()));
+    if (r >= capacity()) {
+        reallocate(std::max(r+1, 2 * capacity()));
     }
 
-    traits_type::copy(data() + length(), str.data(), n);
+    traits_type::copy(data_ + length(), str.data(), n);
+    length_ += n;
     return *this;
 }
 
@@ -994,8 +999,8 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::append(size_t n, char c) -> self&
 {
     size_t r = length() + n;
-    if (r > capacity()) {
-        reallocate(std::max(r, 2 * capacity()));
+    if (r >= capacity()) {
+        reallocate(std::max(r+1, 2 * capacity()));
     }
 
     while (n--) {
@@ -1013,8 +1018,8 @@ auto secure_basic_string<C, T, A>::append(Iter first, Iter last) -> self&
 {
     size_t n = std::distance(first, last);
     size_t r = length() + n;
-    if (r > capacity()) {
-        reallocate(std::max(r, 2 * capacity()));
+    if (r >= capacity()) {
+        reallocate(std::max(r+1, 2 * capacity()));
     }
 
     for (; first != last; ++first) {
@@ -1060,8 +1065,8 @@ auto secure_basic_string<C, T, A>::assign(const view_type& str) -> self&
 {
     size_t n = str.length();
     size_t r = length() + n;
-    if (r > capacity()) {
-        reallocate(std::max(r, 2 * capacity()));
+    if (r >= capacity()) {
+        reallocate(std::max(r+1, 2 * capacity()));
     }
 
     length_ = n;
@@ -1099,8 +1104,8 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::assign(size_t n, value_type c) -> self&
 {
     size_t r = length() + n;
-    if (r > capacity()) {
-        reallocate(std::max(r, 2 * capacity()));
+    if (r >= capacity()) {
+        reallocate(std::max(r+1, 2 * capacity()));
     }
 
     length_ = n;
@@ -1131,6 +1136,41 @@ auto secure_basic_string<C, T, A>::assign(self&& str) noexcept -> self&
 {
     swap(str);
     return *this;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::erase(size_t pos, size_t len) -> self&
+{
+    if (pos > size()) {
+        throw std::out_of_range("secure_basic_string::erase().");
+    }
+
+    size_type move = size() - pos - len;
+    if (move != 0) {
+        traits_type::move(data_ + pos, data_ + pos + len, move);
+    }
+    length_ -= len;
+    data_[length_] = value_type();
+
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::erase(const_iterator p) -> const_iterator
+{
+    return erase(p, p+1);
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::erase(const_iterator first, const_iterator last) -> const_iterator
+{
+    size_type r = first - begin();
+    erase(r, last - first);
+
+    return begin() + r;
 }
 
 
@@ -1567,7 +1607,6 @@ void secure_basic_string<C, T, A>::reallocate(size_type n)
     capacity_ = n;
     data_ = buf;
 }
-
 
 // ALIAS
 // -----

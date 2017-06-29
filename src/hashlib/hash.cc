@@ -51,7 +51,7 @@ struct digest_cstring
     template <typename Hash>
     void operator()(Hash& hash)
     {
-        this->length = hash.digest(dst, dstlen);
+        length = hash.digest(dst, dstlen);
     }
 };
 
@@ -68,7 +68,7 @@ struct hexdigest_cstring
     template <typename Hash>
     void operator()(Hash& hash)
     {
-        this->length = hash.hexdigest(dst, dstlen);
+        length = hash.hexdigest(dst, dstlen);
     }
 };
 
@@ -78,12 +78,12 @@ struct hexdigest_cstring
  */
 struct digest_stl
 {
-    std::string str;
+    secure_string str;
 
     template <typename Hash>
     void operator()(Hash& hash)
     {
-        this->str = hash.digest();
+        str = hash.digest();
     }
 };
 
@@ -93,12 +93,12 @@ struct digest_stl
  */
 struct hexdigest_stl
 {
-    std::string str;
+    secure_string str;
 
     template <typename Hash>
     void operator()(Hash& hash)
     {
-        this->str = hash.hexdigest();
+        str = hash.hexdigest();
     }
 };
 
@@ -248,7 +248,7 @@ size_t hash::hexdigest(void* dst, size_t dstlen) const
 }
 
 
-std::string hash::digest() const
+secure_string hash::digest() const
 {
     digest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
@@ -256,7 +256,7 @@ std::string hash::digest() const
 }
 
 
-std::string hash::hexdigest() const
+secure_string hash::hexdigest() const
 {
     hexdigest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
