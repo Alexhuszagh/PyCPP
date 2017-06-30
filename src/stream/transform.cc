@@ -151,6 +151,34 @@ int transform_streambuf::sync()
 }
 
 
+auto transform_streambuf::seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode mode) -> pos_type
+{
+    pos_type out;
+    if (filebuf) {
+        out = filebuf->pubseekoff(off, way, mode);
+        in_first = in_last = nullptr;
+    } else {
+        out = pos_type(off_type(-1));
+    }
+
+    return out;
+}
+
+
+auto transform_streambuf::seekpos(pos_type pos, std::ios_base::openmode mode) -> pos_type
+{
+    pos_type out;
+    if (filebuf) {
+        out = filebuf->pubseekpos(pos, mode);
+        in_first = in_last = nullptr;
+    } else {
+        out = pos_type(off_type(-1));
+    }
+
+    return out;
+}
+
+
 void transform_streambuf::set_filebuf(std::streambuf* f)
 {
     filebuf = f;

@@ -22,7 +22,10 @@
 // -------
 
 /**
- *  \brief
+ *  \brief Number of bytes read and written to stream.
+ *
+ *  \param first        Number of bytes read from input stream.
+ *  \param second       Number of bytes written to input stream.
  */
 typedef std::pair<std::streamsize, std::streamsize> streamsize_pair;
 
@@ -78,7 +81,8 @@ protected:
     virtual int_type underflow();
     virtual int_type overflow(int_type = traits_type::eof());
     virtual int sync();
-    // TODO: Might need to implement seekoff, seekpos, etc.
+    pos_type seekoff(off_type, std::ios_base::seekdir, std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
+    pos_type seekpos(pos_type, std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
 
 private:
     friend class transform_istream;

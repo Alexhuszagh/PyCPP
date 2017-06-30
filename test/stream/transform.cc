@@ -31,7 +31,6 @@ streamsize_pair doublechars(const void* src, size_t srclen,
     return std::make_pair(bytes, 2*bytes);
 }
 
-
 // TESTS
 // -----
 
@@ -41,16 +40,41 @@ TEST(transform_istream, nocallback)
     std::istringstream sstream("This is a message");
     transform_istream stream(sstream);
     std::string line;
+
     std::getline(stream, line);
     EXPECT_EQ(line, "This is a message");
 }
 
 
-TEST(transform_istream, toupper)
+TEST(transform_istream, seekg)
+{
+    std::istringstream sstream("This is a message");
+    transform_istream stream(sstream);
+    std::string line;
+
+    stream.seekg(5);
+    std::getline(stream, line);
+    EXPECT_EQ(line, "is a message");
+
+    sstream.seekg(0);
+    transform_istream stream2(sstream, doublechars);
+    stream2.seekg(5);
+    std::getline(stream2, line);
+    EXPECT_EQ(line, "iiss  aa  mmeessssaaggee");
+}
+
+
+TEST(transform_istream, doublechars)
 {
     std::istringstream sstream("This is a message");
     transform_istream stream(sstream, doublechars);
     std::string line;
+
     std::getline(stream, line);
     EXPECT_EQ(line, "TThhiiss  iiss  aa  mmeessssaaggee");
 }
+
+
+// TODO: ostream
+// TODO: ifstream
+// TODO: ofstream
