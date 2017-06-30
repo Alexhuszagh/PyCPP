@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <string>
+#include <cstdlib>
 
 // FUNCTIONS
 // ---------

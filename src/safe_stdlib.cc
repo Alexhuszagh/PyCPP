@@ -3,6 +3,7 @@
 
 #include "safe_stdlib.h"
 
+#include <new>
 #include <stdexcept>
 
 // FUNCTIONS

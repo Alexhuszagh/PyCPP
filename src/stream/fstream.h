@@ -49,11 +49,13 @@ public:
 #endif
 
     // DATA
-    std::basic_filebuf<char>* rdbuf() const;
-    void rdbuf(std::basic_filebuf<char> *buffer);
     bool is_open() const;
     void close();
     void swap(fstream &other);
+
+protected:
+    std::basic_filebuf<char>* rdbuf() const;
+    void rdbuf(std::basic_filebuf<char> *buffer);
 
 private:
     FILE *file = nullptr;
@@ -83,11 +85,13 @@ public:
     void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in);
 #endif
 
-    std::basic_filebuf<char>* rdbuf() const;
-    void rdbuf(std::basic_filebuf<char> *buffer);
     bool is_open() const;
     void close();
     void swap(ifstream &other);
+
+protected:
+    std::basic_filebuf<char>* rdbuf() const;
+    void rdbuf(std::basic_filebuf<char> *buffer);
 
 private:
     FILE *file = nullptr;
@@ -117,11 +121,13 @@ public:
     void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::out);
 #endif
 
-    std::basic_filebuf<char>* rdbuf() const;
-    void rdbuf(std::basic_filebuf<char> *buffer);
     bool is_open() const;
     void close();
     void swap(ofstream &other);
+
+protected:
+    std::basic_filebuf<char>* rdbuf() const;
+    void rdbuf(std::basic_filebuf<char> *buffer);
 
 private:
     FILE *file = nullptr;

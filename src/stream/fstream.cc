@@ -120,12 +120,9 @@ fstream::~fstream()
 }
 
 
-fstream::fstream(fstream &&other):
-    std::iostream(std::move(other)),
-    file(std::move(other.file)),
-    buffer(std::move(other.buffer))
+fstream::fstream(fstream &&other)
 {
-    std::ios::rdbuf(&buffer);
+    swap(other);
 }
 
 
@@ -219,12 +216,9 @@ ifstream::~ifstream()
 }
 
 
-ifstream::ifstream(ifstream &&other):
-    std::istream(std::move(other)),
-    file(std::move(other.file)),
-    buffer(std::move(other.buffer))
+ifstream::ifstream(ifstream &&other)
 {
-    std::ios::rdbuf(&buffer);
+    swap(other);
 }
 
 
@@ -315,12 +309,9 @@ ofstream::~ofstream()
 }
 
 
-ofstream::ofstream(ofstream &&other):
-    std::ostream(std::move(other)),
-    file(std::move(other.file)),
-    buffer(std::move(other.buffer))
+ofstream::ofstream(ofstream &&other)
 {
-    std::ios::rdbuf(&buffer);
+    swap(other);
 }
 
 

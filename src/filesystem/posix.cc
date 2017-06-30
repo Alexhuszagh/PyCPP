@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <wordexp.h>
 #include <algorithm>
+#include <cstdlib>
 
 // HELPERS
 // -------

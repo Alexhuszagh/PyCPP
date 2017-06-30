@@ -59,7 +59,7 @@ endif()
 # LIBRARY
 # -------
 
-include_directories(src)
+include_directories(src warnings/src)
 
 set(SOURCE_FILES
     src/random/pseudorandom.cc
@@ -201,7 +201,7 @@ if(BUILD_TESTS)
     if(NOT TARGET gtest)
         add_subdirectory(googletest)
     endif()
-    include_directories(googletest/googletest/include warnings/src)
+    include_directories(googletest/googletest/include)
 
     add_executable(funxx_tests ${TEST_FILES})
     target_link_libraries(funxx_tests

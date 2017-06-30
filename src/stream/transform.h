@@ -1,3 +1,4 @@
+//  :copyright: (c) 2009-2017 LLVM Team.
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
@@ -15,11 +16,28 @@
 #include <functional>
 #include <iostream>
 #include <sstream>
+#include <utility>
 
 // OBJECTS
 // -------
 
-typedef std::function<void(char* src, size_t srclen, char* dst, size_t dstlen)> transform_callback;
+/**
+ *  \brief
+ */
+typedef std::pair<std::streamsize, std::streamsize> streamsize_pair;
+
+/**
+ *  \brief Generic callback to convert bytes from input to output buffers.
+ *
+ *  Converts up to `srclen` chars from `src` to up to `dstlen` chars
+ *  in `dst`, returning a pair containing the number of bytes read
+ *  (`first`) and the number of bytes written (`second`).
+ */
+typedef std::function<streamsize_pair(
+    const void* src, size_t srclen,
+    void* dst, size_t dstlen,
+    size_t char_size)>
+transform_callback;
 
 
 /**
@@ -28,39 +46,50 @@ typedef std::function<void(char* src, size_t srclen, char* dst, size_t dstlen)> 
 class transform_streambuf: public std::streambuf
 {
 public:
-    // TODO: implement??
+    // MEMBER TYPES
+    // ------------
+    using typename std::streambuf::char_type;
+    using typename std::streambuf::int_type;
+    using typename std::streambuf::traits_type;
+    using typename std::streambuf::off_type;
+    using typename std::streambuf::pos_type;
+
+    // MEMBER VARIABLES
+    // ----------------
+    static constexpr size_t buffer_size = 4096;
+
+    // MEMBER FUNCTIONS
+    // ----------------
+    transform_streambuf(std::streambuf* = nullptr, transform_callback = nullptr);
+    ~transform_streambuf();
+
+    transform_streambuf(const transform_streambuf&) = delete;
+    transform_streambuf& operator=(const transform_streambuf&) = delete;
+    transform_streambuf(transform_streambuf&&);
+    transform_streambuf& operator=(transform_streambuf&&);
+    void swap(transform_streambuf&);
+
+    void set_filebuf(std::streambuf*);
+    void set_callback(transform_callback);
+
+protected:
+    // MEMBER FUNCTIONS
+    // ----------------
+    virtual int_type underflow();
+    virtual int_type overflow(int_type = traits_type::eof());
+    virtual int sync();
+    // TODO: Might need to implement seekoff, seekpos, etc.
 
 private:
-    transform_callback input_callback = nullptr;
-    transform_callback output_callback = nullptr;
-};
+    friend class transform_istream;
+    friend class transform_ostream;
 
-
-/**
- *  \brief Transform streaming I/O data via callback.
- */
-class transform_iostream: public std::iostream
-{
-public:
-    transform_iostream();
-    ~transform_iostream();
-    transform_iostream(const transform_iostream&) = delete;
-    transform_iostream & operator=(const transform_iostream&) = delete;
-//    transform_iostream(transform_iostream &&other);
-//    transform_iostream & operator=(transform_iostream &&other);
-
-    // TODO: need I/O callbacks...
-    transform_iostream(std::iostream& stream);
-    void open(std::iostream& stream);
-
-    // DATA
-    transform_streambuf* rdbuf() const;
-    void rdbuf(transform_streambuf *buffer);
-//    void swap(transform_iostream &other);
-
-private:
-    std::iostream *stream = nullptr;
-    transform_streambuf buffer;
+    std::streambuf *filebuf = nullptr;
+    transform_callback callback = nullptr;
+    char* in_buffer = nullptr;
+    char* in_first = nullptr;
+    char* in_last = nullptr;
+    char* out_buffer = nullptr;
 };
 
 
@@ -70,26 +99,24 @@ private:
 class transform_istream: public std::istream
 {
 public:
-//    istream();
-//    ~istream();
-//    istream(const istream&) = delete;
-//    istream & operator=(const istream&) = delete;
-//    istream(istream &&other);
-//    istream & operator=(istream &&other);
-//
-//    istream(std::istream& stream);
-//    void open(std::istream& stream);
-//
-//    // DATA
-//    transform_streambuf* rdbuf() const;
-//    void rdbuf(transform_streambuf *buffer);
-//    bool is_open() const;
-//    void close();
-//    void swap(istream &other);
+    transform_istream(transform_callback = nullptr);
+    ~transform_istream();
+    transform_istream(const transform_istream&) = delete;
+    transform_istream & operator=(const transform_istream&) = delete;
+
+    transform_istream(std::istream& stream, transform_callback = nullptr);
+    void open(std::istream& stream, transform_callback = nullptr);
+
+protected:
+    transform_istream(transform_istream&&);
+    transform_istream & operator=(transform_istream&&);
+    transform_streambuf* rdbuf() const;
+    void rdbuf(transform_streambuf *buffer);
+    void swap(transform_istream &other);
 
 private:
-    std::istream *stream = nullptr;
     transform_streambuf buffer;
+    std::istream *stream = nullptr;
 };
 
 
@@ -99,44 +126,24 @@ private:
 class transform_ostream: public std::ostream
 {
 public:
-//    ostream();
-//    ~ostream();
-//    ostream(const ostream&) = delete;
-//    ostream & operator=(const ostream&) = delete;
-//    ostream(ostream &&other);
-//    ostream & operator=(ostream &&other);
-//
-//    ostream(std::ostream& stream);
-//    void open(std::ostream& stream);
-//
-//    // DATA
-//    transform_streambuf* rdbuf() const;
-//    void rdbuf(transform_streambuf *buffer);
-//    bool is_open() const;
-//    void close();
-//    void swap(ostream &other);
+    transform_ostream(transform_callback = nullptr);
+    ~transform_ostream();
+    transform_ostream(const transform_ostream&) = delete;
+    transform_ostream & operator=(const transform_ostream&) = delete;
+
+    transform_ostream(std::ostream& stream, transform_callback = nullptr);
+    void open(std::ostream& stream, transform_callback = nullptr);
+
+protected:
+    transform_ostream(transform_ostream&&);
+    transform_ostream & operator=(transform_ostream&&);
+    transform_streambuf* rdbuf() const;
+    void rdbuf(transform_streambuf *buffer);
+    void swap(transform_ostream &other);
 
 private:
-    std::ostream *stream = nullptr;
     transform_streambuf buffer;
-};
-
-
-/**
- *  \brief File like overload for iostream.
- */
-class transform_fstream: public transform_iostream
-{
-public:
-    // TODO: need constructors
-    // TODO: need open
-
-    bool is_open() const;
-    void close();
-//    void swap(transform_fstream &other);
-
-private:
-    fstream file;
+    std::ostream *stream = nullptr;
 };
 
 
@@ -146,12 +153,25 @@ private:
 class transform_ifstream: public transform_istream
 {
 public:
-    // TODO: need constructors
-    // TODO: need open
+    transform_ifstream(transform_callback = nullptr);
+    ~transform_ifstream();
+
+    transform_ifstream(const transform_ifstream&) = delete;
+    transform_ifstream & operator=(const transform_ifstream&) = delete;
+    transform_ifstream(transform_ifstream&&);
+    transform_ifstream & operator=(transform_ifstream&&);
+
+    transform_ifstream(const std::string &name, std::ios_base::openmode = std::ios_base::in, transform_callback = nullptr);
+    void open(const std::string &name, std::ios_base::openmode = std::ios_base::in, transform_callback = nullptr);
+
+#if defined(HAVE_WFOPEN)
+    transform_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in, transform_callback = nullptr);
+    void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in, transform_callback = nullptr);
+#endif
 
     bool is_open() const;
     void close();
-//    void swap(transform_ifstream &other);
+    void swap(transform_ifstream&);
 
 private:
     ifstream file;
@@ -164,12 +184,25 @@ private:
 class transform_ofstream: public transform_ostream
 {
 public:
-    // TODO: need constructors
-    // TODO: need open
+    transform_ofstream(transform_callback = nullptr);
+    ~transform_ofstream();
+
+    transform_ofstream(const transform_ofstream&) = delete;
+    transform_ofstream & operator=(const transform_ofstream&) = delete;
+    transform_ofstream(transform_ofstream&&);
+    transform_ofstream & operator=(transform_ofstream&&);
+
+    transform_ofstream(const std::string &name, std::ios_base::openmode = std::ios_base::out, transform_callback = nullptr);
+    void open(const std::string &name, std::ios_base::openmode = std::ios_base::out, transform_callback = nullptr);
+
+#if defined(HAVE_WFOPEN)
+    transform_ofstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::out, transform_callback = nullptr);
+    void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::out, transform_callback = nullptr);
+#endif
 
     bool is_open() const;
     void close();
-//    void swap(transform_ofstream &other);
+    void swap(transform_ofstream&);
 
 private:
     ofstream file;
