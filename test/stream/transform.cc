@@ -15,20 +15,23 @@
 // FUNCTIONS
 // ---------
 
-streamsize_pair doublechars(const void* src, size_t srclen,
-    void* dst, size_t dstlen,
+void doublechars(const void*& src, size_t srclen,
+    void*& dst, size_t dstlen,
     size_t char_size)
 {
-    size_t bytes = std::min(srclen, dstlen) * char_size;
+    size_t bytes = std::min(srclen, dstlen / 2) * char_size;
     const char* src_ = reinterpret_cast<const char*>(src);
     char* dst_ = reinterpret_cast<char*>(dst);
 
-    for (size_t i = 0; i < bytes; ++i) {
-        dst_[2*i] = src_[i];
-        dst_[2*i + 1] = src_[i];
+    // copy bytes
+    while (bytes--) {
+        *dst_++ = *src_;
+        *dst_++ = *src_++;
     }
 
-    return std::make_pair(bytes, 2*bytes);
+    // reassign to buffer
+    src = (const void*) src_;
+    dst = (void*) dst_;
 }
 
 // TESTS

@@ -22,23 +22,15 @@
 // -------
 
 /**
- *  \brief Number of bytes read and written to stream.
- *
- *  \param first        Number of bytes read from input stream.
- *  \param second       Number of bytes written to input stream.
- */
-typedef std::pair<std::streamsize, std::streamsize> streamsize_pair;
-
-/**
  *  \brief Generic callback to convert bytes from input to output buffers.
  *
  *  Converts up to `srclen` chars from `src` to up to `dstlen` chars
  *  in `dst`, returning a pair containing the number of bytes read
  *  (`first`) and the number of bytes written (`second`).
  */
-typedef std::function<streamsize_pair(
-    const void* src, size_t srclen,
-    void* dst, size_t dstlen,
+typedef std::function<void(
+    const void*& src, size_t srclen,
+    void*& dst, size_t dstlen,
     size_t char_size)>
 transform_callback;
 
@@ -90,10 +82,10 @@ private:
 
     std::streambuf *filebuf = nullptr;
     transform_callback callback = nullptr;
-    char* in_buffer = nullptr;
-    char* in_first = nullptr;
-    char* in_last = nullptr;
-    char* out_buffer = nullptr;
+    char_type* in_buffer = nullptr;
+    char_type* out_buffer = nullptr;
+    char_type* in_first = nullptr;
+    char_type* in_last = nullptr;
 };
 
 

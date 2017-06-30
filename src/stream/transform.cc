@@ -17,17 +17,22 @@
 /**
  *  \brief Empty callback, copy src to dst.
  */
-static streamsize_pair null_callback(const void* src, size_t srclen,
-    void* dst, size_t dstlen,
+static void null_callback(const void*& src, size_t srclen,
+    void*& dst, size_t dstlen,
     size_t char_size)
 {
     size_t bytes = std::min(srclen, dstlen) * char_size;
-    if (!memcpy(dst, src, bytes)) {
-        // some weird error
-        return std::make_pair(0, 0);
+    const char* src_ = reinterpret_cast<const char*>(src);
+    char* dst_ = reinterpret_cast<char*>(dst);
+
+    // copy bytes
+    while (bytes--) {
+        *dst_++ = *src_++;
     }
 
-    return std::make_pair(bytes, bytes);
+    // reassign to buffer
+    src = (const void*) src_;
+    dst = (void*) dst_;
 }
 
 // OBJECTS
@@ -39,8 +44,8 @@ transform_streambuf::transform_streambuf(std::streambuf* f, transform_callback c
     filebuf(f),
     callback(null_callback)
 {
-    in_buffer = new char[buffer_size];
-    out_buffer = new char[buffer_size];
+    in_buffer = new char_type[buffer_size];
+    out_buffer = new char_type[buffer_size];
     setg(0, 0, 0);
     setp(out_buffer, out_buffer + buffer_size);
     set_callback(c);
@@ -93,7 +98,11 @@ auto transform_streambuf::underflow() -> int_type
 
         // convert bytes
         distance = std::distance(in_first, in_last);
-        std::tie(read, converted) = callback(in_first, distance, out_buffer, buffer_size, sizeof(char_type));
+        const void* src = (const void*) in_first;
+        void* dst = (void*) out_buffer;
+        callback(src, distance, dst, buffer_size, sizeof(char_type));
+        read = std::distance(in_first, (char*)src);
+        converted = std::distance(out_buffer, (char*)dst);
 
         // store state
         if (read < distance) {
