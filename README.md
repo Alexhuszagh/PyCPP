@@ -28,7 +28,7 @@ fun++ is broken down into multiple core parts:
 
 1. A macro-driven abstraction library to detect compiler features.
 2. Encoding and decoding routines
-3. Filesystem utilities.
+3. Filesystem utilities.s
 4. High-level features common in other standard libraries.
 
 Combined, the library has less than 1500 (is this still accurate??) total lines of C++ headers, with binary sizes of < 1MB, and each module has only a few dependencies, making it easy to extract individual modules for use in another project.
@@ -39,7 +39,7 @@ The files [os.h](/src/os.h), [compiler.h](/src/compiler.h), [architecture.h](/sr
 
 **Encoding and Decoding**
 
-Any modern application should be Unicode aware, and fun++ includes routines for [code point conversions](/src/unicode.h) and [codec conversions](codec.h), as well as [Unicode-aware case conversions](/src/casemap.h). They provide two APIs: a modern wrapper for STL string conversions, and a C-API taking a src and dst buffer. 
+Any modern application should be Unicode aware, and fun++ includes routines for [code point conversions](/src/unicode.h) and [codec conversions](codec.h), as well as [Unicode-aware case conversions](/src/casemap.h). They provide two APIs: a modern wrapper for STL string conversions, and a C-API taking a src and dst buffer.
 
 Supported features include:
 
@@ -65,7 +65,8 @@ Supported features include:
 - [Punycode](/src/punycode.h) encoding and decoding.
 - [Base16](/src/base16.h), [base32](/src/base32.h), and [Base64](/src/base64.h) encoding and decoding.
 - [Hex](/src/hex.h) encoding and decoding.
-- [Wide API streams](/src/fstream.h) for Windows.
+- [Wide API streams](/src/stream/fstream.h) for Windows.
+- [Filtering streambufs](/src/stream/filter.h).
 - [string_view](/str/string_view.h) and [vector_view](/src/vector_view.h)
 - [Cryptographic hash](/src/hashlib.h) functions.
 - [Iterator adaptors](/src/iterator.h).
@@ -90,7 +91,7 @@ fun++ is continually built with the following compiler and compiler versions:
 
 - Clang 3.8+
 - GCC 5.3+
-- MinGW 5.3.0 (MXE, MinGW, and MSYS2) 
+- MinGW 5.3.0 (MXE, MinGW, and MSYS2)
 - Visual Studio 14 2015
 - Visual Studio 15 2017
 

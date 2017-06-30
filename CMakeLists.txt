@@ -117,7 +117,7 @@ endif()
 if(BUILD_STREAM)
     list(APPEND SOURCE_FILES
         src/stream/fstream.cc
-        src/stream/transform.cc
+        src/stream/filter.cc
     )
 endif()
 
@@ -192,7 +192,7 @@ endif()
 if (BUILD_STREAM)
     list(APPEND TEST_FILES
         test/stream/fstream.cc
-        test/stream/transform.cc
+        test/stream/filter.cc
     )
 endif()
 

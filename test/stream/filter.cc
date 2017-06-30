@@ -5,7 +5,7 @@
  *  \brief Transformable stream unittests.
  */
 
-#include "stream/transform.h"
+#include "stream/filter.h"
 
 #include <gtest/gtest.h>
 #include <sstream>
@@ -38,10 +38,10 @@ void doublechars(const void*& src, size_t srclen,
 // -----
 
 
-TEST(transform_istream, nocallback)
+TEST(filter_istream, nocallback)
 {
     std::istringstream sstream("This is a message");
-    transform_istream stream(sstream);
+    filter_istream stream(sstream);
     std::string line;
 
     std::getline(stream, line);
@@ -49,10 +49,10 @@ TEST(transform_istream, nocallback)
 }
 
 
-TEST(transform_istream, seekg)
+TEST(filter_istream, seekg)
 {
     std::istringstream sstream("This is a message");
-    transform_istream stream(sstream);
+    filter_istream stream(sstream);
     std::string line;
 
     stream.seekg(5);
@@ -60,17 +60,17 @@ TEST(transform_istream, seekg)
     EXPECT_EQ(line, "is a message");
 
     sstream.seekg(0);
-    transform_istream stream2(sstream, doublechars);
+    filter_istream stream2(sstream, doublechars);
     stream2.seekg(5);
     std::getline(stream2, line);
     EXPECT_EQ(line, "iiss  aa  mmeessssaaggee");
 }
 
 
-TEST(transform_istream, doublechars)
+TEST(filter_istream, doublechars)
 {
     std::istringstream sstream("This is a message");
-    transform_istream stream(sstream, doublechars);
+    filter_istream stream(sstream, doublechars);
     std::string line;
 
     std::getline(stream, line);
