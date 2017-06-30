@@ -8,7 +8,7 @@
 
 #include "transform.h"
 #include <algorithm>
-#include <cstdlib>
+#include <cstring>
 
 // FUNCTIONS
 // ---------
