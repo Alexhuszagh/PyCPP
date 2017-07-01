@@ -215,6 +215,9 @@
 #   if defined(_WIN32) || defined(_WIN64) || defined(__WIN32__) || defined(__TOS_WIN__) || defined(__WINDOWS__) || defined(__NT__)
 #       define OS_WINDOWS
 #       define OS_DETECTED
+#       if !defined(WINAPI_FAMILY) || WINAPI_FAMILY == WINAPI_FAMILY_DESKTOP_APP
+#           define OS_WINAPI_DESKTOP
+#       endif
 #   endif
 #endif
 

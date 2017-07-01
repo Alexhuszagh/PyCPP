@@ -41,6 +41,13 @@ void* secure_memcpy(void* dst, const void* src, size_t bytes);
 void* secure_memmove(void* dst, const void* src, size_t bytes);
 
 /**
+ *  \brief Securely check if src == dst, preventing compiler optimizations.
+ *
+ *  Use this rather memcmp.
+ */
+int secure_memcmp(const void* lhs, const void* rhs, size_t bytes);
+
+/**
  *  \brief Securely allocate memory, similar to libsodium.
  */
 void* secure_malloc(size_t size);
@@ -58,14 +65,24 @@ void secure_free(void* ptr);
 /**
  *  \brief Block access to memory at ptr.
  */
-int secure_protect_noaccess(void *ptr);
+int secure_mprotect_noaccess(void *ptr);
 
 /**
  *  \brief Set read-only access to memory at ptr.
  */
-int secure_protect_readonly(void *ptr);
+int secure_mprotect_readonly(void *ptr);
 
 /**
  *  \brief Restore read-write access to memory at ptr.
  */
-int secure_protect_readwrite(void *ptr);
+int secure_mprotect_readwrite(void *ptr);
+
+/**
+ *  \brief Lock access to memory
+ */
+int secure_mlock(void* ptr, const size_t len);
+
+/**
+ *  \brief Unlock access to memory
+ */
+int secure_munlock(void* ptr, const size_t len);

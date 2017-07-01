@@ -56,6 +56,17 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
+# INCLUDES
+# --------
+
+include(CheckIncludeFile)
+enable_language(C)
+
+CHECK_INCLUDE_FILE(sys/mman.h HAVE_SYS_MMAN_H)
+if(HAVE_SYS_MMAN_H)
+    add_definitions(-DHAVE_SYS_MMAN_H=1)
+endif()
+
 # FUNCTIONS
 # ---------
 
@@ -80,6 +91,31 @@ CHECK_FUNCTION_EXISTS(memmove_s HAVE_MEMMOVE_S)
 if(HAVE_MEMMOVE_S)
     add_definitions(-DHAVE_MEMMOVE_S=1)
 endif()
+
+CHECK_FUNCTION_EXISTS(posix_memalign HAVE_POSIX_MEMALIGN)
+if(HAVE_POSIX_MEMALIGN)
+    add_definitions(-DHAVE_POSIX_MEMALIGN=1)
+endif()
+
+CHECK_FUNCTION_EXISTS(madvise HAVE_MADVISE)
+if(HAVE_MADVISE)
+    add_definitions(-DHAVE_MADVISE=1)
+endif()
+
+CHECK_FUNCTION_EXISTS(mlock HAVE_MLOCK)
+if(HAVE_MLOCK)
+    add_definitions(-DHAVE_MLOCK=1)
+endif()
+
+#CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
+#if(HAVE_MMAP)
+#    add_definitions(-DHAVE_MMAP=1)
+#endif()
+
+#CHECK_FUNCTION_EXISTS(mprotect HAVE_MPROTECT)
+#if(HAVE_MPROTECT)
+#    add_definitions(-DHAVE_MPROTECT=1)
+#endif()
 
 # LIBRARY
 # -------
@@ -172,7 +208,10 @@ endif()
 set(TEST_FILES
     test/main.cc
     test/safe/stdlib.cc
-    test/secure/string.cc
+# TODO: restore
+    test/secure/allocator.cc
+#    test/secure/string.cc
+    test/secure/util.cc
     test/view/string.cc
     test/view/vector.cc
     test/any.cc
@@ -211,7 +250,8 @@ if (BUILD_FILESYSTEM)
 endif()
 
 if (BUILD_HASHLIB)
-    list(APPEND TEST_FILES test/hashlib.cc)
+# TODO: restore...
+#    list(APPEND TEST_FILES test/hashlib.cc)
 endif()
 
 if (BUILD_STREAM)

@@ -11,8 +11,8 @@
 
 #pragma once
 
-#include <secure/util.h>
-
+#include <string.h>
+#include <string>
 
 // DECLARATION
 // -----------
@@ -90,7 +90,7 @@ template <typename C>
 auto secure_char_traits<C>::move(char_type* dst, const char_type* src, size_t n) -> char_type*
 {
     if (n != 0) {
-        secure_memmove(dst, src, n * sizeof(char_type));
+        memmove(dst, src, n * sizeof(char_type));
     }
     return dst;
 }
@@ -100,7 +100,7 @@ template <typename C>
 auto secure_char_traits<C>::copy(char_type* dst, const char_type* src, size_t n) -> char_type*
 {
     if (n != 0) {
-        secure_memcpy(dst, src, n * sizeof(char_type));
+        memcpy(dst, src, n * sizeof(char_type));
     }
     return dst;
 }
