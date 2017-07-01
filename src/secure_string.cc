@@ -10,13 +10,21 @@
  *      http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
  */
 
+#include "compiler.h"
 #include "os.h"
 #include "secure_string.h"
 
-#include <cstring>
 #if defined(OS_WINDOWS)
 #   include "windows.h"
+#else
+#   include <string.h>
+#   include <strings.h>
 #endif
+
+// MACROS
+// ------
+
+#define WEAK(x) asm("")
 
 // FUNCTIONS
 // ---------
@@ -29,9 +37,40 @@ static void secure_zero_memory(void* ptr, size_t len)
     SecureZeroMemory(ptr, len);
 }
 
+#elif defined(HAVE_EXPLICIT_BZERO)      // EXPLICIT_BZERO
+
+static void secure_zero_memory(void* ptr, size_t len)
+{
+    explicit_bzero(ptr, len);
+}
+
+#elif defined(HAVE_MEMSET_S)            // MEMSET_S
+
+static void secure_zero_memory(void* ptr, size_t len)
+{
+    memset_s(ptr, len, 0, len);
+}
+
 #else                                   // POSIX
 
-static void * (* const volatile memset_ptr)(void*, int, size_t) = memset;
+/**
+ *  Some memset implementations use SSE/AVX instructions, meaning
+ *  sensitive data will be stored in SSE registers after zeroing
+ *  the data. Implement a slow memset version to ensure no SSE
+ *  instructions are used.
+ */
+static void* memset_slow(void* ptr, int c, size_t len)
+{
+    volatile char* p = (volatile char*) ptr;
+
+    while(len--) {
+        *p++ = c;
+    }
+    return (void*) p;
+}
+
+
+static void * (* const volatile memset_ptr)(void*, int, size_t) = memset_slow;
 
 static void secure_zero_memory(void* ptr, size_t len)
 {

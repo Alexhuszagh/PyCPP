@@ -56,6 +56,21 @@ else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif()
 
+# FUNCTIONS
+# ---------
+
+include(CheckFunctionExists)
+
+CHECK_FUNCTION_EXISTS(explicit_bzero HAVE_EXPLICIT_BZERO)
+if(HAVE_EXPLICIT_BZERO)
+    add_definitions(-DHAVE_EXPLICIT_BZERO=1)
+endif()
+
+CHECK_FUNCTION_EXISTS(memset_s HAVE_MEMSET_S)
+if(HAVE_MEMSET_S)
+    add_definitions(-DHAVE_MEMSET_S=1)
+endif()
+
 # LIBRARY
 # -------
 
