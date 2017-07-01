@@ -243,8 +243,10 @@ void sha1_final(uint8_t digest[20], sha1_context* ctx)
         digest[i] = (uint8_t) ((ctx->state[i>>2] >> ((3-(i & 3)) * 8) ) & 255);
     }
 
+    secure_zero(&i, sizeof(i));
+    secure_zero(&c, sizeof(c));
+    secure_zero(finalcount, sizeof(finalcount));
     secure_zero(ctx, sizeof(*ctx));
-    secure_zero(&finalcount, sizeof(finalcount));
 }
 
 
@@ -267,7 +269,7 @@ sha1_hash::sha1_hash(const void* src, size_t srclen)
 }
 
 
-sha1_hash::sha1_hash(const string_view& str)
+sha1_hash::sha1_hash(const secure_string_view& str)
 {
     ctx = new sha1_context;
     sha1_init(ctx);
@@ -296,7 +298,7 @@ void sha1_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha1_hash::update(const string_view& str)
+void sha1_hash::update(const secure_string_view& str)
 {
     update(str.data(), str.size());
 }

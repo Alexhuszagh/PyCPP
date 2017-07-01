@@ -1610,3 +1610,4 @@ typedef secure_basic_string<char> secure_string;
 typedef secure_basic_string<wchar_t> secure_wstring;
 typedef secure_basic_string<char16_t> secure_u16string;
 typedef secure_basic_string<char32_t> secure_u32string;
+typedef basic_string_view<char, secure_char_traits<char>> secure_string_view;

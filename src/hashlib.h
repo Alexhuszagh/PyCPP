@@ -58,7 +58,7 @@ struct hash
 public:
     hash(hash_algorithm algorithm);
     hash(hash_algorithm algorithm, const void* src, size_t srclen);
-    hash(hash_algorithm algorithm, const string_view& str);
+    hash(hash_algorithm algorithm, const secure_string_view& str);
 
     hash(const hash&);
     hash& operator=(const hash&);
@@ -66,7 +66,7 @@ public:
     hash& operator=(hash&&);
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -87,11 +87,11 @@ struct md2_hash
 public:
     md2_hash();
     md2_hash(const void* src, size_t srclen);
-    md2_hash(const string_view& str);
+    md2_hash(const secure_string_view& str);
     ~md2_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -110,11 +110,11 @@ struct md4_hash
 public:
     md4_hash();
     md4_hash(const void* src, size_t srclen);
-    md4_hash(const string_view& str);
+    md4_hash(const secure_string_view& str);
     ~md4_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -133,11 +133,11 @@ struct md5_hash
 public:
     md5_hash();
     md5_hash(const void* src, size_t srclen);
-    md5_hash(const string_view& str);
+    md5_hash(const secure_string_view& str);
     ~md5_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -156,11 +156,11 @@ struct sha1_hash
 public:
     sha1_hash();
     sha1_hash(const void* src, size_t srclen);
-    sha1_hash(const string_view& str);
+    sha1_hash(const secure_string_view& str);
     ~sha1_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -179,11 +179,11 @@ struct sha2_224_hash
 public:
     sha2_224_hash();
     sha2_224_hash(const void* src, size_t srclen);
-    sha2_224_hash(const string_view& str);
+    sha2_224_hash(const secure_string_view& str);
     ~sha2_224_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -202,11 +202,11 @@ struct sha2_256_hash
 public:
     sha2_256_hash();
     sha2_256_hash(const void* src, size_t srclen);
-    sha2_256_hash(const string_view& str);
+    sha2_256_hash(const secure_string_view& str);
     ~sha2_256_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -225,11 +225,11 @@ struct sha2_384_hash
 public:
     sha2_384_hash();
     sha2_384_hash(const void* src, size_t srclen);
-    sha2_384_hash(const string_view& str);
+    sha2_384_hash(const secure_string_view& str);
     ~sha2_384_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -248,11 +248,11 @@ struct sha2_512_hash
 public:
     sha2_512_hash();
     sha2_512_hash(const void* src, size_t srclen);
-    sha2_512_hash(const string_view& str);
+    sha2_512_hash(const secure_string_view& str);
     ~sha2_512_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -271,11 +271,11 @@ struct sha3_224_hash
 public:
     sha3_224_hash();
     sha3_224_hash(const void* src, size_t srclen);
-    sha3_224_hash(const string_view& str);
+    sha3_224_hash(const secure_string_view& str);
     ~sha3_224_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -294,11 +294,11 @@ struct sha3_256_hash
 public:
     sha3_256_hash();
     sha3_256_hash(const void* src, size_t srclen);
-    sha3_256_hash(const string_view& str);
+    sha3_256_hash(const secure_string_view& str);
     ~sha3_256_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -317,11 +317,11 @@ struct sha3_384_hash
 public:
     sha3_384_hash();
     sha3_384_hash(const void* src, size_t srclen);
-    sha3_384_hash(const string_view& str);
+    sha3_384_hash(const secure_string_view& str);
     ~sha3_384_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -340,11 +340,11 @@ struct sha3_512_hash
 public:
     sha3_512_hash();
     sha3_512_hash(const void* src, size_t srclen);
-    sha3_512_hash(const string_view& str);
+    sha3_512_hash(const secure_string_view& str);
     ~sha3_512_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;
@@ -363,11 +363,11 @@ struct whirlpool_hash
 public:
     whirlpool_hash();
     whirlpool_hash(const void* src, size_t srclen);
-    whirlpool_hash(const string_view& str);
+    whirlpool_hash(const secure_string_view& str);
     ~whirlpool_hash();
 
     void update(const void* src, size_t srclen);
-    void update(const string_view& str);
+    void update(const secure_string_view& str);
     size_t digest(void* dst, size_t dstlen) const;
     size_t hexdigest(void* dst, size_t dstlen) const;
     secure_string digest() const;

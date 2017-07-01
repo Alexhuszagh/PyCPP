@@ -29,7 +29,7 @@ struct allocate_hash
  */
 struct update_hash
 {
-    string_view str;
+    secure_string_view str;
 
     template <typename Hash>
     void operator()(Hash& hash)
@@ -183,7 +183,7 @@ hash::hash(hash_algorithm algorithm, const void* src, size_t srclen):
 }
 
 
-hash::hash(hash_algorithm algorithm, const string_view& str):
+hash::hash(hash_algorithm algorithm, const secure_string_view& str):
     algorithm(algorithm)
 {
     get_hash(mem, algorithm, allocate_hash());
@@ -221,11 +221,11 @@ hash& hash::operator=(hash&& other)
 
 void hash::update(const void* src, size_t srclen)
 {
-    update(string_view(reinterpret_cast<const char*>(src), srclen));
+    update(secure_string_view(reinterpret_cast<const char*>(src), srclen));
 }
 
 
-void hash::update(const string_view& str)
+void hash::update(const secure_string_view& str)
 {
     update_hash functor = {str};
     get_hash(mem, algorithm, functor);

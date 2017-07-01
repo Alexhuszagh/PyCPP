@@ -93,6 +93,7 @@ static void md2_final(uint8_t* hash, md2_context* ctx)
 
     memcpy(hash, ctx->state, MD2_HASH_SIZE);
 
+    secure_zero(&pad, sizeof(pad));
     secure_zero(ctx, sizeof(*ctx));
 }
 
@@ -116,7 +117,7 @@ md2_hash::md2_hash(const void* src, size_t srclen)
 }
 
 
-md2_hash::md2_hash(const string_view& str)
+md2_hash::md2_hash(const secure_string_view& str)
 {
     ctx = new md2_context;
     md2_init(ctx);
@@ -145,7 +146,7 @@ void md2_hash::update(const void* src, size_t srclen)
 }
 
 
-void md2_hash::update(const string_view& str)
+void md2_hash::update(const secure_string_view& str)
 {
     update(str.data(), str.size());
 }

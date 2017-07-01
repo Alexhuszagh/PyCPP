@@ -284,6 +284,8 @@ void md5_final(uint8_t* result, md5_context* ctx)
     MD5_OUT(&result[8], ctx->c)
     MD5_OUT(&result[12], ctx->d)
 
+    secure_zero(&used, sizeof(used));
+    secure_zero(&available, sizeof(available));
     secure_zero(ctx, sizeof(*ctx));
 }
 
@@ -307,7 +309,7 @@ md5_hash::md5_hash(const void* src, size_t srclen)
 }
 
 
-md5_hash::md5_hash(const string_view& str)
+md5_hash::md5_hash(const secure_string_view& str)
 {
     ctx = new md5_context;
     md5_init(ctx);
@@ -336,7 +338,7 @@ void md5_hash::update(const void* src, size_t srclen)
 }
 
 
-void md5_hash::update(const string_view& str)
+void md5_hash::update(const secure_string_view& str)
 {
     update(str.data(), str.size());
 }

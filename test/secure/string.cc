@@ -220,6 +220,7 @@ TEST(secure_string, modifier)
 }
 
 
+
 TEST(secure_string, operations)
 {
     secure_string str = {0, 84, 104, 105, 115, 32, 105, 115, 32, 100, 97, 116, 97, 10};
@@ -229,45 +230,45 @@ TEST(secure_string, operations)
     // find
     EXPECT_EQ(str.find(secure_string("is")), 3);
     EXPECT_EQ(str.find("is"), 3);
-    EXPECT_EQ(str.find(string_view("is")), 3);
+    EXPECT_EQ(str.find(secure_string_view("is")), 3);
     EXPECT_EQ(str.find("is", 0, 2), 3);
     EXPECT_EQ(str.find('i'), 3);
 
     // find_first_of
     EXPECT_EQ(str.find_first_of(secure_string("hsi")), 2);
     EXPECT_EQ(str.find_first_of("hsi"), 2);
-    EXPECT_EQ(str.find_first_of(string_view("hsi")), 2);
+    EXPECT_EQ(str.find_first_of(secure_string_view("hsi")), 2);
     EXPECT_EQ(str.find_first_of("hsi", 0, 3), 2);
     EXPECT_EQ(str.find_first_of('h'), 2);
 
     EXPECT_EQ(str.find_first_of(secure_string("x")), secure_string::npos);
     EXPECT_EQ(str.find_first_of("x"), secure_string::npos);
-    EXPECT_EQ(str.find_first_of(string_view("x")), secure_string::npos);
+    EXPECT_EQ(str.find_first_of(secure_string_view("x")), secure_string::npos);
     EXPECT_EQ(str.find_first_of("x", 0, 1), secure_string::npos);
     EXPECT_EQ(str.find_first_of('x'), secure_string::npos);
 
     // find_first_not_of
     EXPECT_EQ(non_null.find_first_not_of(secure_string("Tish")), 4);
     EXPECT_EQ(non_null.find_first_not_of("Tish"), 4);
-    EXPECT_EQ(non_null.find_first_not_of(string_view("Tish")), 4);
+    EXPECT_EQ(non_null.find_first_not_of(secure_string_view("Tish")), 4);
     EXPECT_EQ(non_null.find_first_not_of("Tish", 0, 4), 4);
     EXPECT_EQ(non_null.find_first_not_of('T'), 1);
 
     EXPECT_EQ(non_null.find_first_not_of(secure_string("Thisdta \n")), secure_string::npos);
     EXPECT_EQ(non_null.find_first_not_of("Thisdta \n"), secure_string::npos);
-    EXPECT_EQ(non_null.find_first_not_of(string_view("Thisdta \n")), secure_string::npos);
+    EXPECT_EQ(non_null.find_first_not_of(secure_string_view("Thisdta \n")), secure_string::npos);
     EXPECT_EQ(non_null.find_first_not_of("Thisdta \n", 0, 9), secure_string::npos);
 
     // rfind
     EXPECT_EQ(str.rfind(secure_string("is")), 6);
     EXPECT_EQ(str.rfind("is"), 6);
-    EXPECT_EQ(str.rfind(string_view("is")), 6);
+    EXPECT_EQ(str.rfind(secure_string_view("is")), 6);
     EXPECT_EQ(str.rfind("is", 0, 2), 6);
     EXPECT_EQ(str.rfind('i'), 6);
 
     EXPECT_EQ(str.rfind(secure_string("isx")), secure_string::npos);
     EXPECT_EQ(str.rfind("isx"), secure_string::npos);
-    EXPECT_EQ(str.rfind(string_view("isx")), secure_string::npos);
+    EXPECT_EQ(str.rfind(secure_string_view("isx")), secure_string::npos);
     EXPECT_EQ(str.rfind("isx", 0, 3), secure_string::npos);
     EXPECT_EQ(str.rfind('x'), secure_string::npos);
 
@@ -276,26 +277,26 @@ TEST(secure_string, operations)
     // find_last_of
     EXPECT_EQ(str.find_last_of(secure_string("hsi")), 7);
     EXPECT_EQ(str.find_last_of("hsi"), 7);
-    EXPECT_EQ(str.find_last_of(string_view("hsi")), 7);
+    EXPECT_EQ(str.find_last_of(secure_string_view("hsi")), 7);
     EXPECT_EQ(str.find_last_of("hsi", 0, 3), 7);
     EXPECT_EQ(str.find_last_of('h'), 2);
 
     EXPECT_EQ(str.find_last_of(secure_string("x")), secure_string::npos);
     EXPECT_EQ(str.find_last_of("x"), secure_string::npos);
-    EXPECT_EQ(str.find_last_of(string_view("x")), secure_string::npos);
+    EXPECT_EQ(str.find_last_of(secure_string_view("x")), secure_string::npos);
     EXPECT_EQ(str.find_last_of("x", 0, 1), secure_string::npos);
     EXPECT_EQ(str.find_last_of('x'), secure_string::npos);
 
     // find_last_not_of
     EXPECT_EQ(non_null.find_last_not_of(secure_string("dat\n")), 7);
     EXPECT_EQ(non_null.find_last_not_of("dat\n"), 7);
-    EXPECT_EQ(non_null.find_last_not_of(string_view("dat\n")), 7);
+    EXPECT_EQ(non_null.find_last_not_of(secure_string_view("dat\n")), 7);
     EXPECT_EQ(non_null.find_last_not_of("dat\n", 0, 4), 7);
     EXPECT_EQ(non_null.find_last_not_of('\n'), 11);
 
     EXPECT_EQ(non_null.find_last_not_of(secure_string("Thisdta \n")), secure_string::npos);
     EXPECT_EQ(non_null.find_last_not_of("Thisdta \n"), secure_string::npos);
-    EXPECT_EQ(non_null.find_last_not_of(string_view("Thisdta \n")), secure_string::npos);
+    EXPECT_EQ(non_null.find_last_not_of(secure_string_view("Thisdta \n")), secure_string::npos);
     EXPECT_EQ(non_null.find_last_not_of("Thisdta \n", 0, 9), secure_string::npos);
 }
 
@@ -307,6 +308,6 @@ TEST(secure_string, conversions)
     EXPECT_TRUE(bool(str));
     EXPECT_FALSE(bool(other));
 
-    EXPECT_EQ(string_view(str), str);
-    EXPECT_EQ(string_view(other), "");
+    EXPECT_EQ(secure_string_view(str), str);
+    EXPECT_EQ(secure_string_view(other), "");
 }

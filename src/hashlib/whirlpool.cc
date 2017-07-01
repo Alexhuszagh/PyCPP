@@ -735,6 +735,7 @@ static void whirlpool_final(uint8_t* result, whirlpool_context *ctx)
     /* save result hash */
     memcpy_be64toh(result, ctx->hash, 64);
 
+    secure_zero(&index, sizeof(index));
     secure_zero(ctx, sizeof(*ctx));
 }
 
@@ -758,7 +759,7 @@ whirlpool_hash::whirlpool_hash(const void* src, size_t srclen)
 }
 
 
-whirlpool_hash::whirlpool_hash(const string_view& str)
+whirlpool_hash::whirlpool_hash(const secure_string_view& str)
 {
     ctx = new whirlpool_context;
     whirlpool_init(ctx);
@@ -787,7 +788,7 @@ void whirlpool_hash::update(const void* src, size_t srclen)
 }
 
 
-void whirlpool_hash::update(const string_view& str)
+void whirlpool_hash::update(const secure_string_view& str)
 {
     update(str.data(), str.size());
 }

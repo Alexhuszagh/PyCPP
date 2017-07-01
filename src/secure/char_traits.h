@@ -89,14 +89,20 @@ constexpr bool secure_char_traits<C>::lt(char_type a, char_type b)
 template <typename C>
 auto secure_char_traits<C>::move(char_type* dst, const char_type* src, size_t n) -> char_type*
 {
-    return n == 0 ? dst : secure_memmove(dst, src, n * sizeof(char_type));
+    if (n != 0) {
+        secure_memmove(dst, src, n * sizeof(char_type));
+    }
+    return dst;
 }
 
 
 template <typename C>
 auto secure_char_traits<C>::copy(char_type* dst, const char_type* src, size_t n) -> char_type*
 {
-    return n == 0 ? dst : secure_memcpy(dst, src, n * sizeof(char_type));
+    if (n != 0) {
+        secure_memcpy(dst, src, n * sizeof(char_type));
+    }
+    return dst;
 }
 
 
@@ -118,8 +124,7 @@ int secure_char_traits<C>::compare(const char_type* s1, const char_type* s2, siz
 template <typename C>
 auto secure_char_traits<C>::find(const char_type* s, size_t n, const char_type& a) -> const char_type*
 {
-    for (; n; --n)
-    {
+    for (; n; --n) {
         if (eq(*s, a)) {
             return s;
         }

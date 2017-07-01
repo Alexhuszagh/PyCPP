@@ -226,6 +226,10 @@ static void sha256_final(uint8_t* result, sha2_256_context *ctx)
     if (result) {
         memcpy_be32toh(result, ctx->hash, ctx->digest_length);
     }
+
+    secure_zero(&index, sizeof(index));
+    secure_zero(&shift, sizeof(shift));
+    secure_zero(ctx, sizeof(*ctx));
 }
 
 
@@ -248,7 +252,7 @@ sha2_224_hash::sha2_224_hash(const void* src, size_t srclen)
 }
 
 
-sha2_224_hash::sha2_224_hash(const string_view& str)
+sha2_224_hash::sha2_224_hash(const secure_string_view& str)
 {
     ctx = new sha2_256_context;
     sha224_init(ctx);
@@ -277,7 +281,7 @@ void sha2_224_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha2_224_hash::update(const string_view& str)
+void sha2_224_hash::update(const secure_string_view& str)
 {
     update(str.data(), str.size());
 }
@@ -352,7 +356,7 @@ sha2_256_hash::sha2_256_hash(const void* src, size_t srclen)
 }
 
 
-sha2_256_hash::sha2_256_hash(const string_view& str)
+sha2_256_hash::sha2_256_hash(const secure_string_view& str)
 {
     ctx = new sha2_256_context;
     sha256_init(ctx);
@@ -381,7 +385,7 @@ void sha2_256_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha2_256_hash::update(const string_view& str)
+void sha2_256_hash::update(const secure_string_view& str)
 {
     update(str.data(), str.size());
 }
