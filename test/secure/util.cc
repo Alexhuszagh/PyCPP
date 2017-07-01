@@ -11,5 +11,13 @@
 
 TEST(secure_util, secure_malloc)
 {
-    //
+    auto* ptr = secure_malloc(50);
+    secure_free(ptr);
+}
+
+
+TEST(secure_util, secure_calloc)
+{
+    auto* ptr = secure_calloc(50, 1);
+    secure_free(ptr);
 }

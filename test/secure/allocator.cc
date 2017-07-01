@@ -11,5 +11,12 @@
 
 TEST(secure_allocator, secure_allocator)
 {
-    //
+    typedef secure_allocator<char> alloc;
+    char* ptr = alloc().allocate(50);
+    alloc().deallocate(ptr, 50);
+
+    ptr = alloc().allocate(50);
+    alloc().construct(ptr, 0);
+    alloc().destroy(ptr);
+    alloc().deallocate(ptr, 50);
 }
