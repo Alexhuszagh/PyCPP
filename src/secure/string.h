@@ -9,27 +9,23 @@
  *  to avoid passwords or other sensitive information being retained
  *  in memory. You should use secure_string for any sensitive data.
  *
- *  secure_string doesn't aim for optimization, and therefore it does
+ *  secure_string by default uses a secure memory allocator, from
+ *  libsodium, which allows locking access, or setting read-only access
+ *  to the buffer. Using a non-secure allocator will create a compile-time
+ *  error.
+ *
+ *  secure_string does not aim for optimization, and therefore it does
  *  not use short-string optimization techniques.
  */
 
 #pragma once
 
-#include "string_view.h"
-
-// FUNCTIONS
-// ---------
-
-/**
- *  \brief Securely clear buffer, preventing compiler optimizations.
- *
- *  Use this rather memset.
- */
-void secure_zero(void* dst, size_t bytes);
+#include <secure/allocator.h>
+#include <secure/char_traits.h>
+#include <view/string.h>
 
 // OBJECTS
 // -------
-
 
 /**
  *  \brief Secure string wrapper.
@@ -37,7 +33,7 @@ void secure_zero(void* dst, size_t bytes);
  *  STL-like string that wipes memory during all allocation events,
  *  to avoid leaving sensitvie information in memory.
  */
-template<typename Char, typename Traits = std::char_traits<Char>, typename Allocator = std::allocator<Char>>
+template<typename Char, typename Traits = secure_char_traits<Char>, typename Allocator = secure_allocator<Char>>
 struct secure_basic_string
 {
 public:
@@ -78,6 +74,12 @@ public:
     secure_basic_string(size_t n, value_type c);
     template <typename Iter> secure_basic_string(Iter first, Iter last);
     secure_basic_string(std::initializer_list<value_type> list);
+
+    // TODO: noaccess()
+    // TODO: readonly()
+    // TODO: readwrite()
+    // TODO: lock()
+    // TODO: use sodium_malloc instead.
 
     // ITERATORS
     iterator begin();
@@ -571,10 +573,7 @@ secure_basic_string<C, T, A>::secure_basic_string():
     capacity_(15),
     length_(0),
     data_(allocator_type().allocate(15))
-{
-    // clear buffer on initialization
-    secure_zero(data_, capacity_ * sizeof(value_type));
-}
+{}
 
 
 template <typename C, typename T, typename A>
@@ -1071,7 +1070,7 @@ auto secure_basic_string<C, T, A>::assign(const view_type& str) -> self&
 
     length_ = n;
     traits_type::copy(data_, str.data(), n);
-    traits_type::assign(data_[n], value_type());
+    data_[n] = value_type();
 
     return *this;
 }
@@ -1110,7 +1109,7 @@ auto secure_basic_string<C, T, A>::assign(size_t n, value_type c) -> self&
 
     length_ = n;
     traits_type::assign(data_, n, c);
-    traits_type::assign(data_[n], value_type());
+    data_[n] = value_type();
 
     return *this;
 }
@@ -1578,15 +1577,12 @@ void secure_basic_string<C, T, A>::init()
     capacity_ = 15;
     length_ = 0;
     data_ = allocator_type().allocate(15);
-    secure_zero(data_, capacity_ * sizeof(value_type));
 }
 
 
 template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::reset()
 {
-    // clear our buffer before deallocating it
-    secure_zero(data_, capacity_ * sizeof(value_type));
     allocator_type().deallocate(data_, capacity_);
     capacity_ = length_ = 0;
 }
@@ -1600,7 +1596,6 @@ void secure_basic_string<C, T, A>::reallocate(size_type n)
     traits_type::copy(buf, data_, length_+1);
 
     // clear existing buffer
-    secure_zero(data_, capacity_ * sizeof(value_type));
     allocator_type().deallocate(data_, capacity_);
 
     // store data

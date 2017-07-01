@@ -5,7 +5,7 @@
  *  \brief string_view unittests.
  */
 
-#include "string_view.h"
+#include <view/string.h>
 #include <gtest/gtest.h>
 
 // DATA

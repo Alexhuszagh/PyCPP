@@ -2,10 +2,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include "architecture.h"
-#include "hashlib.h"
-#include "hex.h"
-
+#include <architecture.h>
+#include <hashlib.h>
+#include <hex.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <cstdio>

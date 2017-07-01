@@ -2,10 +2,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 
-#include "casemap.h"
-#include "codec.h"
-#include "unicode.h"
-
+#include <casemap.h>
+#include <codec.h>
+#include <unicode.h>
 #include <algorithm>
 #include <cctype>
 #include <iterator>

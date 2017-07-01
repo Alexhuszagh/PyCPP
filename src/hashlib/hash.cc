@@ -5,7 +5,7 @@
  *  \brief Generic hash structure.
  */
 
-#include "hashlib.h"
+#include <hashlib.h>
 
 // FUNCTIONS
 // ---------

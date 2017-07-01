@@ -5,7 +5,7 @@
  *  \brief Architecture unittests.
  */
 
-#include "architecture.h"
+#include <architecture.h>
 #include <gtest/gtest.h>
 
 

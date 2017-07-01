@@ -5,9 +5,8 @@
  *  \brief Base64 unittests.
  */
 
-#include "base64.h"
+#include <base64.h>
 #include <gtest/gtest.h>
-
 #include <random>
 #include <utility>
 #include <vector>

@@ -8,7 +8,7 @@
 #pragma once
 
 #ifndef _MSC_VER
-#   include "sys/time.h"
+#   include <sys/time.h>
 #else
 #   include <winsock2.h>
 

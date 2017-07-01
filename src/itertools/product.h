@@ -34,7 +34,7 @@
 
 #pragma once
 
-#include "safe_stdlib.h"
+#include <safe/stdlib.h>
 #include <algorithm>
 #include <iterator>
 #include <functional>

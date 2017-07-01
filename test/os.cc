@@ -5,9 +5,8 @@
  *  \brief Operating system detection unittests.
  */
 
-#include "os.h"
+#include <os.h>
 #include <gtest/gtest.h>
-
 
 // TESTS
 // -----

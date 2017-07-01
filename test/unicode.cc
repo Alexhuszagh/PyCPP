@@ -7,9 +7,8 @@
  *  \brief Unicode unittests.
  */
 
-#include "unicode.h"
+#include <unicode.h>
 #include <gtest/gtest.h>
-
 #include <utility>
 #include <vector>
 

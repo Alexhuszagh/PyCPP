@@ -5,9 +5,8 @@
  *  \brief Base32 unittests.
  */
 
-#include "base32.h"
+#include <base32.h>
 #include <gtest/gtest.h>
-
 #include <random>
 #include <utility>
 #include <vector>

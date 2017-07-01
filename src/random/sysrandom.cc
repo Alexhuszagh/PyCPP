@@ -9,11 +9,11 @@
  *  are used for truly random bytes.
  */
 
-#include "os.h"
-#include "random.h"
+#include <os.h>
+#include <random.h>
 #if defined(OS_WINDOWS)
-#   include "windows.h"
-#   include "wincrypt.h"
+#   include <windows.h>
+#   include <wincrypt.h>
 #   include <stdexcept>
 #else
 #   include <fstream>

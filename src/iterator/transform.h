@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "ordering.h"
+#include <ordering.h>
 #include <iterator>
 #include <tuple>
 #include <type_traits>

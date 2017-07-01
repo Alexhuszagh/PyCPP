@@ -5,10 +5,9 @@
  *  [reference] https://github.com/B-Con/crypto-algorithms
  */
 
-#include "hashlib.h"
-#include "hex.h"
-#include "processor.h"
-
+#include <hashlib.h>
+#include <hex.h>
+#include <processor.h>
 #include <cstring>
 #include <stdexcept>
 

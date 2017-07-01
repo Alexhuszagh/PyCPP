@@ -5,9 +5,8 @@
  *  \brief Base16 unittests.
  */
 
-#include "base16.h"
+#include <base16.h>
 #include <gtest/gtest.h>
-
 #include <random>
 #include <utility>
 #include <vector>

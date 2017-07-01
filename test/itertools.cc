@@ -6,9 +6,8 @@
  *  \brief Permutation, combination and product unittests.
  */
 
-#include "itertools.h"
+#include <itertools.h>
 #include <gtest/gtest.h>
-
 #include <map>
 #include <numeric>
 

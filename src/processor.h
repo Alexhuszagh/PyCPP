@@ -99,7 +99,7 @@
 #   if defined(__bfin) || defined(__BFIN__)
 #       define HAVE_CONVEX
 #       define PROCESSOR_DETECTED
-#       include "architecture.h"
+#       include <architecture.h>
 #       if SYSTEM_ARCHITECTURE == 32
 #           define HAVE_CONVEX32
 #       elif SYSTEM_ARCHITECTURE == 64
@@ -113,7 +113,7 @@
 #   if defined(__epiphany__)
 #       define HAVE_EPIPHANY
 #       define PROCESSOR_DETECTED
-#       include "architecture.h"
+#       include <architecture.h>
 #       if SYSTEM_ARCHITECTURE == 32
 #           define HAVE_EPIPHANY32
 #       elif SYSTEM_ARCHITECTURE == 64
@@ -127,7 +127,7 @@
 #   if defined(__hppa__) || defined(__HPPA__) || defined(__hppa)
 #       define HAVE_HPPA
 #       define PROCESSOR_DETECTED
-#       include "architecture.h"
+#       include <architecture.h>
 #       if SYSTEM_ARCHITECTURE == 32
 #           define HAVE_HPPA32
 #       elif SYSTEM_ARCHITECTURE == 64
@@ -150,7 +150,7 @@
 #   if defined(__mips__) || defined(mips) || defined(__mips) || defined(__MIPS__)
 #       define HAVE_MIPS
 #       define PROCESSOR_DETECTED
-#       include "architecture.h"
+#       include <architecture.h>
 #       if SYSTEM_ARCHITECTURE == 32
 #           define HAVE_MIPS32
 #       elif SYSTEM_ARCHITECTURE == 64

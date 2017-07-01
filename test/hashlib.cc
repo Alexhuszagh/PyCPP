@@ -5,9 +5,8 @@
  *  \brief Hashlib unittests.
  */
 
-#include "hashlib.h"
+#include <hashlib.h>
 #include <gtest/gtest.h>
-
 #include <random>
 #include <utility>
 #include <vector>

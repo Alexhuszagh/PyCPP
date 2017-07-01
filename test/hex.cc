@@ -5,10 +5,9 @@
  *  \brief Hex representation unittests.
  */
 
-#include "byteorder.h"
-#include "hex.h"
+#include <byteorder.h>
+#include <hex.h>
 #include <gtest/gtest.h>
-
 
 // TESTS
 // -----

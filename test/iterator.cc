@@ -5,9 +5,8 @@
  *  \brief Iterator unittests.
  */
 
-#include "iterator.h"
+#include <iterator.h>
 #include <gtest/gtest.h>
-
 #include <vector>
 
 // FUNCTIONS

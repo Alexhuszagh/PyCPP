@@ -5,7 +5,7 @@
  *  [reference] https://github.com/B-Con/crypto-algorithms
  */
 
-#include "cipher.h"
+#include <cipher.h>
 
 
 // FUNCTIONS

@@ -5,8 +5,8 @@
  *  \brief Codec unittests.
  */
 
-#include "byteorder.h"
-#include "codec.h"
+#include <byteorder.h>
+#include <codec.h>
 #include <gtest/gtest.h>
 
 // CONSTANTS

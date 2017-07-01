@@ -5,9 +5,8 @@
  *  \brief Processor detection unittests.
  */
 
-#include "processor.h"
+#include <processor.h>
 #include <gtest/gtest.h>
-
 
 // TESTS
 // -----

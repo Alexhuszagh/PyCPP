@@ -5,9 +5,8 @@
  *  \brief Getline unittests.
  */
 
-#include "getline.h"
+#include <getline.h>
 #include <gtest/gtest.h>
-
 
 // TESTS
 // -----

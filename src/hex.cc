@@ -1,10 +1,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Unicode, see licenses/unicode.md for more details.
 
-#include "base16.h"
-#include "byteorder.h"
-#include "hex.h"
-
+#include <base16.h>
+#include <byteorder.h>
+#include <hex.h>
 #include <cstring>
 
 // HELPERS

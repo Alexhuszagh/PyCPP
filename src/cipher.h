@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "string_view.h"
+#include <view/string.h>
 #include <string>
 
 // OBJECTS

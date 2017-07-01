@@ -5,7 +5,7 @@
  *  \brief Safe stdlib unittests.
  */
 
-#include "safe_stdlib.h"
+#include <safe/stdlib.h>
 #include <gtest/gtest.h>
 
 

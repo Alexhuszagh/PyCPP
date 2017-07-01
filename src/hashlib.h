@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "secure_string.h"
+#include <secure/string.h>
 #include <string>
 #include <utility>
 

@@ -5,7 +5,7 @@
  *  \brief Random unittests.
  */
 
-#include "random.h"
+#include <random.h>
 #include <gtest/gtest.h>
 
 

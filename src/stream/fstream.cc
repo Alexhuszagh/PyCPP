@@ -16,8 +16,8 @@
  *  2. https://github.com/llvm-mirror/libcxx/blob/master/include/fstream#L132
  */
 
-#include "codec.h"
-#include "stream/fstream.h"
+#include <codec.h>
+#include <stream/fstream.h>
 
 
 #if defined(HAVE_GCC)                   // GCC

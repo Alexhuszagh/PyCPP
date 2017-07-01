@@ -7,9 +7,8 @@
  *  \brief Punycode encoding and decoding unittests.
  */
 
-#include "punycode.h"
+#include <punycode.h>
 #include <gtest/gtest.h>
-
 #include <utility>
 #include <vector>
 

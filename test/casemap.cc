@@ -5,10 +5,9 @@
  *  \brief Casemap conversion unittests.
  */
 
-#include "byteorder.h"
-#include "casemap.h"
+#include <byteorder.h>
+#include <casemap.h>
 #include <gtest/gtest.h>
-
 
 // TESTS
 // -----

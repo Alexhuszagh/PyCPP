@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include "gettimeofday.h"
+#include <gettimeofday.h>
 
 #ifdef _MSC_VER
 #   include <cstdint>

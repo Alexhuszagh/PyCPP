@@ -5,5 +5,5 @@
  *  \brief Cipher unittests.
  */
 
-#include "cipher.h"
+#include <cipher.h>
 #include <gtest/gtest.h>

@@ -5,13 +5,12 @@
  *  \brief POSIX-specific path normalization routines.
  */
 
-#include "os.h"
+#include <os.h>
 
 #if defined(OS_POSIX)                           // POSIX & MACOS
-#include "filesystem.h"
-#include "filesystem/exception.h"
-#include "unicode.h"
-
+#include <filesystem.h>
+#include <filesystem/exception.h>
+#include <unicode.h>
 #include <limits.h>
 #include <unistd.h>
 #include <wordexp.h>

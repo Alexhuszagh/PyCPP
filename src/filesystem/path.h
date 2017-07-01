@@ -7,9 +7,8 @@
 
 #pragma once
 
-#include "codec.h"
-#include "os.h"
-
+#include <codec.h>
+#include <os.h>
 #include <deque>
 #include <string>
 

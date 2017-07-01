@@ -2,10 +2,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Unicode, see licenses/mit.md for more details.
 
-#include "punycode.h"
-#include "safe_stdlib.h"
-#include "unicode.h"
-
+#include <punycode.h>
+#include <safe/stdlib.h>
+#include <unicode.h>
 #include <algorithm>
 #include <cmath>
 #include <cstring>

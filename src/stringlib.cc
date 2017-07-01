@@ -1,9 +1,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include "casemap.h"
-#include "stringlib.h"
-#include "unicode.h"
+#include <casemap.h>
+#include <stringlib.h>
+#include <unicode.h>
 
 // CONSTANTS
 // ---------

@@ -4,9 +4,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 
-#include "any.h"
-#include "ordering.h"
-
+#include <any.h>
+#include <ordering.h>
 #include <utility>
 
 // OBJECTS

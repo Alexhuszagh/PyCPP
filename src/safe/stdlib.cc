@@ -1,8 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include "safe_stdlib.h"
-
+#include <safe/stdlib.h>
 #include <new>
 #include <stdexcept>
 

@@ -5,9 +5,8 @@
  *  \brief Path normalization routines.
  */
 
-#include "filesystem.h"
-#include "stringlib.h"
-
+#include <filesystem.h>
+#include <stringlib.h>
 #include <algorithm>
 
 // HELPERS

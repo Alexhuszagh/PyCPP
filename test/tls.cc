@@ -5,9 +5,8 @@
  *  \brief Thread-local storage unittests.
  */
 
-#include "tls.h"
+#include <tls.h>
 #include <gtest/gtest.h>
-
 #include <thread>
 #include <vector>
 

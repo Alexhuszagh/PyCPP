@@ -2,16 +2,15 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include "filesystem.h"
-#include "filesystem/exception.h"
-
+#include <filesystem.h>
+#include <filesystem/exception.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #if defined(OS_WINDOWS)
-#   include "windows.h"
-#   include "winerror.h"
+#   include <windows.h>
+#   include <winerror.h>
 #   include <tuple>
 #else
 #   include <limits.h>

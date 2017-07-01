@@ -5,7 +5,7 @@
  *  \brief Type-safe enumeration unittests.
  */
 
-#include "enum.h"
+#include <enum.h>
 #include <gtest/gtest.h>
 
 // ENUM

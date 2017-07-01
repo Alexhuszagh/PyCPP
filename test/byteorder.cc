@@ -5,9 +5,8 @@
  *  \brief Endian unittests.
  */
 
-#include "byteorder.h"
+#include <byteorder.h>
 #include <gtest/gtest.h>
-
 
 // TESTS
 // -----

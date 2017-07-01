@@ -5,10 +5,9 @@
  *  [reference] http://openwall.info/wiki/people/solar/software/public-domain-source-code/md4
  */
 
-#include "hashlib.h"
-#include "hex.h"
-#include "processor.h"
-
+#include <hashlib.h>
+#include <hex.h>
+#include <processor.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <cstring>

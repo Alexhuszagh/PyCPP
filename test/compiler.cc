@@ -5,9 +5,8 @@
  *  \brief Compiler detection unittests.
  */
 
-#include "compiler.h"
+#include <compiler.h>
 #include <gtest/gtest.h>
-
 
 // TESTS
 // -----

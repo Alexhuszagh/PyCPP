@@ -1,8 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Public Domain/MIT, see licenses/mit.md for more details.
 
-#include "byteorder.h"
-
+#include <byteorder.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdexcept>

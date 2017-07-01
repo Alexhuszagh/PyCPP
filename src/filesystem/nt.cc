@@ -5,14 +5,13 @@
  *  \brief Windows-specific path normalization routines.
  */
 
-#include "os.h"
+#include <os.h>
 
 #if defined(OS_WINDOWS)
-#include "casemap.h"
-#include "filesystem.h"
-#include "filesystem/exception.h"
-
-#include "windows.h"
+#include <casemap.h>
+#include <filesystem.h>
+#include <filesystem/exception.h>
+#include <windows.h>
 #include <algorithm>
 
 // HELPERS

@@ -5,9 +5,8 @@
  *  \brief Ordering unittests.
  */
 
-#include "ordering.h"
+#include <ordering.h>
 #include <gtest/gtest.h>
-
 
 // TESTS
 // -----

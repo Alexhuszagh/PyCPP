@@ -5,7 +5,7 @@
  *  \brief vector_view unittests.
  */
 
-#include "vector_view.h"
+#include <view/vector.h>
 #include <gtest/gtest.h>
 
 // DATA

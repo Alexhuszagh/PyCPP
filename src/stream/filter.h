@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include "fstream.h"
+#include <stream/fstream.h>
 #include <functional>
 #include <iostream>
 #include <sstream>

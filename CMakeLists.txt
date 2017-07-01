@@ -71,6 +71,16 @@ if(HAVE_MEMSET_S)
     add_definitions(-DHAVE_MEMSET_S=1)
 endif()
 
+CHECK_FUNCTION_EXISTS(memcpy_s HAVE_MEMCPY_S)
+if(HAVE_MEMCPY_S)
+    add_definitions(-DHAVE_MEMCPY_S=1)
+endif()
+
+CHECK_FUNCTION_EXISTS(memmove_s HAVE_MEMMOVE_S)
+if(HAVE_MEMMOVE_S)
+    add_definitions(-DHAVE_MEMMOVE_S=1)
+endif()
+
 # LIBRARY
 # -------
 
@@ -79,6 +89,8 @@ include_directories(src warnings/src)
 set(SOURCE_FILES
     src/random/pseudorandom.cc
     src/random/sysrandom.cc
+    src/safe/stdlib.cc
+    src/secure/util.cc
     src/any.cc
     src/base16.cc
     src/base32.cc
@@ -90,8 +102,6 @@ set(SOURCE_FILES
     src/gettimeofday.cc
     src/hex.cc
     src/punycode.cc
-    src/safe_stdlib.cc
-    src/secure_string.cc
     src/stringlib.cc
     src/unicode.cc
     src/url.cc
@@ -161,6 +171,10 @@ endif()
 
 set(TEST_FILES
     test/main.cc
+    test/safe/stdlib.cc
+    test/secure/string.cc
+    test/view/string.cc
+    test/view/vector.cc
     test/any.cc
     test/architecture.cc
     test/base16.cc
@@ -182,14 +196,10 @@ set(TEST_FILES
     test/pimpl.cc
     test/punycode.cc
     test/random.cc
-    test/safe_stdlib.cc
-    test/secure_string.cc
-    test/string_view.cc
     test/stringlib.cc
     test/tls.cc
     test/unicode.cc
     test/url.cc
-    test/vector_view.cc
 )
 
 if (BUILD_CIPHER)
