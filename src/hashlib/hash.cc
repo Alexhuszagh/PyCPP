@@ -6,9 +6,94 @@
  */
 
 #include <hashlib.h>
+#include <hex.h>
 
 // FUNCTIONS
 // ---------
+
+
+void hash_update(void* ctx, const void* src, long srclen, void (*cb)(void*, const void*, long))
+{
+    long length = srclen;
+    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
+
+    while (length > 0) {
+        long shift = length > 512 ? 512 : length;
+        cb(ctx, first, shift);
+        length -= shift;
+        first += shift;
+    }
+}
+
+
+size_t hash_digest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*))
+{
+    if (dstlen < hashlen) {
+        throw std::runtime_error("dstlen not large enough to store hash digest.");
+    }
+
+    cb(ctx, dst);
+    return hashlen;
+}
+
+
+secure_string hash_digest(void* ctx, long hashlen, void (*cb)(void*, void*))
+{
+    void* dst = secure_malloc(hashlen);
+
+    try {
+        hash_digest(ctx, dst, hashlen, hashlen, cb);
+        secure_string output((char*)dst, hashlen);
+
+        secure_zero(dst, hashlen);
+        secure_free(dst);
+        return output;
+
+    } catch (std::exception&) {
+        secure_free(dst);
+        throw;
+    }
+}
+
+
+size_t hash_hexdigest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*))
+{
+    if (dstlen < 2 * hashlen) {
+        throw std::runtime_error("dstlen not large enough to store hash hexdigest.");
+    }
+
+    void* hash = secure_malloc(hashlen);
+
+    try {
+        hash_digest(ctx, hash, hashlen, hashlen, cb);
+        size_t out = hex_i8(hash, hashlen, dst, dstlen);
+
+        secure_free(hash);
+        return out;
+    } catch (std::exception&) {
+        secure_free(hash);
+        throw;
+    }
+}
+
+
+secure_string hash_hexdigest(void* ctx, long hashlen, void (*cb)(void*, void*))
+{
+    void* dst = secure_malloc(hashlen * 2);
+
+    try {
+        hash_hexdigest(ctx, dst, hashlen * 2, hashlen, cb);
+        secure_string output((char*)dst, hashlen * 2);
+
+        secure_zero(dst, hashlen * 2);
+        secure_free(dst);
+        return output;
+
+    } catch (std::exception&) {
+        secure_free(dst);
+        throw;
+    }
+}
 
 
 /**

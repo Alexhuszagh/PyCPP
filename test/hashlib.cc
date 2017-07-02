@@ -150,36 +150,23 @@ TEST(md4, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(md4_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, md4_hash());
 }
 
 
 TEST(md4, update)
 {
-    md4_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "51B834B7C1EF0B59EA50888FCB39ACE2");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "33E0B062039C10F3F92BADEFED4A5C0B");
+    std::vector<secure_string> tests = {
+        "51B834B7C1EF0B59EA50888FCB39ACE2",
+        "33E0B062039C10F3F92BADEFED4A5C0B"
+    };
+    test_update(tests, md4_hash());
 }
 
 
 TEST(md4, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(md4_hash(input.view()).hexdigest().size(), 32);
-    }
+    test_fuzz(md4_hash(), 32);
 }
 
 
@@ -220,36 +207,23 @@ TEST(md5, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(md5_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, md5_hash());
 }
 
 
 TEST(md5, update)
 {
-    md5_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "9DD4E461268C8034F5C8564E155C67A6");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "9336EBF25087D91C818EE6E9EC29F8C1");
+    std::vector<secure_string> tests = {
+        "9DD4E461268C8034F5C8564E155C67A6",
+        "9336EBF25087D91C818EE6E9EC29F8C1"
+    };
+    test_update(tests, md5_hash());
 }
 
 
 TEST(md5, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(md5_hash(input.view()).hexdigest().size(), 32);
-    }
+    test_fuzz(md5_hash(), 32);
 }
 
 
@@ -290,36 +264,23 @@ TEST(sha1, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(sha1_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, sha1_hash());
 }
 
 
 TEST(sha1, update)
 {
-    sha1_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "11F6AD8EC52A2984ABAAFD7C3B516503785C2072");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "DD7B7B74EA160E049DD128478E074CE47254BDE8");
+    std::vector<secure_string> tests = {
+        "11F6AD8EC52A2984ABAAFD7C3B516503785C2072",
+        "DD7B7B74EA160E049DD128478E074CE47254BDE8"
+    };
+    test_update(tests, sha1_hash());
 }
 
 
 TEST(sha1, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(sha1_hash(input.view()).hexdigest().size(), 40);
-    }
+    test_fuzz(sha1_hash(), 40);
 }
 
 
@@ -360,36 +321,23 @@ TEST(sha2_256, digest)
         }
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(sha2_256_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, sha2_256_hash());
 }
 
 
 TEST(sha2_256, update)
 {
-    sha2_256_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "2D711642B726B04401627CA9FBAC32F5C8530FB1903CC4DB02258717921A4881");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "5DDE896887F6754C9B15BFE3A441AE4806DF2FDE94001311E08BF110622E0BBE");
+    std::vector<secure_string> tests = {
+        "2D711642B726B04401627CA9FBAC32F5C8530FB1903CC4DB02258717921A4881",
+        "5DDE896887F6754C9B15BFE3A441AE4806DF2FDE94001311E08BF110622E0BBE"
+    };
+    test_update(tests, sha2_256_hash());
 }
 
 
 TEST(sha2_256, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(sha2_256_hash(input.view()).hexdigest().size(), 64);
-    }
+    test_fuzz(sha2_256_hash(), 64);
 }
 
 
@@ -430,36 +378,23 @@ TEST(sha2_224, digest)
         }
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(sha2_224_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, sha2_224_hash());
 }
 
 
 TEST(sha2_224, update)
 {
-    sha2_224_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "54A2F7F92A5F975D8096AF77A126EDDA7DA60C5AA872EF1B871701AE");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "F076570BF05DD6440C2B881BFF82F55F9538DE824A66BFA4A1F672B6");
+    std::vector<secure_string> tests = {
+        "54A2F7F92A5F975D8096AF77A126EDDA7DA60C5AA872EF1B871701AE",
+        "F076570BF05DD6440C2B881BFF82F55F9538DE824A66BFA4A1F672B6"
+    };
+    test_update(tests, sha2_224_hash());
 }
 
 
 TEST(sha2_224, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(sha2_224_hash(input.view()).hexdigest().size(), 56);
-    }
+    test_fuzz(sha2_224_hash(), 56);
 }
 
 
@@ -500,36 +435,23 @@ TEST(sha2_384, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(sha2_384_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, sha2_384_hash());
 }
 
 
 TEST(sha2_384, update)
 {
-    sha2_384_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "D752C2C51FBA0E29AA190570A9D4253E44077A058D3297FA3A5630D5BD012622F97C28ACAED313B5C83BB990CAA7DA85");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "53062481F3D242CA7422E4DF715F24812878D1A152AE60D33BCF12A8BD9990C8359EA490BB3F420479837689C57CBD57");
+    std::vector<secure_string> tests = {
+        "D752C2C51FBA0E29AA190570A9D4253E44077A058D3297FA3A5630D5BD012622F97C28ACAED313B5C83BB990CAA7DA85",
+        "53062481F3D242CA7422E4DF715F24812878D1A152AE60D33BCF12A8BD9990C8359EA490BB3F420479837689C57CBD57"
+    };
+    test_update(tests, sha2_384_hash());
 }
 
 
 TEST(sha2_384, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(sha2_384_hash(input.view()).hexdigest().size(), 96);
-    }
+    test_fuzz(sha2_384_hash(), 96);
 }
 
 
@@ -570,36 +492,23 @@ TEST(sha2_512, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(sha2_512_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, sha2_512_hash());
 }
 
 
 TEST(sha2_512, update)
 {
-    sha2_512_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "A4ABD4448C49562D828115D13A1FCCEA927F52B4D5459297F8B43E42DA89238BC13626E43DCB38DDB082488927EC904FB42057443983E88585179D50551AFE62");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "294C8E2D592D8B13DE92FD6D8254B33A4F4D816E06EC1C158C164A808A3D8164316908DD2580BE11660EFD8333D1F0F16B4869CB2FB94A657CFD8E3DDDBC9714");
+    std::vector<secure_string> tests = {
+        "A4ABD4448C49562D828115D13A1FCCEA927F52B4D5459297F8B43E42DA89238BC13626E43DCB38DDB082488927EC904FB42057443983E88585179D50551AFE62",
+        "294C8E2D592D8B13DE92FD6D8254B33A4F4D816E06EC1C158C164A808A3D8164316908DD2580BE11660EFD8333D1F0F16B4869CB2FB94A657CFD8E3DDDBC9714"
+    };
+    test_update(tests, sha2_512_hash());
 }
 
 
 TEST(sha2_512, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(sha2_512_hash(input.view()).hexdigest().size(), 128);
-    }
+    test_fuzz(sha2_512_hash(), 128);
 }
 
 
@@ -640,36 +549,23 @@ TEST(sha3_224, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(sha3_224_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, sha3_224_hash());
 }
 
 
 TEST(sha3_224, update)
 {
-    sha3_224_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "63E6CEB28AD474FA51C3D5DDA2239ADB5E58A1AE2600D18C6E116746");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "B591DC145CC24DD0B1429E7FE2F4A3286C7F0DD957A3179145CC250B");
+    std::vector<secure_string> tests = {
+        "63E6CEB28AD474FA51C3D5DDA2239ADB5E58A1AE2600D18C6E116746",
+        "B591DC145CC24DD0B1429E7FE2F4A3286C7F0DD957A3179145CC250B"
+    };
+    test_update(tests, sha3_224_hash());
 }
 
 
 TEST(sha3_224, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(sha3_224_hash(input.view()).hexdigest().size(), 56);
-    }
+    test_fuzz(sha3_224_hash(), 56);
 }
 
 
@@ -710,36 +606,23 @@ TEST(sha3_256, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(sha3_256_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, sha3_256_hash());
 }
 
 
 TEST(sha3_256, update)
 {
-    sha3_256_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "741EFA311F97686956946758E0D95F70F11FF2DA4F2FEB7C54314F44134AC49F");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "39E297A02806CEB43F3C6098A17352F5D4A05D60E8D19DD8E184C85FA0B6AF6D");
+    std::vector<secure_string> tests = {
+        "741EFA311F97686956946758E0D95F70F11FF2DA4F2FEB7C54314F44134AC49F",
+        "39E297A02806CEB43F3C6098A17352F5D4A05D60E8D19DD8E184C85FA0B6AF6D"
+    };
+    test_update(tests, sha3_256_hash());
 }
 
 
 TEST(sha3_256, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(sha3_256_hash(input.view()).hexdigest().size(), 64);
-    }
+    test_fuzz(sha3_256_hash(), 64);
 }
 
 
@@ -780,36 +663,23 @@ TEST(sha3_384, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(sha3_384_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, sha3_384_hash());
 }
 
 
 TEST(sha3_384, update)
 {
-    sha3_384_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "5ABFC7BC2A09A612F87987CE070634A0932D31891A61A0EC598E81E6EC616C9F00F05FF627070CBF6CB0499B1C334D4D");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "C35C3E4D856B5117A1C0F3E9F5DEE376666A1975D447A6A57032F606BA678EECA696014324010743CEB7F625063E0138");
+    std::vector<secure_string> tests = {
+        "5ABFC7BC2A09A612F87987CE070634A0932D31891A61A0EC598E81E6EC616C9F00F05FF627070CBF6CB0499B1C334D4D",
+        "C35C3E4D856B5117A1C0F3E9F5DEE376666A1975D447A6A57032F606BA678EECA696014324010743CEB7F625063E0138"
+    };
+    test_update(tests, sha3_384_hash());
 }
 
 
 TEST(sha3_384, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(sha3_384_hash(input.view()).hexdigest().size(), 96);
-    }
+    test_fuzz(sha3_384_hash(), 96);
 }
 
 
@@ -850,36 +720,23 @@ TEST(sha3_512, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(sha3_512_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, sha3_512_hash());
 }
 
 
 TEST(sha3_512, update)
 {
-    sha3_512_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "0FDB27960308C51467EDD49A0F5E0C434C9CCA721F4C35BFF005FEABAF6010E777A1137EE8187C5288AF57578D18D502A0BBE4C022F5587541961E10132D9834");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "AB585B96D532A05EBBFF8653C430099964421248AC320DDE44CAB79388A78D1D2230630E682CBE9E6EE3E2252CABBC8524FCB3B8F5A8EFE42DE278E2D33DA3B0");
+    std::vector<secure_string> tests = {
+        "0FDB27960308C51467EDD49A0F5E0C434C9CCA721F4C35BFF005FEABAF6010E777A1137EE8187C5288AF57578D18D502A0BBE4C022F5587541961E10132D9834",
+        "AB585B96D532A05EBBFF8653C430099964421248AC320DDE44CAB79388A78D1D2230630E682CBE9E6EE3E2252CABBC8524FCB3B8F5A8EFE42DE278E2D33DA3B0"
+    };
+    test_update(tests, sha3_512_hash());
 }
 
 
 TEST(sha3_512, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(sha3_512_hash(input.view()).hexdigest().size(), 128);
-    }
+    test_fuzz(sha3_512_hash(), 128);
 }
 
 
@@ -920,36 +777,23 @@ TEST(whirlpool, digest)
         },
     };
 
-    for (const auto &pair: tests) {
-        EXPECT_EQ(whirlpool_hash(pair.first.view()).hexdigest(), pair.second);
-    }
+    test_digest(tests, whirlpool_hash());
 }
 
 
 TEST(whirlpool, update)
 {
-    whirlpool_hash hash("x");
-    EXPECT_EQ(hash.hexdigest(), "7D6388114687E86BA9A4D2DCAEEB8EC10EB239FBD5B0299FECF6C1355BA6D5C603AE4294BCE70A25BEAD8E7EDAE742465554ABD643B09815D3B168BE8BC58A51");
-
-    hash.update("x");
-    EXPECT_EQ(hash.hexdigest(), "76FC79712863E2A5CC3D51D92CDFE2A7958113E3DBAE99E0A605C0CC2D3267EDA6F63EA447B7434AD4D34A2A2B8B099F424D48F0DA1AD7873CEC06D6F33612DF");
+    std::vector<secure_string> tests = {
+        "7D6388114687E86BA9A4D2DCAEEB8EC10EB239FBD5B0299FECF6C1355BA6D5C603AE4294BCE70A25BEAD8E7EDAE742465554ABD643B09815D3B168BE8BC58A51",
+        "76FC79712863E2A5CC3D51D92CDFE2A7958113E3DBAE99E0A605C0CC2D3267EDA6F63EA447B7434AD4D34A2A2B8B099F424D48F0DA1AD7873CEC06D6F33612DF"
+    };
+    test_update(tests, whirlpool_hash());
 }
 
 
 TEST(whirlpool, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
-    for (size_t i = 0; i < 50; i++) {
-        const size_t length = rand() % 1000;
-        secure_string input;
-        input.reserve(length);
-        for (size_t i = 0; i < length; ++i) {
-            input.push_back(static_cast<char>(dist(engine)));
-        }
-        EXPECT_EQ(whirlpool_hash(input.view()).hexdigest().size(), 128);
-    }
+    test_fuzz(whirlpool_hash(), 128);
 }
 
 

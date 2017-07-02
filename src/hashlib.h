@@ -46,6 +46,66 @@ enum hash_algorithm
     whirlpool_hash_algorithm,
 };
 
+
+// MACROS
+// ------
+
+
+/**
+ *  \brief Macro to declare a specialized hash context.
+ *
+ *  \param          Name of the hash object.
+ *  \cx             Name of the context object.
+ */
+#define SPECIALIZED_HASH(name, cx)                                      \
+    struct name##_hash                                                  \
+    {                                                                   \
+    public:                                                             \
+        name##_hash();                                                  \
+        name##_hash(const void* src, size_t srclen);                    \
+        name##_hash(const secure_string_view& str);                     \
+        ~name##_hash();                                                 \
+                                                                        \
+        void update(const void* src, size_t srclen);                    \
+        void update(const secure_string_view& str);                     \
+        size_t digest(void* dst, size_t dstlen) const;                  \
+        size_t hexdigest(void* dst, size_t dstlen) const;               \
+        secure_string digest() const;                                   \
+        secure_string hexdigest() const;                                \
+                                                                        \
+    private:                                                            \
+        cx##_context* ctx;                                              \
+    }
+
+// FUNCTIONS
+// ---------
+
+/**
+ *  \brief Update hash from buffer.
+ */
+void hash_update(void* ctx, const void* src, long srclen, void (*cb)(void*, const void*, long));
+
+/**
+ *  \brief Get digest from context.
+ */
+size_t hash_digest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*));
+
+/**
+ *  \brief Get digest from context.
+ */
+secure_string hash_digest(void* ctx, long hashlen, void (*cb)(void*, void*));
+
+/**
+ *  \brief Get hexdigest from context.
+ */
+size_t hash_hexdigest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*));
+
+/**
+ *  \brief Get hexdigest from context.
+ */
+secure_string hash_hexdigest(void* ctx, long hashlen, void (*cb)(void*, void*));
+
+
 // OBJECTS
 // -------
 
@@ -79,300 +139,16 @@ private:
 };
 
 
-/**
- *  \brief MD2 hash context.
- */
-struct md2_hash
-{
-public:
-    md2_hash();
-    md2_hash(const void* src, size_t srclen);
-    md2_hash(const secure_string_view& str);
-    ~md2_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    md2_context* ctx;
-};
-
-
-/**
- *  \brief MD4 hash context.
- */
-struct md4_hash
-{
-public:
-    md4_hash();
-    md4_hash(const void* src, size_t srclen);
-    md4_hash(const secure_string_view& str);
-    ~md4_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    md4_context* ctx;
-};
-
-
-/**
- *  \brief MD5 hash context.
- */
-struct md5_hash
-{
-public:
-    md5_hash();
-    md5_hash(const void* src, size_t srclen);
-    md5_hash(const secure_string_view& str);
-    ~md5_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    md5_context* ctx;
-};
-
-
-/**
- *  \brief SHA1 hash context.
- */
-struct sha1_hash
-{
-public:
-    sha1_hash();
-    sha1_hash(const void* src, size_t srclen);
-    sha1_hash(const secure_string_view& str);
-    ~sha1_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    sha1_context* ctx;
-};
-
-
-/**
- *  \brief SHA224 hash context.
- */
-struct sha2_224_hash
-{
-public:
-    sha2_224_hash();
-    sha2_224_hash(const void* src, size_t srclen);
-    sha2_224_hash(const secure_string_view& str);
-    ~sha2_224_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    sha2_256_context* ctx;
-};
-
-
-/**
- *  \brief SHA256 hash context.
- */
-struct sha2_256_hash
-{
-public:
-    sha2_256_hash();
-    sha2_256_hash(const void* src, size_t srclen);
-    sha2_256_hash(const secure_string_view& str);
-    ~sha2_256_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    sha2_256_context* ctx;
-};
-
-
-/**
- *  \brief SHA384 hash context.
- */
-struct sha2_384_hash
-{
-public:
-    sha2_384_hash();
-    sha2_384_hash(const void* src, size_t srclen);
-    sha2_384_hash(const secure_string_view& str);
-    ~sha2_384_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    sha2_512_context* ctx;
-};
-
-
-/**
- *  \brief SHA512 hash context.
- */
-struct sha2_512_hash
-{
-public:
-    sha2_512_hash();
-    sha2_512_hash(const void* src, size_t srclen);
-    sha2_512_hash(const secure_string_view& str);
-    ~sha2_512_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    sha2_512_context* ctx;
-};
-
-
-/**
- *  \brief SHA3-224 hash context.
- */
-struct sha3_224_hash
-{
-public:
-    sha3_224_hash();
-    sha3_224_hash(const void* src, size_t srclen);
-    sha3_224_hash(const secure_string_view& str);
-    ~sha3_224_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    sha3_context* ctx;
-};
-
-
-/**
- *  \brief SHA3-256 hash context.
- */
-struct sha3_256_hash
-{
-public:
-    sha3_256_hash();
-    sha3_256_hash(const void* src, size_t srclen);
-    sha3_256_hash(const secure_string_view& str);
-    ~sha3_256_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    sha3_context* ctx;
-};
-
-
-/**
- *  \brief SHA3-384 hash context.
- */
-struct sha3_384_hash
-{
-public:
-    sha3_384_hash();
-    sha3_384_hash(const void* src, size_t srclen);
-    sha3_384_hash(const secure_string_view& str);
-    ~sha3_384_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    sha3_context* ctx;
-};
-
-
-/**
- *  \brief SHA3-512 hash context.
- */
-struct sha3_512_hash
-{
-public:
-    sha3_512_hash();
-    sha3_512_hash(const void* src, size_t srclen);
-    sha3_512_hash(const secure_string_view& str);
-    ~sha3_512_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    sha3_context* ctx;
-};
-
-
-/**
- *  \brief Whirlpool hash context.
- */
-struct whirlpool_hash
-{
-public:
-    whirlpool_hash();
-    whirlpool_hash(const void* src, size_t srclen);
-    whirlpool_hash(const secure_string_view& str);
-    ~whirlpool_hash();
-
-    void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
-    secure_string digest() const;
-    secure_string hexdigest() const;
-
-private:
-    whirlpool_context* ctx;
-};
+SPECIALIZED_HASH(md2, md2);
+SPECIALIZED_HASH(md4, md4);
+SPECIALIZED_HASH(md5, md5);
+SPECIALIZED_HASH(sha1, sha1);
+SPECIALIZED_HASH(sha2_224, sha2_256);
+SPECIALIZED_HASH(sha2_256, sha2_256);
+SPECIALIZED_HASH(sha2_384, sha2_512);
+SPECIALIZED_HASH(sha2_512, sha2_512);
+SPECIALIZED_HASH(sha3_224, sha3);
+SPECIALIZED_HASH(sha3_256, sha3);
+SPECIALIZED_HASH(sha3_384, sha3);
+SPECIALIZED_HASH(sha3_512, sha3);
+SPECIALIZED_HASH(whirlpool, whirlpool);

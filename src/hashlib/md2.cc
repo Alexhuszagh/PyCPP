@@ -6,7 +6,6 @@
  */
 
 #include <hashlib.h>
-#include <hex.h>
 #include <processor.h>
 #include <cstring>
 #include <stdexcept>
@@ -68,9 +67,12 @@ static void md2_init(md2_context *ctx)
 }
 
 
-static void md2_update(md2_context *ctx, const uint8_t* data, size_t len)
+static void md2_update(void *ptr, const void* buf, long len)
 {
-    for (size_t i = 0; i < len; ++i) {
+    auto* ctx = (md2_context*) ptr;
+    auto* data = (const uint8_t*) buf;
+
+    for (long i = 0; i < len; ++i) {
         ctx->data[ctx->len] = data[i];
         ctx->len++;
         if (ctx->len == MD2_HASH_SIZE) {
@@ -81,8 +83,11 @@ static void md2_update(md2_context *ctx, const uint8_t* data, size_t len)
 }
 
 
-static void md2_final(uint8_t* hash, md2_context* ctx)
+static void md2_final(void* ptr, void* buf)
 {
+    auto* ctx = (md2_context*) ptr;
+    auto* hash = (uint8_t*) buf;
+
     int pad = MD2_HASH_SIZE - ctx->len;
     while (ctx->len < MD2_HASH_SIZE) {
         ctx->data[ctx->len++] = pad;
@@ -134,15 +139,7 @@ md2_hash::~md2_hash()
 
 void md2_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        md2_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, md2_update);
 }
 
 
@@ -154,71 +151,27 @@ void md2_hash::update(const secure_string_view& str)
 
 size_t md2_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < MD2_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store MD2 digest.");
-    }
-
     md2_context copy = *ctx;
-    md2_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return MD2_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, MD2_HASH_SIZE, md2_final);
 }
 
 
 size_t md2_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * MD2_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store MD2 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[MD2_HASH_SIZE];
-    try {
-        digest(hash, MD2_HASH_SIZE);
-        size_t out = hex_i8(hash, MD2_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    md2_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, MD2_HASH_SIZE, md2_final);
 }
 
 
 secure_string md2_hash::digest() const
 {
-    static constexpr size_t size = MD2_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    md2_context copy = *ctx;
+    return hash_digest(&copy, MD2_HASH_SIZE, md2_final);
 }
 
 
 secure_string md2_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * MD2_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    md2_context copy = *ctx;
+    return hash_hexdigest(&copy, MD2_HASH_SIZE, md2_final);
 }

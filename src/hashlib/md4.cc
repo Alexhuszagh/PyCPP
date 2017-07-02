@@ -188,8 +188,10 @@ void md4_init(md4_context *ctx)
 }
 
 
-void md4_update(md4_context *ctx, const void *data, unsigned long size)
+void md4_update(void *ptr, const void *data, long size)
 {
+    auto* ctx = reinterpret_cast<md4_context*>(ptr);
+
     uint32_t saved_lo;
     unsigned long used, available;
 
@@ -230,8 +232,12 @@ void md4_update(md4_context *ctx, const void *data, unsigned long size)
     (dst)[3] = (unsigned char)((src) >> 24);
 
 
-void md4_final(unsigned char *result, md4_context *ctx)
+void md4_final(void *ptr, void* buf)
 {
+    auto* ctx = (md4_context*) ptr;
+    auto* result = (uint8_t*) buf;
+
+    // unsigned char
     unsigned long used, available;
 
     used = ctx->lo & 0x3f;
@@ -299,15 +305,7 @@ md4_hash::~md4_hash()
 
 void md4_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const int8_t* first = reinterpret_cast<const int8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        md4_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, md4_update);
 }
 
 
@@ -319,73 +317,29 @@ void md4_hash::update(const secure_string_view& str)
 
 size_t md4_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < MD4_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store MD4 digest.");
-    }
-
     md4_context copy = *ctx;
-    md4_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return MD4_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, MD4_HASH_SIZE, md4_final);
 }
 
 
 size_t md4_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * MD4_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store MD4 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[MD4_HASH_SIZE];
-    try {
-        digest(hash, MD4_HASH_SIZE);
-        size_t out = hex_i8(hash, MD4_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    md4_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, MD4_HASH_SIZE, md4_final);
 }
 
 
 secure_string md4_hash::digest() const
 {
-    static constexpr size_t size = MD4_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    md4_context copy = *ctx;
+    return hash_digest(&copy, MD4_HASH_SIZE, md4_final);
 }
 
 
 secure_string md4_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * MD4_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    md4_context copy = *ctx;
+    return hash_hexdigest(&copy, MD4_HASH_SIZE, md4_final);
 }
 
 // CLEANUP
