@@ -403,7 +403,7 @@ static int munlock_impl(const void* ptr, size_t len)
     return munlock(ptr, len);
 }
 
-#elif defined(WINAPI_DESKTOP)                   // WINDOWS API
+#elif defined(OS_WINAPI_DESKTOP)                 // WINDOWS API
 
 static int mlock_impl(const void* ptr, size_t len)
 {
@@ -528,7 +528,7 @@ static int secure_mprotect_noaccess_impl(void* ptr, size_t size)
 {
 #ifdef HAVE_MPROTECT
     return mprotect(ptr, size, PROT_NONE);
-#elif defined(WINAPI_DESKTOP)
+#elif defined(OS_WINAPI_DESKTOP)
     DWORD old;
     return -(VirtualProtect(ptr, size, PAGE_NOACCESS, &old) == 0);
 #else
@@ -550,7 +550,7 @@ static int secure_mprotect_readonly_impl(void* ptr, size_t size)
 {
 #ifdef HAVE_MPROTECT
     return mprotect(ptr, size, PROT_READ);
-#elif defined(WINAPI_DESKTOP)
+#elif defined(OS_WINAPI_DESKTOP)
     DWORD old;
     return -(VirtualProtect(ptr, size, PAGE_READONLY, &old) == 0);
 #else
@@ -572,7 +572,7 @@ static int secure_mprotect_readwrite_impl(void* ptr, size_t size)
 {
 #ifdef HAVE_MPROTECT
     return mprotect(ptr, size, PROT_READ | PROT_WRITE);
-#elif defined(WINAPI_DESKTOP)
+#elif defined(OS_WINAPI_DESKTOP)
     DWORD old;
     return -(VirtualProtect(ptr, size, PAGE_READWRITE, &old) == 0);
 #else
@@ -615,7 +615,7 @@ static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
     return ptr;
 }
 
-#elif defined(WINAPI_DESKTOP)                               // WINDOWS
+#elif defined(OS_WINAPI_DESKTOP)                           // WINDOWS
 
 static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
 {
@@ -733,11 +733,10 @@ static void aligned_free_impl(void* ptr, size_t size)
 
 static void aligned_free_impl(void* ptr, size_t size)
 {
-    // WAIT.... lols shit.
     free(ptr);
 }
 
-#elif defined(WINAPI_DESKTOP)                               // WINDOWS
+#elif defined(OS_WINAPI_DESKTOP)                            // WINDOWS
 
 static void aligned_free_impl(void* ptr, size_t size)
 {
