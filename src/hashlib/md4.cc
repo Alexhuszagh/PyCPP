@@ -388,7 +388,6 @@ secure_string md4_hash::hexdigest() const
     }
 }
 
-
 // CLEANUP
 // -------
 

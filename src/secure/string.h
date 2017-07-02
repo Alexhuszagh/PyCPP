@@ -75,10 +75,12 @@ public:
     template <typename Iter> secure_basic_string(Iter first, Iter last);
     secure_basic_string(std::initializer_list<value_type> list);
 
-    // TODO: noaccess()
-    // TODO: readonly()
-    // TODO: readwrite()
-    // TODO: lock()
+    // MEMORY
+    void noaccess();
+    void readonly();
+    void readwrite();
+    void mlock();
+    void munlock();
 
     // ITERATORS
     iterator begin();
@@ -694,6 +696,41 @@ secure_basic_string<C, T, A>::secure_basic_string(std::initializer_list<value_ty
     data_ = allocator_type().allocate(capacity_);
     traits_type::copy(data_, list.begin(), length_);
     data_[length_] = value_type();
+}
+
+
+template <typename C, typename T, typename A>
+void secure_basic_string<C, T, A>::noaccess()
+{
+    secure_mprotect_noaccess(data_);
+}
+
+
+template <typename C, typename T, typename A>
+void secure_basic_string<C, T, A>::readonly()
+{
+    secure_mprotect_readonly(data_);
+}
+
+
+template <typename C, typename T, typename A>
+void secure_basic_string<C, T, A>::readwrite()
+{
+    secure_mprotect_readwrite(data_);
+}
+
+
+template <typename C, typename T, typename A>
+void secure_basic_string<C, T, A>::mlock()
+{
+    secure_mlock(data_, capacity_ * sizeof(value_type));
+}
+
+
+template <typename C, typename T, typename A>
+void secure_basic_string<C, T, A>::munlock()
+{
+    secure_munlock(data_, capacity_ * sizeof(value_type));
 }
 
 

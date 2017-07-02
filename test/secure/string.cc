@@ -112,6 +112,21 @@ TEST(secure_string, relational)
 }
 
 
+TEST(secure_string, memory)
+{
+    secure_string str = {0, 84, 104, 105, 115, 32, 105, 115, 32, 100, 97, 116, 97, 10};
+
+    str.noaccess();
+    str.readonly();
+    EXPECT_EQ(str.front(), '\0');
+    str.readwrite();
+    EXPECT_EQ(str.front(), '\0');
+    str.mlock();
+    str.munlock();
+    EXPECT_EQ(str.front(), '\0');
+}
+
+
 TEST(secure_string, iterator)
 {
     secure_string str = {0, 84, 104, 105, 115, 32, 105, 115, 32, 100, 97, 116, 97, 10};
