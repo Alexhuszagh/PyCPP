@@ -306,8 +306,16 @@ size_t sha2_224_hash::hexdigest(void* dst, size_t dstlen) const
     }
 
     int8_t* hash = new int8_t[SHA224_HASH_SIZE];
-    digest(hash, SHA224_HASH_SIZE);
-    return hex_i8(hash, SHA224_HASH_SIZE, dst, dstlen);
+    try {
+        digest(hash, SHA224_HASH_SIZE);
+        size_t out = hex_i8(hash, SHA224_HASH_SIZE, dst, dstlen);
+
+        delete[] hash;
+        return out;
+    } catch (std::exception&) {
+        delete[] hash;
+        throw;
+    }
 }
 
 
@@ -316,13 +324,18 @@ secure_string sha2_224_hash::digest() const
     static constexpr size_t size = SHA224_HASH_SIZE;
 
     char* hash = new char[size];
-    digest(hash, size);
-    secure_string output(hash, size);
+    try {
+        digest(hash, size);
+        secure_string output(hash, size);
 
-    secure_zero(hash, size);
-    delete[] hash;
+        secure_zero(hash, size);
+        delete[] hash;
 
-    return output;
+        return output;
+    } catch (std::exception&) {
+        delete[] hash;
+        throw;
+    }
 }
 
 
@@ -331,13 +344,18 @@ secure_string sha2_224_hash::hexdigest() const
     static constexpr size_t size = 2 * SHA224_HASH_SIZE;
 
     char* dst = new char[size];
-    hexdigest(dst, size);
-    secure_string output(dst, size);
+    try {
+        hexdigest(dst, size);
+        secure_string output(dst, size);
 
-    secure_zero(dst, size);
-    delete[] dst;
+        secure_zero(dst, size);
+        delete[] dst;
 
-    return output;
+        return output;
+    } catch (std::exception&) {
+        delete[] dst;
+        throw;
+    }
 }
 
 
@@ -410,8 +428,16 @@ size_t sha2_256_hash::hexdigest(void* dst, size_t dstlen) const
     }
 
     int8_t* hash = new int8_t[SHA256_HASH_SIZE];
-    digest(hash, SHA256_HASH_SIZE);
-    return hex_i8(hash, SHA256_HASH_SIZE, dst, dstlen);
+    try {
+        digest(hash, SHA256_HASH_SIZE);
+        size_t out = hex_i8(hash, SHA256_HASH_SIZE, dst, dstlen);
+
+        delete[] hash;
+        return out;
+    } catch (std::exception&) {
+        delete[] hash;
+        throw;
+    }
 }
 
 
@@ -420,13 +446,18 @@ secure_string sha2_256_hash::digest() const
     static constexpr size_t size = SHA256_HASH_SIZE;
 
     char* hash = new char[size];
-    digest(hash, size);
-    secure_string output(hash, size);
+    try {
+        digest(hash, size);
+        secure_string output(hash, size);
 
-    secure_zero(hash, size);
-    delete[] hash;
+        secure_zero(hash, size);
+        delete[] hash;
 
-    return output;
+        return output;
+    } catch (std::exception&) {
+        delete[] hash;
+        throw;
+    }
 }
 
 
@@ -435,11 +466,16 @@ secure_string sha2_256_hash::hexdigest() const
     static constexpr size_t size = 2 * SHA256_HASH_SIZE;
 
     char* dst = new char[size];
-    hexdigest(dst, size);
-    secure_string output(dst, size);
+    try {
+        hexdigest(dst, size);
+        secure_string output(dst, size);
 
-    secure_zero(dst, size);
-    delete[] dst;
+        secure_zero(dst, size);
+        delete[] dst;
 
-    return output;
+        return output;
+    } catch (std::exception&) {
+        delete[] dst;
+        throw;
+    }
 }

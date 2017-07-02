@@ -79,7 +79,6 @@ public:
     // TODO: readonly()
     // TODO: readwrite()
     // TODO: lock()
-    // TODO: use sodium_malloc instead.
 
     // ITERATORS
     iterator begin();

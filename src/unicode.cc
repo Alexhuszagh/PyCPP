@@ -597,7 +597,13 @@ struct to_wide
         auto *dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
         auto *dst_last = dst_first + dstlen;
 
-        size_t out = function(src_first, src_last, dst_first, dst_last, true);
+        size_t out;
+        try {
+            out = function(src_first, src_last, dst_first, dst_last, true);
+        } catch(std::exception&) {
+            safe_free(dst_first);
+            throw;
+        }
         std::string output(reinterpret_cast<const char*>(dst_first), out * size2);
         safe_free(dst_first);
 
@@ -627,7 +633,13 @@ struct to_narrow
         auto *dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
         auto *dst_last = dst_first + dstlen;
 
-        size_t out = function(src_first, src_last, dst_first, dst_last, true);
+        size_t out;
+        try {
+            out = function(src_first, src_last, dst_first, dst_last, true);
+        } catch (std::exception&) {
+            safe_free(dst_first);
+            throw;
+        }
         std::string output(reinterpret_cast<const char*>(dst_first), out * size2);
         safe_free(dst_first);
 

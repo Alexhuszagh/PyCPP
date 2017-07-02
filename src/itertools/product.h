@@ -111,8 +111,8 @@ void product_(BidirIter first, BidirIter last, F f)
     typedef typename helper::reference_type reference_type;
 
     size_t size, k;
-    iterator_type* buf;
-    reference_type* val_first, *val_last;
+    std::vector<iterator_type> buf;
+    std::vector<reference_type> val;
 
     // sanity check
     if (first == last) {
@@ -122,12 +122,12 @@ void product_(BidirIter first, BidirIter last, F f)
     // fill vector for function calls
     size = std::distance(first, last);
     k = 0;
-    buf = (iterator_type*) safe_malloc(size * sizeof(iterator_type));
-    val_first = (reference_type*) safe_malloc(size * sizeof(reference_type));
-    val_last = val_first + size;
+    buf.reserve(size);
+    val.reserve(size);
+
     std::for_each(first, last, [&](const value_type& value) {
-        buf[k] = --helper::begin(value);
-        val_first[k] = *helper::begin(value);
+        buf.emplace_back(--helper::begin(value));
+        val.emplace_back(*helper::begin(value));
         ++k;
     });
 
@@ -136,23 +136,19 @@ void product_(BidirIter first, BidirIter last, F f)
     while (it >= first) {
         k = it - first;
         if (it == last) {
-            if (f(val_first, val_last)) {
+            if (f(val.data(), val.data()+val.size())) {
                 // early, manually-specified break
                 break;
             }
             --it;
         } else if (buf[k] != --helper::end(*it)) {
-            val_first[k] = *++buf[k];
+            val[k] = *++buf[k];
             ++it;
         } else {
             buf[k] = --helper::begin(*it);
             --it;
         }
     }
-
-    // cleanup
-    safe_free(buf);
-    safe_free(val_first);
 }
 
 

@@ -305,7 +305,13 @@ std::string utf32_to_punycode(const std::string &str)
     auto *dst_first = reinterpret_cast<uint8_t*>(safe_malloc(dstlen));
     auto *dst_last = dst_first + dstlen;
 
-    size_t out = encode_impl(src_first, src_last, dst_first, dst_last);
+    size_t out;
+    try {
+        out = encode_impl(src_first, src_last, dst_first, dst_last);
+    } catch (std::exception&) {
+        safe_free(dst_first);
+        throw;
+    }
     std::string output(reinterpret_cast<const char*>(dst_first), out);
     safe_free(dst_first);
 
@@ -333,7 +339,13 @@ std::string punycode_to_utf32(const std::string &str)
     size_t dstlen = srclen;
     auto *dst = reinterpret_cast<uint32_t*>(safe_malloc(dstlen * 4));
 
-    size_t out = decode_impl(src, srclen, dst, dstlen);
+    size_t out;
+    try {
+        out = decode_impl(src, srclen, dst, dstlen);
+    } catch (std::exception&) {
+        safe_free(dst);
+        throw;
+    }
     std::string output(reinterpret_cast<const char*>(dst), out * 4);
     safe_free(dst);
 

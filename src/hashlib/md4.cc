@@ -336,8 +336,16 @@ size_t md4_hash::hexdigest(void* dst, size_t dstlen) const
     }
 
     int8_t* hash = new int8_t[MD4_HASH_SIZE];
-    digest(hash, MD4_HASH_SIZE);
-    return hex_i8(hash, MD4_HASH_SIZE, dst, dstlen);
+    try {
+        digest(hash, MD4_HASH_SIZE);
+        size_t out = hex_i8(hash, MD4_HASH_SIZE, dst, dstlen);
+
+        delete[] hash;
+        return out;
+    } catch (std::exception&) {
+        delete[] hash;
+        throw;
+    }
 }
 
 
@@ -346,13 +354,18 @@ secure_string md4_hash::digest() const
     static constexpr size_t size = MD4_HASH_SIZE;
 
     char* hash = new char[size];
-    digest(hash, size);
-    secure_string output(hash, size);
+    try {
+        digest(hash, size);
+        secure_string output(hash, size);
 
-    secure_zero(hash, size);
-    delete[] hash;
+        secure_zero(hash, size);
+        delete[] hash;
 
-    return output;
+        return output;
+    } catch (std::exception&) {
+        delete[] hash;
+        throw;
+    }
 }
 
 
@@ -361,13 +374,18 @@ secure_string md4_hash::hexdigest() const
     static constexpr size_t size = 2 * MD4_HASH_SIZE;
 
     char* dst = new char[size];
-    hexdigest(dst, size);
-    secure_string output(dst, size);
+    try {
+        hexdigest(dst, size);
+        secure_string output(dst, size);
 
-    secure_zero(dst, size);
-    delete[] dst;
+        secure_zero(dst, size);
+        delete[] dst;
 
-    return output;
+        return output;
+    } catch (std::exception&) {
+        delete[] dst;
+        throw;
+    }
 }
 
 

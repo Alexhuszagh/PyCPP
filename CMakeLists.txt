@@ -208,9 +208,8 @@ endif()
 set(TEST_FILES
     test/main.cc
     test/safe/stdlib.cc
-# TODO: restore
     test/secure/allocator.cc
-#    test/secure/string.cc
+    test/secure/string.cc
     test/secure/util.cc
     test/view/string.cc
     test/view/vector.cc
@@ -250,8 +249,7 @@ if (BUILD_FILESYSTEM)
 endif()
 
 if (BUILD_HASHLIB)
-# TODO: restore...
-#    list(APPEND TEST_FILES test/hashlib.cc)
+    list(APPEND TEST_FILES test/hashlib.cc)
 endif()
 
 if (BUILD_STREAM)
