@@ -591,7 +591,7 @@ int secure_mprotect_readwrite(void *ptr)
 
 #if defined(MAP_ANON) && defined(HAVE_MMAP)                 // MMAP
 
-static void* __attribute__((malloc)) aligned_alloc_impl(size_t size)
+static __attribute__((malloc)) void* aligned_alloc_impl(size_t size)
 {
     void* ptr;
     if ((ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE | MAP_NOCORE, -1, 0)) == MAP_FAILED) {
@@ -602,7 +602,7 @@ static void* __attribute__((malloc)) aligned_alloc_impl(size_t size)
 
 #elif defined(HAVE_POSIX_MEMALIGN)                          // POSIX_MEMALIGN
 
-static void* __attribute__((malloc)) aligned_alloc_impl(size_t size)
+static __attribute__((malloc)) void* aligned_alloc_impl(size_t size)
 {
     static size_t page_size = get_page_size();
 
@@ -615,7 +615,7 @@ static void* __attribute__((malloc)) aligned_alloc_impl(size_t size)
 
 #elif defined(WINAPI_DESKTOP)                               // WINDOWS
 
-static void* __attribute__((malloc)) aligned_alloc_impl(size_t size)
+static __attribute__((malloc)) void* aligned_alloc_impl(size_t size)
 {
     return VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 }
@@ -623,7 +623,7 @@ static void* __attribute__((malloc)) aligned_alloc_impl(size_t size)
 #endif
 
 
-static void* __attribute__((malloc)) aligned_alloc(size_t size)
+static __attribute__((malloc)) void* aligned_alloc(size_t size)
 {
     return aligned_alloc_impl(size);
 }
@@ -631,7 +631,7 @@ static void* __attribute__((malloc)) aligned_alloc(size_t size)
 
 #if defined(HAVE_ALIGNED_ALLOC)                     // HAVE ALIGNED ALLOC
 
-static void* __attribute__((malloc)) secure_malloc_impl(size_t size)
+static __attribute__((malloc)) void* secure_malloc_impl(size_t size)
 {
     void* user_ptr;
     uint8_t* base_ptr;
@@ -682,7 +682,7 @@ static void* __attribute__((malloc)) secure_malloc_impl(size_t size)
 
 #else                                               // NO ALIGNED ALLOC
 
-static void* __attribute__((malloc)) secure_malloc_impl(size_t size)
+static __attribute__((malloc)) void* secure_malloc_impl(size_t size)
 {
     if (size > 0) {
         return malloc(size);
@@ -693,7 +693,7 @@ static void* __attribute__((malloc)) secure_malloc_impl(size_t size)
 #endif
 
 
-void* __attribute__((malloc)) secure_malloc(size_t size)
+void*  __attribute__((malloc))secure_malloc(size_t size)
 {
     void* ptr = secure_malloc_impl(size);
     if (size == 0) {
