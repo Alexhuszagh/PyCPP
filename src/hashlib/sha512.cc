@@ -189,25 +189,28 @@ static void sha384_init(sha2_512_context *ctx)
 }
 
 
-void sha512_update(sha2_512_context *ctx, const uint8_t *msg, size_t size)
+static void sha512_update(void* ptr, const void* buf, long len)
 {
+    auto* ctx = (sha2_512_context*) ptr;
+    auto* msg = (const uint8_t*) buf;
+
     size_t index = (size_t)ctx->length & 127;
-    ctx->length += size;
+    ctx->length += len;
 
     // fill partial block
     if (index) {
         size_t left = SHA512_BLOCK_SIZE - index;
-        memcpy((char*)ctx->message + index, msg, (size < left ? size : left));
-        if (size < left) {
+        memcpy((char*)ctx->message + index, msg, (len < left ? len : left));
+        if (len < left) {
             return;
         }
 
         // process partial block
         sha512_process_block(ctx->hash, ctx->message);
         msg  += left;
-        size -= left;
+        len -= left;
     }
-    while (size >= SHA512_BLOCK_SIZE) {
+    while (len >= SHA512_BLOCK_SIZE) {
         uint64_t* aligned_message_block;
         if (IS_ALIGNED_64(msg)) {
             // the most common case is processing of an already
@@ -220,11 +223,11 @@ void sha512_update(sha2_512_context *ctx, const uint8_t *msg, size_t size)
 
         sha512_process_block(ctx->hash, aligned_message_block);
         msg  += SHA512_BLOCK_SIZE;
-        size -= SHA512_BLOCK_SIZE;
+        len -= SHA512_BLOCK_SIZE;
     }
-    if (size) {
+    if (len) {
         // save leftovers
-        memcpy(ctx->message, msg, size);
+        memcpy(ctx->message, msg, len);
     }
 }
 
@@ -232,8 +235,11 @@ void sha512_update(sha2_512_context *ctx, const uint8_t *msg, size_t size)
 /**
  *  Store calculated hash into the given array.
  */
-void sha512_final(uint8_t* result, sha2_512_context *ctx)
+static void sha512_final(void* ptr, void* buf)
 {
+    auto* ctx = (sha2_512_context*) ptr;
+    auto* result = (uint8_t*) buf;
+
     size_t index = ((unsigned)ctx->length & 127) >> 3;
     unsigned shift = ((unsigned)ctx->length & 7) * 8;
 
@@ -321,73 +327,29 @@ void sha2_384_hash::update(const secure_string_view& str)
 
 size_t sha2_384_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < SHA384_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA384 digest.");
-    }
-
     sha2_512_context copy = *ctx;
-    sha512_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return SHA384_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, SHA384_HASH_SIZE, sha512_final);
 }
 
 
 size_t sha2_384_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * SHA384_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA384 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[SHA384_HASH_SIZE];
-    try {
-        digest(hash, SHA384_HASH_SIZE);
-        size_t out = hex_i8(hash, SHA384_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha2_512_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, SHA384_HASH_SIZE, sha512_final);
 }
 
 
 secure_string sha2_384_hash::digest() const
 {
-    static constexpr size_t size = SHA384_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha2_512_context copy = *ctx;
+    return hash_digest(&copy, SHA384_HASH_SIZE, sha512_final);
 }
 
 
 secure_string sha2_384_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * SHA384_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    sha2_512_context copy = *ctx;
+    return hash_hexdigest(&copy, SHA384_HASH_SIZE, sha512_final);
 }
 
 
@@ -423,15 +385,7 @@ sha2_512_hash::~sha2_512_hash()
 
 void sha2_512_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        sha512_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, sha512_update);
 }
 
 
@@ -443,71 +397,27 @@ void sha2_512_hash::update(const secure_string_view& str)
 
 size_t sha2_512_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < SHA512_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA512 digest.");
-    }
-
     sha2_512_context copy = *ctx;
-    sha512_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return SHA512_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, SHA512_HASH_SIZE, sha512_final);
 }
 
 
 size_t sha2_512_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * SHA512_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA512 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[SHA512_HASH_SIZE];
-    try {
-        digest(hash, SHA512_HASH_SIZE);
-        size_t out = hex_i8(hash, SHA512_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha2_512_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, SHA512_HASH_SIZE, sha512_final);
 }
 
 
 secure_string sha2_512_hash::digest() const
 {
-    static constexpr size_t size = SHA512_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha2_512_context copy = *ctx;
+    return hash_digest(&copy, SHA512_HASH_SIZE, sha512_final);
 }
 
 
 secure_string sha2_512_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * SHA512_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    sha2_512_context copy = *ctx;
+    return hash_hexdigest(&copy, SHA512_HASH_SIZE, sha512_final);
 }

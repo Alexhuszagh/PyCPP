@@ -154,25 +154,28 @@ static void sha256_init(sha2_256_context* ctx)
  *  Calculate message hash.
  *  Can be called repeatedly with chunks of the message to be hashed.
  */
-static void sha256_update(sha2_256_context *ctx, const uint8_t *msg, size_t size)
+static void sha256_update(void* ptr, const void* buf, long len)
 {
+    auto* ctx = (sha2_256_context*) ptr;
+    auto* msg = (const uint8_t*) buf;
+
     size_t index = (size_t)ctx->length & 63;
-    ctx->length += size;
+    ctx->length += len;
 
     // fill partial block
     if (index) {
         size_t left = SHA256_BLOCK_SIZE - index;
-        memcpy((char*)ctx->message + index, msg, (size < left ? size : left));
-        if (size < left){
+        memcpy((char*)ctx->message + index, msg, (len < left ? len : left));
+        if (len < left){
             return;
         }
 
         // process partial block
         sha256_process_block(ctx->hash, (uint32_t*)ctx->message);
         msg  += left;
-        size -= left;
+        len -= left;
     }
-    while (size >= SHA256_BLOCK_SIZE) {
+    while (len >= SHA256_BLOCK_SIZE) {
         uint32_t* aligned_message_block;
         if (IS_ALIGNED_32(msg)) {
             /* the most common case is processing of an already aligned message
@@ -185,10 +188,10 @@ static void sha256_update(sha2_256_context *ctx, const uint8_t *msg, size_t size
 
         sha256_process_block(ctx->hash, aligned_message_block);
         msg  += SHA256_BLOCK_SIZE;
-        size -= SHA256_BLOCK_SIZE;
+        len -= SHA256_BLOCK_SIZE;
     }
-    if (size) {
-        memcpy(ctx->message, msg, size); /* save leftovers */
+    if (len) {
+        memcpy(ctx->message, msg, len); /* save leftovers */
     }
 }
 
@@ -196,8 +199,11 @@ static void sha256_update(sha2_256_context *ctx, const uint8_t *msg, size_t size
 /**
  *  Store calculated hash into the given array.
  */
-static void sha256_final(uint8_t* result, sha2_256_context *ctx)
+static void sha256_final(void* ptr, void* buf)
 {
+    auto* ctx = (sha2_256_context*) ptr;
+    auto* result = (uint8_t*) buf;
+
     size_t index = ((uint32_t)ctx->length & 63) >> 2;
     uint32_t shift = ((uint32_t)ctx->length & 3) * 8;
 
@@ -269,15 +275,7 @@ sha2_224_hash::~sha2_224_hash()
 
 void sha2_224_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        sha256_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, sha256_update);
 }
 
 
@@ -289,73 +287,29 @@ void sha2_224_hash::update(const secure_string_view& str)
 
 size_t sha2_224_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < SHA224_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA224 digest.");
-    }
-
     sha2_256_context copy = *ctx;
-    sha256_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return SHA224_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, SHA224_HASH_SIZE, sha256_final);
 }
 
 
 size_t sha2_224_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * SHA224_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA224 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[SHA224_HASH_SIZE];
-    try {
-        digest(hash, SHA224_HASH_SIZE);
-        size_t out = hex_i8(hash, SHA224_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha2_256_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, SHA224_HASH_SIZE, sha256_final);
 }
 
 
 secure_string sha2_224_hash::digest() const
 {
-    static constexpr size_t size = SHA224_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha2_256_context copy = *ctx;
+    return hash_digest(&copy, SHA224_HASH_SIZE, sha256_final);
 }
 
 
 secure_string sha2_224_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * SHA224_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    sha2_256_context copy = *ctx;
+    return hash_hexdigest(&copy, SHA224_HASH_SIZE, sha256_final);
 }
 
 
@@ -391,15 +345,7 @@ sha2_256_hash::~sha2_256_hash()
 
 void sha2_256_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        sha256_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, sha256_update);
 }
 
 
@@ -411,71 +357,27 @@ void sha2_256_hash::update(const secure_string_view& str)
 
 size_t sha2_256_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < SHA256_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA256 digest.");
-    }
-
     sha2_256_context copy = *ctx;
-    sha256_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return SHA256_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, SHA256_HASH_SIZE, sha256_final);
 }
 
 
 size_t sha2_256_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * SHA256_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA256 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[SHA256_HASH_SIZE];
-    try {
-        digest(hash, SHA256_HASH_SIZE);
-        size_t out = hex_i8(hash, SHA256_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha2_256_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, SHA256_HASH_SIZE, sha256_final);
 }
 
 
 secure_string sha2_256_hash::digest() const
 {
-    static constexpr size_t size = SHA256_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha2_256_context copy = *ctx;
+    return hash_digest(&copy, SHA256_HASH_SIZE, sha256_final);
 }
 
 
 secure_string sha2_256_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * SHA256_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    sha2_256_context copy = *ctx;
+    return hash_hexdigest(&copy, SHA256_HASH_SIZE, sha256_final);
 }
