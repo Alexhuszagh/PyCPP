@@ -6,7 +6,6 @@
  */
 
 #include <hashlib.h>
-#include <hex.h>
 #include <processor.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
@@ -212,8 +211,10 @@ void md5_init(md5_context* ctx)
 
 /** \brief Update hash with data.
  */
-void md5_update(md5_context* ctx, const void* data, uint32_t size)
+static void md5_update(void* ptr, const void* data, long size)
 {
+    auto* ctx = (md5_context*) ptr;
+
     uint32_t saved_lo;
     uint32_t used, available;
 
@@ -256,8 +257,11 @@ void md5_update(md5_context* ctx, const void* data, uint32_t size)
 
 /** \brief Add padding and return the message digest.
  */
-void md5_final(uint8_t* result, md5_context* ctx)
+static void md5_final(void* ptr, void* buf)
 {
+    auto* ctx = (md5_context*) ptr;
+    auto* result = (uint8_t*) buf;
+
     uint32_t used, available;
 
     used = ctx->lo & 0x3f;
@@ -326,15 +330,7 @@ md5_hash::~md5_hash()
 
 void md5_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const int8_t* first = reinterpret_cast<const int8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        md5_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, md5_update);
 }
 
 
@@ -346,73 +342,29 @@ void md5_hash::update(const secure_string_view& str)
 
 size_t md5_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < MD5_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store MD5 digest.");
-    }
-
     md5_context copy = *ctx;
-    md5_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return MD5_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, MD5_HASH_SIZE, md5_final);
 }
 
 
 size_t md5_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * MD5_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store MD5 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[MD5_HASH_SIZE];
-    try {
-        digest(hash, MD5_HASH_SIZE);
-        size_t out = hex_i8(hash, MD5_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    md5_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, MD5_HASH_SIZE, md5_final);
 }
 
 
 secure_string md5_hash::digest() const
 {
-    static constexpr size_t size = MD5_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    md5_context copy = *ctx;
+    return hash_digest(&copy, MD5_HASH_SIZE, md5_final);
 }
 
 
 secure_string md5_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * MD5_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    md5_context copy = *ctx;
+    return hash_hexdigest(&copy, MD5_HASH_SIZE, md5_final);
 }
 
 // CLEANUP

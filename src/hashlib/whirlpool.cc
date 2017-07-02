@@ -667,24 +667,27 @@ static void whirlpool_init(whirlpool_context* ctx)
  *  Calculate message hash.
  *  Can be called repeatedly with chunks of the message to be hashed.
  */
-static void whirlpool_update(whirlpool_context *ctx, const uint8_t* msg, size_t size)
+static void whirlpool_update(void* ptr, const void* buf, long len)
 {
+    auto* ctx = (whirlpool_context*) ptr;
+    auto* msg = (const uint8_t*) buf;
+
     unsigned index = (unsigned)ctx->length & 63;
     unsigned left;
-    ctx->length += size;
+    ctx->length += len;
 
     /* fill partial block */
     if (index) {
         left = WHIRLPOOL_HASH_SIZE - index;
-        memcpy(ctx->message + index, msg, (size < left ? size : left));
-        if (size < left) return;
+        memcpy(ctx->message + index, msg, (len < left ? len : left));
+        if (len < left) return;
 
         /* process partial block */
         whirlpool_process_block(ctx->hash, (uint64_t*)ctx->message);
         msg  += left;
-        size -= left;
+        len -= left;
     }
-    while (size >= WHIRLPOOL_HASH_SIZE) {
+    while (len >= WHIRLPOOL_HASH_SIZE) {
         uint64_t* aligned_message_block;
         if (IS_ALIGNED_64(msg)) {
             /* the most common case is processing of an already aligned message
@@ -697,19 +700,22 @@ static void whirlpool_update(whirlpool_context *ctx, const uint8_t* msg, size_t 
 
         whirlpool_process_block(ctx->hash, aligned_message_block);
         msg += WHIRLPOOL_HASH_SIZE;
-        size -= WHIRLPOOL_HASH_SIZE;
+        len -= WHIRLPOOL_HASH_SIZE;
     }
-    if (size) {
+    if (len) {
         /* save leftovers */
-        memcpy(ctx->message, msg, size);
+        memcpy(ctx->message, msg, len);
     }
 }
 
 /**
  *  Store calculated hash into the given array.
  */
-static void whirlpool_final(uint8_t* result, whirlpool_context *ctx)
+static void whirlpool_final(void* ptr, void* buf)
 {
+    auto* ctx = (whirlpool_context*) ptr;
+    auto* result = (uint8_t*) buf;
+
     unsigned index = (unsigned)ctx->length & 63;
     uint64_t* msg64 = (uint64_t*)ctx->message;
 
@@ -776,15 +782,7 @@ whirlpool_hash::~whirlpool_hash()
 
 void whirlpool_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        whirlpool_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, whirlpool_update);
 }
 
 
@@ -796,71 +794,27 @@ void whirlpool_hash::update(const secure_string_view& str)
 
 size_t whirlpool_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < WHIRLPOOL_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store WHIRLPOOL digest.");
-    }
-
     whirlpool_context copy = *ctx;
-    whirlpool_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return WHIRLPOOL_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, WHIRLPOOL_HASH_SIZE, whirlpool_final);
 }
 
 
 size_t whirlpool_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * WHIRLPOOL_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store WHIRLPOOL hex digest.");
-    }
-
-    int8_t* hash = new int8_t[WHIRLPOOL_HASH_SIZE];
-    try {
-        digest(hash, WHIRLPOOL_HASH_SIZE);
-        size_t out = hex_i8(hash, WHIRLPOOL_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    whirlpool_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, WHIRLPOOL_HASH_SIZE, whirlpool_final);
 }
 
 
 secure_string whirlpool_hash::digest() const
 {
-    static constexpr size_t size = WHIRLPOOL_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    whirlpool_context copy = *ctx;
+    return hash_digest(&copy, WHIRLPOOL_HASH_SIZE, whirlpool_final);
 }
 
 
 secure_string whirlpool_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * WHIRLPOOL_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    whirlpool_context copy = *ctx;
+    return hash_hexdigest(&copy, WHIRLPOOL_HASH_SIZE, whirlpool_final);
 }

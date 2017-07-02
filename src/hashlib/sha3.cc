@@ -255,8 +255,11 @@ static void sha3_process_block(uint64_t* hash, const uint64_t* block, size_t blo
  *  Calculate message hash.
  *  Can be called repeatedly with chunks of the message to be hashed.
  */
-void sha3_update(sha3_context* ctx, const uint8_t *msg, size_t size)
+void sha3_update(void* ptr, const void *buf, long size)
 {
+    auto* ctx = (sha3_context*) ptr;
+    auto* msg = (const uint8_t*) buf;
+
     size_t index = (size_t)ctx->rest;
     size_t block_size = (size_t)ctx->block_size;
 
@@ -299,8 +302,11 @@ void sha3_update(sha3_context* ctx, const uint8_t *msg, size_t size)
 /**
  *  Store calculated hash into the given array.
  */
-void sha3_final(uint8_t* result, sha3_context* ctx)
+void sha3_final(void* ptr, void* buf)
 {
+    auto* ctx = (sha3_context*) ptr;
+    auto* result = (uint8_t*) buf;
+
     size_t digest_length = 100 - ctx->block_size / 2;
     size_t block_size = ctx->block_size;
 
@@ -360,15 +366,7 @@ sha3_224_hash::~sha3_224_hash()
 
 void sha3_224_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        sha3_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, sha3_update);
 }
 
 
@@ -380,73 +378,29 @@ void sha3_224_hash::update(const secure_string_view& str)
 
 size_t sha3_224_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < SHA3_224_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA3 224 digest.");
-    }
-
     sha3_context copy = *ctx;
-    sha3_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return SHA3_224_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, SHA3_224_HASH_SIZE, sha3_final);
 }
 
 
 size_t sha3_224_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * SHA3_224_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA3 224 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[SHA3_224_HASH_SIZE];
-    try {
-        digest(hash, SHA3_224_HASH_SIZE);
-        size_t out = hex_i8(hash, SHA3_224_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, SHA3_224_HASH_SIZE, sha3_final);
 }
 
 
 secure_string sha3_224_hash::digest() const
 {
-    static constexpr size_t size = SHA3_224_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_digest(&copy, SHA3_224_HASH_SIZE, sha3_final);
 }
 
 
 secure_string sha3_224_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * SHA3_224_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_hexdigest(&copy, SHA3_224_HASH_SIZE, sha3_final);
 }
 
 
@@ -483,15 +437,7 @@ sha3_256_hash::~sha3_256_hash()
 
 void sha3_256_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        sha3_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, sha3_update);
 }
 
 
@@ -503,73 +449,29 @@ void sha3_256_hash::update(const secure_string_view& str)
 
 size_t sha3_256_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < SHA3_256_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA3 256 digest.");
-    }
-
     sha3_context copy = *ctx;
-    sha3_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return SHA3_256_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, SHA3_256_HASH_SIZE, sha3_final);
 }
 
 
 size_t sha3_256_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * SHA3_256_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA3 256 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[SHA3_256_HASH_SIZE];
-    try {
-        digest(hash, SHA3_256_HASH_SIZE);
-        size_t out = hex_i8(hash, SHA3_256_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, SHA3_256_HASH_SIZE, sha3_final);
 }
 
 
 secure_string sha3_256_hash::digest() const
 {
-    static constexpr size_t size = SHA3_256_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_digest(&copy, SHA3_256_HASH_SIZE, sha3_final);
 }
 
 
 secure_string sha3_256_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * SHA3_256_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_hexdigest(&copy, SHA3_256_HASH_SIZE, sha3_final);
 }
 
 
@@ -606,15 +508,7 @@ sha3_384_hash::~sha3_384_hash()
 
 void sha3_384_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        sha3_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, sha3_update);
 }
 
 
@@ -626,73 +520,29 @@ void sha3_384_hash::update(const secure_string_view& str)
 
 size_t sha3_384_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < SHA3_384_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA3 384 digest.");
-    }
-
     sha3_context copy = *ctx;
-    sha3_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return SHA3_384_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, SHA3_384_HASH_SIZE, sha3_final);
 }
 
 
 size_t sha3_384_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * SHA3_384_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA3 384 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[SHA3_384_HASH_SIZE];
-    try {
-        digest(hash, SHA3_384_HASH_SIZE);
-        size_t out = hex_i8(hash, SHA3_384_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, SHA3_384_HASH_SIZE, sha3_final);
 }
 
 
 secure_string sha3_384_hash::digest() const
 {
-    static constexpr size_t size = SHA3_384_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_digest(&copy, SHA3_384_HASH_SIZE, sha3_final);
 }
 
 
 secure_string sha3_384_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * SHA3_384_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_hexdigest(&copy, SHA3_384_HASH_SIZE, sha3_final);
 }
 
 
@@ -729,15 +579,7 @@ sha3_512_hash::~sha3_512_hash()
 
 void sha3_512_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        sha3_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, sha3_update);
 }
 
 
@@ -749,71 +591,27 @@ void sha3_512_hash::update(const secure_string_view& str)
 
 size_t sha3_512_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < SHA3_512_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA3 512 digest.");
-    }
-
     sha3_context copy = *ctx;
-    sha3_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return SHA3_512_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, SHA3_512_HASH_SIZE, sha3_final);
 }
 
 
 size_t sha3_512_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * SHA3_512_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA3 512 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[SHA3_512_HASH_SIZE];
-    try {
-        digest(hash, SHA3_512_HASH_SIZE);
-        size_t out = hex_i8(hash, SHA3_512_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, SHA3_512_HASH_SIZE, sha3_final);
 }
 
 
 secure_string sha3_512_hash::digest() const
 {
-    static constexpr size_t size = SHA3_512_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_digest(&copy, SHA3_512_HASH_SIZE, sha3_final);
 }
 
 
 secure_string sha3_512_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * SHA3_512_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    sha3_context copy = *ctx;
+    return hash_hexdigest(&copy, SHA3_512_HASH_SIZE, sha3_final);
 }

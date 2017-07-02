@@ -6,7 +6,6 @@
  */
 
 #include <hashlib.h>
-#include <hex.h>
 #include <processor.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>

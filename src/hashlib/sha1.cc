@@ -4,7 +4,6 @@
 
 #include <architecture.h>
 #include <hashlib.h>
-#include <hex.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <cstdio>
@@ -65,7 +64,7 @@ struct sha1_context
 /*
  *  Hash a single 512-bit block. This is the core of the algorithm.
  */
-void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
+static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 {
     uint32_t a, b, c, d, e;
     Char64Union block[1];  /* use array to appear as a pointer */
@@ -182,7 +181,7 @@ void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 /**
  *  \brief Initialize SHA1 context.
  */
-void sha1_init(sha1_context* ctx)
+static void sha1_init(sha1_context* ctx)
 {
     ctx->state[0] = 0x67452301;
     ctx->state[1] = 0xefcdab89;
@@ -196,8 +195,11 @@ void sha1_init(sha1_context* ctx)
 /**
  *  \brief Update hash with data.
  */
-void sha1_update(sha1_context* ctx, const uint8_t* data, uint32_t len)
+static void sha1_update(void* ptr, const void* buf, long len)
 {
+    auto* ctx = (sha1_context*) ptr;
+    auto* data = (const uint8_t*) buf;
+
     uint32_t i, j;
 
     j = ctx->count[0];
@@ -221,8 +223,11 @@ void sha1_update(sha1_context* ctx, const uint8_t* data, uint32_t len)
 /**
  *  \brief Add padding and return the message digest.
  */
-void sha1_final(uint8_t digest[20], sha1_context* ctx)
+static void sha1_final(void* ptr, void* buf)
 {
+    auto* ctx = (sha1_context*) ptr;
+    auto* digest = (uint8_t*) buf;
+
     unsigned i;
     uint8_t finalcount[8];
     uint8_t c;
@@ -286,15 +291,7 @@ sha1_hash::~sha1_hash()
 
 void sha1_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
-    const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
-
-    while (length > 0) {
-        long shift = length > 512 ? 512 : length;
-        sha1_update(ctx, first, shift);
-        length -= shift;
-        first += shift;
-    }
+    hash_update(ctx, src, srclen, sha1_update);
 }
 
 
@@ -306,73 +303,29 @@ void sha1_hash::update(const secure_string_view& str)
 
 size_t sha1_hash::digest(void* dst, size_t dstlen) const
 {
-    if (dstlen < SHA1_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA1 digest.");
-    }
-
     sha1_context copy = *ctx;
-    sha1_final(reinterpret_cast<uint8_t*>(dst), &copy);
-    return SHA1_HASH_SIZE;
+    return hash_digest(&copy, dst, dstlen, SHA1_HASH_SIZE, sha1_final);
 }
 
 
 size_t sha1_hash::hexdigest(void* dst, size_t dstlen) const
 {
-    if (dstlen < 2 * SHA1_HASH_SIZE) {
-        throw std::runtime_error("dstlen not large enough to store SHA1 hex digest.");
-    }
-
-    int8_t* hash = new int8_t[SHA1_HASH_SIZE];
-    try {
-        digest(hash, SHA1_HASH_SIZE);
-        size_t out = hex_i8(hash, SHA1_HASH_SIZE, dst, dstlen);
-
-        delete[] hash;
-        return out;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha1_context copy = *ctx;
+    return hash_hexdigest(&copy, dst, dstlen, SHA1_HASH_SIZE, sha1_final);
 }
 
 
 secure_string sha1_hash::digest() const
 {
-    static constexpr size_t size = SHA1_HASH_SIZE;
-
-    char* hash = new char[size];
-    try {
-        digest(hash, size);
-        secure_string output(hash, size);
-
-        secure_zero(hash, size);
-        delete[] hash;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] hash;
-        throw;
-    }
+    sha1_context copy = *ctx;
+    return hash_digest(&copy, SHA1_HASH_SIZE, sha1_final);
 }
 
 
 secure_string sha1_hash::hexdigest() const
 {
-    static constexpr size_t size = 2 * SHA1_HASH_SIZE;
-
-    char* dst = new char[size];
-    try {
-        hexdigest(dst, size);
-        secure_string output(dst, size);
-
-        secure_zero(dst, size);
-        delete[] dst;
-
-        return output;
-    } catch (std::exception&) {
-        delete[] dst;
-        throw;
-    }
+    sha1_context copy = *ctx;
+    return hash_hexdigest(&copy, SHA1_HASH_SIZE, sha1_final);
 }
 
 // CLEANUP
