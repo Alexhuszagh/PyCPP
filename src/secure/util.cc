@@ -44,8 +44,10 @@
 
 #ifdef HAVE_MSVC
 #   define WEAK_ATTRIBUTE
+#   define MALLOC_ATTRIBUTE
 #else
 #   define WEAK_ATTRIBUTE __attribute__((weak))
+#   define MALLOC_ATTRIBUTE __attribute__((malloc))
 #endif
 
 #if !defined(MAP_ANON) && defined(MAP_ANONYMOUS)
@@ -591,7 +593,7 @@ int secure_mprotect_readwrite(void *ptr)
 
 #if defined(MAP_ANON) && defined(HAVE_MMAP)                 // MMAP
 
-static __attribute__((malloc)) void* aligned_alloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
 {
     void* ptr;
     if ((ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE | MAP_NOCORE, -1, 0)) == MAP_FAILED) {
@@ -602,7 +604,7 @@ static __attribute__((malloc)) void* aligned_alloc_impl(size_t size)
 
 #elif defined(HAVE_POSIX_MEMALIGN)                          // POSIX_MEMALIGN
 
-static __attribute__((malloc)) void* aligned_alloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
 {
     static size_t page_size = get_page_size();
 
@@ -615,7 +617,7 @@ static __attribute__((malloc)) void* aligned_alloc_impl(size_t size)
 
 #elif defined(WINAPI_DESKTOP)                               // WINDOWS
 
-static __attribute__((malloc)) void* aligned_alloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
 {
     return VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 }
@@ -623,7 +625,7 @@ static __attribute__((malloc)) void* aligned_alloc_impl(size_t size)
 #endif
 
 
-static __attribute__((malloc)) void* aligned_alloc(size_t size)
+static MALLOC_ATTRIBUTE void* aligned_alloc(size_t size)
 {
     return aligned_alloc_impl(size);
 }
@@ -631,7 +633,7 @@ static __attribute__((malloc)) void* aligned_alloc(size_t size)
 
 #if defined(HAVE_ALIGNED_ALLOC)                     // HAVE ALIGNED ALLOC
 
-static __attribute__((malloc)) void* secure_malloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* secure_malloc_impl(size_t size)
 {
     void* user_ptr;
     uint8_t* base_ptr;
@@ -682,7 +684,7 @@ static __attribute__((malloc)) void* secure_malloc_impl(size_t size)
 
 #else                                               // NO ALIGNED ALLOC
 
-static __attribute__((malloc)) void* secure_malloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* secure_malloc_impl(size_t size)
 {
     if (size > 0) {
         return malloc(size);
@@ -693,7 +695,7 @@ static __attribute__((malloc)) void* secure_malloc_impl(size_t size)
 #endif
 
 
-void*  __attribute__((malloc))secure_malloc(size_t size)
+void*  MALLOC_ATTRIBUTE secure_malloc(size_t size)
 {
     void* ptr = secure_malloc_impl(size);
     if (size == 0) {
