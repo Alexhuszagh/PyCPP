@@ -107,7 +107,7 @@ struct hexdigest_stl
  *  \brief Cast storage to the correct type.
  */
 template <typename Memory, typename Function>
-static void get_hash(Memory& mem, hash_algorithm algorithm, Function function)
+static void get_hash(Memory& mem, hash_algorithm algorithm, Function& function)
 {
     switch (algorithm) {
         case md2_hash_algorithm:
@@ -142,17 +142,20 @@ static void get_hash(Memory& mem, hash_algorithm algorithm, Function function)
             function(reinterpret_cast<sha2_512_hash&>(mem));
             break;
 
-        // TODO: need to implement the SHA3 functions.
         case sha3_224_hash_algorithm:
+            function(reinterpret_cast<sha3_224_hash&>(mem));
             break;
 
         case sha3_256_hash_algorithm:
+            function(reinterpret_cast<sha3_256_hash&>(mem));
             break;
 
         case sha3_384_hash_algorithm:
+            function(reinterpret_cast<sha3_384_hash&>(mem));
             break;
 
         case sha3_512_hash_algorithm:
+            function(reinterpret_cast<sha3_512_hash&>(mem));
             break;
 
         case whirlpool_hash_algorithm:
@@ -171,14 +174,16 @@ static void get_hash(Memory& mem, hash_algorithm algorithm, Function function)
 hash::hash(hash_algorithm algorithm):
     algorithm(algorithm)
 {
-    get_hash(mem, algorithm, allocate_hash());
+    allocate_hash hasher;
+    get_hash(mem, algorithm, hasher);
 }
 
 
 hash::hash(hash_algorithm algorithm, const void* src, size_t srclen):
     algorithm(algorithm)
 {
-    get_hash(mem, algorithm, allocate_hash());
+    allocate_hash hasher;
+    get_hash(mem, algorithm, hasher);
     update(src, srclen);
 }
 
@@ -186,7 +191,8 @@ hash::hash(hash_algorithm algorithm, const void* src, size_t srclen):
 hash::hash(hash_algorithm algorithm, const secure_string_view& str):
     algorithm(algorithm)
 {
-    get_hash(mem, algorithm, allocate_hash());
+    allocate_hash hasher;
+    get_hash(mem, algorithm, hasher);
     update(str);
 }
 
@@ -252,7 +258,7 @@ secure_string hash::digest() const
 {
     digest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
-    return functor.str;
+    return std::move(functor.str);
 }
 
 
@@ -260,5 +266,5 @@ secure_string hash::hexdigest() const
 {
     hexdigest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
-    return functor.str;
+    return std::move(functor.str);
 }

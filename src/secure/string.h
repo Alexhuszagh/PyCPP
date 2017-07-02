@@ -140,13 +140,9 @@ public:
     template <typename Iter> self& assign(Iter first, Iter last);
     self& assign(std::initializer_list<value_type> list);
     self& assign(self&& str) noexcept;
-    // TODO: implement
-//    insert();
     self& erase(size_t pos = 0, size_t len = npos);
     const_iterator erase(const_iterator p);
     const_iterator erase(const_iterator first, const_iterator last);
-    // TODO: implement
-//    replace();
     void pop_back();
     void swap(self& other);
 
