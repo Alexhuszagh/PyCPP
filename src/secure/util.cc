@@ -392,40 +392,40 @@ static void madvise_impl(void* ptr, size_t length, int advice)
 
 #if defined(HAVE_MLOCK)                         // MLOCK
 
-static int mlock_impl(const void* ptr, size_t len)
+static int mlock_impl(void* ptr, size_t len)
 {
     return mlock(ptr, len);
 }
 
 
-static int munlock_impl(const void* ptr, size_t len)
+static int munlock_impl(void* ptr, size_t len)
 {
     return munlock(ptr, len);
 }
 
 #elif defined(OS_WINAPI_DESKTOP)                 // WINDOWS API
 
-static int mlock_impl(const void* ptr, size_t len)
+static int mlock_impl(void* ptr, size_t len)
 {
     return -(VirtualLock(ptr, len) == 0);
 }
 
 
-static int munlock_impl(const void* ptr, size_t len)
+static int munlock_impl(void* ptr, size_t len)
 {
     return -(VirtualUnlock(ptr, len) == 0);
 }
 
 #else                                           // NO MLOCK
 
-static int mlock_impl(const void* ptr, size_t len)
+static int mlock_impl(void* ptr, size_t len)
 {
     errno = ENOSYS;
     return -1;
 }
 
 
-static int munlock_impl(const void* ptr, size_t len)
+static int munlock_impl(void* ptr, size_t len)
 {
     errno = ENOSYS;
     return -1;
