@@ -15,6 +15,13 @@
 #include <memory>
 #include <stdexcept>
 
+// MACROS
+// ------
+
+// ¯\_(ツ)_/¯
+#undef max
+#undef min
+
 // DECLARATION
 // -----------
 

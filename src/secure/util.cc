@@ -10,6 +10,8 @@
  *      http://www.daemonology.net/blog/2014-09-04-how-to-zero-a-buffer.html
  */
 
+#define __STDC_WANT_LIB_EXT1__ 1
+
 #include <compiler.h>
 #include <os.h>
 #include <random.h>
