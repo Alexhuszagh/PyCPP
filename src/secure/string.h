@@ -1647,3 +1647,7 @@ typedef secure_basic_string<wchar_t> secure_wstring;
 typedef secure_basic_string<char16_t> secure_u16string;
 typedef secure_basic_string<char32_t> secure_u32string;
 typedef basic_string_view<char, secure_char_traits<char>> secure_string_view;
+typedef basic_string_view<wchar_t, secure_char_traits<wchar_t>> secure_wstring_view;
+typedef basic_string_view<char16_t, secure_char_traits<char16_t>> secure_u16string_view;
+typedef basic_string_view<char32_t, secure_char_traits<char32_t>> secure_u32string_view;
+

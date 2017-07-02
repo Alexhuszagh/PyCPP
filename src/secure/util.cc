@@ -40,14 +40,14 @@
 #define CANARY_SIZE 16U
 #define GARBAGE_VALUE 0xdb
 
-#define WEAK(x) asm("")
-
 #ifdef HAVE_MSVC
 #   define WEAK_ATTRIBUTE
 #   define MALLOC_ATTRIBUTE
+#   define WEAK_ASM(x)
 #else
 #   define WEAK_ATTRIBUTE __attribute__((weak))
 #   define MALLOC_ATTRIBUTE __attribute__((malloc))
+#   define WEAK_ASM(x) asm("")
 #endif
 
 #if !defined(MAP_ANON) && defined(MAP_ANONYMOUS)
@@ -804,8 +804,8 @@ void secure_free(void* ptr)
 // ----
 
 // force asm("") to prevent volatility and prevent optimizations
-WEAK(secure_memset);
-WEAK(secure_memcpy);
-WEAK(secure_memmove);
-WEAK(secure_memcmp);
-WEAK(secure_zero);
+WEAK_ASM(secure_memset);
+WEAK_ASM(secure_memcpy);
+WEAK_ASM(secure_memmove);
+WEAK_ASM(secure_memcmp);
+WEAK_ASM(secure_zero);
