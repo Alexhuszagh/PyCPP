@@ -100,13 +100,13 @@ Supported features include:
 
 **_JSON_**
 
--[DOM](/src/json/dom.h) parser.
--[SAX](/src/json/sax.h) parser.
+- [DOM](/src/json/dom.h) parser.
+- [SAX](/src/json/sax.h) parser.
 
 **_XML_**
 
--[DOM](/src/xml/dom.h) parser.
--[SAX](/src/xml/sax.h) parser.
+- [DOM](/src/xml/dom.h) parser.
+- [SAX](/src/xml/sax.h) parser.
 
 **_Compression_**
 
