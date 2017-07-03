@@ -8,10 +8,118 @@
 // -------
 
 
+json_dom_handler::json_dom_handler(json_value_t& root):
+    root(&root)
+{}
+
+
+void json_dom_handler::start_document()
+{
+    levels.emplace_back(root);
+}
+
+
+void json_dom_handler::end_document()
+{
+    levels.pop_back();
+}
+
+
+void json_dom_handler::start_object()
+{
+    add_value(new json_value_t(json_object_t()));
+}
+
+
+void json_dom_handler::end_object(size_t)
+{
+    levels.pop_back();
+}
+
+
+void json_dom_handler::start_array()
+{
+    add_value(new json_value_t(json_array_t()));
+}
+
+
+void json_dom_handler::end_array(size_t)
+{
+    levels.pop_back();
+}
+
+
+void json_dom_handler::key(const char* s, size_t n)
+{
+    has_key_ = true;
+    key_ = json_string_t(s, n);
+}
+
+
+void json_dom_handler::null()
+{
+    add_value(new json_value_t(nullptr));
+}
+
+
+void json_dom_handler::boolean(bool v)
+{
+    add_value(new json_value_t(v));
+}
+
+
+void json_dom_handler::number(double d)
+{
+    add_value(new json_value_t(d));
+}
+
+
+void json_dom_handler::string(const char* s, size_t n)
+{
+    add_value(new json_value_t(json_string_t(s, n)));
+}
+
+
+void json_dom_handler::add_value(json_value_t* value)
+{
+    auto *parent = levels.back();
+    if (levels.size() == 1 && parent->has_null()) {
+        // root element
+        std::swap(*parent, *value);
+        delete value;
+        return;
+    } else if (has_key_) {
+        parent->get_object().emplace(std::move(key_), value);
+        has_key_ = false;
+    } else {
+        parent->get_array().emplace_back(value);
+    }
+
+    if (value->has_object() || value->has_array()) {
+        levels.emplace_back(value);
+    }
+}
+
+
 json_value_t::json_value_t():
     type_(json_null_type),
     data_((json_pointer_t) nullptr)
 {}
+
+
+json_value_t::json_value_t(json_value_t&& other):
+    type_(json_null_type),
+    data_((json_pointer_t) nullptr)
+{
+    swap(other);
+}
+
+
+json_value_t& json_value_t::operator=(json_value_t&& other)
+{
+    swap(other);
+    return *this;
+}
 
 
 json_value_t::json_value_t(json_type type):
@@ -33,25 +141,25 @@ json_value_t::json_value_t(bool value):
 
 
 json_value_t::json_value_t(double value):
-    type_(json_boolean_type),
+    type_(json_number_type),
     data_((json_pointer_t) value)
 {}
 
 
 json_value_t::json_value_t(json_string_t&& value):
-    type_(json_boolean_type),
+    type_(json_string_type),
     data_((json_pointer_t) new json_string_t(std::move(value)))
 {}
 
 
 json_value_t::json_value_t(json_array_t&& value):
-    type_(json_boolean_type),
+    type_(json_array_type),
     data_((json_pointer_t) new json_array_t(std::move(value)))
 {}
 
 
 json_value_t::json_value_t(json_object_t&& value):
-    type_(json_boolean_type),
+    type_(json_object_type),
     data_((json_pointer_t) new json_object_t(std::move(value)))
 {}
 
@@ -62,9 +170,16 @@ json_value_t::~json_value_t()
 }
 
 
+void json_value_t::swap(json_value_t& other)
+{
+    std::swap(type_, other.type_);
+    std::swap(data_, other.data_);
+}
+
+
 json_type json_value_t::type() const
 {
-    return type();
+    return type_;
 }
 
 
@@ -171,6 +286,7 @@ void json_value_t::set_null(json_null_t value)
 {
     reset();
     data_ = (json_pointer_t) value;
+    type_ = json_null_type;
 }
 
 
@@ -178,6 +294,7 @@ void json_value_t::set_boolean(json_boolean_t value)
 {
     reset();
     data_ = (json_pointer_t) value;
+    type_ = json_boolean_type;
 }
 
 
@@ -185,6 +302,7 @@ void json_value_t::set_number(json_number_t value)
 {
     reset();
     data_ = (json_pointer_t) value;
+    type_ = json_number_type;
 }
 
 
@@ -192,6 +310,7 @@ void json_value_t::set_string(json_string_t&& value)
 {
     reset();
     data_ = (json_pointer_t) new json_string_t(std::move(value));
+    type_ = json_string_type;
 }
 
 
@@ -199,6 +318,7 @@ void json_value_t::set_array(json_array_t&& value)
 {
     reset();
     data_ = (json_pointer_t) new json_array_t(std::move(value));
+    type_ = json_array_type;
 }
 
 
@@ -206,6 +326,7 @@ void json_value_t::set_object(json_object_t&& value)
 {
     reset();
     data_ = (json_pointer_t) new json_object_t(std::move(value));
+    type_ = json_object_type;
 }
 
 
@@ -253,13 +374,13 @@ void json_value_t::reset()
         case json_number_type:
             break;
         case json_string_type:
-            delete (json_string_t*) data_;
+            reset_string((json_string_t*) data_);
             break;
         case json_array_type:
-            delete (json_array_t*) data_;
+            reset_array((json_array_t*) data_);
             break;
         case json_object_type:
-            delete (json_object_t*) data_;
+            reset_object((json_object_t*) data_);
             break;
         default:
             throw std::runtime_error("Unexpected JSON value type.");
@@ -267,3 +388,58 @@ void json_value_t::reset()
 
     type_ = json_null_type;
 }
+
+
+void json_value_t::reset_string(json_string_t* value)
+{
+    delete value;
+}
+
+
+void json_value_t::reset_array(json_array_t* value)
+{
+    if (value) {
+        for (json_value_t *v: *value) {
+            delete v;
+        }
+    }
+    delete value;
+}
+
+
+void json_value_t::reset_object(json_object_t* value)
+{
+    if (value) {
+        for (auto& pair: *value) {
+            delete pair.second;
+        }
+    }
+    delete value;
+}
+
+
+void json_document_t::parse(std::istream& stream)
+{
+    json_stream_reader reader;
+    json_dom_handler handler(*this);
+    reader.set_handler(handler);
+    reader.parse(stream);
+}
+
+
+void json_document_t::parse(const std::string& path)
+{
+    ifstream stream(path);
+    parse(stream);
+}
+
+
+#if defined(HAVE_WFOPEN)
+
+void json_document_t::parse(const std::wstring& path)
+{
+    ifstream stream(path);
+    parse(stream);
+}
+
+#endif

@@ -110,6 +110,19 @@ struct allocate_hash
 
 
 /**
+ *  \brief Deallocate storage for hash.
+ */
+struct deallocate_hash
+{
+    template <typename Hash>
+    void operator()(Hash& hash)
+    {
+        hash.~Hash();
+    }
+};
+
+
+/**
  *  \brief Update hash from storage.
  */
 struct update_hash
@@ -279,6 +292,13 @@ hash::hash(hash_algorithm algorithm, const secure_string_view& str):
     allocate_hash hasher;
     get_hash(mem, algorithm, hasher);
     update(str);
+}
+
+
+hash::~hash()
+{
+    deallocate_hash hasher;
+    get_hash(mem, algorithm, hasher);
 }
 
 

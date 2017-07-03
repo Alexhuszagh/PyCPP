@@ -17,6 +17,8 @@
 #   if defined(_wfopen)
 #       define HAVE_WFOPEN
 #   endif
+#elif defined(HAVE_MSVC)
+#   define HAVE_WFOPEN
 #endif
 
 

@@ -119,6 +119,7 @@ public:
     hash(hash_algorithm algorithm);
     hash(hash_algorithm algorithm, const void* src, size_t srclen);
     hash(hash_algorithm algorithm, const secure_string_view& str);
+    ~hash();
 
     hash(const hash&);
     hash& operator=(const hash&);

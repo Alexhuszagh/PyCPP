@@ -15,6 +15,7 @@
 // FUNCTIONS
 // ---------
 
+// TODO: memory leak
 template <typename List, typename Hasher>
 static void test_digest(const List& list, const Hasher&)
 {
@@ -797,6 +798,7 @@ TEST(whirlpool, fuzz)
 }
 
 
+
 TEST(hash, digest)
 {
     EXPECT_EQ(hash(md2_hash_algorithm, "LOWER").hexdigest(), "F6A2EBAF32C712B834BC2955EF65B575");
@@ -813,4 +815,3 @@ TEST(hash, digest)
     EXPECT_EQ(hash(sha3_512_hash_algorithm, "LOWER").hexdigest(), "AD287FDBB233F213A2D5DF760A9D232E146D732BAF19087AE8C6D75B716B91D88D811F778176BEDD0CEB3B387F8BDA6ABF805D20D6B68AD293160A859915D7AA");
     EXPECT_EQ(hash(whirlpool_hash_algorithm, "LOWER").hexdigest(), "C1D36C5B5C7122371E8A027507B12A3D4921AC1DEBF8F28934100A8820B89B727EDB8E8B3A3FAA23B8C448EFB15139E366698C51EEF673A488AABFD8CC84E817");
 }
-

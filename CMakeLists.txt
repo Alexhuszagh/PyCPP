@@ -193,6 +193,7 @@ endif()
 if(BUILD_JSON)
     list(APPEND SOURCE_FILES
         src/json/dom.cc
+        src/json/sax.cc
     )
 endif()
 
@@ -206,6 +207,7 @@ endif()
 if(BUILD_XML)
     list(APPEND SOURCE_FILES
         src/xml/dom.cc
+        src/xml/sax.cc
     )
 endif()
 
@@ -281,7 +283,10 @@ if (BUILD_HASHLIB)
 endif()
 
 if (BUILD_JSON)
-#    list(APPEND TEST_FILES test/hashlib.cc)
+    list(APPEND TEST_FILES
+        test/json/dom.cc
+        test/json/sax.cc
+    )
 endif()
 
 if (BUILD_STREAM)
@@ -292,7 +297,10 @@ if (BUILD_STREAM)
 endif()
 
 if (BUILD_XML)
-#    list(APPEND TEST_FILES test/hashlib.cc)
+    list(APPEND TEST_FILES
+        test/xml/dom.cc
+        test/xml/sax.cc
+    )
 endif()
 
 
