@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Unicode, see licenses/unicode.md for more details.
 /**
- *  \addtogroup funxx
+ *  \addtogroup PyCPP
  *  \brief Hexadecimal conversions.
  */
 

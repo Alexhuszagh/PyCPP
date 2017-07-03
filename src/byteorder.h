@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Public Domain/MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup funxx
+ *  \addtogroup PyCPP
  *  \brief System endianess detection macros and byteswap routines.
  */
 

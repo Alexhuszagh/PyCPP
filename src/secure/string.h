@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup funxx
+ *  \addtogroup PyCPP
  *  \brief Secure string implementation.
  *
  *  A secure string that wipes the buffer upon reallocation or deallocation

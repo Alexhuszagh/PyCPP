@@ -2,10 +2,12 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief STL container-like views.
+ *  \brief XML DOM parser.
  */
 
 #pragma once
 
-#include <view/string.h>
-#include <view/vector.h>
+#include <xml/sax.h>
+
+// OBJECTS
+// -------

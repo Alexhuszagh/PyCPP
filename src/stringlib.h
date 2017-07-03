@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
- *  \addtogroup funxx
+ *  \addtogroup PyCPP
  *  \brief String manipulation utilities.
  *
  *  Provides an API similar to Python's string module and string class,

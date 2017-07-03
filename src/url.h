@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 /**
- *  \addtogroup funxx
+ *  \addtogroup PyCPP
  *  \brief URL encoding and decoding.
  */
 

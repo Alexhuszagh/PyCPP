@@ -5,7 +5,7 @@
 //  :copyright: (c) Copyright 2001-2011 Joel de Guzman.
 //  :license: Boost, see licenses/boost.md for more details.
 /**
- *  \addtogroup funxx
+ *  \addtogroup PyCPP
  *  \brief Unicode code point conversions and detection.
  */
 

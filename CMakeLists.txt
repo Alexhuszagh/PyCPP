@@ -3,7 +3,7 @@
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 1)
 cmake_minimum_required(VERSION 2.8)
-project(funxx CXX)
+project(pycpp CXX)
 enable_testing()
 
 # FLAGS
@@ -26,7 +26,7 @@ option(WITH_STREAM "Build (only) stream library" OFF)
 
 # OPTIONS
 option(BUILD_STATIC "Build static library" ON)
-option(BUILD_TESTS "Build funxx library tests" OFF)
+option(BUILD_TESTS "Build pycpp library tests" OFF)
 
 if(WITH_CIPHER OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_STREAM)
     set(BUILD_CIPHER ${WITH_CIPHER})
@@ -183,15 +183,15 @@ if(BUILD_STREAM)
 endif()
 
 if(BUILD_STATIC)
-    add_library(funxx STATIC ${SOURCE_FILES})
+    add_library(pycpp STATIC ${SOURCE_FILES})
 else()
-    add_library(funxx SHARED ${SOURCE_FILES})
+    add_library(pycpp SHARED ${SOURCE_FILES})
 endif()
-set(CROSSCXX_LIBRARIES funxx)
+set(CROSSCXX_LIBRARIES pycpp)
 
 # Need to specify proper exception handling for Windows.
 if(MSVC)
-    set_target_properties(funxx PROPERTIES
+    set_target_properties(pycpp PROPERTIES
         COMPILE_OPTIONS "/EHsc"
     )
 endif()
@@ -267,21 +267,21 @@ if(BUILD_TESTS)
     endif()
     include_directories(googletest/googletest/include)
 
-    add_executable(funxx_tests ${TEST_FILES})
-    target_link_libraries(funxx_tests
+    add_executable(pycpp_tests ${TEST_FILES})
+    target_link_libraries(pycpp_tests
         gtest
         gtest_main
         ${CROSSCXX_LIBRARIES}
     )
     # Need to specify proper exception handling for Windows.
     if(MSVC)
-        set_target_properties(funxx_tests PROPERTIES
+        set_target_properties(pycpp_tests PROPERTIES
             COMPILE_OPTIONS "/EHsc"
         )
     endif()
 
-    add_test(NAME funxx_tests
-        COMMAND funxx_tests
+    add_test(NAME pycpp_tests
+        COMMAND pycpp_tests
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endif()
