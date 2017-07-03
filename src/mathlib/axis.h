@@ -29,10 +29,16 @@ public:
     typedef ndarray_axis_iterator<T> self;
     typedef std::iterator<std::random_access_iterator_tag, T> base;
     using typename base::value_type;
+    using typename base::reference;
+    using typename base::const_reference;
+    using typename base::pointer;
+    using typename base::const_pointer;
 
     // CONSTRUCTORS
-    ndarray_axis_iterator(value_type*, value_type*, size_t);
+    ndarray_axis_iterator(pointer, pointer, size_t);
     ~ndarray_axis_iterator();
+    // TODO: need constructors
+//    ndarray_axis_iterator(const self& arr);
 
     // RELATIONAL OPERATORS
     bool operator==(const self&) const;
@@ -50,14 +56,14 @@ public:
     // TODO: need random access
 
     // DEREFERENCE
-    value_type & operator*();
-    const value_type & operator*() const;
-    value_type * operator->();
-    const value_type * operator->() const;
+    reference operator*();
+    const_reference operator*() const;
+    pointer operator->();
+    const_pointer operator->() const;
 
 private:
-    value_type* first_ = nullptr;
-    value_type* last_ = nullptr;
+    pointer first_ = nullptr;
+    pointer last_ = nullptr;
     size_t step_ = 1;
 };
 
@@ -86,7 +92,10 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-//    ndarray_axis() = default;
+    ndarray_axis(pointer, size_type, size_type);
+    ~ndarray_axis();
+
+    // TODO: need constructors
 //    ndarray_axis(const self& arr);
 //    self& operator=(const self& arr);
 //    ndarray_axis(self&& arr);
@@ -111,11 +120,9 @@ public:
     self operator*(const value_type&);
     self operator/(const value_type&);
 
-    // NEED ITERATORS
-
 private:
-    value_type* data_ = nullptr;
-    size_t length_ = 0;
+    pointer data_ = nullptr;
+    size_type length_ = 0;
     size_type step_ = 1;
 };
 
@@ -125,7 +132,7 @@ private:
 
 
 template <typename T>
-ndarray_axis_iterator<T>::ndarray_axis_iterator(value_type* first, value_type* last, size_t step):
+ndarray_axis_iterator<T>::ndarray_axis_iterator(pointer first, pointer last, size_t step):
     first_(first),
     last_(last),
     step_(step)
@@ -212,31 +219,44 @@ auto ndarray_axis_iterator<T>::operator--(int) -> self
 
 
 template <typename T>
-auto ndarray_axis_iterator<T>::operator*() -> value_type &
+auto ndarray_axis_iterator<T>::operator*() -> reference
 {
     return *first_;
 }
 
 
 template <typename T>
-auto ndarray_axis_iterator<T>::operator*() const -> const value_type &
+auto ndarray_axis_iterator<T>::operator*() const -> const_reference
 {
     return *first_;
 }
 
 
 template <typename T>
-auto ndarray_axis_iterator<T>::operator->() -> value_type *
+auto ndarray_axis_iterator<T>::operator->() -> pointer
 {
     return first_;
 }
 
 
 template <typename T>
-auto ndarray_axis_iterator<T>::operator->() const -> const value_type *
+auto ndarray_axis_iterator<T>::operator->() const -> const_pointer
 {
     return first_;
 }
+
+
+template <typename T>
+ndarray_axis<T>::ndarray_axis(pointer data, size_type length, size_type step):
+    data_(data),
+    length_(length),
+    step_(step)
+{}
+
+
+template <typename T>
+ndarray_axis<T>::~ndarray_axis()
+{}
 
 
 template <typename T>
