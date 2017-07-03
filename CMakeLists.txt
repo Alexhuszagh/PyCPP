@@ -14,6 +14,7 @@ set(CXX_STANDARD TRUE)
 
 # MODULES
 option(BUILD_CIPHER "Build cipher library" ON)
+option(BUILD_COMPRESSION "Build compression library" ON)
 option(BUILD_FILESYSTEM "Build filesystem library" ON)
 option(BUILD_HASHLIB "Build hash library" ON)
 option(BUILD_JSON "Build JSON library" ON)
@@ -22,6 +23,7 @@ option(BUILD_XML "Build XML library" ON)
 
 # WITH MODULE
 option(WITH_CIPHER "Build (only) cipher library" OFF)
+option(WITH_COMPRESSION "Build (only) compression library" OFF)
 option(WITH_FILESYSTEM "Build (only) filesystem library" OFF)
 option(WITH_HASHLIB "Build (only) hash library" OFF)
 option(WITH_JSON "Build (only) JSON library" OFF)
@@ -32,8 +34,9 @@ option(WITH_XML "Build (only) XML library" OFF)
 option(BUILD_STATIC "Build static library" ON)
 option(BUILD_TESTS "Build pycpp library tests" OFF)
 
-if(WITH_CIPHER OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_STREAM OR WITH_XML)
+if(WITH_CIPHER OR WITH_COMPRESSION OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_STREAM OR WITH_XML)
     set(BUILD_CIPHER ${WITH_CIPHER})
+    set(BUILD_COMPRESSION ${WITH_COMPRESSION})
     set(BUILD_FILESYSTEM ${WITH_FILESYSTEM})
     set(BUILD_HASHLIB ${WITH_HASHLIB})
     set(BUILD_JSON ${WITH_JSON})
@@ -164,6 +167,9 @@ if(BUILD_CIPHER)
     )
 endif()
 
+if(BUILD_COMPRESSION)
+endif()
+
 if (BUILD_FILESYSTEM)
     list(APPEND SOURCE_FILES
         src/filesystem/exception.cc
@@ -272,6 +278,9 @@ set(TEST_FILES
 
 if (BUILD_CIPHER)
     list(APPEND TEST_FILES test/cipher.cc)
+endif()
+
+if(BUILD_COMPRESSION)
 endif()
 
 if (BUILD_FILESYSTEM)

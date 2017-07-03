@@ -108,6 +108,8 @@ Supported features include:
 -[DOM](/src/xml/dom.h) parser.
 -[SAX](/src/xml/sax.h) parser.
 
+**_Compression_**
+
 **WARNING:** PyCPP includes cryptographic hashes and ciphers, which are tested via fuzzing. The buffer containing these objects is reset upon object destruction, to minimize side-channel attacks. However, they should be assumed to be insecure, until audited.
 
 ## Building
