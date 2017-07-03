@@ -11,8 +11,21 @@
 #include <casemap.h>
 #include <filesystem.h>
 #include <filesystem/exception.h>
+#include <io.h>
 #include <windows.h>
+#include <sys/stat.h>
 #include <algorithm>
+
+// MACROS
+// ------
+
+#ifndef S_IRUSR
+#   define S_IRUSR 00400
+#endif
+
+#ifndef S_IWUSR
+#   define S_IWUSR 00200
+#endif
 
 // HELPERS
 // -------
@@ -490,6 +503,35 @@ bool remove_file(const path_t& path)
     return DeleteFileW(reinterpret_cast<const wchar_t*>(path.data()));
 }
 
+
+bool mkdir(const path_t& path, int mode)
+{
+    auto data = reinterpret_cast<const wchar_t*>(path.data());
+    if (CreateDirectoryW(data, nullptr)) {
+        int mask = 0;
+        if (mode & S_IRUSR) {
+            mask |= _S_IREAD;
+        }
+        if (mode & S_IWUSR) {
+            mask |= _S_IWRITE;
+        }
+        return _wchmod(data, mask) == 0;
+    }
+
+    return false;
+}
+
+
+bool makedirs(const path_t& path, int mode)
+{
+    if (!exists(path)) {
+        makedirs(dir_name(path), mode);
+        return mkdir(path, mode);
+    }
+
+    return false;
+}
+
 #endif
 
 
@@ -593,6 +635,34 @@ bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace,
 bool remove_file(const backup_path_t& path)
 {
     return DeleteFile(path.data());
+}
+
+
+bool mkdir(const backup_path_t& path, int mode)
+{
+    if (CreateDirectory(path.data(), nullptr)) {
+        int mask = 0;
+        if (mode & S_IRUSR) {
+            mask |= _S_IREAD;
+        }
+        if (mode & S_IWUSR) {
+            mask |= _S_IWRITE;
+        }
+        return _chmod(path.data(), mask) == 0;
+    }
+
+    return false;
+}
+
+
+bool makedirs(const backup_path_t& path, int mode)
+{
+    if (!exists(path)) {
+        makedirs(dir_name(path), mode);
+        return mkdir(path, mode);
+    }
+
+    return false;
 }
 
 

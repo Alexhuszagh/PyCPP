@@ -412,6 +412,23 @@ bool remove_file(const path_t& path)
     return unlink(path.data()) == 0;
 }
 
+
+bool mkdir(const path_t& path, int mode)
+{
+    return ::mkdir(path.data(), mode) == 0;
+}
+
+
+bool makedirs(const path_t& path, int mode)
+{
+    if (!exists(path)) {
+        makedirs(dir_name(path), mode);
+        return mkdir(path, mode);
+    }
+
+    return false;
+}
+
 #endif
 
 

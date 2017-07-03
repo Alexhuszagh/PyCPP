@@ -284,6 +284,17 @@ bool remove_file(const path_t& path);
 // */
 //bool remove_dir(const path_t& path, bool recursive = true);
 
+// TODO: need the mode for mkdir...
+/**
+ *  \brief Make directory at path, return if successful.
+ */
+bool mkdir(const path_t& path, int = 0777);
+
+/**
+ *  \brief Make directory at path including all parents, return if successful.
+ */
+bool makedirs(const path_t& path, int = 0777);
+
 #if defined(backup_path_t)          // BACKUP PATH
 
 // RUNTIME
@@ -336,5 +347,7 @@ bool remove_file(const backup_path_t& path);
 //bool move_dir(const backup_path_t& src, const backup_path_t& dst);
 //bool copy_dir(const backup_path_t& src, const backup_path_t& dst, bool recursive = true);
 //bool remove_dir(const backup_path_t& path, bool recursive = true);
+bool mkdir(const backup_path_t& path, int = 0777);
+bool makedirs(const backup_path_t& path, int = 0777);
 
 #endif
