@@ -9,8 +9,6 @@
 
 #include <cstdint>
 #include <string>
-#include <unordered_map>
-#include <vector>
 
 // ENUMS
 // -----
@@ -33,6 +31,8 @@ enum json_type: uint8_t
 // -------
 
 struct json_value_t;
+struct json_array_t;
+//struct json_object_t;
 
 // ALIAS
 // -----
@@ -42,5 +42,3 @@ typedef std::nullptr_t json_null_t;
 typedef bool json_boolean_t;
 typedef double json_number_t;
 typedef std::string json_string_t;
-typedef std::vector<json_value_t*> json_array_t;
-typedef std::unordered_map<json_string_t, json_value_t*> json_object_t;

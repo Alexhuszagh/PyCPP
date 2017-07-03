@@ -8,6 +8,7 @@
 #pragma once
 
 #include <json/sax.h>
+#include <vector>
 
 // OBJECTS
 // -------
@@ -37,9 +38,7 @@ private:
     json_value_t* root = nullptr;
     bool has_key_ = false;
     json_string_t key_;
-    json_array_t levels;
-
-    void add_value(json_value_t*);
+    std::vector<json_value_t*> levels;
 };
 
 
@@ -99,13 +98,18 @@ public:
     void set(json_array_t&&);
     void set(json_object_t&&);
 
+    // CONVERSIONS
+    operator json_boolean_t() const;
+    operator json_number_t() const;
+    operator json_string_t&() const;
+    operator json_array_t&() const;
+    operator json_object_t&() const;
+
 private:
     json_type type_;
     json_pointer_t data_;
 
     void reset();
-    void reset_string(json_string_t*);
-    void reset_array(json_array_t*);
     void reset_object(json_object_t*);
 };
 
@@ -118,7 +122,7 @@ struct json_document_t: json_value_t
     void parse(std::istream&);
     void parse(const std::string&);
 #if defined(HAVE_WFOPEN)
-    json_file_reader(const std::wstring&);
+    parse(const std::wstring&);
 #endif
 
     // TODO: need to add serializers

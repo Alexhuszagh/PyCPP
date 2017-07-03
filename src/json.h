@@ -7,4 +7,6 @@
 
 #pragma once
 
+#include <json/array.h>
 #include <json/dom.h>
+#include <json/object.h>

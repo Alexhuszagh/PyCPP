@@ -1,8 +1,42 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <json/array.h>
 #include <json/dom.h>
 #include <stdexcept>
+
+
+static_assert(sizeof(json_pointer_t) >= sizeof(double), "WTF");
+
+// HELPERS
+// -------
+
+
+template <typename Levels, typename... Ts>
+static void add_value(Levels &levels, bool& has_key, json_string_t& key, Ts... ts)
+{
+    json_value_t* parent, *value;
+
+    parent = levels.back();
+    value = new json_value_t(std::forward<Ts>(ts)...);
+    if (levels.size() == 1 && parent->has_null()) {
+        // root element
+        std::swap(*parent, *value);
+        delete value;
+        return;
+    } else if (has_key) {
+        auto &object = parent->get_object();
+        object.emplace(std::move(key), value);
+        key.clear();
+        has_key = false;
+    } else {
+        parent->get_array().push_back(value);
+    }
+
+    if (value->has_object() || value->has_array()) {
+        levels.push_back(value);
+    }
+}
 
 // OBJECTS
 // -------
@@ -27,7 +61,7 @@ void json_dom_handler::end_document()
 
 void json_dom_handler::start_object()
 {
-    add_value(new json_value_t(json_object_t()));
+    add_value(levels, has_key_, key_, json_object_t());
 }
 
 
@@ -39,7 +73,7 @@ void json_dom_handler::end_object(size_t)
 
 void json_dom_handler::start_array()
 {
-    add_value(new json_value_t(json_array_t()));
+    add_value(levels, has_key_, key_, json_array_t());
 }
 
 
@@ -58,46 +92,25 @@ void json_dom_handler::key(const char* s, size_t n)
 
 void json_dom_handler::null()
 {
-    add_value(new json_value_t(nullptr));
+    add_value(levels, has_key_, key_, nullptr);
 }
 
 
 void json_dom_handler::boolean(bool v)
 {
-    add_value(new json_value_t(v));
+    add_value(levels, has_key_, key_, v);
 }
 
 
 void json_dom_handler::number(double d)
 {
-    add_value(new json_value_t(d));
+    add_value(levels, has_key_, key_, d);
 }
 
 
 void json_dom_handler::string(const char* s, size_t n)
 {
-    add_value(new json_value_t(json_string_t(s, n)));
-}
-
-
-void json_dom_handler::add_value(json_value_t* value)
-{
-    auto *parent = levels.back();
-    if (levels.size() == 1 && parent->has_null()) {
-        // root element
-        std::swap(*parent, *value);
-        delete value;
-        return;
-    } else if (has_key_) {
-        parent->get_object().emplace(std::move(key_), value);
-        has_key_ = false;
-    } else {
-        parent->get_array().emplace_back(value);
-    }
-
-    if (value->has_object() || value->has_array()) {
-        levels.emplace_back(value);
-    }
+    add_value(levels, has_key_, key_, json_string_t(s, n));
 }
 
 
@@ -136,31 +149,31 @@ json_value_t::json_value_t(json_null_t):
 
 json_value_t::json_value_t(bool value):
     type_(json_boolean_type),
-    data_((json_pointer_t) value)
+    data_(reinterpret_cast<json_pointer_t>(new json_boolean_t(value)))
 {}
 
 
 json_value_t::json_value_t(double value):
     type_(json_number_type),
-    data_((json_pointer_t) value)
+    data_(reinterpret_cast<json_pointer_t>(new json_number_t(value)))
 {}
 
 
 json_value_t::json_value_t(json_string_t&& value):
     type_(json_string_type),
-    data_((json_pointer_t) new json_string_t(std::move(value)))
+    data_(reinterpret_cast<json_pointer_t>(new json_string_t(std::move(value))))
 {}
 
 
 json_value_t::json_value_t(json_array_t&& value):
     type_(json_array_type),
-    data_((json_pointer_t) new json_array_t(std::move(value)))
+    data_(reinterpret_cast<json_pointer_t>(new json_array_t(std::move(value))))
 {}
 
 
 json_value_t::json_value_t(json_object_t&& value):
     type_(json_object_type),
-    data_((json_pointer_t) new json_object_t(std::move(value)))
+    data_(reinterpret_cast<json_pointer_t>(new json_object_t(std::move(value))))
 {}
 
 
@@ -233,7 +246,7 @@ json_boolean_t json_value_t::get_boolean() const
     if (type_ != json_boolean_type) {
         throw std::runtime_error("Type is not boolean.");
     }
-    return (json_boolean_t) data_;
+    return *reinterpret_cast<json_boolean_t*>(data_);
 }
 
 
@@ -242,7 +255,8 @@ json_number_t json_value_t::get_number() const
     if (type_ != json_number_type) {
         throw std::runtime_error("Type is not a number.");
     }
-    return (json_number_t) data_;
+
+    return *reinterpret_cast<json_number_t*>(data_);
 }
 
 
@@ -254,7 +268,7 @@ json_string_t& json_value_t::get_string() const
     if (!data_) {
         throw std::runtime_error("Value is null.");
     }
-    return * (json_string_t*) data_;
+    return *reinterpret_cast<json_string_t*>(data_);
 }
 
 
@@ -266,7 +280,7 @@ json_array_t& json_value_t::get_array() const
     if (!data_) {
         throw std::runtime_error("Value is null.");
     }
-    return * (json_array_t*) data_;
+    return *reinterpret_cast<json_array_t*>(data_);
 }
 
 
@@ -278,14 +292,14 @@ json_object_t& json_value_t::get_object() const
     if (!data_) {
         throw std::runtime_error("Value is null.");
     }
-    return * (json_object_t*) data_;
+    return *reinterpret_cast<json_object_t*>(data_);
 }
 
 
 void json_value_t::set_null(json_null_t value)
 {
     reset();
-    data_ = (json_pointer_t) value;
+    data_ = (json_pointer_t) nullptr;
     type_ = json_null_type;
 }
 
@@ -293,7 +307,7 @@ void json_value_t::set_null(json_null_t value)
 void json_value_t::set_boolean(json_boolean_t value)
 {
     reset();
-    data_ = (json_pointer_t) value;
+    data_ = reinterpret_cast<json_pointer_t>(new json_boolean_t(value));
     type_ = json_boolean_type;
 }
 
@@ -301,7 +315,7 @@ void json_value_t::set_boolean(json_boolean_t value)
 void json_value_t::set_number(json_number_t value)
 {
     reset();
-    data_ = (json_pointer_t) value;
+    data_ = reinterpret_cast<json_pointer_t>(new json_number_t(value));
     type_ = json_number_type;
 }
 
@@ -309,7 +323,7 @@ void json_value_t::set_number(json_number_t value)
 void json_value_t::set_string(json_string_t&& value)
 {
     reset();
-    data_ = (json_pointer_t) new json_string_t(std::move(value));
+    data_ = reinterpret_cast<json_pointer_t>(new json_string_t(std::move(value)));
     type_ = json_string_type;
 }
 
@@ -317,7 +331,7 @@ void json_value_t::set_string(json_string_t&& value)
 void json_value_t::set_array(json_array_t&& value)
 {
     reset();
-    data_ = (json_pointer_t) new json_array_t(std::move(value));
+    data_ = reinterpret_cast<json_pointer_t>(new json_array_t(std::move(value)));
     type_ = json_array_type;
 }
 
@@ -325,7 +339,7 @@ void json_value_t::set_array(json_array_t&& value)
 void json_value_t::set_object(json_object_t&& value)
 {
     reset();
-    data_ = (json_pointer_t) new json_object_t(std::move(value));
+    data_ = reinterpret_cast<json_pointer_t>(new json_object_t(std::move(value)));
     type_ = json_object_type;
 }
 
@@ -366,18 +380,52 @@ void json_value_t::set(json_object_t&& value)
 }
 
 
+json_value_t::operator json_boolean_t() const
+{
+    return get_boolean();
+}
+
+
+json_value_t::operator json_number_t() const
+{
+    return get_number();
+}
+
+
+json_value_t::operator json_string_t&() const
+{
+    return get_string();
+}
+
+
+json_value_t::operator json_array_t&() const
+{
+    return get_array();
+}
+
+
+json_value_t::operator json_object_t&() const
+{
+    return get_object();
+}
+
+
 void json_value_t::reset()
 {
     switch (type_) {
         case json_null_type:
+            break;
         case json_boolean_type:
+            delete (json_boolean_t*) data_;
+            break;
         case json_number_type:
+            delete (json_number_t*) data_;
             break;
         case json_string_type:
-            reset_string((json_string_t*) data_);
+            delete (json_string_t*) data_;
             break;
         case json_array_type:
-            reset_array((json_array_t*) data_);
+            delete (json_array_t*) data_;
             break;
         case json_object_type:
             reset_object((json_object_t*) data_);
@@ -387,23 +435,6 @@ void json_value_t::reset()
     }
 
     type_ = json_null_type;
-}
-
-
-void json_value_t::reset_string(json_string_t* value)
-{
-    delete value;
-}
-
-
-void json_value_t::reset_array(json_array_t* value)
-{
-    if (value) {
-        for (json_value_t *v: *value) {
-            delete v;
-        }
-    }
-    delete value;
 }
 
 

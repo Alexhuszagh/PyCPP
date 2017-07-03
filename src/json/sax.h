@@ -8,6 +8,7 @@
 #pragma once
 
 #include <json/core.h>
+#include <json/object.h>            // TODO: remove
 #include <stream/fstream.h>
 #include <view/string.h>
 

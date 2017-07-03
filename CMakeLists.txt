@@ -198,7 +198,9 @@ endif()
 
 if(BUILD_JSON)
     list(APPEND SOURCE_FILES
+        src/json/array.cc
         src/json/dom.cc
+        src/json/object.cc
         src/json/sax.cc
     )
 endif()
