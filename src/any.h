@@ -1,6 +1,6 @@
-//  :copyright: (c) Kevlin Henney 2001.
-//  :copyright: (c) Pablo Aguilar 2005.
-//  :copyright: (c) Christopher Diggins 2005-2011.
+//  :copyright: (c) 2001 Kevlin Henney.
+//  :copyright: (c) 2005 Pablo Aguilar.
+//  :copyright: (c) 2005-2011 Christopher Diggins.
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 /**

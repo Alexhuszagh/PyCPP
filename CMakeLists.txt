@@ -229,6 +229,7 @@ set(TEST_FILES
     test/iterator.cc
     test/itertools.cc
     test/processor.cc
+    test/optional.cc
     test/ordering.cc
     test/os.cc
     test/pimpl.cc

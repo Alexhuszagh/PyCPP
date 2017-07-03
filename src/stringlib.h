@@ -3,18 +3,30 @@
 /**
  *  \addtogroup funxx
  *  \brief String manipulation utilities.
+ *
+ *  Provides an API similar to Python's string module and string class,
+ *  allowing facile string conversions and replacement with a clean
+ *  API.
  */
 
 #pragma once
 
 #include <view/string.h>
+#include <functional>
 #include <vector>
+
+// FORWARD
+// -------
+
+class string_wrapper;
 
 // ALIAS
 // -----
 
 typedef std::string string_t;
 typedef std::vector<std::string> string_list_t;
+typedef std::vector<string_wrapper> string_wrapper_list_t;
+typedef std::function<bool(char)> split_function;
 
 // CONSTANTS
 // ---------
@@ -38,22 +50,32 @@ extern const string_t whitespace;
 /**
  *  \brief Split characters by delimiters into dst.
  */
-string_list_t split(const std::string& str, const std::string& sep, size_t maxsplit = SIZE_MAX);
+string_list_t split(const string_t& str, split_function is_split, size_t maxsplit = SIZE_MAX);
 
 /**
  *  \brief Same as split, except scanning in reverse order.
  */
-string_list_t rsplit(const std::string& str, const std::string& sep, size_t maxsplit = SIZE_MAX);
+string_list_t rsplit(const string_t& str, split_function is_split, size_t maxsplit = SIZE_MAX);
 
 /**
- *  \brief Capitalize first letter of word.
+ *  \brief Split characters by delimiters into dst.
  */
-std::string capitalize(const std::string& str);
+string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit = SIZE_MAX);
+
+/**
+ *  \brief Same as split, except scanning in reverse order.
+ */
+string_list_t rsplit(const string_t& str, const string_t& sep, size_t maxsplit = SIZE_MAX);
 
 /**
  *  \brief Convert tabs to spaces, using the tabsize.
  */
-//std::string expandtabs(const std::string& str, size_t tabsize = 8);
+string_t join(const string_list_t& list, const std::string& sep = " ");
+
+/**
+ *  \brief Convert tabs to spaces, using the tabsize.
+ */
+//string_t expandtabs(const string_t& str, size_t tabsize = 8);
 
 /**
  *  \brief Find in substring in string.
@@ -62,47 +84,60 @@ std::string capitalize(const std::string& str);
  *  \param end          Last character in str to search for substr.
  *  \return             Position of substr, or -1 on failure.
  */
-size_t find(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t find(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
 
 /**
  *  \brief Like find, but find last position of substring in string.
  */
-size_t rfind(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t rfind(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
 
 /**
  *  \brief Like find, but raise error if substring not found.
  */
-size_t index(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t index(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
 
 /**
  *  \brief Like rfind, but raise error if substring not found.
  */
-size_t rindex(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t rindex(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
 
 /**
  *  \brief Count instances of substring in string.
  */
-size_t count(const std::string& str, const std::string& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t count(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
+
+/**
+ *  \brief Capitalize first letter of word.
+ */
+string_t capitalize(const string_t& str);
 
 /**
  *  \brief Convert all uppercase characters to lowercase in string.
  *
  *  This function **this** Unicode aware.
  */
-std::string lower(const std::string& str);
+string_t lower(const string_t& str);
 
 /**
  *  \brief Convert all uppercase characters to uppercase in string.
  *
  *  This function **this** Unicode aware.
  */
-//std::string upper(const std::string& str);
+string_t upper(const string_t& str);
+
+// TODO: replace...
 
 // OBJECTS
 // -------
 
 /**
  *  \brief Zero-copy model providing string methods via member functions.
+ *
+ *  These routines will handle non-null terminated strings well, however,
+ *  routines like split and rsplit will not modify the underlying buffer,
+ *  meaning this wrapper must be copied to a new buffer for any
+ *  routine expecting a null-terminated string. Each wrapper can be
+ *  explicitly converted to std::string.
  */
 struct string_wrapper: string_view
 {
@@ -113,13 +148,16 @@ struct string_wrapper: string_view
     const string_view& view() const;
 
     // MODIFIERS
-    void capitalize();
-    void lower();
-    //void upper();
+    string_t capitalize() const;
+    string_t lower() const;
+    string_t upper() const;
 
     // TOKENS
-    std::vector<string_wrapper> split(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
-    std::vector<string_wrapper> rsplit(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
+    string_wrapper_list_t split(split_function is_split, size_t maxsplit = SIZE_MAX) const;
+    string_wrapper_list_t rsplit(split_function is_split, size_t maxsplit = SIZE_MAX) const;
+    string_wrapper_list_t split(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
+    string_wrapper_list_t rsplit(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
+    string_t join(const string_wrapper_list_t& list);
 
     // SEARCH
     size_t find(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;

@@ -25,21 +25,28 @@ const string_t printable = digits + letters + punctuation + whitespace;
 // -------
 
 
-template <typename Iter, typename IsSep, typename Store>
-static size_t split_impl(Iter first, Iter last, size_t maxsplit, IsSep issep, Store store)
+template <typename Iter, typename IsSplit, typename StoreCb>
+static size_t split_impl(Iter first, Iter last, size_t maxsplit, IsSplit is_split, StoreCb store_cb)
 {
     size_t length = 0;
     auto interval = first;
-    for (; first != last && interval != last && maxsplit; ++interval, --maxsplit) {
-        if (issep(*interval)) {
-            store(first, interval);
+    for (; interval != last && maxsplit; ++interval) {
+        if (is_split(*interval)) {
+            store_cb(first, interval);
             ++length;
+            --maxsplit;
             first = interval + 1;
+
+            // last character is a delimiter, add and exit early
+            if (first == last) {
+                store_cb(first, last);
+                return ++length;
+            }
         }
     }
 
-    if (first != interval) {
-        store(first, last);
+    if (first != last) {
+        store_cb(first, last);
         ++length;
     }
 
@@ -47,52 +54,72 @@ static size_t split_impl(Iter first, Iter last, size_t maxsplit, IsSep issep, St
 }
 
 
-template <typename Iter, typename IsSep, typename Store>
-static size_t rsplit_impl(Iter first, Iter last, size_t maxsplit, IsSep issep, Store store)
+template <typename Iter, typename IsSplit, typename StoreCb>
+static size_t rsplit_impl(Iter first, Iter last, size_t maxsplit, IsSplit is_split, StoreCb store_cb)
 {
-    // TODO: here...
-//    size_t length = 0;
-//    auto interval = first;
-//    for (; first != last && interval != last && maxsplit; ++interval, --maxsplit) {
-//        if (issep(*interval)) {
-//            store(first, interval);
-//            ++length;
-//            first = interval + 1;
-//        }
-//    }
-//
-//    if (first != interval) {
-//        store(first, last);
-//        ++length;
-//    }
-//
-//    return length;
+    typedef std::reverse_iterator<Iter> RIter;
 
-    return 0;
+    RIter rlast(first);
+    RIter rfirst(last);
+
+    size_t length = 0;
+    auto interval = rfirst;
+    for (; interval != rlast && maxsplit; ++interval) {
+        if (is_split(*interval)) {
+            store_cb(interval.base(), rfirst.base());
+            ++length;
+            --maxsplit;
+
+            // last character is a delimiter, add and exit early
+            rfirst = interval + 1;
+            if (rfirst == rlast) {
+                store_cb(rlast.base(), rfirst.base());
+                return ++length;
+            }
+        }
+    }
+
+    if (rfirst != rlast) {
+        store_cb(rlast.base(), rfirst.base());
+        ++length;
+    }
+
+    return length;
 }
 
 
-template <typename Iter>
-static void capitalize_impl(Iter first, Iter last)
+template <typename List>
+static string_t join_impl(const List& list, const string_view& sep)
 {
-    auto it = first;
-    if (first == last) {
-        return;
-    } else {
-        if (is_ascii_byte(*first)) {
-            *first = ascii_toupper(*first);
-        } else {
-            // we have a unicode block, find the first
-            // non-continuation byte
-            ++it;
-            it = std::find_if(it, last, [](char c) {
-                return !is_continuation_byte(c);
-            });
-
-            // get our uint32
-            // TODO: here...
-        }
+    string_t string;
+    for (const auto &item: list) {
+        string.append(item.data(), item.size());
+        string.append(sep.data(), sep.size());
     }
+
+    if (!string.empty()) {
+        string.erase(string.length()-sep.size());
+    }
+
+    return string;
+}
+
+
+static string_t capitalize_impl(const string_t& str)
+{
+    return utf8_capitalize(str);
+}
+
+
+static string_t lower_impl(const string_t& str)
+{
+    return utf8_tolower(str);
+}
+
+
+static string_t upper_impl(const string_t& str)
+{
+    return utf8_toupper(str);
 }
 
 
@@ -173,21 +200,36 @@ static size_t count_impl(const string_view& str, const string_view& sub, size_t 
 // ---------
 
 
-string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit)
+string_list_t split(const string_t& str, split_function is_split, size_t maxsplit)
 {
-    typedef typename string_t::const_iterator iterator;
+    typedef typename string_t::const_iterator iter;
     string_list_t data;
 
-    auto issep = [&](char c)
-    {
-        return sep.find(c) != sep.npos;
-    };
-    auto store = [&](iterator first, iterator second)
-    {
+    split_impl(str.begin(), str.end(), maxsplit, is_split, [&](iter first, iter second) {
         return data.emplace_back(string_t(first, second));
-    };
+    });
 
-    split_impl(str.begin(), str.end(), maxsplit, issep, store);
+    return data;
+}
+
+
+string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit)
+{
+    return split(str, [&](char c) {
+        return sep.find(c) != sep.npos;
+    }, maxsplit);
+}
+
+
+string_list_t rsplit(const string_t& str, split_function is_split, size_t maxsplit)
+{
+    typedef typename string_t::const_iterator iter;
+    string_list_t data;
+
+    rsplit_impl(str.begin(), str.end(), maxsplit, is_split, [&](iter first, iter second) {
+        return data.emplace_back(string_t(first, second));
+    });
+    std::reverse(data.begin(), data.end());
 
     return data;
 }
@@ -195,80 +237,72 @@ string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit)
 
 string_list_t rsplit(const string_t& str, const string_t& sep, size_t maxsplit)
 {
-    typedef typename string_t::const_iterator iterator;
-    string_list_t data;
-
-    auto issep = [&](char c)
-    {
+    return rsplit(str, [&](char c) {
         return sep.find(c) != sep.npos;
-    };
-    auto store = [&](iterator first, iterator second)
-    {
-        return data.emplace_back(string_t(first, second));
-    };
-
-    rsplit_impl(str.begin(), str.end(), maxsplit, issep, store);
-
-    return data;
+    }, maxsplit);
 }
 
 
-std::string capitalize(const std::string& str)
+string_t join(const string_list_t& list, const string_t& sep)
 {
-    std::string output(str);
-    capitalize_impl(output.begin(), output.end());
-
-    return output;
+    return join_impl(list, string_view(sep));
 }
 
 
-//std::string expandtabs(const std::string& str, size_t tabsize)
+
+string_t capitalize(const string_t& str)
+{
+    return capitalize_impl(str);
+}
+
+
+//string_t expandtabs(const string_t& str, size_t tabsize)
 //{
 //    // TODO: here...
 //    // Need to replace characters...
 //}
 
 
-size_t find(const std::string&str, const std::string& sub, size_t start, size_t end)
+size_t find(const string_t&str, const string_t& sub, size_t start, size_t end)
 {
     return find_impl(str, sub, start, end);
 }
 
 
-size_t rfind(const std::string&str, const std::string& sub, size_t start, size_t end)
+size_t rfind(const string_t&str, const string_t& sub, size_t start, size_t end)
 {
     return rfind_impl(str, sub, start, end);
 }
 
 
-size_t index(const std::string&str, const std::string& sub, size_t start, size_t end)
+size_t index(const string_t&str, const string_t& sub, size_t start, size_t end)
 {
     return index_impl(str, sub, start, end);
 }
 
 
-size_t rindex(const std::string&str, const std::string& sub, size_t start, size_t end)
+size_t rindex(const string_t&str, const string_t& sub, size_t start, size_t end)
 {
     return rindex_impl(str, sub, start, end);
 }
 
 
-size_t count(const std::string&str, const std::string& sub, size_t start, size_t end)
+size_t count(const string_t&str, const string_t& sub, size_t start, size_t end)
 {
     return count_impl(str, sub, start, end);
 }
 
 
-//std::string lower(const std::string& str)
-//{
-//    lower_impl(str);
-//}
-//
-//
-//std::string upper(const std::string& str)
-//{
-//    upper_impl(str);
-//}
+string_t lower(const string_t& str)
+{
+    return lower_impl(str);
+}
+
+
+string_t upper(const string_t& str)
+{
+    return upper_impl(str);
+}
 
 
 // OBJECTS
@@ -287,62 +321,71 @@ const string_view& string_wrapper::view() const
 }
 
 
-std::vector<string_wrapper> string_wrapper::split(const string_wrapper& sep, size_t maxsplit) const
+string_wrapper_list_t string_wrapper::split(split_function is_split, size_t maxsplit) const
 {
-    typedef typename string_wrapper::const_iterator iterator;
-    std::vector<string_wrapper> data;
+    typedef typename string_wrapper::const_iterator iter;
+    string_wrapper_list_t data;
 
-    auto issep = [&](char c)
-    {
-        return sep.view().find(c) != sep.npos;
-    };
-    auto store = [&](iterator first, iterator second)
-    {
+    split_impl(begin(), end(), maxsplit, is_split, [&](iter first, iter second) {
         return data.emplace_back(string_wrapper(first, second));
-    };
-
-    split_impl(begin(), end(), maxsplit, issep, store);
+    });
 
     return data;
 }
 
 
-std::vector<string_wrapper> string_wrapper::rsplit(const string_wrapper& sep, size_t maxsplit) const
+string_wrapper_list_t string_wrapper::split(const string_wrapper& sep, size_t maxsplit) const
 {
-    typedef typename string_wrapper::const_iterator iterator;
-    std::vector<string_wrapper> data;
-
-    auto issep = [&](char c)
-    {
+    return split([&](char c) {
         return sep.view().find(c) != sep.npos;
-    };
-    auto store = [&](iterator first, iterator second)
-    {
-        return data.emplace_back(string_wrapper(first, second));
-    };
+    }, maxsplit);
+}
 
-    rsplit_impl(begin(), end(), maxsplit, issep, store);
+
+string_wrapper_list_t string_wrapper::rsplit(split_function is_split, size_t maxsplit) const
+{
+    typedef typename string_wrapper::const_iterator iter;
+    string_wrapper_list_t data;
+
+    rsplit_impl(begin(), end(), maxsplit, is_split, [&](iter first, iter second) {
+        return data.emplace_back(string_wrapper(first, second));
+    });
+    std::reverse(data.begin(), data.end());
 
     return data;
 }
 
 
-void string_wrapper::capitalize()
+string_wrapper_list_t string_wrapper::rsplit(const string_wrapper& sep, size_t maxsplit) const
 {
-    capitalize_impl(begin(), end());
+    return rsplit([&](char c) {
+        return sep.view().find(c) != sep.npos;
+    }, maxsplit);
 }
 
 
-//void string_wrapper::lower()
-//{
-//    lower_impl(*this);
-//}
+string_t string_wrapper::join(const string_wrapper_list_t& list)
+{
+    return join_impl(list, *this);
+}
 
-//
-//void string_wrapper::upper()
-//{
-//    upper_impl(*this);
-//}
+
+string_t string_wrapper::capitalize() const
+{
+    return capitalize_impl(string_t(*this));
+}
+
+
+string_t string_wrapper::lower() const
+{
+    return lower_impl(string_t(*this));
+}
+
+
+string_t string_wrapper::upper() const
+{
+    return upper_impl(string_t(*this));
+}
 
 
 size_t string_wrapper::find(const string_wrapper& sub, size_t start, size_t end) const

@@ -8,7 +8,6 @@
 #include <architecture.h>
 #include <byteorder.h>
 #include <hashlib.h>
-#include <hex.h>
 #include <cassert>
 #include <cstring>
 #include <stdexcept>

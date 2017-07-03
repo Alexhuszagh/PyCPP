@@ -66,6 +66,16 @@
 #   endif
 #endif
 
+// GNUC
+// ----
+
+#if defined(__GNUC__)
+#   define HAVE_GNUC
+#   define GNUC_MAJOR_VERSION __GNUC__
+#   define GNUC_MINOR_VERSION __GNUC_MINOR__
+#   define GNUC_PATCH_VERSION __GNUC_PATCHLEVEL__
+#endif
+
 // CLANG
 // -----
 
@@ -87,12 +97,12 @@
 // GCC
 // ---
 
-#if !defined(COMPILER_DETECTED) && defined(__GNUC__)
+#if !defined(COMPILER_DETECTED) && defined(HAVE_GNUC)
 #   define HAVE_GCC 1
 #   define COMPILER_DETECTED HAVE_GCC
-#   define COMPILER_MAJOR_VERSION __GNUC__
-#   define COMPILER_MINOR_VERSION __GNUC_MINOR__
-#   define COMPILER_PATCH_VERSION __GNUC_PATCHLEVEL__
+#   define COMPILER_MAJOR_VERSION GNUC_MAJOR_VERSION
+#   define COMPILER_MINOR_VERSION GNUC_MINOR_VERSION
+#   define COMPILER_PATCH_VERSION GNUC_PATCH_VERSION
 #   if COMPILER_MAJOR_VERSION == 7
 #      define HAVE_GCC_7 1
 #   elif COMPILER_MAJOR_VERSION == 6
@@ -103,5 +113,20 @@
 #      define HAVE_GCC_4 1
 #   elif COMPILER_MAJOR_VERSION == 3
 #      define HAVE_GCC_3 1
+#   endif
+#endif
+
+// C++
+// ---
+
+#if defined(__cplusplus)
+#   if __cplusplus >= 201703L
+#       define HAVE_CPP17 1
+#   endif
+#   if __cplusplus >= 201402L
+#       define HAVE_CPP14 1
+#   endif
+#   if __cplusplus >= 201103L
+#       define HAVE_CPP11 1
 #   endif
 #endif

@@ -3,6 +3,15 @@
 /**
  *  \addtogroup funxx
  *  \brief Filesystem and path utilities.
+ *
+ *  Filesystem normalization and manipulation routines provided
+ *  for the default path type (UTF-8 strings on POSIX-like systems,
+ *  UTF-16 strings on Windows), as well as for the backup path
+ *  type (UTF-8 strings on Windows). The functions are documented
+ *  for the default path type, and are otherwise identical except
+ *  for the string encoding. You should use the native path
+ *  type whenever possible for Unicode support: narrow paths
+ *  on Windows do not support Unicode characters.
  */
 
 #pragma once
@@ -279,214 +288,53 @@ bool remove_file(const path_t& path);
 
 // RUNTIME
 
-/** \brief Join POSIX-compliant paths to create path to full file.
- *
- *  \warning Any intermediate elements from starting from the root
- *  will reset the current root.
- *
- *  \code
- *      join("/tmp", "path", "to")          // "/tmp/path/to"
- *      join("/tmp", "/path", "to")         // "/path/to"
- *
- *  \param paths            Paths to join
- *  \return                 Joined paths
- */
 backup_path_t join(const backup_path_list_t &paths);
 
 // STAT
 
-/**
- * \brief POSIX-like stat call.
- */
 stat_t stat(const backup_path_t& path);
-
-/**
- * \brief POSIX-like lstat call.
- */
 stat_t lstat(const backup_path_t& path);
-
-/**
- *  \brief Get access time of file, as if by stat.
- */
 time_t getatime(const backup_path_t& path);
-
-/**
- *  \brief Get modified time of file, as if by stat.
- */
 time_t getmtime(const backup_path_t& path);
-
-/**
- *  \brief Get created time of file, as if by stat.
- */
 time_t getctime(const backup_path_t& path);
-
-/**
- *  \brief Get size of file, as if by stat.
- */
 off_t getsize(const backup_path_t& path);
-
-/**
- *  \brief Check if path points to file.
- */
 bool isfile(const backup_path_t& path);
-
-/**
- *  \brief Check if path points to directory.
- */
 bool isdir(const backup_path_t& path);
-
-/**
- *  \brief Check if path points to symbolic link.
- */
 bool islink(const backup_path_t& path);
-
-/**
- *  \brief Check if path exists on filesystem.
- */
 bool exists(const backup_path_t& path);
-
-/**
- *  \brief Check if path exists on filesystem as if by lstat.
- */
 bool lexists(const backup_path_t& path);
-
-/**
- *  \brief Check if path is absolute.
- */
 bool isabs(const backup_path_t& path);
-
-/**
- *  \brief Check if two paths point to same file.
- */
 bool samefile(const backup_path_t& p1, const backup_path_t& p2);
 
 // SPLIT
 
-/**
- *  \brief Split path into head and tail using last pathname component.
- */
 backup_path_list_t split(const backup_path_t& path);
-
-/**
- *  \brief Split path into drive and tail components.
- */
 backup_path_list_t splitdrive(const backup_path_t& path);
-
-/**
- *  \brief Split path into root and filename extension components.
- */
 backup_path_list_t splitext(const backup_path_t& path);
-
-/**
- *  \brief Split path into UNC mount point and tail components.
- */
 backup_path_list_t splitunc(const backup_path_t& path);
 
 // NORMALIZATION
 
-/**
- *  \brief Read value of a symlink.
- */
 backup_path_t read_link(const backup_path_t& path);
-
-/**
- *  \brief Return the absolute path relative to the base.
- */
 backup_path_t abspath(const backup_path_t& path);
-
-/**
- *  \brief Return name of file, relative to parent directory.
- */
 backup_path_t base_name(const backup_path_t& path);
-
-/**
- *  \brief Return the path of the parent directory.
- */
 backup_path_t dir_name(const backup_path_t& path);
-
-/**
- *  \brief Convert first ~ to username if followed by path separator.
- */
 backup_path_t expanduser(const backup_path_t& path);
-
-/**
- *  \brief Perform variable expansion for `$name`, `${name}`, and `%name%`.
- */
 backup_path_t expandvars(const backup_path_t& path);
-
-/**
- *  \brief Collapse redundant relative and normalize case.
- *  \warning This method will not preserve path containing symlinks.
- */
 backup_path_t normcase(const backup_path_t& path);
-
-/**
- *  \brief Collapse redundant relative references.
- *
- *  Convert a path so redundant "." and ".." references are removed,
- *  as well as converting any secondary directory separators to
- *  the primary directory separator ("/" to "\" on Windows).
- *
- *  \warning This method will not preserve path containing symlinks.
- */
 backup_path_t normpath(const backup_path_t& path);
-
-/**
- *  \brief Convert path to a realpath, converting any symlinks in the process.
- *
- *  In order for relative path operators to properly work ("." and ".."),
- *  the path is read from the topmost directory down.
- */
 backup_path_t realpath(const backup_path_t& path);
-
-/**
- *  \brief Get a relative path from the current working directory.
- */
 backup_path_t relpath(const backup_path_t& path);
-
-/**
- *  \brief Get a relative path from start.
- */
 backup_path_t relpath(const backup_path_t& path, const backup_path_t& start);
 
 // MANIPULATION
 
-/**
- *  \brief Copy file metadata from src to dst.
- */
 bool copystat(const backup_path_t& src, const backup_path_t& dst);
-
-/**
- *  \brief Move file, as if by rename, and return if rename was successful.
- */
 bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
-
-/**
- *  \brief Copy file, and copy was successful.
- *
- *  \param replace          Replace dst if it exists.
- *  \param copystat         Copy stat date from src to dst.
- */
 bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false, bool copystat = false);
-
-/**
- *  \brief Remove file, return if file was successfully removed.
- */
 bool remove_file(const backup_path_t& path);
-
-///**
-// *  \brief Move directory, as if by rename, and return if rename was successful.
-// */
 //bool move_dir(const backup_path_t& src, const backup_path_t& dst);
-//
-///**
-// *  \brief Copy directory, and copy was successful.
-// */
 //bool copy_dir(const backup_path_t& src, const backup_path_t& dst, bool recursive = true);
-//
-///**
-// *  \brief Remove directory, return if directory was successfully removed.
-// */
 //bool remove_dir(const backup_path_t& path, bool recursive = true);
 
 #endif

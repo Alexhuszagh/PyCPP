@@ -56,6 +56,14 @@ size_t ascii_totitle(const void *src, size_t srclen, void* dst, size_t dstlen);
  */
 std::string ascii_totitle(const std::string &str);
 
+/** \brief Capitalize ASCII string. Returns number of bytes converted.
+ */
+size_t ascii_capitalize(const void *src, size_t srclen, void* dst, size_t dstlen);
+
+/** \brief Capitalize ASCII string.
+ */
+std::string ascii_capitalize(const std::string &str);
+
 // UTF8
 
 /** \brief Convert UTF8 string to lower-case. Returns number of bytes converted.
@@ -81,6 +89,14 @@ size_t utf8_totitle(const void *src, size_t srclen, void* dst, size_t dstlen);
 /** \brief Convert UTF8 string to title-case.
  */
 std::string utf8_totitle(const std::string &str);
+
+/** \brief Capitalize UTF8 string. Returns number of bytes converted.
+ */
+size_t utf8_capitalize(const void *src, size_t srclen, void* dst, size_t dstlen);
+
+/** \brief Capitalize UTF8 string.
+ */
+std::string utf8_capitalize(const std::string &str);
 
 // UTF16
 
@@ -120,6 +136,18 @@ std::string utf16_totitle(const std::string &str);
  */
 std::u16string utf16_totitle(const std::u16string &str);
 
+/** \brief Capitalize UTF16 string. Returns number of bytes converted.
+ */
+size_t utf16_capitalize(const void *src, size_t srclen, void* dst, size_t dstlen);
+
+/** \brief Capitalize UTF16 string.
+ */
+std::string utf16_capitalize(const std::string &str);
+
+/** \brief Capitalize UTF16 string.
+ */
+std::u16string utf16_capitalize(const std::u16string &str);
+
 // UTF32
 
 /** \brief Convert UTF32 string to lower-case. Returns number of bytes converted.
@@ -157,3 +185,15 @@ std::string utf32_totitle(const std::string &str);
 /** \brief Convert UTF32 string to title-case.
  */
 std::u32string utf32_totitle(const std::u32string &str);
+
+/** \brief Capitalize UTF32 string. Returns number of bytes converted.
+ */
+size_t utf32_capitalize(const void *src, size_t srclen, void* dst, size_t dstlen);
+
+/** \brief Capitalize UTF32 string.
+ */
+std::string utf32_capitalize(const std::string &str);
+
+/** \brief Capitalize UTF32 string.
+ */
+std::u32string utf32_capitalize(const std::u32string &str);

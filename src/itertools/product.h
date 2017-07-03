@@ -102,7 +102,7 @@ struct iterator_reference
  *  \brief Calculate cartesian product with zero data copies.
  */
 template < typename BidirIter, typename F>
-void product_(BidirIter first, BidirIter last, F f)
+void product_(BidirIter first, BidirIter last, F &f)
 {
     typedef std::iterator_traits<BidirIter> traits_type;
     typedef typename traits_type::value_type value_type;
@@ -174,7 +174,7 @@ struct list_list_product
  *  \brief Product wrapper for list of lists.
  */
 template <typename T, typename F>
-void list_list(const T& t, F f)
+void list_list(const T& t, F &f)
 {
     typedef list_list_product<T> helper;
     typedef typename helper::list_type list_type;
@@ -215,7 +215,7 @@ struct list_map_product
 /** \brief Product wrapper for list of maps.
  */
 template <typename T, typename F>
-void list_map(const T& t, F f)
+void list_map(const T& t, F &f)
 {
     typedef list_map_product<T> helper;
     typedef typename helper::list_type list_type;
@@ -258,8 +258,7 @@ struct map_list_product
  *  \brief Product wrapper for map of lists.
  */
 template <typename T, typename F>
-void map_list(const T& t,
-    F f)
+void map_list(const T& t, F &f)
 {
     typedef map_list_product<T> helper;
     typedef typename helper::list_type list_type;
@@ -302,7 +301,7 @@ struct map_map_product
  *  \brief Product wrapper for map of maps.
  */
 template <typename T, typename F>
-void map_map(const T& t, F f)
+void map_map(const T& t, F &f)
 {
     typedef map_map_product<T> helper;
     typedef typename helper::list_type list_type;
@@ -394,25 +393,25 @@ struct is_map_map
 struct cartesian_product
 {
     template <typename T, typename F>
-    enable_if_t<is_list_list<T>::value, void> operator()(const T& t, F f)
+    enable_if_t<is_list_list<T>::value, void> operator()(const T& t, F &f)
     {
         list_list(t, f);
     }
 
     template <typename T, typename F>
-    enable_if_t<is_list_map<T>::value, void> operator()(const T& t, F f)
+    enable_if_t<is_list_map<T>::value, void> operator()(const T& t, F &f)
     {
         list_map(t, f);
     }
 
     template <typename T, typename F>
-    enable_if_t<is_map_list<T>::value, void> operator()(const T& t, F f)
+    enable_if_t<is_map_list<T>::value, void> operator()(const T& t, F &f)
     {
         map_list(t, f);
     }
 
     template <typename T, typename F>
-    enable_if_t<is_map_map<T>::value, void> operator()(const T& t, F f)
+    enable_if_t<is_map_map<T>::value, void> operator()(const T& t, F &f)
     {
         map_map(t, f);
     }
