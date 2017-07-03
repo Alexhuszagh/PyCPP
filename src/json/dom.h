@@ -110,7 +110,6 @@ private:
     json_pointer_t data_;
 
     void reset();
-    void reset_object(json_object_t*);
 };
 
 

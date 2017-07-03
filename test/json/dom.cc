@@ -22,10 +22,10 @@ TEST(json, dom)
     ASSERT_TRUE(document.has_object());
     auto &object = document.get_object();
     EXPECT_EQ(object.size(), 7);
-    EXPECT_EQ(object["hello"]->get_string(), "world");
-    EXPECT_EQ(object["t"]->get_boolean(), true);
-    EXPECT_EQ(object["pi"]->get_number(), 3.1416);
-    EXPECT_EQ(object["a"]->get_array().size(), 4);
-    EXPECT_EQ(object["a"]->get_array().front().get_number(), 1.);
+    EXPECT_EQ(object["hello"].get_string(), "world");
+    EXPECT_EQ(object["t"].get_boolean(), true);
+    EXPECT_EQ(object["pi"].get_number(), 3.1416);
+    EXPECT_EQ(object["a"].get_array().size(), 4);
+    EXPECT_EQ(object["a"].get_array().front().get_number(), 1.);
     // TODO: add more tests...
 }

@@ -1,12 +1,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <json/array.h>
 #include <json/dom.h>
 #include <stdexcept>
 
-
-static_assert(sizeof(json_pointer_t) >= sizeof(double), "WTF");
 
 // HELPERS
 // -------
@@ -18,21 +15,26 @@ static void add_value(Levels &levels, bool& has_key, json_string_t& key, Ts... t
     json_value_t* parent, *value;
 
     parent = levels.back();
-    value = new json_value_t(std::forward<Ts>(ts)...);
     if (levels.size() == 1 && parent->has_null()) {
         // root element
-        std::swap(*parent, *value);
-        delete value;
+        json_value_t value(std::forward<Ts>(ts)...);
+        std::swap(*parent, value);
         return;
     } else if (has_key) {
+        // adding to object
         auto &object = parent->get_object();
-        object.emplace(std::move(key), value);
+        object.emplace(key, json_value_t(std::forward<Ts>(ts)...));
+        value = &object.at(key);
         key.clear();
         has_key = false;
     } else {
-        parent->get_array().push_back(value);
+        // add to array
+        auto &array = parent->get_array();
+        array.push_back(json_value_t(std::forward<Ts>(ts)...));
+        value = &array.back();
     }
 
+    // add new level
     if (value->has_object() || value->has_array()) {
         levels.push_back(value);
     }
@@ -428,24 +430,13 @@ void json_value_t::reset()
             delete (json_array_t*) data_;
             break;
         case json_object_type:
-            reset_object((json_object_t*) data_);
+            delete (json_object_t*) data_;
             break;
         default:
             throw std::runtime_error("Unexpected JSON value type.");
     }
 
     type_ = json_null_type;
-}
-
-
-void json_value_t::reset_object(json_object_t* value)
-{
-    if (value) {
-        for (auto& pair: *value) {
-            delete pair.second;
-        }
-    }
-    delete value;
 }
 
 
