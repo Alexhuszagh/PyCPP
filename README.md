@@ -98,6 +98,16 @@ Supported features include:
 - [Iterator adaptors](/src/iterator.h).
 - [Combinations, permutation](/src/itertools/sampling.h) and [cartesian products](/src/itertools/product.h).
 
+**_JSON_**
+
+-[DOM](/src/json/dom.h) parser.
+-[SAX](/src/json/sax.h) parser.
+
+**_XML_**
+
+-[DOM](/src/xml/dom.h) parser.
+-[SAX](/src/xml/sax.h) parser.
+
 **WARNING:** PyCPP includes cryptographic hashes and ciphers, which are tested via fuzzing. The buffer containing these objects is reset upon object destruction, to minimize side-channel attacks. However, they should be assumed to be insecure, until audited.
 
 ## Building
