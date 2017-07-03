@@ -145,7 +145,7 @@ public:
     {
         self_t copy(*this);
         operator--();
-        return *this;
+        return copy;
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
@@ -206,18 +206,14 @@ transform_iterator<It, F> make_transform_iterator(const It& it, F function)
 
 template <typename It, typename F>
 transform_iterator<It, F>::transform_iterator()
-{
-    printf("%d\n", this->has_arithmetic);
-}
+{}
 
 
 template <typename It, typename F>
 transform_iterator<It, F>::transform_iterator(const It& it, F function):
     it(it),
     function(function)
-{
-    printf("%d\n", this->has_arithmetic);
-}
+{}
 
 
 template <typename It, typename F>
@@ -268,7 +264,7 @@ auto transform_iterator<It, F>::operator++(int) -> self_t
 {
     self_t copy(*this);
     operator++();
-    return *this;
+    return copy;
 }
 
 

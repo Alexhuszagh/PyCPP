@@ -317,6 +317,10 @@ if (BUILD_JSON)
 endif()
 
 if(BUILD_MATH)
+    list(APPEND TEST_FILES
+        test/mathlib/array.cc
+        test/mathlib/axis.cc
+    )
 endif()
 
 if (BUILD_STREAM)
