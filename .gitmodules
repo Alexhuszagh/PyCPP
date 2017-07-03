@@ -7,6 +7,6 @@
 [submodule "third_party/rapidjson"]
 	path = third_party/rapidjson
 	url = https://github.com/Alexhuszagh/rapidjson
-[submodule "third_party/rapidxml"]
-	path = third_party/rapidxml
-	url = https://github.com/Alexhuszagh/rapidxml
+[submodule "third_party/libxml2"]
+	path = third_party/libxml2
+	url = https://github.com/Alexhuszagh/libxml2

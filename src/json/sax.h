@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <json/core.h>
 #include <view/string.h>
 
 
@@ -17,7 +18,7 @@
 /**
  *  \brief SAX handler for a JSON document.
  */
-class JsonSaxHandler
+struct json_sax_handler
 {
     virtual void start_document();
     virtual void end_document();

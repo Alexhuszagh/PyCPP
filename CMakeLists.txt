@@ -16,23 +16,29 @@ set(CXX_STANDARD TRUE)
 option(BUILD_CIPHER "Build cipher library" ON)
 option(BUILD_FILESYSTEM "Build filesystem library" ON)
 option(BUILD_HASHLIB "Build hash library" ON)
+option(BUILD_JSON "Build JSON library" ON)
 option(BUILD_STREAM "Build stream library" ON)
+option(BUILD_XML "Build XML library" ON)
 
 # WITH MODULE
 option(WITH_CIPHER "Build (only) cipher library" OFF)
 option(WITH_FILESYSTEM "Build (only) filesystem library" OFF)
 option(WITH_HASHLIB "Build (only) hash library" OFF)
+option(WITH_JSON "Build (only) JSON library" OFF)
 option(WITH_STREAM "Build (only) stream library" OFF)
+option(WITH_XML "Build (only) XML library" OFF)
 
 # OPTIONS
 option(BUILD_STATIC "Build static library" ON)
 option(BUILD_TESTS "Build pycpp library tests" OFF)
 
-if(WITH_CIPHER OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_STREAM)
+if(WITH_CIPHER OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_STREAM OR WITH_XML)
     set(BUILD_CIPHER ${WITH_CIPHER})
     set(BUILD_FILESYSTEM ${WITH_FILESYSTEM})
     set(BUILD_HASHLIB ${WITH_HASHLIB})
+    set(BUILD_JSON ${WITH_JSON})
     set(BUILD_STREAM ${WITH_STREAM})
+    set(BUILD_XML ${WITH_XML})
 endif()
 
 if(BUILD_STATIC)
@@ -107,20 +113,29 @@ if(HAVE_MLOCK)
     add_definitions(-DHAVE_MLOCK=1)
 endif()
 
-#CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
-#if(HAVE_MMAP)
-#    add_definitions(-DHAVE_MMAP=1)
-#endif()
+CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
+if(HAVE_MMAP)
+    add_definitions(-DHAVE_MMAP=1)
+endif()
 
-#CHECK_FUNCTION_EXISTS(mprotect HAVE_MPROTECT)
-#if(HAVE_MPROTECT)
-#    add_definitions(-DHAVE_MPROTECT=1)
-#endif()
+CHECK_FUNCTION_EXISTS(mprotect HAVE_MPROTECT)
+if(HAVE_MPROTECT)
+    add_definitions(-DHAVE_MPROTECT=1)
+endif()
 
 # LIBRARY
 # -------
 
 include_directories(src warnings/src)
+
+if(BUILD_JSON)
+    include_directories(third_party/rapidjson/include)
+endif()
+
+if(BUILD_XML)
+    include_directories(third_party/libxml2/include)
+    add_subdirectory(third_party/libxml2)
+endif()
 
 set(SOURCE_FILES
     src/random/pseudorandom.cc
@@ -175,10 +190,22 @@ if (BUILD_HASHLIB)
     )
 endif()
 
+if(BUILD_JSON)
+    list(APPEND SOURCE_FILES
+        src/json/dom.cc
+    )
+endif()
+
 if(BUILD_STREAM)
     list(APPEND SOURCE_FILES
         src/stream/fstream.cc
         src/stream/filter.cc
+    )
+endif()
+
+if(BUILD_XML)
+    list(APPEND SOURCE_FILES
+        src/xml/dom.cc
     )
 endif()
 
@@ -253,11 +280,19 @@ if (BUILD_HASHLIB)
     list(APPEND TEST_FILES test/hashlib.cc)
 endif()
 
+if (BUILD_JSON)
+#    list(APPEND TEST_FILES test/hashlib.cc)
+endif()
+
 if (BUILD_STREAM)
     list(APPEND TEST_FILES
         test/stream/fstream.cc
         test/stream/filter.cc
     )
+endif()
+
+if (BUILD_XML)
+#    list(APPEND TEST_FILES test/hashlib.cc)
 endif()
 
 
