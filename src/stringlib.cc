@@ -170,13 +170,11 @@ static size_t rfind_impl(const string_view& str, const string_view& sub, size_t 
         return -1;
     } else if (end == SIZE_MAX) {
         size_t index = str.substr(start).rfind(sub);
-        printf("Index is %zu\n", index);
         return index;
     }
 
     size_t length = end - start;
     size_t index = str.substr(start, length).rfind(sub);
-    printf("Indexr is %zu\n", index);
     return index;
 }
 
