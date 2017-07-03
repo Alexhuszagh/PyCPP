@@ -127,9 +127,11 @@ if(HAVE_MMAP)
     add_definitions(-DHAVE_MMAP=1)
 endif()
 
-CHECK_FUNCTION_EXISTS(mprotect HAVE_MPROTECT)
-if(HAVE_MPROTECT)
-    add_definitions(-DHAVE_MPROTECT=1)
+if(HAVE_SYS_MMAN_H)
+    CHECK_FUNCTION_EXISTS(mprotect HAVE_MPROTECT)
+    if(HAVE_MPROTECT)
+        add_definitions(-DHAVE_MPROTECT=1)
+    endif()
 endif()
 
 # LIBRARY
