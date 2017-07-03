@@ -121,7 +121,7 @@ struct json_document_t: json_value_t
     void parse(std::istream&);
     void parse(const std::string&);
 #if defined(HAVE_WFOPEN)
-    parse(const std::wstring&);
+    void parse(const std::wstring&);
 #endif
 
     // TODO: need to add serializers
