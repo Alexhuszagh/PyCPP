@@ -75,7 +75,7 @@ string_t join(const string_list_t& list, const std::string& sep = " ");
 /**
  *  \brief Convert tabs to spaces, using the tabsize.
  */
-//string_t expandtabs(const string_t& str, size_t tabsize = 8);
+string_t expandtabs(const string_t& str, size_t tabsize = 8);
 
 /**
  *  \brief Find in substring in string.
@@ -125,7 +125,10 @@ string_t lower(const string_t& str);
  */
 string_t upper(const string_t& str);
 
-// TODO: replace...
+/**
+ *  \brief Replace maxreplace instances of sub with repl in str.
+ */
+string_t replace(const string_t& str, const string_t& sub, const string_t& repl, size_t maxreplace = SIZE_MAX);
 
 // OBJECTS
 // -------
@@ -151,6 +154,8 @@ struct string_wrapper: string_view
     string_t capitalize() const;
     string_t lower() const;
     string_t upper() const;
+    string_t replace(const string_wrapper& sub, const string_wrapper& repl, size_t maxreplace = SIZE_MAX);
+    string_t expandtabs(size_t tabsize = 8);
 
     // TOKENS
     string_wrapper_list_t split(split_function is_split, size_t maxsplit = SIZE_MAX) const;

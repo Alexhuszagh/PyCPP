@@ -123,6 +123,34 @@ static string_t upper_impl(const string_t& str)
 }
 
 
+string_t replace_impl(const string_view& str, const string_view& sub, const string_view& repl, size_t count)
+{
+    string_t string;
+    string.reserve(str.size());
+    for (auto it = str.begin(); it != str.end(); ) {
+        auto distance = std::distance(it, str.end());
+        if (count && distance >= sub.size() && std::equal(sub.begin(), sub.end(), it)) {
+            string.append(repl.data(), repl.size());
+            it += sub.size();
+            --count;
+        } else {
+            string.push_back(*it++);
+        }
+    }
+
+    return string;
+}
+
+
+string_t expandtabs_impl(const string_view& str, size_t tabsize)
+{
+    std::string sub("\t");
+    std::string repl(tabsize, ' ');
+
+    return replace_impl(str, sub, repl, SIZE_MAX);
+}
+
+
 static size_t find_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
 {
     if (end < start) {
@@ -141,11 +169,15 @@ static size_t rfind_impl(const string_view& str, const string_view& sub, size_t 
     if (end < start) {
         return -1;
     } else if (end == SIZE_MAX) {
-        return str.substr(start).rfind(sub);
+        size_t index = str.substr(start).rfind(sub);
+        printf("Index is %zu\n", index);
+        return index;
     }
 
     size_t length = end - start;
-    return str.substr(start, length).rfind(sub);
+    size_t index = str.substr(start, length).rfind(sub);
+    printf("Indexr is %zu\n", index);
+    return index;
 }
 
 
@@ -256,13 +288,6 @@ string_t capitalize(const string_t& str)
 }
 
 
-//string_t expandtabs(const string_t& str, size_t tabsize)
-//{
-//    // TODO: here...
-//    // Need to replace characters...
-//}
-
-
 size_t find(const string_t&str, const string_t& sub, size_t start, size_t end)
 {
     return find_impl(str, sub, start, end);
@@ -302,6 +327,18 @@ string_t lower(const string_t& str)
 string_t upper(const string_t& str)
 {
     return upper_impl(str);
+}
+
+
+string_t replace(const string_t& str, const string_t& sub, const string_t& repl, size_t count)
+{
+    return replace_impl(string_view(str), string_view(sub), string_view(repl), count);
+}
+
+
+string_t expandtabs(const string_t& str, size_t tabsize)
+{
+    return expandtabs_impl(string_view(str), tabsize);
 }
 
 
@@ -385,6 +422,18 @@ string_t string_wrapper::lower() const
 string_t string_wrapper::upper() const
 {
     return upper_impl(string_t(*this));
+}
+
+
+string_t string_wrapper::replace(const string_wrapper& sub, const string_wrapper& repl, size_t count)
+{
+    return replace_impl(*this, sub, repl, count);
+}
+
+
+string_t string_wrapper::expandtabs(size_t tabsize)
+{
+    return expandtabs_impl(*this, tabsize);
 }
 
 

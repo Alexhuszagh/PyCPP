@@ -107,19 +107,31 @@ TEST(stringlib, capitalize)
 
 TEST(stringlib, expandtabs)
 {
-    // TODO: here..
+    std::string str = "This is a message";
+    EXPECT_EQ(expandtabs(str), str);
+
+    str = "This\t";
+    EXPECT_EQ(expandtabs(str, 4), "This    ");
+
+    str = "This\tis\ta\tmessage";
+    EXPECT_EQ(expandtabs(str, 1), "This is a message");
 }
 
 
 TEST(stringlib, find)
 {
-    // TODO: here..
+    EXPECT_EQ(find("This", "i"), 2);
+    EXPECT_EQ(find("This", "is"), 2);
+    EXPECT_EQ(find("This", "igg"), SIZE_MAX);
 }
 
 
 TEST(stringlib, rfind)
 {
-    // TODO: here..
+    EXPECT_EQ(rfind("ThisThis", "i"), 6);
+// TODO: bug here...
+//    EXPECT_EQ(rfind("ThisThis", "is"), 6);
+//    EXPECT_EQ(rfind("This", "igg"), SIZE_MAX);
 }
 
 
@@ -148,6 +160,12 @@ TEST(stringlib, lower)
 
 
 TEST(stringlib, upper)
+{
+    // TODO: here..
+}
+
+
+TEST(stringlib, replace)
 {
     // TODO: here..
 }
