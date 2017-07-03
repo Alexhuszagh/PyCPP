@@ -32,7 +32,7 @@ PyCPP is broken down into multiple core parts:
 3. Filesystem utilities.
 4. High-level features common in other standard libraries.
 
-Combined, the library has less than 1500 (is this still accurate??) total lines of C++ headers, with binary sizes of < 1MB, and each module has only a few dependencies, making it easy to extract individual modules for use in another project.
+Combined, the library has less than 100,00 total lines of C++ headers, with binary sizes of < 5MB, and each module has only a few dependencies, making it easy to extract individual modules for use in another project.
 
 **Abstraction Library**
 
