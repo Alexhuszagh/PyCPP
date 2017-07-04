@@ -33,12 +33,15 @@ public:
     using typename base::const_reference;
     using typename base::pointer;
     using typename base::const_pointer;
+    using typename base::difference_type;
 
     // CONSTRUCTORS
     ndarray_axis_iterator(pointer, pointer, size_t);
+    ndarray_axis_iterator(const self&);
+    self & operator=(const self&);
+    ndarray_axis_iterator(self&&);
+    self & operator=(self&&);
     ~ndarray_axis_iterator();
-    // TODO: need constructors
-//    ndarray_axis_iterator(const self& arr);
 
     // RELATIONAL OPERATORS
     bool operator==(const self&) const;
@@ -53,13 +56,20 @@ public:
     self operator++(int);
     self& operator--();
     self operator--(int);
-    // TODO: need random access
+    self& operator+=(difference_type n);
+    self& operator-=(difference_type n);
+    self operator+(difference_type n);
+    self operator-(difference_type n);
+    reference operator[](difference_type n) const;
 
     // DEREFERENCE
     reference operator*();
     const_reference operator*() const;
     pointer operator->();
     const_pointer operator->() const;
+
+    // OTHER
+    void swap(self&);
 
 private:
     pointer first_ = nullptr;
@@ -93,13 +103,11 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     ndarray_axis(pointer, size_type, size_type);
+    ndarray_axis(const self&);
+    self& operator=(const self&);
+    ndarray_axis(self&&);
+    self& operator=(self&&);
     ~ndarray_axis();
-
-    // TODO: need constructors
-//    ndarray_axis(const self& arr);
-//    self& operator=(const self& arr);
-//    ndarray_axis(self&& arr);
-//    self& operator=(self&& arr);
 
     // ITERATORS
     iterator begin();
@@ -108,7 +116,12 @@ public:
     iterator end();
     const_iterator end() const;
     const_iterator cend() const;
-    // TODO: rbegin(), etc...
+    reverse_iterator rbegin();
+    const_reverse_iterator rbegin() const;
+    const_reverse_iterator crbegin() const;
+    reverse_iterator rend();
+    const_reverse_iterator rend() const;
+    const_reverse_iterator crend() const;
 
     // MATH OPERATORS
     self& operator+=(const value_type&);
@@ -119,6 +132,9 @@ public:
     self operator-(const value_type&);
     self operator*(const value_type&);
     self operator/(const value_type&);
+
+    // OTHER
+    void swap(self&);
 
 private:
     pointer data_ = nullptr;
@@ -137,6 +153,39 @@ ndarray_axis_iterator<T>::ndarray_axis_iterator(pointer first, pointer last, siz
     last_(last),
     step_(step)
 {}
+
+
+template <typename T>
+ndarray_axis_iterator<T>::ndarray_axis_iterator(const self& rhs):
+    first_(rhs.first_),
+    last_(rhs.last_),
+    step_(rhs.step_)
+{}
+
+
+template <typename T>
+auto ndarray_axis_iterator<T>::operator=(const self& rhs) -> self&
+{
+    first_ = rhs.first_;
+    last_ = rhs.last_;
+    step_ = rhs.step_;
+    return *this;
+}
+
+
+template <typename T>
+ndarray_axis_iterator<T>::ndarray_axis_iterator(self&& rhs)
+{
+    swap(rhs);
+}
+
+
+template <typename T>
+auto ndarray_axis_iterator<T>::operator=(self&& rhs) -> self&
+{
+    swap(rhs);
+    return *this;
+}
 
 
 template <typename T>
@@ -219,6 +268,47 @@ auto ndarray_axis_iterator<T>::operator--(int) -> self
 
 
 template <typename T>
+auto ndarray_axis_iterator<T>::operator+=(difference_type n) -> self&
+{
+    first_ += n * step_;
+    return *this;
+}
+
+
+template <typename T>
+auto ndarray_axis_iterator<T>::operator-=(difference_type n) -> self&
+{
+    first_ -= n * step_;
+    return *this;
+}
+
+
+template <typename T>
+auto ndarray_axis_iterator<T>::operator+(difference_type n) -> self
+{
+    self copy(*this);
+    operator+=(n);
+    return copy;
+}
+
+
+template <typename T>
+auto ndarray_axis_iterator<T>::operator-(difference_type n) -> self
+{
+    self copy(*this);
+    operator-=(n);
+    return copy;
+}
+
+
+template <typename T>
+auto ndarray_axis_iterator<T>::operator[](difference_type n) const -> reference
+{
+    return first_[n * step_];
+}
+
+
+template <typename T>
 auto ndarray_axis_iterator<T>::operator*() -> reference
 {
     return *first_;
@@ -247,11 +337,52 @@ auto ndarray_axis_iterator<T>::operator->() const -> const_pointer
 
 
 template <typename T>
+void ndarray_axis_iterator<T>::swap(self& rhs)
+{
+    std::swap(first_, rhs.first_);
+    std::swap(last_, rhs.last_);
+    std::swap(step_, rhs.step_);
+}
+
+
+template <typename T>
 ndarray_axis<T>::ndarray_axis(pointer data, size_type length, size_type step):
     data_(data),
     length_(length),
     step_(step)
 {}
+
+
+template <typename T>
+ndarray_axis<T>::ndarray_axis(const self& rhs):
+    data_(rhs.data_),
+    length_(rhs.length_),
+    step_(rhs.step_)
+{}
+
+
+template <typename T>
+auto ndarray_axis<T>::operator=(const self& rhs) -> self&
+{
+    data_ = rhs.data_;
+    length_ = rhs.length_;
+    step_ = rhs.step_;
+}
+
+
+template <typename T>
+ndarray_axis<T>::ndarray_axis(self&& rhs)
+{
+    swap(rhs);
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::operator=(self&& rhs) -> self&
+{
+    swap(rhs);
+    return *this;
+}
 
 
 template <typename T>
@@ -298,6 +429,48 @@ template <typename T>
 auto ndarray_axis<T>::cend() const -> const_iterator
 {
     return const_iterator(data_+length_, data_+length_, step_);
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::rbegin() -> reverse_iterator
+{
+    return reverse_iterator(end());
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::rbegin() const -> const_reverse_iterator
+{
+    return const_reverse_iterator(end());
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::crbegin() const -> const_reverse_iterator
+{
+    return const_reverse_iterator(end());
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::rend() -> reverse_iterator
+{
+    return reverse_iterator(begin());
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::rend() const -> const_reverse_iterator
+{
+    return const_reverse_iterator(begin());
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::crend() const -> const_reverse_iterator
+{
+    return const_reverse_iterator(begin());
 }
 
 
