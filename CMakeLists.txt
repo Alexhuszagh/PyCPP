@@ -211,6 +211,7 @@ if(BUILD_JSON)
     list(APPEND SOURCE_FILES
         src/json/dom.cc
         src/json/sax.cc
+        src/json/writer.cc
     )
 endif()
 
@@ -315,6 +316,7 @@ if (BUILD_JSON)
     list(APPEND TEST_FILES
         test/json/dom.cc
         test/json/sax.cc
+        test/json/writer.cc
     )
 endif()
 

@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <json/dom.h>
+#include <sstream>
 #include <stdexcept>
 
 
@@ -40,79 +41,155 @@ static void add_value(Levels &levels, bool& has_key, json_string_t& key, Ts... t
     }
 }
 
+
+static void dump_impl(const json_value_t&, json_stream_writer&);
+
+
+static void dump_array_impl(const json_array_t& array, json_stream_writer& writer)
+{
+    writer.start_array();
+    for (const json_value_t& v: array) {
+        dump_impl(v, writer);
+    }
+    writer.end_array();
+}
+
+
+static void dump_object_impl(const json_object_t& object, json_stream_writer& writer)
+{
+    writer.start_object();
+    for (const auto& pair: object) {
+        writer.key(string_view(pair.first));
+        dump_impl(pair.second, writer);
+    }
+    writer.end_object();
+}
+
+
+static void dump_null_impl(json_stream_writer& writer)
+{
+    writer.null();
+}
+
+
+static void dump_bool_impl(const json_boolean_t& value, json_stream_writer& writer)
+{
+    writer.boolean(value);
+}
+
+
+static void dump_number_impl(const json_number_t& value, json_stream_writer& writer)
+{
+    writer.number(value);
+}
+
+
+static void dump_string_impl(const json_string_t& value, json_stream_writer& writer)
+{
+    writer.string(value);
+}
+
+
+static void dump_impl(const json_value_t& value, json_stream_writer& writer)
+{
+    switch (value.type()) {
+        case json_null_type:
+            dump_null_impl(writer);
+            break;
+        case json_boolean_type:
+            dump_bool_impl(value.get_boolean(), writer);
+            break;
+        case json_number_type:
+            dump_number_impl(value.get_number(), writer);
+            break;
+        case json_string_type:
+            dump_string_impl(value.get_string(), writer);
+            break;
+        case json_array_type:
+            dump_array_impl(value.get_array(), writer);
+            break;
+        case json_object_type:
+            dump_object_impl(value.get_object(), writer);
+            break;
+        default:
+            throw std::runtime_error("Unexpected JSON value type.");
+    }
+}
+
+
 // OBJECTS
 // -------
 
 
 json_dom_handler::json_dom_handler(json_value_t& root):
-    root(&root)
+    root_(&root)
 {}
 
 
 void json_dom_handler::start_document()
 {
-    levels.emplace_back(root);
+    levels_.emplace_back(root_);
 }
 
 
 void json_dom_handler::end_document()
 {
-    levels.pop_back();
+    levels_.pop_back();
 }
 
 
 void json_dom_handler::start_object()
 {
-    add_value(levels, has_key_, key_, json_object_t());
+    add_value(levels_, has_key_, key_, json_object_t());
 }
 
 
 void json_dom_handler::end_object(size_t)
 {
-    levels.pop_back();
+    levels_.pop_back();
 }
 
 
 void json_dom_handler::start_array()
 {
-    add_value(levels, has_key_, key_, json_array_t());
+    add_value(levels_, has_key_, key_, json_array_t());
 }
 
 
 void json_dom_handler::end_array(size_t)
 {
-    levels.pop_back();
+    levels_.pop_back();
 }
 
 
-void json_dom_handler::key(const char* s, size_t n)
+void json_dom_handler::key(const string_view& str)
 {
     has_key_ = true;
-    key_ = json_string_t(s, n);
+    key_ = json_string_t(str);
 }
 
 
 void json_dom_handler::null()
 {
-    add_value(levels, has_key_, key_, nullptr);
+    add_value(levels_, has_key_, key_, nullptr);
 }
 
 
 void json_dom_handler::boolean(bool v)
 {
-    add_value(levels, has_key_, key_, v);
+    add_value(levels_, has_key_, key_, v);
 }
 
 
 void json_dom_handler::number(double d)
 {
-    add_value(levels, has_key_, key_, d);
+    add_value(levels_, has_key_, key_, d);
 }
 
 
-void json_dom_handler::string(const char* s, size_t n)
+void json_dom_handler::string(const string_view& str)
 {
-    add_value(levels, has_key_, key_, json_string_t(s, n));
+    add_value(levels_, has_key_, key_, json_string_t(str));
 }
 
 
@@ -440,7 +517,14 @@ void json_value_t::reset()
 }
 
 
-void json_document_t::parse(std::istream& stream)
+void json_document_t::loads(const std::string& data)
+{
+    std::istringstream stream(data);
+    load(stream);
+}
+
+
+void json_document_t::load(std::istream& stream)
 {
     json_stream_reader reader;
     json_dom_handler handler(*this);
@@ -449,19 +533,52 @@ void json_document_t::parse(std::istream& stream)
 }
 
 
-void json_document_t::parse(const std::string& path)
+void json_document_t::load(const std::string& path)
 {
     ifstream stream(path);
-    parse(stream);
+    load(stream);
 }
 
 
 #if defined(HAVE_WFOPEN)
 
-void json_document_t::parse(const std::wstring& path)
+void json_document_t::load(const std::wstring& path)
 {
     ifstream stream(path);
-    parse(stream);
+    load(stream);
+}
+
+#endif
+
+
+std::string json_document_t::dumps(char c, int width)
+{
+    std::ostringstream stream;
+    dump(stream, c, width);
+    return stream.str();
+}
+
+
+void json_document_t::dump(std::ostream& stream, char c, int width)
+{
+    json_stream_writer writer(stream, c, width);
+    dump_impl(*this, writer);
+}
+
+
+void json_document_t::dump(const std::string& path, char c, int width)
+{
+    ofstream stream(path);
+    dump(stream, c, width);
+}
+
+
+#if defined(HAVE_WFOPEN)
+
+void json_document_t::dump(const std::wstring& path, char c, int width)
+{
+    ofstream stream(path);
+    dump(stream, c, width);
 }
 
 #endif

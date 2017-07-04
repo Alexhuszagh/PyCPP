@@ -2,7 +2,7 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief JSON SAX unittests.
+ *  \brief JSON writer unittests.
  */
 
 #include <json.h>

@@ -27,11 +27,11 @@ struct json_sax_handler
     virtual void end_object(size_t);
     virtual void start_array();
     virtual void end_array(size_t);
-    virtual void key(const char*, size_t);
+    virtual void key(const string_view&);
     virtual void null();
     virtual void boolean(bool);
     virtual void number(double);
-    virtual void string(const char*, size_t);
+    virtual void string(const string_view&);
 };
 
 
@@ -47,8 +47,8 @@ public:
     void set_handler(json_sax_handler&);
 
 private:
-    std::istream* stream = nullptr;
-    json_sax_handler* handler = nullptr;
+    std::istream* stream_ = nullptr;
+    json_sax_handler* handler_ = nullptr;
 };
 
 
@@ -72,8 +72,5 @@ public:
     void parse();
 
 private:
-    ifstream file;
+    ifstream file_;
 };
-
-
-// TODO: need a stream writer

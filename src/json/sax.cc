@@ -92,7 +92,7 @@ bool HandlerImpl::Double(double value)
 
 bool HandlerImpl::String(const char* value, rapidjson::SizeType length, bool)
 {
-    handler->string(value, length);
+    handler->string(string_view(value, length));
     return true;
 }
 
@@ -113,7 +113,7 @@ bool HandlerImpl::EndObject(rapidjson::SizeType length)
 
 bool HandlerImpl::Key(const char* value, rapidjson::SizeType length, bool)
 {
-    handler->key(value, length);
+    handler->key(string_view(value, length));
     return true;
 }
 
@@ -160,7 +160,7 @@ void json_sax_handler::end_array(size_t)
 {}
 
 
-void json_sax_handler::key(const char*, size_t)
+void json_sax_handler::key(const string_view&)
 {}
 
 
@@ -176,7 +176,7 @@ void json_sax_handler::number(double)
 {}
 
 
-void json_sax_handler::string(const char*, size_t)
+void json_sax_handler::string(const string_view&)
 {}
 
 
@@ -186,24 +186,24 @@ json_stream_reader::json_stream_reader()
 
 void json_stream_reader::parse(std::istream& s)
 {
-    stream = &s;
-    if (!handler) {
+    stream_ = &s;
+    if (!handler_) {
         throw std::runtime_error("Must assign handler prior parsing.");
     }
 
     // parse stream
-    handler->start_document();
-    HandlerImpl impl(*handler);
+    handler_->start_document();
+    HandlerImpl impl(*handler_);
     rapidjson::Reader reader;
-    rapidjson::IStreamWrapper istream(*stream);
+    rapidjson::IStreamWrapper istream(*stream_);
     reader.Parse(istream, impl);
-    handler->end_document();
+    handler_->end_document();
 }
 
 
 void json_stream_reader::set_handler(json_sax_handler& h)
 {
-    handler = &h;
+    handler_ = &h;
 }
 
 
@@ -219,7 +219,7 @@ json_file_reader::json_file_reader(const std::string &name)
 
 void json_file_reader::open(const std::string &name)
 {
-    file.open(name);
+    file_.open(name, std::ios_base::binary);
 }
 
 
@@ -241,7 +241,7 @@ json_file_reader::json_file_reader(const std::wstring &name)
 
 void json_file_reader::open(const std::wstring &name)
 {
-    file.open(name);
+    file_.open(name, std::ios_base::binary);
 }
 
 
@@ -256,8 +256,8 @@ void json_file_reader::parse(const std::wstring &name)
 
 void json_file_reader::parse()
 {
-    if (!file.is_open()) {
+    if (!file_.is_open()) {
         throw std::runtime_error("Must open file handle prior to parsing.");
     }
-    json_stream_reader::parse(file);
+    json_stream_reader::parse(file_);
 }
