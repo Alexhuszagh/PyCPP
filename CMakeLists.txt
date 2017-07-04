@@ -209,6 +209,7 @@ endif()
 
 if(BUILD_JSON)
     list(APPEND SOURCE_FILES
+        src/json/core.cc
         src/json/dom.cc
         src/json/sax.cc
         src/json/writer.cc
@@ -227,8 +228,10 @@ endif()
 
 if(BUILD_XML)
     list(APPEND SOURCE_FILES
+        src/xml/core.cc
         src/xml/dom.cc
         src/xml/sax.cc
+        src/xml/writer.cc
     )
 endif()
 
