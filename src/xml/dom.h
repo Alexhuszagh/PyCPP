@@ -8,6 +8,7 @@
 #pragma once
 
 #include <xml/sax.h>
+#include <xml/writer.h>
 
 // OBJECTS
 // -------

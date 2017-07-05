@@ -19,8 +19,10 @@
 /**
  *  \brief pimpl idiom using aligned storage for direct stack allocation.
  *
- *  Since the size may be unknown at template instantiation, there
- *  are no static checks for
+ *  \warning Since the size may be unknown at template instantiation,
+ *  there are no static checks for the type-size. It is highly
+ *  recommend you include static_asserts for the type size in compilation
+ *  units and use fixed-size types.
  */
 template <typename T, size_t S = sizeof(T)>
 class pimpl
@@ -68,6 +70,7 @@ template <typename T, size_t S>
 pimpl<T, S>::pimpl()
 {}
 
+
 template <typename T, size_t S>
 pimpl<T, S>::pimpl(const self& other):
     mem(other.mem)
@@ -80,6 +83,7 @@ auto pimpl<T, S>::operator=(const self& other) -> self&
     mem = other.mem;
     return *this;
 }
+
 
 template <typename T, size_t S>
 pimpl<T, S>::pimpl(pimpl&& other):
@@ -129,11 +133,13 @@ auto pimpl<T, S>::operator*() -> reference
     return reinterpret_cast<reference>(mem);
 }
 
+
 template <typename T, size_t S>
 auto pimpl<T, S>::operator*() const -> const_reference
 {
     return reinterpret_cast<const_reference>(mem);
 }
+
 
 template <typename T, size_t S>
 auto pimpl<T, S>::operator->() -> pointer

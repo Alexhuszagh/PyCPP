@@ -4,16 +4,6 @@ os:
   - Visual Studio 2015
   - Visual Studio 2017
 
-environment:
-  matrix:
-  - additional_flags: ""
-  - additional_flags: "/std:c++latest"
-
-matrix:
-  exclude:
-    - additional_flags: "/std:c++latest"
-      os: Visual Studio 2015
-
 init: []
 
 install:

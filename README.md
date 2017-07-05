@@ -3,7 +3,7 @@ PyCPP
 
 Python-like C++ environment with independent, lightweight utilities for cross-platform C++ development.
 
-[![Build Status](https://travis-ci.org/Alexhuszagh/funxx.svg?branch=master)](https://travis-ci.org/Alexhuszagh/funxx)
+[![Build Status](https://travis-ci.org/Alexhuszagh/pycpp.svg?branch=master)](https://travis-ci.org/Alexhuszagh/pycpp)
 [![Build Status](https://tea-ci.org/api/badges/Alexhuszagh/pycpp/status.svg)](https://tea-ci.org/Alexhuszagh/pycpp)
 [![Build status](https://ci.appveyor.com/api/projects/status/b8fh8431rcu3wc3q?svg=true)](https://ci.appveyor.com/project/Alexhuszagh/pycpp)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Alexhuszagh/pycpp/blob/master/LICENSE.md)
