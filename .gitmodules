@@ -10,3 +10,6 @@
 [submodule "third_party/libxml2"]
 	path = third_party/libxml2
 	url = https://github.com/Alexhuszagh/libxml2
+[submodule "third_party/multi_index"]
+	path = third_party/multi_index
+	url = https://github.com/Alexhuszagh/multi_index.git

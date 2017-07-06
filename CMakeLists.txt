@@ -145,6 +145,7 @@ endif()
 
 if(BUILD_XML)
     include_directories(third_party/libxml2/include)
+    include_directories(third_party/multi_index/include)
     add_subdirectory(third_party/libxml2)
 endif()
 

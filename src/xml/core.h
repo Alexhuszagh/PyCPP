@@ -46,12 +46,17 @@ typedef std::unordered_map<xml_string_t, xml_string_t> xml_attr_t;
 // -------
 
 // TODO: need boost::multi_index with the PimPl idiom for this...
-
 // TODO: need an iterator wrapper too...
 
+/**
+ *  \brief Collection of ordered elements with name-based lookups.
+ */
 struct xml_node_list_t
 {
 public:
+    xml_node_list_t();
+
+    // TODO:
 private:
     void *ptr_ = nullptr;
 };
@@ -65,15 +70,27 @@ private:
 struct xml_node_t
 {
 public:
-    // TODO: document the interface
     xml_node_t();
+    xml_node_t(xml_node_list_t&);
+    // TODO: document the interface
 
     // TODO:....
     void clear();
+
+    // GETTERS
+    const xml_string_t& get_tag() const;
+    const xml_string_t& get_text() const;
+// TODO: this doesn't need to be const
+//    const xml_attr_t& get_attrs() const;
+
+    // SETTERS
+    void set_tag(const xml_string_t&);
+    void set_text(const xml_string_t&);
 
 private:
     xml_string_t tag_;
     xml_string_t text_;
     xml_attr_t attr_;
     xml_node_list_t children_;
+    xml_node_list_t* parent_ = nullptr;
 };
