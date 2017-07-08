@@ -50,33 +50,6 @@ struct xml_node_impl_t
     xml_node_list_t* parent = nullptr;
 };
 
-
-// HELPERS
-// -------
-
-
-template <typename TagCb, typename Tag>
-static void update_tag(xml_node_impl_t& node, Tag& tag, TagCb cb)
-{
-    if (node.parent) {
-        // get an iterator to our element in constant time
-//        auto &container = *(xml_node_list_impl_t*) node.parent->ptr_;
-//        auto it = container.iterator_to(*this);
-//        if (it == container.end()) {
-//            throw std::runtime_error("Node has no visible parent.");
-//        }
-//
-//        // update the underlying container
-//        container.modify(it, [&tag](xml_node_t &n) {
-//            n->ptr_.tag = tag;
-//        });
-
-    } else {
-        cb(node.tag, tag);
-    }
-}
-
-
 // OBJECTS
 // -------
 
@@ -370,6 +343,8 @@ xml_node_t::xml_node_t(xml_node_list_t& parent):
     ptr_(new xml_node_impl_t)
 {
     ptr_->parent = &parent;
+    auto& c = *(xml_node_list_impl_t*) parent.ptr_;
+    c.emplace_back(*this);
 }
 
 
@@ -483,27 +458,22 @@ const xml_node_list_t& xml_node_t::get_children() const
 
 void xml_node_t::set_tag(const xml_string_t& tag)
 {
-    update_tag(*ptr_, tag, [](xml_string_t& dst, const xml_string_t& src) {
-        dst = src;
-    });
+    if (ptr_->parent) {
+        // get an iterator to our element in constant time
+        auto &container = *(xml_node_list_impl_t*) ptr_->parent->ptr_;
+        auto it = container.iterator_to(*this);
+        if (it == container.end()) {
+            throw std::runtime_error("Node has no visible parent.");
+        }
 
-// TODO: need to remove once I get the protection racket sorted out...
-//    if (ptr_->parent) {
-//        // get an iterator to our element in constant time
-//        auto &container = *(xml_node_list_impl_t*) ptr_->parent->ptr_;
-//        auto it = container.iterator_to(*this);
-//        if (it == container.end()) {
-//            throw std::runtime_error("Node has no visible parent.");
-//        }
-//
-//        // update the underlying container
-//        container.modify(it, [&tag](xml_node_t &node) {
-//            node.ptr_->tag = tag;
-//        });
-//
-//    } else {
-//        ptr_->tag = tag;
-//    }
+        // update the underlying container
+        container.modify(it, [&tag](xml_node_t &n) {
+            n.ptr_->tag = tag;
+        });
+
+    } else {
+        ptr_->tag = tag;
+    }
 }
 
 
@@ -527,10 +497,22 @@ void xml_node_t::set_children(const xml_node_list_t& children)
 
 void xml_node_t::set_tag(xml_string_t&& tag)
 {
-    // TODO: do I need a container cb?
-    update_tag(*ptr_, tag, [](xml_string_t& dst, xml_string_t& src) {
-        std::swap(dst, src);
-    });
+    if (ptr_->parent) {
+        // get an iterator to our element in constant time
+        auto &container = *(xml_node_list_impl_t*) ptr_->parent->ptr_;
+        auto it = container.iterator_to(*this);
+        if (it == container.end()) {
+            throw std::runtime_error("Node has no visible parent.");
+        }
+
+        // update the underlying container
+        container.modify(it, [&tag](xml_node_t &n) {
+            std::swap(n.ptr_->tag, tag);
+        });
+
+    } else {
+        std::swap(ptr_->tag, tag);
+    }
 }
 
 

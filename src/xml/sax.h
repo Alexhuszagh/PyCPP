@@ -20,11 +20,15 @@
  */
 struct xml_sax_handler
 {
+    // SAX EVENTS
     virtual void start_document();
     virtual void end_document();
-    virtual void start_element(const string_view& content, xml_attr_t &attrs);
-    virtual void end_element(const string_view& content);
-    virtual void characters(const string_view& content);
+    virtual void start_element(const string_view&, xml_attr_t&);
+    virtual void end_element(const string_view&);
+    virtual void characters(const string_view&);
+    // TODO: start_element_ns(const string_view&, const string_view&, const string_view&)
+    // TODO: end_element_ns(const string_view&, const string_view&, const string_view&)
+    // TODO: ignorable_whitespace
 };
 
 

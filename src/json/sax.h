@@ -21,6 +21,7 @@
  */
 struct json_sax_handler
 {
+    // SAX EVENTS
     virtual void start_document();
     virtual void end_document();
     virtual void start_object();

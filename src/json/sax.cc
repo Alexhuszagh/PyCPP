@@ -12,9 +12,9 @@
  *  \brief Transform RapidJSON API to public SAX handler.
  */
 
-struct HandlerImpl: rapidjson::BaseReaderHandler<rapidjson::UTF8<>, HandlerImpl>
+struct handler_impl: rapidjson::BaseReaderHandler<rapidjson::UTF8<>, handler_impl>
 {
-    HandlerImpl(json_sax_handler&);
+    handler_impl(json_sax_handler&);
 
     // HANDLER
     bool Null();
@@ -36,96 +36,96 @@ private:
 };
 
 
-HandlerImpl::HandlerImpl(json_sax_handler& h):
+handler_impl::handler_impl(json_sax_handler& h):
     handler(&h)
 {}
 
 
-bool HandlerImpl::Null()
+bool handler_impl::Null()
 {
     handler->null();
     return true;
 }
 
 
-bool HandlerImpl::Bool(bool value)
+bool handler_impl::Bool(bool value)
 {
     handler->boolean(value);
     return true;
 }
 
 
-bool HandlerImpl::Int(int value)
+bool handler_impl::Int(int value)
 {
     handler->number(value);
     return true;
 }
 
 
-bool HandlerImpl::Uint(unsigned value)
+bool handler_impl::Uint(unsigned value)
 {
     handler->number(value);
     return true;
 }
 
 
-bool HandlerImpl::Int64(int64_t value)
+bool handler_impl::Int64(int64_t value)
 {
     handler->number(value);
     return true;
 }
 
 
-bool HandlerImpl::Uint64(uint64_t value)
+bool handler_impl::Uint64(uint64_t value)
 {
     handler->number(value);
     return true;
 }
 
 
-bool HandlerImpl::Double(double value)
+bool handler_impl::Double(double value)
 {
     handler->number(value);
     return true;
 }
 
 
-bool HandlerImpl::String(const char* value, rapidjson::SizeType length, bool)
+bool handler_impl::String(const char* value, rapidjson::SizeType length, bool)
 {
     handler->string(string_view(value, length));
     return true;
 }
 
 
-bool HandlerImpl::StartObject()
+bool handler_impl::StartObject()
 {
     handler->start_object();
     return true;
 }
 
 
-bool HandlerImpl::EndObject(rapidjson::SizeType length)
+bool handler_impl::EndObject(rapidjson::SizeType length)
 {
     handler->end_object(length);
     return true;
 }
 
 
-bool HandlerImpl::Key(const char* value, rapidjson::SizeType length, bool)
+bool handler_impl::Key(const char* value, rapidjson::SizeType length, bool)
 {
     handler->key(string_view(value, length));
     return true;
 }
 
 
-bool HandlerImpl::StartArray()
+bool handler_impl::StartArray()
 {
     handler->start_array();
     return true;
 }
 
 
-bool HandlerImpl::EndArray(rapidjson::SizeType length)
+bool handler_impl::EndArray(rapidjson::SizeType length)
 {
     handler->end_array(length);
     return true;
@@ -193,7 +193,7 @@ void json_stream_reader::parse(std::istream& s)
 
     // parse stream
     handler_->start_document();
-    HandlerImpl impl(*handler_);
+    handler_impl impl(*handler_);
     rapidjson::Reader reader;
     rapidjson::IStreamWrapper istream(*stream_);
     reader.Parse(istream, impl);
