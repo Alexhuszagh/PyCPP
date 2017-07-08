@@ -9,6 +9,7 @@
 
 #include <json/sax.h>
 #include <json/writer.h>
+#include <deque>
 
 // OBJECTS
 // -------
@@ -38,7 +39,7 @@ private:
     json_value_t* root_ = nullptr;
     bool has_key_ = false;
     json_string_t key_;
-    std::vector<json_value_t*> levels_;
+    std::deque<json_value_t*> levels_;
 };
 
 

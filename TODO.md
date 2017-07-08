@@ -12,6 +12,7 @@
 
 - Random
     - Need to clone Python's random API
+    -- Mostly done...
 
 - IDNA
     - Add IDNA support
@@ -24,8 +25,6 @@
 
 - JSON support
     - Add writer...
-        - Clone the RapidJSON example
-            - https://github.com/miloyip/rapidjson/blob/master/example/simplewriter/simplewriter.cpp
 
 - Binary serialization
     - Add cereal...

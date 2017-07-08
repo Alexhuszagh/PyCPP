@@ -9,6 +9,7 @@
 
 #include <xml/sax.h>
 #include <xml/writer.h>
+#include <deque>
 
 // OBJECTS
 // -------
@@ -20,16 +21,16 @@
 struct xml_dom_handler: xml_sax_handler
 {
 public:
-// TODO: need to implement...
-//    xml_dom_handler(xml_node_t&);
-//    virtual void start_document() override;
-//    virtual void end_document() override;
+    xml_dom_handler(xml_node_t&);
+    virtual void start_document() override;
+    virtual void end_document() override;
+    virtual void start_element(const string_view& content, xml_attr_t &attrs) override;
+    virtual void end_element(const string_view& content) override;
+    virtual void characters(const string_view& content) override;
 
 private:
-//    xml_node_t* root_ = nullptr;
-//    bool has_key_ = false;
-//    xml_string_t key_;
-//    std::vector<xml_node_t*> levels_;
+    xml_node_t* root_ = nullptr;
+    std::deque<xml_node_t*> levels_;
 };
 
 

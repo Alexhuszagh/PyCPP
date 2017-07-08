@@ -200,6 +200,10 @@ public:
     void set_text(const xml_string_t&);
     void set_attrs(const xml_attr_t&);
     void set_children(const xml_node_list_t&);
+    void set_tag(xml_string_t&&);
+    void set_text(xml_string_t&&);
+    void set_attrs(xml_attr_t&&);
+    void set_children(xml_node_list_t&&);
 
     // RELATIONAL OPERATORS
     bool operator==(const self&) const;

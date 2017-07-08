@@ -9,6 +9,44 @@
 // -------
 
 
+xml_dom_handler::xml_dom_handler(xml_node_t& root):
+    root_(&root)
+{}
+
+
+void xml_dom_handler::start_document()
+{
+    levels_.emplace_back(root_);
+}
+
+
+void xml_dom_handler::end_document()
+{
+    levels_.pop_back();
+}
+
+
+void xml_dom_handler::start_element(const string_view& content, xml_attr_t &attrs)
+{
+    // TODO: implement
+    // Need to add a node to the parent
+}
+
+
+void xml_dom_handler::end_element(const string_view& content)
+{
+    // TODO: implement
+    // Need to remove a node from the parent
+}
+
+
+void xml_dom_handler::characters(const string_view& content)
+{
+    xml_node_t* current = levels_.back();
+    current->set_text(xml_string_t(content));
+}
+
+
 void xml_document_t::loads(const std::string& data)
 {
     std::istringstream stream(data);
@@ -18,11 +56,10 @@ void xml_document_t::loads(const std::string& data)
 
 void xml_document_t::load(std::istream& stream)
 {
-// TODO: need to implement...
-//    json_stream_reader reader;
-//    json_dom_handler handler(*this);
-//    reader.set_handler(handler);
-//    reader.parse(stream);
+    xml_stream_reader reader;
+    xml_dom_handler handler(*this);
+    reader.set_handler(handler);
+    reader.parse(stream);
 }
 
 
@@ -54,8 +91,9 @@ std::string xml_document_t::dumps(char c, int width)
 
 void xml_document_t::dump(std::ostream& stream, char c, int width)
 {
-// TODO: implement... (What's the indentation I want?)
-//    json_stream_writer writer(stream, c, width);
+// TODO: implement...
+//      (What's the indentation I want?)
+//    xml_stream_writer writer(stream, c, width);
 //    dump_impl(*this, writer);
 }
 

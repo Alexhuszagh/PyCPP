@@ -18,14 +18,13 @@
 /**
  *  \brief SAX handler for an XML document.
  */
-class xml_sax_handler
+struct xml_sax_handler
 {
     virtual void start_document();
     virtual void end_document();
-// TODO: need to consider how to handle element attributes...
-//    virtual void start_element(const string_view& content);
-//    virtual void end_element(const string_view& content);
-//    virtual void characters(const string_view& content);
+    virtual void start_element(const string_view& content, xml_attr_t &attrs);
+    virtual void end_element(const string_view& content);
+    virtual void characters(const string_view& content);
 };
 
 
