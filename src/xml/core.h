@@ -50,9 +50,6 @@ typedef std::unordered_map<xml_string_t, xml_string_t> xml_attr_t;
 // OBJECTS
 // -------
 
-// TODO: need boost::multi_index with the PimPl idiom for this...
-// TODO: need an iterator wrapper too...
-
 /**
  *  \brief Iterator over XML nodes.
  */
@@ -71,7 +68,6 @@ public:
     typedef const value_type* const_pointer;
 
     // CONSTRUCTORS
-    xml_node_iterator_t() = delete;
     xml_node_iterator_t(const self&);
     self & operator=(const self&);
     xml_node_iterator_t(self&&);
@@ -98,6 +94,11 @@ public:
     void swap(self&);
 
 private:
+    friend class xml_node_t;
+    friend class xml_node_list_t;
+
+    xml_node_iterator_t();
+
     void *ptr_ = nullptr;
 };
 
@@ -140,7 +141,7 @@ public:
     bool operator!=(const self&) const;
 
     // MODIFIERS
-//    void clear();
+    void clear();
     void swap(self&);
 
     // TODO:

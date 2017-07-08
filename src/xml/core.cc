@@ -80,13 +80,14 @@ struct xml_node_impl_t
 
 
 xml_node_iterator_t::xml_node_iterator_t(const self& other):
-    ptr_(other.ptr_)
+    ptr_((void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) other.ptr_))
 {}
 
 
 auto xml_node_iterator_t::operator=(const self& other) -> xml_node_iterator_t&
 {
-    ptr_ = other.ptr_;
+    delete (xml_node_iterator_impl_t*) ptr_;
+    ptr_ = (void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) other.ptr_);
     return *this;
 }
 
@@ -101,6 +102,12 @@ auto xml_node_iterator_t::operator=(self&& other) -> xml_node_iterator_t&
 {
     swap(other);
     return *this;
+}
+
+
+xml_node_list_t::~xml_node_list_t()
+{
+    delete (xml_node_list_impl_t*) ptr_;
 }
 
 
@@ -184,64 +191,102 @@ void xml_node_iterator_t::swap(self& other)
 }
 
 
+xml_node_iterator_t::xml_node_iterator_t()
+{}
+
+
+xml_node_iterator_t::~xml_node_iterator_t()
+{
+    delete (xml_node_iterator_impl_t*) ptr_;
+}
+
+
 xml_node_list_t::xml_node_list_t():
     ptr_(new xml_node_list_impl_t)
 {}
 
 
-xml_node_list_t::~xml_node_list_t()
+auto xml_node_list_t::begin() -> iterator
 {
-    delete (xml_node_list_impl_t*) ptr_;
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    xml_node_iterator_t it;
+    it.ptr_ = new xml_node_iterator_impl_t(c.begin());
+    return it;
 }
 
 
-auto xml_node_list_t::begin() -> iterator
-{}
-
-
 auto xml_node_list_t::begin() const -> const_iterator
-{}
+{
+    return cbegin();
+}
 
 
 auto xml_node_list_t::cbegin() const -> const_iterator
-{}
+{
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    xml_node_iterator_t it;
+    it.ptr_ = new xml_node_iterator_impl_t(c.begin());
+    return it;
+}
 
 
 auto xml_node_list_t::end() -> iterator
-{}
+{
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    xml_node_iterator_t it;
+    it.ptr_ = new xml_node_iterator_impl_t(c.end());
+    return it;
+}
 
 
 auto xml_node_list_t::end() const -> const_iterator
-{}
+{
+    return cend();
+}
 
 
 auto xml_node_list_t::cend() const -> const_iterator
-{}
+{
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    xml_node_iterator_t it;
+    it.ptr_ = new xml_node_iterator_impl_t(c.end());
+    return it;
+}
 
 
 auto xml_node_list_t::rbegin() -> reverse_iterator
-{}
+{
+    return reverse_iterator(end());
+}
 
 
 auto xml_node_list_t::rbegin() const -> const_reverse_iterator
-{}
+{
+    return const_reverse_iterator(end());
+}
 
 
 auto xml_node_list_t::crbegin() const -> const_reverse_iterator
-{}
+{
+    return const_reverse_iterator(end());
+}
 
 
 auto xml_node_list_t::rend() -> reverse_iterator
-{}
+{
+    return reverse_iterator(begin());
+}
 
 
 auto xml_node_list_t::rend() const -> const_reverse_iterator
-{}
+{
+    return const_reverse_iterator(begin());
+}
 
 
 auto xml_node_list_t::crend() const -> const_reverse_iterator
 {
-    // TODO: implement...
+    return const_reverse_iterator(begin());
 }
 
 
@@ -256,6 +301,13 @@ bool xml_node_list_t::operator==(const self& other) const
 bool xml_node_list_t::operator!=(const self& other) const
 {
     return !operator==(other);
+}
+
+
+void xml_node_list_t::clear()
+{
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    c.clear();
 }
 
 
