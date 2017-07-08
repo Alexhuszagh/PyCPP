@@ -43,7 +43,6 @@ struct xml_node_iterator_t;
 // ALIAS
 // -----
 
-typedef uint32_t xml_id_t;
 typedef std::string xml_string_t;
 typedef std::unordered_map<xml_string_t, xml_string_t> xml_attr_t;
 
@@ -200,7 +199,6 @@ public:
     const xml_attr_t& get_attrs() const;
     xml_node_list_t& get_children();
     const xml_node_list_t& get_children() const;
-    const xml_id_t& get_id() const;
 
     // SETTERS
     void set_tag(const xml_string_t&);

@@ -7,7 +7,6 @@
 #include <multi_index/indexed_by.hpp>
 #include <multi_index/mem_fun.hpp>
 #include <multi_index/sequenced_index.hpp>
-#include <atomic>
 #include <stdexcept>
 
 // ALIAS
@@ -25,32 +24,11 @@ typedef multi_index_container<
             multi_index::tag<name_tag>,
             multi_index::const_mem_fun<xml_node_t, const xml_string_t&, &xml_node_t::get_tag>,
             std::hash<xml_string_t>
-        >,
-        multi_index::hashed_unique<
-            multi_index::tag<id_tag>,
-            multi_index::const_mem_fun<xml_node_t, const xml_id_t&, &xml_node_t::get_id>,
-            std::hash<xml_id_t>
         >
     >
 > xml_node_list_impl_t;
 
 using xml_node_iterator_impl_t = typename xml_node_list_impl_t::iterator;
-
-// HELPERS
-// -------
-
-
-/**
- *  \brief Get an effectively unique identifier for the document.
- *
- *  This is a temporary identifier while the document is in memory,
- *  and is not stable. Therefore, 4 bytes of precision should suffice.
- */
-static xml_id_t get_unique_id()
-{
-    static std::atomic<xml_id_t> seed = ATOMIC_VAR_INIT(0);
-    return seed++;
-}
 
 
 // PRIVATE
@@ -70,7 +48,6 @@ struct xml_node_impl_t
     xml_string_t text;
     xml_attr_t attrs;
     xml_node_list_t children;
-    xml_id_t id = get_unique_id();
     xml_node_list_t* parent = nullptr;
 };
 
@@ -437,25 +414,18 @@ const xml_node_list_t& xml_node_t::get_children() const
 }
 
 
-const xml_id_t& xml_node_t::get_id() const
-{
-    return ptr_->id;
-}
-
-
 void xml_node_t::set_tag(const xml_string_t& tag)
 {
     if (ptr_->parent) {
         // get an iterator to our element in constant time
         auto &container = *(xml_node_list_impl_t*) ptr_->parent->ptr_;
-        auto &view = container.get<id_tag>();
-        auto it = view.find(ptr_->id);
-        if (it == view.end()) {
+        auto it = container.iterator_to(*this);
+        if (it == container.end()) {
             throw std::runtime_error("Node has no visible parent.");
         }
 
         // update the underlying container
-        view.modify(it, [&tag](xml_node_t &node) {
+        container.modify(it, [&tag](xml_node_t &node) {
             node.ptr_->tag = tag;
         });
 
@@ -485,7 +455,7 @@ void xml_node_t::set_children(const xml_node_list_t& children)
 
 bool xml_node_t::operator==(const self& other) const
 {
-    return get_id() == other.get_id();
+    return ptr_.get() == other.ptr_.get();
 }
 
 
