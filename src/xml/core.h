@@ -8,29 +8,11 @@
 #pragma once
 
 #include <cstdint>
+#include <deque>
 #include <iterator>
 #include <memory>
 #include <string>
 #include <unordered_map>
-
-
-//// ENUMS
-//// -----
-//
-//
-///**
-// *  \brief Enumerated values for a XML object type.
-// */
-//enum xml_node_type: uint8_t
-//{
-//    xml_none_type = 0,
-//    xml_boolean_type,
-//    xml_number_type,
-//    xml_string_type,
-//    xml_array_type,
-//    xml_object_type,
-//};
-
 
 // FORWARD
 // -------
@@ -44,6 +26,7 @@ struct xml_node_iterator_t;
 // -----
 
 typedef std::string xml_string_t;
+typedef std::deque<xml_string_t> xml_string_list_t;
 typedef std::unordered_map<xml_string_t, xml_string_t> xml_attr_t;
 
 // OBJECTS
@@ -139,6 +122,14 @@ public:
     bool operator==(const self&) const;
     bool operator!=(const self&) const;
 
+    // LOOKUP
+    iterator find(const xml_string_t&) const;
+    std::pair<iterator, iterator> findall(const xml_string_t&) const;
+
+    // I/O
+    // xml_string_list_t tostringlist() const;
+    // static xml_node_t fromstringlist(const xml_string_list_t&);
+
     // MODIFIERS
     void clear();
     void swap(self&);
@@ -177,6 +168,10 @@ public:
     xml_node_t & operator=(const xml_node_t&) = default;
     xml_node_t(xml_node_t&&) = default;
     xml_node_t & operator=(xml_node_t&&) = default;
+
+    // I/O
+    // xml_string_t tostring() const;
+    // static xml_node_t fromstring(const xml_string_t&);
 
     // ITERATORS
     iterator begin();

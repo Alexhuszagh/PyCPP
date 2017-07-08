@@ -13,7 +13,6 @@
 // -----
 
 struct name_tag {};
-struct id_tag {};
 
 
 typedef multi_index_container<
@@ -50,7 +49,6 @@ struct xml_node_impl_t
     xml_node_list_t children;
     xml_node_list_t* parent = nullptr;
 };
-
 
 // OBJECTS
 // -------
@@ -278,6 +276,48 @@ bool xml_node_list_t::operator==(const self& other) const
 bool xml_node_list_t::operator!=(const self& other) const
 {
     return !operator==(other);
+}
+
+
+auto xml_node_list_t::find(const xml_string_t& tag) const -> iterator
+{
+    // get iterator to element
+    auto& container = *(xml_node_list_impl_t*) ptr_;
+    auto& view = container.get<name_tag>();
+    auto impl = view.find(tag);
+    if (impl == view.end()) {
+        return end();
+    }
+
+    // wrap iterator to element
+    auto& v = *impl;
+    iterator it;
+    it.ptr_ = new xml_node_iterator_impl_t(container.iterator_to(v));
+
+    return it;
+}
+
+
+auto xml_node_list_t::findall(const xml_string_t& tag) const -> std::pair<iterator, iterator>
+{
+    auto pair = std::make_pair(iterator(), iterator());
+
+    // get iterators to elements
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    auto& v = c.get<name_tag>();
+    auto impl = v.equal_range(tag);
+    if (impl.first == v.end()) {
+        pair.first = end();
+        pair.second = end();
+    } else if (impl.second == v.end()) {
+        pair.first.ptr_ = new xml_node_iterator_impl_t(c.iterator_to(*impl.first));
+        pair.second = end();
+    } else {
+        pair.first.ptr_ = new xml_node_iterator_impl_t(c.iterator_to(*impl.first));
+        pair.second.ptr_ = new xml_node_iterator_impl_t(c.iterator_to(*impl.second));
+    }
+
+    return pair;
 }
 
 
