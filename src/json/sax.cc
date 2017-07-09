@@ -11,7 +11,6 @@
 /**
  *  \brief Transform RapidJSON API to public SAX handler.
  */
-
 struct handler_impl: rapidjson::BaseReaderHandler<rapidjson::UTF8<>, handler_impl>
 {
     handler_impl(json_sax_handler&);

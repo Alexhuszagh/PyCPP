@@ -4,6 +4,7 @@
 #include <libxml/tree.h>
 #include <libxml/xmlreader.h>
 #include <xml/sax.h>
+#include <cstring>
 
 
 // HELPERS
@@ -30,6 +31,78 @@ void error_handler(void *ctx, const char *msg, ...)
 }
 
 
+static void start_document(void* ctx)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+    handler->start_document();
+}
+
+
+static void end_document(void* ctx)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+    handler->end_document();
+}
+
+
+static void start_element(void * ctx, const xmlChar * name, const xmlChar ** attrs)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+    // TODO: need to get the start/end element
+    //handler->end_element(string_view((char*) name));
+}
+
+
+static void end_element(void * ctx, const xmlChar * name)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+    handler->end_element(string_view((char*) name));
+}
+
+
+/**
+ *  \brief Transform libxml2 API to public SAX handler.
+ */
+struct handler_impl
+{
+    handler_impl(xml_sax_handler&);
+
+private:
+    xml_sax_handler* handler = nullptr;
+    xmlSAXHandler impl;
+};
+
+
+handler_impl::handler_impl(xml_sax_handler& h):
+    handler(&h)
+{
+    memset(&impl, 0, sizeof(impl));
+    impl.initialized = XML_SAX2_MAGIC;
+    impl.startDocument = start_document;
+    impl.endDocument = end_document;
+    impl.startElement = start_element;
+    impl.endElement = end_element;
+
+//   impl.startElementNs = &ParseFSM::startElementNs;
+//   impl.endElementNs = &ParseFSM::endElementNs;
+//   impl.warning = &ParseFSM::warning;
+//   impl.error = &ParseFSM::error;
+    // TODO: need to handle the rest of the events...
+}
+
+
+struct parser_state
+{
+//    RetVal return_val;
+//    StatesEnum state;
+//    ...
+};
+
+
+#if 0
+
+
+
 /**
  *  \brief Private text reader which calls the SAX events.
  */
@@ -44,88 +117,69 @@ public:
 private:
     std::istream* stream_ = nullptr;
     xmlTextReaderPtr xml_ = nullptr;
-    int status_ = 0;
+    xmlSAXHandler handler_;
+    parser_state state_;
 };
 
 
 text_reader::text_reader(std::istream& stream):
     stream_(&stream)
 {
+    //xmlSAXHandler saxHandler
+
     // TODO: I think I need this:
     // xmlCreateIOParserCtxt
-    xml_ = xmlReaderForIO(
-        reinterpret_cast<xmlInputReadCallback>(stream_read),
-        reinterpret_cast<xmlInputCloseCallback>(stream_close),
-        stream_,
-        nullptr,
-        nullptr,
-        0
-    );
-    status_ = xml_ ? 1 : 0;
-    if (status_) {
-        xmlSetGenericErrorFunc(xml_, error_handler);
-    }
+//    xml_ = xmlCreateIOParserCtxt(
+        // TODO: need sax_handler
+        // TODO: need user_data
+//        reinterpret_cast<xmlInputReadCallback>(stream_read),
+//        reinterpret_cast<xmlInputCloseCallback>(stream_close),
+//        stream_,  /* stream */
+//        0         /* encoding */
+//    );
+//    status_ = xml_ ? 1 : 0;
+//    if (status_) {
+//        xmlSetGenericErrorFunc(xml_, error_handler);
+//    }
 }
 
 
 text_reader::~text_reader()
 {
-    if (xml_) {
-        xmlFreeTextReader(xml_);
-    }
+//    if (xml_) {
+//        xmlFreeTextReader(xml_);
+//    }
 }
-
-
-//enum class NodeType: int32_t
-//{
-//    NONE                    = XML_READER_TYPE_NONE,
-//    START_ELEMENT           = XML_READER_TYPE_ELEMENT,
-//    ATTRIBUTE               = XML_READER_TYPE_ATTRIBUTE,
-//    TEXT                    = XML_READER_TYPE_TEXT,
-//    CDATA                   = XML_READER_TYPE_CDATA,
-//    ENTITY_REFERENCE        = XML_READER_TYPE_ENTITY_REFERENCE,
-//    ENTITY                  = XML_READER_TYPE_ENTITY,
-//    PROCESSING_INSTRUCTION  = XML_READER_TYPE_PROCESSING_INSTRUCTION,
-//    COMMENT                 = XML_READER_TYPE_COMMENT,
-//    DOCUMENT                = XML_READER_TYPE_DOCUMENT,
-//    DOCUMENT_TYPE           = XML_READER_TYPE_DOCUMENT_TYPE,
-//    DOCUMENT_FRAGMENT       = XML_READER_TYPE_DOCUMENT_FRAGMENT,
-//    NOTATION                = XML_READER_TYPE_NOTATION,
-//    WHITESPACE              = XML_READER_TYPE_WHITESPACE,
-//    SIGNIFICANT_WHITESPACE  = XML_READER_TYPE_SIGNIFICANT_WHITESPACE,
-//    END_ELEMENT             = XML_READER_TYPE_END_ELEMENT,
-//    END_ENTITY              = XML_READER_TYPE_END_ENTITY,
-//    XML_DECLARATION         = XML_READER_TYPE_XML_DECLARATION,
-//};
 
 
 void text_reader::parse(xml_sax_handler& handler)
 {
-    // xmlTextReaderConstName
-    while ((status_ = xmlTextReaderRead(xml_)) == 1) {
-        //auto *name = xmlTextReaderConstName(xml_);
-        //
-
-        switch (xmlTextReaderNodeType(xml_)) {
-            case XML_READER_TYPE_ELEMENT:
-                continue;
-            case XML_READER_TYPE_ATTRIBUTE:
-                // check if a namespace... xmlTextReaderIsNamespaceDecl
-                continue;
-            case XML_READER_TYPE_TEXT:
-                continue;
-            case XML_READER_TYPE_END_ELEMENT:
-                continue;
-            default:
-                break;
-        }
-
-        // TODO:
-        // TODO: check the current node type
-        // TODO:
-        // TODO
-    }
+//    // xmlTextReaderConstName
+//    while ((status_ = xmlTextReaderRead(xml_)) == 1) {
+//        //auto *name = xmlTextReaderConstName(xml_);
+//        //
+//
+//        switch (xmlTextReaderNodeType(xml_)) {
+//            case XML_READER_TYPE_ELEMENT:
+//                continue;
+//            case XML_READER_TYPE_ATTRIBUTE:
+//                // check if a namespace... xmlTextReaderIsNamespaceDecl
+//                continue;
+//            case XML_READER_TYPE_TEXT:
+//                continue;
+//            case XML_READER_TYPE_END_ELEMENT:
+//                continue;
+//            default:
+//                break;
+//        }
+//
+//        // TODO:
+//        // TODO: check the current node type
+//        // TODO:
+//        // TODO
+//    }
 }
+#endif
 
 
 // OBJECTS
@@ -158,16 +212,17 @@ xml_stream_reader::xml_stream_reader()
 
 void xml_stream_reader::parse(std::istream& s)
 {
-    stream_ = &s;
-    if (!handler_) {
-        throw std::runtime_error("Must assign handler prior parsing.");
-    }
-
-    // parse stream
-    handler_->start_document();
-    text_reader reader(s);
-    reader.parse(*handler_);
-    handler_->end_document();
+// TODO: restore
+//    stream_ = &s;
+//    if (!handler_) {
+//        throw std::runtime_error("Must assign handler prior parsing.");
+//    }
+//
+//    // parse stream
+//    handler_->start_document();
+//    text_reader reader(s);
+//    reader.parse(*handler_);
+//    handler_->end_document();
 }
 
 
