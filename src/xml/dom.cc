@@ -28,15 +28,20 @@ void xml_dom_handler::end_document()
 
 void xml_dom_handler::start_element(const string_view& content, xml_attr_t &attrs)
 {
-//    xml_node_t* parent = levels_.back();
+    xml_node_t* parent = levels_.back();
+    xml_node_list_t& list = parent->get_children();
+
+    // TODO: need to be able to add an item...
 //    xml_node_t child(parent->get_children());
 //    child.set_tag(xml_string_t(content));
 //    child.set_attrs(std::forward<xml_attr_t>(attrs));
+//    levels_.emplace_back(&child);
 }
 
 
 void xml_dom_handler::end_element(const string_view& content)
 {
+    printf("Removing back %zu\n", levels_.size());
 //    levels_.pop_back();
 }
 

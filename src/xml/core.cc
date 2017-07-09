@@ -321,6 +321,57 @@ auto xml_node_list_t::findall(const xml_string_t& tag) const -> std::pair<iterat
 }
 
 
+size_t xml_node_list_t::size() const
+{
+    auto& c = *(const xml_node_list_impl_t*) ptr_;
+    return c.size();
+}
+
+
+auto xml_node_list_t::front() const -> const_reference
+{
+    auto& c = *(const xml_node_list_impl_t*) ptr_;
+    return c.front();
+}
+
+
+auto xml_node_list_t::back() const -> const_reference
+{
+    auto& c = *(const xml_node_list_impl_t*) ptr_;
+    return c.back();
+}
+
+
+auto xml_node_list_t::push_front(const value_type& x) -> std::pair<iterator, bool>
+{
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    auto pair = c.push_front(x);
+    return std::make_pair(iterator(pair.first), pair.second);
+}
+
+
+auto xml_node_list_t::push_front(value_type&& x) -> std::pair<iterator, bool>
+{
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    auto pair = c.push_front(std::forward<value_type>(x));
+    return std::make_pair(iterator(pair.first), pair.second);
+}
+
+
+void xml_node_list_t::pop_front()
+{
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    c.pop_front();
+}
+
+
+void xml_node_list_t::pop_back()
+{
+    auto& c = *(xml_node_list_impl_t*) ptr_;
+    c.pop_back();
+}
+
+
 void xml_node_list_t::clear()
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
@@ -337,15 +388,6 @@ void xml_node_list_t::swap(self& other)
 xml_node_t::xml_node_t():
     ptr_(new xml_node_impl_t)
 {}
-
-
-xml_node_t::xml_node_t(xml_node_list_t& parent):
-    ptr_(new xml_node_impl_t)
-{
-    ptr_->parent = &parent;
-    auto& c = *(xml_node_list_impl_t*) parent.ptr_;
-    c.emplace_back(*this);
-}
 
 
 auto xml_node_t::begin() -> iterator

@@ -94,6 +94,11 @@ public:
     // MEMBER TYPES
     // ------------
     typedef xml_node_list_t self;
+    typedef xml_node_t value_type;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    typedef value_type* pointer;
+    typedef const value_type* const_pointer;
     typedef xml_node_iterator_t iterator;
     typedef iterator const_iterator;
     typedef std::reverse_iterator<iterator> reverse_iterator;
@@ -130,7 +135,18 @@ public:
     // xml_string_list_t tostringlist() const;
     // static xml_node_t fromstringlist(const xml_string_list_t&);
 
+    // CAPACITY
+    size_t size() const;
+
+    // ACCESS
+    const_reference front() const;
+    const_reference back() const;
+
     // MODIFIERS
+    std::pair<iterator, bool> push_front(const value_type& x);
+    std::pair<iterator, bool> push_front(value_type&& x);
+    void pop_front();
+    void pop_back();
     void clear();
     void swap(self&);
 
@@ -163,7 +179,6 @@ public:
 
     // CONSTRUCTORS
     xml_node_t();
-    xml_node_t(xml_node_list_t&);
     xml_node_t(const xml_node_t&) = default;
     xml_node_t & operator=(const xml_node_t&) = default;
     xml_node_t(xml_node_t&&) = default;
