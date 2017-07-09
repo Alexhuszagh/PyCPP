@@ -20,6 +20,9 @@
  */
 struct xml_sax_handler
 {
+public:
+    xml_sax_handler(bool use_namespaces = false);
+
     // SAX EVENTS
     virtual void start_document();
     virtual void end_document();
@@ -29,6 +32,12 @@ struct xml_sax_handler
     // TODO: start_element_ns(const string_view&, const string_view&, const string_view&)
     // TODO: end_element_ns(const string_view&, const string_view&, const string_view&)
     // TODO: ignorable_whitespace
+
+    // PROPERTIES
+    bool use_namespaces() const;
+
+private:
+    bool use_namespaces_ = false;
 };
 
 

@@ -25,88 +25,109 @@ int stream_close(std::istream*)
 }
 
 
-void error_handler(void *ctx, const char *msg, ...)
+static void internal_subset_handler(void* data, const xmlChar* name,
+                                    const xmlChar* external_id,
+                                    const xmlChar * system_id)
 {
-    throw std::runtime_error(msg);
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+    // TODO: implement.
 }
 
 
-void internal_subset(void* ctx, const xmlChar* name,
-                     const xmlChar* external_id,
-                     const xmlChar * system_id)
+static void start_document_handler(void* data)
 {
-    xml_sax_handler* handler = (xml_sax_handler*) ctx;
-}
-
-
-static void start_document(void* ctx)
-{
-    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+    xml_sax_handler* handler = (xml_sax_handler*) data;
     handler->start_document();
 }
 
 
-static void end_document(void* ctx)
+static void end_document_handler(void* data)
 {
-    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+    xml_sax_handler* handler = (xml_sax_handler*) data;
     handler->end_document();
 }
 
 
-static void start_element(void * ctx, const xmlChar * name, const xmlChar ** attrs)
+static void start_element_handler(void* data, const xmlChar * name, const xmlChar ** attrs)
 {
-    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+
+    printf("start_element %p\n", data);
     // TODO: need to get the start/end element
     //handler->end_element(string_view((char*) name));
 }
 
 
-static void end_element(void * ctx, const xmlChar * name)
+static void end_element_handler(void* data, const xmlChar * name)
 {
-    xml_sax_handler* handler = (xml_sax_handler*) ctx;
-    handler->end_element(string_view((char*) name));
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+//    handler->end_element(string_view((char*) name));
 }
 
 
-void start_element_ns(void* ctx, const xmlChar* localname,
-                      const xmlChar* prefix, const xmlChar* uri,
-                      int nb_namespaces, const xmlChar** namespaces,
-                      int nb_attributes, int nb_defaulted,
-                      const xmlChar** attrs)
+static void characters_handler(void* ctx, const xmlChar* ch, int len)
 {
-    xml_sax_handler* handler = (xml_sax_handler*) ctx;
-    // TODO:
+    // TODO: implement...
 }
 
 
-void end_element_ns(void* ctx, const xmlChar* localname,
-                    const xmlChar* prefix, const xmlChar* uri)
+void start_element_ns_handler(void* data, const xmlChar* localname,
+                              const xmlChar* prefix, const xmlChar* uri,
+                              int nb_namespaces, const xmlChar** namespaces,
+                              int nb_attributes, int nb_defaulted,
+                              const xmlChar** attrs)
 {
-    xml_sax_handler* handler = (xml_sax_handler*) ctx;
-    // TODO:
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+    // TODO: implement
+}
+
+
+void end_element_ns_handler(void* data, const xmlChar* localname,
+                            const xmlChar* prefix, const xmlChar* uri)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+    // TODO: implement
+}
+
+
+static void comment_handler(void* data, const xmlChar* msg)
+{}
+
+
+static void warning_handler(void* data, const char* msg, ...)
+{}
+
+
+static void error_handler(void* data, const char* msg, ...)
+{
+    throw std::runtime_error(msg);
 }
 
 
 /**
  *  \brief Transform libxml2 API to public SAX handler.
  */
-struct handler_impl
+struct handler_wrapper
 {
-    handler_impl(xml_sax_handler&);
+public:
+    handler_wrapper(xml_sax_handler&);
+
+    xml_sax_handler* mapper();
+    xmlSAXHandler* handler();
 
 private:
-    xml_sax_handler* handler = nullptr;
-    xmlSAXHandler impl;
+    xml_sax_handler* public_ = nullptr;
+    xmlSAXHandler private_;
 };
 
 
-handler_impl::handler_impl(xml_sax_handler& h):
-    handler(&h)
+handler_wrapper::handler_wrapper(xml_sax_handler& h):
+    public_(&h)
 {
-    memset(&impl, 0, sizeof(impl));
+    memset(&private_, 0, sizeof(private_));
 
 // TODO: implement the rest of the callbacks
-    impl.internalSubset = internal_subset;
+    private_.internalSubset = internal_subset_handler;
 //    isStandaloneSAXFunc isStandalone
 //    hasInternalSubsetSAXFunc    hasInternalSubset
 //    hasExternalSubsetSAXFunc    hasExternalSubset
@@ -118,127 +139,96 @@ handler_impl::handler_impl(xml_sax_handler& h):
 //    elementDeclSAXFunc  elementDecl
 //    unparsedEntityDeclSAXFunc   unparsedEntityDecl
 //    setDocumentLocatorSAXFunc   setDocumentLocator
-    impl.startDocument = start_document;
-    impl.endDocument = end_document;
-    impl.startElement = start_element;
-    impl.endElement = end_element;
+    private_.startDocument = start_document_handler;
+    private_.endDocument = end_document_handler;
+    private_.startElement = start_element_handler;
+    private_.endElement = end_element_handler;
 //    referenceSAXFunc    reference
 //    charactersSAXFunc   characters
 //    ignorableWhitespaceSAXFunc  ignorableWhitespace
 //    processingInstructionSAXFunc    processingInstruction
-//    commentSAXFunc  comment
-//    warningSAXFunc  warning
-//    errorSAXFunc    error
+    private_.comment = comment_handler;
+    private_.warning = warning_handler;
+    private_.error = error_handler;
 //    fatalErrorSAXFunc   fatalError  : unused error() get all the errors
 //    getParameterEntitySAXFunc   getParameterEntity
 //    cdataBlockSAXFunc   cdataBlock
 //    externalSubsetSAXFunc   externalSubset
-    impl.initialized = XML_SAX2_MAGIC;
-    impl.startElementNs = start_element_ns;
-   impl.endElementNs = end_element_ns;
+    private_.initialized = XML_SAX2_MAGIC;
+// TODO: need to selectively use namespaces
+//    private_.startElementNs = start_element_ns_handler;
+//    private_.endElementNs = end_element_ns_handler;
 //    xmlStructuredErrorFunc  serror
+}
+
+
+xml_sax_handler* handler_wrapper::mapper()
+{
+    return public_;
+}
+
+
+xmlSAXHandler* handler_wrapper::handler()
+{
+    return &private_;
 }
 
 
 struct reader_impl
 {
-//    void parse(std::istream&, );
+    void parse(std::istream&, handler_wrapper&);
 };
 
 
-//struct parser_state
-//{
-////    RetVal return_val;
-////    StatesEnum state;
-////    ...
-//};
-
-
-#if 0
-
-
-
-/**
- *  \brief Private text reader which calls the SAX events.
- */
-struct text_reader
+void reader_impl::parse(std::istream& stream, handler_wrapper& wrapper)
 {
-public:
-    text_reader(std::istream&);
-    ~text_reader();
+    // create our context
+    xmlParserCtxtPtr ctx = xmlCreateIOParserCtxt(wrapper.handler(),
+        wrapper.mapper(),
+        reinterpret_cast<xmlInputReadCallback>(stream_read),
+        reinterpret_cast<xmlInputCloseCallback>(stream_close),
+        &stream,
+        XML_CHAR_ENCODING_NONE
+    );
 
-    void parse(xml_sax_handler&);
+    // process the context
+    if (ctx == nullptr) {
+        throw std::runtime_error("Unable to make SAX context.");
+    }
 
-private:
-    std::istream* stream_ = nullptr;
-    xmlTextReaderPtr xml_ = nullptr;
-    xmlSAXHandler handler_;
-    parser_state state_;
-};
+    if (ctx->sax != (xmlSAXHandlerPtr) &xmlDefaultSAXHandler) {
+        xmlFree(ctx->sax);
+    }
+    ctx->sax = wrapper.handler();
 
+    // parse data
+    xmlParseDocument(ctx);
+    int error = ctx->wellFormed ? 0 : ctx->errNo;
 
-text_reader::text_reader(std::istream& stream):
-    stream_(&stream)
-{
-    //xmlSAXHandler saxHandler
+    // free our context
+    if (wrapper.handler() != nullptr) {
+        ctx->sax = nullptr;
+    }
+    if (ctx->myDoc != nullptr) {
+        xmlFreeDoc(ctx->myDoc);
+        ctx->myDoc = nullptr;
+    }
+    xmlFreeParserCtxt(ctx);
 
-    // TODO: I think I need this:
-    // xmlCreateIOParserCtxt
-//    xml_ = xmlCreateIOParserCtxt(
-        // TODO: need sax_handler
-        // TODO: need user_data
-//        reinterpret_cast<xmlInputReadCallback>(stream_read),
-//        reinterpret_cast<xmlInputCloseCallback>(stream_close),
-//        stream_,  /* stream */
-//        0         /* encoding */
-//    );
-//    status_ = xml_ ? 1 : 0;
-//    if (status_) {
-//        xmlSetGenericErrorFunc(xml_, error_handler);
-//    }
+    // handle errors
+    if (error != 0) {
+        // TODO: create a real message
+        throw std::runtime_error("Unknown runtime error during SAX2.");
+    }
 }
-
-
-text_reader::~text_reader()
-{
-//    if (xml_) {
-//        xmlFreeTextReader(xml_);
-//    }
-}
-
-
-void text_reader::parse(xml_sax_handler& handler)
-{
-//    // xmlTextReaderConstName
-//    while ((status_ = xmlTextReaderRead(xml_)) == 1) {
-//        //auto *name = xmlTextReaderConstName(xml_);
-//        //
-//
-//        switch (xmlTextReaderNodeType(xml_)) {
-//            case XML_READER_TYPE_ELEMENT:
-//                continue;
-//            case XML_READER_TYPE_ATTRIBUTE:
-//                // check if a namespace... xmlTextReaderIsNamespaceDecl
-//                continue;
-//            case XML_READER_TYPE_TEXT:
-//                continue;
-//            case XML_READER_TYPE_END_ELEMENT:
-//                continue;
-//            default:
-//                break;
-//        }
-//
-//        // TODO:
-//        // TODO: check the current node type
-//        // TODO:
-//        // TODO
-//    }
-}
-#endif
-
 
 // OBJECTS
 // -------
+
+
+xml_sax_handler::xml_sax_handler(bool use_namespaces):
+    use_namespaces_(use_namespaces)
+{}
 
 
 void xml_sax_handler::start_document()
@@ -261,24 +251,27 @@ void xml_sax_handler::characters(const string_view& content)
 {}
 
 
+bool xml_sax_handler::use_namespaces() const
+{
+    return use_namespaces_;
+}
+
+
 xml_stream_reader::xml_stream_reader()
 {}
 
 
 void xml_stream_reader::parse(std::istream& s)
 {
-// TODO: restore
     stream_ = &s;
     if (!handler_) {
         throw std::runtime_error("Must assign handler prior parsing.");
     }
 
     // parse stream
-    handler_impl(*handler_);
-//    handler_->start_document();
-//    text_reader reader(s);
-//    reader.parse(*handler_);
-//    handler_->end_document();
+    handler_wrapper wrapper(*handler_);
+    reader_impl reader;
+    reader.parse(*stream_, wrapper);
 }
 
 

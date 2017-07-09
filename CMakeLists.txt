@@ -244,7 +244,7 @@ if(BUILD_STATIC)
 else()
     add_library(pycpp SHARED ${SOURCE_FILES})
 endif()
-set(CROSSCXX_LIBRARIES pycpp)
+set(PYCPP_LIBRARIES pycpp)
 
 # Need to specify proper exception handling for Windows.
 if(MSVC)
@@ -254,9 +254,13 @@ if(MSVC)
 endif()
 
 if(MSVC)
-    list(APPEND CROSSCXX_LIBRARIES ws2_32.lib crypt32.lib kernel32.lib)
+    list(APPEND PYCPP_LIBRARIES ws2_32.lib crypt32.lib kernel32.lib)
 elseif(MINGW OR MSYS)
-    list(APPEND CROSSCXX_LIBRARIES -lws2_32 -lcrypt32 -lkernel32)
+    list(APPEND PYCPP_LIBRARIES -lws2_32 -lcrypt32 -lkernel32)
+endif()
+
+if(BUILD_XML)
+    list(APPEND PYCPP_LIBRARIES libxml2)
 endif()
 
 # TESTS
@@ -359,7 +363,7 @@ if(BUILD_TESTS)
     target_link_libraries(pycpp_tests
         gtest
         gtest_main
-        ${CROSSCXX_LIBRARIES}
+        ${PYCPP_LIBRARIES}
     )
     # Need to specify proper exception handling for Windows.
     if(MSVC)
