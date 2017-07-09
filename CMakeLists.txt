@@ -137,7 +137,8 @@ endif()
 # LIBRARY
 # -------
 
-include_directories(src warnings/src)
+# TODO: change to include the current src directory
+include_directories(pycpp third_party/warnings/src)
 
 if(BUILD_JSON)
     include_directories(third_party/rapidjson/include)
@@ -355,9 +356,9 @@ endif()
 
 if(BUILD_TESTS)
     if(NOT TARGET gtest)
-        add_subdirectory(googletest)
+        add_subdirectory(third_party/googletest)
     endif()
-    include_directories(googletest/googletest/include)
+    include_directories(third_party/googletest/googletest/include)
 
     add_executable(pycpp_tests ${TEST_FILES})
     target_link_libraries(pycpp_tests

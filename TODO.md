@@ -1,3 +1,5 @@
+- Move to namespaces
+
 - Bug fixes
     - Clang on macOS with JSON DOM is producing an infinite loop
     - Why? Where...

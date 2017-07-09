@@ -1,8 +1,8 @@
 [submodule "googletest"]
-	path = googletest
+	path = third_party/googletest
 	url = https://github.com/Alexhuszagh/googletest
 [submodule "warnings"]
-	path = warnings
+	path = third_party/warnings
 	url = https://github.com/Alexhuszagh/warnings.git
 [submodule "third_party/rapidjson"]
 	path = third_party/rapidjson
