@@ -31,6 +31,14 @@ void error_handler(void *ctx, const char *msg, ...)
 }
 
 
+void internal_subset(void* ctx, const xmlChar* name,
+                     const xmlChar* external_id,
+                     const xmlChar * system_id)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+}
+
+
 static void start_document(void* ctx)
 {
     xml_sax_handler* handler = (xml_sax_handler*) ctx;
@@ -60,6 +68,25 @@ static void end_element(void * ctx, const xmlChar * name)
 }
 
 
+void start_element_ns(void* ctx, const xmlChar* localname,
+                      const xmlChar* prefix, const xmlChar* uri,
+                      int nb_namespaces, const xmlChar** namespaces,
+                      int nb_attributes, int nb_defaulted,
+                      const xmlChar** attrs)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+    // TODO:
+}
+
+
+void end_element_ns(void* ctx, const xmlChar* localname,
+                    const xmlChar* prefix, const xmlChar* uri)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) ctx;
+    // TODO:
+}
+
+
 /**
  *  \brief Transform libxml2 API to public SAX handler.
  */
@@ -77,26 +104,54 @@ handler_impl::handler_impl(xml_sax_handler& h):
     handler(&h)
 {
     memset(&impl, 0, sizeof(impl));
-    impl.initialized = XML_SAX2_MAGIC;
+
+// TODO: implement the rest of the callbacks
+    impl.internalSubset = internal_subset;
+//    isStandaloneSAXFunc isStandalone
+//    hasInternalSubsetSAXFunc    hasInternalSubset
+//    hasExternalSubsetSAXFunc    hasExternalSubset
+//    resolveEntitySAXFunc    resolveEntity
+//    getEntitySAXFunc    getEntity
+//    entityDeclSAXFunc   entityDecl
+//    notationDeclSAXFunc notationDecl
+//    attributeDeclSAXFunc    attributeDecl
+//    elementDeclSAXFunc  elementDecl
+//    unparsedEntityDeclSAXFunc   unparsedEntityDecl
+//    setDocumentLocatorSAXFunc   setDocumentLocator
     impl.startDocument = start_document;
     impl.endDocument = end_document;
     impl.startElement = start_element;
     impl.endElement = end_element;
-
-//   impl.startElementNs = &ParseFSM::startElementNs;
-//   impl.endElementNs = &ParseFSM::endElementNs;
-//   impl.warning = &ParseFSM::warning;
-//   impl.error = &ParseFSM::error;
-    // TODO: need to handle the rest of the events...
+//    referenceSAXFunc    reference
+//    charactersSAXFunc   characters
+//    ignorableWhitespaceSAXFunc  ignorableWhitespace
+//    processingInstructionSAXFunc    processingInstruction
+//    commentSAXFunc  comment
+//    warningSAXFunc  warning
+//    errorSAXFunc    error
+//    fatalErrorSAXFunc   fatalError  : unused error() get all the errors
+//    getParameterEntitySAXFunc   getParameterEntity
+//    cdataBlockSAXFunc   cdataBlock
+//    externalSubsetSAXFunc   externalSubset
+    impl.initialized = XML_SAX2_MAGIC;
+    impl.startElementNs = start_element_ns;
+   impl.endElementNs = end_element_ns;
+//    xmlStructuredErrorFunc  serror
 }
 
 
-struct parser_state
+struct reader_impl
 {
-//    RetVal return_val;
-//    StatesEnum state;
-//    ...
+//    void parse(std::istream&, );
 };
+
+
+//struct parser_state
+//{
+////    RetVal return_val;
+////    StatesEnum state;
+////    ...
+//};
 
 
 #if 0
@@ -213,12 +268,13 @@ xml_stream_reader::xml_stream_reader()
 void xml_stream_reader::parse(std::istream& s)
 {
 // TODO: restore
-//    stream_ = &s;
-//    if (!handler_) {
-//        throw std::runtime_error("Must assign handler prior parsing.");
-//    }
-//
-//    // parse stream
+    stream_ = &s;
+    if (!handler_) {
+        throw std::runtime_error("Must assign handler prior parsing.");
+    }
+
+    // parse stream
+    handler_impl(*handler_);
 //    handler_->start_document();
 //    text_reader reader(s);
 //    reader.parse(*handler_);
