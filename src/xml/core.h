@@ -107,6 +107,10 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     xml_node_list_t();
+    xml_node_list_t(const self&);
+    self& operator=(const self&);
+    xml_node_list_t(self&&);
+    self& operator=(self&&);
     ~xml_node_list_t();
 
     // ITERATORS
@@ -136,7 +140,9 @@ public:
     // static xml_node_t fromstringlist(const xml_string_list_t&);
 
     // CAPACITY
+    bool empty() const;
     size_t size() const;
+    size_t max_size() const;
 
     // ACCESS
     const_reference front() const;
@@ -146,11 +152,14 @@ public:
     std::pair<iterator, bool> push_front(const value_type& x);
     std::pair<iterator, bool> push_front(value_type&& x);
     void pop_front();
+    std::pair<iterator, bool> push_back(const value_type& x);
+    std::pair<iterator, bool> push_back(value_type&& x);
     void pop_back();
+    std::pair<iterator, bool> insert(iterator position, const value_type&);
+    std::pair<iterator, bool> insert(iterator position, value_type&&);
     void clear();
     void swap(self&);
 
-    // TODO:
 private:
     friend class xml_node_t;
 
@@ -231,5 +240,6 @@ public:
 private:
     friend class xml_node_list_t;
 
+    xml_node_t(xml_node_impl_t*);
     std::shared_ptr<xml_node_impl_t> ptr_;
 };

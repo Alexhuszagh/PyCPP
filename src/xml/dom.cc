@@ -26,23 +26,24 @@ void xml_dom_handler::end_document()
 }
 
 
-void xml_dom_handler::start_element(const string_view& content, xml_attr_t &attrs)
+void xml_dom_handler::start_element(const string_view& name, xml_attr_t &attrs)
 {
     xml_node_t* parent = levels_.back();
     xml_node_list_t& list = parent->get_children();
 
-    // TODO: need to be able to add an item...
-//    xml_node_t child(parent->get_children());
-//    child.set_tag(xml_string_t(content));
-//    child.set_attrs(std::forward<xml_attr_t>(attrs));
-//    levels_.emplace_back(&child);
+    // create and append child
+    xml_node_t child;
+    child.set_tag(xml_string_t(name));
+    child.set_attrs(std::forward<xml_attr_t>(attrs));
+    list.push_back(std::move(child));
+
+    levels_.emplace_back(&*list.rbegin());
 }
 
 
-void xml_dom_handler::end_element(const string_view& content)
+void xml_dom_handler::end_element(const string_view& name)
 {
-    printf("Removing back %zu\n", levels_.size());
-//    levels_.pop_back();
+    levels_.pop_back();
 }
 
 
