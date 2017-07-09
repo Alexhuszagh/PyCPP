@@ -17,20 +17,39 @@ TEST(xml, dom)
     xml_document_t document;
     document.loads("<?xml version=\"1.0\" encoding=\"UTF-8\"?><note><to email=\"tove@tove.com\">Tove</to><from email=\"jani@jani.com\">Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>");
 
-//    ASSERT_TRUE(document.has_object());
-//    auto &object = document.get_object();
-//    EXPECT_EQ(object.size(), 7);
-//    EXPECT_EQ(object["hello"].get_string(), "world");
-//    EXPECT_EQ(object["t"].get_boolean(), true);
-//    EXPECT_EQ(object["pi"].get_number(), 3.1416);
-//    EXPECT_EQ(object["a"].get_array().size(), 4);
-//    EXPECT_EQ(object["a"].get_array().front().get_number(), 1.);
-//
-//    auto str = document.dumps(' ', 0);
-//    // only check the first character, since the order isn't defined
-//    EXPECT_EQ(str.substr(0, 1), "{");
-//
-//    str = document.dumps(' ', 4);
-//    // only check the first two to ensure newlines are added
-//    EXPECT_EQ(str.substr(0, 2), "{\n");
+    // check document root
+    ASSERT_EQ(document.get_children().size(), 1);
+
+    // check note
+    auto &note = document.get_children().front();
+    EXPECT_EQ(note.get_tag(), "note");
+    ASSERT_EQ(note.get_attrs().size(), 0);
+    ASSERT_EQ(note.get_children().size(), 4);
+    auto it = note.begin();
+
+    // check to
+    auto &to = *it++;
+    EXPECT_EQ(to.get_tag(), "to");
+    ASSERT_EQ(to.get_attrs().size(), 1);
+    ASSERT_EQ(to.get_attrs().at("email"), "tove@tove.com");
+    EXPECT_EQ(to.get_text(), "Tove");
+
+    // check from
+    auto &from = *it++;
+    EXPECT_EQ(from.get_tag(), "from");
+    ASSERT_EQ(from.get_attrs().size(), 1);
+    ASSERT_EQ(from.get_attrs().at("email"), "jani@jani.com");
+    EXPECT_EQ(from.get_text(), "Jani");
+
+    // check heading
+    auto &heading = *it++;
+    EXPECT_EQ(heading.get_tag(), "heading");
+    ASSERT_EQ(heading.get_attrs().size(), 0);
+    EXPECT_EQ(heading.get_text(), "Reminder");
+
+    // check body
+    auto &body = *it++;
+    EXPECT_EQ(body.get_tag(), "body");
+    ASSERT_EQ(body.get_attrs().size(), 0);
+    EXPECT_EQ(body.get_text(), "Don't forget me this weekend!");
 }

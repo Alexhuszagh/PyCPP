@@ -50,7 +50,7 @@ void xml_dom_handler::end_element(const string_view& name)
 void xml_dom_handler::characters(const string_view& content)
 {
     xml_node_t* current = levels_.back();
-    current->set_text(xml_string_t(content));
+    current->set_text(current->get_text() + xml_string_t(content));
 }
 
 

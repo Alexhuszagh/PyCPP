@@ -83,7 +83,22 @@ static void end_element_handler(void* data, const xmlChar* name)
 static void characters_handler(void* data, const xmlChar* ch, int len)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-//    handler->characters(string_view((char*) ch, len));
+    handler->characters(string_view((char*) ch, len));
+}
+
+
+static void ignorable_whitespace_handler(void* data, const xmlChar* ch, int len)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+// TODO: implement...
+//    handler->ignorable_whitespace(string_view((char*) ch, len));
+}
+
+
+static void processing_instruction_handler(void* data, const xmlChar* target, const xmlChar* value)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+// TODO: implement...
 }
 
 
@@ -160,9 +175,9 @@ handler_wrapper::handler_wrapper(xml_sax_handler& h):
     private_.startElement = start_element_handler;
     private_.endElement = end_element_handler;
 //    referenceSAXFunc    reference
-//    charactersSAXFunc   characters
-//    ignorableWhitespaceSAXFunc  ignorableWhitespace
-//    processingInstructionSAXFunc    processingInstruction
+    private_.characters = characters_handler;
+    private_.ignorableWhitespace = ignorable_whitespace_handler;
+    private_.processingInstruction = processing_instruction_handler;
     private_.comment = comment_handler;
     private_.warning = warning_handler;
     private_.error = error_handler;
@@ -171,10 +186,12 @@ handler_wrapper::handler_wrapper(xml_sax_handler& h):
 //    cdataBlockSAXFunc   cdataBlock
 //    externalSubsetSAXFunc   externalSubset
     private_.initialized = XML_SAX2_MAGIC;
-// TODO: need to selectively use namespaces
-//    private_.startElementNs = start_element_ns_handler;
-//    private_.endElementNs = end_element_ns_handler;
-//    xmlStructuredErrorFunc  serror
+
+    if (public_->use_namespaces()) {
+        private_.startElementNs = start_element_ns_handler;
+        private_.endElementNs = end_element_ns_handler;
+//        xmlStructuredErrorFunc  serror
+    }
 }
 
 

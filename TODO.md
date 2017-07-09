@@ -23,8 +23,9 @@
 - Atomic Operations
     - Check boltsons
 
-- JSON support
-    - Add writer...
+- XML support
+    - Add writer
+    - Finish SAX reader
 
 - Binary serialization
     - Add cereal...
