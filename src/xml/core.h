@@ -209,6 +209,7 @@ public:
     const xml_attr_t& get_attrs() const;
     xml_node_list_t& get_children();
     const xml_node_list_t& get_children() const;
+    uintptr_t get_id() const;
 
     // SETTERS
     void set_tag(const xml_string_t&);
@@ -223,6 +224,9 @@ public:
     // RELATIONAL OPERATORS
     bool operator==(const self&) const;
     bool operator!=(const self&) const;
+
+    // OTHER
+    void swap(self&);
 
 private:
     friend class xml_node_list_t;

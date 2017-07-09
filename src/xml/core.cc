@@ -13,6 +13,7 @@
 // -----
 
 struct name_tag {};
+struct id_tag {};
 
 
 typedef multi_index_container<
@@ -23,6 +24,11 @@ typedef multi_index_container<
             multi_index::tag<name_tag>,
             multi_index::const_mem_fun<xml_node_t, const xml_string_t&, &xml_node_t::get_tag>,
             std::hash<xml_string_t>
+        >,
+        multi_index::hashed_non_unique<
+            multi_index::tag<id_tag>,
+            multi_index::const_mem_fun<xml_node_t, uintptr_t, &xml_node_t::get_id>,
+            std::hash<uintptr_t>
         >
     >
 > xml_node_list_impl_t;
@@ -346,7 +352,14 @@ auto xml_node_list_t::push_front(const value_type& x) -> std::pair<iterator, boo
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
     auto pair = c.push_front(x);
-    return std::make_pair(iterator(pair.first), pair.second);
+    if (pair.second) {
+        // insertion happened, make sure to parent the item
+        pair.first->ptr_->parent = this;
+    }
+
+    iterator it;
+    it.ptr_ = new xml_node_iterator_impl_t(pair.first);
+    return std::make_pair(std::move(it), pair.second);
 }
 
 
@@ -354,13 +367,23 @@ auto xml_node_list_t::push_front(value_type&& x) -> std::pair<iterator, bool>
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
     auto pair = c.push_front(std::forward<value_type>(x));
-    return std::make_pair(iterator(pair.first), pair.second);
+    if (pair.second) {
+        // insertion happened, make sure to parent the item
+        pair.first->ptr_->parent = this;
+    }
+
+    iterator it;
+    it.ptr_ = new xml_node_iterator_impl_t(pair.first);
+    return std::make_pair(std::move(it), pair.second);
 }
 
 
 void xml_node_list_t::pop_front()
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
+    auto& node = c.front();
+    node.ptr_->parent = nullptr;
+
     c.pop_front();
 }
 
@@ -368,6 +391,9 @@ void xml_node_list_t::pop_front()
 void xml_node_list_t::pop_back()
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
+    auto& node = c.back();
+    node.ptr_->parent = nullptr;
+
     c.pop_back();
 }
 
@@ -375,6 +401,11 @@ void xml_node_list_t::pop_back()
 void xml_node_list_t::clear()
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
+
+    // clear the parents
+    for (auto it = c.begin(); it != c.end(); ++it) {
+        it->ptr_->parent = nullptr;
+    }
     c.clear();
 }
 
@@ -498,6 +529,12 @@ const xml_node_list_t& xml_node_t::get_children() const
 }
 
 
+uintptr_t xml_node_t::get_id() const
+{
+    return (uintptr_t) ptr_.get();
+}
+
+
 void xml_node_t::set_tag(const xml_string_t& tag)
 {
     if (ptr_->parent) {
@@ -585,4 +622,10 @@ bool xml_node_t::operator==(const self& other) const
 bool xml_node_t::operator!=(const self& other) const
 {
     return !operator==(other);
+}
+
+
+void xml_node_t::swap(self& other)
+{
+    std::swap(ptr_, other.ptr_);
 }
