@@ -27,7 +27,7 @@ int stream_close(std::istream*)
 
 static void internal_subset_handler(void* data, const xmlChar* name,
                                     const xmlChar* external_id,
-                                    const xmlChar * system_id)
+                                    const xmlChar* system_id)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
     // TODO: implement.
@@ -48,26 +48,42 @@ static void end_document_handler(void* data)
 }
 
 
-static void start_element_handler(void* data, const xmlChar * name, const xmlChar ** attrs)
+static void start_element_handler(void* data, const xmlChar* name, const xmlChar** attrs)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
+    xml_attr_t attrib;
 
-    printf("start_element %p\n", data);
-    // TODO: need to get the start/end element
-    //handler->end_element(string_view((char*) name));
+    // parse the attrs
+    if (attrs != nullptr) {
+        // find start/end
+        const xmlChar** first = attrs;
+        const xmlChar** last = first;
+        while (*last != nullptr) {
+            ++last;
+        }
+
+        for (; first < last; ) {
+            std::string key((char*) *first++);
+            std::string value((char*) *first++);
+            attrib[std::move(key)] = std::move(value);
+        }
+    }
+
+    handler->start_element(string_view((char*) name), attrib);
 }
 
 
-static void end_element_handler(void* data, const xmlChar * name)
+static void end_element_handler(void* data, const xmlChar* name)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-//    handler->end_element(string_view((char*) name));
+    handler->end_element(string_view((char*) name));
 }
 
 
-static void characters_handler(void* ctx, const xmlChar* ch, int len)
+static void characters_handler(void* data, const xmlChar* ch, int len)
 {
-    // TODO: implement...
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+//    handler->characters(string_view((char*) ch, len));
 }
 
 

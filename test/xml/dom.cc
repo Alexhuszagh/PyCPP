@@ -15,7 +15,7 @@
 TEST(xml, dom)
 {
     xml_document_t document;
-    document.loads("<?xml version=\"1.0\" encoding=\"UTF-8\"?><note><to>Tove</to><from>Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>");
+    document.loads("<?xml version=\"1.0\" encoding=\"UTF-8\"?><note><to email=\"tove@tove.com\">Tove</to><from email=\"jani@jani.com\">Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>");
 
 //    ASSERT_TRUE(document.has_object());
 //    auto &object = document.get_object();
