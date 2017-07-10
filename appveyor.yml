@@ -6,8 +6,11 @@ os:
   - Visual Studio 2017
 
 matrix:
-  - PYCPP_NAMESPACE: ""
-  - PYCPP_NAMESPACE: pycpp
+  environment:
+    PYCPP_NAMESPACE: ""
+
+  environment:
+    PYCPP_NAMESPACE: pycpp
 
 init: []
 
