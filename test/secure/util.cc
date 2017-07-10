@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <secure/util.h>
+#include <pycpp/secure/util.h>
 #include <gtest/gtest.h>
 
 

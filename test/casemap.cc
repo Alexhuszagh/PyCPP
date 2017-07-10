@@ -5,8 +5,8 @@
  *  \brief Casemap conversion unittests.
  */
 
-#include <byteorder.h>
-#include <casemap.h>
+#include <pycpp/byteorder.h>
+#include <pycpp/casemap.h>
 #include <gtest/gtest.h>
 
 // TESTS

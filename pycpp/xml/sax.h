@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <xml/core.h>
-#include <stream/fstream.h>
-#include <view/string.h>
+#include <pycpp/xml/core.h>
+#include <pycpp/stream/fstream.h>
+#include <pycpp/view/string.h>
 
 // OBJECTS
 // -------

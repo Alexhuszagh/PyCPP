@@ -5,7 +5,7 @@
  *  \brief Hashlib unittests.
  */
 
-#include <hashlib.h>
+#include <pycpp/hashlib.h>
 #include <gtest/gtest.h>
 #include <random>
 #include <utility>
@@ -15,7 +15,6 @@
 // FUNCTIONS
 // ---------
 
-// TODO: memory leak
 template <typename List, typename Hasher>
 static void test_digest(const List& list, const Hasher&)
 {

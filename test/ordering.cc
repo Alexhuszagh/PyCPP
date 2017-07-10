@@ -5,7 +5,7 @@
  *  \brief Ordering unittests.
  */
 
-#include <ordering.h>
+#include <pycpp/ordering.h>
 #include <gtest/gtest.h>
 
 // TESTS

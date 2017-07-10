@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <xml/sax.h>
-#include <xml/writer.h>
+#include <pycpp/xml/sax.h>
+#include <pycpp/xml/writer.h>
 #include <deque>
 
 // OBJECTS

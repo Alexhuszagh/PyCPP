@@ -5,5 +5,5 @@
  *  \brief Cipher unittests.
  */
 
-#include <cipher.h>
+#include <pycpp/cipher.h>
 #include <gtest/gtest.h>

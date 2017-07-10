@@ -1,8 +1,10 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <base16.h>
+#include <pycpp/base16.h>
 #include <iterator>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -130,3 +132,5 @@ std::string base16_decode(const std::string& str)
 
     return base16;
 }
+
+PYCPP_END_NAMESPACE

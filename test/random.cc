@@ -5,7 +5,7 @@
  *  \brief Random unittests.
  */
 
-#include <random.h>
+#include <pycpp/random.h>
 #include <gtest/gtest.h>
 
 

@@ -5,9 +5,9 @@
  *  \brief File-based stream unittests.
  */
 
-#include <byteorder.h>
-#include <os.h>
-#include <stream/fstream.h>
+#include <pycpp/byteorder.h>
+#include <pycpp/os.h>
+#include <pycpp/stream/fstream.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <gtest/gtest.h>

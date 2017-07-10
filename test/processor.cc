@@ -5,7 +5,7 @@
  *  \brief Processor detection unittests.
  */
 
-#include <processor.h>
+#include <pycpp/processor.h>
 #include <gtest/gtest.h>
 
 // TESTS

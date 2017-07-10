@@ -5,7 +5,7 @@
  *  \brief JSON DOM unittests.
  */
 
-#include <xml.h>
+#include <pycpp/xml.h>
 #include <gtest/gtest.h>
 
 // TESTS

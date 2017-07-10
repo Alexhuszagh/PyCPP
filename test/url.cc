@@ -5,7 +5,7 @@
  *  \brief URL encoding and decoding unittests.
  */
 
-#include <url.h>
+#include <pycpp/url.h>
 #include <gtest/gtest.h>
 
 // TESTS

@@ -5,7 +5,7 @@
  *  \brief Compiler detection unittests.
  */
 
-#include <compiler.h>
+#include <pycpp/compiler.h>
 #include <gtest/gtest.h>
 
 // TESTS

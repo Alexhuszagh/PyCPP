@@ -5,7 +5,7 @@
  *  \brief Transformable stream unittests.
  */
 
-#include <stream/filter.h>
+#include <pycpp/stream/filter.h>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <string>

@@ -5,7 +5,7 @@
  *  \brief Filesystem unittests.
  */
 
-#include <filesystem.h>
+#include <pycpp/filesystem.h>
 #include <gtest/gtest.h>
 
 // CONSTANTS

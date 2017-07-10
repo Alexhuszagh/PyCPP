@@ -5,7 +5,7 @@
  *  \brief Ordered dict unittests.
  */
 
-#include <collections/ordereddict.h>
+#include <pycpp/collections/ordereddict.h>
 #include <gtest/gtest.h>
 
 

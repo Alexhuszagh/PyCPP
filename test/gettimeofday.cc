@@ -5,7 +5,7 @@
  *  \brief Gettimeofday unittests.
  */
 
-#include <gettimeofday.h>
+#include <pycpp/gettimeofday.h>
 #include <gtest/gtest.h>
 #include <chrono>
 #include <thread>

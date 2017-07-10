@@ -5,7 +5,7 @@
  *  \brief String manipulation unittests.
  */
 
-#include <stringlib.h>
+#include <pycpp/stringlib.h>
 #include <gtest/gtest.h>
 
 // TESTS

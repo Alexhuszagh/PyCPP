@@ -5,7 +5,7 @@
  *  \brief Thread-local storage unittests.
  */
 
-#include <tls.h>
+#include <pycpp/tls.h>
 #include <gtest/gtest.h>
 #include <thread>
 #include <vector>

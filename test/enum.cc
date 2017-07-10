@@ -5,7 +5,7 @@
  *  \brief Type-safe enumeration unittests.
  */
 
-#include <enum.h>
+#include <pycpp/enum.h>
 #include <gtest/gtest.h>
 
 // ENUM

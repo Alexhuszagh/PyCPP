@@ -5,5 +5,5 @@
  *  \brief JSON writer unittests.
  */
 
-#include <json.h>
+#include <pycpp/json.h>
 #include <gtest/gtest.h>

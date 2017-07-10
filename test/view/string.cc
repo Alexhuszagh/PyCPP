@@ -5,7 +5,7 @@
  *  \brief string_view unittests.
  */
 
-#include <view/string.h>
+#include <pycpp/view/string.h>
 #include <gtest/gtest.h>
 
 // DATA

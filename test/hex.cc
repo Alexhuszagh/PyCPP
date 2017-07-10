@@ -5,8 +5,8 @@
  *  \brief Hex representation unittests.
  */
 
-#include <byteorder.h>
-#include <hex.h>
+#include <pycpp/byteorder.h>
+#include <pycpp/hex.h>
 #include <gtest/gtest.h>
 
 // TESTS

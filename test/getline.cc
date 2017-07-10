@@ -5,7 +5,7 @@
  *  \brief Getline unittests.
  */
 
-#include <getline.h>
+#include <pycpp/getline.h>
 #include <gtest/gtest.h>
 
 // TESTS

@@ -5,7 +5,7 @@
  *  \brief Operating system detection unittests.
  */
 
-#include <os.h>
+#include <pycpp/os.h>
 #include <gtest/gtest.h>
 
 // TESTS

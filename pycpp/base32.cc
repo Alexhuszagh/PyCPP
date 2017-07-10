@@ -1,9 +1,11 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <base32.h>
+#include <pycpp/base32.h>
 #include <cmath>
 #include <iterator>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -236,3 +238,5 @@ std::string base32_decode(const std::string& str)
 
     return base32;
 }
+
+PYCPP_END_NAMESPACE

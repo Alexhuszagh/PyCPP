@@ -7,7 +7,7 @@
  *  \brief Unicode unittests.
  */
 
-#include <unicode.h>
+#include <pycpp/unicode.h>
 #include <gtest/gtest.h>
 #include <utility>
 #include <vector>

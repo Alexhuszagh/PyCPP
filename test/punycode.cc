@@ -7,7 +7,7 @@
  *  \brief Punycode encoding and decoding unittests.
  */
 
-#include <punycode.h>
+#include <pycpp/punycode.h>
 #include <gtest/gtest.h>
 #include <utility>
 #include <vector>

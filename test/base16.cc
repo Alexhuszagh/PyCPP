@@ -5,11 +5,13 @@
  *  \brief Base16 unittests.
  */
 
-#include <base16.h>
+#include <pycpp/base16.h>
 #include <gtest/gtest.h>
 #include <random>
 #include <utility>
 #include <vector>
+
+PYCPP_USING_NAMESPACE
 
 // TESTS
 // -----

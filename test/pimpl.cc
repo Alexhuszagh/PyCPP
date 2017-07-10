@@ -5,7 +5,7 @@
  *  \brief Pimpl unittests.
  */
 
-#include <pimpl.h>
+#include <pycpp/pimpl.h>
 #include <gtest/gtest.h>
 
 // FORWARD

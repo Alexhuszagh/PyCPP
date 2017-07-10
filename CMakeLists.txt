@@ -137,8 +137,8 @@ endif()
 # LIBRARY
 # -------
 
-# TODO: change to include the current src directory
-include_directories(pycpp third_party/warnings/src)
+# TODO: change to include the current src directory only
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} pycpp third_party/warnings/src)
 
 if(BUILD_JSON)
     include_directories(third_party/rapidjson/include)
@@ -154,29 +154,29 @@ if(BUILD_XML)
 endif()
 
 set(SOURCE_FILES
-    src/random/pseudorandom.cc
-    src/random/sysrandom.cc
-    src/safe/stdlib.cc
-    src/secure/util.cc
-    src/any.cc
-    src/base16.cc
-    src/base32.cc
-    src/base64.cc
-    src/byteorder.cc
-    src/casemap.cc
-    src/codec.cc
-    src/getline.cc
-    src/gettimeofday.cc
-    src/hex.cc
-    src/punycode.cc
-    src/stringlib.cc
-    src/unicode.cc
-    src/url.cc
+    pycpp/random/pseudorandom.cc
+    pycpp/random/sysrandom.cc
+    pycpp/safe/stdlib.cc
+    pycpp/secure/util.cc
+    pycpp/any.cc
+    pycpp/base16.cc
+    pycpp/base32.cc
+    pycpp/base64.cc
+    pycpp/byteorder.cc
+    pycpp/casemap.cc
+    pycpp/codec.cc
+    pycpp/getline.cc
+    pycpp/gettimeofday.cc
+    pycpp/hex.cc
+    pycpp/punycode.cc
+    pycpp/stringlib.cc
+    pycpp/unicode.cc
+    pycpp/url.cc
 )
 
 if(BUILD_CIPHER)
     list(APPEND SOURCE_FILES
-        src/cipher/aes.cc
+        pycpp/cipher/aes.cc
     )
 endif()
 
@@ -188,36 +188,36 @@ endif()
 
 if (BUILD_FILESYSTEM)
     list(APPEND SOURCE_FILES
-        src/filesystem/exception.cc
-        src/filesystem/mac.cc
-        src/filesystem/nt.cc
-        src/filesystem/path.cc
-        src/filesystem/posix.cc
-        src/filesystem/stat.cc
+        pycpp/filesystem/exception.cc
+        pycpp/filesystem/mac.cc
+        pycpp/filesystem/nt.cc
+        pycpp/filesystem/path.cc
+        pycpp/filesystem/posix.cc
+        pycpp/filesystem/stat.cc
     )
 endif()
 
 if (BUILD_HASHLIB)
     list(APPEND SOURCE_FILES
-        src/hashlib/crc32.cc
-        src/hashlib/hash.cc
-        src/hashlib/md2.cc
-        src/hashlib/md4.cc
-        src/hashlib/md5.cc
-        src/hashlib/sha1.cc
-        src/hashlib/sha3.cc
-        src/hashlib/sha256.cc
-        src/hashlib/sha512.cc
-        src/hashlib/whirlpool.cc
+        pycpp/hashlib/crc32.cc
+        pycpp/hashlib/hash.cc
+        pycpp/hashlib/md2.cc
+        pycpp/hashlib/md4.cc
+        pycpp/hashlib/md5.cc
+        pycpp/hashlib/sha1.cc
+        pycpp/hashlib/sha3.cc
+        pycpp/hashlib/sha256.cc
+        pycpp/hashlib/sha512.cc
+        pycpp/hashlib/whirlpool.cc
     )
 endif()
 
 if(BUILD_JSON)
     list(APPEND SOURCE_FILES
-        src/json/core.cc
-        src/json/dom.cc
-        src/json/sax.cc
-        src/json/writer.cc
+        pycpp/json/core.cc
+        pycpp/json/dom.cc
+        pycpp/json/sax.cc
+        pycpp/json/writer.cc
     )
 endif()
 
@@ -226,17 +226,17 @@ endif()
 
 if(BUILD_STREAM)
     list(APPEND SOURCE_FILES
-        src/stream/fstream.cc
-        src/stream/filter.cc
+        pycpp/stream/fstream.cc
+        pycpp/stream/filter.cc
     )
 endif()
 
 if(BUILD_XML)
     list(APPEND SOURCE_FILES
-        src/xml/core.cc
-        src/xml/dom.cc
-        src/xml/sax.cc
-        src/xml/writer.cc
+        pycpp/xml/core.cc
+        pycpp/xml/dom.cc
+        pycpp/xml/sax.cc
+        pycpp/xml/writer.cc
     )
 endif()
 

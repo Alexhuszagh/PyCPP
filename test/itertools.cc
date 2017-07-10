@@ -6,7 +6,7 @@
  *  \brief Permutation, combination and product unittests.
  */
 
-#include <itertools.h>
+#include <pycpp/itertools.h>
 #include <gtest/gtest.h>
 #include <map>
 #include <numeric>

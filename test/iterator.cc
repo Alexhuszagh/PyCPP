@@ -5,7 +5,7 @@
  *  \brief Iterator unittests.
  */
 
-#include <iterator.h>
+#include <pycpp/iterator.h>
 #include <gtest/gtest.h>
 #include <vector>
 

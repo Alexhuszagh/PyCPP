@@ -10,8 +10,11 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <cstdlib>
 #include <memory>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FORWARD
 // -------
@@ -297,3 +300,5 @@ const T& any::cast() const
 
     return *r;
 }
+
+PYCPP_END_NAMESPACE

@@ -5,7 +5,7 @@
  *  \brief Endian unittests.
  */
 
-#include <byteorder.h>
+#include <pycpp/byteorder.h>
 #include <gtest/gtest.h>
 
 // TESTS

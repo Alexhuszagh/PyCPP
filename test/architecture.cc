@@ -5,7 +5,7 @@
  *  \brief Architecture unittests.
  */
 
-#include <architecture.h>
+#include <pycpp/architecture.h>
 #include <gtest/gtest.h>
 
 

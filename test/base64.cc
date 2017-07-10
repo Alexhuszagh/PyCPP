@@ -5,7 +5,7 @@
  *  \brief Base64 unittests.
  */
 
-#include <base64.h>
+#include <pycpp/base64.h>
 #include <gtest/gtest.h>
 #include <random>
 #include <utility>
