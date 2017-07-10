@@ -7,12 +7,15 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <cstdint>
 #include <deque>
 #include <iterator>
 #include <memory>
 #include <string>
 #include <unordered_map>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FORWARD
 // -------
@@ -243,3 +246,5 @@ private:
     xml_node_t(xml_node_impl_t*);
     std::shared_ptr<xml_node_impl_t> ptr_;
 };
+
+PYCPP_END_NAMESPACE

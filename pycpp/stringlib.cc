@@ -1,9 +1,11 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <casemap.h>
-#include <stringlib.h>
-#include <unicode.h>
+#include <pycpp/casemap.h>
+#include <pycpp/stringlib.h>
+#include <pycpp/unicode.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -463,3 +465,5 @@ size_t string_wrapper::count(const string_wrapper& sub, size_t start, size_t end
 {
     return count_impl(*this, sub, start, end);
 }
+
+PYCPP_END_NAMESPACE

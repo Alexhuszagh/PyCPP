@@ -137,8 +137,7 @@ endif()
 # LIBRARY
 # -------
 
-# TODO: change to include the current src directory only
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} pycpp third_party/warnings/src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR} third_party/warnings/src)
 
 if(BUILD_JSON)
     include_directories(third_party/rapidjson/include)

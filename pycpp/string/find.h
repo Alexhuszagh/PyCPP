@@ -8,9 +8,11 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <algorithm>
 #include <iterator>
 
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -118,3 +120,5 @@ Iter1 rfind_not_of(Iter1 last, size_t length, Iter2 substr, size_t sublen)
     }
     return nullptr;
 }
+
+PYCPP_END_NAMESPACE

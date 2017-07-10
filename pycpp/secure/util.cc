@@ -12,10 +12,10 @@
 
 #define __STDC_WANT_LIB_EXT1__ 1
 
-#include <compiler.h>
-#include <os.h>
-#include <random.h>
-#include <secure/string.h>
+#include <pycpp/compiler.h>
+#include <pycpp/os.h>
+#include <pycpp/random.h>
+#include <pycpp/secure/string.h>
 #include <assert.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -33,6 +33,8 @@
 #   include <strings.h>
 #   include <unistd.h>
 #endif
+
+PYCPP_BEGIN_NAMESPACE
 
 // MACROS
 // ------
@@ -808,3 +810,5 @@ WEAK_ASM(secure_memcpy);
 WEAK_ASM(secure_memmove);
 WEAK_ASM(secure_memcmp);
 WEAK_ASM(secure_zero);
+
+PYCPP_END_NAMESPACE

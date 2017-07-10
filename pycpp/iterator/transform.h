@@ -7,10 +7,12 @@
 
 #pragma once
 
-#include <ordering.h>
+#include <pycpp/ordering.h>
 #include <iterator>
 #include <tuple>
 #include <type_traits>
+
+PYCPP_BEGIN_NAMESPACE
 
 // DECLARATION
 // -----------
@@ -280,3 +282,5 @@ auto transform_iterator<It, F>::operator*() const -> value_type
 {
     return function(*it);
 }
+
+PYCPP_END_NAMESPACE

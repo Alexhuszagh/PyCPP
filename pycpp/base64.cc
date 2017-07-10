@@ -1,9 +1,11 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <base64.h>
+#include <pycpp/base64.h>
 #include <cmath>
 #include <iterator>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -229,3 +231,5 @@ std::string base64_decode(const std::string& str)
 
     return base64;
 }
+
+PYCPP_END_NAMESPACE

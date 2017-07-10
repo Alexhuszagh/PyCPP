@@ -5,12 +5,14 @@
  *  [reference] http://openwall.info/wiki/people/solar/software/public-domain-source-code/md5
  */
 
-#include <hashlib.h>
-#include <processor.h>
+#include <pycpp/hashlib.h>
+#include <pycpp/processor.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <cstring>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -379,5 +381,7 @@ secure_string md5_hash::hexdigest() const
 #undef SET
 #undef GET
 #undef MD5_OUT
+
+PYCPP_END_NAMESPACE
 
 #include <warnings/pop.h>

@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <string>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -119,3 +122,5 @@ size_t unhex_i64(const void* src, size_t srclen, void* dst, size_t dstlen);
  *  \brief Undo hex representation of 64-bit signed type.
  */
 std::string unhex_i64(const std::string& str);
+
+PYCPP_END_NAMESPACE

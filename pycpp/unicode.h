@@ -11,7 +11,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <string>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -147,3 +150,5 @@ size_t utf32_to_utf16(const void *src, size_t srclen, void* dst, size_t dstlen);
 /** \brief Convert UTF-32 string to UTF-16.
  */
 std::string utf32_to_utf16(const std::string& str);
+
+PYCPP_END_NAMESPACE

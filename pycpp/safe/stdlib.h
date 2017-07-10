@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <cstdlib>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -31,3 +34,5 @@ void* safe_calloc(size_t num, size_t size);
  *  \brief Throws std::bad_alloc if memory cannot be allocated.
  */
 void safe_free(void* ptr);
+
+PYCPP_END_NAMESPACE

@@ -1,9 +1,11 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <safe/stdlib.h>
+#include <pycpp/safe/stdlib.h>
 #include <new>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -44,3 +46,5 @@ void safe_free(void* ptr)
 {
     free(ptr);
 }
+
+PYCPP_END_NAMESPACE

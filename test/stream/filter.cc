@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 
+PYCPP_USING_NAMESPACE
 
 // FUNCTIONS
 // ---------

@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <cstdlib>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -86,3 +89,5 @@ int secure_mlock(void* ptr, const size_t len);
  *  \brief Unlock access to memory
  */
 int secure_munlock(void* ptr, const size_t len);
+
+PYCPP_END_NAMESPACE

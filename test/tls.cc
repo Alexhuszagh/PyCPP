@@ -5,10 +5,13 @@
  *  \brief Thread-local storage unittests.
  */
 
+#include <pycpp/config.h>
 #include <pycpp/tls.h>
 #include <gtest/gtest.h>
 #include <thread>
 #include <vector>
+
+PYCPP_USING_NAMESPACE
 
 // STORAGE
 // -------

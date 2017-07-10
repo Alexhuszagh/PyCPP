@@ -5,8 +5,11 @@
  *  \brief Compiler detection unittests.
  */
 
+#include <pycpp/config.h>
 #include <pycpp/compiler.h>
 #include <gtest/gtest.h>
+
+PYCPP_USING_NAMESPACE
 
 // TESTS
 // -----

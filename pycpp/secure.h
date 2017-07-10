@@ -10,5 +10,5 @@
 
 #pragma once
 
-#include <secure/allocator.h>
-#include <secure/string.h>
+#include <pycpp/secure/allocator.h>
+#include <pycpp/secure/string.h>

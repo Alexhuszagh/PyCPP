@@ -5,9 +5,8 @@
  *  \brief macOS-specific path normalization routines.
  */
 
-#include <os.h>
+#include <pycpp/os.h>
 
 #if defined(OS_MACOS)
-#include <filesystem.h>
-
+#   include <pycpp/filesystem.h>
 #endif

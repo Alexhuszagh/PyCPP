@@ -5,12 +5,14 @@
  *  [reference] https://github.com/rhash/RHash
  */
 
-#include <architecture.h>
-#include <byteorder.h>
-#include <hashlib.h>
+#include <pycpp/architecture.h>
+#include <pycpp/byteorder.h>
+#include <pycpp/hashlib.h>
 #include <cassert>
 #include <cstring>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -614,3 +616,5 @@ secure_string sha3_512_hash::hexdigest() const
     sha3_context copy = *ctx;
     return hash_hexdigest(&copy, SHA3_512_HASH_SIZE, sha3_final);
 }
+
+PYCPP_END_NAMESPACE

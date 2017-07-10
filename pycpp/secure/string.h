@@ -20,9 +20,11 @@
 
 #pragma once
 
-#include <secure/allocator.h>
-#include <secure/char_traits.h>
-#include <view/string.h>
+#include <pycpp/secure/allocator.h>
+#include <pycpp/secure/char_traits.h>
+#include <pycpp/view/string.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
@@ -1647,3 +1649,4 @@ typedef basic_string_view<wchar_t, secure_char_traits<wchar_t>> secure_wstring_v
 typedef basic_string_view<char16_t, secure_char_traits<char16_t>> secure_u16string_view;
 typedef basic_string_view<char32_t, secure_char_traits<char32_t>> secure_u32string_view;
 
+PYCPP_END_NAMESPACE

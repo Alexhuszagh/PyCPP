@@ -5,8 +5,9 @@
  *  [reference] https://github.com/B-Con/crypto-algorithms
  */
 
-#include <cipher.h>
+#include <pycpp/cipher.h>
 
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -47,3 +48,5 @@ static void aes_key_setup(const uint8_t* key, uint32_t* w, int keysize)
 //        w[idx] = w[idx-Nk] ^ temp;
 //    }
 }
+
+PYCPP_END_NAMESPACE

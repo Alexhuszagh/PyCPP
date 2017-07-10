@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <stream/filter.h>
+#include <pycpp/stream/filter.h>
 #include <algorithm>
 #include <cstring>
 
@@ -379,7 +379,7 @@ void filter_ifstream::open(const std::string &name, std::ios_base::openmode mode
     rdbuf()->set_callback(c);
 }
 
-#ifdef HAVE_WFOPEN
+#ifdef PYCPP_HAVE_WFOPEN
 
 filter_ifstream::filter_ifstream(const std::wstring &name, std::ios_base::openmode mode, filter_callback c):
     filter_istream(file, c)
@@ -453,7 +453,7 @@ void filter_ofstream::open(const std::string &name, std::ios_base::openmode mode
     rdbuf()->set_callback(c);
 }
 
-#ifdef HAVE_WFOPEN
+#ifdef PYCPP_HAVE_WFOPEN
 
 filter_ofstream::filter_ofstream(const std::wstring &name, std::ios_base::openmode mode, filter_callback c):
     filter_ostream(file, c)

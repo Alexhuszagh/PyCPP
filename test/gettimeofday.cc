@@ -10,6 +10,8 @@
 #include <chrono>
 #include <thread>
 
+PYCPP_USING_NAMESPACE
+
 
 // TESTS
 // -----

@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include "compiler.h"
+#include <pycpp/config.h>
+#include <pycpp/compiler.h>
 #include <utility>
 #include <type_traits>
 #include <initializer_list>
@@ -17,6 +18,8 @@
 #include <string>
 #include <stdexcept>
 #include <type_traits>
+
+PYCPP_BEGIN_NAMESPACE
 
 // MACROS
 // ------
@@ -1195,3 +1198,5 @@ struct hash<optional<T&>>
 
 #undef TR2_OPTIONAL_REQUIRES
 #undef TR2_OPTIONAL_ASSERTED_EXPRESSION
+
+PYCPP_END_NAMESPACE

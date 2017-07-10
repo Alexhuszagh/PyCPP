@@ -1,14 +1,16 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <optional.h>
-#include <random.h>
-#include <tls.h>
+#include <pycpp/optional.h>
+#include <pycpp/random.h>
+#include <pycpp/tls.h>
 #include <chrono>
 #include <cstring>
 #include <ctime>
 #include <memory>
 #include <random>
+
+PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
@@ -202,3 +204,5 @@ random_list_t weibullvariate(random_t alpha, random_t beta, size_t n)
     std::weibull_distribution<random_t> distribution(alpha, beta);
     return random_list(distribution, n);
 }
+
+PYCPP_END_NAMESPACE

@@ -8,6 +8,8 @@
 #include <pycpp/view/string.h>
 #include <gtest/gtest.h>
 
+PYCPP_USING_NAMESPACE
+
 // DATA
 // ----
 

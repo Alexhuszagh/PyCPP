@@ -1,8 +1,10 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <json/core.h>
+#include <pycpp/json/core.h>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
@@ -330,3 +332,5 @@ void json_value_t::reset()
 
     type_ = json_null_type;
 }
+
+PYCPP_END_NAMESPACE

@@ -2,13 +2,15 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 
-#include <casemap.h>
-#include <codec.h>
-#include <unicode.h>
+#include <pycpp/casemap.h>
+#include <pycpp/codec.h>
+#include <pycpp/unicode.h>
 #include <algorithm>
 #include <cctype>
 #include <iterator>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -732,3 +734,5 @@ std::u32string utf32_capitalize(const std::u32string &str)
 
     return upper;
 }
+
+PYCPP_END_NAMESPACE

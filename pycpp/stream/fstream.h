@@ -7,18 +7,19 @@
 
 #pragma once
 
-#include <compiler.h>
+#include <pycpp/config.h>
+#include <pycpp/compiler.h>
 #include <fstream>
 #if defined(HAVE_GCC)
-#   include <os.h>
+#   include <pycpp/os.h>
 #   include <ext/stdio_filebuf.h>
 #   include <stdio.h>
 #   include <iostream>
 #   if defined(_wfopen)
-#       define HAVE_WFOPEN
+#       define PYCPP_HAVE_WFOPEN
 #   endif
 #elif defined(HAVE_MSVC)
-#   define HAVE_WFOPEN
+#   define PYCPP_HAVE_WFOPEN
 #endif
 
 
@@ -45,7 +46,7 @@ public:
     fstream(const std::string &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::string &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
     fstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 #endif
@@ -82,7 +83,7 @@ public:
     ifstream(const std::string &name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::string &name, std::ios_base::openmode mode = std::ios_base::in);
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
     ifstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in);
 #endif
@@ -118,7 +119,7 @@ public:
     ofstream(const std::string &name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::string &name, std::ios_base::openmode mode = std::ios_base::out);
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
     ofstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::out);
 #endif

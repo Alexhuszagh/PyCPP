@@ -7,5 +7,5 @@
 
 #pragma once
 
-#include <itertools/product.h>
-#include <itertools/sampling.h>
+#include <pycpp/itertools/product.h>
+#include <pycpp/itertools/sampling.h>

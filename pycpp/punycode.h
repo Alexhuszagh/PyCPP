@@ -8,8 +8,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <string>
 
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -37,3 +39,5 @@ std::string punycode_to_utf16(const std::string &str);
 /** \brief Convert Punycode to UTF-32.
  */
 std::string punycode_to_utf32(const std::string &str);
+
+PYCPP_END_NAMESPACE

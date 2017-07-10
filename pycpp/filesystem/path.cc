@@ -5,9 +5,11 @@
  *  \brief Path normalization routines.
  */
 
-#include <filesystem.h>
-#include <stringlib.h>
+#include <pycpp/filesystem.h>
+#include <pycpp/stringlib.h>
 #include <algorithm>
+
+PYCPP_BEGIN_NAMESPACE
 
 // HELPERS
 // -------
@@ -268,3 +270,5 @@ backup_path_t relpath(const backup_path_t& path, const backup_path_t& start)
 }
 
 #endif
+
+PYCPP_END_NAMESPACE

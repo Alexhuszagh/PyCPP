@@ -7,9 +7,12 @@
 
 #pragma once
 
-#include <secure/string.h>
+#include <pycpp/config.h>
+#include <pycpp/secure/string.h>
 #include <string>
 #include <utility>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FORWARD
 // -------
@@ -153,3 +156,5 @@ SPECIALIZED_HASH(sha3_256, sha3);
 SPECIALIZED_HASH(sha3_384, sha3);
 SPECIALIZED_HASH(sha3_512, sha3);
 SPECIALIZED_HASH(whirlpool, whirlpool);
+
+PYCPP_END_NAMESPACE

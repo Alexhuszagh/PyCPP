@@ -7,10 +7,12 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <cstdlib>
 #include <type_traits>
 #include <utility>
 
+PYCPP_BEGIN_NAMESPACE
 
 // DECLARATION
 // -----------
@@ -166,3 +168,5 @@ void pimpl<T, S>::swap(self& other)
 {
     std::swap(mem, other.mem);
 }
+
+PYCPP_END_NAMESPACE

@@ -4,6 +4,7 @@
 #include <pycpp/secure/util.h>
 #include <gtest/gtest.h>
 
+PYCPP_USING_NAMESPACE
 
 // TESTS
 // -----

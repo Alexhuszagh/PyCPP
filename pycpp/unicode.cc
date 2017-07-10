@@ -5,11 +5,13 @@
 //  :copyright: (c) Copyright 2001-2011 Joel de Guzman.
 //  :license: Boost, see licenses/boost.md for more details.
 
-#include <safe/stdlib.h>
-#include <unicode.h>
+#include <pycpp/safe/stdlib.h>
+#include <pycpp/unicode.h>
 #include <algorithm>
 #include <functional>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // MACROS
 // ------
@@ -837,3 +839,5 @@ std::string utf32_to_utf16(const std::string& str)
 {
     return to_narrow<uint32_t, uint16_t>()(str, utf32_to_utf16_ptr);
 }
+
+PYCPP_END_NAMESPACE

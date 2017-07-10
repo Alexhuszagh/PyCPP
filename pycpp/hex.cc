@@ -1,10 +1,12 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Unicode, see licenses/unicode.md for more details.
 
-#include <base16.h>
-#include <byteorder.h>
-#include <hex.h>
+#include <pycpp/base16.h>
+#include <pycpp/byteorder.h>
+#include <pycpp/hex.h>
 #include <cstring>
+
+PYCPP_BEGIN_NAMESPACE
 
 // HELPERS
 // -------
@@ -203,3 +205,5 @@ std::string unhex_i64(const std::string& str)
 {
     return unhex(str, 8);
 }
+
+PYCPP_END_NAMESPACE

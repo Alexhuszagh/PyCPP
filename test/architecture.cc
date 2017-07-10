@@ -5,9 +5,11 @@
  *  \brief Architecture unittests.
  */
 
+#include <pycpp/config.h>
 #include <pycpp/architecture.h>
 #include <gtest/gtest.h>
 
+PYCPP_USING_NAMESPACE
 
 // TESTS
 // -----

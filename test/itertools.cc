@@ -11,6 +11,8 @@
 #include <map>
 #include <numeric>
 
+PYCPP_USING_NAMESPACE
+
 // DATA
 // ----
 

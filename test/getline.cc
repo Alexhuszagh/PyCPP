@@ -8,6 +8,8 @@
 #include <pycpp/getline.h>
 #include <gtest/gtest.h>
 
+PYCPP_USING_NAMESPACE
+
 // TESTS
 // -----
 

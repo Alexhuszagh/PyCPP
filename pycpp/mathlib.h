@@ -7,4 +7,4 @@
 
 #pragma once
 
-#include <mathlib/array.h>
+#include <pycpp/mathlib/array.h>

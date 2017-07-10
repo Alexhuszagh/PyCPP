@@ -7,10 +7,13 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <cstdint>
 #include <string>
 #include <unordered_map>
 #include <vector>
+
+PYCPP_BEGIN_NAMESPACE
 
 // ENUMS
 // -----
@@ -119,3 +122,5 @@ private:
 
     void reset();
 };
+
+PYCPP_END_NAMESPACE

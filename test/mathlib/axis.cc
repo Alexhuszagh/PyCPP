@@ -5,7 +5,7 @@
  *  \brief Numerical array axis unittests.
  */
 
-#include <mathlib/axis.h>
+#include <pycpp/mathlib/axis.h>
 #include <gtest/gtest.h>
 
 

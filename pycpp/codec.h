@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <string>
 
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -36,3 +38,5 @@ std::string codec_utf32_utf8(const std::u32string& str);
 /** \brief Convert UTF-32 string to UTF-16.
  */
 std::u16string codec_utf32_utf16(const std::u32string& str);
+
+PYCPP_END_NAMESPACE

@@ -1,9 +1,11 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <xml/dom.h>
+#include <pycpp/xml/dom.h>
 #include <sstream>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
@@ -77,7 +79,7 @@ void xml_document_t::load(const std::string& path)
 }
 
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
 
 void xml_document_t::load(const std::wstring& path)
 {
@@ -112,7 +114,7 @@ void xml_document_t::dump(const std::string& path, char c, int width)
 }
 
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
 
 void xml_document_t::dump(const std::wstring& path, char c, int width)
 {
@@ -121,3 +123,5 @@ void xml_document_t::dump(const std::wstring& path, char c, int width)
 }
 
 #endif
+
+PYCPP_END_NAMESPACE

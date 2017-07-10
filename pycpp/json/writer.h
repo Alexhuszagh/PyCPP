@@ -7,10 +7,11 @@
 
 #pragma once
 
-#include <json/core.h>
-#include <stream/fstream.h>
-#include <view/string.h>
+#include <pycpp/json/core.h>
+#include <pycpp/stream/fstream.h>
+#include <pycpp/view/string.h>
 
+PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
@@ -74,7 +75,7 @@ public:
     json_file_writer(const std::string &name);
     void open(const std::string &name);
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
     json_file_writer(const std::wstring &name);
     void open(const std::wstring &name);
 #endif
@@ -82,3 +83,5 @@ public:
 private:
     ofstream file_;
 };
+
+PYCPP_END_NAMESPACE

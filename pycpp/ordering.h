@@ -7,6 +7,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
+
+PYCPP_BEGIN_NAMESPACE
+
 
 // FUNCTIONS
 // ---------
@@ -46,3 +50,5 @@ bool greater_equal(const T& left, const T& right)
 {
     return !(left < right);
 }
+
+PYCPP_END_NAMESPACE

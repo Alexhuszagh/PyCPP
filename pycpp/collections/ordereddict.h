@@ -8,7 +8,8 @@
 
 #pragma once
 
-#include <compiler.h>
+#include <pycpp/config.h>
+#include <pycpp/compiler.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -25,6 +26,8 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
+
+PYCPP_BEGIN_NAMESPACE
 
 // MACROS
 // ------
@@ -2397,3 +2400,5 @@ public:
 private:
     ht m_ht;
 };
+
+PYCPP_END_NAMESPACE

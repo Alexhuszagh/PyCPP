@@ -8,7 +8,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <string>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -27,3 +30,5 @@ std::string url_encode(const std::string &string);
  *  \return             URL-decoded string
  */
 std::string url_decode(const std::string &string);
+
+PYCPP_END_NAMESPACE

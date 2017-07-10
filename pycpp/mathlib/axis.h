@@ -11,9 +11,11 @@
 
 #pragma once
 
-#include <ordering.h>
+#include <pycpp/ordering.h>
 #include <cstdint>
 #include <memory>
+
+PYCPP_BEGIN_NAMESPACE
 
 // DECLARATIONS
 // ------------
@@ -552,3 +554,5 @@ auto ndarray_axis<T>::operator/(const value_type& value) -> self
     copy /= value;
     return copy;
 }
+
+PYCPP_END_NAMESPACE

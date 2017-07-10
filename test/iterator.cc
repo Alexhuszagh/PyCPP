@@ -9,6 +9,8 @@
 #include <gtest/gtest.h>
 #include <vector>
 
+PYCPP_USING_NAMESPACE
+
 // FUNCTIONS
 // ---------
 

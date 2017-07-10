@@ -8,6 +8,8 @@
 #include <pycpp/url.h>
 #include <gtest/gtest.h>
 
+PYCPP_USING_NAMESPACE
+
 // TESTS
 // -----
 

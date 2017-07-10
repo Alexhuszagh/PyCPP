@@ -7,10 +7,13 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #ifndef _MSC_VER
 #   include <sys/time.h>
 #else
 #   include <winsock2.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -23,3 +26,5 @@
 int gettimeofday(struct timeval* tp, void* tz);
 
 #endif
+
+PYCPP_END_NAMESPACE

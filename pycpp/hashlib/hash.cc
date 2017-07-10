@@ -5,8 +5,10 @@
  *  \brief Generic hash structure.
  */
 
-#include <hashlib.h>
-#include <hex.h>
+#include <pycpp/hashlib.h>
+#include <pycpp/hex.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -373,3 +375,5 @@ secure_string hash::hexdigest() const
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
     return std::move(functor.str);
 }
+
+PYCPP_END_NAMESPACE

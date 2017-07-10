@@ -7,7 +7,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <string>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -197,3 +200,5 @@ std::string utf32_capitalize(const std::string &str);
 /** \brief Capitalize UTF32 string.
  */
 std::u32string utf32_capitalize(const std::u32string &str);
+
+PYCPP_END_NAMESPACE

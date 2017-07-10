@@ -8,11 +8,13 @@
 
 #pragma once
 
-#include <string/find.h>
+#include <pycpp/config.h>
+#include <pycpp/string/find.h>
 #include <cassert>
 #include <stdexcept>
 #include <string>
 
+PYCPP_BEGIN_NAMESPACE
 
 // DECLARATION
 // -----------
@@ -1310,3 +1312,5 @@ typedef basic_string_view<char> string_view;
 typedef basic_string_view<wchar_t> wstring_view;
 typedef basic_string_view<char16_t> u16string_view;
 typedef basic_string_view<char32_t> u32string_view;
+
+PYCPP_END_NAMESPACE

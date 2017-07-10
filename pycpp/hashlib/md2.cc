@@ -5,10 +5,12 @@
  *  [reference] https://github.com/B-Con/crypto-algorithms
  */
 
-#include <hashlib.h>
-#include <processor.h>
+#include <pycpp/hashlib.h>
+#include <pycpp/processor.h>
 #include <cstring>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -175,3 +177,5 @@ secure_string md2_hash::hexdigest() const
     md2_context copy = *ctx;
     return hash_hexdigest(&copy, MD2_HASH_SIZE, md2_final);
 }
+
+PYCPP_END_NAMESPACE

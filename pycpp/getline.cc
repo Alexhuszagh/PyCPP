@@ -1,7 +1,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <getline.h>
+#include <pycpp/getline.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -37,3 +39,5 @@ std::istream& getline(std::istream& stream, std::string& line)
         }
     }
 }
+
+PYCPP_END_NAMESPACE

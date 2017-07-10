@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <istream>
 
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -18,3 +20,5 @@
  *  Getline implementation which stops at "\r", "\n", or both.
  */
 std::istream& getline(std::istream& stream, std::string& line);
+
+PYCPP_END_NAMESPACE

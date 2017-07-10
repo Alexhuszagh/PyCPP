@@ -5,16 +5,19 @@
  *  \brief Windows-specific path normalization routines.
  */
 
-#include <os.h>
+#include <pycpp/config.h>
+#include <pycpp/os.h>
 
 #if defined(OS_WINDOWS)
-#include <casemap.h>
-#include <filesystem.h>
-#include <filesystem/exception.h>
+#include <pycpp/casemap.h>
+#include <pycpp/filesystem.h>
+#include <pycpp/filesystem/exception.h>
 #include <io.h>
 #include <windows.h>
 #include <sys/stat.h>
 #include <algorithm>
+
+PYCPP_BEGIN_NAMESPACE
 
 // MACROS
 // ------
@@ -742,3 +745,5 @@ bool makedirs(const backup_path_t& path, int mode)
 //}
 
 #endif
+
+PYCPP_END_NAMESPACE

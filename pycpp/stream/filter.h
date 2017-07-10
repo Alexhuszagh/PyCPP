@@ -12,7 +12,8 @@
 
 #pragma once
 
-#include <stream/fstream.h>
+#include <pycpp/config.h>
+#include <pycpp/stream/fstream.h>
 #include <functional>
 #include <iostream>
 #include <sstream>
@@ -160,7 +161,7 @@ public:
     filter_ifstream(const std::string &name, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
     void open(const std::string &name, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
     filter_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
     void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
 #endif
@@ -191,7 +192,7 @@ public:
     filter_ofstream(const std::string &name, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
     void open(const std::string &name, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
     filter_ofstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
     void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
 #endif

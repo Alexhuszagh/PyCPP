@@ -34,12 +34,14 @@
 
 #pragma once
 
-#include <safe/stdlib.h>
+#include <pycpp/safe/stdlib.h>
 #include <algorithm>
 #include <iterator>
 #include <functional>
 #include <type_traits>
 #include <vector>
+
+PYCPP_BEGIN_NAMESPACE
 
 // DETAIL
 // ------
@@ -426,3 +428,5 @@ void product(const T& t, F f)
 {
     cartesian_product()(t, f);
 }
+
+PYCPP_END_NAMESPACE

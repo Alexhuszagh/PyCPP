@@ -7,9 +7,11 @@
 
 #pragma once
 
-#include <json/sax.h>
-#include <json/writer.h>
+#include <pycpp/json/sax.h>
+#include <pycpp/json/writer.h>
 #include <deque>
+
+PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
@@ -51,14 +53,16 @@ struct json_document_t: json_value_t
     void loads(const std::string&);
     void load(std::istream&);
     void load(const std::string&);
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
     void load(const std::wstring&);
 #endif
 
     std::string dumps(char = ' ', int = 4);
     void dump(std::ostream&, char = ' ', int = 4);
     void dump(const std::string&, char = ' ', int = 4);
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
     void dump(const std::wstring&, char = ' ', int = 4);
 #endif
 };
+
+PYCPP_END_NAMESPACE

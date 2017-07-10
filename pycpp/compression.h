@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <compression/blosc.h>
-#include <compression/bzip2.h>
-#include <compression/xz.h>
-#include <compression/zlib.h>
+#include <pycpp/compression/blosc.h>
+#include <pycpp/compression/bzip2.h>
+#include <pycpp/compression/xz.h>
+#include <pycpp/compression/zlib.h>

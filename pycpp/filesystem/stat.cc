@@ -2,8 +2,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <filesystem.h>
-#include <filesystem/exception.h>
+#include <pycpp/filesystem.h>
+#include <pycpp/filesystem/exception.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -16,6 +16,8 @@
 #   include <limits.h>
 #   include <unistd.h>
 #endif
+
+PYCPP_BEGIN_NAMESPACE
 
 // MACROS
 // -------
@@ -782,3 +784,5 @@ bool copystat(const backup_path_t& src, const backup_path_t& dst)
 }
 
 #endif
+
+PYCPP_END_NAMESPACE

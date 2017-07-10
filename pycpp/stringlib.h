@@ -11,9 +11,12 @@
 
 #pragma once
 
-#include <view/string.h>
+#include <pycpp/config.h>
+#include <pycpp/view/string.h>
 #include <functional>
 #include <vector>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FORWARD
 // -------
@@ -171,3 +174,5 @@ struct string_wrapper: string_view
     size_t rindex(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
     size_t count(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
 };
+
+PYCPP_END_NAMESPACE

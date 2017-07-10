@@ -11,8 +11,11 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <string.h>
 #include <string>
+
+PYCPP_BEGIN_NAMESPACE
 
 // DECLARATION
 // -----------
@@ -178,3 +181,5 @@ constexpr auto secure_char_traits<C>::eof() noexcept -> int_type
 {
     return int_type(EOF);
 }
+
+PYCPP_END_NAMESPACE

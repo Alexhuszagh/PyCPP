@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+PYCPP_USING_NAMESPACE
+
 // CONSTANTS
 // ---------
 

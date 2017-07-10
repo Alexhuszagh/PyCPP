@@ -7,8 +7,10 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <stdexcept>
 
+PYCPP_BEGIN_NAMESPACE
 
 // ENUMS
 // ----
@@ -46,3 +48,5 @@ public:
 private:
     filesystem_code code_;
 };
+
+PYCPP_END_NAMESPACE

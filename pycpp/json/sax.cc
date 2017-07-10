@@ -1,9 +1,11 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <json/sax.h>
+#include <pycpp/json/sax.h>
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/reader.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // HELPERS
 // -------
@@ -229,7 +231,7 @@ void json_file_reader::parse(const std::string &name)
 }
 
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
 
 
 json_file_reader::json_file_reader(const std::wstring &name)
@@ -260,3 +262,5 @@ void json_file_reader::parse()
     }
     json_stream_reader::parse(file_);
 }
+
+PYCPP_END_NAMESPACE

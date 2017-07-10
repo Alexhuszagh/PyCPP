@@ -1,7 +1,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <filesystem/exception.h>
+#include <pycpp/filesystem/exception.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // EXCEPTIONS
 // ----------
@@ -42,3 +44,5 @@ const char* filesystem_error::what() const throw ()
             return "Unexpected error in stat.";
     }
 }
+
+PYCPP_END_NAMESPACE

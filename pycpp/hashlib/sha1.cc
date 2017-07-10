@@ -2,13 +2,15 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <architecture.h>
-#include <hashlib.h>
+#include <pycpp/architecture.h>
+#include <pycpp/hashlib.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <cstdio>
 #include <cstring>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -339,5 +341,7 @@ secure_string sha1_hash::hexdigest() const
 #undef R2
 #undef R3
 #undef R4
+
+PYCPP_END_NAMESPACE
 
 #include <warnings/pop.h>

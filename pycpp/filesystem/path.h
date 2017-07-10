@@ -7,10 +7,12 @@
 
 #pragma once
 
-#include <codec.h>
-#include <os.h>
+#include <pycpp/codec.h>
+#include <pycpp/os.h>
 #include <deque>
 #include <string>
+
+PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
@@ -70,3 +72,5 @@
 #   define path_separator path_prefix('/')
 #   define path_separators path_t(path_prefix("/"))
 #endif
+
+PYCPP_END_NAMESPACE

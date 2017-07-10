@@ -11,6 +11,7 @@
 #include <ctime>
 #include <sys/types.h>
 
+PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
@@ -51,3 +52,5 @@ struct stat_t
 };
 
 #endif
+
+PYCPP_END_NAMESPACE

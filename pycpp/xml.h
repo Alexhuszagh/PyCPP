@@ -7,4 +7,4 @@
 
 #pragma once
 
-#include <xml/dom.h>
+#include <pycpp/xml/dom.h>

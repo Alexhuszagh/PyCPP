@@ -1,13 +1,15 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <xml/core.h>
+#include <pycpp/xml/core.h>
 #include <multi_index_container.hpp>
 #include <multi_index/hashed_index.hpp>
 #include <multi_index/indexed_by.hpp>
 #include <multi_index/mem_fun.hpp>
 #include <multi_index/sequenced_index.hpp>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
@@ -751,3 +753,5 @@ void xml_node_t::swap(self& other)
 {
     std::swap(ptr_, other.ptr_);
 }
+
+PYCPP_END_NAMESPACE

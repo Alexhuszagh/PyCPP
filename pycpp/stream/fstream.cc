@@ -16,8 +16,8 @@
  *  2. https://github.com/llvm-mirror/libcxx/blob/master/include/fstream#L132
  */
 
-#include <codec.h>
-#include <stream/fstream.h>
+#include <pycpp/codec.h>
+#include <pycpp/stream/fstream.h>
 
 
 #if defined(HAVE_GCC)                   // GCC
@@ -86,7 +86,7 @@ FILE * get_c_file(const std::string &narrow, std::ios_base::openmode mode)
 }
 
 
-#ifdef HAVE_WFOPEN
+#ifdef PYCPP_HAVE_WFOPEN
 
 /** \brief Get C FILE pointer from wide filename.
  */
@@ -145,7 +145,7 @@ void fstream::open(const std::string &name, std::ios_base::openmode mode)
     std::ios::rdbuf(&buffer);
 }
 
-#ifdef HAVE_WFOPEN
+#ifdef PYCPP_HAVE_WFOPEN
 
 fstream::fstream(const std::wstring &name, std::ios_base::openmode mode)
 {
@@ -241,7 +241,7 @@ void ifstream::open(const std::string &name, std::ios_base::openmode mode)
     std::ios::rdbuf(&buffer);
 }
 
-#ifdef HAVE_WFOPEN
+#ifdef PYCPP_HAVE_WFOPEN
 
 ifstream::ifstream(const std::wstring &name, std::ios_base::openmode mode)
 {
@@ -334,7 +334,7 @@ void ofstream::open(const std::string &name, std::ios_base::openmode mode)
     std::ios::rdbuf(&buffer);
 }
 
-#ifdef HAVE_WFOPEN
+#ifdef PYCPP_HAVE_WFOPEN
 
 ofstream::ofstream(const std::wstring &name, std::ios_base::openmode mode)
 {

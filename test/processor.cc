@@ -5,8 +5,11 @@
  *  \brief Processor detection unittests.
  */
 
+#include <pycpp/config.h>
 #include <pycpp/processor.h>
 #include <gtest/gtest.h>
+
+PYCPP_USING_NAMESPACE
 
 // TESTS
 // -----

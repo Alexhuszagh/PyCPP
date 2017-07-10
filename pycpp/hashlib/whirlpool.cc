@@ -5,11 +5,13 @@
  *  [reference] https://github.com/rhash/RHash
  */
 
-#include <architecture.h>
-#include <byteorder.h>
-#include <hashlib.h>
+#include <pycpp/architecture.h>
+#include <pycpp/byteorder.h>
+#include <pycpp/hashlib.h>
 #include <cstring>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
@@ -817,3 +819,5 @@ secure_string whirlpool_hash::hexdigest() const
     whirlpool_context copy = *ctx;
     return hash_hexdigest(&copy, WHIRLPOOL_HASH_SIZE, whirlpool_final);
 }
+
+PYCPP_END_NAMESPACE

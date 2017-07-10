@@ -2,7 +2,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 
-#include <url.h>
+#include <pycpp/url.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // HELPERS
 // -------
@@ -91,3 +93,5 @@ std::string url_decode(const std::string &string)
     result.shrink_to_fit();
     return result;
 }
+
+PYCPP_END_NAMESPACE

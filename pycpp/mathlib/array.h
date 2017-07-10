@@ -7,8 +7,10 @@
 
 #pragma once
 
-#include <mathlib/axis.h>
+#include <pycpp/mathlib/axis.h>
 #include <vector>
+
+PYCPP_BEGIN_NAMESPACE
 
 // DECLARATIONS
 // ------------
@@ -285,3 +287,5 @@ void ndarray<T, A>::swap(self& arr)
     std::swap(vector_, arr.vector_);
     std::swap(dims_, arr.dims_);
 }
+
+PYCPP_END_NAMESPACE

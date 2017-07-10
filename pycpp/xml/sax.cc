@@ -1,11 +1,12 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/xml/sax.h>
 #include <libxml/tree.h>
 #include <libxml/xmlreader.h>
-#include <xml/sax.h>
 #include <cstring>
 
+PYCPP_BEGIN_NAMESPACE
 
 // HELPERS
 // -------
@@ -337,7 +338,7 @@ void xml_file_reader::parse(const std::string &name)
 }
 
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
 
 
 xml_file_reader::xml_file_reader(const std::wstring &name)
@@ -368,3 +369,5 @@ void xml_file_reader::parse()
     }
     xml_stream_reader::parse(file_);
 }
+
+PYCPP_END_NAMESPACE

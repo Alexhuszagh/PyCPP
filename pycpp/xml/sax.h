@@ -7,9 +7,12 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <pycpp/xml/core.h>
 #include <pycpp/stream/fstream.h>
 #include <pycpp/view/string.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
@@ -69,7 +72,7 @@ public:
     void open(const std::string &name);
     void parse(const std::string &name);
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
     xml_file_reader(const std::wstring &name);
     void open(const std::wstring &name);
     void parse(const std::wstring &name);
@@ -80,3 +83,5 @@ public:
 private:
     ifstream file_;
 };
+
+PYCPP_END_NAMESPACE

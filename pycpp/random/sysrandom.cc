@@ -9,8 +9,8 @@
  *  are used for truly random bytes.
  */
 
-#include <os.h>
-#include <random.h>
+#include <pycpp/os.h>
+#include <pycpp/random.h>
 #if defined(OS_WINDOWS)
 #   include <windows.h>
 #   include <wincrypt.h>
@@ -21,6 +21,8 @@
 
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -89,5 +91,7 @@ std::string sysrandom(size_t length)
     delete[] dst;
     return output;
 }
+
+PYCPP_END_NAMESPACE
 
 #include <warnings/pop.h>

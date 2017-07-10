@@ -7,8 +7,11 @@
 
 #pragma once
 
-#include <view/string.h>
+#include <pycpp/config.h>
+#include <pycpp/view/string.h>
 #include <string>
+
+PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
@@ -32,3 +35,5 @@ private:
 // TODO?
 //    aes_context* ctx;
 };
+
+PYCPP_END_NAMESPACE

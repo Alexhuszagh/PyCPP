@@ -5,17 +5,19 @@
  *  \brief POSIX-specific path normalization routines.
  */
 
-#include <os.h>
+#include <pycpp/os.h>
 
 #if defined(OS_POSIX)                           // POSIX & MACOS
-#include <filesystem.h>
-#include <filesystem/exception.h>
-#include <unicode.h>
+#include <pycpp/filesystem.h>
+#include <pycpp/filesystem/exception.h>
+#include <pycpp/unicode.h>
 #include <limits.h>
 #include <unistd.h>
 #include <wordexp.h>
 #include <algorithm>
 #include <cstdlib>
+
+PYCPP_BEGIN_NAMESPACE
 
 // HELPERS
 // -------
@@ -510,3 +512,5 @@ backup_path_t normcase(const backup_path_t& path)
 }
 
 #endif
+
+PYCPP_END_NAMESPACE

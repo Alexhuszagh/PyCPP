@@ -16,8 +16,11 @@
 
 #pragma once
 
-#include <filesystem/path.h>
-#include <filesystem/stat.h>
+#include <pycpp/config.h>
+#include <pycpp/filesystem/path.h>
+#include <pycpp/filesystem/stat.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
@@ -351,3 +354,5 @@ bool mkdir(const backup_path_t& path, int = 0777);
 bool makedirs(const backup_path_t& path, int = 0777);
 
 #endif
+
+PYCPP_END_NAMESPACE

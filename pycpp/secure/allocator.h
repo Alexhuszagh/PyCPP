@@ -10,10 +10,12 @@
 
 #pragma once
 
-#include <secure/util.h>
+#include <pycpp/secure/util.h>
 #include <limits>
 #include <memory>
 #include <stdexcept>
+
+PYCPP_BEGIN_NAMESPACE
 
 // MACROS
 // ------
@@ -189,3 +191,5 @@ auto secure_allocator<T>::max_size(const secure_allocator<T>& other) noexcept ->
 {
     return other.max_size();
 }
+
+PYCPP_END_NAMESPACE

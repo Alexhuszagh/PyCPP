@@ -8,10 +8,12 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <algorithm>
 #include <cassert>
 #include <vector>
 
+PYCPP_BEGIN_NAMESPACE
 
 // DECLARATION
 // -----------
@@ -521,3 +523,5 @@ vector_view<T>::operator stl_type() const
 {
     return stl_type(begin(), end());
 }
+
+PYCPP_END_NAMESPACE

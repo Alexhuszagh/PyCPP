@@ -7,8 +7,11 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <string>
 #include <vector>
+
+PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
@@ -114,3 +117,4 @@ random_list_t weibullvariate(random_t alpha, random_t beta, size_t n);
 // class random.WichmannHill([seed])
 // random.whseed([x])
 
+PYCPP_END_NAMESPACE

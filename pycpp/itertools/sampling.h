@@ -15,6 +15,8 @@
 #include <iterator>
 #include <stdexcept>
 
+PYCPP_BEGIN_NAMESPACE
+
 // FUNCTIONS
 // ---------
 
@@ -1037,3 +1039,5 @@ std::uintmax_t count_each_reversible_circular_permutation(BidirIter first,
 {
     return count_each_reversible_circular_permutation<std::uintmax_t>(std::distance(first, mid), std::distance(mid, last));
 }
+
+PYCPP_END_NAMESPACE

@@ -1,9 +1,11 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <json/writer.h>
+#include <pycpp/json/writer.h>
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/prettywriter.h>
+
+PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
@@ -243,7 +245,7 @@ void json_file_writer::open(const std::string &name)
     file_.open(name, std::ios_base::binary);
 }
 
-#if defined(HAVE_WFOPEN)
+#if defined(PYCPP_HAVE_WFOPEN)
 
 
 json_file_writer::json_file_writer(const std::wstring &name):
@@ -259,3 +261,5 @@ void json_file_writer::open(const std::wstring &name)
 }
 
 #endif
+
+PYCPP_END_NAMESPACE
