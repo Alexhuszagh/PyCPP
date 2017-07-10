@@ -18,6 +18,3 @@ matrix:
 # Bug with 64-bit MSYS2 on WINE currently, disable temporarily.
 #    - 64
     - 32
-
-  - PYCPP_NAMESPACE: ""
-  - PYCPP_NAMESPACE: pycpp
