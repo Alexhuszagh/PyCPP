@@ -12,6 +12,30 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
+static xml_attr_t parse_attributes(const xmlChar** attrs)
+{
+    xml_attr_t attrib;
+
+    // parse the attrs
+    if (attrs != nullptr) {
+        // find start/end
+        const xmlChar** first = attrs;
+        const xmlChar** last = first;
+        while (*last != nullptr) {
+            ++last;
+        }
+
+        for (; first < last; ) {
+            std::string key((char*) *first++);
+            std::string value((char*) *first++);
+            attrib[std::move(key)] = std::move(value);
+        }
+    }
+
+    return attrib;
+}
+
+
 int stream_read(std::istream* stream, char* buffer, int length)
 {
     stream->read(buffer, length);
@@ -52,25 +76,7 @@ static void end_document_handler(void* data)
 static void start_element_handler(void* data, const xmlChar* name, const xmlChar** attrs)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    xml_attr_t attrib;
-
-    // parse the attrs
-    if (attrs != nullptr) {
-        // find start/end
-        const xmlChar** first = attrs;
-        const xmlChar** last = first;
-        while (*last != nullptr) {
-            ++last;
-        }
-
-        for (; first < last; ) {
-            std::string key((char*) *first++);
-            std::string value((char*) *first++);
-            attrib[std::move(key)] = std::move(value);
-        }
-    }
-
-    handler->start_element(string_view((char*) name), attrib);
+    handler->start_element(string_view((char*) name), parse_attributes(attrs));
 }
 
 
@@ -88,18 +94,34 @@ static void characters_handler(void* data, const xmlChar* ch, int len)
 }
 
 
+static void reference_handler(void* data, const xmlChar* name)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+//    handler->characters(string_view((char*) ch, len));
+}
+
+
 static void ignorable_whitespace_handler(void* data, const xmlChar* ch, int len)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-// TODO: implement...
-//    handler->ignorable_whitespace(string_view((char*) ch, len));
+    handler->ignorable_whitespace(string_view((char*) ch, len));
 }
 
 
 static void processing_instruction_handler(void* data, const xmlChar* target, const xmlChar* value)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-// TODO: implement...
+    handler->processing_instruction(string_view((char*) target), string_view((char*) value));
+}
+
+
+static void skipped_entity_handler(void* data, const xmlChar* name,
+                                   const xmlChar* public_id,
+                                   const xmlChar* system_id,
+                                   const xmlChar* notation_name)
+{
+    xml_sax_handler* handler = (xml_sax_handler*) data;
+    handler->skipped_entity(string_view((char*) name));
 }
 
 
@@ -110,7 +132,7 @@ void start_element_ns_handler(void* data, const xmlChar* localname,
                               const xmlChar** attrs)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    // TODO: implement
+    handler->start_element_ns(string_view((char*) uri), string_view((char*) prefix), string_view((char*) localname), parse_attributes(attrs));
 }
 
 
@@ -118,7 +140,7 @@ void end_element_ns_handler(void* data, const xmlChar* localname,
                             const xmlChar* prefix, const xmlChar* uri)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    // TODO: implement
+    handler->end_element_ns(string_view((char*) uri), string_view((char*) prefix), string_view((char*) localname));
 }
 
 
@@ -131,6 +153,12 @@ static void warning_handler(void* data, const char* msg, ...)
 
 
 static void error_handler(void* data, const char* msg, ...)
+{
+    throw std::runtime_error(msg);
+}
+
+
+static void fatal_error_handler(void* data, const char* msg, ...)
 {
     throw std::runtime_error(msg);
 }
@@ -158,40 +186,25 @@ handler_wrapper::handler_wrapper(xml_sax_handler& h):
 {
     memset(&private_, 0, sizeof(private_));
 
-// TODO: implement the rest of the callbacks
     private_.internalSubset = internal_subset_handler;
-//    isStandaloneSAXFunc isStandalone
-//    hasInternalSubsetSAXFunc    hasInternalSubset
-//    hasExternalSubsetSAXFunc    hasExternalSubset
-//    resolveEntitySAXFunc    resolveEntity
-//    getEntitySAXFunc    getEntity
-//    entityDeclSAXFunc   entityDecl
-//    notationDeclSAXFunc notationDecl
-//    attributeDeclSAXFunc    attributeDecl
-//    elementDeclSAXFunc  elementDecl
-//    unparsedEntityDeclSAXFunc   unparsedEntityDecl
-//    setDocumentLocatorSAXFunc   setDocumentLocator
+    private_.unparsedEntityDecl = skipped_entity_handler;
     private_.startDocument = start_document_handler;
     private_.endDocument = end_document_handler;
     private_.startElement = start_element_handler;
     private_.endElement = end_element_handler;
-//    referenceSAXFunc    reference
+    private_.reference = reference_handler;
     private_.characters = characters_handler;
     private_.ignorableWhitespace = ignorable_whitespace_handler;
     private_.processingInstruction = processing_instruction_handler;
     private_.comment = comment_handler;
     private_.warning = warning_handler;
     private_.error = error_handler;
-//    fatalErrorSAXFunc   fatalError  : unused error() get all the errors
-//    getParameterEntitySAXFunc   getParameterEntity
-//    cdataBlockSAXFunc   cdataBlock
-//    externalSubsetSAXFunc   externalSubset
+    private_.fatalError = fatal_error_handler;
     private_.initialized = XML_SAX2_MAGIC;
 
     if (public_->use_namespaces()) {
         private_.startElementNs = start_element_ns_handler;
         private_.endElementNs = end_element_ns_handler;
-//        xmlStructuredErrorFunc  serror
     }
 }
 
@@ -273,7 +286,7 @@ void xml_sax_handler::end_document()
 {}
 
 
-void xml_sax_handler::start_element(const string_view& content, xml_attr_t &attrs)
+void xml_sax_handler::start_element(const string_view& content, xml_attr_t&& attrs)
 {}
 
 
@@ -282,6 +295,26 @@ void xml_sax_handler::end_element(const string_view& content)
 
 
 void xml_sax_handler::characters(const string_view& content)
+{}
+
+
+void xml_sax_handler::start_element_ns(const string_view& uri, const string_view& prefix, const string_view& localname, xml_attr_t&& attrs)
+{}
+
+
+void xml_sax_handler::end_element_ns(const string_view& uri, const string_view& prefix, const string_view& localname)
+{}
+
+
+void xml_sax_handler::ignorable_whitespace(const string_view& whitespace)
+{}
+
+
+void xml_sax_handler::processing_instruction(const string_view& target, const string_view& data)
+{}
+
+
+void xml_sax_handler::skipped_entity(const string_view& name)
 {}
 
 

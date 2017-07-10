@@ -29,12 +29,14 @@ public:
     // SAX EVENTS
     virtual void start_document();
     virtual void end_document();
-    virtual void start_element(const string_view&, xml_attr_t&);
+    virtual void start_element(const string_view&, xml_attr_t&&);
     virtual void end_element(const string_view&);
     virtual void characters(const string_view&);
-    // TODO: start_element_ns(const string_view&, const string_view&, const string_view&)
-    // TODO: end_element_ns(const string_view&, const string_view&, const string_view&)
-    // TODO: ignorable_whitespace
+    virtual void start_element_ns(const string_view&, const string_view&, const string_view&, xml_attr_t&&);
+    virtual void end_element_ns(const string_view&, const string_view&, const string_view&);
+    virtual void ignorable_whitespace(const string_view&);
+    virtual void processing_instruction(const string_view&, const string_view&);
+    virtual void skipped_entity(const string_view&);
 
     // PROPERTIES
     bool use_namespaces() const;

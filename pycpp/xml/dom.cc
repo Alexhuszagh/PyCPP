@@ -28,7 +28,7 @@ void xml_dom_handler::end_document()
 }
 
 
-void xml_dom_handler::start_element(const string_view& name, xml_attr_t &attrs)
+void xml_dom_handler::start_element(const string_view& name, xml_attr_t&& attrs)
 {
     xml_node_t* parent = levels_.back();
     xml_node_list_t& list = parent->get_children();

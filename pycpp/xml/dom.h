@@ -27,9 +27,9 @@ public:
     xml_dom_handler(xml_node_t&);
     virtual void start_document() override;
     virtual void end_document() override;
-    virtual void start_element(const string_view& content, xml_attr_t &attrs) override;
-    virtual void end_element(const string_view& content) override;
-    virtual void characters(const string_view& content) override;
+    virtual void start_element(const string_view&, xml_attr_t&&) override;
+    virtual void end_element(const string_view&) override;
+    virtual void characters(const string_view&) override;
 
 private:
     xml_node_t* root_ = nullptr;
