@@ -18,7 +18,7 @@
 
 - Requests
     - Add lattice
-    - Finish the lattice move from util/*.hpp to util.hpp
+    - Make sure it uses the right namespace
 
 - Atomic Operations
     - Check boltsons
