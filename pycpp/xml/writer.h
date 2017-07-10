@@ -26,10 +26,6 @@ struct xml_writer
     virtual void start_element(const string_view&);
     virtual void end_element();
 //    virtual void key(const string_view&);
-//    virtual void null();
-//    virtual void boolean(bool);
-//    virtual void number(double);
-//    virtual void string(const string_view&);
 };
 
 
@@ -49,10 +45,6 @@ public:
     virtual void start_element(const string_view&) override;
     virtual void end_element() override;
 //    virtual void key(const string_view&) override;
-//    virtual void null() override;
-//    virtual void boolean(bool) override;
-//    virtual void number(double) override;
-//    virtual void string(const string_view&) override;
 
 private:
     char indent_character_ = ' ';

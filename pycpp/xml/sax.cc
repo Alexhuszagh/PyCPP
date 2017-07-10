@@ -36,7 +36,7 @@ static xml_attr_t parse_attributes(const xmlChar** attrs)
 }
 
 
-int stream_read(void* ctx, char* buffer, int length)
+static int stream_read(void* ctx, char* buffer, int length)
 {
     auto* stream = (std::istream*) ctx;
     stream->read(buffer, length);
@@ -45,7 +45,7 @@ int stream_read(void* ctx, char* buffer, int length)
 
 
 
-int stream_close(void*)
+static int stream_close(void*)
 {
     return 0;
 }

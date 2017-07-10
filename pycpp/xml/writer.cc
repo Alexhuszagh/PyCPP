@@ -11,7 +11,7 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-int stream_write(void* ctx, const char* buffer, int length)
+static int stream_write(void* ctx, const char* buffer, int length)
 {
     auto* stream = (std::ostream*) ctx;
     try {
@@ -24,7 +24,7 @@ int stream_write(void* ctx, const char* buffer, int length)
 }
 
 
-int stream_close(void*)
+static int stream_close(void*)
 {
     return 0;
 }
