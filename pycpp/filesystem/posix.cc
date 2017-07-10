@@ -16,8 +16,11 @@
 #include <wordexp.h>
 #include <algorithm>
 #include <cstdlib>
+#endif
 
 PYCPP_BEGIN_NAMESPACE
+
+#if defined(OS_POSIX)                           // POSIX & MACOS
 
 // HELPERS
 // -------
