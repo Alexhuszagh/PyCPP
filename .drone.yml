@@ -9,7 +9,7 @@ build:
     - git submodule update --init --recursive
     - mkdir -p build
     - cd build
-    - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON ..
+    - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DPYCPP_NAMESPACE:STRING=$PYCPP_NAMESPACE ..
     - make -j 8
     - ctest -C Release -V
 
@@ -18,3 +18,6 @@ matrix:
 # Bug with 64-bit MSYS2 on WINE currently, disable temporarily.
 #    - 64
     - 32
+
+  - PYCPP_NAMESPACE: ""
+  - PYCPP_NAMESPACE: pycpp

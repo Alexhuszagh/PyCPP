@@ -16,6 +16,10 @@ os:
   - linux
   - osx
 
+env:
+  - PYCPP_NAMESPACE=
+  - PYCPP_NAMESPACE=pycpp
+
 addons:
   apt:
     sources:
