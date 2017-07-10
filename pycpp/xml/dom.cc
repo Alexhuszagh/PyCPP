@@ -13,8 +13,11 @@ PYCPP_BEGIN_NAMESPACE
 static void dump_impl(const xml_node_t& node, xml_stream_writer& writer)
 {
     writer.start_element(node.get_tag());
-    // TODO: write attributes
-    // TODO: write other cool shit
+    for (const auto& pair: node.get_attrs()) {
+        writer.write_attribute(pair.first, pair.second);
+    }
+    writer.write_text(node.get_text());
+
     for (const xml_node_t& child: node.get_children()) {
         dump_impl(child, writer);
     }

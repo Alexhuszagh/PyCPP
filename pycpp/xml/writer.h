@@ -25,7 +25,12 @@ struct xml_writer
 {
     virtual void start_element(const string_view&);
     virtual void end_element();
-//    virtual void key(const string_view&);
+    virtual void write_attribute(const string_view&, const string_view&);
+    virtual void write_text(const string_view&);
+    virtual void write_comment(const string_view&);
+    virtual void start_element_ns(const string_view&, const string_view&, const string_view&);
+    virtual void end_element_ns();
+    virtual void write_attribute_ns(const string_view&, const string_view&, const string_view&, const string_view&);
 };
 
 
@@ -44,7 +49,12 @@ public:
 
     virtual void start_element(const string_view&) override;
     virtual void end_element() override;
-//    virtual void key(const string_view&) override;
+    virtual void write_attribute(const string_view&, const string_view&) override;
+    virtual void write_text(const string_view&) override;
+    virtual void write_comment(const string_view&) override;
+    virtual void start_element_ns(const string_view&, const string_view&, const string_view&) override;
+    virtual void end_element_ns() override;
+    virtual void write_attribute_ns(const string_view&, const string_view&, const string_view&, const string_view&) override;
 
 private:
     char indent_character_ = ' ';

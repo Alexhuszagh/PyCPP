@@ -54,4 +54,10 @@ TEST(xml, dom)
     EXPECT_EQ(body.get_tag(), "body");
     ASSERT_EQ(body.get_attrs().size(), 0);
     EXPECT_EQ(body.get_text(), "Don't forget me this weekend!");
+
+    auto str = document.dumps(' ', 0);
+    EXPECT_EQ(str, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<note><to email=\"tove@tove.com\">Tove</to><from email=\"jani@jani.com\">Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>\n");
+
+    str = document.dumps(' ', 4);
+    EXPECT_EQ(str, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<note>    <to email=\"tove@tove.com\">Tove</to>\n    <from email=\"jani@jani.com\">Jani</from>\n    <heading>Reminder</heading>\n    <body>Don't forget me this weekend!</body>\n</note>\n");
 }

@@ -41,6 +41,30 @@ void xml_writer::end_element()
 {}
 
 
+void xml_writer::write_attribute(const string_view&, const string_view&)
+{}
+
+
+void xml_writer::write_text(const string_view&)
+{}
+
+
+void xml_writer::write_comment(const string_view&)
+{}
+
+
+void xml_writer::start_element_ns(const string_view&, const string_view&, const string_view&)
+{}
+
+
+void xml_writer::end_element_ns()
+{}
+
+
+void xml_writer::write_attribute_ns(const string_view&, const string_view&, const string_view&, const string_view&)
+{}
+
+
 xml_stream_writer::xml_stream_writer(char c, int width)
 {
     set_indent(c, width);
@@ -58,11 +82,6 @@ xml_stream_writer::~xml_stream_writer()
 {
     if (writer_) {
         xmlTextWriterEndDocument((xmlTextWriterPtr) writer_);
-    }
-    if (stream_) {
-        xmlOutputBufferClose((xmlOutputBufferPtr) stream_);
-    }
-    if (writer_) {
         xmlFreeTextWriter((xmlTextWriterPtr) writer_);
     }
 }
@@ -71,9 +90,6 @@ xml_stream_writer::~xml_stream_writer()
 void xml_stream_writer::reset(std::ostream& s)
 {
     // cleanup
-    if (stream_) {
-        xmlOutputBufferClose((xmlOutputBufferPtr) stream_);
-    }
     if (writer_) {
         xmlFreeTextWriter((xmlTextWriterPtr) writer_);
     }
@@ -103,15 +119,60 @@ void xml_stream_writer::set_indent(char c, int width)
 }
 
 
-void xml_stream_writer::start_element(const string_view&)
+void xml_stream_writer::start_element(const string_view& name)
 {
-    // TODO: implement...
+    xmlTextWriterStartElement((xmlTextWriterPtr) writer_, (const xmlChar*) name.data());
 }
 
 
 void xml_stream_writer::end_element()
 {
-    // TODO: implement...
+    xmlTextWriterEndElement((xmlTextWriterPtr) writer_);
+}
+
+
+void xml_stream_writer::write_attribute(const string_view& name, const string_view& value)
+{
+    auto name_ = (const xmlChar*) name.data();
+    auto value_ = (const xmlChar*) value.data();
+    xmlTextWriterWriteAttribute((xmlTextWriterPtr) writer_, name_, value_);
+}
+
+
+void xml_stream_writer::write_text(const string_view& text)
+{
+    xmlTextWriterWriteString((xmlTextWriterPtr) writer_, (const xmlChar*) text.data());
+}
+
+
+void xml_stream_writer::write_comment(const string_view& comment)
+{
+    xmlTextWriterWriteComment((xmlTextWriterPtr) writer_, (const xmlChar*) comment.data());
+}
+
+
+void xml_stream_writer::start_element_ns(const string_view& uri, const string_view& prefix, const string_view& localname)
+{
+    auto uri_ = (const xmlChar*) uri.data();
+    auto prefix_ = (const xmlChar*) prefix.data();
+    auto localname_ = (const xmlChar*) localname.data();
+    xmlTextWriterStartElementNS((xmlTextWriterPtr) writer_, prefix_, localname_, uri_);
+}
+
+
+void xml_stream_writer::end_element_ns()
+{
+    xmlTextWriterEndElement((xmlTextWriterPtr) writer_);
+}
+
+
+void xml_stream_writer::write_attribute_ns(const string_view& uri, const string_view& prefix, const string_view& localname, const string_view& value)
+{
+    auto uri_ = (const xmlChar*) uri.data();
+    auto prefix_ = (const xmlChar*) prefix.data();
+    auto localname_ = (const xmlChar*) localname.data();
+    auto value_ = (const xmlChar*) value.data();
+    xmlTextWriterWriteAttributeNS((xmlTextWriterPtr) writer_, prefix_, localname_, uri_, value_);
 }
 
 

@@ -12,6 +12,7 @@ Python-like C++ environment with independent, lightweight utilities for cross-pl
 
 - [Introduction](#introduction)
 - [Design](#design)
+- [Namespace](#namespace)
 - [Building](#building)
 - [Platforms](#platforms)
 - [Contributors](#contributors)
@@ -36,11 +37,11 @@ Combined, the library has less than 100,00 total lines of C++ headers, with bina
 
 **Abstraction Library**
 
-The files [os.h](/src/os.h), [compiler.h](/src/compiler.h), [architecture.h](/src/architecture.h), [processor.h](/src/processor.h), and [byteorder.h](/src/byteorder.h) provide an abstraction platform to detect the current compiler, compiler version, operating system, system endianness, and processor. These are the largest dependencies, with ~1000 lines of code.
+The files [os.h](/pycpp/os.h), [compiler.h](/pycpp/compiler.h), [architecture.h](/pycpp/architecture.h), [processor.h](/pycpp/processor.h), and [byteorder.h](/pycpp/byteorder.h) provide an abstraction platform to detect the current compiler, compiler version, operating system, system endianness, and processor. These are the largest dependencies, with ~1000 lines of code.
 
 **Code Page Conversion**
 
-Any modern application should be Unicode aware, and PyCPP includes routines for [code point conversions](/src/unicode.h) and [codec conversions](codec.h), as well as [Unicode-aware case conversions](/src/casemap.h). They provide two APIs: a modern wrapper for STL string conversions, and a C-API taking a src and dst buffer.
+Any modern application should be Unicode aware, and PyCPP includes routines for [code point conversions](/pycpp/unicode.h) and [codec conversions](codec.h), as well as [Unicode-aware case conversions](/pycpp/casemap.h). They provide two APIs: a modern wrapper for STL string conversions, and a C-API taking a src and dst buffer.
 
 Supported features include:
 
@@ -62,55 +63,63 @@ Supported features include:
 
 **_General_**
 
-- [Thread-local storage](/src/tls.h).
-- [Optional](/src/optional.h) type.
-- [Generic "any"](/src/any.h) type.
-- [Bit-flag aware scoped enums](/src/enum.h).
-- [string_view](/str/view/string.h) and [vector_view](/src/view/vector.h)
+- [Thread-local storage](/pycpp/tls.h).
+- [Optional](/pycpp/optional.h) type.
+- [Generic "any"](/pycpp/any.h) type.
+- [Bit-flag aware scoped enums](/pycpp/enum.h).
+- [string_view](/str/view/string.h) and [vector_view](/pycpp/view/vector.h)
 
 **_Codec_**
 
-- [Base16](/src/base16.h), [base32](/src/base32.h), and [Base64](/src/base64.h) encoding and decoding.
-- [Hex](/src/hex.h) encoding and decoding.
-- [Punycode](/src/punycode.h) encoding and decoding.
-- [Url](/src/url.h) encoding and decoding.
-- [International domain names](/src/idna.h) encoding and decoding.
+- [Base16](/pycpp/base16.h), [base32](/pycpp/base32.h), and [Base64](/pycpp/base64.h) encoding and decoding.
+- [Hex](/pycpp/hex.h) encoding and decoding.
+- [Punycode](/pycpp/punycode.h) encoding and decoding.
+- [Url](/pycpp/url.h) encoding and decoding.
+- [International domain names](/pycpp/idna.h) encoding and decoding.
 
 **_Streams_**
 
-- [Wide API streams](/src/stream/fstream.h) for Windows.
-- [Filtering streambufs](/src/stream/filter.h).
+- [Wide API streams](/pycpp/stream/fstream.h) for Windows.
+- [Filtering streambufs](/pycpp/stream/filter.h).
 
 **_Random_**
 
-- [Pseudorandom](/src/random.h) number generators.
-- [Cryptographic random](/src/random.h) number generators.
+- [Pseudorandom](/pycpp/random.h) number generators.
+- [Cryptographic random](/pycpp/random.h) number generators.
 
 **_Cryptography_**
 
-- [Secure memory](/src/allocator.h) allocation and deallocation.
-- [Secure buffers](/src/string.h).
-- [Cryptographic hash](/src/hashlib.h) functions.
-- [Cryptographic ciphers](/src/cipher.h).
+- [Secure memory](/pycpp/allocator.h) allocation and deallocation.
+- [Secure buffers](/pycpp/string.h).
+- [Cryptographic hash](/pycpp/hashlib.h) functions.
+- [Cryptographic ciphers](/pycpp/cipher.h).
 
 **_Iterables_**
 
-- [Iterator adaptors](/src/iterator.h).
-- [Combinations, permutation](/src/itertools/sampling.h) and [cartesian products](/src/itertools/product.h).
+- [Iterator adaptors](/pycpp/iterator.h).
+- [Combinations, permutation](/pycpp/itertools/sampling.h) and [cartesian products](/pycpp/itertools/product.h).
 
 **_JSON_**
 
-- [DOM](/src/json/dom.h) parser.
-- [SAX](/src/json/sax.h) parser.
+- [DOM](/pycpp/json/dom.h) parser.
+- [SAX](/pycpp/json/sax.h) parser.
+- [DOM/Text](/pycpp/json/writer.h) writer.
 
 **_XML_**
 
-- [DOM](/src/xml/dom.h) parser.
-- [SAX](/src/xml/sax.h) parser.
+- [DOM](/pycpp/xml/dom.h) parser.
+- [SAX](/pycpp/xml/sax.h) parser.
+- [DOM/Text](/pycpp/xml/writer.h) writer.
 
 **_Compression_**
 
 **WARNING:** PyCPP includes cryptographic hashes and ciphers, which are tested via fuzzing. The buffer containing these objects is reset upon object destruction, to minimize side-channel attacks. However, they should be assumed to be insecure, until audited.
+
+## Namespace
+
+By default, PyCPP uses no namespace. However, a custom namespace can be set during configuration. For example, to use `pycpp` as the namespace name, add `-DPYCPP_NAMESPACE:STRING=pycpp` during the CMake configuration step.
+
+To access members in the PyCPP namespace, you can either preface method calls with `PYCPP_NAMESPACE::method()`, where `PYCPP_NAMESPACE` evaluates to the desired namespace, or `PYCPP_USING_NAMESPACE`, which introduces methods from PyCPP to the current namespace.
 
 ## Building
 
