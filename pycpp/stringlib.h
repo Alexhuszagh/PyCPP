@@ -90,14 +90,23 @@ string_list_t rsplit(const string_t& str, split_function is_split, size_t maxspl
  */
 string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit = SIZE_MAX);
 
-// TODO: need quoted split
+/**
+ *  \brief Split characters by delimiter into dst.
+ *
+ *  Split string by delimiter, but allow escaped or quoted characters
+ *  to be successfully included.
+ *
+ *  \param string           String to split
+ *  \param quote            Quoting character
+ *  \param escape           Escape character
+ *  \param delimiters       Character delimiter
+ */
+string_list_t quoted_split(const string_t& str, char delimiter, char quote, char escape);
 
 /**
  *  \brief Same as split, except scanning in reverse order.
  */
 string_list_t rsplit(const string_t& str, const string_t& sep, size_t maxsplit = SIZE_MAX);
-
-// TODO: need quoted rsplit
 
 /**
  *  \brief Convert tabs to spaces, using the tabsize.
@@ -198,6 +207,7 @@ struct string_wrapper: string_view
     string_wrapper_list_t split(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
     string_wrapper_list_t rsplit(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
     string_t join(const string_wrapper_list_t& list);
+    string_list_t quoted_split(char delimiter, char quote, char escape);
 
     // SEARCH
     bool startswith(const string_wrapper& sub) const;

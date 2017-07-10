@@ -134,6 +134,48 @@ static size_t rsplit_impl(Iter first, Iter last, size_t maxsplit, IsSplit is_spl
 }
 
 
+template <typename Iter>
+string_list_t quoted_split_impl(Iter first, Iter last, char delimiter, char quote, char escape)
+{
+    string_list_t data;
+
+    bool is_quoted = false;
+    bool is_escaped = false;
+    char *word = new char[std::distance(first, last)];
+    int j = 0;
+    int k = 0;
+
+    for (auto it = first; it != last; ++it) {
+        char c = *it;
+        if (is_escaped) {           // escape letter and undo escaping
+            is_escaped = false;
+            word[j] = c;
+            j++;
+        }  else if (c == escape) {
+            is_escaped = true;      // escape next character
+        } else if (c == quote) {
+            is_quoted ^= true;      // opening/ending quote
+        } else if (is_quoted) {
+            word[j] = c;            // append quoted character to word
+            j++;
+        } else if (c == delimiter) {
+            data.emplace_back(std::string(word, j));
+            memset(word, 0, j);     // write null values to line
+            j = 0;
+            k++;
+        } else {
+            word[j] = c;            // append unquoted word
+            j++;
+        }
+    }
+
+    data.emplace_back(std::string(word, j));
+    delete[] word;
+
+    return data;
+}
+
+
 template <typename List>
 static string_t join_impl(const List& list, const string_view& sep)
 {
@@ -333,6 +375,12 @@ string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit)
 }
 
 
+string_list_t quoted_split(const string_t& str, char delimiter, char quote, char escape)
+{
+    return quoted_split_impl(str.begin(), str.end(), delimiter, quote, escape);
+}
+
+
 string_list_t rsplit(const string_t& str, split_function is_split, size_t maxsplit)
 {
     typedef typename string_t::const_iterator iter;
@@ -484,6 +532,12 @@ string_wrapper_list_t string_wrapper::rsplit(const string_wrapper& sep, size_t m
 string_t string_wrapper::join(const string_wrapper_list_t& list)
 {
     return join_impl(list, *this);
+}
+
+
+string_list_t string_wrapper::quoted_split(char delimiter, char quote, char escape)
+{
+    return quoted_split_impl(begin(), end(), delimiter, quote, escape);
 }
 
 

@@ -65,6 +65,15 @@ TEST(stringlib, split)
 }
 
 
+TEST(stringlib, quoted_split)
+{
+    auto data = quoted_split("';';0", ';', '\'', '\\');
+    ASSERT_EQ(data.size(), 2);
+    EXPECT_EQ(data[0], ";");
+    EXPECT_EQ(data[1], "0");
+}
+
+
 TEST(stringlib, rsplit)
 {
     auto data = split(";;0", ";");
