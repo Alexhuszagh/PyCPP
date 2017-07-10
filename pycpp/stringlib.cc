@@ -27,6 +27,21 @@ const string_t printable = digits + letters + punctuation + whitespace;
 // -------
 
 
+static bool startswith_impl(const string_view& str, const string_view& sub)
+{
+    return str.substr(0, sub.size()) == sub;
+}
+
+
+static bool endswith_impl(const string_view& str, const string_view& sub)
+{
+    if (sub.size() > str.size()) {
+        return false;
+    }
+    return str.substr(str.size() - sub.size()) == sub;
+}
+
+
 template <typename Iter, typename IsSplit, typename StoreCb>
 static size_t split_impl(Iter first, Iter last, size_t maxsplit, IsSplit is_split, StoreCb store_cb)
 {
@@ -232,6 +247,17 @@ static size_t count_impl(const string_view& str, const string_view& sub, size_t 
 // ---------
 
 
+bool startswith(const string_t& str, const string_t& sub)
+{
+    return startswith_impl(str, sub);
+}
+
+bool endswith(const string_t& str, const string_t& sub)
+{
+    return endswith_impl(str, sub);
+}
+
+
 string_list_t split(const string_t& str, split_function is_split, size_t maxsplit)
 {
     typedef typename string_t::const_iterator iter;
@@ -434,6 +460,18 @@ string_t string_wrapper::replace(const string_wrapper& sub, const string_wrapper
 string_t string_wrapper::expandtabs(size_t tabsize)
 {
     return expandtabs_impl(*this, tabsize);
+}
+
+
+bool string_wrapper::startswith(const string_wrapper& sub) const
+{
+    return startswith_impl(*this, sub);
+}
+
+
+bool string_wrapper::endswith(const string_wrapper& sub) const
+{
+    return endswith_impl(*this, sub);
 }
 
 

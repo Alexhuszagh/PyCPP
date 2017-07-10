@@ -51,6 +51,16 @@ extern const string_t whitespace;
 // ---------
 
 /**
+ *  \brief Check if str starts with substr.
+ */
+bool startswith(const string_t& str, const string_t& sub);
+
+/**
+ *  \brief Check if str ends with substr.
+ */
+bool endswith(const string_t& str, const string_t& sub);
+
+/**
  *  \brief Split characters by delimiters into dst.
  */
 string_list_t split(const string_t& str, split_function is_split, size_t maxsplit = SIZE_MAX);
@@ -65,10 +75,14 @@ string_list_t rsplit(const string_t& str, split_function is_split, size_t maxspl
  */
 string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit = SIZE_MAX);
 
+// TODO: need quoted split
+
 /**
  *  \brief Same as split, except scanning in reverse order.
  */
 string_list_t rsplit(const string_t& str, const string_t& sep, size_t maxsplit = SIZE_MAX);
+
+// TODO: need quoted rsplit
 
 /**
  *  \brief Convert tabs to spaces, using the tabsize.
@@ -168,6 +182,8 @@ struct string_wrapper: string_view
     string_t join(const string_wrapper_list_t& list);
 
     // SEARCH
+    bool startswith(const string_wrapper& sub) const;
+    bool endswith(const string_wrapper& sub) const;
     size_t find(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
     size_t rfind(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;
     size_t index(const string_wrapper& sub, size_t start = 0, size_t end = SIZE_MAX) const;

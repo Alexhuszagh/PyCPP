@@ -16,12 +16,11 @@
 - Stringlib
     - unittests
 
+- Requests
+    - Add lattice
+
 - Atomic Operations
     - Check boltsons
-
-- XML support
-    - Add writer
-    - Finish SAX reader
 
 - Binary serialization
     - Add cereal...

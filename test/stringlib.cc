@@ -120,6 +120,24 @@ TEST(stringlib, expandtabs)
 }
 
 
+TEST(stringlib, startswith)
+{
+    EXPECT_TRUE(startswith("This", "T"));
+    EXPECT_TRUE(startswith("This", "Thi"));
+    EXPECT_FALSE(startswith("This", "t"));
+    EXPECT_FALSE(startswith("This", "s"));
+}
+
+
+TEST(stringlib, endswith)
+{
+    EXPECT_TRUE(endswith("This", "s"));
+    EXPECT_TRUE(endswith("This", "his"));
+    EXPECT_FALSE(endswith("This", "T"));
+    EXPECT_FALSE(endswith("This", "t"));
+}
+
+
 TEST(stringlib, find)
 {
     EXPECT_EQ(find("This", "i"), 2);
