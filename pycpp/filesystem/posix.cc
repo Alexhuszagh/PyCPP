@@ -5,6 +5,7 @@
  *  \brief POSIX-specific path normalization routines.
  */
 
+#include <pycpp/config.h>
 #include <pycpp/os.h>
 
 #if defined(OS_POSIX)                           // POSIX & MACOS
