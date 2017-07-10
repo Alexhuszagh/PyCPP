@@ -10,12 +10,10 @@
 
 #include <pycpp/lattice/adaptor/posix.h>
 #include <pycpp/lattice/util.h>
-
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-
 #include <iostream>
 
 PYCPP_BEGIN_NAMESPACE

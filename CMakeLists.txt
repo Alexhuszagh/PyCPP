@@ -226,6 +226,30 @@ if(BUILD_JSON)
 endif()
 
 if(BUILD_LATTICE)
+    list(APPEND SOURCE_FILES
+        pycpp/lattice/async.cc
+        pycpp/lattice/auth.cc
+        pycpp/lattice/cookie.cc
+        pycpp/lattice/digest.cc
+        pycpp/lattice/dns.cc
+        pycpp/lattice/header.cc
+        pycpp/lattice/multipart.cc
+        pycpp/lattice/parameter.cc
+        pycpp/lattice/proxy.cc
+        pycpp/lattice/redirect.cc
+        pycpp/lattice/request.cc
+        pycpp/lattice/response.cc
+        pycpp/lattice/ssl.cc
+        pycpp/lattice/timeout.cc
+        pycpp/lattice/url.cc
+        pycpp/lattice/util.cc
+    )
+
+    if(UNIX)
+        list(APPEND SOURCE_FILES pycpp/lattice/adaptor/posix.cc)
+    elseif(WIN32)
+        list(APPEND SOURCE_FILES pycpp/lattice/adaptor/windows.cc)
+    endif()
 endif()
 
 if(BUILD_MATH)
@@ -341,6 +365,8 @@ if (BUILD_JSON)
 endif()
 
 if(BUILD_LATTICE)
+#    list(APPEND TEST_FILES
+#    )
 endif()
 
 if(BUILD_MATH)

@@ -10,7 +10,7 @@ PYCPP_BEGIN_NAMESPACE
 // CONSTANTS
 // ---------
 
-std::mutex MUTEX;
+std::mutex LATTICE_MUTEX;
 
 // OBJECTS
 // -------
@@ -18,7 +18,7 @@ std::mutex MUTEX;
 
 void encryption_warning()
 {
-    std::lock_guard<std::mutex> lock(MUTEX);
+    std::lock_guard<std::mutex> lock(LATTICE_MUTEX);
     std::cerr << "Warning: HTTP requests do not support SSL/TLS."
               << "Do NOT send sensitive data without SSL/TLS."
               << std::endl;
