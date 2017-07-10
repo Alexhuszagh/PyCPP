@@ -237,6 +237,7 @@ if(BUILD_XML)
         pycpp/xml/core.cc
         pycpp/xml/dom.cc
         pycpp/xml/sax.cc
+        pycpp/xml/text.cc
         pycpp/xml/writer.cc
     )
 endif()

@@ -36,15 +36,16 @@ static xml_attr_t parse_attributes(const xmlChar** attrs)
 }
 
 
-int stream_read(std::istream* stream, char* buffer, int length)
+int stream_read(void* ctx, char* buffer, int length)
 {
+    auto* stream = (std::istream*) ctx;
     stream->read(buffer, length);
     return stream->gcount();
 }
 
 
 
-int stream_close(std::istream*)
+int stream_close(void*)
 {
     return 0;
 }
@@ -232,8 +233,8 @@ void reader_impl::parse(std::istream& stream, handler_wrapper& wrapper)
     // create our context
     xmlParserCtxtPtr ctx = xmlCreateIOParserCtxt(wrapper.handler(),
         wrapper.mapper(),
-        reinterpret_cast<xmlInputReadCallback>(stream_read),
-        reinterpret_cast<xmlInputCloseCallback>(stream_close),
+        stream_read,
+        stream_close,
         &stream,
         XML_CHAR_ENCODING_NONE
     );

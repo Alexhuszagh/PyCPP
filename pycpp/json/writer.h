@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <pycpp/json/core.h>
 #include <pycpp/stream/fstream.h>
 #include <pycpp/view/string.h>
@@ -59,7 +60,8 @@ public:
     virtual void string(const string_view&) override;
 
 private:
-    bool pretty_ = false;
+    char indent_character_ = ' ';
+    int indent_width_ = 0;
     void* stream_ = nullptr;
     void* writer_ = nullptr;
 };

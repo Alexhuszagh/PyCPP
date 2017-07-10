@@ -1,7 +1,3 @@
-- Bug fixes
-    - Clang on macOS with JSON DOM is producing an infinite loop
-    - Why? Where...
-
 - filesystem
     - copystat
     - copy_directory
@@ -12,7 +8,7 @@
 
 - Random
     - Need to clone Python's random API
-    -- Mostly done...
+    - Mostly done...
 
 - IDNA
     - Add IDNA support

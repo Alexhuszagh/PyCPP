@@ -94,6 +94,7 @@ static void dump_string_impl(const json_string_t& value, json_stream_writer& wri
 
 static void dump_impl(const json_value_t& value, json_stream_writer& writer)
 {
+    std::cout << value.type() << std::endl;
     switch (value.type()) {
         case json_null_type:
             dump_null_impl(writer);

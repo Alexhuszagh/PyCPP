@@ -12,7 +12,6 @@ PYCPP_BEGIN_NAMESPACE
 
 typedef rapidjson::OStreamWrapper rapidjson_ostream;
 typedef rapidjson::PrettyWriter<rapidjson_ostream> rapidjson_prettywriter;
-typedef rapidjson::Writer<rapidjson_ostream> rapidjson_writer;
 
 // OBJECTS
 // -------
@@ -70,160 +69,98 @@ json_stream_writer::json_stream_writer(std::ostream& s, char c, int width)
 json_stream_writer::~json_stream_writer()
 {
     delete (rapidjson_ostream*) stream_;
-    if (is_pretty()) {
-        delete (rapidjson_prettywriter*) writer_;
-    } else {
-        delete (rapidjson_writer*) writer_;
-    }
+    delete (rapidjson_prettywriter*) writer_;
 }
 
 
 void json_stream_writer::reset(std::ostream& s)
 {
+    // cleanup
     delete (rapidjson_ostream*) stream_;
+    delete (rapidjson_prettywriter*) writer_;
+
+    // reset
     stream_ = (void*) new rapidjson_ostream(s);
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->Reset(*(rapidjson_ostream*) stream_);
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->Reset(*(rapidjson_ostream*) stream_);
-    }
+    writer_ = (void*) new rapidjson_prettywriter(*(rapidjson_ostream*) stream_);
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->Reset(*(rapidjson_ostream*) stream_);
+    w->SetIndent(indent_character_, indent_width_);
 }
 
 
 void json_stream_writer::set_indent(char c, int width)
 {
-    // need to delete the old writer
-    if (is_pretty()) {
-        delete (rapidjson_prettywriter*) writer_;
-    } else {
-        delete (rapidjson_writer*) writer_;
-    }
-
-    // set new writer
-    pretty_ = bool(width);
-    if (is_pretty()) {
-        writer_ = (void*) new rapidjson_prettywriter;
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->SetIndent(c, width);
-    } else {
-        writer_ = (void*) new rapidjson_writer;
-    }
+    indent_character_ = c;
+    indent_width_ = width;
 }
 
 
 bool json_stream_writer::is_pretty() const
 {
-    return pretty_;
+    return indent_width_ > 0;
 }
 
 
 void json_stream_writer::start_object()
 {
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->StartObject();
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->StartObject();
-    }
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->StartObject();
 }
 
 
 void json_stream_writer::end_object()
 {
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->EndObject();
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->EndObject();
-    }
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->EndObject();
 }
 
 
 void json_stream_writer::start_array()
 {
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->StartArray();
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->StartArray();
-    }
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->StartArray();
 }
 
 
 void json_stream_writer::end_array()
 {
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->EndArray();
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->EndArray();
-    }
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->EndArray();
 }
 
 
 void json_stream_writer::key(const string_view& value)
 {
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->Key(value.data(), value.size());
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->Key(value.data(), value.size());
-    }
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->Key(value.data(), value.size());
 }
 
 
 void json_stream_writer::null()
 {
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->Null();
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->Null();
-    }
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->Null();
 }
 
 
 void json_stream_writer::boolean(bool value)
 {
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->Bool(value);
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->Bool(value);
-    }
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->Bool(value);
 }
 
 
 void json_stream_writer::number(double value)
 {
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->Double(value);
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->Double(value);
-    }
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->Double(value);
 }
 
 
 void json_stream_writer::string(const string_view& value)
 {
-    if (is_pretty()) {
-        auto w = (rapidjson_prettywriter*) writer_;
-        w->String(value.data(), value.size());
-    } else {
-        auto w = (rapidjson_writer*) writer_;
-        w->String(value.data(), value.size());
-    }
+    auto w = (rapidjson_prettywriter*) writer_;
+    w->String(value.data(), value.size());
 }
 
 
