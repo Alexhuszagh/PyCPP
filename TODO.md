@@ -18,6 +18,7 @@
 
 - Requests
     - Add lattice
+    - Finish the lattice move from util.hpp to 
 
 - Atomic Operations
     - Check boltsons
