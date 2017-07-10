@@ -4,6 +4,7 @@
 #include <pycpp/casemap.h>
 #include <pycpp/stringlib.h>
 #include <pycpp/unicode.h>
+#include <cstring>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -39,6 +40,34 @@ static bool endswith_impl(const string_view& str, const string_view& sub)
         return false;
     }
     return str.substr(str.size() - sub.size()) == sub;
+}
+
+
+static void ltrim_impl(string_t& str, const string_view& characters)
+{
+    auto* ptr = characters.data();
+    size_t num = characters.size();
+    size_t index = 0;
+    while (index < str.size() && memchr(ptr, str[index], num)) {
+        ++index;
+    }
+    str.erase(0, index);
+}
+
+
+static void rtrim_impl(string_t& str, const string_view& characters)
+{
+    if (str.empty()) {
+        return;
+    }
+
+    auto* ptr = characters.data();
+    size_t num = characters.size();
+    size_t index = str.size() - 1;
+    while (index >= 0 && memchr(ptr, str[index], num)) {
+        --index;
+    }
+    str.erase(index+1);
 }
 
 
@@ -245,6 +274,31 @@ static size_t count_impl(const string_view& str, const string_view& sub, size_t 
 
 // FUNCTIONS
 // ---------
+
+
+string_t ltrim(const string_t& str, const string_t& characters)
+{
+    string_t copy(str);
+    ltrim_impl(copy, characters);
+    return copy;
+}
+
+
+string_t rtrim(const string_t& str, const string_t& characters)
+{
+    string_t copy(str);
+    rtrim_impl(copy, characters);
+    return copy;
+}
+
+
+string_t trim(const string_t& str, const string_t& characters)
+{
+    string_t copy(str);
+    ltrim_impl(copy, characters);
+    rtrim_impl(copy, characters);
+    return copy;
+}
 
 
 bool startswith(const string_t& str, const string_t& sub)
@@ -460,6 +514,31 @@ string_t string_wrapper::replace(const string_wrapper& sub, const string_wrapper
 string_t string_wrapper::expandtabs(size_t tabsize)
 {
     return expandtabs_impl(*this, tabsize);
+}
+
+
+string_t string_wrapper::ltrim(const string_wrapper& characters)
+{
+    string_t copy(*this);
+    ltrim_impl(copy, characters);
+    return copy;
+}
+
+
+string_t string_wrapper::rtrim(const string_wrapper& characters)
+{
+    string_t copy(*this);
+    rtrim_impl(copy, characters);
+    return copy;
+}
+
+
+string_t string_wrapper::trim(const string_wrapper& characters)
+{
+    string_t copy(*this);
+    ltrim_impl(copy, characters);
+    rtrim_impl(copy, characters);
+    return copy;
 }
 
 

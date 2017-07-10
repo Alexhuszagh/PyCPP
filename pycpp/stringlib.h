@@ -61,6 +61,21 @@ bool startswith(const string_t& str, const string_t& sub);
 bool endswith(const string_t& str, const string_t& sub);
 
 /**
+ *  \brief Trim characters from left-end of string.
+ */
+string_t ltrim(const string_t& str, const string_t& characters = " \n\r\t");
+
+/**
+ *  \brief Trim characters from right-end of string.
+ */
+string_t rtrim(const string_t& str, const string_t& characters = " \n\r\t");
+
+/**
+ *  \brief Trim characters from both ends of string.
+ */
+string_t trim(const string_t& str, const string_t& characters = " \n\r\t");
+
+/**
  *  \brief Split characters by delimiters into dst.
  */
 string_list_t split(const string_t& str, split_function is_split, size_t maxsplit = SIZE_MAX);
@@ -173,6 +188,9 @@ struct string_wrapper: string_view
     string_t upper() const;
     string_t replace(const string_wrapper& sub, const string_wrapper& repl, size_t maxreplace = SIZE_MAX);
     string_t expandtabs(size_t tabsize = 8);
+    string_t ltrim(const string_wrapper& characters = " \n\r\t");
+    string_t rtrim(const string_wrapper& characters = " \n\r\t");
+    string_t trim(const string_wrapper& characters = " \n\r\t");
 
     // TOKENS
     string_wrapper_list_t split(split_function is_split, size_t maxsplit = SIZE_MAX) const;

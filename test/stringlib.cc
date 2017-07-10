@@ -138,6 +138,33 @@ TEST(stringlib, endswith)
 }
 
 
+TEST(stringlib, ltrim)
+{
+    EXPECT_EQ(ltrim("ThisihT", "T"), "hisihT");
+    EXPECT_EQ(ltrim("ThisihT", "Ti"), "hisihT");
+    EXPECT_EQ(ltrim("ThisihT", "Tih"), "sihT");
+    EXPECT_EQ(ltrim("ThisihT", "Tish"), "");
+}
+
+
+TEST(stringlib, rtrim)
+{
+    EXPECT_EQ(rtrim("ThisihT", "T"), "Thisih");
+    EXPECT_EQ(rtrim("ThisihT", "Ti"), "Thisih");
+    EXPECT_EQ(rtrim("ThisihT", "Tih"), "This");
+    EXPECT_EQ(rtrim("ThisihT", "Tish"), "");
+}
+
+
+TEST(stringlib, trim)
+{
+    EXPECT_EQ(trim("ThisihT", "T"), "hisih");
+    EXPECT_EQ(trim("ThisihT", "Ti"), "hisih");
+    EXPECT_EQ(trim("ThisihT", "Tih"), "s");
+    EXPECT_EQ(trim("ThisihT", "Tish"), "");
+}
+
+
 TEST(stringlib, find)
 {
     EXPECT_EQ(find("This", "i"), 2);
