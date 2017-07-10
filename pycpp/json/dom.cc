@@ -21,6 +21,7 @@ static void add_value(Levels &levels, bool& has_key, json_string_t& key, Ts... t
         // root element
         json_value_t value(std::forward<Ts>(ts)...);
         std::swap(*parent, value);
+        levels.push_back(parent);
         return;
     } else if (has_key) {
         // adding to object

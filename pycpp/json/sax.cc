@@ -193,10 +193,10 @@ void json_stream_reader::parse(std::istream& s)
     }
 
     // parse stream
-    handler_->start_document();
     handler_impl impl(*handler_);
     rapidjson::Reader reader;
     rapidjson::IStreamWrapper istream(*stream_);
+    handler_->start_document();
     reader.Parse(istream, impl);
     handler_->end_document();
 }
