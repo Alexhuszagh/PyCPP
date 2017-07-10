@@ -1,3 +1,8 @@
+- Stringlib
+    - unittests
+- Lattice
+    - unittests
+
 - filesystem
     - copystat
     - copy_directory
@@ -9,12 +14,6 @@
 - Random
     - Need to clone Python's random API
     - Mostly done...
-
-- IDNA
-    - Add IDNA support
-
-- Stringlib
-    - unittests
 
 - Atomic Operations
     - Check boltsons
