@@ -19,6 +19,7 @@
 #include <pycpp/codec.h>
 #include <pycpp/stream/fstream.h>
 
+PYCPP_BEGIN_NAMESPACE
 
 #if defined(HAVE_GCC)                   // GCC
 
@@ -392,3 +393,5 @@ void ofstream::swap(ofstream &other)
 }
 
 #endif
+
+PYCPP_END_NAMESPACE

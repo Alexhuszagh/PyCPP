@@ -19,6 +19,8 @@
 #include <sstream>
 #include <utility>
 
+PYCPP_BEGIN_NAMESPACE
+
 // OBJECTS
 // -------
 
@@ -204,3 +206,5 @@ public:
 private:
     ofstream file;
 };
+
+PYCPP_END_NAMESPACE

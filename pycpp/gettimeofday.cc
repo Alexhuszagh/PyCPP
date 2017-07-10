@@ -3,8 +3,6 @@
 
 #include <pycpp/gettimeofday.h>
 
-PYCPP_BEGIN_NAMESPACE
-
 #ifdef _MSC_VER
 #   include <cstdint>
 #   include <windows.h>
@@ -46,5 +44,3 @@ int gettimeofday(struct timeval* tp, void* tz)
 }
 
 #endif
-
-PYCPP_END_NAMESPACE

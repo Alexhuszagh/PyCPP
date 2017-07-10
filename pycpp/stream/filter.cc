@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <cstring>
 
+PYCPP_BEGIN_NAMESPACE
+
 // FUNCTIONS
 // ---------
 
@@ -487,3 +489,5 @@ void filter_ofstream::swap(filter_ofstream &other)
     filter_ostream::swap(other);
     std::swap(file, other.file);
 }
+
+PYCPP_END_NAMESPACE

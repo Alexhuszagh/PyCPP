@@ -37,6 +37,7 @@ option(WITH_XML "Build (only) XML library" OFF)
 # OPTIONS
 option(BUILD_STATIC "Build static library" ON)
 option(BUILD_TESTS "Build pycpp library tests" OFF)
+SET(PYCPP_NAMESPACE "" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
 
 if(WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_MATH OR WITH_STREAM OR WITH_XML)
     set(BUILD_CIPHER ${WITH_CIPHER})
@@ -138,6 +139,7 @@ endif()
 # -------
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} third_party/warnings/src)
+add_definitions(-DPYCPP_NAMESPACE=${PYCPP_NAMESPACE})
 
 if(BUILD_JSON)
     include_directories(third_party/rapidjson/include)

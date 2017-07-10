@@ -948,7 +948,7 @@ auto basic_string_view<C, T>::data() const noexcept -> const_pointer
 template <typename C, typename T>
 auto basic_string_view<C, T>::find(const self& str, size_type pos) const noexcept -> size_type
 {
-    auto found = ::find(data()+pos, size()-pos, str.data(), str.size());
+    auto found = PYCPP_NAMESPACE::find(data()+pos, size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
 }
 
@@ -958,7 +958,7 @@ auto basic_string_view<C, T>::find(const stl_type& str, size_type pos) const -> 
 {
     const_pointer first = str.data();
     const size_t length = str.size();
-    auto found = ::find(data()+pos, size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::find(data()+pos, size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -968,7 +968,7 @@ auto basic_string_view<C, T>::find(const_pointer array, size_type pos) const -> 
 {
     const_pointer first = array;
     size_type length = traits_type::length(array);
-    auto found = ::find(data()+pos, size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::find(data()+pos, size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -976,7 +976,7 @@ auto basic_string_view<C, T>::find(const_pointer array, size_type pos) const -> 
 template <typename C, typename T>
 auto basic_string_view<C, T>::find(const_pointer array, size_type pos, size_type length) const -> size_type
 {
-    auto found = ::find(data()+pos, size()-pos, array, length);
+    auto found = PYCPP_NAMESPACE::find(data()+pos, size()-pos, array, length);
     return found ? found - data() : npos;
 }
 
@@ -984,7 +984,7 @@ auto basic_string_view<C, T>::find(const_pointer array, size_type pos, size_type
 template <typename C, typename T>
 auto basic_string_view<C, T>::find(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = ::find(data()+pos, size()-pos, &c, 1);
+    auto found = PYCPP_NAMESPACE::find(data()+pos, size()-pos, &c, 1);
     return found ? found - data() : npos;
 }
 
@@ -992,7 +992,7 @@ auto basic_string_view<C, T>::find(value_type c, size_type pos) const noexcept -
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_first_of(const self& str, size_type pos) const noexcept -> size_type
 {
-    auto found = ::find_of(data()+pos, size()-pos, str.data(), str.size());
+    auto found = PYCPP_NAMESPACE::find_of(data()+pos, size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
 }
 
@@ -1002,7 +1002,7 @@ auto basic_string_view<C, T>::find_first_of(const stl_type &str, size_type pos) 
 {
     const_pointer first = str.data();
     size_type length = str.size();
-    auto found = ::find_of(data()+pos, size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::find_of(data()+pos, size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1012,7 +1012,7 @@ auto basic_string_view<C, T>::find_first_of(const_pointer array, size_type pos) 
 {
     const_pointer first = array;
     size_type length = traits_type::length(array);
-    auto found = ::find_of(data()+pos, size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::find_of(data()+pos, size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1020,7 +1020,7 @@ auto basic_string_view<C, T>::find_first_of(const_pointer array, size_type pos) 
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_first_of(const_pointer array, size_type pos, size_type length) const -> size_type
 {
-    auto found = ::find_of(data()+pos, size()-pos, array, length);
+    auto found = PYCPP_NAMESPACE::find_of(data()+pos, size()-pos, array, length);
     return found ? found - data() : npos;
 }
 
@@ -1028,7 +1028,7 @@ auto basic_string_view<C, T>::find_first_of(const_pointer array, size_type pos, 
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_first_of(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = ::find_of(data()+pos, size()-pos, &c, 1);
+    auto found = PYCPP_NAMESPACE::find_of(data()+pos, size()-pos, &c, 1);
     return found ? found - data() : npos;
 }
 
@@ -1036,7 +1036,7 @@ auto basic_string_view<C, T>::find_first_of(value_type c, size_type pos) const n
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_first_not_of(const self& str, size_type pos) const noexcept -> size_type
 {
-    auto found = ::find_not_of(data()+pos, size()-pos, str.data(), str.size());
+    auto found = PYCPP_NAMESPACE::find_not_of(data()+pos, size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
 }
 
@@ -1046,7 +1046,7 @@ auto basic_string_view<C, T>::find_first_not_of(const stl_type &str, size_type p
 {
     const_pointer first = str.data();
     size_type length = str.size();
-    auto found = ::find_not_of(data()+pos, size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::find_not_of(data()+pos, size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1056,7 +1056,7 @@ auto basic_string_view<C, T>::find_first_not_of(const_pointer array, size_type p
 {
     const_pointer first = array;
     size_type length = traits_type::length(array);
-    auto found = ::find_not_of(data()+pos, size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::find_not_of(data()+pos, size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1064,7 +1064,7 @@ auto basic_string_view<C, T>::find_first_not_of(const_pointer array, size_type p
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_first_not_of(const_pointer array, size_type pos, size_type length) const -> size_type
 {
-    auto found = ::find_not_of(data()+pos, size()-pos, array, length);
+    auto found = PYCPP_NAMESPACE::find_not_of(data()+pos, size()-pos, array, length);
     return found ? found - data() : npos;
 }
 
@@ -1072,7 +1072,7 @@ auto basic_string_view<C, T>::find_first_not_of(const_pointer array, size_type p
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_first_not_of(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = ::find_not_of(data()+pos, size()-pos, &c, 1);
+    auto found = PYCPP_NAMESPACE::find_not_of(data()+pos, size()-pos, &c, 1);
     return found ? found - data() : npos;
 }
 
@@ -1080,7 +1080,7 @@ auto basic_string_view<C, T>::find_first_not_of(value_type c, size_type pos) con
 template <typename C, typename T>
 auto basic_string_view<C, T>::rfind(const self& str, size_type pos) const noexcept -> size_type
 {
-    auto found = ::rfind(end(), size()-pos, str.data(), str.size());
+    auto found = PYCPP_NAMESPACE::rfind(end(), size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
 }
 
@@ -1090,7 +1090,7 @@ auto basic_string_view<C, T>::rfind(const stl_type &str, size_type pos) const ->
 {
     const_pointer first = str.data();
     size_type length = str.size();
-    auto found = ::rfind(end(), size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::rfind(end(), size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1100,7 +1100,7 @@ auto basic_string_view<C, T>::rfind(const_pointer array, size_type pos) const ->
 {
     const_pointer first = array;
     size_type length = traits_type::length(array);
-    auto found = ::rfind(end(), size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::rfind(end(), size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1108,7 +1108,7 @@ auto basic_string_view<C, T>::rfind(const_pointer array, size_type pos) const ->
 template <typename C, typename T>
 auto basic_string_view<C, T>::rfind(const_pointer array, size_type pos, size_type length) const -> size_type
 {
-    auto found = ::rfind(end(), size()-pos, array, length);
+    auto found = PYCPP_NAMESPACE::rfind(end(), size()-pos, array, length);
     return found ? found - data() : npos;
 }
 
@@ -1116,7 +1116,7 @@ auto basic_string_view<C, T>::rfind(const_pointer array, size_type pos, size_typ
 template <typename C, typename T>
 auto basic_string_view<C, T>::rfind(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = ::rfind(end(), size()-pos, &c, 1);
+    auto found = PYCPP_NAMESPACE::rfind(end(), size()-pos, &c, 1);
     return found ? found - data() : npos;
 }
 
@@ -1124,7 +1124,7 @@ auto basic_string_view<C, T>::rfind(value_type c, size_type pos) const noexcept 
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_last_of(const self& str, size_type pos) const noexcept -> size_type
 {
-    auto found = ::rfind_of(end(), size()-pos, str.data(), str.size());
+    auto found = PYCPP_NAMESPACE::rfind_of(end(), size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
 }
 
@@ -1134,7 +1134,7 @@ auto basic_string_view<C, T>::find_last_of(const stl_type &str, size_type pos) c
 {
     const_pointer first = str.data();
     size_type length = str.size();
-    auto found = ::rfind_of(end(), size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::rfind_of(end(), size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1144,7 +1144,7 @@ auto basic_string_view<C, T>::find_last_of(const_pointer array, size_type pos) c
 {
     const_pointer first = array;
     size_type length = traits_type::length(array);
-    auto found = ::rfind_of(end(), size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::rfind_of(end(), size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1152,7 +1152,7 @@ auto basic_string_view<C, T>::find_last_of(const_pointer array, size_type pos) c
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_last_of(const_pointer array, size_type pos, size_type length) const -> size_type
 {
-    auto found = ::rfind_of(end(), size()-pos, array, length);
+    auto found = PYCPP_NAMESPACE::rfind_of(end(), size()-pos, array, length);
     return found ? found - data() : npos;
 }
 
@@ -1160,7 +1160,7 @@ auto basic_string_view<C, T>::find_last_of(const_pointer array, size_type pos, s
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_last_of(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = ::rfind_of(end(), size()-pos, &c, 1);
+    auto found = PYCPP_NAMESPACE::rfind_of(end(), size()-pos, &c, 1);
     return found ? found - data() : npos;
 }
 
@@ -1168,7 +1168,7 @@ auto basic_string_view<C, T>::find_last_of(value_type c, size_type pos) const no
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_last_not_of(const self& str, size_type pos) const noexcept -> size_type
 {
-    auto found = ::rfind_not_of(end(), size()-pos, str.data(), str.size());
+    auto found = PYCPP_NAMESPACE::rfind_not_of(end(), size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
 }
 
@@ -1178,7 +1178,7 @@ auto basic_string_view<C, T>::find_last_not_of(const stl_type &str, size_type po
 {
     const_pointer first = str.data();
     size_type length = str.size();
-    auto found = ::rfind_not_of(end(), size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::rfind_not_of(end(), size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1188,7 +1188,7 @@ auto basic_string_view<C, T>::find_last_not_of(const_pointer array, size_type po
 {
     const_pointer first = array;
     size_type length = traits_type::length(array);
-    auto found = ::rfind_not_of(end(), size()-pos, first, length);
+    auto found = PYCPP_NAMESPACE::rfind_not_of(end(), size()-pos, first, length);
     return found ? found - data() : npos;
 }
 
@@ -1196,7 +1196,7 @@ auto basic_string_view<C, T>::find_last_not_of(const_pointer array, size_type po
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_last_not_of(const_pointer array, size_type pos, size_type length) const -> size_type
 {
-    auto found = ::rfind_not_of(end(), size()-pos, array, length);
+    auto found = PYCPP_NAMESPACE::rfind_not_of(end(), size()-pos, array, length);
     return found ? found - data() : npos;
 }
 
@@ -1204,7 +1204,7 @@ auto basic_string_view<C, T>::find_last_not_of(const_pointer array, size_type po
 template <typename C, typename T>
 auto basic_string_view<C, T>::find_last_not_of(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = ::rfind_not_of(end(), size()-pos, &c, 1);
+    auto found = PYCPP_NAMESPACE::rfind_not_of(end(), size()-pos, &c, 1);
     return found ? found - data() : npos;
 }
 

@@ -5,11 +5,8 @@
  *  \brief Type-safe enumeration unittests.
  */
 
-#include <pycpp/config.h>
 #include <pycpp/enum.h>
 #include <gtest/gtest.h>
-
-PYCPP_USING_NAMESPACE
 
 // ENUM
 // ----

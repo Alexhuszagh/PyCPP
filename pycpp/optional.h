@@ -1158,12 +1158,16 @@ constexpr optional<X&> make_optional(std::reference_wrapper<X> v)
     return optional<X&>(v.get());
 }
 
+PYCPP_END_NAMESPACE
+
 // SPECIALIZATION
 // --------------
 
 
 namespace std
 {
+
+PYCPP_USING_NAMESPACE
 
 
 template <typename T>
@@ -1198,5 +1202,3 @@ struct hash<optional<T&>>
 
 #undef TR2_OPTIONAL_REQUIRES
 #undef TR2_OPTIONAL_ASSERTED_EXPRESSION
-
-PYCPP_END_NAMESPACE

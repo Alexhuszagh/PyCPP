@@ -8,6 +8,8 @@
 #include <pycpp/config.h>
 #include <pycpp/os.h>
 
+PYCPP_BEGIN_NAMESPACE
+
 #if defined(OS_WINDOWS)
 #include <pycpp/casemap.h>
 #include <pycpp/filesystem.h>
@@ -16,8 +18,6 @@
 #include <windows.h>
 #include <sys/stat.h>
 #include <algorithm>
-
-PYCPP_BEGIN_NAMESPACE
 
 // MACROS
 // ------
@@ -379,7 +379,7 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool 
 
     bool status = copy(src, dst, replace);
     if (status && copystat) {
-        return ::copystat(src, dst);
+        return PYCPP_NAMESPACE::copystat(src, dst);
     }
     return status;
 }

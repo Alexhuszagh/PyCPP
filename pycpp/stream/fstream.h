@@ -10,6 +10,7 @@
 #include <pycpp/config.h>
 #include <pycpp/compiler.h>
 #include <fstream>
+
 #if defined(HAVE_GCC)
 #   include <pycpp/os.h>
 #   include <ext/stdio_filebuf.h>
@@ -22,6 +23,7 @@
 #   define PYCPP_HAVE_WFOPEN
 #endif
 
+PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
@@ -144,3 +146,5 @@ typedef std::ifstream ifstream;
 typedef std::ofstream ofstream;
 
 #endif
+
+PYCPP_END_NAMESPACE

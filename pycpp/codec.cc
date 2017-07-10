@@ -4,6 +4,7 @@
 #include <pycpp/codec.h>
 #include <pycpp/unicode.h>
 
+PYCPP_BEGIN_NAMESPACE
 
 // HELPERS
 // -------
@@ -118,3 +119,4 @@ std::u16string codec_utf32_utf16(const std::u32string& str)
     });
 }
 
+PYCPP_END_NAMESPACE

@@ -294,7 +294,7 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool 
 
     bool status = copy(src, dst);
     if (status && copystat) {
-        return ::copystat(src, dst);
+        return PYCPP_NAMESPACE::copystat(src, dst);
     }
     return status;
 }
@@ -417,7 +417,7 @@ bool remove_file(const path_t& path)
 
 bool mkdir(const path_t& path, int mode)
 {
-    return ::mkdir(path.data(), mode) == 0;
+    return PYCPP_NAMESPACE::mkdir(path.data(), mode) == 0;
 }
 
 

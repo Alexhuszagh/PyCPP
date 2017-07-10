@@ -5,11 +5,8 @@
  *  \brief Endian unittests.
  */
 
-#include <pycpp/config.h>
 #include <pycpp/byteorder.h>
 #include <gtest/gtest.h>
-
-PYCPP_USING_NAMESPACE
 
 // TESTS
 // -----
