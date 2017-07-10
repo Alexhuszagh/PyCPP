@@ -71,9 +71,13 @@ Iter1 find_not_of(Iter1 first, size_t length, Iter2 substr, size_t sublen)
 template <typename Iter1, typename Iter2>
 Iter1 rfind(Iter1 last, size_t length, Iter2 substr, size_t sublen)
 {
+    if (sublen == 0) {
+        return last;
+    }
+
     auto substr_first = substr;
     auto substr_last = substr_first + sublen;
-    last -= sublen;
+    last -= sublen - 1;
     for (; length >= sublen; --length) {
         if (std::equal(substr_first, substr_last, --last)) {
             return last;

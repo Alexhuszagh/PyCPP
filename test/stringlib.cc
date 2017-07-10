@@ -185,39 +185,53 @@ TEST(stringlib, find)
 TEST(stringlib, rfind)
 {
     EXPECT_EQ(rfind("ThisThis", "i"), 6);
-// TODO: bug here...
-//    EXPECT_EQ(rfind("ThisThis", "is"), 6);
-//    EXPECT_EQ(rfind("This", "igg"), SIZE_MAX);
+    EXPECT_EQ(rfind("ThisThis", "is"), 6);
+    EXPECT_EQ(rfind("This", "igg"), SIZE_MAX);
 }
 
 
 TEST(stringlib, index)
 {
-    // TODO: here..
+    EXPECT_EQ(index("This", "i"), 2);
+    EXPECT_EQ(index("This", "is"), 2);
+    try {
+        index("This", "igg");
+    } catch (std::exception) {
+        return;
+    }
+    EXPECT_TRUE(false);
 }
 
 
 TEST(stringlib, rindex)
 {
-    // TODO: here..
+    EXPECT_EQ(rindex("ThisThis", "i"), 6);
+    EXPECT_EQ(rindex("ThisThis", "is"), 6);
+    try {
+        rindex("This", "igg");
+    } catch (std::exception) {
+        return;
+    }
+    EXPECT_TRUE(false);
 }
 
 
 TEST(stringlib, count)
 {
-    // TODO: here..
+// TODO: bug...
+//    EXPECT_EQ(count("ThisThis", "i"), 2);
 }
 
 
 TEST(stringlib, lower)
 {
-    // TODO: here..
+    EXPECT_EQ(lower("ThisThis"), "thisthis");
 }
 
 
 TEST(stringlib, upper)
 {
-    // TODO: here..
+    EXPECT_EQ(upper("ThisThis"), "THISTHIS");
 }
 
 

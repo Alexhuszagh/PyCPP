@@ -257,12 +257,12 @@ static size_t rfind_impl(const string_view& str, const string_view& sub, size_t 
     if (end < start) {
         return -1;
     } else if (end == SIZE_MAX) {
-        size_t index = str.substr(start).rfind(sub);
+        size_t index = str.substr(start).rfind(sub) + start;
         return index;
     }
 
     size_t length = end - start;
-    size_t index = str.substr(start, length).rfind(sub);
+    size_t index = str.substr(start, length).rfind(sub) + start;
     return index;
 }
 

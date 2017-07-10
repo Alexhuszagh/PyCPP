@@ -16,10 +16,6 @@
 - Stringlib
     - unittests
 
-- Requests
-    - Add lattice
-    - Make sure it uses the right namespace
-
 - Atomic Operations
     - Check boltsons
 
