@@ -365,8 +365,10 @@ if (BUILD_JSON)
 endif()
 
 if(BUILD_LATTICE)
-#    list(APPEND TEST_FILES
-#    )
+    list(APPEND TEST_FILES
+        test/lattice/timeout.cc
+        test/lattice/url.cc
+    )
 endif()
 
 if(BUILD_MATH)
