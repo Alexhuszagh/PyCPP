@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/mathlib/array.h>
+#include <functional>
 
 PYCPP_BEGIN_NAMESPACE
 

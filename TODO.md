@@ -1,3 +1,7 @@
+- Bug fixes
+    - randrange (illegal instruction)
+    - No template named greater in std
+
 - reference_vector/reference_deque
     - Nunittests
 
