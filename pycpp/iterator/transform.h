@@ -33,7 +33,7 @@ struct traits_impl
     typedef typename traits_type::iterator_category iterator_category;
     typedef typename traits_type::difference_type difference_type;
     typedef value_type& reference;
-    typedef value_type* pointer;
+    typedef typename std::remove_reference<value_type>::type* pointer;
 };
 
 
