@@ -99,7 +99,6 @@ TEST(url_t, unicode)
 
     EXPECT_EQ("http", url.service());
     EXPECT_EQ("xn--rksmrgs-5wao1o.josefsson.org", url.host());
-    std::cout << string_to_hex(url) << std::endl;
     EXPECT_EQ("/", url.path());
     EXPECT_EQ("", url.directory());
     EXPECT_EQ("", url.file());

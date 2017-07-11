@@ -8,9 +8,16 @@
 #pragma once
 
 #include <pycpp/mathlib/axis.h>
+#include <cassert>
+#include <numeric>
 #include <vector>
 
 PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+using dimensions = std::vector<size_t>;
 
 // DECLARATIONS
 // ------------
@@ -28,6 +35,7 @@ public:
     // MEMBER TYPES
     // ------------
     typedef ndarray<T, Allocator> self;
+    typedef std::vector<T, Allocator> vector_type;
     typedef ndarray_axis<T> axis_type;
     typedef T value_type;
     typedef T& reference;
@@ -45,6 +53,10 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     ndarray() = default;
+    ndarray(const dimensions& dims);
+    ndarray(dimensions&& dims);
+    ndarray(const vector_type& vector, const dimensions& dims = {});
+    ndarray(vector_type&& vector, dimensions&& dims = {});
     ndarray(const self& arr);
     self& operator=(const self& arr);
     ndarray(self&& arr);
@@ -82,13 +94,61 @@ public:
     void swap(self& arr);
 
 private:
-    std::vector<value_type, allocator_type> vector_;
-    std::vector<size_t> dims_ = {0};
+    vector_type vector_;
+    dimensions dims_ = {0};
 };
 
 
 // DEFINITIONS
 // -----------
+
+
+template <typename T, typename A>
+ndarray<T, A>::ndarray(const vector_type& vector, const dimensions& dims)
+{
+    if (dims.empty()) {
+        // use a flat array
+        vector_ = vector;
+        dims_ = {vector_.size()};
+    } else {
+        // use a matrix
+        assert(std::accumulate(dims_.begin(), dims_.end(), 0) == vector_.size());
+        vector_ = vector;
+        dims_ = vector;
+    }
+}
+
+
+template <typename T, typename A>
+ndarray<T, A>::ndarray(vector_type&& vector, dimensions&& dims)
+{
+    if (dims.empty()) {
+        // use a flat array
+        std::swap(vector_, vector);
+        dims_ = {vector_.size()};
+    } else {
+        // use a matrix
+        assert(std::accumulate(dims_.begin(), dims_.end(), 0) == vector_.size());
+        std::swap(vector_, vector);
+        std::swap(dims_, dims);
+    }
+}
+
+
+template <typename T, typename A>
+ndarray<T, A>::ndarray(const dimensions& dims):
+    dims_(dims)
+{
+    vector_.resize(std::accumulate(dims_.begin(), dims_.end(), 0));
+}
+
+
+template <typename T, typename A>
+ndarray<T, A>::ndarray(dimensions&& dims):
+    dims_(std::move(dims))
+{
+    vector_.resize(std::accumulate(dims_.begin(), dims_.end(), 0));
+}
 
 
 template <typename T, typename A>

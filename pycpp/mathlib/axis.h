@@ -31,10 +31,10 @@ public:
     typedef ndarray_axis_iterator<T> self;
     typedef std::iterator<std::random_access_iterator_tag, T> base;
     using typename base::value_type;
-    using typename base::reference;
-    using typename base::const_reference;
-    using typename base::pointer;
-    using typename base::const_pointer;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    typedef value_type* pointer;
+    typedef const value_type* const_pointer;
     using typename base::difference_type;
 
     // CONSTRUCTORS
@@ -62,6 +62,7 @@ public:
     self& operator-=(difference_type n);
     self operator+(difference_type n);
     self operator-(difference_type n);
+    difference_type operator-(const self&);
     reference operator[](difference_type n) const;
 
     // DEREFERENCE
@@ -300,6 +301,13 @@ auto ndarray_axis_iterator<T>::operator-(difference_type n) -> self
     self copy(*this);
     operator-=(n);
     return copy;
+}
+
+
+template <typename T>
+auto ndarray_axis_iterator<T>::operator-(const self& rhs) -> difference_type
+{
+    return first_ - rhs.first_;
 }
 
 

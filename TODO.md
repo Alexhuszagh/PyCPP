@@ -1,6 +1,3 @@
-- Lattice
-    - unittests
-
 - filesystem
     - copystat
     - copy_directory
@@ -12,6 +9,11 @@
 - Random
     - Need to clone Python's random API
     - Mostly done...
+    - unittests
+
+- Mathlib
+    - Need array/axis unittests
+    - Numpy.arange
 
 - Atomic Operations
     - Check boltsons

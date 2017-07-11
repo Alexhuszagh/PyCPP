@@ -378,6 +378,7 @@ endif()
 if(BUILD_MATH)
     list(APPEND TEST_FILES
         test/mathlib/array.cc
+        test/mathlib/arange.cc
         test/mathlib/axis.cc
     )
 endif()
