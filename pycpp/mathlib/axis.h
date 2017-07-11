@@ -257,6 +257,7 @@ template <typename T>
 auto ndarray_axis_iterator<T>::operator++() -> self&
 {
     first_ += step_;
+    return *this;
 }
 
 
@@ -273,6 +274,7 @@ template <typename T>
 auto ndarray_axis_iterator<T>::operator--() -> self&
 {
     first_ -= step_;
+    return *this;
 }
 
 
