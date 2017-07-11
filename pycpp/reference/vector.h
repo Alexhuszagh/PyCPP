@@ -86,11 +86,14 @@ struct reference_vector_base
     const_reference back() const;
 
     // MODIFIERS
-    // assign
+    void assign(size_type n, reference r);
     void push_back(reference r);
     void pop_back();
-    // insert
-    // erase
+    iterator insert(const_iterator position, reference r);
+    iterator insert(const_iterator position, size_type n, reference r);
+    iterator erase(const_iterator position);
+    iterator erase(const_iterator first, const_iterator last);
+    void clear();
     void swap(self&);
 
     // RELATIONAL OPERATORS
@@ -323,6 +326,13 @@ auto reference_vector_base<T>::back() const -> const_reference
 
 
 template <typename T>
+void reference_vector_base<T>::assign(size_type n, reference r)
+{
+    vector_.assign(n, std::addressof(r));
+}
+
+
+template <typename T>
 void reference_vector_base<T>::push_back(reference r)
 {
     vector_.push_back(std::addressof(r));
@@ -333,6 +343,58 @@ template <typename T>
 void reference_vector_base<T>::pop_back()
 {
     vector_.pop_back();
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::insert(const_iterator position, reference r) -> iterator
+{
+    auto distance = std::distance(begin(), position);
+    auto it = vector_.insert(vector_.cbegin()+distance, std::addressof(r));
+    return iterator(it, [](pointer p) -> reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::insert(const_iterator position, size_type n, reference r) -> iterator
+{
+    auto distance = std::distance(begin(), position);
+    auto it = vector_.insert(vector_.cbegin()+distance, n, std::addressof(r));
+    return iterator(it, [](pointer p) -> reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::erase(const_iterator position) -> iterator
+{
+    auto distance = std::distance(begin(), position);
+    auto it = vector_.erase(vector_.cbegin()+distance);
+    return iterator(it, [](pointer p) -> reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::erase(const_iterator first, const_iterator last) -> iterator
+{
+    auto f = std::distance(begin(), first);
+    auto l = std::distance(begin(), last);
+    auto it = vector_.erase(vector_.cbegin()+f, vector_.cbegin()+l);
+    return iterator(it, [](pointer p) -> reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
+void reference_vector_base<T>::clear()
+{
+    vector_.clear();
 }
 
 
