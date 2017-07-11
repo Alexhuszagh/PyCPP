@@ -1,6 +1,7 @@
 - reference_vector
     - Need to finish push_back, etc...
-    - Clone the interface for a deque, too?
+    - Clone the interface for deque.
+    - Change itertools product to use this new vector!!!
 
 - Mathlib
     - Need array/axis unittests

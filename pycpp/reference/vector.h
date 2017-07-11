@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <pycpp/ordering.h>
 #include <pycpp/reference/core.h>
 #include <vector>
 
@@ -28,6 +29,7 @@ struct reference_vector_base
 {
     // MEMBER TYPES
     // ------------
+    typedef reference_vector_base<T> self;
     using value_type = typename std::remove_pointer<T>::type;
     typedef value_type& reference;
     typedef const value_type& const_reference;
@@ -44,7 +46,12 @@ struct reference_vector_base
     // ----------------
 
     // CONSTRUCTORS
-    // TODO: here...
+    reference_vector_base() = default;
+    reference_vector_base(size_type n, reference);
+    reference_vector_base(const self&) = default;
+    self & operator=(const self&) = default;
+    reference_vector_base(self&&) = default;
+    self & operator=(self&&) = default;
 
     // ITERATORS
     iterator begin();
@@ -84,10 +91,15 @@ struct reference_vector_base
     void pop_back();
     // insert
     // erase
-    // swap
+    void swap(self&);
 
     // RELATIONAL OPERATORS
-    // TODO: here...
+    bool operator==(const self&) const;
+    bool operator!=(const self&) const;
+    bool operator<(const self&) const;
+    bool operator<=(const self&) const;
+    bool operator>(const self&) const;
+    bool operator>=(const self&) const;
 
 private:
     std::vector<pointer> vector_;
@@ -104,6 +116,16 @@ using reference_vector_impl = typename std::conditional<
 
 // IMPLEMENTATION
 // --------------
+
+
+template <typename T>
+reference_vector_base<T>::reference_vector_base(size_type n, reference r)
+{
+    vector_.reserve(n);
+    for (size_t i = 0; i < n; ++i) {
+        vector_.emplace_back(std::addressof(r));
+    }
+}
 
 
 template <typename T>
@@ -311,6 +333,55 @@ template <typename T>
 void reference_vector_base<T>::pop_back()
 {
     vector_.pop_back();
+}
+
+
+template <typename T>
+void reference_vector_base<T>::swap(self& rhs)
+{
+    std::swap(vector_, rhs.vector_);
+}
+
+
+template <typename T>
+bool reference_vector_base<T>::operator==(const self& rhs) const
+{
+    return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
+}
+
+
+template <typename T>
+bool reference_vector_base<T>::operator!=(const self& rhs) const
+{
+    return not_equal_to(*this, rhs);
+}
+
+
+template <typename T>
+bool reference_vector_base<T>::operator<(const self& rhs) const
+{
+    return std::lexicographical_compare(begin(), end(), rhs.begin(), rhs.end());
+}
+
+
+template <typename T>
+bool reference_vector_base<T>::operator<=(const self& rhs) const
+{
+    return less_equal(*this, rhs);
+}
+
+
+template <typename T>
+bool reference_vector_base<T>::operator>(const self& rhs) const
+{
+    return greater(*this, rhs);
+}
+
+
+template <typename T>
+bool reference_vector_base<T>::operator>=(const self& rhs) const
+{
+    return greater_equal(*this, rhs);
 }
 
 }   /* detail */

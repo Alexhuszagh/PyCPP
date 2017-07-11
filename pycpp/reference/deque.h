@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <pycpp/ordering.h>
 #include <pycpp/reference/core.h>
 #include <deque>
 
@@ -28,6 +29,7 @@ struct reference_deque_base
 {
     // MEMBER TYPES
     // ------------
+    typedef reference_deque_base<T> self;
     using value_type = typename std::remove_pointer<T>::type;
     typedef value_type& reference;
     typedef const value_type& const_reference;
@@ -44,7 +46,12 @@ struct reference_deque_base
     // ----------------
 
     // CONSTRUCTORS
-    // TODO: here...
+    reference_deque_base() = default;
+    reference_deque_base(size_type n, reference);
+    reference_deque_base(const self&) = default;
+    self & operator=(const self&) = default;
+    reference_deque_base(self&&) = default;
+    self & operator=(self&&) = default;
 
     // ITERATORS
     iterator begin();
@@ -60,6 +67,41 @@ struct reference_deque_base
     const_reverse_iterator rend() const;
     const_reverse_iterator crend() const;
 
+    // CAPACITY
+    size_type size() const;
+    size_type max_size() const;
+    size_type capacity() const;
+    bool empty() const noexcept;
+    void shrink_to_fit();
+
+    // ELEMENT ACCESS
+    reference operator[](size_type n);
+    const_reference operator[](size_type n) const;
+    reference at(size_type n);
+    const_reference at(size_type n) const;
+    reference front();
+    const_reference front() const;
+    reference back();
+    const_reference back() const;
+
+    // MODIFIERS
+    // assign
+    void push_front(reference r);
+    void pop_front();
+    void push_back(reference r);
+    void pop_back();
+    // insert
+    // erase
+    void swap(self&);
+
+    // RELATIONAL OPERATORS
+    bool operator==(const self&) const;
+    bool operator!=(const self&) const;
+    bool operator<(const self&) const;
+    bool operator<=(const self&) const;
+    bool operator>(const self&) const;
+    bool operator>=(const self&) const;
+
 private:
     std::deque<pointer> deque_;
 };
@@ -74,6 +116,15 @@ using reference_deque_impl = typename std::conditional<
 
 // IMPLEMENTATION
 // --------------
+
+
+template <typename T>
+reference_deque_base<T>::reference_deque_base(size_type n, reference r)
+{
+    for (size_t i = 0; i < n; ++i) {
+        deque_.emplace_back(std::addressof(r));
+    }
+}
 
 
 template <typename T>
@@ -171,7 +222,173 @@ auto reference_deque_base<T>::crend() const -> const_reverse_iterator
     return const_reverse_iterator(begin());
 }
 
-// TODO: implement...
+
+template <typename T>
+auto reference_deque_base<T>::size() const -> size_type
+{
+    return deque_.size();
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::max_size() const -> size_type
+{
+    return deque_.max_size();
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::capacity() const -> size_type
+{
+    return deque_.capacity();
+}
+
+
+template <typename T>
+bool reference_deque_base<T>::empty() const noexcept
+{
+    return deque_.empty();
+}
+
+
+template <typename T>
+void reference_deque_base<T>::shrink_to_fit()
+{
+    deque_.shrink_to_fit();
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::operator[](size_type n) -> reference
+{
+    return *deque_[n];
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::operator[](size_type n) const -> const_reference
+{
+    return *deque_[n];
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::at(size_type n) -> reference
+{
+    return *deque_.at(n);
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::at(size_type n) const -> const_reference
+{
+    return *deque_.at(n);
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::front() -> reference
+{
+    return *deque_.front();
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::front() const -> const_reference
+{
+    return *deque_.front();
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::back() -> reference
+{
+    return *deque_.back();
+}
+
+
+template <typename T>
+auto reference_deque_base<T>::back() const -> const_reference
+{
+    return *deque_.back();
+}
+
+
+template <typename T>
+void reference_deque_base<T>::push_front(reference r)
+{
+    deque_.push_front(std::addressof(r));
+}
+
+
+template <typename T>
+void reference_deque_base<T>::pop_front()
+{
+    deque_.pop_front();
+}
+
+
+template <typename T>
+void reference_deque_base<T>::push_back(reference r)
+{
+    deque_.push_back(std::addressof(r));
+}
+
+
+template <typename T>
+void reference_deque_base<T>::pop_back()
+{
+    deque_.pop_back();
+}
+
+
+template <typename T>
+void reference_deque_base<T>::swap(self& rhs)
+{
+    std::swap(deque_, rhs.deque_);
+}
+
+
+template <typename T>
+bool reference_deque_base<T>::operator==(const self& rhs) const
+{
+    return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
+}
+
+
+template <typename T>
+bool reference_deque_base<T>::operator!=(const self& rhs) const
+{
+    return not_equal_to(*this, rhs);
+}
+
+
+template <typename T>
+bool reference_deque_base<T>::operator<(const self& rhs) const
+{
+    return std::lexicographical_compare(begin(), end(), rhs.begin(), rhs.end());
+}
+
+
+template <typename T>
+bool reference_deque_base<T>::operator<=(const self& rhs) const
+{
+    return less_equal(*this, rhs);
+}
+
+
+template <typename T>
+bool reference_deque_base<T>::operator>(const self& rhs) const
+{
+    return greater(*this, rhs);
+}
+
+
+template <typename T>
+bool reference_deque_base<T>::operator>=(const self& rhs) const
+{
+    return greater_equal(*this, rhs);
+}
 
 }   /* detail */
 

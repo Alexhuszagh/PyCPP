@@ -12,6 +12,8 @@
 #pragma once
 
 #include <pycpp/ordering.h>
+#include <pycpp/parallel.h>
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 
@@ -500,9 +502,9 @@ auto ndarray_axis<T>::crend() const -> const_reverse_iterator
 template <typename T>
 auto ndarray_axis<T>::operator+=(const value_type& rhs) -> self&
 {
-    for (auto &value: *this) {
-        value += rhs;
-    }
+    std::for_each(PARALLEL_EXECUTION begin(), end(), [&rhs](value_type& lhs) {
+        lhs += rhs;
+    });
 
     return *this;
 }
@@ -511,9 +513,9 @@ auto ndarray_axis<T>::operator+=(const value_type& rhs) -> self&
 template <typename T>
 auto ndarray_axis<T>::operator-=(const value_type& rhs) -> self&
 {
-    for (auto &value: *this) {
-        value -= rhs;
-    }
+    std::for_each(PARALLEL_EXECUTION begin(), end(), [&rhs](value_type& lhs) {
+        lhs -= rhs;
+    });
 
     return *this;
 }
@@ -522,9 +524,9 @@ auto ndarray_axis<T>::operator-=(const value_type& rhs) -> self&
 template <typename T>
 auto ndarray_axis<T>::operator*=(const value_type& rhs) -> self&
 {
-    for (auto &value: *this) {
-        value *= rhs;
-    }
+    std::for_each(PARALLEL_EXECUTION begin(), end(), [&rhs](value_type& lhs) {
+        lhs *= rhs;
+    });
 
     return *this;
 }
@@ -533,9 +535,9 @@ auto ndarray_axis<T>::operator*=(const value_type& rhs) -> self&
 template <typename T>
 auto ndarray_axis<T>::operator/=(const value_type& rhs) -> self&
 {
-    for (auto &value: *this) {
-        value /= rhs;
-    }
+    std::for_each(PARALLEL_EXECUTION begin(), end(), [&rhs](value_type& lhs) {
+        lhs /= rhs;
+    });
 
     return *this;
 }
