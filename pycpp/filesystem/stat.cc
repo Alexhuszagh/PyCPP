@@ -456,7 +456,7 @@ path_t read_link(const path_t& path)
 
 #endif
 
-#if defined(backup_path_t)          // BACKUP PATH
+#if defined(OS_WINDOWS)             // BACKUP PATH
 
 stat_t stat(const backup_path_t& path)
 {

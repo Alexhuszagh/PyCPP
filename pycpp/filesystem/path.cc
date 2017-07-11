@@ -216,7 +216,7 @@ path_t relpath(const path_t& path, const path_t& start)
     return relpath_impl(path, start);
 }
 
-#if defined(backup_path_t)          // BACKUP PATH
+#if defined(OS_WINDOWS)          // BACKUP PATH
 
 // SPLIT
 

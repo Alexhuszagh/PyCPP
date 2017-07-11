@@ -298,7 +298,7 @@ bool mkdir(const path_t& path, int = 0777);
  */
 bool makedirs(const path_t& path, int = 0777);
 
-#if defined(backup_path_t)          // BACKUP PATH
+#if defined(OS_WINDOWS)          // BACKUP PATH
 
 // RUNTIME
 

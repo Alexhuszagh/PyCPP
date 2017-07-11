@@ -538,7 +538,7 @@ bool makedirs(const path_t& path, int mode)
 #endif
 
 
-#if defined(OS_WINDOWS) && defined(backup_path_t)       // BACKUP PATH
+#if defined(OS_WINDOWS)         // BACKUP PATH
 
 // RUNTIME
 
