@@ -307,7 +307,7 @@ static size_t count_impl(const string_view& str, const string_view& sub, size_t 
     size_t count = 0;
     size_t diff = substr.size() - sub.size();
     for (auto it = str.begin(); it <= str.begin()+diff; ++it) {
-        count += std::equal(it, str.end(), sub.begin());
+        count += std::equal(sub.begin(), sub.end(), it);
     }
 
     return count;

@@ -69,6 +69,24 @@ TEST(url_t, properties)
 }
 
 
+static std::string string_to_hex(const std::string& input)
+{
+    static const char* const lut = "0123456789abcdef";
+
+    std::string output;
+    output.reserve(4 * input.length());
+    for (size_t i = 0; i < input.length(); ++i)
+    {
+        const unsigned char c = input[i];
+        output.push_back('\\');
+        output.push_back('x');
+        output.push_back(lut[c >> 4]);
+        output.push_back(lut[c & 15]);
+    }
+    return output;
+}
+
+
 TEST(url_t, unicode)
 {
     // "http://räksmörgås.josefsson.org/"
@@ -81,8 +99,8 @@ TEST(url_t, unicode)
 
     EXPECT_EQ("http", url.service());
     EXPECT_EQ("xn--rksmrgs-5wao1o.josefsson.org", url.host());
-// TODO: restore, failing on MSVC
-//    EXPECT_EQ("/", url.path());
-//    EXPECT_EQ("", url.directory());
-//    EXPECT_EQ("", url.file());
+    std::cout << string_to_hex(url) << std::endl;
+    EXPECT_EQ("/", url.path());
+    EXPECT_EQ("", url.directory());
+    EXPECT_EQ("", url.file());
 }

@@ -366,6 +366,10 @@ endif()
 
 if(BUILD_LATTICE)
     list(APPEND TEST_FILES
+        test/lattice/auth.cc
+        test/lattice/cookies.cc
+        test/lattice/digest.cc
+        test/lattice/parameters.cc
         test/lattice/timeout.cc
         test/lattice/url.cc
     )

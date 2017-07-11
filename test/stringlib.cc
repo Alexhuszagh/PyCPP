@@ -112,7 +112,8 @@ TEST(stringlib, join)
 
 TEST(stringlib, capitalize)
 {
-    // TODO: here..
+    EXPECT_EQ(capitalize("this is"), "This is");
+    EXPECT_EQ(capitalize(".this is"), ".this is");
 }
 
 
@@ -218,8 +219,10 @@ TEST(stringlib, rindex)
 
 TEST(stringlib, count)
 {
-// TODO: bug...
-//    EXPECT_EQ(count("ThisThis", "i"), 2);
+    EXPECT_EQ(count("ThisThis", "x"), 0);
+    EXPECT_EQ(count("ThisThis", "i"), 2);
+    EXPECT_EQ(count("ThisThis", "is"), 2);
+    EXPECT_EQ(count("ThisThis", "isT"), 1);
 }
 
 
@@ -237,5 +240,5 @@ TEST(stringlib, upper)
 
 TEST(stringlib, replace)
 {
-    // TODO: here..
+    EXPECT_EQ(replace("ThisThis", "is", "IS"), "ThISThIS");
 }

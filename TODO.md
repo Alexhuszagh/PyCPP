@@ -1,5 +1,3 @@
-- Stringlib
-    - unittests
 - Lattice
     - unittests
 

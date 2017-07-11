@@ -70,11 +70,11 @@ std::string url_t::service() const noexcept
     assert(absolute());
     size_t index = find("://");
     if (index == std::string::npos) {
-        #ifdef HAVE_SSL
-            return "https";
-        #else
-            return "http";
-        #endif
+#ifdef PYCPP_HAVE_SSL
+        return "https";
+#else
+        return "http";
+#endif
     }
     return substr(0, index).data();
 }
