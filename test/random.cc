@@ -89,8 +89,8 @@ TEST(random, expovariate)
 
 TEST(random, normalvariate)
 {
-    EXPECT_TRUE(check_range<random_t>(normalvariate(1.0, 1.0), 0., 10.));
-    EXPECT_TRUE(check_range<random_t>(normalvariate(1.0, 1.0, 5), 0., 10.));
+    EXPECT_TRUE(check_range<random_t>(normalvariate(0.0, 1.0), -10., 10.));
+    EXPECT_TRUE(check_range<random_t>(normalvariate(0.0, 1.0, 5), -10., 10.));
 }
 
 
@@ -145,8 +145,8 @@ TEST(random, betavariate)
 
 TEST(random, gauss)
 {
-    EXPECT_TRUE(check_range<random_t>(gauss(1.0, 1.0), 0., 10.));
-    EXPECT_TRUE(check_range<random_t>(gauss(1.0, 1.0, 5), 0., 10.));
+    EXPECT_TRUE(check_range<random_t>(gauss(0.0, 1.0), -10., 10.));
+    EXPECT_TRUE(check_range<random_t>(gauss(0.0, 1.0, 5), -10., 10.));
 }
 
 
