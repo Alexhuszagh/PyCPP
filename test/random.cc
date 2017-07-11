@@ -168,12 +168,10 @@ TEST(random, choice)
 
 TEST(random, sample)
 {
-// TODO: bug fix due to the reference... shit
     auto list = uniform(0, 1, 500);
     auto total = std::accumulate(list.begin(), list.end(), 0);
     for (size_t i = 0; i < 499; ++i) {
         auto value = sample(list.begin(), list.end(), i);
-        auto x = value.begin();
-        //EXPECT_TRUE(std::accumulate(value.begin(), value.end(), 0) < total);
+        EXPECT_TRUE(std::accumulate(value.begin(), value.end(), 0) < total);
     }
 }

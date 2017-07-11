@@ -243,7 +243,7 @@ void transform_iterator<It, F>::swap(self_t& other)
 template <typename It, typename F>
 bool transform_iterator<It, F>::operator==(const self_t& other) const
 {
-    return std::tie(it, function) == std::tie(other.it, other.function);
+    return it == other.it;
 }
 
 template <typename It, typename F>
