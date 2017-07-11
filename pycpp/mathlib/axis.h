@@ -136,6 +136,8 @@ public:
     self operator*(const value_type&);
     self operator/(const value_type&);
 
+    // TODO: operator[]
+
     // OTHER
     void swap(self&);
 

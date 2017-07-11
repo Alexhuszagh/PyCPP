@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <pycpp/iterator/transform.h>
+#include <functional>
 #include <type_traits>
 #include <vector>
 
@@ -16,6 +18,13 @@ namespace detail
 {
 // DECLARATION
 // -----------
+
+
+template <typename P>
+using deref = decltype(*std::declval<P>());
+
+template <typename P>
+using iterator_impl = transform_iterator<P, std::function<deref<P>(P)>>;
 
 
 /**
@@ -33,27 +42,29 @@ struct reference_vector_base
     typedef const value_type* const_pointer;
     typedef std::ptrdiff_t difference_type;
     typedef size_t size_type;
-// TODO: need to transform it..
-//    typedef pointer iterator;
-//    typedef const_pointer const_iterator;
-//    typedef std::reverse_iterator<pointer> reverse_iterator;
-//    typedef std::reverse_iterator<const_pointer> const_reverse_iterator;
+    typedef iterator_impl<pointer> iterator;
+    typedef iterator_impl<const_pointer> const_iterator;
+    typedef std::reverse_iterator<pointer> reverse_iterator;
+    typedef std::reverse_iterator<const_pointer> const_reverse_iterator;
 
-//    // ITERATORS
-//    iterator begin() const;
-//    const_iterator begin() const;
-//    const_iterator end() const;
-//    const_reverse_iterator rbegin() const;
-//    const_reverse_iterator rend() const;
-//    const_iterator cbegin() const;
-//    const_iterator cend() const;
-//    const_reverse_iterator crbegin() const;
-//    const_reverse_iterator crend() const;
+    // ITERATORS
+    iterator begin();
+    const_iterator begin() const;
+    const_iterator cbegin() const;
+    iterator end();
+    const_iterator end() const;
+    const_iterator cend() const;
+    reverse_iterator rbegin();
+    const_reverse_iterator rbegin() const;
+    const_reverse_iterator crbegin() const;
+    reverse_iterator rend();
+    const_reverse_iterator rend() const;
+    const_reverse_iterator crend() const;
 
     // CAPACITY
     size_type size() const;
     size_type max_size() const;
-    // resize
+    void resize(size_type n);
     size_type capacity() const;
     bool empty() const noexcept;
     void reserve(size_type n);
@@ -68,8 +79,8 @@ struct reference_vector_base
     const_reference front() const;
     reference back();
     const_reference back() const;
-//    data
-//    Access data (public member function )
+
+    // TODO: need the rest of the methods
 
 private:
     std::vector<pointer> vector_;
@@ -89,6 +100,33 @@ using reference_vector_impl = typename std::conditional<
 
 
 template <typename T>
+auto reference_vector_base<T>::begin() -> iterator
+{
+    return make_transform_iterator(vector_.begin(), [](pointer p) -> reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::begin() const -> const_iterator
+{
+    return make_transform_iterator(vector_.begin(), [](const_pointer p) -> const_reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::cbegin() const -> const_iterator
+{
+    return make_transform_iterator(vector_.cbegin(), [](const_pointer p) -> const_reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
 auto reference_vector_base<T>::size() const -> size_type
 {
     return vector_.size();
@@ -99,6 +137,13 @@ template <typename T>
 auto reference_vector_base<T>::max_size() const -> size_type
 {
     return vector_.max_size();
+}
+
+
+template <typename T>
+void reference_vector_base<T>::resize(size_type n)
+{
+    vector_.resize(n);
 }
 
 

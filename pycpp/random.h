@@ -223,12 +223,21 @@ auto sample(Iter first, Iter last, size_t k) -> reference_vector<decltype(*std::
         throw std::runtime_error("Cannot sample k elements from range size N if k > N.");
     }
 
+    // partial fisher yates shuffling on the indexes
+    auto index = arange<size_t>(0, distance, 1);
+    for (size_t i = k; i >= 1; --i) {
+        auto j = randint(0, distance-1);
+// TODO: restore
+//        std::swap(index.view()[i-1], index.view()[j]);
+    }
+
     // fill vector
-    // TODO: I think I need a reference vector for this...
-    // Implementation: store pointers under the hood
-    // Implementation: conditionally compile
     reference_vector<decltype(*std::declval<Iter>())> vector;
-    //vector.reserve(k);
+    vector.reserve(k);
+    for (size_t i = 0; i < k; ++i) {
+// TODO: restore
+//        vector.emplace_back(first[index[i]]);
+    }
 
     return vector;
 }

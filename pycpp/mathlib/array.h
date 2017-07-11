@@ -53,8 +53,6 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     ndarray() = default;
-    ndarray(const dimensions& dims);
-    ndarray(dimensions&& dims);
     ndarray(const vector_type& vector, const dimensions& dims = {});
     ndarray(vector_type&& vector, dimensions&& dims = {});
     ndarray(const self& arr);
@@ -86,6 +84,10 @@ public:
     self operator*(const value_type&);
     self operator/(const value_type&);
 // TODO: need operators for ndarrays too
+
+    // MODIFIERS
+    void reshape(const dimensions& dims);
+    void reshape(dimensions&& dims);
 
     // VIEWS
     axis_type view();
@@ -132,22 +134,6 @@ ndarray<T, A>::ndarray(vector_type&& vector, dimensions&& dims)
         std::swap(vector_, vector);
         std::swap(dims_, dims);
     }
-}
-
-
-template <typename T, typename A>
-ndarray<T, A>::ndarray(const dimensions& dims):
-    dims_(dims)
-{
-    vector_.resize(std::accumulate(dims_.begin(), dims_.end(), 0));
-}
-
-
-template <typename T, typename A>
-ndarray<T, A>::ndarray(dimensions&& dims):
-    dims_(std::move(dims))
-{
-    vector_.resize(std::accumulate(dims_.begin(), dims_.end(), 0));
 }
 
 
@@ -331,6 +317,30 @@ auto ndarray<T, A>::operator/(const value_type& rhs) -> self
     self copy(*this);
     copy /= rhs;
     return copy;
+}
+
+
+template <typename T, typename A>
+void ndarray<T, A>::reshape(const dimensions& dims)
+{
+    if (dims.empty()) {
+        dims_ = {vector_.size()};
+    } else {
+        assert(std::accumulate(dims.begin(), dims.end(), 0) == vector_.size());
+        dims_ = dims;
+    }
+}
+
+
+template <typename T, typename A>
+void ndarray<T, A>::reshape(dimensions&& dims)
+{
+    if (dims.empty()) {
+        dims_ = {vector_.size()};
+    } else {
+        assert(std::accumulate(dims.begin(), dims.end(), 0) == vector_.size());
+        dims_ = std::move(dims);
+    }
 }
 
 

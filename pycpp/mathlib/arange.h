@@ -18,8 +18,8 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Generate values in range [start, stop) by step.
  */
-template <typename T, typename Compare>
-ndarray<T> arange(Compare comp, T start, T stop, T step = 1)
+template <typename Compare, typename T>
+ndarray<T> arange_impl(Compare comp, T start, T stop, T step = 1)
 {
     std::vector<T> list;
     list.reserve((stop - start) / step);
@@ -39,9 +39,9 @@ ndarray<T> arange(T start, T stop, T step = 1)
     // check if either both step and the range have the same direction
     assert((step > 0) ^ (stop - start < 0));
     if (step > 0) {
-        return arange(std::less<T>(), start, stop, step);
+        return arange_impl(std::less<T>(), start, stop, step);
     }
-    return arange(std::greater<T>(), start, stop, step);
+    return arange_impl(std::greater<T>(), start, stop, step);
 }
 
 PYCPP_END_NAMESPACE
