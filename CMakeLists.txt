@@ -301,6 +301,8 @@ endif()
 
 set(TEST_FILES
     test/main.cc
+    test/reference/deque.cc
+    test/reference/vector.cc
     test/safe/stdlib.cc
     test/secure/allocator.cc
     test/secure/string.cc

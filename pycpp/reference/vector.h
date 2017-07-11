@@ -3,13 +3,14 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Reference-wrapper like vector.
+ *
+ *  Stores non-nullable pointers to existing objects, using a vector
+ *  wrapper as the underlying structure.
  */
 
 #pragma once
 
-#include <pycpp/iterator/transform.h>
-#include <functional>
-#include <type_traits>
+#include <pycpp/reference/core.h>
 #include <vector>
 
 PYCPP_BEGIN_NAMESPACE
@@ -18,16 +19,6 @@ namespace detail
 {
 // DECLARATION
 // -----------
-
-template <typename P>
-using deref = decltype(*std::declval<P>());
-
-template <typename P>
-using double_deref = deref<deref<P>>;
-
-template <typename P>
-using iterator_impl = transform_iterator<P, std::function<double_deref<P>(deref<P>)>>;
-
 
 /**
  *  \brief Vector wrapper mapping value pointers to values.
@@ -44,8 +35,8 @@ struct reference_vector_base
     typedef const value_type* const_pointer;
     typedef std::ptrdiff_t difference_type;
     typedef size_t size_type;
-    typedef iterator_impl<pointer*> iterator;
-    typedef iterator_impl<const_pointer*> const_iterator;
+    typedef sequence_iterator_impl<typename std::vector<pointer>::iterator> iterator;
+    typedef sequence_iterator_impl<typename std::vector<pointer>::const_iterator> const_iterator;
     typedef std::reverse_iterator<pointer> reverse_iterator;
     typedef std::reverse_iterator<const_pointer> const_reverse_iterator;
 
@@ -72,7 +63,6 @@ struct reference_vector_base
     // CAPACITY
     size_type size() const;
     size_type max_size() const;
-    void resize(size_type n);
     size_type capacity() const;
     bool empty() const noexcept;
     void reserve(size_type n);
@@ -119,7 +109,7 @@ using reference_vector_impl = typename std::conditional<
 template <typename T>
 auto reference_vector_base<T>::begin() -> iterator
 {
-    return iterator(vector_.data(), [](pointer& p) -> reference {
+    return iterator(vector_.begin(), [](pointer& p) -> reference {
         return *p;
     });
 }
@@ -128,7 +118,7 @@ auto reference_vector_base<T>::begin() -> iterator
 template <typename T>
 auto reference_vector_base<T>::begin() const -> const_iterator
 {
-    return const_iterator(vector_.data(), [](const_pointer p) -> const_reference {
+    return const_iterator(vector_.begin(), [](const_pointer p) -> const_reference {
         return *p;
     });
 }
@@ -137,7 +127,7 @@ auto reference_vector_base<T>::begin() const -> const_iterator
 template <typename T>
 auto reference_vector_base<T>::cbegin() const -> const_iterator
 {
-    return const_iterator(vector_.data(), [](const_pointer p) -> const_reference {
+    return const_iterator(vector_.begin(), [](const_pointer p) -> const_reference {
         return *p;
     });
 }
@@ -146,7 +136,7 @@ auto reference_vector_base<T>::cbegin() const -> const_iterator
 template <typename T>
 auto reference_vector_base<T>::end() -> iterator
 {
-    return iterator(vector_.data() + vector_.size(), [](pointer p) -> reference {
+    return iterator(vector_.end(), [](pointer p) -> reference {
         return *p;
     });
 }
@@ -155,7 +145,7 @@ auto reference_vector_base<T>::end() -> iterator
 template <typename T>
 auto reference_vector_base<T>::end() const -> const_iterator
 {
-    return const_iterator(vector_.data() + vector_.size(), [](const_pointer p) -> const_reference {
+    return const_iterator(vector_.end(), [](const_pointer p) -> const_reference {
         return *p;
     });
 }
@@ -164,7 +154,7 @@ auto reference_vector_base<T>::end() const -> const_iterator
 template <typename T>
 auto reference_vector_base<T>::cend() const -> const_iterator
 {
-    return const_iterator(vector_.data() + vector_.size(), [](const_pointer p) -> const_reference {
+    return const_iterator(vector_.end(), [](const_pointer p) -> const_reference {
         return *p;
     });
 }
@@ -223,13 +213,6 @@ template <typename T>
 auto reference_vector_base<T>::max_size() const -> size_type
 {
     return vector_.max_size();
-}
-
-
-template <typename T>
-void reference_vector_base<T>::resize(size_type n)
-{
-    vector_.resize(n);
 }
 
 
@@ -343,7 +326,7 @@ template <typename T>
 struct reference_vector: PYCPP_NAMESPACE::detail::reference_vector_impl<T>
 {
     using base = PYCPP_NAMESPACE::detail::reference_vector_impl<T>;
+    using base::base;
 };
-
 
 PYCPP_END_NAMESPACE

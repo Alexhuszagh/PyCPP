@@ -131,29 +131,29 @@ TEST(random, uniform)
 
 TEST(random, triangular)
 {
-//    EXPECT_TRUE(check_range<random_t>(triangular(0, 5), 0, 5));
-//    EXPECT_TRUE(check_range<random_t>(triangular(0, 5, 100), 0, 5));
+    EXPECT_TRUE(check_range<random_t>(triangular(0, 5, 0.5), 0, 5));
+    EXPECT_TRUE(check_range<random_t>(triangular(0, 5, 0.5, 100), 0, 5));
 }
 
 
 TEST(random, betavariate)
 {
-//    EXPECT_TRUE(check_range<random_t>(betavariate(0, 5), 0, 5));
-//    EXPECT_TRUE(check_range<random_t>(betavariate(0, 5, 100), 0, 5));
+    EXPECT_TRUE(check_range<random_t>(betavariate(1, 1), 0, 1));
+    EXPECT_TRUE(check_range<random_t>(betavariate(1, 1, 100), 0, 1));
 }
 
 
 TEST(random, gauss)
 {
-//    EXPECT_TRUE(check_range<random_t>(triangular(0, 5), 0, 5));
-//    EXPECT_TRUE(check_range<random_t>(triangular(0, 5, 100), 0, 5));
+    EXPECT_TRUE(check_range<random_t>(gauss(1.0, 1.0), 0., 8.));
+    EXPECT_TRUE(check_range<random_t>(gauss(1.0, 1.0, 5), 0., 8.));
 }
 
 
 TEST(random, paretovariate)
 {
-//    EXPECT_TRUE(check_range<random_t>(paretovariate(0, 5), 0, 5));
-//    EXPECT_TRUE(check_range<random_t>(paretovariate(0, 5, 100), 0, 5));
+    EXPECT_TRUE(check_range<random_t>(paretovariate(1), 1, 6e6));
+    EXPECT_TRUE(check_range<random_t>(paretovariate(1, 100), 1, 6e6));
 }
 
 

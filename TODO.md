@@ -1,5 +1,9 @@
-- mathlib
-    - clear bug in the operator[] interface
+- reference_vector
+    - Need to finish push_back, etc...
+    - Clone the interface for a deque, too?
+
+- Mathlib
+    - Need array/axis unittests
 
 - filesystem
     - copystat
@@ -8,15 +12,6 @@
     - remove_directory
     - mkdir -- unitests
     - makedirs -- unittests
-
-- Random
-    - Need to clone Python's random API
-    - Mostly done...
-    - unittests
-
-- Mathlib
-    - Need array/axis unittests
-    - Numpy.arange
 
 - Atomic Operations
     - Check boltsons
