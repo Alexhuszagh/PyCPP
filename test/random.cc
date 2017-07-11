@@ -173,6 +173,7 @@ TEST(random, sample)
     auto total = std::accumulate(list.begin(), list.end(), 0);
     for (size_t i = 0; i < 499; ++i) {
         auto value = sample(list.begin(), list.end(), i);
-//        EXPECT_TRUE(std::accumulate(value.begin(), value.end(), 0) < total);
+        auto x = value.begin();
+        //EXPECT_TRUE(std::accumulate(value.begin(), value.end(), 0) < total);
     }
 }

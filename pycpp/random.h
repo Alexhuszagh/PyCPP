@@ -227,22 +227,34 @@ auto sample(Iter first, Iter last, size_t k) -> reference_vector<decltype(*std::
     auto index = arange<size_t>(0, distance, 1);
     for (size_t i = k; i >= 1; --i) {
         auto j = randint(0, distance-1);
-// TODO: restore
-//        std::swap(index.view()[i-1], index.view()[j]);
+        std::swap(index.view()[i-1], index.view()[j]);
     }
 
     // fill vector
     reference_vector<decltype(*std::declval<Iter>())> vector;
     vector.reserve(k);
     for (size_t i = 0; i < k; ++i) {
-// TODO: restore
-//        vector.emplace_back(first[index[i]]);
+        vector.push_back(first[index.view()[i]]);
     }
 
     return vector;
 }
 
-// random.shuffle(x[, random])
-// random.sample(population, k)
+
+/**
+ *  \brief Shuffle items in range.
+ *
+ *  Use a Fisher-Yates method to shuffle elements. Iter must a
+ *  RandomAccessIterator.
+ */
+template <typename Iter>
+void shuffle(Iter first, Iter last)
+{
+    auto distance = std::distance(first, last);
+    for (size_t i = distance; i >= 1; --i) {
+        auto j = randint(0, distance-1);
+        std::iter_swap(first[i-1], first[j]);
+    }
+}
 
 PYCPP_END_NAMESPACE

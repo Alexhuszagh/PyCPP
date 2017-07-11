@@ -47,6 +47,12 @@ struct reference_vector_base
     typedef std::reverse_iterator<pointer> reverse_iterator;
     typedef std::reverse_iterator<const_pointer> const_reverse_iterator;
 
+    // MEMBER FUNCTIONS
+    // ----------------
+
+    // CONSTRUCTORS
+    // TODO: here...
+
     // ITERATORS
     iterator begin();
     const_iterator begin() const;
@@ -80,7 +86,16 @@ struct reference_vector_base
     reference back();
     const_reference back() const;
 
-    // TODO: need the rest of the methods
+    // MODIFIERS
+    // assign
+    void push_back(reference r);
+    void pop_back();
+    // insert
+    // erase
+    // swap
+
+    // RELATIONAL OPERATORS
+    // TODO: here...
 
 private:
     std::vector<pointer> vector_;
@@ -123,6 +138,75 @@ auto reference_vector_base<T>::cbegin() const -> const_iterator
     return make_transform_iterator(vector_.cbegin(), [](const_pointer p) -> const_reference {
         return *p;
     });
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::end() -> iterator
+{
+    return make_transform_iterator(vector_.end(), [](pointer p) -> reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::end() const -> const_iterator
+{
+    return make_transform_iterator(vector_.end(), [](const_pointer p) -> const_reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::cend() const -> const_iterator
+{
+    return make_transform_iterator(vector_.cend(), [](const_pointer p) -> const_reference {
+        return *p;
+    });
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::rbegin() -> reverse_iterator
+{
+    return reverse_iterator(end());
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::rbegin() const -> const_reverse_iterator
+{
+    return const_reverse_iterator(end());
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::crbegin() const -> const_reverse_iterator
+{
+    return const_reverse_iterator(end());
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::rend() -> reverse_iterator
+{
+    return reverse_iterator(begin());
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::rend() const -> const_reverse_iterator
+{
+    return const_reverse_iterator(begin());
+}
+
+
+template <typename T>
+auto reference_vector_base<T>::crend() const -> const_reverse_iterator
+{
+    return const_reverse_iterator(begin());
 }
 
 
@@ -228,6 +312,20 @@ template <typename T>
 auto reference_vector_base<T>::back() const -> const_reference
 {
     return *vector_.back();
+}
+
+
+template <typename T>
+void reference_vector_base<T>::push_back(reference r)
+{
+    vector_.push_back(std::addressof(r));
+}
+
+
+template <typename T>
+void reference_vector_base<T>::pop_back()
+{
+    vector_.pop_back();
 }
 
 }   /* detail */

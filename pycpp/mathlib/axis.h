@@ -136,7 +136,15 @@ public:
     self operator*(const value_type&);
     self operator/(const value_type&);
 
-    // TODO: operator[]
+    // ELEMENT ACCESS
+    reference operator[](size_type n);
+    const_reference operator[](size_type n) const;
+    reference at(size_type n);
+    const_reference at(size_type n) const;
+    reference front();
+    const_reference front() const;
+    reference back();
+    const_reference back() const;
 
     // OTHER
     void swap(self&);
@@ -563,6 +571,71 @@ auto ndarray_axis<T>::operator/(const value_type& value) -> self
     self copy(*this);
     copy /= value;
     return copy;
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::operator[](size_type n) -> reference
+{
+    return at(n);
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::operator[](size_type n) const -> const_reference
+{
+    return at(n);
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::at(size_type n) -> reference
+{
+    return *(begin() + n);
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::at(size_type n) const -> const_reference
+{
+    return *(begin() + n);
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::front() -> reference
+{
+    return *begin();
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::front() const -> const_reference
+{
+    return *begin();
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::back() -> reference
+{
+    return *rbegin();
+}
+
+
+template <typename T>
+auto ndarray_axis<T>::back() const -> const_reference
+{
+    return *rbegin();
+}
+
+
+template <typename T>
+void ndarray_axis<T>::swap(self& rhs)
+{
+    std::swap(data_, rhs.data_);
+    std::swap(length_, rhs.length_);
+    std::swap(step_, rhs.step_);
 }
 
 PYCPP_END_NAMESPACE
