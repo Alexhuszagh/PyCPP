@@ -318,6 +318,7 @@ set(TEST_FILES
     test/casemap.cc
     test/codec.cc
     test/compiler.cc
+    test/coroutine.cc
     test/enum.cc
     test/getline.cc
     test/gettimeofday.cc

@@ -61,8 +61,8 @@ PYCPP_BEGIN_NAMESPACE
 #   endif
 #endif
 #
-#if defined _MSC_VER
-#   if (_MSC_VER >= 1900)
+#if defined(HAVE_MSVC)
+#   if (COMPILER_MAJOR_VERSION >= 14)
 #       define TR2_OPTIONAL_MSVC_2015_AND_HIGHER___
 #   endif
 #endif
