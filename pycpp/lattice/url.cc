@@ -59,7 +59,7 @@ url_t::url_t(const std::string &string):
 
 
 url_t::url_t(std::initializer_list<char> list):
-    std::string(list.begin())
+    std::string(list.begin(), list.size())
 {
     puny_encoded_url(*this);
 }
