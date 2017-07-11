@@ -1,3 +1,6 @@
+- mathlib
+    - clear bug in the operator[] interface
+
 - filesystem
     - copystat
     - copy_directory

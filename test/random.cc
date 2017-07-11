@@ -168,10 +168,27 @@ TEST(random, choice)
 
 TEST(random, sample)
 {
-    auto list = uniform(0, 1, 500);
-    auto total = std::accumulate(list.begin(), list.end(), 0);
+    random_list_t list = uniform(0, 1, 500);
+    random_list_t copy(list);
+    auto total = std::accumulate(list.begin(), list.end(), 0.);
     for (size_t i = 0; i < 499; ++i) {
         auto value = sample(list.begin(), list.end(), i);
-        EXPECT_TRUE(std::accumulate(value.begin(), value.end(), 0) < total);
+        auto sum = std::accumulate(value.begin(), value.end(), 0.);
+        EXPECT_EQ(value.size(), i);
+        EXPECT_TRUE(sum < total);
+        EXPECT_TRUE(i > 50 ? sum > 0 : true);
+        EXPECT_EQ(list, copy);
+    }
+}
+
+
+TEST(random, shuffle)
+{
+    auto list = uniform(0, 1, 500);
+    random_list_t copy(list);
+    EXPECT_EQ(list, copy);
+    for (size_t i = 0; i < 499; ++i) {
+        shuffle(list.begin(), list.end());
+        EXPECT_NE(list, copy);
     }
 }

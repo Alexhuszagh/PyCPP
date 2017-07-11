@@ -225,16 +225,18 @@ auto sample(Iter first, Iter last, size_t k) -> reference_vector<decltype(*std::
 
     // partial fisher yates shuffling on the indexes
     auto index = arange<size_t>(0, distance, 1);
+    auto index_view = index.view();
     for (size_t i = k; i >= 1; --i) {
         auto j = randint(0, distance-1);
-        std::swap(index.view()[i-1], index.view()[j]);
+        std::swap(index_view[i-1], index_view[j]);
     }
 
     // fill vector
     reference_vector<decltype(*std::declval<Iter>())> vector;
     vector.reserve(k);
     for (size_t i = 0; i < k; ++i) {
-        vector.push_back(first[index.view()[i]]);
+        size_t j = index_view[i];
+        vector.push_back(first[j]);
     }
 
     return vector;
@@ -253,7 +255,7 @@ void shuffle(Iter first, Iter last)
     auto distance = std::distance(first, last);
     for (size_t i = distance; i >= 1; --i) {
         auto j = randint(0, distance-1);
-        std::iter_swap(first[i-1], first[j]);
+        std::swap(first[i-1], first[j]);
     }
 }
 

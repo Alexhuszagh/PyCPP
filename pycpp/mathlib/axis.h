@@ -146,6 +146,9 @@ public:
     reference back();
     const_reference back() const;
 
+    // TODO: need size
+    // Need capacity
+
     // OTHER
     void swap(self&);
 
@@ -300,7 +303,7 @@ template <typename T>
 auto ndarray_axis_iterator<T>::operator+(difference_type n) -> self
 {
     self copy(*this);
-    operator+=(n);
+    copy += n;
     return copy;
 }
 
@@ -309,7 +312,7 @@ template <typename T>
 auto ndarray_axis_iterator<T>::operator-(difference_type n) -> self
 {
     self copy(*this);
-    operator-=(n);
+    copy -= n;
     return copy;
 }
 

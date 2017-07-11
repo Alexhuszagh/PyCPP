@@ -16,12 +16,15 @@ PYCPP_USING_NAMESPACE
 
 TEST(mathlib, arange)
 {
-    auto range = arange<int>(0, 5);
-    EXPECT_EQ(std::vector<int>(range.begin(), range.end()), std::vector<int>({0, 1, 2, 3, 4}));
+    auto r1 = arange<int>(0, 5);
+    EXPECT_EQ(std::vector<int>(r1.begin(), r1.end()), std::vector<int>({0, 1, 2, 3, 4}));
 
-    range = arange<int>(0, 5, 2);
-    EXPECT_EQ(std::vector<int>(range.begin(), range.end()), std::vector<int>({0, 2, 4}));
+    r1 = arange<int>(0, 5, 2);
+    EXPECT_EQ(std::vector<int>(r1.begin(), r1.end()), std::vector<int>({0, 2, 4}));
 
-    range = arange<int>(5, 0, -2);
-    EXPECT_EQ(std::vector<int>(range.begin(), range.end()), std::vector<int>({5, 3, 1}));
+    r1 = arange<int>(5, 0, -2);
+    EXPECT_EQ(std::vector<int>(r1.begin(), r1.end()), std::vector<int>({5, 3, 1}));
+
+    auto r2 = arange<size_t>(0, 5, 2);
+    EXPECT_EQ(std::vector<size_t>(r2.begin(), r2.end()), std::vector<size_t>({0, 2, 4}));
 }

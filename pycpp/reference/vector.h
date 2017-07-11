@@ -146,7 +146,7 @@ auto reference_vector_base<T>::cbegin() const -> const_iterator
 template <typename T>
 auto reference_vector_base<T>::end() -> iterator
 {
-    return iterator(vector_.data(), [](pointer p) -> reference {
+    return iterator(vector_.data() + vector_.size(), [](pointer p) -> reference {
         return *p;
     });
 }
@@ -155,7 +155,7 @@ auto reference_vector_base<T>::end() -> iterator
 template <typename T>
 auto reference_vector_base<T>::end() const -> const_iterator
 {
-    return const_iterator(vector_.data(), [](const_pointer p) -> const_reference {
+    return const_iterator(vector_.data() + vector_.size(), [](const_pointer p) -> const_reference {
         return *p;
     });
 }
@@ -164,7 +164,7 @@ auto reference_vector_base<T>::end() const -> const_iterator
 template <typename T>
 auto reference_vector_base<T>::cend() const -> const_iterator
 {
-    return const_iterator(vector_.data(), [](const_pointer p) -> const_reference {
+    return const_iterator(vector_.data() + vector_.size(), [](const_pointer p) -> const_reference {
         return *p;
     });
 }

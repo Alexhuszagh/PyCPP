@@ -85,6 +85,9 @@ public:
     self operator/(const value_type&);
 // TODO: need operators for ndarrays too
 
+    // TODO: need size
+    // Need capacity
+
     // MODIFIERS
     void reshape(const dimensions& dims);
     void reshape(dimensions&& dims);

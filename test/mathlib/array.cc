@@ -8,9 +8,31 @@
 #include <pycpp/mathlib/array.h>
 #include <gtest/gtest.h>
 
+PYCPP_USING_NAMESPACE
 
 // TESTS
 // -----
 
 
-// TODO: implement
+TEST(ndarray, constructors)
+{
+    // TODO: implement
+}
+
+
+TEST(ndarray, iterators)
+{
+    // TODO: implement
+}
+
+
+TEST(ndarray, operations)
+{
+    // TODO: implement
+}
+
+
+TEST(ndarray, modifiers)
+{
+    // TODO: implement
+}
