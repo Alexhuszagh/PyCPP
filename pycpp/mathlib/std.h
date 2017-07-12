@@ -12,6 +12,8 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// FUNCTIONS
+// ---------
 
 /** \brief Calculate variance of range with pre-calculated mean.
  *
@@ -27,14 +29,13 @@ double variance(double mean,
     Iter first,
     Iter last)
 {
-    double sums = 0;
-    size_t length = 0;
-    while (first != last) {
-        sums += pow(*first++ - mean, 2);
-        ++length;
-    }
+    using value_type = typename std::iterator_traits<Iter>::value_type;
+    double sum = 0;
+    std::for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
+        sum += pow(value - mean, 2);
+    });
 
-    return sums / length;
+    return sum / std::distance(first, last);
 }
 
 
@@ -100,21 +101,20 @@ double stdev(Iter first,
  */
 template <
     typename Iter,
-    typename Sum
+    typename Summer
 >
 double variance(double mean,
     Iter first,
     Iter last,
-    Sum sum)
+    Summer summer)
 {
-    double sums = 0;
-    size_t length = 0;
-    while (first != last) {
-        sums += pow(sum(*first++) - mean, 2);
-        ++length;
-    }
+    using value_type = typename std::iterator_traits<Iter>::value_type;
+    double sum = 0;
+    std::for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
+        sum += pow(summer(value) - mean, 2);
+    });
 
-    return sums / length;
+    return sum / std::distance(first, last);
 }
 
 
@@ -204,18 +204,18 @@ double variance(double mean,
     WeightIter weight_first,
     WeightIter weight_last)
 {
-    double sums = 0;
-    double weights = 0;
-    size_t length = 0;
-    while (value_first != value_last && weight_first != weight_last) {
-        double var = pow(*value_first++ - mean, 2);
-        const double w = *weight_first++;
-        sums += w * var;
-        weights += w;
-        ++length;
-    }
+    double sum = 0;
+    double weight = 0;
+    size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
+    auto r = range<size_t>(0, distance, 1);
+    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+        double v = pow(value_first[i] - mean, 2);
+        double w = weight_first[i];
+        sum += w * v;
+        weight += w;
+    });
 
-    return sums / (weights * (length / (length-1)));
+    return sum / (weight * (distance / (distance-1)));
 }
 
 
@@ -307,29 +307,29 @@ double stdev(ValueIter value_first,
 template <
     typename ValueIter,
     typename WeightIter,
-    typename Sum,
-    typename Weight
+    typename Summer,
+    typename Weighter
 >
 double variance(double mean,
     ValueIter value_first,
     ValueIter value_last,
     WeightIter weight_first,
     WeightIter weight_last,
-    Sum sum,
-    Weight weight)
+    Summer summer,
+    Weighter weighter)
 {
-    double sums = 0;
-    double weights = 0;
-    size_t length = 0;
-    while (value_first != value_last && weight_first != weight_last) {
-        double var = pow(sum(*value_first++) - mean, 2);
-        const double w = weight(*weight_first++);
-        sums += w * var;
-        weights += w;
-        ++length;
-    }
+    double sum = 0;
+    double weight = 0;
+    size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
+    auto r = range<size_t>(0, distance, 1);
+    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+        double v = pow(summer(value_first[i]) - mean, 2);
+        double w = weighter(weight_first[i]);
+        sum += w * v;
+        weight += w;
+    });
 
-    return sums / (weights * (length / (length-1)));
+    return sum / (weight * (distance / (distance-1)));
 }
 
 

@@ -8,12 +8,14 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/parallel.h>
+#include <pycpp/range.h>
+#include <algorithm>
 
 PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
-
 
 /** \brief Calculate trapezoidal integral of equally-spaced values over range.
  *
@@ -22,16 +24,16 @@ PYCPP_BEGIN_NAMESPACE
  *  \dx                     Spacing of values
  */
 template <typename Iter>
-double trapz(Iter first,
-    Iter last,
-    const double dx = 1)
+double trapz(Iter first, Iter last, double dx = 1)
 {
     double integral = 0;
-    while ((first+1) != last) {
-        auto yi = *first++;
-        auto yj = *first;
+    size_t distance = std::distance(first, last);
+    auto r = range<size_t>(0, distance-1, 1);
+    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+        double yi = first[i];
+        double yj = first[i+1];
         integral += 0.5 * dx * (yj + yi);
-    }
+    });
 
     return integral;
 }
@@ -40,7 +42,7 @@ double trapz(Iter first,
 /** \brief Calculate trapezoidal integral of values over range.
  *
  *  \param y_first          Iterator at beginning of range for values
- *  \param y_end            Iterator past end of range for values
+ *  \param y_last           Iterator past end of range for values
  *  \param x_first          Iterator at beginning of range for spacing
  *  \param x_last           Iterator past end of range for spacing
  */
@@ -49,18 +51,20 @@ template <
     typename XIter
 >
 double trapz(YIter y_first,
-    YIter y_end,
+    YIter y_last,
     XIter x_first,
     XIter x_last)
 {
     double integral = 0;
-    while ((y_first+1) != y_end && (x_first+1) != x_last) {
-        auto xi = *x_first++;
-        auto xj = *x_first;
-        auto yi = *y_first++;
-        auto yj = *y_first;
+    size_t distance = std::min(std::distance(y_first, y_last), std::distance(x_first, x_last));
+    auto r = range<size_t>(0, distance-1, 1);
+    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+        double xi = x_first[i];
+        double xj = x_first[i+1];
+        double yi = y_first[i];
+        double yj = y_first[i+1];
         integral += 0.5 * (xj - xi) * (yj + yi);
-    }
+    });
 
     return integral;
 }
@@ -78,15 +82,17 @@ template <
 >
 double trapz(Iter first,
     Iter last,
-    const double dx,
+    double dx,
     Fun fun)
 {
     double integral = 0;
-    while ((first+1) != last) {
-        auto yi = fun(*first++);
-        auto yj = fun(*first);
+    size_t distance = std::distance(first, last);
+    auto r = range<size_t>(0, distance-1, 1);
+    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+        double yi = fun(first[i]);
+        double yj = fun(first[i+1]);
         integral += 0.5 * dx * (yj + yi);
-    }
+    });
 
     return integral;
 }
@@ -96,7 +102,7 @@ double trapz(Iter first,
 /** \brief Calculate trapezoidal integral of values over range.
  *
  *  \param y_first          Iterator at beginning of range for values
- *  \param y_end            Iterator past end of range for values
+ *  \param y_last           Iterator past end of range for values
  *  \param x_first          Iterator at beginning of range for spacing
  *  \param x_last           Iterator past end of range for spacing
  *  \param y_fun            Function to extract y-value from value_type
@@ -109,20 +115,22 @@ template <
     typename XFun
 >
 double trapz(YIter y_first,
-    YIter y_end,
+    YIter y_last,
     XIter x_first,
     XIter x_last,
     YFun y_fun,
     XFun x_fun)
 {
     double integral = 0;
-    while ((y_first+1) != y_end && (x_first+1) != x_last) {
-        auto xi = x_fun(*x_first++);
-        auto xj = x_fun(*x_first);
-        auto yi = y_fun(*y_first++);
-        auto yj = y_fun(*y_first);
+    size_t distance = std::min(std::distance(y_first, y_last), std::distance(x_first, x_last));
+    auto r = range<size_t>(0, distance-1, 1);
+    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+        double xi = x_fun(x_first[i]);
+        double xj = x_fun(x_first[i+1]);
+        double yi = y_fun(y_first[i]);
+        double yj = y_fun(y_first[i+1]);
         integral += 0.5 * (xj - xi) * (yj + yi);
-    }
+    });
 
     return integral;
 }

@@ -8,14 +8,15 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <cstdlib>
+#include <pycpp/parallel.h>
+#include <pycpp/range.h>
+#include <algorithm>
 #include <iterator>
 
 PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
-
 
 /** \brief Calculate average of range.
  *
@@ -26,17 +27,15 @@ PYCPP_BEGIN_NAMESPACE
  *  NAN or INF.
  */
 template <typename Iter>
-double average(Iter first,
-    Iter last)
+double average(Iter first, Iter last)
 {
+    using value_type = typename std::iterator_traits<Iter>::value_type;
     double sum = 0;
-    size_t length = 0;
-    while (first != last) {
-        sum += *first++;
-        ++length;
-    }
+    std::for_each(PARALLEL_EXECUTION first, last, [&sum](const value_type& value) {
+        sum += value;
+    });
 
-    return sum / length;
+    return sum / std::distance(first, last);
 }
 
 
@@ -51,20 +50,19 @@ double average(Iter first,
  */
 template <
     typename Iter,
-    typename Sum
+    typename Summer
 >
 double average(Iter first,
     Iter last,
-    Sum sum)
+    Summer summer)
 {
-    double sums = 0;
-    size_t length = 0;
-    while (first != last) {
-        sums += sum(*first++);
-        ++length;
-    }
+    using value_type = typename std::iterator_traits<Iter>::value_type;
+    double sum = 0;
+    std::for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
+        sum += summer(value);
+    });
 
-    return sums / length;
+    return sum / std::distance(first, last);
 }
 
 
@@ -87,15 +85,17 @@ double average(ValueIter value_first,
     WeightIter weight_first,
     WeightIter weight_last)
 {
-    double sums = 0;
-    double weights = 0;
-    while (value_first != value_last && weight_first != weight_last) {
-        const double w = *weight_first++;
-        sums += w * *value_first++;
-        weights += w;
-    }
+    double sum = 0;
+    double weight = 0;
+    size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
+    auto r = range<size_t>(0, distance, 1);
+    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+        double w = weight_first[i];
+        sum += value_first[i] * w;
+        weight += w;
+    });
 
-    return sums / weights;
+    return sum / weight;
 }
 
 
@@ -114,25 +114,27 @@ double average(ValueIter value_first,
 template <
     typename ValueIter,
     typename WeightIter,
-    typename Sum,
-    typename Weight
+    typename Summer,
+    typename Weighter
 >
 double average(ValueIter value_first,
     ValueIter value_last,
     WeightIter weight_first,
     WeightIter weight_last,
-    Sum sum,
-    Weight weight)
+    Summer summer,
+    Weighter weighter)
 {
-    double sums = 0;
-    double weights = 0;
-    while (value_first != value_last && weight_first != weight_last) {
-        const double w = weight(*weight_first++);
-        sums += w * sum(*value_first++);
-        weights += w;
-    }
+    double sum = 0;
+    double weight = 0;
+    size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
+    auto r = range<size_t>(0, distance, 1);
+    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+        double w = weighter(weight_first[i]);
+        sum += summer(value_first[i]) * w;
+        weight += w;
+    });
 
-    return sums / weights;
+    return sum / weight;
 }
 
 PYCPP_END_NAMESPACE

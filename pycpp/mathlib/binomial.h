@@ -16,7 +16,6 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-
 /**
  *  \brief Fast binomial coefficient calculation.
  *  \author Modified from [Etceterology](1).
