@@ -1,8 +1,8 @@
 - Mathlib
     - Need array/axis unittests
     - Need math routines
-        - average
         - dot
+        - distribution -- unittests
         - Etc.
 
 - filesystem
