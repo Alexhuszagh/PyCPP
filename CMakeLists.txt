@@ -254,6 +254,9 @@ if(BUILD_LATTICE)
 endif()
 
 if(BUILD_MATH)
+    list(APPEND SOURCE_FILES
+        pycpp/mathlib/distribution.cc
+    )
 endif()
 
 if(BUILD_STREAM)
@@ -384,7 +387,9 @@ if(BUILD_MATH)
     list(APPEND TEST_FILES
         test/mathlib/array.cc
         test/mathlib/arange.cc
+        test/mathlib/average.cc
         test/mathlib/axis.cc
+        test/mathlib/distribution.cc
     )
 endif()
 
