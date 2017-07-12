@@ -65,23 +65,47 @@ TEST(reference_deque, iterator)
 
 TEST(reference_deque, capacity)
 {
+    using reference = reference_deque<int&>;
 
 }
 
 
 TEST(reference_deque, element)
 {
+    using reference = reference_deque<int&>;
 
 }
 
 
 TEST(reference_deque, modifiers)
 {
+    using reference = reference_deque<int&>;
+    reference deque(5, DATA[0]);
 
+    EXPECT_EQ(deque.size(), 5);
+    EXPECT_GE(deque.max_size(), 5);
+    EXPECT_FALSE(deque.empty());
+
+    deque.shrink_to_fit();
+    EXPECT_EQ(deque.size(), 5);
 }
 
 
 TEST(reference_deque, relational)
 {
+    using reference = reference_deque<int&>;
 
+    // create deques
+    reference deque;
+    reference reversed;
+    reference duplicate(5, DATA[0]);
+    for (auto &item: DATA) {
+        deque.push_back(item);
+        reversed.push_front(item);
+    }
+
+    EXPECT_EQ(deque, deque);
+    EXPECT_NE(deque, reversed);
+    EXPECT_NE(deque, duplicate);
+    EXPECT_NE(reversed, duplicate);
 }

@@ -38,7 +38,7 @@ struct reference_deque_base
     typedef std::ptrdiff_t difference_type;
     typedef size_t size_type;
     typedef sequence_iterator_impl<typename std::deque<pointer>::iterator> iterator;
-    typedef sequence_iterator_impl<typename std::deque<pointer>::const_iterator> const_iterator;
+    typedef sequence_const_iterator_impl<typename std::deque<pointer>::const_iterator> const_iterator;
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
@@ -70,7 +70,6 @@ struct reference_deque_base
     // CAPACITY
     size_type size() const;
     size_type max_size() const;
-    size_type capacity() const;
     bool empty() const noexcept;
     void shrink_to_fit();
 
@@ -237,13 +236,6 @@ template <typename T>
 auto reference_deque_base<T>::max_size() const -> size_type
 {
     return deque_.max_size();
-}
-
-
-template <typename T>
-auto reference_deque_base<T>::capacity() const -> size_type
-{
-    return deque_.capacity();
 }
 
 

@@ -38,7 +38,7 @@ struct reference_vector_base
     typedef std::ptrdiff_t difference_type;
     typedef size_t size_type;
     typedef sequence_iterator_impl<typename std::vector<pointer>::iterator> iterator;
-    typedef sequence_iterator_impl<typename std::vector<pointer>::const_iterator> const_iterator;
+    typedef sequence_const_iterator_impl<typename std::vector<pointer>::const_iterator> const_iterator;
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
