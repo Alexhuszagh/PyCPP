@@ -333,6 +333,7 @@ set(TEST_FILES
     test/pimpl.cc
     test/punycode.cc
     test/random.cc
+    test/range.cc
     test/stringlib.cc
     test/tls.cc
     test/unicode.cc

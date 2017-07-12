@@ -18,6 +18,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Create generator from range [start, stop) using step intervals.
  */
+template <typename T>
 generator<T> range(T start, T stop, T step = 1)
 {
     return generator<T>([=](generator<T>& gen) mutable {

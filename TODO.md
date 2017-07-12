@@ -1,10 +1,6 @@
 - reference_vector/reference_deque
     - unittests
 
-- Coroutines
-    - Need a COROUTINE() macro, automatically handles yielding
-    - Likely use the C++14 library? jamboree/co2    
-
 - Mathlib
     - Need array/axis unittests
 
