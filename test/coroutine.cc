@@ -7,40 +7,24 @@
 
 #include <pycpp/coroutine.h>
 #include <gtest/gtest.h>
+#include <numeric>
 
 PYCPP_USING_NAMESPACE
 
 // HELPERS
 // -------
-//
-//COROUTINE_DECL(int, range, int start, int stop, int step)
-//{
-//    for (int i = start; i < stop; i += step) {
-// //       COROUTINE_YIELD(i);
-//    }
-//}
 
 
-struct x {};
-
-
-struct range: generator<int>
+generator<int> custom_range(int start, int stop, int step = 1)
 {
-    int start = 0;
-    int stop = 50;
-    int step = 1;
-    int i = start;
-
-    virtual void operator()() override
-    {
-        CORO_REENTER(coro_) {
-            for (; i < stop; i += step) {
-                CORO_YIELD store(i);
+    return generator<int>([=](generator<int>& gen) mutable {
+        COROUTINE_REENTER(gen.coroutine()) {
+            for (; start < stop; start += step) {
+                COROUTINE_YIELD gen.store(start);
             }
         }
-    }
-};
-
+    });
+}
 
 // TESTS
 // -----
@@ -48,13 +32,6 @@ struct range: generator<int>
 
 TEST(coroutine, coroutine)
 {
-    int sum = 0;
-    range r;
-    for (int i: r) {
-        std::cout << i << std::endl;
-    }
-
-    // TODO: need to implement...
-    EXPECT_EQ(sum, 0);
-    exit(0);
+    auto range = custom_range(1, 10, 1);
+    EXPECT_EQ(std::accumulate(range.begin(), range.end(), 0), 45);
 }

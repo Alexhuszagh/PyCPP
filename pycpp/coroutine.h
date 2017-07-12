@@ -1,5 +1,6 @@
+//  :copyright: (c) 2003-2013 Christopher M. Kohlhoff.
 //  :copyright: (c) 2017 Alex Huszagh.
-//  :license: MIT, see licenses/mit.md for more details.
+//  :license: Bolost, see licenses/boost.md for more details.
 /**
  *  \addtogroup PyCPP
  *  \brief Python-like stackful coroutines for C++.
@@ -10,6 +11,7 @@
 #include <pycpp/config.h>
 #include <pycpp/compiler.h>
 #include <pycpp/ordering.h>
+#include <functional>
 #include <iterator>
 #include <type_traits>
 
@@ -19,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 // ------
 
 
-#define CORO_REENTER(c)                             \
+#define COROUTINE_REENTER(c)                        \
   switch (coroutine_ref _coro_value = c)            \
     case -1: if (_coro_value)                       \
     {                                               \
@@ -33,7 +35,7 @@ PYCPP_BEGIN_NAMESPACE
     else case 0:
 
 
-#define CORO_YIELD_IMPL(n)                          \
+#define COROUTINE_YIELD_IMPL(n)                     \
   for (_coro_value = (n);;)                         \
     if (_coro_value == 0)                           \
     {                                               \
@@ -51,7 +53,7 @@ PYCPP_BEGIN_NAMESPACE
             else case 0:
 
 
-#define CORO_FORK_IMPL(n)                           \
+#define COROUTINE_FORK_IMPL(n)                      \
   for (_coro_value = -(n);; _coro_value = (n))      \
     if (_coro_value == (n))                         \
     {                                               \
@@ -62,11 +64,11 @@ PYCPP_BEGIN_NAMESPACE
 
 
 #if defined(HAVE_MSVC)              // MSVC
-#   define CORO_YIELD CORO_YIELD_IMPL(__COUNTER__ + 1)
-#   define CORO_FORK CORO_FORK_IMPL(__COUNTER__ + 1)
+#   define COROUTINE_YIELD COROUTINE_YIELD_IMPL(__COUNTER__ + 1)
+#   define COROUTINE_FORK COROUTINE_FORK_IMPL(__COUNTER__ + 1)
 #else                               // NOT MSVC
-#   define CORO_YIELD CORO_YIELD_IMPL(__LINE__)
-#   define CORO_FORK CORO_FORK_IMPL(__LINE__)
+#   define COROUTINE_YIELD COROUTINE_YIELD_IMPL(__LINE__)
+#   define COROUTINE_FORK COROUTINE_FORK_IMPL(__LINE__)
 #endif                              // MSVC
 
 // FORWARD
@@ -188,26 +190,29 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
+    generator(std::function<void(self&)>&& function);
 
     // ITERATORS
     iterator begin();
     iterator end();
 
+    // PROPERTIES
+    void operator()();
+    struct coroutine& coroutine();
+
     // DATA
-    virtual void operator()();
     void store(const value_type& value);
     void store(value_type&& value);
     reference get();
     const_reference get() const;
-    bool initialized() const;
     explicit operator bool() const;
 
-protected:
+private:
     using mem_t = typename std::aligned_storage<sizeof(T), alignof(T)>::type;
 
-    bool initialized_ = false;
+    std::function<void(self&)> function_;
     mem_t data_;
-    coroutine coro_;
+    struct coroutine coroutine_;
 };
 
 
@@ -253,10 +258,6 @@ auto generator_iterator<T>::operator++() -> self&
     } else if (!*generator_) {
         generator_ = nullptr;
     } else {
-        if (!generator_->initialized()) {
-            (*generator_)();
-        }
-
         (*generator_)();
         if (!*generator_) {
             generator_ = nullptr;
@@ -341,6 +342,14 @@ bool operator!=(const generator_iterator<U>& lhs, const generator_iterator<U>& r
 
 
 template <typename T>
+generator<T>::generator(std::function<void(self&)>&& function):
+    function_(std::move(function))
+{
+    operator()();
+}
+
+
+template <typename T>
 auto generator<T>::begin() -> iterator
 {
     return iterator(this);
@@ -355,15 +364,23 @@ auto generator<T>::end() -> iterator
 
 
 template <typename T>
+struct coroutine& generator<T>::coroutine()
+{
+    return coroutine_;
+}
+
+
+template <typename T>
 void generator<T>::operator()()
-{}
+{
+    function_(*this);
+}
 
 
 template <typename T>
 void generator<T>::store(const value_type& value)
 {
     new(&data_) value_type(value);
-    initialized_ = true;
 }
 
 
@@ -371,7 +388,6 @@ template <typename T>
 void generator<T>::store(value_type&& value)
 {
     new(&data_) value_type(std::forward<value_type>(value));
-    initialized_ = true;
 }
 
 
@@ -390,143 +406,13 @@ auto generator<T>::get() const -> const_reference
 
 
 template <typename T>
-bool generator<T>::initialized() const
-{
-    return initialized_;
-}
-
-
-template <typename T>
 generator<T>::operator bool() const
 {
-    return !coro_.is_complete();
+    return !coroutine_.is_complete();
 }
 
-//
-//// FORWARD
-//// -------
-//
-//template <typename T>
-//struct coro_iterator_t;
-//
-//template <typename T>
-//struct coro_t;
-//
-//// DECLARATION
-//// -----------
-//
-//
-///**
-// *  \brief Iterator facade for a coroutine.
-// */
-//template <typename T>
-//struct coro_iterator_t
-//{
-//    // TODO: here...
-//};
-//
-//
-///**
-// *  \brief Type-aware coroutine definition.
-// */
-//template <typename T>
-//struct coro_t
-//{
-//public:
-//    // MEMBER TYPES
-//    // ------------
-//    typedef T value_type;
-//
-//    // MEMBER FUNCTIONS
-//    // ----------------
-//
-//    void yield(T&&);
-//    T get();
-//
-//    explicit operator bool() const;
-//
-//protected:
-//    using mem_t = typename std::aligned_storage<sizeof(T), alignof(T)>::type;
-//    mem_t data_;
-//
-//    // TODO: need an iterator facade and all that...
-//    // TODO: need to switch stacks, etc...
-//};
-//
-//// IMPLEMENTATION
-//// --------------
-//
-//
-//template <typename T>
-//void coro_t<T>::yield(T&& t)
-//{
-//    new(&data_) value_type(std::forward<T>(t));
-////    suspend();
-//    // TODO: implement...
-//}
-//
-//
-//template <typename T>
-//T coro_t<T>::get()
-//{
-//    return T();
-//    // TODO: implement...
-//}
-//
-//
-//template <typename T>
-//coro_t<T>::operator bool() const
-//{
-//    // TODO: implement...
-//    return false;
-//}
-//
-//// MACROS
-//// ------
-//
-///**
-// *  \brief Declare a stackful coroutine.
-// *
-// *  Use macro-magic to make it look like a function declaration,
-// *  when in reality it's a wrapped class.
-// */
-//#define COROUTINE_DECL(type, name, ...)                 \
-//    struct name##_class_wrapper                         \
-//    {                                                   \
-//        coro_t<type> _coroutine;                        \
-//        void body(__VA_ARGS__);                         \
-//    };                                                  \
-//                                                        \
-//    template <typename... Ts>                           \
-//    coro_t<type> name(Ts&&... ts)                       \
-//    {                                                   \
-//        name##_class_wrapper inst;                      \
-//        inst.body(std::forward<Ts>(ts)...);             \
-//        return std::move(inst._coroutine);              \
-//    }                                                   \
-//                                                        \
-//    void name##_class_wrapper::body(__VA_ARGS__)
-//
-//
-///**
-// *  \brief Yield value from function into coroutine.
-// */
-//#define COROUTINE_YIELD(value) this->_coroutine.yield(value)
-//
-///**
-// *  \brief Get value from coroutine.
-// */
-//#define COROUTINE_GET(coroutine) coroutine.get()
-//
-//// TODO: need a callback for the coroutine use...
-//
-//// Coroutines need to be iterable.
-//
-//// libcoroutine should simplify things:
-////      http://www.dekorte.com/projects/opensource/libcoroutine/
-//// TODO: consider implementing via
-////      http://www.1024cores.net/home/lock-free-algorithms/tricks/fibers
-//// Also consider looking at:
-////      https://github.com/rethinkdb/rethinkdb/blob/next/src/arch/runtime/coroutines.hpp
+
+// MACROS
+// ------
 
 PYCPP_END_NAMESPACE
