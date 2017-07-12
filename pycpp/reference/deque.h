@@ -39,8 +39,8 @@ struct reference_deque_base
     typedef size_t size_type;
     typedef sequence_iterator_impl<typename std::deque<pointer>::iterator> iterator;
     typedef sequence_iterator_impl<typename std::deque<pointer>::const_iterator> const_iterator;
-    typedef std::reverse_iterator<pointer> reverse_iterator;
-    typedef std::reverse_iterator<const_pointer> const_reverse_iterator;
+    typedef std::reverse_iterator<iterator> reverse_iterator;
+    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
     // MEMBER FUNCTIONS
     // ----------------

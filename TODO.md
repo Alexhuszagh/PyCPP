@@ -3,6 +3,10 @@
 
 - Mathlib
     - Need array/axis unittests
+    - Need math routines
+        - average
+        - dot
+        - Etc.
 
 - filesystem
     - copystat
