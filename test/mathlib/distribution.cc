@@ -117,3 +117,95 @@ TEST(mathlib, lorentzian_cdf)
     EXPECT_EQ(lorentzian_cdf(0.0, 2.0, input.begin(), input.end(), random.begin()), 3);
     EXPECT_EQ(back, random);
 }
+
+
+TEST(mathlib, norm)
+{
+    std::vector<double> input = {-1.0, 0.0, 1.0};
+    std::vector<double> back;
+    std::vector<double> random(3, 0);
+
+    norm inst;
+    EXPECT_NEAR(inst.pdf(1.0), 0.24197, 0.001);
+    EXPECT_NEAR(inst.cdf(1.0), 0.84134, 0.001);
+
+    // PDF iterator
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), std::back_inserter(back)), 3);
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), random.begin()), 3);
+    EXPECT_EQ(back, random);
+    back.clear();
+
+    // CDF iterator
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), std::back_inserter(back)), 3);
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), random.begin()), 3);
+    EXPECT_EQ(back, random);
+}
+
+
+TEST(mathlib, gaussian)
+{
+    std::vector<double> input = {-1.0, 0.0, 1.0};
+    std::vector<double> back;
+    std::vector<double> random(3, 0);
+
+    gaussian inst(0.0, 1.0);
+    EXPECT_NEAR(inst.pdf(1.0), 0.24197, 0.001);
+    EXPECT_NEAR(inst.cdf(1.0), 0.84134, 0.001);
+
+    // PDF iterator
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), std::back_inserter(back)), 3);
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), random.begin()), 3);
+    EXPECT_EQ(back, random);
+    back.clear();
+
+    // CDF iterator
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), std::back_inserter(back)), 3);
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), random.begin()), 3);
+    EXPECT_EQ(back, random);
+}
+
+
+TEST(mathlib, cauchy)
+{
+    std::vector<double> input = {-1.0, 0.0, 1.0};
+    std::vector<double> back;
+    std::vector<double> random(3, 0);
+
+    cauchy inst;
+    EXPECT_NEAR(inst.pdf(1.0), 0.159155, 0.001);
+    EXPECT_NEAR(inst.cdf(1.0), 0.75, 0.001);
+
+    // PDF iterator
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), std::back_inserter(back)), 3);
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), random.begin()), 3);
+    EXPECT_EQ(back, random);
+    back.clear();
+
+    // CDF iterator
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), std::back_inserter(back)), 3);
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), random.begin()), 3);
+    EXPECT_EQ(back, random);
+}
+
+
+TEST(mathlib, lorentzian)
+{
+    std::vector<double> input = {-1.0, 0.0, 1.0};
+    std::vector<double> back;
+    std::vector<double> random(3, 0);
+
+    lorentzian inst(0.0, 2.0);
+    EXPECT_NEAR(inst.pdf(1.0), 0.159155, 0.001);
+    EXPECT_NEAR(inst.cdf(1.0), 0.75, 0.001);
+
+    // PDF iterator
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), std::back_inserter(back)), 3);
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), random.begin()), 3);
+    EXPECT_EQ(back, random);
+    back.clear();
+
+    // CDF iterator
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), std::back_inserter(back)), 3);
+    EXPECT_EQ(inst.cdf(input.begin(), input.end(), random.begin()), 3);
+    EXPECT_EQ(back, random);
+}
