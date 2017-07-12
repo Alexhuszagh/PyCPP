@@ -12,13 +12,35 @@ PYCPP_USING_NAMESPACE
 
 // HELPERS
 // -------
+//
+//COROUTINE_DECL(int, range, int start, int stop, int step)
+//{
+//    for (int i = start; i < stop; i += step) {
+// //       COROUTINE_YIELD(i);
+//    }
+//}
 
-COROUTINE_DECL(int, myroutine)
+
+struct x {};
+
+
+struct range: generator<int>
 {
-    for (int i = 0; i < 500; ++i) {
-        COROUTINE_YIELD(i);
+    int start = 0;
+    int stop = 50;
+    int step = 1;
+    int i = start;
+
+    virtual void operator()() override
+    {
+        CORO_REENTER(coro_) {
+            for (; i < stop; i += step) {
+                CORO_YIELD store(i);
+            }
+        }
     }
-}
+};
+
 
 // TESTS
 // -----
@@ -26,5 +48,13 @@ COROUTINE_DECL(int, myroutine)
 
 TEST(coroutine, coroutine)
 {
-    // TODO: implement..
+    int sum = 0;
+    range r;
+    for (int i: r) {
+        std::cout << i << std::endl;
+    }
+
+    // TODO: need to implement...
+    EXPECT_EQ(sum, 0);
+    exit(0);
 }

@@ -169,6 +169,7 @@ set(SOURCE_FILES
     pycpp/byteorder.cc
     pycpp/casemap.cc
     pycpp/codec.cc
+    pycpp/coroutine.cc
     pycpp/getline.cc
     pycpp/gettimeofday.cc
     pycpp/hex.cc
