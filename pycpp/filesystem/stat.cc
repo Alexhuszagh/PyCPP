@@ -715,7 +715,7 @@ bool copystat(const path_t& src, const path_t& dst)
 }
 
 
-#if defined(backup_path_t)          // BACKUP PATH
+#if defined(OS_WINDOWS)             // BACKUP PATH
 
 
 time_t getatime(const backup_path_t& path)
