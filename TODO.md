@@ -1,6 +1,3 @@
-- reference_vector/reference_deque
-    - unittests
-
 - Mathlib
     - Need array/axis unittests
     - Need math routines

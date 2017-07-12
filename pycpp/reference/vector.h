@@ -349,7 +349,7 @@ void reference_vector_base<T>::pop_back()
 template <typename T>
 auto reference_vector_base<T>::insert(const_iterator position, reference r) -> iterator
 {
-    auto distance = std::distance(begin(), position);
+    auto distance = std::distance(cbegin(), position);
     auto it = vector_.insert(vector_.cbegin()+distance, std::addressof(r));
     return iterator(it, [](pointer p) -> reference {
         return *p;
@@ -360,7 +360,7 @@ auto reference_vector_base<T>::insert(const_iterator position, reference r) -> i
 template <typename T>
 auto reference_vector_base<T>::insert(const_iterator position, size_type n, reference r) -> iterator
 {
-    auto distance = std::distance(begin(), position);
+    auto distance = std::distance(cbegin(), position);
     auto it = vector_.insert(vector_.cbegin()+distance, n, std::addressof(r));
     return iterator(it, [](pointer p) -> reference {
         return *p;
@@ -371,7 +371,7 @@ auto reference_vector_base<T>::insert(const_iterator position, size_type n, refe
 template <typename T>
 auto reference_vector_base<T>::erase(const_iterator position) -> iterator
 {
-    auto distance = std::distance(begin(), position);
+    auto distance = std::distance(cbegin(), position);
     auto it = vector_.erase(vector_.cbegin()+distance);
     return iterator(it, [](pointer p) -> reference {
         return *p;
@@ -382,8 +382,8 @@ auto reference_vector_base<T>::erase(const_iterator position) -> iterator
 template <typename T>
 auto reference_vector_base<T>::erase(const_iterator first, const_iterator last) -> iterator
 {
-    auto f = std::distance(begin(), first);
-    auto l = std::distance(begin(), last);
+    auto f = std::distance(cbegin(), first);
+    auto l = std::distance(cbegin(), last);
     auto it = vector_.erase(vector_.cbegin()+f, vector_.cbegin()+l);
     return iterator(it, [](pointer p) -> reference {
         return *p;

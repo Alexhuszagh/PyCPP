@@ -347,7 +347,7 @@ void reference_deque_base<T>::pop_back()
 template <typename T>
 auto reference_deque_base<T>::insert(const_iterator position, reference r) -> iterator
 {
-    auto distance = std::distance(begin(), position);
+    auto distance = std::distance(cbegin(), position);
     auto it = deque_.insert(deque_.cbegin()+distance, std::addressof(r));
     return iterator(it, [](pointer p) -> reference {
         return *p;
@@ -358,7 +358,7 @@ auto reference_deque_base<T>::insert(const_iterator position, reference r) -> it
 template <typename T>
 auto reference_deque_base<T>::insert(const_iterator position, size_type n, reference r) -> iterator
 {
-    auto distance = std::distance(begin(), position);
+    auto distance = std::distance(cbegin(), position);
     auto it = deque_.insert(deque_.cbegin()+distance, n, std::addressof(r));
     return iterator(it, [](pointer p) -> reference {
         return *p;
@@ -369,7 +369,7 @@ auto reference_deque_base<T>::insert(const_iterator position, size_type n, refer
 template <typename T>
 auto reference_deque_base<T>::erase(const_iterator position) -> iterator
 {
-    auto distance = std::distance(begin(), position);
+    auto distance = std::distance(cbegin(), position);
     auto it = deque_.erase(deque_.cbegin()+distance);
     return iterator(it, [](pointer p) -> reference {
         return *p;
@@ -380,8 +380,8 @@ auto reference_deque_base<T>::erase(const_iterator position) -> iterator
 template <typename T>
 auto reference_deque_base<T>::erase(const_iterator first, const_iterator last) -> iterator
 {
-    auto f = std::distance(begin(), first);
-    auto l = std::distance(begin(), last);
+    auto f = std::distance(cbegin(), first);
+    auto l = std::distance(cbegin(), last);
     auto it = deque_.erase(deque_.cbegin()+f, deque_.cbegin()+l);
     return iterator(it, [](pointer p) -> reference {
         return *p;

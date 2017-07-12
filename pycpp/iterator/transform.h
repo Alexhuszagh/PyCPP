@@ -94,6 +94,10 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     transform_iterator();
+    transform_iterator(const self_t&) = default;
+    self_t& operator=(const self_t&) = default;
+    transform_iterator(self_t&&) = default;
+    self_t& operator=(self_t&&) = default;
     transform_iterator(const Iterator& it, UnaryFunction function);
 
     // BASE
@@ -184,6 +188,12 @@ public:
         self_t copy(*this);
         copy -= n;
         return copy;
+    }
+
+    template <typename It = Iterator, typename F = UnaryFunction>
+    enable_if_t<rebind<It, F>::has_arithmetic, difference_type> operator-(const rebind<It, F>& rhs) const
+    {
+        return it - rhs.it;
     }
 
 private:
