@@ -1,9 +1,5 @@
 - Mathlib
     - Need array/axis unittests
-    - Need math routines
-        - dot
-        - distribution -- unittests
-        - Etc.
 
 - filesystem
     - copystat

@@ -63,7 +63,7 @@ static void rtrim_impl(string_t& str, const string_view& characters)
 
     auto* ptr = characters.data();
     size_t num = characters.size();
-    size_t index = str.size() - 1;
+    int64_t index = str.size() - 1;
     while (index >= 0 && memchr(ptr, str[index], num)) {
         --index;
     }

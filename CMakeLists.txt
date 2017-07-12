@@ -389,7 +389,12 @@ if(BUILD_MATH)
         test/mathlib/arange.cc
         test/mathlib/average.cc
         test/mathlib/axis.cc
+        test/mathlib/binomial.cc
         test/mathlib/distribution.cc
+        test/mathlib/dot.cc
+        test/mathlib/factorial.cc
+        test/mathlib/std.cc
+        test/mathlib/trapz.cc
     )
 endif()
 
