@@ -9,37 +9,37 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-bool coroutine::is_child() const
+bool coroutine_t::is_child() const
 {
     return value_ < 0;
 }
 
 
-bool coroutine::is_parent() const
+bool coroutine_t::is_parent() const
 {
     return !is_child();
 }
 
 
-bool coroutine::is_complete() const
+bool coroutine_t::is_complete() const
 {
     return value_ == -1;
 }
 
 
-coroutine_ref::coroutine_ref(coroutine& c):
+coroutine_ref_t::coroutine_ref_t(coroutine_t& c):
     value_(c.value_),
     modified_(false)
 {}
 
 
-coroutine_ref::coroutine_ref(coroutine* c):
+coroutine_ref_t::coroutine_ref_t(coroutine_t* c):
     value_(c->value_),
     modified_(false)
 {}
 
 
-coroutine_ref::~coroutine_ref()
+coroutine_ref_t::~coroutine_ref_t()
 {
     if (!modified_) {
         value_ = -1;
@@ -47,13 +47,13 @@ coroutine_ref::~coroutine_ref()
 }
 
 
-coroutine_ref::operator int() const
+coroutine_ref_t::operator int() const
 {
     return value_;
 }
 
 
-int& coroutine_ref::operator=(int v)
+int& coroutine_ref_t::operator=(int v)
 {
     modified_ = true;
     value_ = v;

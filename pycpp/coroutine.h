@@ -22,7 +22,7 @@ PYCPP_BEGIN_NAMESPACE
 
 
 #define COROUTINE_REENTER(c)                        \
-  switch (coroutine_ref _coro_value = c)            \
+  switch (coroutine_ref_t _coro_value = c)          \
     case -1: if (_coro_value)                       \
     {                                               \
       goto terminate_coroutine;                     \
@@ -74,8 +74,8 @@ PYCPP_BEGIN_NAMESPACE
 // FORWARD
 // -------
 
-struct coroutine;
-struct coroutine_ref;
+struct coroutine_t;
+struct coroutine_ref_t;
 template <typename T> struct generator_iterator;
 template <typename T> struct generator;
 
@@ -85,7 +85,7 @@ template <typename T> struct generator;
 /**
  *  \brief Core coroutine object.
  */
-struct coroutine
+struct coroutine_t
 {
 public:
     bool is_child() const;
@@ -93,7 +93,7 @@ public:
     bool is_complete() const;
 
 private:
-    friend class coroutine_ref;
+    friend class coroutine_ref_t;
     int value_ = 0;
 };
 
@@ -101,18 +101,16 @@ private:
 /**
  *  \brief Reference for current position of the coroutine.
  */
-struct coroutine_ref
+struct coroutine_ref_t
 {
 public:
-    coroutine_ref(coroutine& c);
-    coroutine_ref(coroutine* c);
-    ~coroutine_ref();
+    coroutine_ref_t(coroutine_t& c);
+    coroutine_ref_t(coroutine_t* c);
+    ~coroutine_ref_t();
     operator int() const;
     int& operator=(int v);
 
 private:
-//    coroutine_ref(const coroutine_ref&) = default;
-//    coroutine_ref& operator=(const coroutine_ref&) = default;
     int& value_;
     bool modified_ = false;
 };
@@ -198,7 +196,7 @@ public:
 
     // PROPERTIES
     void operator()();
-    struct coroutine& coroutine();
+    coroutine_t& coroutine();
 
     // DATA
     void store(const value_type& value);
@@ -212,7 +210,7 @@ private:
 
     std::function<void(self&)> function_;
     mem_t data_;
-    struct coroutine coroutine_;
+    coroutine_t coroutine_;
 };
 
 
@@ -364,7 +362,7 @@ auto generator<T>::end() -> iterator
 
 
 template <typename T>
-struct coroutine& generator<T>::coroutine()
+coroutine_t& generator<T>::coroutine()
 {
     return coroutine_;
 }
