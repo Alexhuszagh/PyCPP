@@ -8,17 +8,11 @@
 #pragma once
 
 #include <pycpp/ordering.h>
-#include <iterator>
+#include <pycpp/iterator/category.h>
 #include <tuple>
 #include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
-
-// DECLARATION
-// -----------
-
-template <bool B, typename T = void>
-using enable_if_t = typename std::enable_if<B, T>::type;
 
 /**
  *  \brief Transformation iterator implied base class.
@@ -57,11 +51,12 @@ struct transform_iterator_base:
     // SFINAE
     // ------
     // TYPES
-    static constexpr bool is_input = std::is_same<typename traits_type::iterator_category, std::input_iterator_tag>::value;
-    static constexpr bool is_output = std::is_same<typename traits_type::iterator_category, std::output_iterator_tag>::value;
-    static constexpr bool is_forward = std::is_same<typename traits_type::iterator_category, std::forward_iterator_tag>::value;
-    static constexpr bool is_bidirectional = std::is_same<typename traits_type::iterator_category, std::bidirectional_iterator_tag>::value;
-    static constexpr bool is_random_access = std::is_same<typename traits_type::iterator_category, std::random_access_iterator_tag>::value;
+    static constexpr bool is_input = is_input_iterator<Iterator>::value;
+    static constexpr bool is_output = is_output_iterator<Iterator>::value;
+    static constexpr bool is_forward = is_forward_iterator<Iterator>::value;
+    static constexpr bool is_bidirectional = is_bidirectional_iterator<Iterator>::value;
+    static constexpr bool is_random_access = is_random_access_iterator<Iterator>::value;
+
     // FEATURES
     static constexpr bool has_total = is_random_access;
     static constexpr bool has_decrement = is_bidirectional || is_random_access;

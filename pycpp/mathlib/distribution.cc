@@ -48,7 +48,7 @@ double gaussian_cdf(double x, double mean, double sigma)
 
 double cauchy_cdf(double x)
 {
-    return 0.5 * atan(x) * CAUCHY_CDF;
+    return 0.5 + atan(x) / CAUCHY_CDF;
 }
 
 
