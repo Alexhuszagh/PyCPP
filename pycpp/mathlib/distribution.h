@@ -19,8 +19,8 @@ PYCPP_BEGIN_NAMESPACE
 // CONSTANTS
 // ---------
 
-static constexpr double CAUCHY_CDF = M_PI;
-static constexpr double NORM_PDF = 2.5066282746310002;      // sqrt(2*M_PI);
+static constexpr double CAUCHY_CDF = 3.14159265358979323846;    // M_PI
+static constexpr double NORM_PDF = 2.5066282746310002;          // sqrt(2*M_PI);
 
 // FUNCTIONS
 // ---------
