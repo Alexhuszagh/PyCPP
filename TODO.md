@@ -2,7 +2,7 @@
     - Need array/axis unittests
 
 - filesystem
-    - copystat
+    - copystat --unittests
     - copy_directory
     - move_directory
     - remove_directory

@@ -289,17 +289,21 @@ template <typename Path>
 static bool set_stat_impl(const Path& src, const Path& dst)
 {
     auto src_stat = stat(src);
-    auto dst_stat = stat(dst);
     HANDLE handle = get_handle(dst, false);
-// Windows:: need to get the handle...
-//  SetFileTime(handle, ctime, atime, mtime);
+    FILETIME atime, mtime;
 
-    // Need a set_stat_impl
+    // update filetime
+    TIME_T_TO_FILETIME(src_stat.st_atim.tv_sec, &atime);
+    TIME_T_TO_FILETIME(src_stat.st_mtim.tv_sec, &mtime);
+    if (!SetFileTime(handle, NULL, &atime, &mtime)) {
+        CloseHandle(handle);
+        return false;
+    }
 
-    // WINDOWS
-    // TODO: need to convert thestat data
+    // we don't define st_uid, and st_gid, so don't implement them
 
-    return false;
+    CloseHandle(handle);
+    return true;
 }
 
 
@@ -678,6 +682,7 @@ static bool islink_impl(const Path& path)
 {
     return check_impl(path, islink_stat, true);
 }
+
 
 template <typename Path>
 static bool copystat_impl(const Path& src, const Path& dst)
