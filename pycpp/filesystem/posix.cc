@@ -304,6 +304,38 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool 
 }
 
 
+template <typename Path>
+static bool copy_dir_shallow_impl(const Path&src, const Path& dst)
+{
+    auto src_stat = stat(src);
+    if (!exists(src_stat)) {
+        throw filesystem_error(filesystem_no_such_directory);
+    }
+
+    return mkdir(dst, src_stat.st_mode);
+}
+
+
+template <typename Path>
+static bool copy_dir_recursive_impl(const Path&src, const Path& dst)
+{
+    // TODO: implement...
+    // TODO: need a directory iterator...
+    return false;
+}
+
+
+template <typename Path>
+static bool copy_dir_impl(const Path&src, const Path& dst, bool recursive)
+{
+    if (recursive) {
+        return copy_dir_recursive_impl(src, dst);
+    } else {
+        return copy_dir_shallow_impl(src, dst);
+    }
+}
+
+
 // FUNCTIONS
 // ---------
 
@@ -416,6 +448,12 @@ bool copy_file(const path_t& src, const path_t& dst, bool replace, bool copystat
 bool remove_file(const path_t& path)
 {
     return unlink(path.data()) == 0;
+}
+
+
+bool copy_dir(const path_t& src, const path_t& dst, bool recursive)
+{
+    return copy_dir_impl(src, dst, recursive);
 }
 
 

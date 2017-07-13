@@ -385,6 +385,40 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool 
 }
 
 
+static bool copy_dir_shallow_impl(const path_t&src, const path_t& dst)
+{
+    auto s = reinterpret_cast<const wchar_t*>(src.data());
+    auto d = reinterpret_cast<const wchar_t*>(dst.data());
+    return CreateDirectoryExW(s, d, 0);
+}
+
+
+static bool copy_dir_shallow_impl(const backup_path_t&src, const backup_path_t& dst)
+{
+    return CreateDirectoryExA(src.data(), dst.data(), 0);
+}
+
+
+template <typename Path>
+static bool copy_dir_recursive_impl(const path_t&src, const path_t& dst)
+{
+    // TODO: implement...
+    // TODO: need a directory iterator...
+    return false;
+}
+
+
+template <typename Path>
+static bool copy_dir_impl(const path_t&src, const path_t& dst, bool recursive)
+{
+    if (recursive) {
+        return copy_dir_recursive_impl(src, dst);
+    } else {
+        return copy_dir_shallow_impl(src, dst);
+    }
+}
+
+
 // FUNCTIONS
 // ---------
 

@@ -4,6 +4,8 @@
 - filesystem
     - copystat --unittests
     - copy_directory
+        - CreateDirectoryExW
+        - 
     - move_directory
     - remove_directory
     - mkdir -- unitests

@@ -13,25 +13,28 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// FORWARD
+// -------
+
+struct punycode_idna_t;
+struct unicode_idna_t;
+struct url_t;
+
 // OBJECTS
 // -------
 
 
 /**
- *  \brief URL class instance.
+ *  \brief Base class for a URL.
  */
-struct url_t: std::string
+struct url_impl_t: std::string
 {
-    url_t() = default;
-    url_t(const url_t &other) = default;
-    url_t & operator=(const url_t&) = default;
-    url_t(url_t&&) = default;
-    url_t & operator=(url_t&&) = default;
-
-    url_t(const char *cstring);
-    url_t(const char *array, size_t size);
-    url_t(const std::string &string);
-    url_t(std::initializer_list<char> list);
+    url_impl_t() = default;
+    url_impl_t(const url_impl_t &other) = default;
+    url_impl_t & operator=(const url_impl_t&) = default;
+    url_impl_t(url_impl_t&&) = default;
+    url_impl_t & operator=(url_impl_t&&) = default;
+    using std::string::string;
 
     // GETTERS
     std::string service() const noexcept;
@@ -40,6 +43,30 @@ struct url_t: std::string
     std::string directory() const noexcept;
     std::string file() const noexcept;
 
+    // PROPERTIES
+    bool relative() const noexcept;
+    bool absolute() const noexcept;
+
+    explicit operator bool() const;
+};
+
+
+/**
+ *  \brief Punycode-encoded international domain name.
+ */
+struct punycode_idna_t: url_impl_t
+{
+    punycode_idna_t() = default;
+    punycode_idna_t(const punycode_idna_t &other) = default;
+    punycode_idna_t & operator=(const punycode_idna_t&) = default;
+    punycode_idna_t(punycode_idna_t&&) = default;
+    punycode_idna_t & operator=(punycode_idna_t&&) = default;
+
+    punycode_idna_t(const char *cstring);
+    punycode_idna_t(const char *array, size_t size);
+    punycode_idna_t(const std::string &string);
+    punycode_idna_t(std::initializer_list<char> list);
+
     // SETTERS
     void set_service(const std::string &service);
     void set_host(const std::string &host);
@@ -47,11 +74,44 @@ struct url_t: std::string
     void set_directory(const std::string &directory);
     void set_file(const std::string &file);
 
-    // PROPERTIES
-    bool relative() const noexcept;
-    bool absolute() const noexcept;
-
-    explicit operator bool() const;
+    unicode_idna_t to_unicode() const;
 };
+
+
+/**
+ *  \brief Unicode-encoded international domain name.
+ */
+struct unicode_idna_t: url_impl_t
+{
+    unicode_idna_t() = default;
+    unicode_idna_t(const unicode_idna_t &other) = default;
+    unicode_idna_t & operator=(const unicode_idna_t&) = default;
+    unicode_idna_t(unicode_idna_t&&) = default;
+    unicode_idna_t & operator=(unicode_idna_t&&) = default;
+
+    unicode_idna_t(const char *cstring);
+    unicode_idna_t(const char *array, size_t size);
+    unicode_idna_t(const std::string &string);
+    unicode_idna_t(std::initializer_list<char> list);
+
+    // SETTERS
+    void set_service(const std::string &service);
+    void set_host(const std::string &host);
+    void set_path(const std::string &path);
+    void set_directory(const std::string &directory);
+    void set_file(const std::string &file);
+
+    punycode_idna_t to_punycode() const;
+};
+
+
+/**
+ *  \brief URL class instance.
+ */
+struct url_t: punycode_idna_t
+{
+    using punycode_idna_t::punycode_idna_t;
+};
+
 
 PYCPP_END_NAMESPACE

@@ -75,7 +75,7 @@ Supported features include:
 - [Hex](/pycpp/hex.h) encoding and decoding.
 - [Punycode](/pycpp/punycode.h) encoding and decoding.
 - [Url](/pycpp/url.h) encoding and decoding.
-- [International domain names](/pycpp/idna.h) encoding and decoding.
+- [International domain name](/pycpp/lattice/url.h) encoding and decoding.
 
 **_Streams_**
 

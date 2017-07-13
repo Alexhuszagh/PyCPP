@@ -1075,7 +1075,6 @@ private:
         return static_cast<std::size_t>(dist);
     }
 
-    // TODO could be faster
     static std::size_t round_up_to_power_of_two(std::size_t value)
     {
         std::size_t power = 1;

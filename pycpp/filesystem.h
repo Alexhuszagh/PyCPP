@@ -17,6 +17,7 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/filesystem/iterator.h>
 #include <pycpp/filesystem/path.h>
 #include <pycpp/filesystem/stat.h>
 
@@ -276,12 +277,12 @@ bool remove_file(const path_t& path);
 // *  \brief Move directory, as if by rename, and return if rename was successful.
 // */
 //bool move_dir(const path_t& src, const path_t& dst);
-//
-///**
-// *  \brief Copy directory, and copy was successful.
-// */
-//bool copy_dir(const path_t& src, const path_t& dst, bool recursive = true);
-//
+
+/**
+ *  \brief Copy directory, and copy was successful.
+ */
+bool copy_dir(const path_t& src, const path_t& dst, bool recursive = true);
+
 ///**
 // *  \brief Remove directory, return if directory was successfully removed.
 // */
@@ -348,7 +349,7 @@ bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace 
 bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false, bool copystat = false);
 bool remove_file(const backup_path_t& path);
 //bool move_dir(const backup_path_t& src, const backup_path_t& dst);
-//bool copy_dir(const backup_path_t& src, const backup_path_t& dst, bool recursive = true);
+bool copy_dir(const backup_path_t& src, const backup_path_t& dst, bool recursive = true);
 //bool remove_dir(const backup_path_t& path, bool recursive = true);
 bool mkdir(const backup_path_t& path, int = 0777);
 bool makedirs(const backup_path_t& path, int = 0777);

@@ -194,6 +194,7 @@ endif()
 if (BUILD_FILESYSTEM)
     list(APPEND SOURCE_FILES
         pycpp/filesystem/exception.cc
+        pycpp/filesystem/iterator.cc
         pycpp/filesystem/mac.cc
         pycpp/filesystem/nt.cc
         pycpp/filesystem/path.cc

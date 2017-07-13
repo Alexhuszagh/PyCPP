@@ -13,22 +13,119 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 
-inline bool is_relative(const std::string &string) noexcept
+inline bool is_relative(const std::string &str)
 {
-    return string.empty() || string.front() == '/';
+    return str.empty() || str.front() == '/';
 }
 
 
-void puny_encoded_url(url_t& url)
+inline bool is_punycode(const std::string& str)
+{
+    return string_wrapper(str).startswith("xn--");
+}
+
+
+static std::string to_idna(const std::string& str)
+{
+    return "xn--" + utf8_to_punycode(str);
+}
+
+
+static std::string from_idna(const std::string& str)
+{
+    return punycode_to_utf8(str.substr(4));
+}
+
+
+static void set_service_impl(std::string& url, const std::string& service)
+{
+    assert(!is_relative(url));
+    size_t index = url.find("://");
+    if (index != std::string::npos) {
+        // replace service
+        url.replace(0, index, service);
+    } else {
+        // set a service
+        url.insert(0, service + "://");
+    }
+}
+
+
+static void set_host_impl(std::string& url, const std::string& host)
+{
+    size_t start = url.find("://");
+    if (start == std::string::npos) {
+        url.replace(0, url.find_first_of('/'), host);
+    } else {
+        size_t end = url.find_first_of('/', start+4);
+        url.replace(start+3, end-start-3, host);
+    }
+}
+
+
+static void set_path_impl(std::string& url, const std::string& path)
+{
+    if (is_relative(url)) {
+        url.assign(path);
+    } else {
+        size_t separator = url.find("://");
+        if (separator == std::string::npos) {
+            url.replace(url.find_first_of('/'), std::string::npos, path);
+        } else {
+            url.replace(url.find_first_of('/', separator+4), std::string::npos, path);
+        }
+    }
+}
+
+
+static void set_directory_impl(std::string& url, const std::string& directory)
+{
+    size_t separator, start, end;
+    end = url.find_last_of('/');
+    if ((separator = url.find("://")) != std::string::npos) {
+        start = url.find_first_of('/', separator+4);
+    } else {
+        start = url.find_first_of('/');
+    }
+
+    if (start != std::string::npos && ++start < end) {
+        const size_t length = end - start;
+        url.replace(start, length, directory);
+    }
+}
+
+
+static void set_file_impl(std::string& url, const std::string& file)
+{
+    size_t index = url.find_last_of('/');
+    url.replace(index + 1, std::string::npos, file);
+}
+
+
+void punycode_encode_url(punycode_idna_t& url)
 {
     if (url.absolute()) {
         auto names = split(url.host(), ".");
         for (auto &name: names) {
             if (is_unicode(name)) {
-                name = "xn--" + utf8_to_punycode(name);
+                name = to_idna(name);
             }
         }
-        url.set_host(join(names, "."));
+        set_host_impl(url, join(names, "."));
+    }
+}
+
+
+void unicode_encode_url(unicode_idna_t& url)
+{
+    if (url.absolute()) {
+        auto names = split(url.host(), ".");
+        for (auto &name: names) {
+            if (is_punycode(name)) {
+                name = from_idna(name);
+            }
+        }
+        set_host_impl(url, join(names, "."));
     }
 }
 
@@ -37,35 +134,8 @@ void puny_encoded_url(url_t& url)
 // -------
 
 
-url_t::url_t(const char *cstring):
-    std::string(cstring)
-{
-    puny_encoded_url(*this);
-}
 
-
-url_t::url_t(const char *array, size_t size):
-    std::string(array, size)
-{
-    puny_encoded_url(*this);
-}
-
-
-url_t::url_t(const std::string &string):
-    std::string(string.data(), string.size())
-{
-    puny_encoded_url(*this);
-}
-
-
-url_t::url_t(std::initializer_list<char> list):
-    std::string(list.begin(), list.size())
-{
-    puny_encoded_url(*this);
-}
-
-
-std::string url_t::service() const noexcept
+std::string url_impl_t::service() const noexcept
 {
     assert(absolute());
     size_t index = find("://");
@@ -80,7 +150,7 @@ std::string url_t::service() const noexcept
 }
 
 
-std::string url_t::host() const noexcept
+std::string url_impl_t::host() const noexcept
 {
     assert(absolute());
     size_t start = find("://");
@@ -95,7 +165,7 @@ std::string url_t::host() const noexcept
 }
 
 
-std::string url_t::path() const noexcept
+std::string url_impl_t::path() const noexcept
 {
     if (relative()) {
         return *this;
@@ -115,7 +185,7 @@ std::string url_t::path() const noexcept
 }
 
 
-std::string url_t::directory() const noexcept
+std::string url_impl_t::directory() const noexcept
 {
     auto data = path();
     const size_t separator = data.find_last_of('/');
@@ -127,7 +197,7 @@ std::string url_t::directory() const noexcept
 }
 
 
-std::string url_t::file() const noexcept
+std::string url_impl_t::file() const noexcept
 {
     auto data = path();
     const size_t separator = data.find_last_of('/');
@@ -139,87 +209,157 @@ std::string url_t::file() const noexcept
 }
 
 
-void url_t::set_service(const std::string &service)
-{
-    assert(absolute());
-    size_t index = find("://");
-    if (index != std::string::npos) {
-        // replace service
-        replace(0, index, service);
-    } else {
-        // set a service
-        insert(0, service + "://");
-    }
-}
-
-
-void url_t::set_host(const std::string &host)
-{
-    size_t start = find("://");
-    if (start == std::string::npos) {
-        replace(0, find_first_of('/'), host);
-    } else {
-        size_t end = find_first_of('/', start+4);
-        replace(start+3, end-start-3, host);
-    }
-}
-
-
-void url_t::set_path(const std::string &path)
-{
-    if (relative()) {
-        assign(path);
-    } else {
-        size_t separator = find("://");
-        if (separator == std::string::npos) {
-            replace(find_first_of('/'), std::string::npos, path);
-        } else {
-            replace(find_first_of('/', separator+4), std::string::npos, path);
-        }
-    }
-}
-
-
-void url_t::set_directory(const std::string &directory)
-{
-    size_t separator, start, end;
-    end = find_last_of('/');
-    if ((separator = find("://")) != std::string::npos) {
-        start = find_first_of('/', separator+4);
-    } else {
-        start = find_first_of('/');
-    }
-
-    if (start != std::string::npos && ++start < end) {
-        const size_t length = end - start;
-        replace(start, length, directory);
-    }
-}
-
-
-void url_t::set_file(const std::string &file)
-{
-    size_t index = find_last_of('/');
-    replace(index + 1, std::string::npos, file);
-}
-
-
-
-bool url_t::relative() const noexcept
+bool url_impl_t::relative() const noexcept
 {
     return is_relative(*this);
 }
 
 
-bool url_t::absolute() const noexcept
+bool url_impl_t::absolute() const noexcept
 {
     return !relative();
 }
 
 
-url_t::operator bool() const
+url_impl_t::operator bool() const
 {
     return !empty();
+}
+
+
+punycode_idna_t::punycode_idna_t(const char *cstring):
+    url_impl_t(cstring)
+{
+    punycode_encode_url(*this);
+}
+
+
+punycode_idna_t::punycode_idna_t(const char *array, size_t size):
+    url_impl_t(array, size)
+{
+    punycode_encode_url(*this);
+}
+
+
+punycode_idna_t::punycode_idna_t(const std::string &string):
+    url_impl_t(string.data(), string.size())
+{
+    punycode_encode_url(*this);
+}
+
+
+punycode_idna_t::punycode_idna_t(std::initializer_list<char> list):
+    url_impl_t(list.begin(), list.size())
+{
+    punycode_encode_url(*this);
+}
+
+
+void punycode_idna_t::set_service(const std::string &service)
+{
+    set_service_impl(*this, service);
+}
+
+
+void punycode_idna_t::set_host(const std::string &host)
+{
+    if (is_unicode(host)) {
+        set_host_impl(*this, to_idna(host));
+    } else {
+        set_host_impl(*this, host);
+    }
+}
+
+
+void punycode_idna_t::set_path(const std::string &path)
+{
+    set_path_impl(*this, path);
+}
+
+
+void punycode_idna_t::set_directory(const std::string &directory)
+{
+    set_directory_impl(*this, directory);
+}
+
+
+void punycode_idna_t::set_file(const std::string &file)
+{
+    set_file_impl(*this, file);
+}
+
+
+unicode_idna_t punycode_idna_t::to_unicode() const
+{
+    return unicode_idna_t(data(), size());
+}
+
+
+unicode_idna_t::unicode_idna_t(const char *cstring):
+    url_impl_t(cstring)
+{
+    unicode_encode_url(*this);
+}
+
+
+unicode_idna_t::unicode_idna_t(const char *array, size_t size):
+    url_impl_t(array, size)
+{
+    unicode_encode_url(*this);
+}
+
+
+unicode_idna_t::unicode_idna_t(const std::string &string):
+    url_impl_t(string.data(), string.size())
+{
+    unicode_encode_url(*this);
+}
+
+
+unicode_idna_t::unicode_idna_t(std::initializer_list<char> list):
+    url_impl_t(list.begin(), list.size())
+{
+    unicode_encode_url(*this);
+}
+
+
+void unicode_idna_t::set_service(const std::string &service)
+{
+    set_service_impl(*this, service);
+}
+
+
+void unicode_idna_t::set_host(const std::string &host)
+{
+    if (is_punycode(host)) {
+        set_host_impl(*this, from_idna(host));
+    } else {
+        set_host_impl(*this, host);
+    }
+}
+
+
+void unicode_idna_t::set_path(const std::string &path)
+{
+    set_path_impl(*this, path);
+}
+
+
+void unicode_idna_t::set_directory(const std::string &directory)
+{
+    set_directory_impl(*this, directory);
+}
+
+
+void unicode_idna_t::set_file(const std::string &file)
+{
+    set_file_impl(*this, file);
+}
+
+
+punycode_idna_t unicode_idna_t::to_punycode() const
+{
+    return punycode_idna_t(data(), size());
 }
 
 PYCPP_END_NAMESPACE

@@ -170,9 +170,6 @@ static void handle_error(int code)
     (filetime).dwHighDateTime = bigtime >> 32;                                  \
   } while(0)
 
-// TODO: check here for how to do it
-// https://github.com/joyent/libuv/blob/1dc2709b999a84520ab1b3c56c0e082bf8617c1f/src/win/fs.c#L1206
-
 
 /**
  *  \brief Map GetLastError to errno.
@@ -271,14 +268,14 @@ static HANDLE get_handle(Pointer path, bool use_lstat, Function function)
 }
 
 
-void get_handle(const path_t& path, bool use_lstat)
+static HANDLE get_handle(const path_t& path, bool use_lstat)
 {
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     return get_handle(data, use_lstat, CreateFileW);
 }
 
 
-void get_handle(const backup_path_t& path, bool use_lstat)
+static HANDLE get_handle(const backup_path_t& path, bool use_lstat)
 {
     auto data = reinterpret_cast<const char*>(path.data());
     return get_handle(data, use_lstat, CreateFileA);
