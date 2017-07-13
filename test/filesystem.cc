@@ -30,6 +30,10 @@ TEST(directory_iterator, directory_iterator)
     directory_iterator last;
     EXPECT_NE(first, last);
     for (; first != last; ++first) {
+        EXPECT_TRUE(first->isfile());
+        EXPECT_FALSE(first->isdir());
+        EXPECT_FALSE(first->islink());
+        EXPECT_TRUE(first->exists());
 #if defined(OS_WINDOWS)                 // WINDOWS
         EXPECT_EQ(first->path(), path_t(path_prefix("test/files\\file")));
 #else                                   // POSIX

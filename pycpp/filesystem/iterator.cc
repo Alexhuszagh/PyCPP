@@ -131,12 +131,15 @@ struct directory_data
 {
     HANDLE handle = INVALID_HANDLE_VALUE;
     path_t path;
+    stat_t *stat = nullptr;
     bool is_unicode = false;
     void* data = nullptr;
 
     ~directory_data();
     void reset();
+    path_t fullpath() const;
     path_t basename() const;
+    const path_t& dirname() const;
 
     void open(const path_t& path);
     void open(const backup_path_t& path);
@@ -152,6 +155,7 @@ directory_data::~directory_data()
 {
     reset();
     FindClose(handle);
+    delete stat;
 }
 
 
@@ -281,12 +285,6 @@ path_t directory_data::basename() const
 }
 
 
-path_t directory_entry::basename() const
-{
-    return ptr_->basename();
-}
-
-
 directory_iterator::directory_iterator(const path_t& path)
 {
     entry_.ptr_.reset(new directory_data);
@@ -331,9 +329,15 @@ struct directory_data
     DIR* dir = nullptr;
     dirent* entry = nullptr;
     path_t path;
+    stat_t *stat = nullptr;
 
     ~directory_data();
     void open(const path_t& path);
+
+    path_t fullpath() const;
+    path_t basename() const;
+    const path_t& dirname() const;
+
     directory_data& operator++();
     directory_data operator++(int);
     bool operator==(const directory_data&) const;
@@ -345,6 +349,7 @@ struct directory_data
 directory_data::~directory_data()
 {
     closedir((DIR*) dir);
+    delete stat;
 }
 
 
@@ -355,6 +360,12 @@ void directory_data::open(const path_t& p)
     if (dir == nullptr) {
         handle_error(errno);
     }
+}
+
+
+path_t directory_data::basename() const
+{
+    return path_t(entry->d_name);
 }
 
 
@@ -380,12 +391,6 @@ bool directory_data::operator==(const directory_data& rhs) const
 }
 
 
-path_t directory_entry::basename() const
-{
-    return path_t(ptr_->entry->d_name);
-}
-
-
 directory_iterator::directory_iterator(const path_t& path)
 {
     entry_.ptr_.reset(new directory_data);
@@ -407,6 +412,19 @@ directory_iterator::directory_iterator(const path_t& path)
 
 // OBJECTS -- GENERIC
 // ------------------
+
+
+path_t directory_data::fullpath() const
+{
+    path_list_t paths = {dirname(), basename()};
+    return join(paths);
+}
+
+
+const path_t& directory_data::dirname() const
+{
+    return path;
+}
 
 
 auto directory_data::operator++(int) -> directory_data
@@ -434,14 +452,52 @@ bool directory_entry::operator==(const self& rhs) const
 
 path_t directory_entry::path() const
 {
-    path_list_t paths = {dirname(), basename()};
-    return join(paths);
+    return ptr_->fullpath();
+}
+
+
+path_t directory_entry::basename() const
+{
+    return ptr_->basename();
 }
 
 
 const path_t& directory_entry::dirname() const
 {
-    return ptr_->path;
+    return ptr_->dirname();
+}
+
+
+const stat_t& directory_entry::stat() const
+{
+    if (ptr_->stat) {
+        ptr_->stat = new stat_t(lstat(path()));
+    }
+    return *ptr_->stat;
+}
+
+
+bool directory_entry::isfile() const
+{
+    return PYCPP_NAMESPACE::isfile(stat());
+}
+
+
+bool directory_entry::isdir() const
+{
+    return PYCPP_NAMESPACE::isdir(stat());
+}
+
+
+bool directory_entry::islink() const
+{
+    return PYCPP_NAMESPACE::islink(stat());
+}
+
+
+bool directory_entry::exists() const
+{
+    return PYCPP_NAMESPACE::exists(stat());
 }
 
 
