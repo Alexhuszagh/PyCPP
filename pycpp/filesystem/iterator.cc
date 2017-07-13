@@ -128,7 +128,32 @@ static bool is_relative_dot(const wchar_t* name)
  *  \brief Generic base class for directory data.
  */
 struct directory_data_impl
-{};
+{
+    stat_t *stat = nullptr;
+    bool is_unicode = false;
+    void* data = nullptr;
+
+    ~directory_data_impl();
+    void reset();
+};
+
+
+directory_data_impl::~directory_data_impl()
+{
+    reset();
+    delete stat;
+}
+
+
+void directory_data_impl::reset()
+{
+    if (is_unicode) {
+        delete (WIN32_FIND_DATAW*) data;
+    } else {
+        delete (WIN32_FIND_DATAA*) data;
+    }
+    data = nullptr;
+}
 
 
 /**
@@ -138,12 +163,8 @@ struct directory_data: directory_data_impl
 {
     HANDLE handle = INVALID_HANDLE_VALUE;
     path_t path;
-    stat_t *stat = nullptr;
-    bool is_unicode = false;
-    void* data = nullptr;
 
     ~directory_data();
-    void reset();
     path_t fullpath() const;
     path_t basename() const;
     const path_t& dirname() const;
@@ -160,20 +181,7 @@ struct directory_data: directory_data_impl
 
 directory_data::~directory_data()
 {
-    reset();
     FindClose(handle);
-    delete stat;
-}
-
-
-void directory_data::reset()
-{
-    if (is_unicode) {
-        delete (WIN32_FIND_DATAW*) data;
-    } else {
-        delete (WIN32_FIND_DATAA*) data;
-    }
-    data = nullptr;
 }
 
 
@@ -292,6 +300,30 @@ path_t directory_data::basename() const
 }
 
 
+/**
+ *  \brief Data for a recursive directory entry.
+ */
+struct recursive_directory_data: directory_data_impl
+{
+    std::deque<HANDLE> handle_list;
+    path_list_t path_list;
+
+    ~recursive_directory_data();
+//    void open(const path_t& path);
+
+    path_t fullpath() const;
+    const path_t& dirname() const;
+};
+
+
+recursive_directory_data::~recursive_directory_data()
+{
+    std::for_each(handle_list.begin(), handle_list.end(), [](HANDLE* handle) {
+        FindClose(handle);
+    });
+}
+
+
 directory_iterator::directory_iterator(const path_t& path)
 {
     entry_.ptr_.reset(new directory_data);
@@ -329,20 +361,44 @@ directory_iterator::directory_iterator(const backup_path_t& path)
 
 
 /**
+ *  \brief Generic base class for directory data.
+ */
+struct directory_data_impl
+{
+    dirent* entry = nullptr;
+    stat_t *stat = nullptr;
+
+    ~directory_data_impl();
+    void reset();
+
+    path_t basename() const;
+};
+
+
+directory_data_impl::~directory_data_impl()
+{
+    delete stat;
+}
+
+
+path_t directory_data_impl::basename() const
+{
+    return path_t(entry->d_name);
+}
+
+
+/**
  *  \brief Data for a directory entry.
  */
-struct directory_data
+struct directory_data: directory_data_impl
 {
     DIR* dir = nullptr;
-    dirent* entry = nullptr;
     path_t path;
-    stat_t *stat = nullptr;
 
     ~directory_data();
     void open(const path_t& path);
 
     path_t fullpath() const;
-    path_t basename() const;
     const path_t& dirname() const;
 
     directory_data& operator++();
@@ -355,8 +411,7 @@ struct directory_data
 
 directory_data::~directory_data()
 {
-    closedir((DIR*) dir);
-    delete stat;
+    closedir(dir);
 }
 
 
@@ -367,12 +422,6 @@ void directory_data::open(const path_t& p)
     if (dir == nullptr) {
         handle_error(errno);
     }
-}
-
-
-path_t directory_data::basename() const
-{
-    return path_t(entry->d_name);
 }
 
 
@@ -396,6 +445,43 @@ bool directory_data::operator==(const directory_data& rhs) const
 {
     return std::tie(dir, path, entry) == std::tie(rhs.dir, rhs.path, rhs.entry);
 }
+
+
+/**
+ *  \brief Data for a recursive directory entry.
+ */
+struct recursive_directory_data: directory_data_impl
+{
+    std::deque<DIR*> dir_list;
+    path_list_t path_list;
+
+    ~recursive_directory_data();
+    void open(const path_t& path);
+
+    path_t fullpath() const;
+    const path_t& dirname() const;
+};
+
+
+recursive_directory_data::~recursive_directory_data()
+{
+    std::for_each(dir_list.begin(), dir_list.end(), [](DIR* dir) {
+        closedir(dir);
+    });
+}
+
+
+void recursive_directory_data::open(const path_t& p)
+{
+    path_list.emplace_back(p);
+    dir_list.emplace_back(opendir(p.data()));
+    if (dir_list.back() == nullptr) {
+        handle_error(errno);
+    }
+}
+
+
+// TODO: implement..
 
 
 directory_iterator::directory_iterator(const path_t& path)
@@ -581,6 +667,19 @@ bool directory_iterator::operator==(const self& rhs) const
 bool directory_iterator::operator!=(const self& rhs) const
 {
     return !operator==(rhs);
+}
+
+
+path_t recursive_directory_data::fullpath() const
+{
+    path_list_t paths = {dirname(), basename()};
+    return join(paths);
+}
+
+
+const path_t& recursive_directory_data::dirname() const
+{
+    return path_list.back();
 }
 
 

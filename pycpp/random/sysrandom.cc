@@ -36,6 +36,10 @@
 #   endif
 #endif
 
+#if defined(OS_OPENBSD)
+#   define PYCPP_HAVE_GETENTROPY
+#endif
+
 PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
@@ -92,6 +96,25 @@ size_t sysrandom(void* dst, size_t dstlen)
 
     return dstlen;
 }
+
+#elif defined(PYCPP_HAVE_GETENTROPY)        // GETENTROPY
+
+
+/**
+ *  Generate cryptograhically random bytes on OpenBSD systems. Use
+ *  the `getentropy` syscall, since `/dev/urandom` is not secure
+ *  or does not exist.
+ */
+size_t sysrandom(void* dst, size_t dstlen)
+{
+    int bytes = getentropy(dst, dstlen);
+    if (bytes != dstlen) {
+        throw std::runtime_error("Unable to read N bytes from CSPRNG.");
+    }
+
+    return dstlen;
+}
+
 
 #else                                       // POSIX
 
