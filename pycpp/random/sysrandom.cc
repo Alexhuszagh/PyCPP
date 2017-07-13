@@ -16,7 +16,8 @@
 #   include <wincrypt.h>
 #   include <stdexcept>
 #else
-#   include <cstdio>
+#   include <fcntl.h>
+#   include <unistd.h>
 #endif
 
 #include <warnings/push.h>
@@ -73,14 +74,16 @@ size_t sysrandom(void* dst, size_t dstlen)
  */
 size_t sysrandom(void* dst, size_t dstlen)
 {
-    char* buffer = reinterpret_cast<char*>(dst);
-    FILE* file = fopen("/dev/urandom", "rb");
-    if (fread(buffer, 1, dstlen, file) != dstlen) {
-        fclose(file);
+    int fd = open("/dev/urandom", O_RDONLY);
+    if (fd == -1) {
+        throw std::runtime_error("Unable to open /dev/urandom.");
+    }
+    if (read(fd, dst, dstlen) != dstlen) {
+        close(fd);
         throw std::runtime_error("Unable to read N bytes from CSPRNG.");
     }
 
-    fclose(file);
+    close(fd);
     return dstlen;
 }
 

@@ -45,6 +45,10 @@ public:
     directory_iterator() = default;
     ~directory_iterator();
 
+    // OPERATORS
+//    self& operator++();
+//    self operator++(int);
+
 private:
     void *ptr_ = nullptr;
 };
@@ -71,6 +75,10 @@ public:
     // ----------------
     recursive_directory_iterator() = default;
     ~recursive_directory_iterator();
+
+    // OPERATORS
+//    self& operator++();
+//    self operator++(int);
 
 private:
     void *ptr_ = nullptr;

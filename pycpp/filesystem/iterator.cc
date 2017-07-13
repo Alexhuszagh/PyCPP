@@ -21,4 +21,7 @@ recursive_directory_iterator::~recursive_directory_iterator()
 }
 
 
+// TODO: on POSIX, use direct and opendir.
+
+
 PYCPP_END_NAMESPACE
