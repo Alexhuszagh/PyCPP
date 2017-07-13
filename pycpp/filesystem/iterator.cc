@@ -337,7 +337,8 @@ struct recursive_directory_data: directory_data_impl
     path_list_t path_list;
 
     ~recursive_directory_data();
-//    void open(const path_t& path);
+    void open(const path_t& path);
+    void open(const backup_path_t& path);
 
     path_t fullpath() const;
     const path_t& dirname() const;
@@ -349,6 +350,22 @@ recursive_directory_data::~recursive_directory_data()
     std::for_each(handle_list.begin(), handle_list.end(), [](HANDLE handle) {
         FindClose(handle);
     });
+}
+
+
+void recursive_directory_data::open(const path_t& p)
+{
+    path_list.emplace_back(p);
+    handle_list.emplace_back(nullptr);
+    directory_data_impl::open(handle_list.back(), p);
+}
+
+
+void recursive_directory_data::open(const backup_path_t& p)
+{
+    path_list.emplace_back(ansi_to_utf16(p));
+    handle_list.emplace_back(nullptr);
+    directory_data_impl::open(handle_list.back(), p);
 }
 
 
@@ -522,14 +539,12 @@ recursive_directory_data::~recursive_directory_data()
 void recursive_directory_data::open(const path_t& p)
 {
     path_list.emplace_back(p);
-    dir_list.emplace_back(opendir(p.data()));
-    if (dir_list.back() == nullptr) {
-        handle_error(errno);
-    }
+    dir_list.emplace_back(nullptr);
+    directory_data_impl::open(dir_list.back(), p);
 }
 
 
-// TODO: implement..
+// TODO: implement recursive_directory_data..
 
 
 directory_iterator::directory_iterator(const path_t& path)
