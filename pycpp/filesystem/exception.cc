@@ -39,6 +39,10 @@ const char* filesystem_error::what() const throw ()
             return "No such directory.";
         case filesystem_destination_exists:
             return "Destination already exists.";
+        case filesystem_permissions_error:
+            return "Permissions error, cannot open file.";
+        case filesystem_too_many_file_descriptors:
+            return "Too many open file descriptors by the process.";
         case filesystem_unexpected_error:
         default:
             return "Unexpected error in stat.";

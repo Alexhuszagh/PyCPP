@@ -10,6 +10,11 @@
     - remove_directory
     - mkdir -- unitests
     - makedirs -- unittests
+    - iterator
+        - On MinGW, we don't seem to be entering the loop...
+        - Need to skip ".", ".." probably
+        - Need to have a directory "deque" for the recursive directory iterator
+
 
 - Atomic Operations
     - Check boltsons

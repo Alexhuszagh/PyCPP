@@ -19,14 +19,17 @@ PYCPP_BEGIN_NAMESPACE
 
 #if defined(OS_WINDOWS)             // WINDOWS
    typedef wchar_t native_char_type;
+   typedef char backup_char_type;
    typedef std::u16string path_t;
    typedef std::string backup_path_t;
    typedef std::deque<path_t> path_list_t;
    typedef std::deque<backup_path_t> backup_path_list_t;
+   std::u16string ansi_to_utf16(const std::string&);
+   std::string utf16_to_ansi(const std::u16string&);
 #   define path_to_string(s) codec_utf16_utf8(s)
 #   define backup_path_to_string(s) (s)
-#   define path_to_backup_path(s) codec_utf16_utf8(s)
-#   define backup_path_to_path(s) codec_utf8_utf16(s)
+#   define path_to_backup_path(s) utf16_to_ansi(s)
+#   define backup_path_to_path(s) ansi_to_utf16(s)
 #   define string_to_path(s) codec_utf8_utf16(s)
 #   define string_to_backup_path(s) (s)
 #   define path_prefix(p) u##p

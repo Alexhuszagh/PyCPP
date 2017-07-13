@@ -149,6 +149,7 @@ if(BUILD_JSON)
 endif()
 
 if(BUILD_XML)
+    add_definitions(-DLIBXML_STATIC)
     include_directories(third_party/libxml2/include)
     include_directories(
         third_party/multi_index/include

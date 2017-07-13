@@ -28,6 +28,8 @@ enum filesystem_code
     filesystem_not_a_file,
     filesystem_no_such_directory,
     filesystem_destination_exists,
+    filesystem_permissions_error,
+    filesystem_too_many_file_descriptors,
     filesystem_unexpected_error,
 };
 

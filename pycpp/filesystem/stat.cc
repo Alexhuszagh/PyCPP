@@ -290,8 +290,8 @@ static bool set_stat_impl(const Path& src, const Path& dst)
     FILETIME atime, mtime;
 
     // update filetime
-    TIME_T_TO_FILETIME(src_stat.st_atim.tv_sec, &atime);
-    TIME_T_TO_FILETIME(src_stat.st_mtim.tv_sec, &mtime);
+    TIME_T_TO_FILETIME(src_stat.st_atim.tv_sec, atime);
+    TIME_T_TO_FILETIME(src_stat.st_mtim.tv_sec, mtime);
     if (!SetFileTime(handle, NULL, &atime, &mtime)) {
         CloseHandle(handle);
         return false;

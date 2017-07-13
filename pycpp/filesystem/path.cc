@@ -8,6 +8,9 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/stringlib.h>
 #include <algorithm>
+#if defined(OS_WINDOWS)
+#   include <windows.h>
+#endif
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -162,6 +165,60 @@ Path relpath_impl(const Path& path, ToPath topath)
 
 // FUNCTIONS
 // ---------
+
+#if defined(OS_WINDOWS)          // WINDOWS
+
+// CONVERSIONS
+
+
+std::u16string ansi_to_utf16(const std::string& ansi)
+{
+    // parameters
+    auto srclen = ansi.size();
+    auto src = ansi.data();
+    auto dstlen = srclen * 2;       // need 4 bytes per ANSI character
+    wchar_t* dst = new wchar_t[dstlen];
+
+    // conversion
+    auto length = MultiByteToWideChar(CP_ACP, 0, src, srclen, dst, dstlen);
+    if (length == 0) {
+        delete[] dst;
+        throw std::runtime_error("Cannot convert ansi to UTF-16.");
+    }
+
+    // create output
+    std::u16string u16(reinterpret_cast<char16_t*>(dst), length);
+    delete[] dst;
+
+    return u16;
+}
+
+
+std::string utf16_to_ansi(const std::u16string& u16)
+{
+    // parameters
+    auto srclen = u16.size();
+    auto src = reinterpret_cast<const wchar_t*>(u16.data());
+    auto dstlen = srclen * 3;       // need 1.5 bytes per UTF-16 character
+    char* dst = new char[dstlen];
+
+    // conversion
+    auto length = WideCharToMultiByte(CP_ACP, 0, src, srclen, dst, dstlen, nullptr, nullptr);
+    if (length == 0) {
+        delete[] dst;
+        throw std::runtime_error("Cannot convert UTF-16 to ANSI.");
+    }
+
+    // create output
+    std::string ansi(dst, length);
+    delete[] dst;
+
+    return ansi;
+}
+
+
+#endif
+
 
 // SPLIT
 

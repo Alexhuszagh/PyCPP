@@ -23,6 +23,30 @@ PYCPP_USING_NAMESPACE
 // -----
 
 
+TEST(directory_iterator, directory_iterator)
+{
+
+    directory_iterator first(path_t(path_prefix("test/files")));
+    directory_iterator last;
+    EXPECT_NE(first, last);
+    for (; first != last; ++first) {
+#if defined(OS_WINDOWS)                 // WINDOWS
+        EXPECT_EQ(first->path(), path_t(path_prefix("test/files\\file")));
+#else                                   // POSIX
+        EXPECT_EQ(first->path(), path_t(path_prefix("test/files/file")));
+#endif                                  // WINDOWS
+        EXPECT_EQ(first->basename(), path_t(path_prefix("file")));
+        EXPECT_EQ(first->dirname(), path_t(path_prefix("test/files")));
+    }
+}
+
+
+TEST(directory_iterator, recursive_directory_iterator)
+{
+    // TODO: need to implement...
+}
+
+
 TEST(stat, stat)
 {
     auto s = stat("test/files");

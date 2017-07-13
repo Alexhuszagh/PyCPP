@@ -400,7 +400,7 @@ static bool copy_dir_shallow_impl(const backup_path_t&src, const backup_path_t& 
 
 
 template <typename Path>
-static bool copy_dir_recursive_impl(const path_t&src, const path_t& dst)
+static bool copy_dir_recursive_impl(const Path&src, const Path& dst)
 {
     // TODO: implement...
     // TODO: need a directory iterator...
@@ -409,7 +409,7 @@ static bool copy_dir_recursive_impl(const path_t&src, const path_t& dst)
 
 
 template <typename Path>
-static bool copy_dir_impl(const path_t&src, const path_t& dst, bool recursive)
+static bool copy_dir_impl(const Path&src, const Path& dst, bool recursive)
 {
     if (recursive) {
         return copy_dir_recursive_impl(src, dst);
