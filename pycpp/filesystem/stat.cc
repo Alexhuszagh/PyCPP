@@ -13,8 +13,10 @@
 #   include <winerror.h>
 #   include <tuple>
 #else
+#   include <fcntl.h>
 #   include <limits.h>
 #   include <unistd.h>
+#   include <utime.h>
 #endif
 
 PYCPP_BEGIN_NAMESPACE
@@ -250,13 +252,6 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
 }
 
 
-static int set_stat(HANDLE handle, stat_t* data)
-{
-    // TODO: this will set the stat data.
-    // get_handle(path, false, [](){});
-}
-
-
 
 template <typename Pointer, typename Function>
 static HANDLE get_handle(Pointer path, bool use_lstat, Function function)
@@ -276,6 +271,37 @@ static HANDLE get_handle(Pointer path, bool use_lstat, Function function)
 }
 
 
+void get_handle(const path_t& path, bool use_lstat)
+{
+    auto data = reinterpret_cast<const wchar_t*>(path.data());
+    return get_handle(data, use_lstat, CreateFileW);
+}
+
+
+void get_handle(const backup_path_t& path, bool use_lstat)
+{
+    auto data = reinterpret_cast<const char*>(path.data());
+    return get_handle(data, use_lstat, CreateFileA);
+}
+
+
+template <typename Path>
+static bool set_stat_impl(const Path& src, const Path& dst)
+{
+    auto src_stat = stat(src);
+    auto dst_stat = stat(dst);
+    HANDLE handle = get_handle(dst, false);
+// Windows:: need to get the handle...
+//  SetFileTime(handle, ctime, atime, mtime);
+
+    // Need a set_stat_impl
+
+    // WINDOWS
+    // TODO: need to convert thestat data
+
+    return false;
+}
+
 
 static DWORD get_ioctrl(HANDLE handle, REPARSE_DATA_BUFFER* buf)
 {
@@ -291,13 +317,13 @@ static DWORD get_ioctrl(HANDLE handle, REPARSE_DATA_BUFFER* buf)
 }
 
 
-template <typename Pointer, typename Function>
-static int stat_impl(Pointer path, stat_t* buffer, bool use_lstat, Function function)
+template <typename Path>
+static int stat_impl(const Path& path, stat_t* buffer, bool use_lstat)
 {
-    HANDLE handle = get_handle(path, use_lstat, function);
+    HANDLE handle = get_handle(path, use_lstat);
     if (handle == INVALID_HANDLE_VALUE) {
         if (use_lstat && GetLastError() == ERROR_SYMLINK_NOT_SUPPORTED) {
-            return stat_impl(path, buffer, false, function);
+            return stat_impl(path, buffer, false);
         }
         return get_error_code();
     }
@@ -339,16 +365,15 @@ static path_t read_link_impl(HANDLE handle)
     return out;
 }
 
-
-static int stat(const char* path, stat_t* buffer, bool use_lstat)
+static int stat(const backup_path_t& path, stat_t* buffer, bool use_lstat)
 {
-    return stat_impl(path, buffer, use_lstat, CreateFile);
+    return stat_impl(path, buffer, use_lstat);
 }
 
 
-static int wstat(const wchar_t* path, stat_t* buffer, bool use_lstat)
+static int wstat(const path_t& path, stat_t* buffer, bool use_lstat)
 {
-    return stat_impl(path, buffer, use_lstat, CreateFileW);
+    return stat_impl(path, buffer, use_lstat);
 }
 
 
@@ -357,8 +382,7 @@ stat_t stat(const path_t& path)
     stat_t data;
     int code;
 
-    auto buffer = reinterpret_cast<const wchar_t*>(path.data());
-    code = wstat(buffer, &data, false);
+    code = wstat(path, &data, false);
     handle_error(code);
 
     return data;
@@ -370,8 +394,7 @@ stat_t lstat(const path_t& path)
     stat_t data;
     int code;
 
-    auto buffer = reinterpret_cast<const wchar_t*>(path.data());
-    code = wstat(buffer, &data, true);
+    code = wstat(path, &data, true);
     handle_error(code);
 
     return data;
@@ -380,8 +403,7 @@ stat_t lstat(const path_t& path)
 
 path_t read_link(const path_t& path)
 {
-    auto data = reinterpret_cast<const wchar_t*>(path.data());
-    HANDLE handle = get_handle(data, true, CreateFileW);
+    HANDLE handle = get_handle(path, true);
     if (handle == INVALID_HANDLE_VALUE) {
         handle_error(get_error_code());
     }
@@ -390,6 +412,42 @@ path_t read_link(const path_t& path)
 }
 
 #else                           // POSIX
+
+
+template <typename Path>
+static bool set_stat_impl(const Path& src, const Path& dst)
+{
+    auto src_stat = stat(src);
+    utimbuf times = {src_stat.st_atim.tv_sec, src_stat.st_mtim.tv_sec};
+
+    // update filetime
+    int status = utime(dst.data(), &times);
+    if (status != 0) {
+        return false;
+    }
+
+    // get open file descriptor
+    int fd = open(dst.data(), O_RDWR);
+    if (fd == -1) {
+        return false;
+    }
+
+    // update owner
+    status = fchown(fd, src_stat.st_uid, src_stat.st_gid);
+    if (status != 0) {
+        close(fd);
+        return false;
+    }
+
+    // update permission
+    status = fchmod(fd, src_stat.st_mode);
+    if (status != 0) {
+        close(fd);
+        return false;
+    }
+
+    return close(fd) == 0;
+}
 
 
 static void copy_native(const struct stat& src, stat_t& dst)
@@ -463,7 +521,7 @@ stat_t stat(const backup_path_t& path)
     stat_t data;
     int code;
 
-    code = stat(path.data(), &data, false);
+    code = stat(path, &data, false);
     handle_error(code);
 
     return data;
@@ -475,7 +533,7 @@ stat_t lstat(const backup_path_t& path)
     stat_t data;
     int code;
 
-    code = stat(path.data(), &data, true);
+    code = stat(path, &data, true);
     handle_error(code);
 
     return data;
@@ -484,8 +542,7 @@ stat_t lstat(const backup_path_t& path)
 
 backup_path_t read_link(const backup_path_t& path)
 {
-    auto data = reinterpret_cast<const wchar_t*>(path.data());
-    HANDLE handle = get_handle(data, true, CreateFileW);
+    HANDLE handle = get_handle(path, true);
     if (handle == INVALID_HANDLE_VALUE) {
         handle_error(get_error_code());
     }
@@ -623,21 +680,9 @@ static bool islink_impl(const Path& path)
 }
 
 template <typename Path>
-static bool copy_stat_impl(const Path& src, const Path& dst)
+static bool copystat_impl(const Path& src, const Path& dst)
 {
-    auto src_stat = stat(src);
-    auto dst_stat = stat(dst);
-
-    // Need a set_stat_impl
-
-    // WINDOWS
-    // TODO: need to convert thestat data
-    // SetFileTime(filename, &thefiletime, (LPFILETIME) NULL,(LPFILETIME) NULL);
-
-    // LINUX
-    // use utime
-
-    return false;
+    return set_stat_impl(src, dst);
 }
 
 // FUNCTIONS
@@ -711,7 +756,7 @@ bool samestat(const stat_t& s1, const stat_t& s2)
 
 bool copystat(const path_t& src, const path_t& dst)
 {
-    return copy_stat_impl(src, dst);
+    return copystat_impl(src, dst);
 }
 
 
@@ -780,7 +825,7 @@ bool samefile(const backup_path_t& p1, const backup_path_t& p2)
 
 bool copystat(const backup_path_t& src, const backup_path_t& dst)
 {
-    return copy_stat_impl(src, dst);
+    return copystat_impl(src, dst);
 }
 
 #endif

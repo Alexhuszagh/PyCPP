@@ -16,7 +16,7 @@
 #   include <wincrypt.h>
 #   include <stdexcept>
 #else
-#   include <fstream>
+#   include <cstdio>
 #endif
 
 #include <warnings/push.h>
@@ -36,8 +36,8 @@ PYCPP_BEGIN_NAMESPACE
   */
 bool acquire_context(HCRYPTPROV *ctx)
 {
-    if (!CryptAcquireContext(ctx, nullptr, nullptr, PROV_RSA_FULL, 0)) {
-        return CryptAcquireContext(ctx, nullptr, nullptr, PROV_RSA_FULL, CRYPT_NEWKEYSET);
+    if (!CryptAcquireContext(ctx, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_SILENT)) {
+        return CryptAcquireContext(ctx, nullptr, nullptr, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT | CRYPT_SILENT | CRYPT_NEWKEYSET);
     }
     return true;
 }
@@ -74,9 +74,13 @@ size_t sysrandom(void* dst, size_t dstlen)
 size_t sysrandom(void* dst, size_t dstlen)
 {
     char* buffer = reinterpret_cast<char*>(dst);
-    std::ifstream stream("/dev/urandom", std::ios_base::binary | std::ios_base::in);
-    stream.read(buffer, dstlen);
+    FILE* file = fopen("/dev/urandom", "rb");
+    if (fread(buffer, 1, dstlen, file) != dstlen) {
+        fclose(file);
+        throw std::runtime_error("Unable to read N bytes from CSPRNG.");
+    }
 
+    fclose(file);
     return dstlen;
 }
 
