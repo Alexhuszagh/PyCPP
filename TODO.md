@@ -13,6 +13,9 @@
     - iterator
         - Need to implemnt recursive_directory_iterator
         - Need to have a directory "deque" for the recursive directory iterator
+    - copylink (for copy_directory, etc.)
+    - listdir
+
 
 - Atomic Operations
     - Check boltsons

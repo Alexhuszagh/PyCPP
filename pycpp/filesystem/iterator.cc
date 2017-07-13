@@ -125,9 +125,16 @@ static bool is_relative_dot(const wchar_t* name)
 
 
 /**
+ *  \brief Generic base class for directory data.
+ */
+struct directory_data_impl
+{};
+
+
+/**
  *  \brief Data for a directory entry.
  */
-struct directory_data
+struct directory_data: directory_data_impl
 {
     HANDLE handle = INVALID_HANDLE_VALUE;
     path_t path;
@@ -470,7 +477,7 @@ const path_t& directory_entry::dirname() const
 
 const stat_t& directory_entry::stat() const
 {
-    if (ptr_->stat) {
+    if (!ptr_->stat) {
         ptr_->stat = new stat_t(lstat(path()));
     }
     return *ptr_->stat;

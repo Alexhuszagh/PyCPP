@@ -23,12 +23,25 @@
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 
+// MACROS
+// ------
+
+#if defined(OS_LINUX)
+#   // Check the kernel version. `getrandom` is only Linux 3.17 and above.
+#   include <linux/version.h>
+#   if LINUX_VERSION_CODE >= KERNEL_VERSION(3,17,0)
+#       define PYCPP_HAVE_GETRANDOM
+#       include <sys/syscall.h>
+#       include <linux/random.h>
+#   endif
+#endif
+
 PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
 
-#if defined(OS_WINDOWS)         // WINDOWS
+#if defined(OS_WINDOWS)                     // WINDOWS
 
 
  /**
@@ -63,7 +76,24 @@ size_t sysrandom(void* dst, size_t dstlen)
     return dstlen;
 }
 
-#else                           // POSIX
+#elif defined(PYCPP_HAVE_GETRANDOM)         // GETRANDOM
+
+
+/**
+ *  Generate cryptograhically random bytes on Linux systems. Use
+ *  the blocking `getrandom` syscall.
+ */
+size_t sysrandom(void* dst, size_t dstlen)
+{
+    int bytes = syscall(SYS_getrandom, dst, dstlen, 0);
+    if (bytes != dstlen) {
+        throw std::runtime_error("Unable to read N bytes from CSPRNG.");
+    }
+
+    return dstlen;
+}
+
+#else                                       // POSIX
 
 
 /**
