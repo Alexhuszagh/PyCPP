@@ -135,6 +135,13 @@ struct directory_data_impl
 
     ~directory_data_impl();
     void reset();
+    path_t basename() const;
+    void open(HANDLE& handle, const path_t& path);
+    void open(HANDLE& handle, const backup_path_t& path);
+
+    void increment(HANDLE& handle);
+    bool operator==(const directory_data_impl&) const;
+    explicit operator bool() const;
 };
 
 
@@ -156,45 +163,28 @@ void directory_data_impl::reset()
 }
 
 
-/**
- *  \brief Data for a directory entry.
- */
-struct directory_data: directory_data_impl
+path_t directory_data_impl::basename() const
 {
-    HANDLE handle = INVALID_HANDLE_VALUE;
-    path_t path;
-
-    ~directory_data();
-    path_t fullpath() const;
-    path_t basename() const;
-    const path_t& dirname() const;
-
-    void open(const path_t& path);
-    void open(const backup_path_t& path);
-    directory_data& operator++();
-    directory_data operator++(int);
-    bool operator==(const directory_data&) const;
-    bool operator!=(const directory_data&) const;
-    explicit operator bool() const;
-};
-
-
-directory_data::~directory_data()
-{
-    FindClose(handle);
+    if (is_unicode) {
+        auto d = (WIN32_FIND_DATAW*) data;
+        return path_t(reinterpret_cast<char16_t*>(d->cFileName));
+    } else {
+        auto d = (WIN32_FIND_DATAA*) data;
+        return path_t(ansi_to_utf16(d->cFileName));
+    }
 }
 
 
-void directory_data::open(const path_t& p)
+void directory_data_impl::open(HANDLE& handle, const path_t& path)
 {
     // don't allow wildcards in the search
-    if (has_wildcards(p)) {
+    if (has_wildcards(path)) {
         throw std::runtime_error("Cannot use wildcards in search.");
     }
 
     // get data
     auto find_data = new WIN32_FIND_DATAW;
-    path_list_t paths = {p, path_prefix("*")};
+    path_list_t paths = {path, path_prefix("*")};
     path_t joined = join(paths);
     auto str = reinterpret_cast<const wchar_t*>(joined.data());
 
@@ -207,22 +197,21 @@ void directory_data::open(const path_t& p)
 
     // reset class data
     reset();
-    path = p;
     is_unicode = true;
     data = (void*) find_data;
 }
 
 
-void directory_data::open(const backup_path_t& p)
+void directory_data_impl::open(HANDLE& handle, const backup_path_t& path)
 {
     // don't allow wildcards in the search
-    if (has_wildcards(p)) {
+    if (has_wildcards(path)) {
         throw std::runtime_error("Cannot use wildcards in search.");
     }
 
     // get data
     auto d = new WIN32_FIND_DATAA;
-    backup_path_list_t paths = {p, "*"};
+    backup_path_list_t paths = {path, "*"};
     backup_path_t joined = join(paths);
     auto str = reinterpret_cast<const char*>(joined.data());
 
@@ -234,7 +223,6 @@ void directory_data::open(const backup_path_t& p)
     }
 
     // reset class data
-    path = ansi_to_utf16(p);
     reset();
     is_unicode = false;
     data = (void*) d;
@@ -254,7 +242,7 @@ static DWORD find_next_path(HANDLE handle, FindData* data, FindNext findnext)
 }
 
 
-directory_data& directory_data::operator++()
+void directory_data_impl::increment(HANDLE& handle)
 {
     DWORD error = 0;
     if (is_unicode) {
@@ -271,32 +259,72 @@ directory_data& directory_data::operator++()
     } else if (error != 0) {
         handle_error(get_error_code());
     }
+}
 
+
+bool directory_data_impl::operator==(const directory_data_impl& rhs) const
+{
+    return std::tie(is_unicode, data) == std::tie(rhs.is_unicode, rhs.data);
+}
+
+
+directory_data_impl::operator bool() const
+{
+    return bool(data);
+}
+
+
+/**
+ *  \brief Data for a directory entry.
+ */
+struct directory_data: directory_data_impl
+{
+    HANDLE handle = INVALID_HANDLE_VALUE;
+    path_t path;
+
+    ~directory_data();
+    path_t fullpath() const;
+    const path_t& dirname() const;
+
+    void open(const path_t& path);
+    void open(const backup_path_t& path);
+    directory_data& operator++();
+    directory_data operator++(int);
+    bool operator==(const directory_data&) const;
+    bool operator!=(const directory_data&) const;
+};
+
+
+directory_data::~directory_data()
+{
+    FindClose(handle);
+}
+
+
+void directory_data::open(const path_t& p)
+{
+    directory_data_impl::open(handle, p);
+    path = p;
+}
+
+
+void directory_data::open(const backup_path_t& p)
+{
+    directory_data_impl::open(handle, p);
+    path = ansi_to_utf16(p);
+}
+
+
+directory_data& directory_data::operator++()
+{
+    increment(handle);
     return *this;
 }
 
 
 bool directory_data::operator==(const directory_data& rhs) const
 {
-    return std::tie(handle, path, is_unicode, data) == std::tie(rhs.handle, rhs.path, rhs.is_unicode, rhs.data);
-}
-
-
-directory_data::operator bool() const
-{
-    return bool(data);
-}
-
-
-path_t directory_data::basename() const
-{
-    if (is_unicode) {
-        auto d = (WIN32_FIND_DATAW*) data;
-        return path_t(reinterpret_cast<char16_t*>(d->cFileName));
-    } else {
-        auto d = (WIN32_FIND_DATAA*) data;
-        return path_t(ansi_to_utf16(d->cFileName));
-    }
+    return directory_data_impl::operator==(rhs) && std::tie(handle, path) == std::tie(rhs.handle, rhs.path);
 }
 
 
@@ -318,7 +346,7 @@ struct recursive_directory_data: directory_data_impl
 
 recursive_directory_data::~recursive_directory_data()
 {
-    std::for_each(handle_list.begin(), handle_list.end(), [](HANDLE* handle) {
+    std::for_each(handle_list.begin(), handle_list.end(), [](HANDLE handle) {
         FindClose(handle);
     });
 }
@@ -370,8 +398,12 @@ struct directory_data_impl
 
     ~directory_data_impl();
     void reset();
-
     path_t basename() const;
+    void open(DIR*& dir, const path_t& path);
+
+    void increment(DIR*& dir);
+    bool operator==(const directory_data_impl&) const;
+    explicit operator bool() const;
 };
 
 
@@ -384,6 +416,35 @@ directory_data_impl::~directory_data_impl()
 path_t directory_data_impl::basename() const
 {
     return path_t(entry->d_name);
+}
+
+
+void directory_data_impl::open(DIR*& dir, const path_t& path)
+{
+    dir = opendir(path.data());
+    if (dir == nullptr) {
+        handle_error(errno);
+    }
+}
+
+
+void directory_data_impl::increment(DIR*& dir)
+{
+    do {
+        entry = readdir(dir);
+    } while (entry && is_relative_dot(entry->d_name));
+}
+
+
+bool directory_data_impl::operator==(const directory_data_impl& rhs) const
+{
+    return entry == rhs.entry;
+}
+
+
+directory_data_impl::operator bool() const
+{
+    return bool(entry);
 }
 
 
@@ -405,7 +466,6 @@ struct directory_data: directory_data_impl
     directory_data operator++(int);
     bool operator==(const directory_data&) const;
     bool operator!=(const directory_data&) const;
-    explicit operator bool() const;
 };
 
 
@@ -417,33 +477,21 @@ directory_data::~directory_data()
 
 void directory_data::open(const path_t& p)
 {
+    directory_data_impl::open(dir, p);
     path = p;
-    dir = opendir(path.data());
-    if (dir == nullptr) {
-        handle_error(errno);
-    }
 }
 
 
 directory_data& directory_data::operator++()
 {
-    do {
-        entry = readdir(dir);
-    } while (entry && is_relative_dot(entry->d_name));
-
+    increment(dir);
     return *this;
-}
-
-
-directory_data::operator bool() const
-{
-    return bool(entry);
 }
 
 
 bool directory_data::operator==(const directory_data& rhs) const
 {
-    return std::tie(dir, path, entry) == std::tie(rhs.dir, rhs.path, rhs.entry);
+    return directory_data_impl::operator==(rhs) && std::tie(dir, path) == std::tie(rhs.dir, rhs.path);
 }
 
 
