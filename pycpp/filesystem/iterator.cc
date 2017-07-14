@@ -129,53 +129,26 @@ static bool is_relative_dot(const wchar_t* name)
  */
 struct directory_data_impl
 {
-    stat_t *stat = nullptr;
-    bool is_unicode = false;
-    void* data = nullptr;
+    stat_t *stat_ = nullptr;
 
     ~directory_data_impl();
-    void reset();
-    path_t basename() const;
-    void open(HANDLE& handle, const path_t& path);
-    void open(HANDLE& handle, const backup_path_t& path);
+    virtual path_t fullpath() const = 0;
+    virtual path_t basename() const = 0;
+    virtual const path_t& dirname() const = 0;
+    const stat_t& stat();
+    void open(HANDLE& handle, WIN32_FIND_DATAW*& data, const path_t& path);
 
-    void increment(HANDLE& handle);
-    bool operator==(const directory_data_impl&) const;
-    explicit operator bool() const;
+    void increment(HANDLE& handle, WIN32_FIND_DATAW*& data);
 };
 
 
 directory_data_impl::~directory_data_impl()
 {
-    reset();
-    delete stat;
+    delete stat_;
 }
 
 
-void directory_data_impl::reset()
-{
-    if (is_unicode) {
-        delete (WIN32_FIND_DATAW*) data;
-    } else {
-        delete (WIN32_FIND_DATAA*) data;
-    }
-    data = nullptr;
-}
-
-
-path_t directory_data_impl::basename() const
-{
-    if (is_unicode) {
-        auto d = (WIN32_FIND_DATAW*) data;
-        return path_t(reinterpret_cast<char16_t*>(d->cFileName));
-    } else {
-        auto d = (WIN32_FIND_DATAA*) data;
-        return path_t(ansi_to_utf16(d->cFileName));
-    }
-}
-
-
-void directory_data_impl::open(HANDLE& handle, const path_t& path)
+void directory_data_impl::open(HANDLE& handle, WIN32_FIND_DATAW*& data, const path_t& path)
 {
     // don't allow wildcards in the search
     if (has_wildcards(path)) {
@@ -196,36 +169,8 @@ void directory_data_impl::open(HANDLE& handle, const path_t& path)
     }
 
     // reset class data
-    reset();
-    is_unicode = true;
-    data = (void*) find_data;
-}
-
-
-void directory_data_impl::open(HANDLE& handle, const backup_path_t& path)
-{
-    // don't allow wildcards in the search
-    if (has_wildcards(path)) {
-        throw std::runtime_error("Cannot use wildcards in search.");
-    }
-
-    // get data
-    auto d = new WIN32_FIND_DATAA;
-    backup_path_list_t paths = {path, "*"};
-    backup_path_t joined = join(paths);
-    auto str = reinterpret_cast<const char*>(joined.data());
-
-    // create our handle
-    handle = FindFirstFileA(str, d);
-    if (handle == INVALID_HANDLE_VALUE) {
-        delete d;
-        handle_error(get_error_code());
-    }
-
-    // reset class data
-    reset();
-    is_unicode = false;
-    data = (void*) d;
+    delete data;
+    data = find_data;
 }
 
 
@@ -242,35 +187,21 @@ static DWORD find_next_path(HANDLE handle, FindData* data, FindNext findnext)
 }
 
 
-void directory_data_impl::increment(HANDLE& handle)
+void directory_data_impl::increment(HANDLE& handle, WIN32_FIND_DATAW*& data)
 {
     DWORD error = 0;
-    if (is_unicode) {
-        auto d = (WIN32_FIND_DATAW*) data;
-        error = find_next_path(handle, d, FindNextFileW);
-    } else {
-        auto d = (WIN32_FIND_DATAA*) data;
-        error = find_next_path(handle, d, FindNextFileA);
-    }
+    error = find_next_path(handle, data, FindNextFileW);
 
     // handle any errors
     if (error == ERROR_NO_MORE_FILES) {
-        reset();
+        delete data;
+        data = nullptr;
     } else if (error != 0) {
         handle_error(get_error_code());
     }
-}
 
-
-bool directory_data_impl::operator==(const directory_data_impl& rhs) const
-{
-    return std::tie(is_unicode, data) == std::tie(rhs.is_unicode, rhs.data);
-}
-
-
-directory_data_impl::operator bool() const
-{
-    return bool(data);
+    delete stat_;
+    stat_ = nullptr;
 }
 
 
@@ -281,10 +212,12 @@ struct directory_data: directory_data_impl
 {
     HANDLE handle = INVALID_HANDLE_VALUE;
     path_t path;
+    WIN32_FIND_DATAW* data = nullptr;
 
     ~directory_data();
-    path_t fullpath() const;
-    const path_t& dirname() const;
+    virtual path_t fullpath() const override;
+    virtual path_t basename() const override;
+    virtual const path_t& dirname() const override;
 
     void open(const path_t& path);
     void open(const backup_path_t& path);
@@ -292,39 +225,52 @@ struct directory_data: directory_data_impl
     directory_data operator++(int);
     bool operator==(const directory_data&) const;
     bool operator!=(const directory_data&) const;
+    explicit operator bool() const;
 };
 
 
 directory_data::~directory_data()
 {
     FindClose(handle);
+    delete data;
+}
+
+
+path_t directory_data::basename() const
+{
+    return path_t(reinterpret_cast<char16_t*>(data->cFileName));
 }
 
 
 void directory_data::open(const path_t& p)
 {
-    directory_data_impl::open(handle, p);
     path = p;
+    directory_data_impl::open(handle, data, path);
 }
 
 
 void directory_data::open(const backup_path_t& p)
 {
-    directory_data_impl::open(handle, p);
-    path = ansi_to_utf16(p);
+    open(ansi_to_utf16(p));
 }
 
 
 directory_data& directory_data::operator++()
 {
-    increment(handle);
+    increment(handle, data);
     return *this;
 }
 
 
 bool directory_data::operator==(const directory_data& rhs) const
 {
-    return directory_data_impl::operator==(rhs) && std::tie(handle, path) == std::tie(rhs.handle, rhs.path);
+    return std::tie(handle, path, data) == std::tie(rhs.handle, rhs.path, rhs.data);
+}
+
+
+directory_data::operator bool() const
+{
+    return bool(data);
 }
 
 
@@ -335,13 +281,21 @@ struct recursive_directory_data: directory_data_impl
 {
     std::deque<HANDLE> handle_list;
     path_list_t path_list;
+    std::deque<WIN32_FIND_DATAW*> data_list;
+    bool initialized = false;
 
     ~recursive_directory_data();
+    virtual path_t fullpath() const override;
+    virtual path_t basename() const override;
+    virtual const path_t& dirname() const override;
+
     void open(const path_t& path);
     void open(const backup_path_t& path);
-
-    path_t fullpath() const;
-    const path_t& dirname() const;
+    recursive_directory_data& operator++();
+    recursive_directory_data operator++(int);
+    bool operator==(const recursive_directory_data&) const;
+    bool operator!=(const recursive_directory_data&) const;
+    explicit operator bool() const;
 };
 
 
@@ -350,22 +304,69 @@ recursive_directory_data::~recursive_directory_data()
     std::for_each(handle_list.begin(), handle_list.end(), [](HANDLE handle) {
         FindClose(handle);
     });
+    std::for_each(data_list.begin(), data_list.end(), [](WIN32_FIND_DATAW* data) {
+        delete data;
+    });
+}
+
+
+path_t recursive_directory_data::basename() const
+{
+    return path_t(reinterpret_cast<char16_t*>(data_list.back()->cFileName));
 }
 
 
 void recursive_directory_data::open(const path_t& p)
 {
     path_list.emplace_back(p);
-    handle_list.emplace_back(nullptr);
-    directory_data_impl::open(handle_list.back(), p);
+    handle_list.emplace_back(INVALID_HANDLE_VALUE);
+    data_list.emplace_back(nullptr);
+    directory_data_impl::open(handle_list.back(), data_list.back(), path_list.back());
 }
 
 
 void recursive_directory_data::open(const backup_path_t& p)
 {
-    path_list.emplace_back(ansi_to_utf16(p));
-    handle_list.emplace_back(nullptr);
-    directory_data_impl::open(handle_list.back(), p);
+    open(ansi_to_utf16(p));
+}
+
+
+recursive_directory_data& recursive_directory_data::operator++()
+{
+    // directory start, add a level
+    if (initialized && isdir(stat())) {
+        path_list.emplace_back(fullpath());
+        handle_list.emplace_back(INVALID_HANDLE_VALUE);
+        data_list.emplace_back(nullptr);
+        directory_data_impl::open(handle_list.back(), data_list.back(), path_list.back());
+    }
+    initialized = true;
+
+    // increment until we don't lose a parent directory
+    increment(handle_list.back(), data_list.back());
+    while (!data_list.empty() && !data_list.back()) {
+       // clean our values
+        path_list.pop_back();
+        handle_list.pop_back();
+        data_list.pop_back();
+        if (!data_list.empty()) {
+            increment(handle_list.back(), data_list.back());
+        }
+    }
+
+    return *this;
+}
+
+
+bool recursive_directory_data::operator==(const recursive_directory_data& rhs) const
+{
+    return std::tie(handle_list, path_list, data_list) == std::tie(rhs.handle_list, rhs.path_list, rhs.data_list);
+}
+
+
+recursive_directory_data::operator bool() const
+{
+    return data_list.empty() ? false : bool(data_list.front());
 }
 
 
@@ -385,21 +386,20 @@ directory_iterator::directory_iterator(const backup_path_t& path)
 }
 
 
-// TODO: need to think long and hard about this one...
-//recursive_directory_iterator::recursive_directory_iterator(const path_t& path):
-//    ptr_(new directory_data)
-//{
-//    ptr_->open(path);
-//    operator++();
-//}
-//
-//
-//recursive_directory_iterator::recursive_directory_iterator(const backup_path_t& path):
-//    ptr_(new directory_data)
-//{
-//    ptr_->open(path);
-//    operator++();
-//}
+recursive_directory_iterator::recursive_directory_iterator(const path_t& path)
+{
+    entry_.ptr_.reset(new recursive_directory_data);
+    entry_.ptr_->open(path);
+    operator++();
+}
+
+
+recursive_directory_iterator::recursive_directory_iterator(const backup_path_t& path)
+{
+    entry_.ptr_.reset(new recursive_directory_data);
+    entry_.ptr_->open(path);
+    operator++();
+}
 
 
 #else                                       // POSIX
@@ -411,11 +411,14 @@ directory_iterator::directory_iterator(const backup_path_t& path)
 struct directory_data_impl
 {
     dirent* entry = nullptr;
-    stat_t *stat = nullptr;
+    stat_t *stat_ = nullptr;
 
     ~directory_data_impl();
     void reset();
+    virtual path_t fullpath() const = 0;
     path_t basename() const;
+    virtual const path_t& dirname() const = 0;
+    const stat_t& stat();
     void open(DIR*& dir, const path_t& path);
 
     void increment(DIR*& dir);
@@ -426,7 +429,7 @@ struct directory_data_impl
 
 directory_data_impl::~directory_data_impl()
 {
-    delete stat;
+    delete stat_;
 }
 
 
@@ -450,6 +453,9 @@ void directory_data_impl::increment(DIR*& dir)
     do {
         entry = readdir(dir);
     } while (entry && is_relative_dot(entry->d_name));
+
+    delete stat_;
+    stat_ = nullptr;
 }
 
 
@@ -476,8 +482,8 @@ struct directory_data: directory_data_impl
     ~directory_data();
     void open(const path_t& path);
 
-    path_t fullpath() const;
-    const path_t& dirname() const;
+    virtual path_t fullpath() const override;
+    virtual const path_t& dirname() const override;
 
     directory_data& operator++();
     directory_data operator++(int);
@@ -521,10 +527,14 @@ struct recursive_directory_data: directory_data_impl
     path_list_t path_list;
 
     ~recursive_directory_data();
-    void open(const path_t& path);
+    virtual path_t fullpath() const override;
+    virtual const path_t& dirname() const override;
 
-    path_t fullpath() const;
-    const path_t& dirname() const;
+    void open(const path_t& path);
+    recursive_directory_data& operator++();
+    recursive_directory_data operator++(int);
+    bool operator==(const recursive_directory_data&) const;
+    bool operator!=(const recursive_directory_data&) const;
 };
 
 
@@ -544,7 +554,36 @@ void recursive_directory_data::open(const path_t& p)
 }
 
 
-// TODO: implement recursive_directory_data..
+recursive_directory_data& recursive_directory_data::operator++()
+{
+    // directory start, add  a level
+    if (entry && isdir(stat())) {
+        path_list.emplace_back(fullpath());
+        dir_list.emplace_back(nullptr);
+        directory_data_impl::open(dir_list.back(), path_list.back());
+    }
+
+    // increment until we don't lose a parent directory
+    increment(dir_list.back());
+    if (!dir_list.empty() && !entry) {
+        // clean our values
+        path_list.pop_back();
+        dir_list.pop_back();
+
+        // if we still have parents, recurse
+        if (!dir_list.empty()) {
+            return operator++();
+        }
+    }
+
+    return *this;
+}
+
+
+bool recursive_directory_data::operator==(const recursive_directory_data& rhs) const
+{
+    return directory_data_impl::operator==(rhs) && std::tie(dir_list, path_list) == std::tie(rhs.dir_list, rhs.path_list);
+}
 
 
 directory_iterator::directory_iterator(const path_t& path)
@@ -555,12 +594,12 @@ directory_iterator::directory_iterator(const path_t& path)
 }
 
 
-//recursive_directory_iterator::recursive_directory_iterator(const path_t& path):
-//    ptr_(new directory_data)
-//{
-//    ptr_->open(path);
-//    operator++();
-//}
+recursive_directory_iterator::recursive_directory_iterator(const path_t& path)
+{
+    entry_.ptr_.reset(new recursive_directory_data);
+    entry_.ptr_->open(path);
+    operator++();
+}
 
 
 #endif                                      // WINDOWS
@@ -568,6 +607,15 @@ directory_iterator::directory_iterator(const path_t& path)
 
 // OBJECTS -- GENERIC
 // ------------------
+
+
+const stat_t& directory_data_impl::stat()
+{
+    if (!stat_) {
+        stat_ = new stat_t(lstat(fullpath()));
+    }
+    return *stat_;
+}
 
 
 path_t directory_data::fullpath() const
@@ -597,15 +645,6 @@ bool directory_data::operator!=(const directory_data& rhs) const
 }
 
 
-bool directory_entry::operator==(const self& rhs) const
-{
-    if (ptr_ && rhs.ptr_) {
-        return *ptr_ == *rhs.ptr_;
-    }
-    return ptr_ == rhs.ptr_;
-}
-
-
 path_t directory_entry::path() const
 {
     return ptr_->fullpath();
@@ -626,10 +665,7 @@ const path_t& directory_entry::dirname() const
 
 const stat_t& directory_entry::stat() const
 {
-    if (!ptr_->stat) {
-        ptr_->stat = new stat_t(lstat(path()));
-    }
-    return *ptr_->stat;
+    return ptr_->stat();
 }
 
 
@@ -660,6 +696,15 @@ bool directory_entry::exists() const
 void directory_entry::swap(self& rhs)
 {
     std::swap(ptr_, rhs.ptr_);
+}
+
+
+bool directory_entry::operator==(const self& rhs) const
+{
+    if (ptr_ && rhs.ptr_) {
+        return *ptr_ == *rhs.ptr_;
+    }
+    return ptr_ == rhs.ptr_;
 }
 
 
@@ -746,72 +791,151 @@ const path_t& recursive_directory_data::dirname() const
 }
 
 
-// TODO: need to think long and hard about this one...
-//recursive_directory_iterator::~recursive_directory_iterator()
-//{}
-//
-//
-//auto recursive_directory_iterator::operator++() -> self&
-//{
-//    ptr_->operator++();
-//    if (!*ptr_) {
-//        ptr_.reset();
-//    }
-//    return *this;
-//}
-//
-//
-//auto recursive_directory_iterator::operator++(int) -> self
-//{
-//    self copy(*this);
-//    operator++();
-//    return copy;
-//}
-//
-//
-//auto recursive_directory_iterator::operator->() -> pointer
-//{
-//    return &ptr_->entry;
-//}
-//
-//
-//auto recursive_directory_iterator::operator->() const -> const_pointer
-//{
-//    return &ptr_->entry;
-//}
-//
-//
-//auto recursive_directory_iterator::operator*() -> reference
-//{
-//    return ptr_->entry;
-//}
-//
-//
-//auto recursive_directory_iterator::operator*() const -> const_reference
-//{
-//    return ptr_->entry;
-//}
-//
-//
-//void recursive_directory_iterator::swap(self& rhs)
-//{
-//    std::swap(ptr_, rhs.ptr_);
-//}
-//
-//
-//bool recursive_directory_iterator::operator==(const self& rhs) const
-//{
-//    if (ptr_ && rhs.ptr_) {
-//        return *ptr_ == *rhs.ptr_;
-//    }
-//    return ptr_ == rhs.ptr_;
-//}
-//
-//
-//bool recursive_directory_iterator::operator!=(const self& rhs) const
-//{
-//    return !operator==(rhs);
-//}
+auto recursive_directory_data::operator++(int) -> recursive_directory_data
+{
+    recursive_directory_data copy(*this);
+    operator++();
+    return copy;
+}
+
+
+bool recursive_directory_data::operator!=(const recursive_directory_data& rhs) const
+{
+    return !operator==(rhs);
+}
+
+
+path_t recursive_directory_entry::path() const
+{
+    return ptr_->fullpath();
+}
+
+
+path_t recursive_directory_entry::basename() const
+{
+    return ptr_->basename();
+}
+
+
+const path_t& recursive_directory_entry::dirname() const
+{
+    return ptr_->dirname();
+}
+
+
+const stat_t& recursive_directory_entry::stat() const
+{
+    return ptr_->stat();
+}
+
+
+bool recursive_directory_entry::isfile() const
+{
+    return PYCPP_NAMESPACE::isfile(stat());
+}
+
+
+bool recursive_directory_entry::isdir() const
+{
+    return PYCPP_NAMESPACE::isdir(stat());
+}
+
+
+bool recursive_directory_entry::islink() const
+{
+    return PYCPP_NAMESPACE::islink(stat());
+}
+
+
+bool recursive_directory_entry::exists() const
+{
+    return PYCPP_NAMESPACE::exists(stat());
+}
+
+
+void recursive_directory_entry::swap(self& rhs)
+{
+    std::swap(ptr_, rhs.ptr_);
+}
+
+
+bool recursive_directory_entry::operator==(const self& rhs) const
+{
+    if (ptr_ && rhs.ptr_) {
+        return *ptr_ == *rhs.ptr_;
+    }
+    return ptr_ == rhs.ptr_;
+}
+
+
+bool recursive_directory_entry::operator!=(const self& rhs) const
+{
+    return !operator==(rhs);
+}
+
+
+recursive_directory_iterator::~recursive_directory_iterator()
+{}
+
+
+auto recursive_directory_iterator::operator++() -> self&
+{
+    entry_.ptr_->operator++();
+    if (!*entry_.ptr_) {
+        entry_.ptr_.reset();
+    }
+    return *this;
+}
+
+
+auto recursive_directory_iterator::operator++(int) -> self
+{
+    self copy(*this);
+    operator++();
+    return copy;
+}
+
+
+auto recursive_directory_iterator::operator->() -> pointer
+{
+    return &entry_;
+}
+
+
+auto recursive_directory_iterator::operator->() const -> const_pointer
+{
+    return &entry_;
+}
+
+
+auto recursive_directory_iterator::operator*() -> reference
+{
+    return entry_;
+}
+
+
+auto recursive_directory_iterator::operator*() const -> const_reference
+{
+    return entry_;
+}
+
+
+void recursive_directory_iterator::swap(self& rhs)
+{
+    std::swap(entry_, rhs.entry_);
+}
+
+
+bool recursive_directory_iterator::operator==(const self& rhs) const
+{
+    return entry_ == rhs.entry_;
+}
+
+
+bool recursive_directory_iterator::operator!=(const self& rhs) const
+{
+    return !operator==(rhs);
+}
 
 
 PYCPP_END_NAMESPACE

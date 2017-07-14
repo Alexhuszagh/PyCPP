@@ -45,9 +45,29 @@ TEST(directory_iterator, directory_iterator)
 }
 
 
+TEST(directory_iterator, directory_iterator_shallow)
+{
+    path_list_t list;
+    directory_iterator first(path_t(path_prefix("test/directory")));
+    directory_iterator last;
+    EXPECT_NE(first, last);
+    for (; first != last; ++first) {
+        list.emplace_back(first->path());
+    }
+    EXPECT_EQ(list.size(), 2);
+}
+
+
 TEST(directory_iterator, recursive_directory_iterator)
 {
-    // TODO: need to implement...
+    path_list_t list;
+    recursive_directory_iterator first(path_t(path_prefix("test/directory")));
+    recursive_directory_iterator last;
+    EXPECT_NE(first, last);
+    for (; first != last; ++first) {
+        list.emplace_back(first->path());
+    }
+    EXPECT_EQ(list.size(), 3);
 }
 
 

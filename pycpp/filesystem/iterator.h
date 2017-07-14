@@ -143,26 +143,25 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-// TODO: implement
-//
-//    // PATHS
-//    path_t path() const;
-//    path_t basename() const;
-//    const path_t& dirname() const;
-//
-//    // STAT
-//    const stat_t& stat() const;
-//    bool isfile() const;
-//    bool isdir() const;
-//    bool islink() const;
-//    bool exists() const;
-//
-//    // OTHER
-//    void swap(self&);
-//
-//    // RELATIONAL
-//    bool operator==(const self&) const;
-//    bool operator!=(const self&) const;
+
+    // PATHS
+    path_t path() const;
+    path_t basename() const;
+    const path_t& dirname() const;
+
+    // STAT
+    const stat_t& stat() const;
+    bool isfile() const;
+    bool isdir() const;
+    bool islink() const;
+    bool exists() const;
+
+    // OTHER
+    void swap(self&);
+
+    // RELATIONAL
+    bool operator==(const self&) const;
+    bool operator!=(const self&) const;
 
 private:
     friend class recursive_directory_data;
@@ -195,35 +194,35 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-//    recursive_directory_iterator() = default;
-//    recursive_directory_iterator(const self&) = default;
-//    self& operator=(const self&) = default;
-//    recursive_directory_iterator(self&&) = default;
-//    self& operator=(self&&) = default;
-//    ~recursive_directory_iterator();
-//
-//    recursive_directory_iterator(const path_t& path);
-//#if defined(OS_WINDOWS)
-//    recursive_directory_iterator(const backup_path_t& path);
-//#endif
-//
-//    // OPERATORS
-//    self& operator++();
-//    self operator++(int);
-//    pointer operator->();
-//    const_pointer operator->() const;
-//    reference operator*();
-//    const_reference operator*() const;
-//
-//    // OTHER
-//    void swap(self&);
-//
-//    // RELATIONAL
-//    bool operator==(const self&) const;
-//    bool operator!=(const self&) const;
+    recursive_directory_iterator() = default;
+    recursive_directory_iterator(const self&) = default;
+    self& operator=(const self&) = default;
+    recursive_directory_iterator(self&&) = default;
+    self& operator=(self&&) = default;
+    ~recursive_directory_iterator();
+
+    recursive_directory_iterator(const path_t& path);
+#if defined(OS_WINDOWS)
+    recursive_directory_iterator(const backup_path_t& path);
+#endif
+
+    // OPERATORS
+    self& operator++();
+    self operator++(int);
+    pointer operator->();
+    const_pointer operator->() const;
+    reference operator*();
+    const_reference operator*() const;
+
+    // OTHER
+    void swap(self&);
+
+    // RELATIONAL
+    bool operator==(const self&) const;
+    bool operator!=(const self&) const;
 
 private:
-    recursive_directory_data_ptr ptr_;
+    recursive_directory_entry entry_;
 };
 
 PYCPP_END_NAMESPACE
