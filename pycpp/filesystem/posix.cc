@@ -259,7 +259,10 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
     // POSIX rename doesn't work accross filesystems
     // make sure stat data looks like the file was moved
     if (src_stat.st_dev != dst_stat.st_dev) {
-        return copy_file(src, dst, replace, true);
+        if (copy_file(src, dst, replace)) {
+            return copystat(src, dst);
+        }
+        return false;
     }
 
     if (exists(dst)) {
@@ -271,6 +274,14 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
     }
 
     return move(src, dst);
+}
+
+
+template <typename Path, typename MoveDir>
+static bool move_dir_impl(const Path& src, const Path& dst, bool replace, MoveDir move)
+{
+    // TODO: need a lot of logic here...
+    return false;
 }
 
 
@@ -286,7 +297,7 @@ static bool mklink_impl(const Path& target, const Path& dst, bool replace, Mklin
 
 
 template <typename Path, typename CopyFile>
-static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool copystat, CopyFile copy)
+static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyFile copy)
 {
     auto dst_dir = dir_name(dst);
 
@@ -307,11 +318,7 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool 
         }
     }
 
-    bool status = copy(src, dst);
-    if (status && copystat) {
-        return PYCPP_NAMESPACE::copystat(src, dst);
-    }
-    return status;
+    return copy(src, dst);
 }
 
 
@@ -358,8 +365,14 @@ static bool copy_dir_recursive_impl(const Path&src, const Path& dst)
 
 
 template <typename Path>
-static bool copy_dir_impl(const Path&src, const Path& dst, bool recursive)
+static bool copy_dir_impl(const Path&src, const Path& dst, bool recursive, bool replace)
 {
+    if (replace && exists(dst)) {
+        if (!remove_path(dst)) {
+            throw filesystem_error(filesystem_destination_exists);
+        }
+    }
+
     if (recursive) {
         return copy_dir_recursive_impl(src, dst);
     } else {
@@ -461,10 +474,27 @@ path_t normcase(const path_t& path)
 
 // MANIPULATION
 
+
+bool move_link(const path_t& src, const path_t& dst, bool replace)
+{
+    // POSIX rename works identically on files.
+    return move_file(src, dst, replace);
+}
+
+
 bool move_file(const path_t& src, const path_t& dst, bool replace)
 {
     return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
         return rename(src.data(), dst.data()) == 0;
+    });
+}
+
+
+bool move_dir(const path_t& src, const path_t& dst, bool replace)
+{
+    return move_dir_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+        // TODO: need to fix the directory renamer...
+        return false;
     });
 }
 
@@ -477,11 +507,18 @@ bool mklink(const path_t& target, const path_t& dst, bool replace)
 }
 
 
-bool copy_file(const path_t& src, const path_t& dst, bool replace, bool copystat)
+bool copy_file(const path_t& src, const path_t& dst, bool replace)
 {
-    return copy_file_impl(src, dst, replace, copystat, [](const path_t& src, const path_t& dst) {
+    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
         return copy_file_buffer(src, dst);
     });
+}
+
+
+bool remove_link(const path_t& path)
+{
+    // same as remove_file on POSIX systems
+    return remove_file(path);
 }
 
 
@@ -491,9 +528,49 @@ bool remove_file(const path_t& path)
 }
 
 
-bool copy_dir(const path_t& src, const path_t& dst, bool recursive)
+static bool remove_dir_shallow_impl(const path_t& path)
 {
-    return copy_dir_impl(src, dst, recursive);
+    return rmdir(path.data()) == 0;
+}
+
+
+static bool remove_dir_recursive_impl(const path_t& path)
+{
+    directory_iterator first(path);
+    directory_iterator last;
+    for (; first != last; ++first) {
+        if (first->isfile()) {
+            if (!remove_file(first->path())) {
+                return false;
+            }
+        } else if (first->islink()) {
+            if (!remove_link(first->path())) {
+                return false;
+            }
+        } else if (first->isdir()) {
+            if (!remove_dir_recursive_impl(first->path())) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+
+bool remove_dir(const path_t& path, bool recursive)
+{
+    if (recursive) {
+        return remove_dir_recursive_impl(path);
+    } else {
+        return remove_dir_shallow_impl(path);
+    }
+}
+
+
+bool copy_dir(const path_t& src, const path_t& dst, bool recursive, bool replace)
+{
+    return copy_dir_impl(src, dst, recursive, replace);
 }
 
 

@@ -368,6 +368,14 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 }
 
 
+template <typename Path, typename MoveDir>
+static bool move_dir_impl(const Path& src, const Path& dst, bool replace, MoveDir move)
+{
+    // TODO: need a lot of logic here...
+    return false;
+}
+
+
 template <typename Path, typename Mklink>
 static bool mklink_impl(const Path& target, const Path& dst, bool replace, Mklink linker)
 {
@@ -381,7 +389,7 @@ static bool mklink_impl(const Path& target, const Path& dst, bool replace, Mklin
 
 
 template <typename Path, typename CopyFile>
-static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool copystat, CopyFile copy)
+static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyFile copy)
 {
     auto dst_dir = dir_name(dst);
 
@@ -394,11 +402,7 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool 
         throw filesystem_error(filesystem_no_such_directory);
     }
 
-    bool status = copy(src, dst, replace);
-    if (status && copystat) {
-        return PYCPP_NAMESPACE::copystat(src, dst);
-    }
-    return status;
+    return copy(src, dst, replace);
 }
 
 
@@ -416,8 +420,7 @@ static bool copy_dir_shallow_impl(const backup_path_t&src, const backup_path_t& 
 }
 
 
-template <typename Path>
-static bool copy_dir_recursive_impl(const Path&src, const Path& dst)
+static bool copy_dir_recursive_impl(const path_t& src, const path_t& dst)
 {
     if (!copy_dir_shallow_impl(src, dst)) {
         return false;
@@ -446,13 +449,90 @@ static bool copy_dir_recursive_impl(const Path&src, const Path& dst)
 }
 
 
-template <typename Path>
-static bool copy_dir_impl(const Path&src, const Path& dst, bool recursive)
+static bool copy_dir_recursive_impl(const backup_path_t& src, const backup_path_t& dst)
 {
+    return copy_dir_recursive_impl(backup_path_to_path(src), backup_path_to_path(dst));
+}
+
+
+template <typename Path>
+static bool copy_dir_impl(const Path&src, const Path& dst, bool recursive, bool replace)
+{
+    if (replace && exists(dst)) {
+        if (!remove_path(dst)) {
+            throw filesystem_error(filesystem_destination_exists);
+        }
+    }
+
     if (recursive) {
         return copy_dir_recursive_impl(src, dst);
     } else {
         return copy_dir_shallow_impl(src, dst);
+    }
+}
+
+
+template <typename Path>
+static bool remove_link_impl(const Path& path)
+{
+    if (!islink(path)) {
+        throw filesystem_error(filesystem_not_a_symlink);
+    }
+
+    auto path_stat = stat(path);
+    if (isdir(path_stat)) {
+        return remove_dir(path, false);
+    } else {
+        return remove_file(path);
+    }
+}
+
+
+static bool remove_dir_shallow_impl(const path_t& path)
+{
+    auto p = reinterpret_cast<const wchar_t*>(path.data());
+    return RemoveDirectoryW(p);
+}
+
+
+static bool remove_dir_shallow_impl(const backup_path_t& path)
+{
+    return RemoveDirectoryA(path.data());
+}
+
+
+template <typename Path>
+static bool remove_dir_recursive_impl(const Path& path)
+{
+    directory_iterator first(path);
+    directory_iterator last;
+    for (; first != last; ++first) {
+        if (first->isfile()) {
+            if (!remove_file(first->path())) {
+                return false;
+            }
+        } else if (first->islink()) {
+            if (!remove_link(first->path())) {
+                return false;
+            }
+        } else if (first->isdir()) {
+            if (!remove_dir_recursive_impl(first->path())) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+
+template <typename Path>
+bool remove_dir_impl(const Path& path, bool recursive)
+{
+    if (recursive) {
+        return remove_dir_recursive_impl(path);
+    } else {
+        return remove_dir_shallow_impl(path);
     }
 }
 
@@ -553,12 +633,28 @@ path_t normcase(const path_t& path)
 // MANIPULATION
 
 
+bool move_link(const path_t& src, const path_t& dst, bool replace)
+{
+    // same as move_file
+    return move_file(src, dst, replace);
+}
+
+
 bool move_file(const path_t& src, const path_t& dst, bool replace)
 {
     return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
         return MoveFileW(s, d);
+    });
+}
+
+
+bool move_dir(const path_t& src, const path_t& dst, bool replace)
+{
+    return move_dir_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+        // TODO: need to fix the directory renamer...
+        return false;
     });
 }
 
@@ -573,9 +669,9 @@ bool mklink(const path_t& target, const path_t& dst, bool replace)
 }
 
 
-bool copy_file(const path_t& src, const path_t& dst, bool replace, bool copystat)
+bool copy_file(const path_t& src, const path_t& dst, bool replace)
 {
-    return copy_file_impl(src, dst, replace, copystat, [](const path_t& src, const path_t& dst, bool replace) {
+    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst, bool replace) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
         return CopyFileW(s, d, replace);
@@ -583,9 +679,27 @@ bool copy_file(const path_t& src, const path_t& dst, bool replace, bool copystat
 }
 
 
+bool copy_dir(const path_t& src, const path_t& dst, bool recursive, bool replace)
+{
+    return copy_dir_impl(src, dst, recursive, replace);
+}
+
+
+bool remove_link(const path_t& path)
+{
+    return remove_link_impl(path);
+}
+
+
 bool remove_file(const path_t& path)
 {
     return DeleteFileW(reinterpret_cast<const wchar_t*>(path.data()));
+}
+
+
+bool remove_dir(const path_t& path, bool recursive)
+{
+    return remove_dir_impl(path, recursive);
 }
 
 
@@ -700,11 +814,26 @@ backup_path_t normcase(const backup_path_t& path)
 
 // MANIPULATION
 
+bool move_link(const backup_path_t& src, const backup_path_t& dst, bool replace)
+{
+    // same as move_file
+    return move_file(src, dst, replace);
+}
+
 
 bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
 {
     return move_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst) {
         return MoveFile(src.data(), dst.data());
+    });
+}
+
+
+bool move_dir(const backup_path_t& src, const backup_path_t& dst, bool replace)
+{
+    return move_dir_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+        // TODO: need to fix the directory renamer...
+        return false;
     });
 }
 
@@ -717,17 +846,35 @@ bool mklink(const backup_path_t& target, const backup_path_t& dst, bool replace)
 }
 
 
-bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace, bool copystat)
+bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
 {
-    return copy_file_impl(src, dst, replace, copystat, [](const backup_path_t& src, const backup_path_t& dst, bool replace) {
+    return copy_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst, bool replace) {
         return CopyFile(src.data(), dst.data(), replace);
     });
+}
+
+
+bool copy_dir(const backup_path_t& src, const backup_path_t& dst, bool recursive, bool replace)
+{
+    return copy_dir_impl(src, dst, recursive, replace);
+}
+
+
+bool remove_link(const backup_path_t& path)
+{
+    return remove_link_impl(path);
 }
 
 
 bool remove_file(const backup_path_t& path)
 {
     return DeleteFile(path.data());
+}
+
+
+bool remove_dir(const backup_path_t& path, bool recursive)
+{
+    return remove_dir_impl(path, recursive);
 }
 
 
@@ -758,81 +905,6 @@ bool makedirs(const backup_path_t& path, int mode)
     return false;
 }
 
-
-//// TODO: remove directory is going to be ugly
-//
-//int DeleteDirectory(const std::string &refcstrRootDirectory,
-//                    bool              bDeleteSubdirectories = true)
-//{
-//  bool            bSubdirectory = false;       // Flag, indicating whether
-//                                               // subdirectories have been found
-//  HANDLE          hFile;                       // Handle to directory
-//  std::string     strFilePath;                 // Filepath
-//  std::string     strPattern;                  // Pattern
-//  WIN32_FIND_DATA FileInformation;             // File information
-//
-//
-//  strPattern = refcstrRootDirectory + "\\*.*";
-//  hFile = ::FindFirstFile(strPattern.c_str(), &FileInformation);
-//  if(hFile != INVALID_HANDLE_VALUE)
-//  {
-//    do
-//    {
-//      if(FileInformation.cFileName[0] != '.')
-//      {
-//        strFilePath.erase();
-//        strFilePath = refcstrRootDirectory + "\\" + FileInformation.cFileName;
-//
-//        if(FileInformation.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-//        {
-//          if(bDeleteSubdirectories)
-//          {
-//            // Delete subdirectory
-//            int iRC = DeleteDirectory(strFilePath, bDeleteSubdirectories);
-//            if(iRC)
-//              return iRC;
-//          }
-//          else
-//            bSubdirectory = true;
-//        }
-//        else
-//        {
-//          // Set file attributes
-//          if(::SetFileAttributes(strFilePath.c_str(),
-//                                 FILE_ATTRIBUTE_NORMAL) == FALSE)
-//            return ::GetLastError();
-//
-//          // Delete file
-//          if(::DeleteFile(strFilePath.c_str()) == FALSE)
-//            return ::GetLastError();
-//        }
-//      }
-//    } while(::FindNextFile(hFile, &FileInformation) == TRUE);
-//
-//    // Close handle
-//    ::FindClose(hFile);
-//
-//    DWORD dwError = ::GetLastError();
-//    if(dwError != ERROR_NO_MORE_FILES)
-//      return dwError;
-//    else
-//    {
-//      if(!bSubdirectory)
-//      {
-//        // Set directory attributes
-//        if(::SetFileAttributes(refcstrRootDirectory.c_str(),
-//                               FILE_ATTRIBUTE_NORMAL) == FALSE)
-//          return ::GetLastError();
-//
-//        // Delete directory
-//        if(::RemoveDirectory(refcstrRootDirectory.c_str()) == FALSE)
-//          return ::GetLastError();
-//      }
-//    }
-//  }
-//
-//  return 0;
-//}
 PYCPP_END_NAMESPACE
 
 #endif
