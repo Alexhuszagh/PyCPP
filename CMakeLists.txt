@@ -233,6 +233,12 @@ if(BUILD_JSON)
     include_directories(third_party/rapidjson/include)
 endif()
 
+if(BUILD_RE)
+    add_external_project(re2_external third_party/re2)
+    add_external_target(re2 third_party/re2 third_party/re2 STATIC re2_external)
+    include_directories(${re2_INCLUDE_DIR})
+endif()
+
 if(BUILD_XML)
     add_definitions(-DLIBXML_STATIC)
     add_external_project(xml2_external third_party/libxml2)
@@ -345,6 +351,11 @@ if(BUILD_MATH)
     )
 endif()
 
+if(BUILD_RE)
+#    list(APPEND SOURCE_FILES
+#    )
+endif()
+
 if(BUILD_STREAM)
     list(APPEND SOURCE_FILES
         pycpp/stream/fstream.cc
@@ -368,6 +379,10 @@ else()
     add_library(pycpp SHARED ${SOURCE_FILES})
 endif()
 
+if(BUILD_RE)
+    add_dependencies(pycpp re2)
+endif()
+
 if(BUILD_XML)
     add_dependencies(pycpp xml2)
 endif()
@@ -385,6 +400,10 @@ if(MSVC)
     list(APPEND PYCPP_LIBRARIES ws2_32.lib crypt32.lib kernel32.lib)
 elseif(MINGW OR MSYS)
     list(APPEND PYCPP_LIBRARIES -lws2_32 -lcrypt32 -lkernel32)
+endif()
+
+if(BUILD_RE)
+    list(APPEND PYCPP_LIBRARIES re2)
 endif()
 
 if(BUILD_XML)
