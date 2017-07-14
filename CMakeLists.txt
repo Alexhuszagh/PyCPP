@@ -349,6 +349,11 @@ if(BUILD_STATIC)
 else()
     add_library(pycpp SHARED ${SOURCE_FILES})
 endif()
+
+if(BUILD_XML)
+    add_dependencies(pycpp xml2)
+endif()
+
 set(PYCPP_LIBRARIES pycpp)
 
 # Need to specify proper exception handling for Windows.
