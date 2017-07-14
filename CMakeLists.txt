@@ -138,10 +138,70 @@ if(HAVE_SYS_MMAN_H)
     endif()
 endif()
 
+# EXTERNAL
+# --------
+
+include(ExternalProject)
+
+#
+#   Add external project.
+#
+#   \param name             Name of external project
+#   \param path             Path to source directory
+#   \param external         Name of the external target
+#
+macro(add_external_project name path)
+    # Create external project
+    set(${name}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${path})
+    set(${name}_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${path})
+    ExternalProject_Add(${name}
+        SOURCE_DIR "${${name}_SOURCE_DIR}"
+        BINARY_DIR "${${name}_BINARY_DIR}"
+        CMAKE_ARGS "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}"
+                   "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"
+                   "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+       INSTALL_COMMAND ""
+    )
+
+endmacro(add_external_project)
+
+#
+#   Add external target to external project.
+#
+#   \param name             Name of external project
+#   \param includedir       Path to include directory
+#   \param libdir           Path to library directory
+#   \param build_type       Build type {STATIC, SHARED}
+#   \param external         Name of the external target
+#
+macro(add_external_target name includedir libdir build_type external)
+    # Configurations
+    set(${name}_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${libdir})
+
+    # Create external library
+    add_library(${name} ${build_type} IMPORTED)
+    set(${name}_LIBRARY "${${name}_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${CMAKE_${build_type}_LIBRARY_PREFIX}${name}${CMAKE_${build_type}_LIBRARY_SUFFIX}")
+
+    # Find paths and set dependencies
+    add_dependencies(${name} ${external})
+    set(${name}_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/${includedir}")
+
+    # Set interface properties
+    set_target_properties(${name} PROPERTIES IMPORTED_LOCATION ${${name}_LIBRARY})
+    set_target_properties(${name} PROPERTIES INCLUDE_DIRECTORIES ${${name}_INCLUDE_DIR})
+endmacro(add_external_target)
+
+
 # LIBRARY
 # -------
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} third_party/warnings/src)
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    third_party/warnings/src
+    third_party/multi_index/include
+    third_party/multi_index/third_party/brigand/include
+)
+
 add_definitions(-DPYCPP_NAMESPACE=${PYCPP_NAMESPACE})
 
 if(BUILD_JSON)
@@ -150,12 +210,9 @@ endif()
 
 if(BUILD_XML)
     add_definitions(-DLIBXML_STATIC)
-    include_directories(third_party/libxml2/include)
-    include_directories(
-        third_party/multi_index/include
-        third_party/multi_index/third_party/brigand/include
-    )
-    add_subdirectory(third_party/libxml2)
+    add_external_project(xml2_external third_party/libxml2)
+    add_external_target(xml2 third_party/libxml2/include third_party/libxml2 STATIC xml2_external)
+    include_directories(${xml2_INCLUDE_DIR})
 endif()
 
 set(SOURCE_FILES
@@ -195,6 +252,7 @@ endif()
 if (BUILD_FILESYSTEM)
     list(APPEND SOURCE_FILES
         pycpp/filesystem/exception.cc
+        pycpp/filesystem/filesystem.cc
         pycpp/filesystem/iterator.cc
         pycpp/filesystem/mac.cc
         pycpp/filesystem/nt.cc
@@ -299,7 +357,7 @@ elseif(MINGW OR MSYS)
 endif()
 
 if(BUILD_XML)
-    list(APPEND PYCPP_LIBRARIES libxml2)
+    list(APPEND PYCPP_LIBRARIES xml2)
 endif()
 
 # TESTS
@@ -416,15 +474,22 @@ endif()
 
 
 if(BUILD_TESTS)
-    if(NOT TARGET gtest)
-        add_subdirectory(third_party/googletest)
+    if (NOT MINGW)
+        find_package(Threads)
     endif()
-    include_directories(third_party/googletest/googletest/include)
+
+    if(NOT TARGET gtest)
+        add_external_project(googletest_external third_party/googletest)
+        add_external_target(gtest third_party/googletest/googletest/include third_party/googletest/googlemock/gtest STATIC googletest_external)
+        add_external_target(gtest_main third_party/googletest/googletest/include third_party/googletest/googlemock/gtest STATIC googletest_external)
+    endif()
+    include_directories(${gtest_INCLUDE_DIR})
 
     add_executable(pycpp_tests ${TEST_FILES})
     target_link_libraries(pycpp_tests
         gtest
         gtest_main
+        ${CMAKE_THREAD_LIBS_INIT}
         ${PYCPP_LIBRARIES}
     )
     # Need to specify proper exception handling for Windows.

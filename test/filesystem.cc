@@ -219,6 +219,13 @@ TEST(path, samefile)
 }
 
 
+TEST(directory, listdir)
+{
+    auto list = listdir("test/directory");
+    ASSERT_EQ(list.size(), 2);
+}
+
+
 TEST(path, split)
 {
     EXPECT_EQ(split("test").front(), "");

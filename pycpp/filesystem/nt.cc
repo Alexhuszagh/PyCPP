@@ -8,9 +8,13 @@
 #include <pycpp/config.h>
 #include <pycpp/os.h>
 
-PYCPP_BEGIN_NAMESPACE
-
 #if defined(OS_WINDOWS)
+
+#if _WIN32_WINNT < _WIN32_WINNT_VISTA
+#   undef _WIN32_WINNT
+#   define _WIN32_WINNT _WIN32_WINNT_VISTA
+#endif
+
 #include <pycpp/casemap.h>
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
@@ -29,6 +33,8 @@ PYCPP_BEGIN_NAMESPACE
 #ifndef S_IWUSR
 #   define S_IWUSR 00200
 #endif
+
+PYCPP_BEGIN_NAMESPACE
 
 // HELPERS
 // -------
@@ -362,6 +368,17 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 }
 
 
+template <typename Path, typename Mklink>
+static bool mklink_impl(const Path& target, const Path& dst, bool replace, Mklink linker)
+{
+    if (replace && exists(dst)) {
+        remove_file(dst);
+    }
+
+    DWORD flags = isdir(target);
+    return linker(target, dst, flags);
+}
+
 
 template <typename Path, typename CopyFile>
 static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool copystat, CopyFile copy)
@@ -402,9 +419,30 @@ static bool copy_dir_shallow_impl(const backup_path_t&src, const backup_path_t& 
 template <typename Path>
 static bool copy_dir_recursive_impl(const Path&src, const Path& dst)
 {
-    // TODO: implement...
-    // TODO: need a directory iterator...
-    return false;
+    if (!copy_dir_shallow_impl(src, dst)) {
+        return false;
+    }
+
+    directory_iterator first(src);
+    directory_iterator last;
+    for (; first != last; ++first) {
+        path_list_t dst_list = {dst, first->basename()};
+        if (first->isfile()) {
+            if (!copy_file(first->path(), join(dst_list))) {
+                return false;
+            }
+        } else if (first->islink()) {
+            if (!copy_link(first->path(), join(dst_list))) {
+                return false;
+            }
+        } else if (first->isdir()) {
+            if (!copy_dir_recursive_impl(first->path(), join(dst_list))) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 
@@ -521,6 +559,16 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
         auto s = reinterpret_cast<const wchar_t*>(src.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
         return MoveFileW(s, d);
+    });
+}
+
+
+bool mklink(const path_t& target, const path_t& dst, bool replace)
+{
+    return mklink_impl(target, dst, replace, [](const path_t& tar, const path_t& dst, DWORD f) {
+        auto t = reinterpret_cast<const wchar_t*>(tar.data());
+        auto d = reinterpret_cast<const wchar_t*>(dst.data());
+        return CreateSymbolicLinkW(d, t, f);
     });
 }
 
@@ -661,6 +709,14 @@ bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
 }
 
 
+bool mklink(const backup_path_t& target, const backup_path_t& dst, bool replace)
+{
+    return mklink_impl(target, dst, replace, [](const backup_path_t& t, const backup_path_t& d, DWORD f) {
+        return CreateSymbolicLinkA(d.data(), t.data(), f);
+    });
+}
+
+
 bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace, bool copystat)
 {
     return copy_file_impl(src, dst, replace, copystat, [](const backup_path_t& src, const backup_path_t& dst, bool replace) {
@@ -777,7 +833,6 @@ bool makedirs(const backup_path_t& path, int mode)
 //
 //  return 0;
 //}
+PYCPP_END_NAMESPACE
 
 #endif
-
-PYCPP_END_NAMESPACE

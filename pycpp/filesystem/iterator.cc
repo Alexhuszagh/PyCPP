@@ -27,6 +27,10 @@ PYCPP_BEGIN_NAMESPACE
 #   endif
 #endif
 
+// TODO: these need to be moved as options later...
+#define PYCPP_FOLLOW_DIRECTORY_SYMLINK false
+#define PYCPP_SKIP_PERMISSIONS_ERROR false
+
 // HELPERS
 // -------
 
@@ -79,6 +83,9 @@ static int get_error_code()
         case ERROR_TOO_MANY_OPEN_FILES:
             return EMFILE;
         case ERROR_ACCESS_DENIED:
+            if (PYCPP_SKIP_PERMISSIONS_ERROR) {
+                return 0;
+            }
             return EACCES;
         case ERROR_NOT_ENOUGH_MEMORY:
         case ERROR_OUTOFMEMORY:
@@ -179,7 +186,12 @@ static DWORD find_next_path(HANDLE handle, FindData* data, FindNext findnext)
 {
     while (true) {
         if (findnext(handle, data) == 0) {
-            return GetLastError();
+            DWORD error = GetLastError();
+            if (PYCPP_SKIP_PERMISSIONS_ERROR && error == ERROR_ACCESS_DENIED) {
+                continue;
+            } else {
+                return error;
+            }
         } else if (!is_relative_dot(data->cFileName)) {
             return 0;
         }
@@ -450,9 +462,18 @@ void directory_data_impl::open(DIR*& dir, const path_t& path)
 
 void directory_data_impl::increment(DIR*& dir)
 {
+    errno = 0;
     do {
         entry = readdir(dir);
     } while (entry && is_relative_dot(entry->d_name));
+
+    // check for any error handling
+    int error = errno;
+    if (!entry && errno != 0) {
+        if (errno != EACCES || !PYCPP_SKIP_PERMISSIONS_ERROR) {
+            handle_error(errno);
+        }
+    }
 
     delete stat_;
     stat_ = nullptr;

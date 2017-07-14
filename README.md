@@ -8,6 +8,8 @@ Python-like C++ environment with independent, lightweight utilities for cross-pl
 [![Build status](https://ci.appveyor.com/api/projects/status/b8fh8431rcu3wc3q?svg=true)](https://ci.appveyor.com/project/Alexhuszagh/pycpp)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Alexhuszagh/pycpp/blob/master/LICENSE.md)
 
+> **WARNING** PyCPP is still alpha software. APIs are destined to break, and bugs will certainly exist.
+
 **Table of Contents**
 
 - [Introduction](#introduction)

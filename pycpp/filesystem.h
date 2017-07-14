@@ -159,6 +159,13 @@ bool isabs(const path_t& path);
  */
 bool samefile(const path_t& p1, const path_t& p2);
 
+// DIRECTORY
+
+/**
+ *  \brief List all items in the directory.
+ */
+path_list_t listdir(const path_t& path);
+
 // SPLIT
 
 /**
@@ -256,9 +263,24 @@ path_t relpath(const path_t& path, const path_t& start);
 bool copystat(const path_t& src, const path_t& dst);
 
 /**
+ *  \brief Make symbolic link pointing to target at dst.
+ */
+bool mklink(const path_t& target, const path_t& dst, bool replace = false);
+
+/**
  *  \brief Move file, as if by rename, and return if rename was successful.
  */
 bool move_file(const path_t& src, const path_t& dst, bool replace = false);
+
+///**
+// *  \brief Move directory, as if by rename, and return if rename was successful.
+// */
+//bool move_dir(const path_t& src, const path_t& dst);
+
+/**
+ *  \brief Copy symbolic link from src to dst.
+ */
+bool copy_link(const path_t& src, const path_t& dst, bool replace = false);
 
 /**
  *  \brief Copy file, and copy was successful.
@@ -269,26 +291,20 @@ bool move_file(const path_t& src, const path_t& dst, bool replace = false);
 bool copy_file(const path_t& src, const path_t& dst, bool replace = false, bool copystat = false);
 
 /**
- *  \brief Remove file, return if file was successfully removed.
- */
-bool remove_file(const path_t& path);
-
-///**
-// *  \brief Move directory, as if by rename, and return if rename was successful.
-// */
-//bool move_dir(const path_t& src, const path_t& dst);
-
-/**
  *  \brief Copy directory, and copy was successful.
  */
 bool copy_dir(const path_t& src, const path_t& dst, bool recursive = true);
+
+/**
+ *  \brief Remove file, return if file was successfully removed.
+ */
+bool remove_file(const path_t& path);
 
 ///**
 // *  \brief Remove directory, return if directory was successfully removed.
 // */
 //bool remove_dir(const path_t& path, bool recursive = true);
 
-// TODO: need the mode for mkdir...
 /**
  *  \brief Make directory at path, return if successful.
  */
@@ -321,6 +337,10 @@ bool lexists(const backup_path_t& path);
 bool isabs(const backup_path_t& path);
 bool samefile(const backup_path_t& p1, const backup_path_t& p2);
 
+// DIRECTORY
+
+backup_path_list_t listdir(const backup_path_t& path);
+
 // SPLIT
 
 backup_path_list_t split(const backup_path_t& path);
@@ -345,14 +365,23 @@ backup_path_t relpath(const backup_path_t& path, const backup_path_t& start);
 // MANIPULATION
 
 bool copystat(const backup_path_t& src, const backup_path_t& dst);
+bool mklink(const backup_path_t& target, const backup_path_t& dst, bool replace = false);
+//bool move_link(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
 bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
+//bool move_dir(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
+//bool move_path(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
+bool copy_link(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
 bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false, bool copystat = false);
-bool remove_file(const backup_path_t& path);
-//bool move_dir(const backup_path_t& src, const backup_path_t& dst);
 bool copy_dir(const backup_path_t& src, const backup_path_t& dst, bool recursive = true);
+bool remove_file(const backup_path_t& path);
 //bool remove_dir(const backup_path_t& path, bool recursive = true);
 bool mkdir(const backup_path_t& path, int = 0777);
 bool makedirs(const backup_path_t& path, int = 0777);
+
+// TODO: remove_link
+// TODO: rename_path
+// TODO: move_path
+// TODO: copy_path
 
 #endif
 

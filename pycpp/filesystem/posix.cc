@@ -274,6 +274,17 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 }
 
 
+template <typename Path, typename Mklink>
+static bool mklink_impl(const Path& target, const Path& dst, bool replace, Mklink linker)
+{
+    if (replace && exists(dst)) {
+        remove_file(dst);
+    }
+
+    return linker(target, dst);
+}
+
+
 template <typename Path, typename CopyFile>
 static bool copy_file_impl(const Path& src, const Path& dst, bool replace, bool copystat, CopyFile copy)
 {
@@ -319,9 +330,30 @@ static bool copy_dir_shallow_impl(const Path&src, const Path& dst)
 template <typename Path>
 static bool copy_dir_recursive_impl(const Path&src, const Path& dst)
 {
-    // TODO: implement...
-    // TODO: need a directory iterator...
-    return false;
+    if (!copy_dir_shallow_impl(src, dst)) {
+        return false;
+    }
+
+    directory_iterator first(src);
+    directory_iterator last;
+    for (; first != last; ++first) {
+        path_list_t dst_list = {dst, first->basename()};
+        if (first->isfile()) {
+            if (!copy_file(first->path(), join(dst_list))) {
+                return false;
+            }
+        } else if (first->islink()) {
+            if (!copy_link(first->path(), join(dst_list))) {
+                return false;
+            }
+        } else if (first->isdir()) {
+            if (!copy_dir_recursive_impl(first->path(), join(dst_list))) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 
@@ -433,6 +465,14 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 {
     return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
         return rename(src.data(), dst.data()) == 0;
+    });
+}
+
+
+bool mklink(const path_t& target, const path_t& dst, bool replace)
+{
+    return mklink_impl(target, dst, replace, [](const path_t& t, const path_t& d) {
+        return symlink(d.data(), t.data()) == 0;
     });
 }
 

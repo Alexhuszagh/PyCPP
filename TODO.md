@@ -1,21 +1,22 @@
+- libxml2 to third_party
+    - Change libxml2 to a 3rd party module...
+
 - Mathlib
     - Need array/axis unittests
 
 - filesystem
     - copystat --unittests
-    - copy_directory
-        - CreateDirectoryExW
-        - 
+    - copy_directory -- unittests
     - move_directory
     - remove_directory
+        - Implement in terms of unlink for symlinks
+        - Descend into directories first...
     - mkdir -- unitests
     - makedirs -- unittests
-    - iterator
-        - Need to implemnt recursive_directory_iterator
-        - Need to have a directory "deque" for the recursive directory iterator
     - copylink (for copy_directory, etc.)
-    - listdir
 
+- Regular expressions
+    - RE2 backbone
 
 - Atomic Operations
     - Check boltsons
