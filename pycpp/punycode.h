@@ -16,25 +16,49 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
+/** \brief Convert UTF8-encoded data to Punycode. Returns number of bytes converted.
+ */
+size_t utf8_to_punycode(const void *src, size_t srclen, void* dst, size_t dstlen);
+
 /** \brief Convert UTF8-encoded data to Punycode.
  */
 std::string utf8_to_punycode(const std::string &str);
+
+/** \brief Convert UTF16-encoded data to Punycode. Returns number of bytes converted.
+ */
+size_t utf16_to_punycode(const void *src, size_t srclen, void* dst, size_t dstlen);
 
 /** \brief Convert UTF16-encoded data to Punycode.
  */
 std::string utf16_to_punycode(const std::string &str);
 
+/** \brief Convert UTF32-encoded data to Punycode. Returns number of bytes converted.
+ */
+size_t utf32_to_punycode(const void *src, size_t srclen, void* dst, size_t dstlen);
+
 /** \brief Convert UTF32-encoded data to Punycode.
  */
 std::string utf32_to_punycode(const std::string &str);
+
+/** \brief Convert Punycode to UTF-8. Returns number of bytes converted.
+ */
+size_t punycode_to_utf8(const void *src, size_t srclen, void* dst, size_t dstlen);
 
 /** \brief Convert Punycode to UTF-8.
  */
 std::string punycode_to_utf8(const std::string &str);
 
+/** \brief Convert Punycode to UTF-16. Returns number of bytes converted.
+ */
+size_t punycode_to_utf16(const void *src, size_t srclen, void* dst, size_t dstlen);
+
 /** \brief Convert Punycode to UTF-16.
  */
 std::string punycode_to_utf16(const std::string &str);
+
+/** \brief Convert Punycode to UTF-32. Returns number of bytes converted.
+ */
+size_t punycode_to_utf32(const void *src, size_t srclen, void* dst, size_t dstlen);
 
 /** \brief Convert Punycode to UTF-32.
  */

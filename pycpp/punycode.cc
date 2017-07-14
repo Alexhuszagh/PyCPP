@@ -286,9 +286,23 @@ size_t decode_impl(Iter8 src, size_t srclen, Iter32 dst, size_t dstlen)
 // ---------
 
 
+size_t utf8_to_punycode(const void *src, size_t srclen, void* dst, size_t dstlen)
+{
+    auto u32 = utf8_to_utf32(std::string((const char*) src, srclen));
+    return utf32_to_punycode(u32.data(), u32.size(), dst, dstlen);
+}
+
+
 std::string utf8_to_punycode(const std::string &str)
 {
     return utf32_to_punycode(utf8_to_utf32(str));
+}
+
+
+size_t utf16_to_punycode(const void *src, size_t srclen, void* dst, size_t dstlen)
+{
+    auto u32 = utf16_to_utf32(std::string((const char*) src, srclen));
+    return utf32_to_punycode(u32.data(), u32.size(), dst, dstlen);
 }
 
 
@@ -298,27 +312,42 @@ std::string utf16_to_punycode(const std::string &str)
 }
 
 
+size_t utf32_to_punycode(const void *src, size_t srclen, void* dst, size_t dstlen)
+{
+    auto *src_first = reinterpret_cast<const uint32_t*>(src);
+    auto *src_last = src_first + (srclen / 4);
+    auto *dst_first = reinterpret_cast<uint8_t*>(dst);
+    auto *dst_last = dst_first + dstlen;
+
+    return encode_impl(src_first, src_last, dst_first, dst_last);
+}
+
+
 std::string utf32_to_punycode(const std::string &str)
 {
     // arguments
-    const size_t srclen = str.size() / 4;
-    const size_t dstlen = srclen * 6;
-    auto *src_first = reinterpret_cast<const uint32_t*>(str.data());
-    auto *src_last = src_first + srclen;
-    auto *dst_first = reinterpret_cast<uint8_t*>(safe_malloc(dstlen));
-    auto *dst_last = dst_first + dstlen;
+    const size_t srclen = str.size();
+    const size_t dstlen = srclen * 6 / 4;
+    auto *dst = safe_malloc(dstlen);
 
     size_t out;
     try {
-        out = encode_impl(src_first, src_last, dst_first, dst_last);
+        out = utf32_to_punycode(str.data(), srclen, dst, dstlen);
     } catch (std::exception&) {
-        safe_free(dst_first);
+        safe_free(dst);
         throw;
     }
-    std::string output(reinterpret_cast<const char*>(dst_first), out);
-    safe_free(dst_first);
+    std::string output(reinterpret_cast<const char*>(dst), out);
+    safe_free(dst);
 
     return output;
+}
+
+
+size_t punycode_to_utf8(const void *src, size_t srclen, void* dst, size_t dstlen)
+{
+    auto u32 = punycode_to_utf32(std::string((const char*) src, srclen));
+    return utf32_to_utf8(u32.data(), u32.size(), dst, dstlen);
 }
 
 
@@ -328,9 +357,22 @@ std::string punycode_to_utf8(const std::string &str)
 }
 
 
+size_t punycode_to_utf16(const void *src, size_t srclen, void* dst, size_t dstlen)
+{
+    auto u16 = punycode_to_utf16(std::string((const char*) src, srclen));
+    return utf16_to_utf8(u16.data(), u16.size(), dst, dstlen);
+}
+
+
 std::string punycode_to_utf16(const std::string &str)
 {
     return utf32_to_utf16(punycode_to_utf32(str));
+}
+
+
+size_t punycode_to_utf32(const void *src, size_t srclen, void* dst, size_t dstlen)
+{
+    return 4 * decode_impl((const char*) src, srclen, (uint32_t*) dst, dstlen / 4);
 }
 
 
@@ -339,17 +381,17 @@ std::string punycode_to_utf32(const std::string &str)
     // arguments
     auto *src = str.data();
     size_t srclen = str.size();
-    size_t dstlen = srclen;
-    auto *dst = reinterpret_cast<uint32_t*>(safe_malloc(dstlen * 4));
+    size_t dstlen = srclen * 4;
+    auto *dst = reinterpret_cast<uint32_t*>(safe_malloc(dstlen));
 
     size_t out;
     try {
-        out = decode_impl(src, srclen, dst, dstlen);
+        out = punycode_to_utf32(src, srclen, dst, dstlen);
     } catch (std::exception&) {
         safe_free(dst);
         throw;
     }
-    std::string output(reinterpret_cast<const char*>(dst), out * 4);
+    std::string output(reinterpret_cast<const char*>(dst), out);
     safe_free(dst);
 
     return output;

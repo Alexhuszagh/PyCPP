@@ -229,6 +229,29 @@ include_directories(
 
 add_definitions(-DPYCPP_NAMESPACE=${PYCPP_NAMESPACE})
 
+
+if(BUILD_COMPRESSION)
+    # ZLIB
+    add_external_project(zlib_external third_party/zlib)
+    add_external_target(z third_party/zlib third_party/zlib STATIC zlib_external)
+    include_directories(${z_INCLUDE_DIR})
+
+    # BZIP2
+    add_external_project(bzip2_external third_party/bzip2)
+    add_external_target(bz2 third_party/bzip2 third_party/bzip2 STATIC bzip2_external)
+    include_directories(${bz2_INCLUDE_DIR})
+
+    # XZ
+    add_external_project(xz_external third_party/xz)
+    add_external_target(lzma third_party/xz/src/liblzma/api third_party/xz/src/liblzma/ STATIC xz_external)
+    include_directories(${lzma_INCLUDE_DIR})
+
+    # BLOSC
+    add_external_project(blosc_external third_party/c-blosc)
+    add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
+    include_directories(${blosc_INCLUDE_DIR})
+endif()
+
 if(BUILD_JSON)
     include_directories(third_party/rapidjson/include)
 endif()
@@ -279,6 +302,12 @@ if(BUILD_COLLECTIONS)
 endif()
 
 if(BUILD_COMPRESSION)
+    list(APPEND SOURCE_FILES
+        pycpp/compression/blosc.cc
+        pycpp/compression/bzip2.cc
+        pycpp/compression/lzma.cc
+        pycpp/compression/zlib.cc
+    )
 endif()
 
 if (BUILD_FILESYSTEM)
@@ -380,6 +409,10 @@ else()
     add_library(pycpp SHARED ${SOURCE_FILES})
 endif()
 
+if(BUILD_COMPRESSION)
+    add_dependencies(pycpp z bz2 lzma blosc)
+endif()
+
 if(BUILD_RE)
     add_dependencies(pycpp re2)
 endif()
@@ -401,6 +434,10 @@ if(MSVC)
     list(APPEND PYCPP_LIBRARIES ws2_32.lib crypt32.lib kernel32.lib)
 elseif(MINGW OR MSYS)
     list(APPEND PYCPP_LIBRARIES -lws2_32 -lcrypt32 -lkernel32)
+endif()
+
+if(BUILD_COMPRESSION)
+    list(APPEND PYCPP_LIBRARIES z bz2 lzma blosc)
 endif()
 
 if(BUILD_RE)

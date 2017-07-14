@@ -6,6 +6,7 @@
  */
 
 #pragma once
+
 #include <pycpp/re/match.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -33,6 +34,13 @@ public:
 
     match_t search(const string_view& str, size_t start = 0, size_t endpos = string_view::npos);
     match_t match(const string_view& str, size_t start = 0, size_t endpos = string_view::npos);
+    // split
+    // findall
+    // finditer
+    // sub
+    // subn
+    // groups
+    // groupindex
 
 private:
     friend class match_t;

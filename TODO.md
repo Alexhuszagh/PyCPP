@@ -1,7 +1,6 @@
 - Regular expressions
     - RE2 backbone
     - Add RE2 to project.
-    - 
 
 - Mathlib
     - Need array/axis unittests
@@ -23,3 +22,4 @@
     - ZLIB
     - LZMA
     - BZ2
+

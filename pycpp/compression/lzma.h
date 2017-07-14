@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief ZLIB compression and decompression.
+ *  \brief LZMA compression and decompression.
  */
 
 #pragma once
