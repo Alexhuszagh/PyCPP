@@ -1650,3 +1650,35 @@ typedef basic_string_view<char16_t, secure_char_traits<char16_t>> secure_u16stri
 typedef basic_string_view<char32_t, secure_char_traits<char32_t>> secure_u32string_view;
 
 PYCPP_END_NAMESPACE
+
+
+namespace std
+{
+// SPECIALIZATION
+// --------------
+
+template <>
+struct hash<PYCPP_NAMESPACE::secure_string>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::secure_wstring>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::secure_u16string>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::secure_u32string>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::secure_string_view>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::secure_wstring_view>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::secure_u16string_view>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::secure_u32string_view>;
+
+}   /* std */

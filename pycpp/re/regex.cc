@@ -77,7 +77,11 @@ void regex_impl_t::clear()
 
 regex_t::regex_t(const string_view& view):
     ptr_(new regex_impl_t(view))
-{}
+{
+    if (!ptr_->re2.ok()) {
+        throw std::runtime_error("Invalid regular expression pattern.");
+    }
+}
 
 
 regex_t::regex_t(regex_t&& rhs):
@@ -96,21 +100,21 @@ regex_t::~regex_t()
 {}
 
 
-match_t regex_t::search(const string_view& str, size_t start, size_t endpos)
+match_t regex_t::search(const string_view& str, size_t pos, size_t endpos)
 {
-    auto view = str.substr(start, endpos);
+    auto view = str.substr(pos, endpos);
     re2::StringPiece input(view.data(), view.size());
 
     // TODO: verify this is accurate...
     if (ptr_->argc) {
         // capturing groups
         if (re2::RE2::PartialMatchN(input, ptr_->re2, ptr_->argp, ptr_->argc)) {
-            return match_t(*this, view);
+            return match_t(*this, str, pos, endpos);
         }
     } else {
         // no capturing groups
         if (re2::RE2::PartialMatch(input, ptr_->re2, ptr_->piece)) {
-            return match_t(*this, view);
+            return match_t(*this, str, pos, endpos);
         }
     }
 
@@ -118,21 +122,21 @@ match_t regex_t::search(const string_view& str, size_t start, size_t endpos)
 }
 
 
-match_t regex_t::match(const string_view& str, size_t start, size_t endpos)
+match_t regex_t::match(const string_view& str, size_t pos, size_t endpos)
 {
-    auto view = str.substr(start, endpos);
+    auto view = str.substr(pos, endpos);
     re2::StringPiece input(view.data(), view.size());
 
     // TODO: verify this is accurate...
     if (ptr_->argc) {
         // capturing groups
         if (re2::RE2::FullMatchN(input, ptr_->re2, ptr_->argp, ptr_->argc)) {
-            return match_t(*this, view);
+            return match_t(*this, str, pos, endpos);
         }
     } else {
         // no capturing groups
         if (re2::RE2::FullMatch(input, ptr_->re2, ptr_->piece)) {
-            return match_t(*this, view);
+            return match_t(*this, str, pos, endpos);
         }
     }
 

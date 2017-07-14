@@ -1314,3 +1314,23 @@ typedef basic_string_view<char16_t> u16string_view;
 typedef basic_string_view<char32_t> u32string_view;
 
 PYCPP_END_NAMESPACE
+
+
+namespace std
+{
+// SPECIALIZATION
+// --------------
+
+template <>
+struct hash<PYCPP_NAMESPACE::string_view>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::wstring_view>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::u16string_view>;
+
+template <>
+struct hash<PYCPP_NAMESPACE::u32string_view>;
+
+}   /* std */
