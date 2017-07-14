@@ -21,6 +21,7 @@ option(BUILD_HASHLIB "Build hash library" ON)
 option(BUILD_JSON "Build JSON library" ON)
 option(BUILD_LATTICE "Build lattice (networking) library" ON)
 option(BUILD_MATH "Build math library" ON)
+option(BUILD_RE "Build regular expression library" ON)
 option(BUILD_STREAM "Build stream library" ON)
 option(BUILD_XML "Build XML library" ON)
 
@@ -33,6 +34,7 @@ option(WITH_HASHLIB "Build (only) hash library" OFF)
 option(WITH_JSON "Build (only) JSON library" OFF)
 option(WITH_LATTICE "Build (only) lattice library" OFF)
 option(WITH_MATH "Build (only) math library" OFF)
+option(WITH_RE "Build (only) regular expression library" OFF)
 option(WITH_STREAM "Build (only) stream library" OFF)
 option(WITH_XML "Build (only) XML library" OFF)
 
@@ -41,7 +43,7 @@ option(BUILD_STATIC "Build static library" ON)
 option(BUILD_TESTS "Build pycpp library tests" OFF)
 SET(PYCPP_NAMESPACE "" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
 
-if(WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_LATTICE OR WITH_MATH OR WITH_STREAM OR WITH_XML)
+if(WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_LATTICE OR WITH_MATH OR WITH_RE OR WITH_STREAM OR WITH_XML)
     set(BUILD_CIPHER ${WITH_CIPHER})
     set(BUILD_COLLECTIONS ${WITH_COLLECTIONS})
     set(BUILD_COMPRESSION ${WITH_COMPRESSION})
@@ -50,9 +52,24 @@ if(WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_FILESYSTEM OR WIT
     set(BUILD_JSON ${WITH_JSON})
     set(BUILD_LATTICE ${WITH_LATTICE})
     set(BUILD_MATH ${WITH_MATH})
+    set(BUILD_RE ${WITH_RE})
     set(BUILD_STREAM ${WITH_STREAM})
     set(BUILD_XML ${WITH_XML})
 endif()
+
+add_definitions(
+    -DBUILD_CIPHER=${BUILD_CIPHER}
+    -DBUILD_COLLECTIONS=${BUILD_COLLECTIONS}
+    -DBUILD_COMPRESSION=${BUILD_COMPRESSION}
+    -DBUILD_FILESYSTEM=${BUILD_FILESYSTEM}
+    -DBUILD_HASHLIB=${BUILD_HASHLIB}
+    -DBUILD_JSON=${BUILD_JSON}
+    -DBUILD_LATTICE=${BUILD_LATTICE}
+    -DBUILD_MATH=${BUILD_MATH}
+    -DBUILD_RE=${BUILD_RE}
+    -DBUILD_STREAM=${BUILD_STREAM}
+    -DBUILD_XML=${BUILD_XML}
+)
 
 if(BUILD_STATIC)
     if(UNIX)

@@ -5,6 +5,7 @@
 #include <pycpp/os.h>
 #include <pycpp/runtime.h>
 #include <pycpp/stream/fstream.h>
+#include <pycpp/view/string.h>
 #include <sstream>
 #if defined(OS_WINDOWS)
 #   include <windows.h>
@@ -67,9 +68,15 @@ static bool read_pid1()
     // init system takes the following format for the native host
     // init (1, #threads: 1)
     // systemd (1, #threads: 1)
+    string_view view(line);
+    size_t start = view.find("(");
+    size_t end = view.find(",", start);
+    if (start == view.npos || end == view.npos) {
+        return false;
+    } else if (view.substr(start, end) == "1") {
+        return true;
+    }
 
-    // TODO: need to finish
-    // use a regular expression to parse the value.
     return false;
 }
 
@@ -122,7 +129,7 @@ bool is_docker()
 bool is_container()
 {
 #if defined(OS_LINUX)                   // LINUX
-    return read_pid1();
+    return !read_pid1();
 #else                                   // NOT LINUX
     return false;
 #endif
