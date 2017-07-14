@@ -352,8 +352,9 @@ if(BUILD_MATH)
 endif()
 
 if(BUILD_RE)
-#    list(APPEND SOURCE_FILES
-#    )
+    list(APPEND SOURCE_FILES
+        pycpp/re/match.cc
+    )
 endif()
 
 if(BUILD_STREAM)

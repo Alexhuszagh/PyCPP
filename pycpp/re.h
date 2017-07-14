@@ -7,3 +7,5 @@
 
 #pragma once
 
+#include <pycpp/re/match.h>
+#include <pycpp/re/regex.h>
