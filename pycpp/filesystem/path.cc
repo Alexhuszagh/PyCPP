@@ -14,6 +14,13 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// MACROS
+// ------
+
+// ¯\_(ツ)_/¯
+#undef max
+#undef min
+
 // HELPERS
 // -------
 

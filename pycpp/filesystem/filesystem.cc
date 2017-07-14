@@ -35,7 +35,7 @@ std::deque<Path> listdir_impl(const Path& path, ToPath topath)
 
 bool copy_link(const path_t& src, const path_t& dst, bool replace)
 {
-    copy_link_impl(src, dst, replace);
+    return copy_link_impl(src, dst, replace);
 }
 
 
@@ -51,7 +51,7 @@ path_list_t listdir(const path_t& path)
 
 bool copy_link(const backup_path_t& src, const backup_path_t& dst, bool replace)
 {
-    copy_link_impl(src, dst, replace);
+    return copy_link_impl(src, dst, replace);
 }
 
 
