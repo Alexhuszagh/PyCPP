@@ -160,6 +160,14 @@ macro(add_external_project name path)
         CMAKE_ARGS "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}"
                    "-DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}"
                    "-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}"
+                   "-DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}"
+                   "-DCMAKE_SYSTEM_PROCESSOR=${CMAKE_SYSTEM_PROCESSOR}"
+                   "-DCMAKE_AR=${CMAKE_AR}"
+                   "-DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}"
+                   "-DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}"
+                   "-DCMAKE_RC_COMPILER=${CMAKE_RC_COMPILER}"
+                   "-DCMAKE_COMPILER_PREFIX=${CMAKE_COMPILER_PREFIX}"
+                   "-DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}"
        INSTALL_COMMAND ""
     )
 
