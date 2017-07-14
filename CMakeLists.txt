@@ -240,6 +240,7 @@ set(SOURCE_FILES
     pycpp/gettimeofday.cc
     pycpp/hex.cc
     pycpp/punycode.cc
+    pycpp/runtime.cc
     pycpp/stringlib.cc
     pycpp/unicode.cc
     pycpp/url.cc

@@ -1,11 +1,11 @@
+- Regular expressions
+    - RE2 backbone
+
 - Mathlib
     - Need array/axis unittests
 
 - filesystem
     - move_* implements need to be **durable** across filesystems.
-
-- Regular expressions
-    - RE2 backbone
 
 - Atomic Operations
     - Check boltsons

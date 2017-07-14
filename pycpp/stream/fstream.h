@@ -57,8 +57,6 @@ public:
     bool is_open() const;
     void close();
     void swap(fstream &other);
-
-protected:
     std::basic_filebuf<char>* rdbuf() const;
     void rdbuf(std::basic_filebuf<char> *buffer);
 
@@ -93,8 +91,6 @@ public:
     bool is_open() const;
     void close();
     void swap(ifstream &other);
-
-protected:
     std::basic_filebuf<char>* rdbuf() const;
     void rdbuf(std::basic_filebuf<char> *buffer);
 
@@ -129,8 +125,6 @@ public:
     bool is_open() const;
     void close();
     void swap(ofstream &other);
-
-protected:
     std::basic_filebuf<char>* rdbuf() const;
     void rdbuf(std::basic_filebuf<char> *buffer);
 

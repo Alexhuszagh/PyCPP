@@ -277,11 +277,50 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 }
 
 
-template <typename Path, typename MoveDir>
-static bool move_dir_impl(const Path& src, const Path& dst, bool replace, MoveDir move)
+template <typename Path>
+static bool is_empty_directory_impl(const Path& path)
 {
-    // TODO: need a lot of logic here...
-    return false;
+    directory_iterator it(path);
+    return it == directory_iterator();
+}
+
+
+template <typename Path>
+static bool move_dir_impl(const Path& src, const Path& dst, bool replace)
+{
+    // get stats
+    auto src_stat = stat(src);
+    auto dst_stat = stat(dst);
+
+    // check if we can move
+    if (!isdir(src)) {
+        throw filesystem_error(filesystem_no_such_directory);
+    } else if (exists(dst_stat)) {
+        // destination exists, can we overwrite?
+        if (replace) {
+            if (!remove_path(dst)) {
+                return false;
+            }
+        } else if (!isdir(dst_stat) || !is_empty_directory_impl(dst)) {
+            throw filesystem_error(filesystem_destination_exists);
+        }
+    }
+
+    // check to see if they're on the same device
+    if (src_stat.st_dev == dst_stat.st_dev) {
+        // same filesystem, guaranteed atomicity
+        return rename(src.data(), dst.data()) == 0;
+    } else {
+        // different filesystems, remove and copy
+        if (!copy_dir(src, dst, true)) {
+            throw filesystem_error(filesystem_unexpected_error);
+        }
+        if (!remove_dir(src)) {
+            throw filesystem_error(filesystem_unexpected_error);
+        }
+    }
+
+    return true;
 }
 
 
@@ -492,10 +531,7 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 
 bool move_dir(const path_t& src, const path_t& dst, bool replace)
 {
-    return move_dir_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
-        // TODO: need to fix the directory renamer...
-        return false;
-    });
+    return move_dir_impl(src, dst, replace);
 }
 
 

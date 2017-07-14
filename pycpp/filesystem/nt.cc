@@ -368,11 +368,48 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 }
 
 
+template <typename Path>
+static bool is_empty_directory_impl(const Path& path)
+{
+    directory_iterator it(path);
+    return it == directory_iterator();
+}
+
+
 template <typename Path, typename MoveDir>
 static bool move_dir_impl(const Path& src, const Path& dst, bool replace, MoveDir move)
 {
-    // TODO: need a lot of logic here...
-    return false;
+    // get stats
+    auto src_stat = stat(src);
+    auto dst_stat = stat(dst);
+
+    // check if we can move
+    if (!isdir(src)) {
+        throw filesystem_error(filesystem_no_such_directory);
+    } else if (exists(dst_stat)) {
+        // destination exists, can we overwrite?
+        if (replace) {
+            if (!remove_path(dst)) {
+                return false;
+            }
+        } else if (!isdir(dst_stat) || !is_empty_directory_impl(dst)) {
+            throw filesystem_error(filesystem_destination_exists);
+        }
+    }
+
+    // no guaranteed atomicity
+    if (src_stat.st_dev == dst_stat.st_dev) {
+        // same volume, call MoveFile[AW]
+        return move(src, dst);
+    } else {
+        // different filesystems, remove and copy
+        if (!copy_dir(src, dst, true)) {
+            throw filesystem_error(filesystem_unexpected_error);
+        }
+        if (!remove_dir(src)) {
+            throw filesystem_error(filesystem_unexpected_error);
+        }
+    }
 }
 
 
@@ -653,8 +690,9 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 bool move_dir(const path_t& src, const path_t& dst, bool replace)
 {
     return move_dir_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
-        // TODO: need to fix the directory renamer...
-        return false;
+        auto s = reinterpret_cast<const wchar_t*>(src.data());
+        auto d = reinterpret_cast<const wchar_t*>(dst.data());
+        return MoveFileW(s, d);
     });
 }
 
@@ -824,16 +862,15 @@ bool move_link(const backup_path_t& src, const backup_path_t& dst, bool replace)
 bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
 {
     return move_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst) {
-        return MoveFile(src.data(), dst.data());
+        return MoveFileA(src.data(), dst.data());
     });
 }
 
 
 bool move_dir(const backup_path_t& src, const backup_path_t& dst, bool replace)
 {
-    return move_dir_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
-        // TODO: need to fix the directory renamer...
-        return false;
+    return move_dir_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst) {
+        return MoveFileA(src.data(), dst.data());
     });
 }
 
@@ -849,7 +886,7 @@ bool mklink(const backup_path_t& target, const backup_path_t& dst, bool replace)
 bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
 {
     return copy_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst, bool replace) {
-        return CopyFile(src.data(), dst.data(), replace);
+        return CopyFileA(src.data(), dst.data(), replace);
     });
 }
 
@@ -868,7 +905,7 @@ bool remove_link(const backup_path_t& path)
 
 bool remove_file(const backup_path_t& path)
 {
-    return DeleteFile(path.data());
+    return DeleteFileA(path.data());
 }
 
 

@@ -171,6 +171,7 @@ public:
     bool is_open() const;
     void close();
     void swap(filter_ifstream&);
+    using filter_istream::rdbuf;
 
 private:
     ifstream file;
@@ -202,6 +203,7 @@ public:
     bool is_open() const;
     void close();
     void swap(filter_ofstream&);
+    using filter_ostream::rdbuf;
 
 private:
     ofstream file;

@@ -1,12 +1,13 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/multi_index/container.h>
+#include <pycpp/multi_index/hashed_index.h>
+#include <pycpp/multi_index/indexed_by.h>
+#include <pycpp/multi_index/mem_fun.h>
+#include <pycpp/multi_index/sequenced_index.h>
+#include <pycpp/multi_index/tag.h>
 #include <pycpp/xml/core.h>
-#include <multi_index_container.hpp>
-#include <multi_index/hashed_index.hpp>
-#include <multi_index/indexed_by.hpp>
-#include <multi_index/mem_fun.hpp>
-#include <multi_index/sequenced_index.hpp>
 #include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
@@ -20,16 +21,16 @@ struct id_tag {};
 
 typedef multi_index_container<
     xml_node_t,
-    multi_index::indexed_by<
-        multi_index::sequenced<>,
-        multi_index::hashed_non_unique<
-            multi_index::tag<name_tag>,
-            multi_index::const_mem_fun<xml_node_t, const xml_string_t&, &xml_node_t::get_tag>,
+    indexed_by<
+        sequenced<>,
+        hashed_non_unique<
+            tag<name_tag>,
+            const_mem_fun<xml_node_t, const xml_string_t&, &xml_node_t::get_tag>,
             std::hash<xml_string_t>
         >,
-        multi_index::hashed_non_unique<
-            multi_index::tag<id_tag>,
-            multi_index::const_mem_fun<xml_node_t, uintptr_t, &xml_node_t::get_id>,
+        hashed_non_unique<
+            tag<id_tag>,
+            const_mem_fun<xml_node_t, uintptr_t, &xml_node_t::get_id>,
             std::hash<uintptr_t>
         >
     >
