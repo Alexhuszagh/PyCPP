@@ -157,4 +157,9 @@ SPECIALIZED_HASH(sha3_384, sha3);
 SPECIALIZED_HASH(sha3_512, sha3);
 SPECIALIZED_HASH(whirlpool, whirlpool);
 
+// CLEANUP
+// -------
+
+#undef SPECIALIZED_HASH
+
 PYCPP_END_NAMESPACE

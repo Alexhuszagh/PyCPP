@@ -16,6 +16,7 @@ Python-like C++ environment with independent, lightweight utilities for cross-pl
 - [Design](#design)
 - [Namespace](#namespace)
 - [Building](#building)
+- [Performance](#performance)
 - [Platforms](#platforms)
 - [Contributors](#contributors)
 - [License](#license)
@@ -115,6 +116,13 @@ Supported features include:
 
 **_Compression_**
 
+- [Compression detection](/pycpp/compression/detect.h) for strings, streams, and files.
+- [bzip](/pycpp/compression/bzip2.h) compressors and decompressors.
+- [zlib](/pycpp/compression/zlib.h) compressors and decompressors.
+- [lzma2](/pycpp/compression/lzma.h) compressors and decompressors.
+- [blosc](/pycpp/compression/blosc.h) compressors and decompressors.
+- [Decompressing streams](/pycpp/compression/stream.h).
+
 **WARNING:** PyCPP includes cryptographic hashes and ciphers, which are tested via fuzzing. The buffer containing these objects is reset upon object destruction, to minimize side-channel attacks. However, they should be assumed to be insecure, until audited.
 
 ## Namespace
@@ -133,6 +141,10 @@ git submodule update --init --recursive
 cmake .                         # `-DBUILD_TESTS=ON`
 make -j 5                       # "msbuild pycpp.sln" for MSVC
 ```
+
+## Performance
+
+To avoid long build times, PyCPP avoids inlining functions at all costs, and minimizes template definitions within headers, coming with a slight performance penalty. Using link-time optimization should remedy these issues, and mitigate the need for explicit inlining.
 
 ## Platforms
 

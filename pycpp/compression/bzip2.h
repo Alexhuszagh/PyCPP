@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/compression/exception.h>
 #include <memory>
 #include <string>
 
@@ -34,8 +34,8 @@ public:
     bz2_compressor(bz2_compressor&&);
     bz2_compressor & operator=(bz2_compressor&&);
     ~bz2_compressor();
-    void compress(const void* src, size_t srclen, void* dst, size_t dstlen);
-    void flush(void* dst, size_t dstlen);
+    compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+    bool flush(void*& dst, size_t dstlen);
 
 private:
     std::unique_ptr<bz2_compressor_impl> ptr_;
@@ -52,7 +52,7 @@ public:
     bz2_decompressor(bz2_decompressor&&);
     bz2_decompressor & operator=(bz2_decompressor&&);
     ~bz2_decompressor();
-    void decompress(const void* src, size_t srclen, void* dst, size_t dstlen);
+    compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 private:
     std::unique_ptr<bz2_decompressor_impl> ptr_;
@@ -68,14 +68,6 @@ size_t bzip2_compress(const void *src, size_t srclen, void* dst, size_t dstlen);
 /** \brief BZIP2-compress data.
  */
 std::string bzip2_compress(const std::string &str);
-
-/** \brief BZIP2-decompress data. Returns number of bytes converted.
- */
-size_t bzip2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen);
-
-/** \brief BZIP2-decompress data.
- */
-std::string bzip2_decompress(const std::string &str);
 
 /** \brief BZIP2-decompress data. Returns number of bytes converted.
  *

@@ -19,6 +19,8 @@
     - Needs to be an N-D array
 
 - Compression support
+    - Detection
+    - Compressors/decompressors
     - ZLIB
     - LZMA
     - BZ2

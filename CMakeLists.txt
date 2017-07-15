@@ -305,7 +305,10 @@ if(BUILD_COMPRESSION)
     list(APPEND SOURCE_FILES
         pycpp/compression/blosc.cc
         pycpp/compression/bzip2.cc
+        pycpp/compression/detect.cc
+        pycpp/compression/exception.cc
         pycpp/compression/lzma.cc
+        pycpp/compression/stream.cc
         pycpp/compression/zlib.cc
     )
 endif()
@@ -502,6 +505,14 @@ if(BUILD_COLLECTIONS)
 endif()
 
 if(BUILD_COMPRESSION)
+    list(APPEND TEST_FILES
+        test/compression/blosc.cc
+        test/compression/bzip2.cc
+        test/compression/detect.cc
+        test/compression/lzma.cc
+        test/compression/stream.cc
+        test/compression/zlib.cc
+    )
 endif()
 
 if (BUILD_FILESYSTEM)

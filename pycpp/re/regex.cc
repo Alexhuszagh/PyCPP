@@ -1,7 +1,6 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-// Include the source file so the implied declarations can interact.
 #include <pycpp/re/match.h>
 #include <pycpp/re/regex.h>
 #include <re2/re2.h>

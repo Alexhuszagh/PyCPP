@@ -5,6 +5,7 @@
 #include <pycpp/compression/bzip2.h>
 #include <pycpp/safe/stdlib.h>
 #include <bzlib.h>
+#include <string.h>
 #include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
@@ -50,6 +51,37 @@ static size_t bzip2_compress_bound(size_t size)
     return (1.01 * size) + 600;
 }
 
+
+void check_bzstatus(int error)
+{
+    switch (error) {
+        case BZ_OK:
+        case BZ_RUN_OK:
+        case BZ_FLUSH_OK:
+        case BZ_FINISH_OK:
+        case BZ_STREAM_END:
+            return;
+        case BZ_CONFIG_ERROR:
+            throw compression_error(compression_config_error);
+        case BZ_PARAM_ERROR:
+            throw compression_error(compression_invalid_parameter);
+        case BZ_MEM_ERROR:
+            throw compression_error(compression_out_of_memory);
+        case BZ_DATA_ERROR:
+        case BZ_DATA_ERROR_MAGIC:
+            throw compression_error(compression_data_error);
+        case BZ_IO_ERROR:
+            throw compression_error(compression_io_error);
+        case BZ_UNEXPECTED_EOF:
+            throw compression_error(compression_unexpected_eof);
+        case BZ_SEQUENCE_ERROR:
+            throw compression_error(compression_internal_error);
+        default:
+            throw compression_error(compression_unexpected_error);
+    }
+}
+
+
 // OBJECTS
 // -------
 
@@ -57,18 +89,272 @@ static size_t bzip2_compress_bound(size_t size)
  *  \brief Implied base class for the BZ2 compressor.
  */
 struct bz2_compressor_impl
-{};
+{
+    int block_size = BZ2_BLOCK_SIZE;
+    int small = BZ2_SMALL;
+    int verbosity = BZ2_VERBOSITY;
+    int status = BZ_OK;
+    bz_stream stream;
+
+    bz2_compressor_impl();
+    ~bz2_compressor_impl();
+
+    void before(void* dst, size_t dstlen);
+    void before(const void* src, size_t srclen, void* dst, size_t dstlen);
+    void compress();
+    bool flush(void*& dst, size_t dstlen);
+    compression_status check_status(const void* src, void* dst) const;
+    void after(void*& dst);
+    void after(const void*& src, void*& dst);
+
+    compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+};
+
+
+bz2_compressor_impl::bz2_compressor_impl()
+{
+    stream.bzalloc = nullptr;
+    stream.bzfree = nullptr;
+    stream.opaque = nullptr;
+    stream.avail_in = 0;
+    stream.next_in = nullptr;
+    stream.avail_out = 0;
+    stream.next_out = nullptr;
+    BZ2_CHECK(BZ2_bzCompressInit(&stream, block_size, verbosity, small));
+}
+
+
+bz2_compressor_impl::~bz2_compressor_impl()
+{
+    BZ2_bzCompressEnd(&stream);
+}
+
+
+void bz2_compressor_impl::before(void* dst, size_t dstlen)
+{
+    stream.next_out = (char*) dst;
+    stream.avail_out = dstlen;
+}
+
+
+void bz2_compressor_impl::before(const void* src, size_t srclen, void* dst, size_t dstlen)
+{
+    stream.next_in = (char*) src;
+    stream.avail_in = srclen;
+    stream.next_out = (char*) dst;
+    stream.avail_out = dstlen;
+}
+
+
+void bz2_compressor_impl::compress()
+{
+    while (stream.avail_in && stream.avail_out && status != BZ_STREAM_END) {
+        status = BZ2_bzCompress(&stream, BZ_RUN);
+        check_bzstatus(status);
+    }
+}
+
+
+bool bz2_compressor_impl::flush(void*& dst, size_t dstlen)
+{
+    before(dst, dstlen);
+    bool code;
+    if (dstlen) {
+        status = BZ2_bzCompress(&stream, BZ_FINISH);
+        code = status == BZ_FINISH_OK;
+    } else {
+        status = BZ2_bzCompress(&stream, BZ_FLUSH);
+        code = status == BZ_FLUSH_OK;
+    }
+    after(dst);
+
+    return status;
+}
+
+
+compression_status bz2_compressor_impl::check_status(const void* src, void* dst) const
+{
+    if (status == BZ_STREAM_END) {
+        return compression_eof;
+    } else if (stream.next_out == dst) {
+        return compression_need_input;
+    } else if (stream.next_in == src) {
+        return compression_need_output;
+    }
+}
+
+
+void bz2_compressor_impl::after(void*& dst)
+{
+    dst = stream.next_out;
+}
+
+
+void bz2_compressor_impl::after(const void*& src, void*& dst)
+{
+    src = stream.next_in;
+    dst = stream.next_out;
+}
+
+
+compression_status bz2_compressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+{
+    // no input data, or already reached stream end
+    if (status == BZ_STREAM_END) {
+        return compression_eof;
+    } else if (srclen == 0 && stream.avail_in == 0) {
+        return compression_need_input;
+    } else if (dstlen == 0) {
+        return compression_need_output;
+    }
+
+    bool use_src = (stream.next_in == nullptr || stream.avail_in == 0);
+    if (use_src) {
+        before(src, srclen, dst, dstlen);
+    } else {
+        // have remaining input data
+        before(dst, dstlen);
+    }
+    compress();
+    compression_status code = check_status(src, dst);
+    if (use_src) {
+        after(src, dst);
+    } else {
+        after(dst);
+    }
+
+    return code;
+}
 
 
 /**
  *  \brief Implied base class for the BZ2 decompressor.
  */
 struct bz2_decompressor_impl
-{};
+{
+    int small = BZ2_SMALL;
+    int verbosity = BZ2_VERBOSITY;
+    int status = BZ_OK;
+    bz_stream stream;
+
+    bz2_decompressor_impl();
+    ~bz2_decompressor_impl();
+
+    void before(void* dst, size_t dstlen);
+    void before(const void* src, size_t srclen, void* dst, size_t dstlen);
+    void decompress();
+    compression_status check_status(const void* src, void* dst) const;
+    void after(void*& dst);
+    void after(const void*& src, void*& dst);
+
+    compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+};
 
 
-bz2_compressor::bz2_compressor(int compress_level)
-{}
+bz2_decompressor_impl::bz2_decompressor_impl()
+{
+    stream.bzalloc = nullptr;
+    stream.bzfree = nullptr;
+    stream.opaque = nullptr;
+    stream.avail_in = 0;
+    stream.next_in = nullptr;
+    stream.avail_out = 0;
+    stream.next_out = nullptr;
+    BZ2_CHECK(BZ2_bzDecompressInit(&stream, verbosity, small));
+}
+
+
+bz2_decompressor_impl::~bz2_decompressor_impl()
+{
+    BZ2_bzDecompressEnd(&stream);
+}
+
+
+void bz2_decompressor_impl::before(void* dst, size_t dstlen)
+{
+    stream.next_out = (char*) dst;
+    stream.avail_out = dstlen;
+}
+
+
+void bz2_decompressor_impl::before(const void* src, size_t srclen, void* dst, size_t dstlen)
+{
+    stream.next_in = (char*) src;
+    stream.avail_in = srclen;
+    stream.next_out = (char*) dst;
+    stream.avail_out = dstlen;
+}
+
+
+void bz2_decompressor_impl::decompress()
+{
+    while (stream.avail_in && stream.avail_out && status != BZ_STREAM_END) {
+        status = BZ2_bzDecompress(&stream);
+        check_bzstatus(status);
+    }
+}
+
+
+compression_status bz2_decompressor_impl::check_status(const void* src, void* dst) const
+{
+    if (status == BZ_STREAM_END) {
+        return compression_eof;
+    } else if (stream.next_out == dst) {
+        return compression_need_input;
+    } else if (stream.next_in == src) {
+        return compression_need_output;
+    }
+}
+
+
+void bz2_decompressor_impl::after(void*& dst)
+{
+    dst = stream.next_out;
+}
+
+
+void bz2_decompressor_impl::after(const void*& src, void*& dst)
+{
+    src = stream.next_in;
+    dst = stream.next_out;
+}
+
+
+compression_status bz2_decompressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+{
+    // no input data, or already reached stream end
+    if (status == BZ_STREAM_END) {
+        return compression_eof;
+    } else if (srclen == 0 && stream.avail_in == 0) {
+        return compression_need_input;
+    } else if (dstlen == 0) {
+        return compression_need_output;
+    }
+
+    bool use_src = (stream.next_in == nullptr || stream.avail_in == 0);
+    if (use_src) {
+        before(src, srclen, dst, dstlen);
+    } else {
+        // have remaining input data
+        before(dst, dstlen);
+    }
+    decompress();
+    compression_status code = check_status(src, dst);
+    if (use_src) {
+        after(src, dst);
+    } else {
+        after(dst);
+    }
+
+    return code;
+}
+
+
+bz2_compressor::bz2_compressor(int compress_level):
+    ptr_(new bz2_compressor_impl)
+{
+    ptr_->block_size = compress_level;
+}
 
 
 bz2_compressor::bz2_compressor(bz2_compressor&& rhs):
@@ -87,7 +373,20 @@ bz2_compressor::~bz2_compressor()
 {}
 
 
-bz2_decompressor::bz2_decompressor()
+compression_status bz2_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+{
+    return (*ptr_)(src, srclen, dst, dstlen);
+}
+
+
+bool bz2_compressor::flush(void*& dst, size_t dstlen)
+{
+    return ptr_->flush(dst, dstlen);
+}
+
+
+bz2_decompressor::bz2_decompressor():
+    ptr_(new bz2_decompressor_impl)
 {}
 
 
@@ -106,8 +405,11 @@ bz2_decompressor & bz2_decompressor::operator=(bz2_decompressor&& rhs)
 bz2_decompressor::~bz2_decompressor()
 {}
 
-// TODO: need to do the object definitions.
-// The 1-shot kinda shit should probably be handled too...
+
+compression_status bz2_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+{
+    return (*ptr_)(src, srclen, dst, dstlen);
+}
 
 // FUNCTIONS
 // ---------
@@ -129,7 +431,7 @@ size_t bzip2_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
         char c = 0;
         BZ2_CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) &c, 0, block_size, verbosity, work_factor));
     }
-    return dstlen;
+    return dstlen_;
 }
 
 
@@ -152,26 +454,41 @@ std::string bzip2_compress(const std::string &str)
 }
 
 
-// TODO: implement...
-///** \brief BZIP2-decompress data. Returns number of bytes converted.
-// */
-//size_t bzip2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen);
-//
-///** \brief BZIP2-decompress data.
-// */
-//std::string bzip2_decompress(const std::string &str);
-//
-///** \brief BZIP2-decompress data. Returns number of bytes converted.
-// *
-// *  \param bound            Known size of decompressed buffer.
-// */
-//size_t bzip2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound);
-//
-///** \brief BZIP2-decompress data.
-// *
-// *  \param bound            Known size of decompressed buffer.
-// */
-//std::string bzip2_decompress(const std::string &str, size_t bound);
+size_t bzip2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound)
+{
+    // configurations
+    auto small = BZ2_SMALL;
+    auto verbosity = BZ2_VERBOSITY;
+
+    unsigned int srclen_ = srclen;
+    unsigned int dstlen_ = dstlen;
+    if (srclen) {
+        BZ2_CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) src, srclen_, small, verbosity));
+    } else {
+        // compression no bytes
+        char c = 0;
+        BZ2_CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) &c, 0, small, verbosity));
+    }
+    return dstlen_;
+}
+
+
+std::string bzip2_decompress(const std::string &str, size_t bound)
+{
+    auto *dst = safe_malloc(bound);
+
+    size_t out;
+    try {
+        out = bzip2_decompress(str.data(), str.size(), dst, bound, bound);
+    } catch (std::exception&) {
+        safe_free(dst);
+        throw;
+    }
+    std::string output(reinterpret_cast<const char*>(dst), out);
+    safe_free(dst);
+
+    return output;
+}
 
 
 PYCPP_END_NAMESPACE
