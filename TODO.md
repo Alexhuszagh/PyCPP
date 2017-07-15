@@ -2,6 +2,16 @@
     - RE2 backbone
     - Add RE2 to project.
 
+- TODO: there's an issue in my RE2 implementation...
+    ~bz2_compressor_impl is getting called **almost** immediately...
+
+- BZIP2 buffer needs to grow exponentially (2-fold).
+    - Don't use a constant buffer size... seriously.
+    - https://stackoverflow.com/a/19849403/4131059
+
+- Need to make the streambuf's buffer increase maybe???
+    - buffer_size
+
 - Mathlib
     - Need array/axis unittests
 

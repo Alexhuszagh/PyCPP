@@ -58,13 +58,14 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    filter_streambuf(std::streambuf* = nullptr, filter_callback = nullptr);
-    ~filter_streambuf();
+    filter_streambuf(std::ios_base::openmode, std::streambuf* = nullptr, filter_callback = nullptr);
+    virtual ~filter_streambuf();
 
     filter_streambuf(const filter_streambuf&) = delete;
     filter_streambuf& operator=(const filter_streambuf&) = delete;
     filter_streambuf(filter_streambuf&&);
     filter_streambuf& operator=(filter_streambuf&&);
+    void close();
     void swap(filter_streambuf&);
 
     void set_filebuf(std::streambuf*);
@@ -76,13 +77,14 @@ protected:
     virtual int_type underflow();
     virtual int_type overflow(int_type = traits_type::eof());
     virtual int sync();
-    pos_type seekoff(off_type, std::ios_base::seekdir, std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
-    pos_type seekpos(pos_type, std::ios_base::openmode = std::ios_base::in | std::ios_base::out);
 
 private:
+    std::streamsize do_callback();
+
     friend class filter_istream;
     friend class filter_ostream;
 
+    std::ios_base::openmode mode;
     std::streambuf *filebuf = nullptr;
     filter_callback callback = nullptr;
     char_type* in_buffer = nullptr;
@@ -105,6 +107,7 @@ public:
 
     filter_istream(std::istream& stream, filter_callback = nullptr);
     void open(std::istream& stream, filter_callback = nullptr);
+    void close();
     filter_streambuf* rdbuf() const;
     void rdbuf(filter_streambuf *buffer);
 
@@ -112,6 +115,8 @@ protected:
     filter_istream(filter_istream&&);
     filter_istream & operator=(filter_istream&&);
     void swap(filter_istream &other);
+    using std::istream::tellg;
+    using std::istream::seekg;
 
 private:
     filter_streambuf buffer;
@@ -132,6 +137,7 @@ public:
 
     filter_ostream(std::ostream& stream, filter_callback = nullptr);
     void open(std::ostream& stream, filter_callback = nullptr);
+    void close();
     filter_streambuf* rdbuf() const;
     void rdbuf(filter_streambuf *buffer);
 
@@ -139,6 +145,8 @@ protected:
     filter_ostream(filter_ostream&&);
     filter_ostream & operator=(filter_ostream&&);
     void swap(filter_ostream &other);
+    using std::ostream::tellp;
+    using std::ostream::seekp;
 
 private:
     filter_streambuf buffer;

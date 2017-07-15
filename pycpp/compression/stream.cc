@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/compression/stream.h>
+#include <iostream>     // TODO: remove
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -16,14 +17,13 @@ PYCPP_BEGIN_NAMESPACE
     [this](const void*& src, size_t srclen, void*& dst,                 \
            size_t dstlen, size_t char_size)                             \
     {                                                                   \
-        printf("%p, %zu, %p, %zu\n", src, srclen, dst, dstlen); \
+        std::cout << src << " " << srclen << " " << dst << " " << dstlen << std::endl; \
+        if (srclen) {                                                   \
+            ctx.compress(src, srclen, dst, dstlen);                     \
+        } else {                                                        \
+            ctx.flush(dst, dstlen);                                     \
+        }                                                               \
     }
-
-//        if (srclen) {                                                   \
-//            ctx.compress(src, srclen, dst, dstlen);                     \
-//        } else {                                                        \
-//            ctx.flush(dst, dstlen);                                     \
-//        }                                                               \
 
 
 /**
@@ -46,6 +46,11 @@ PYCPP_BEGIN_NAMESPACE
     name##_istream::name##_istream(std::istream& stream)                \
     {                                                                   \
         open(stream);                                                   \
+    }                                                                   \
+                                                                        \
+    name##_istream::~name##_istream()                                   \
+    {                                                                   \
+        filter_istream::close();                                        \
     }                                                                   \
                                                                         \
     void name##_istream::open(std::istream& stream)                     \
@@ -88,9 +93,13 @@ PYCPP_BEGIN_NAMESPACE
         open(stream);                                                   \
     }                                                                   \
                                                                         \
+    name##_ostream::~name##_ostream()                                   \
+    {                                                                   \
+        filter_ostream::close();                                        \
+    }                                                                   \
+                                                                        \
     void name##_ostream::open(std::ostream& stream)                     \
     {                                                                   \
-        printf("Opening ostream\n");    \
         filter_ostream::open(stream, COMPRESS_CALLBACK);                \
     }                                                                   \
                                                                         \

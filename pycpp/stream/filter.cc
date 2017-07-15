@@ -38,23 +38,28 @@ static void null_callback(const void*& src, size_t srclen,
 
 // STREAMBUF
 
-filter_streambuf::filter_streambuf(std::streambuf* f, filter_callback c):
+filter_streambuf::filter_streambuf(std::ios_base::openmode m, std::streambuf* f, filter_callback c):
+    mode(m),
     filebuf(f),
     callback(null_callback)
 {
     in_buffer = new char_type[buffer_size];
     out_buffer = new char_type[buffer_size];
-    setg(0, 0, 0);
-    setp(out_buffer, out_buffer + buffer_size);
+    if (mode & std::ios_base::in) {
+        setg(0, 0, 0);
+        setp(out_buffer, out_buffer + buffer_size);
+    } else {
+        setg(in_buffer, in_buffer, in_buffer+ buffer_size);
+        setp(0, 0);
+    }
+
     set_callback(c);
 }
 
 
 filter_streambuf::~filter_streambuf()
 {
-    sync();
-    delete[] in_buffer;
-    delete[] out_buffer;
+    close();
 }
 
 
@@ -71,20 +76,41 @@ filter_streambuf& filter_streambuf::operator=(filter_streambuf&& other)
 }
 
 
+void filter_streambuf::close()
+{
+    sync();
+    std::streamsize converted = do_callback();
+    if (converted && mode & std::ios_base::out) {
+        filebuf->sputn(out_buffer, converted);
+    }
+
+    delete[] in_buffer;
+    delete[] out_buffer;
+    filebuf = nullptr;
+    in_first = nullptr;
+    in_last = nullptr;
+    in_buffer = nullptr;
+    out_buffer = nullptr;
+}
+
+
 void filter_streambuf::swap(filter_streambuf& other)
 {
     std::streambuf::swap(other);
     std::swap(filebuf, other.filebuf);
     std::swap(in_buffer, other.in_buffer);
+    std::swap(out_buffer, other.out_buffer);
     std::swap(in_first, other.in_first);
     std::swap(in_last, other.in_last);
-    std::swap(out_buffer, other.out_buffer);
 }
 
 
 auto filter_streambuf::underflow() -> int_type
 {
-    size_t distance;
+    if (!(mode & std::ios_base::in)) {
+        return traits_type::eof();
+    }
+
     std::streamsize read, converted;
 
     if (filebuf) {
@@ -94,25 +120,8 @@ auto filter_streambuf::underflow() -> int_type
             in_last = in_buffer + read;
         }
 
-        // convert bytes
-        distance = std::distance(in_first, in_last);
-        const void* src = (const void*) in_first;
-        void* dst = (void*) out_buffer;
-        callback(src, distance, dst, buffer_size, sizeof(char_type));
-        read = std::distance(in_first, (char*)src);
-        converted = std::distance(out_buffer, (char*)dst);
-
-        // store state
-        if (read < distance) {
-            // overflow in bytes written to dst, store state
-            in_first += read;
-        } else {
-            // fully converted
-            in_first = nullptr;
-            in_last = nullptr;
-        }
-
-        // set get input pointer
+        // perform the callback
+        std::streamsize converted = do_callback();
         if (!converted) {
             return traits_type::eof();
         }
@@ -124,39 +133,68 @@ auto filter_streambuf::underflow() -> int_type
 }
 
 
-auto filter_streambuf::overflow(int_type c) -> int_type
+std::streamsize filter_streambuf::do_callback()
 {
-    printf("Calling overflow...\n");
-    if (filebuf) {
+    size_t distance;
+    std::streamsize processed, converted;
 
-        // TODO: this isn't working...
-        int write = pptr() - pbase();
-        printf("Write is %d\n", write);
-        if (write) {
-            // TODO: write is the number of bytes to put into the output
-            // buffer, those that need to be converted.
-            // DO THIS SHIT
-            if (filebuf->sputn(out_buffer, write) != write)  {
-                return traits_type::eof();
-            }
-        }
+    // prep arguments
+    distance = std::distance(in_first, in_last);
+    const void* src = (const void*) in_first;
+    void* dst = (void*) out_buffer;
 
-        // write to output buffer
-        setp(out_buffer, out_buffer + buffer_size);
-        if (!traits_type::eq_int_type(c, traits_type::eof())) {
-            sputc(c);
-        }
-        return traits_type::not_eof(c);
+    // do callback
+    callback(src, distance, dst, buffer_size, sizeof(char_type));
+
+    // get callback data
+    processed = std::distance(in_first, (char*)src);
+    converted = std::distance(out_buffer, (char*)dst);
+
+    // store state
+    if (processed < distance) {
+        // overflow in bytes written to dst, store state
+        in_first += processed;
+    } else {
+        // fully converted
+        in_first = nullptr;
+        in_last = nullptr;
     }
 
-    return traits_type::eof();
+    return converted;
+}
+
+
+auto filter_streambuf::overflow(int_type c) -> int_type
+{
+    if (!(mode & std::ios_base::out)) {
+        return traits_type::eof();
+    }
+
+    if (filebuf) {
+        if (in_first == 0) {
+            in_first = in_buffer;
+            in_last = in_buffer;
+        } else if (in_last == in_first + buffer_size) {
+            std::streamsize converted = do_callback();
+            filebuf->sputn(out_buffer, converted);
+        }
+
+        if (!traits_type::eq_int_type(c, traits_type::eof())) {
+            *in_last++ = traits_type::to_char_type(c);
+        }
+    }
+    return traits_type::not_eof(c);
 }
 
 
 int filter_streambuf::sync()
 {
     auto result = overflow(traits_type::eof());
-    if (filebuf) {
+
+    // flush buffer on output
+    if (filebuf && mode & std::ios_base::out) {
+        std::streamsize converted = do_callback();
+        filebuf->sputn(out_buffer, converted);
         filebuf->pubsync();
     }
 
@@ -164,34 +202,6 @@ int filter_streambuf::sync()
         return -1;
     }
     return 0;
-}
-
-
-auto filter_streambuf::seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode mode) -> pos_type
-{
-    pos_type out;
-    if (filebuf) {
-        out = filebuf->pubseekoff(off, way, mode);
-        in_first = in_last = nullptr;
-    } else {
-        out = pos_type(off_type(-1));
-    }
-
-    return out;
-}
-
-
-auto filter_streambuf::seekpos(pos_type pos, std::ios_base::openmode mode) -> pos_type
-{
-    pos_type out;
-    if (filebuf) {
-        out = filebuf->pubseekpos(pos, mode);
-        in_first = in_last = nullptr;
-    } else {
-        out = pos_type(off_type(-1));
-    }
-
-    return out;
 }
 
 
@@ -203,11 +213,7 @@ void filter_streambuf::set_filebuf(std::streambuf* f)
 
 void filter_streambuf::set_callback(filter_callback c)
 {
-    if (c) {
-        callback = c;
-    } else {
-        callback = null_callback;
-    }
+    callback = c ? c : null_callback;
 }
 
 
@@ -215,7 +221,7 @@ void filter_streambuf::set_callback(filter_callback c)
 
 
 filter_istream::filter_istream(filter_callback c):
-    buffer(nullptr, c),
+    buffer(std::ios_base::in, nullptr, c),
     std::istream(&buffer)
 {}
 
@@ -225,7 +231,7 @@ filter_istream::~filter_istream()
 
 
 filter_istream::filter_istream(std::istream& stream, filter_callback c):
-    buffer(nullptr, c),
+    buffer(std::ios_base::in, nullptr, c),
     std::istream(&buffer)
 {
     open(stream, c);
@@ -268,6 +274,12 @@ void filter_istream::rdbuf(filter_streambuf *buffer)
 }
 
 
+void filter_istream::close()
+{
+    buffer.close();
+}
+
+
 void filter_istream::swap(filter_istream &other)
 {
     // swap
@@ -283,7 +295,7 @@ void filter_istream::swap(filter_istream &other)
 // OSTREAM
 
 filter_ostream::filter_ostream(filter_callback c):
-    buffer(nullptr, c),
+    buffer(std::ios_base::out, nullptr, c),
     std::ostream(&buffer)
 {}
 
@@ -293,7 +305,7 @@ filter_ostream::~filter_ostream()
 
 
 filter_ostream::filter_ostream(std::ostream& stream, filter_callback c):
-    buffer(nullptr, c),
+    buffer(std::ios_base::out, nullptr, c),
     std::ostream(&buffer)
 {
     open(stream, c);
@@ -333,6 +345,12 @@ filter_streambuf* filter_ostream::rdbuf() const
 void filter_ostream::rdbuf(filter_streambuf *buffer)
 {
     std::ios::rdbuf(buffer);
+}
+
+
+void filter_ostream::close()
+{
+    buffer.close();
 }
 
 
@@ -413,6 +431,7 @@ bool filter_ifstream::is_open() const
 
 void filter_ifstream::close()
 {
+    filter_istream::close();
     file.close();
 }
 
@@ -487,6 +506,7 @@ bool filter_ofstream::is_open() const
 
 void filter_ofstream::close()
 {
+    filter_ostream::close();
     file.close();
 }
 

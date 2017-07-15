@@ -48,6 +48,7 @@ PYCPP_BEGIN_NAMESPACE
         name##_istream();                                                                       \
         name##_istream(const name##_istream&) = delete;                                         \
         name##_istream & operator=(const name##_istream&) = delete;                             \
+        ~name##_istream();                                                                      \
                                                                                                 \
         name##_istream(std::istream& stream);                                                   \
         void open(std::istream& stream);                                                        \
@@ -72,6 +73,7 @@ PYCPP_BEGIN_NAMESPACE
         name##_ostream(int level);                                                              \
         name##_ostream(const name##_ostream&) = delete;                                         \
         name##_ostream & operator=(const name##_ostream&) = delete;                             \
+        ~name##_ostream();                                                                      \
                                                                                                 \
         name##_ostream(std::ostream& stream);                                                   \
         name##_ostream(std::ostream& stream, int level);                                        \
@@ -98,6 +100,7 @@ PYCPP_BEGIN_NAMESPACE
         name##_ifstream & operator=(const name##_ifstream&) = delete;                           \
         name##_ifstream(name##_ifstream&&);                                                     \
         name##_ifstream & operator=(name##_ifstream&&);                                         \
+        ~name##_ifstream();                                                                     \
                                                                                                 \
         name##_ifstream(const std::string &name, std::ios_base::openmode = std::ios_base::in);  \
         void open(const std::string &name, std::ios_base::openmode = std::ios_base::in);        \
@@ -121,6 +124,7 @@ PYCPP_BEGIN_NAMESPACE
         name##_ofstream & operator=(const name##_ofstream&) = delete;                                       \
         name##_ofstream(name##_ofstream&&);                                                                 \
         name##_ofstream & operator=(name##_ofstream&&);                                                     \
+        ~name##_ofstream();                                                                                 \
                                                                                                             \
         name##_ofstream(const std::string &name, std::ios_base::openmode = std::ios_base::out);             \
         name##_ofstream(const std::string &name, int level, std::ios_base::openmode = std::ios_base::out);  \

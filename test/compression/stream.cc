@@ -38,10 +38,7 @@ TEST(bz2_stream, bz2_ostream)
     {
         bz2_ostream bz2(sstream);
         bz2 << BZ2_DECOMPRESSED;
-
-// TODO: for some reason... shit...
     }
 
-//    EXPECT_EQ(sstream.str(), BZ2_COMPRESSED);
-    exit(0);
+    EXPECT_EQ(sstream.str(), BZ2_COMPRESSED);
 }

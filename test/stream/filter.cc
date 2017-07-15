@@ -49,24 +49,6 @@ TEST(filter_istream, nocallback)
 }
 
 
-TEST(filter_istream, seekg)
-{
-    std::istringstream sstream("This is a message");
-    filter_istream stream(sstream);
-    std::string line;
-
-    stream.seekg(5);
-    std::getline(stream, line);
-    EXPECT_EQ(line, "is a message");
-
-    sstream.seekg(0);
-    filter_istream stream2(sstream, doublechars);
-    stream2.seekg(5);
-    std::getline(stream2, line);
-    EXPECT_EQ(line, "iiss  aa  mmeessssaaggee");
-}
-
-
 TEST(filter_istream, doublechars)
 {
     std::istringstream sstream("This is a message");
@@ -78,6 +60,23 @@ TEST(filter_istream, doublechars)
 }
 
 
-// TODO: ostream
-// TODO: ifstream
-// TODO: ofstream
+TEST(filter_ostream, nocallback)
+{
+    std::ostringstream sstream;
+    {
+        filter_ostream stream(sstream);
+        stream << "This is a message";
+    }
+    EXPECT_EQ(sstream.str(), "This is a message");
+}
+
+
+TEST(filter_ostream, doublechars)
+{
+    std::ostringstream sstream;
+    {
+        filter_ostream stream(sstream, doublechars);
+        stream << "This is a message";
+    }
+    EXPECT_EQ(sstream.str(), "TThhiiss  iiss  aa  mmeessssaaggee");
+}
