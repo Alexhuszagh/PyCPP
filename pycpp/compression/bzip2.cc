@@ -22,6 +22,7 @@ static constexpr int BZ2_SMALL = 0;
 static constexpr int BZ2_BLOCK_SIZE = 9;
 static constexpr int BZ2_VERBOSITY = 0;
 static constexpr int BZ2_WORK_FACTOR = 30;
+static constexpr int BUFFER_SIZE = 4096;
 
 #if SYSTEM_ARCHITECTURE == 16
     static const uint16_t UNCOMPRESSED_MAX = 0xFB24ULL;
@@ -449,6 +450,43 @@ std::string bzip2_compress(const std::string &str)
     }
     std::string output(reinterpret_cast<const char*>(dst), out);
     safe_free(dst);
+
+    return output;
+}
+
+
+std::string bzip2_decompress(const std::string &str)
+{
+    // configurations
+    size_t dstlen = 0;
+    size_t srclen = str.size();
+    size_t dst_pos = 0;
+    size_t src_pos = 0;
+    char* buffer = (char*) safe_malloc(dstlen);
+    void* dst = (void*) buffer;
+    const void* src = (const void*) str.data();
+
+    // initialize our decompression
+    compression_status status = compression_ok;
+    try {
+        bz2_decompressor ctx;
+        while (status != compression_eof) {
+            dstlen += BUFFER_SIZE;
+            buffer = (char*) safe_realloc(buffer, dstlen);
+            dst = (void*) (buffer + dst_pos);
+            status = ctx.decompress(src, srclen - src_pos, dst, dstlen - dst_pos);
+            dst_pos = std::distance(buffer, (char*) dst);
+            src_pos = std::distance(str.data(), (const char*) src);
+        }
+    } catch (...) {
+        safe_free(dst);
+        throw;
+    }
+
+    // create our output string
+    size_t out = std::distance(buffer, (char*) dst);
+    std::string output(buffer, out);
+    safe_free(buffer);
 
     return output;
 }

@@ -69,6 +69,10 @@ size_t bzip2_compress(const void *src, size_t srclen, void* dst, size_t dstlen);
  */
 std::string bzip2_compress(const std::string &str);
 
+/** \brief BZIP2-decompress data.
+ */
+std::string bzip2_decompress(const std::string &str);
+
 /** \brief BZIP2-decompress data. Returns number of bytes converted.
  *
  *  \param bound            Known size of decompressed buffer.
