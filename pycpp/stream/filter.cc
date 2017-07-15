@@ -126,9 +126,16 @@ auto filter_streambuf::underflow() -> int_type
 
 auto filter_streambuf::overflow(int_type c) -> int_type
 {
+    printf("Calling overflow...\n");
     if (filebuf) {
+
+        // TODO: this isn't working...
         int write = pptr() - pbase();
+        printf("Write is %d\n", write);
         if (write) {
+            // TODO: write is the number of bytes to put into the output
+            // buffer, those that need to be converted.
+            // DO THIS SHIT
             if (filebuf->sputn(out_buffer, write) != write)  {
                 return traits_type::eof();
             }

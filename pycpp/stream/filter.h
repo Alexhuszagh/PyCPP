@@ -105,12 +105,12 @@ public:
 
     filter_istream(std::istream& stream, filter_callback = nullptr);
     void open(std::istream& stream, filter_callback = nullptr);
+    filter_streambuf* rdbuf() const;
+    void rdbuf(filter_streambuf *buffer);
 
 protected:
     filter_istream(filter_istream&&);
     filter_istream & operator=(filter_istream&&);
-    filter_streambuf* rdbuf() const;
-    void rdbuf(filter_streambuf *buffer);
     void swap(filter_istream &other);
 
 private:
@@ -132,12 +132,12 @@ public:
 
     filter_ostream(std::ostream& stream, filter_callback = nullptr);
     void open(std::ostream& stream, filter_callback = nullptr);
+    filter_streambuf* rdbuf() const;
+    void rdbuf(filter_streambuf *buffer);
 
 protected:
     filter_ostream(filter_ostream&&);
     filter_ostream & operator=(filter_ostream&&);
-    filter_streambuf* rdbuf() const;
-    void rdbuf(filter_streambuf *buffer);
     void swap(filter_ostream &other);
 
 private:
