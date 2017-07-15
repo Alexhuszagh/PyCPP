@@ -121,13 +121,11 @@ bz2_compressor_impl::bz2_compressor_impl(int block_size)
     stream.avail_out = 0;
     stream.next_out = nullptr;
     BZ2_CHECK(BZ2_bzCompressInit(&stream, block_size, verbosity, small));
-    printf("BZ2_bzCompressInit %p\n", stream.state);
 }
 
 
 bz2_compressor_impl::~bz2_compressor_impl()
 {
-    printf("~bz2_compressor_impl %p\n", stream.state);
     BZ2_bzCompressEnd(&stream);
 }
 
@@ -162,7 +160,6 @@ bool bz2_compressor_impl::flush(void*& dst, size_t dstlen)
     if (dst == nullptr) {
         return false;
     }
-    printf("flush %p, %p, %zu\n", stream.state, dst, dstlen);
     before(dst, dstlen);
     bool code;
     if (dstlen) {
@@ -192,7 +189,6 @@ compression_status bz2_compressor_impl::check_status(const void* src, void* dst)
 
 void bz2_compressor_impl::after(void*& dst)
 {
-    printf("::after() %p, %p, %d\n", dst, stream.next_out, stream.avail_out);
     dst = stream.next_out;
 }
 
@@ -206,7 +202,6 @@ void bz2_compressor_impl::after(const void*& src, void*& dst)
 
 compression_status bz2_compressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    printf("operator() %p %d\n", stream.state, status);
     // no input data, or already reached stream end
     if (status == BZ_STREAM_END) {
         return compression_eof;
@@ -217,8 +212,6 @@ compression_status bz2_compressor_impl::operator()(const void*& src, size_t srcl
     }
 
     bool use_src = (stream.next_in == nullptr || stream.avail_in == 0);
-//    printf("Have use_src %d\n", use_src);
-    printf("%.100s\n", src);
     if (use_src) {
         before(src, srclen, dst, dstlen);
     } else {
@@ -362,42 +355,33 @@ compression_status bz2_decompressor_impl::operator()(const void*& src, size_t sr
 
 bz2_compressor::bz2_compressor(int compress_level):
     ptr_(new bz2_compressor_impl(compress_level))
-{
-    printf("bz2_compressor(int compress_level)\n");
-}
+{}
 
 
 bz2_compressor::bz2_compressor(bz2_compressor&& rhs):
     ptr_(std::move(rhs.ptr_))
-{
-    printf("bz2_compressor(bz2_compressor&& rhs)\n");
-}
+{}
 
 
 bz2_compressor & bz2_compressor::operator=(bz2_compressor&& rhs)
 {
-    printf("operator=(bz2_compressor&& rhs)\n");
     std::swap(ptr_, rhs.ptr_);
     return *this;
 }
 
 
 bz2_compressor::~bz2_compressor()
-{
-    printf("~bz2_compressor\n");
-}
+{}
 
 
 compression_status bz2_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    printf("bz2_compressor::compress\n");
     return (*ptr_)(src, srclen, dst, dstlen);
 }
 
 
 bool bz2_compressor::flush(void*& dst, size_t dstlen)
 {
-    printf("bz2_compressor::flush\n");
     return ptr_->flush(dst, dstlen);
 }
 

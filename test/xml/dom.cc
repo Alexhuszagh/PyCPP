@@ -60,4 +60,13 @@ TEST(xml, dom)
 
     str = document.dumps(' ', 4);
     EXPECT_EQ(str, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<note>    <to email=\"tove@tove.com\">Tove</to>\n    <from email=\"jani@jani.com\">Jani</from>\n    <heading>Reminder</heading>\n    <body>Don't forget me this weekend!</body>\n</note>\n");
+
+    // tostring
+    EXPECT_EQ(to.tostring(), "<to email=\"tove@tove.com\">Tove</to>\n");
+    EXPECT_EQ(from.tostring(), "<from email=\"jani@jani.com\">Jani</from>\n");
+    EXPECT_EQ(body.tostring(), "<body>Don't forget me this weekend!</body>\n");
+
+    // fromstring
+    auto from_copy = xml_node_t::fromstring(from.tostring());
+    EXPECT_EQ(from.get_tag(), from_copy.get_tag());
 }

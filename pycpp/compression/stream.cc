@@ -2,7 +2,6 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/compression/stream.h>
-#include <iostream>     // TODO: remove
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -122,6 +121,8 @@ PYCPP_BEGIN_NAMESPACE
 #define COMPRESSED_STREAM_DEFINITION(name)                              \
     COMPRESSED_ISTREAM(name);                                           \
     COMPRESSED_OSTREAM(name);                                           \
+
+// TODO: need to finish the ofstream, ifstream overloads
 
 //    COMPRESSED_OSTREAM(name);                                           \
 //    COMPRESSED_IFSTREAM(name);                                          \

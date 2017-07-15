@@ -8,9 +8,15 @@
 #include <pycpp/multi_index/sequenced_index.h>
 #include <pycpp/multi_index/tag.h>
 #include <pycpp/xml/core.h>
+#include <pycpp/xml/dom.h>
+#include <sstream>
 #include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
+
+// NOTICE
+// The `tostring` is declared in the `dom.cc`
+// source file, since this simplifies the definition.
 
 // ALIAS
 // -----
@@ -371,6 +377,28 @@ auto xml_node_list_t::findall(const xml_string_t& tag) const -> std::pair<iterat
 }
 
 
+xml_string_list_t xml_node_list_t::tostringlist() const
+{
+    xml_string_list_t list;
+    for (const xml_node_t &node: *this) {
+        list.emplace_back(node.tostring());
+    }
+
+    return list;
+}
+
+
+xml_node_list_t xml_node_list_t::fromstringlist(const xml_string_list_t& strlist)
+{
+    xml_node_list_t list;
+    for (const xml_string_t& str: strlist) {
+        list.push_back(xml_node_t::fromstring(str));
+    }
+
+    return list;
+}
+
+
 bool xml_node_list_t::empty() const
 {
     auto& c = *(const xml_node_list_impl_t*) ptr_;
@@ -544,6 +572,24 @@ xml_node_t::xml_node_t():
 xml_node_t::xml_node_t(xml_node_impl_t*ptr):
     ptr_(ptr)
 {}
+
+
+xml_node_t xml_node_t::fromstring(const xml_string_t& str)
+{
+    xml_node_t node;
+    {
+        std::istringstream stream(str);
+        xml_stream_reader reader;
+        xml_dom_handler handler(node);
+        reader.set_handler(handler);
+        reader.parse(stream);
+    }
+
+    // we want the first child, the actual element parsed
+    auto& child = *node.begin();
+    child.ptr_->parent = nullptr;
+    return child;
+}
 
 
 auto xml_node_t::begin() -> iterator

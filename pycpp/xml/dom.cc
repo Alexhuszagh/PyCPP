@@ -1,6 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/stringlib.h>
 #include <pycpp/xml/dom.h>
 #include <sstream>
 #include <stdexcept>
@@ -27,6 +28,24 @@ static void dump_impl(const xml_node_t& node, xml_stream_writer& writer)
 
 // OBJECTS
 // -------
+
+
+xml_string_t xml_node_t::tostring() const
+{
+    std::ostringstream stream;
+    {
+        xml_stream_writer writer(stream, ' ', 0);
+        dump_impl(*this, writer);
+    }
+
+    // remove the XML declaration
+    xml_string_t str = stream.str();
+    size_t end_decl = str.find("?>\n");
+    if (end_decl == str.npos) {
+        return str;
+    }
+    return str.substr(end_decl + 3);
+}
 
 
 xml_dom_handler::xml_dom_handler(xml_node_t& root):

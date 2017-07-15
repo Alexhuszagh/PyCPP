@@ -2,15 +2,15 @@
     - RE2 backbone
     - Add RE2 to project.
 
-- TODO: there's an issue in my RE2 implementation...
-    ~bz2_compressor_impl is getting called **almost** immediately...
+- Need to finish the compression streams
+    - ifstream
+    - ofstream
 
-- BZIP2 buffer needs to grow exponentially (2-fold).
-    - Don't use a constant buffer size... seriously.
-    - https://stackoverflow.com/a/19849403/4131059
-
-- Need to make the streambuf's buffer increase maybe???
-    - buffer_size
+- Need to finish the compression modules
+    - ZLIB
+    - GZIP
+    - LZMA
+    - BLOSC
 
 - Mathlib
     - Need array/axis unittests
@@ -27,11 +27,4 @@
 - Math
     - Need a NumPy-like container
     - Needs to be an N-D array
-
-- Compression support
-    - Detection
-    - Compressors/decompressors
-    - ZLIB
-    - LZMA
-    - BZ2
 

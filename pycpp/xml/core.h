@@ -139,8 +139,8 @@ public:
     std::pair<iterator, iterator> findall(const xml_string_t&) const;
 
     // I/O
-    // xml_string_list_t tostringlist() const;
-    // static xml_node_t fromstringlist(const xml_string_list_t&);
+    xml_string_list_t tostringlist() const;
+    static xml_node_list_t fromstringlist(const xml_string_list_t&);
 
     // CAPACITY
     bool empty() const;
@@ -172,8 +172,6 @@ private:
 
 /**
  *  \brief XML node type.
- *
- *  // TODO: document the interface
  */
 struct xml_node_t
 {
@@ -197,8 +195,8 @@ public:
     xml_node_t & operator=(xml_node_t&&) = default;
 
     // I/O
-    // xml_string_t tostring() const;
-    // static xml_node_t fromstring(const xml_string_t&);
+    xml_string_t tostring() const;
+    static xml_node_t fromstring(const xml_string_t&);
 
     // ITERATORS
     iterator begin();

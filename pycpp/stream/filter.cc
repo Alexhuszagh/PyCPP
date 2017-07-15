@@ -80,7 +80,7 @@ void filter_streambuf::close()
 {
     sync();
     std::streamsize converted = do_callback();
-    if (converted && mode & std::ios_base::out) {
+    if (converted && filebuf && mode & std::ios_base::out) {
         filebuf->sputn(out_buffer, converted);
     }
 
