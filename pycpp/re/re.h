@@ -3,20 +3,38 @@
 /**
  *  \addtogroup PyCPP
  *  \brief High-level regular expression methods.
+ *
+ *  \warning These global functions are not rentrant, since they
+ *  rely on a global cache to store compiled regex objects,
+ *  storing the last N (typically 100) compiled regular expression
+ *  objects. If you need thread safety, you should instantiate a
+ *  separate `regex_t` object per thread.
  */
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <pycpp/view/string.h>
+#include <pycpp/re/match.h>
 
 PYCPP_BEGIN_NAMESPACE
+
+// FUNCTIONS
+// ---------
+
+/**
+ *  \brief Search for pattern within string.
+ */
+match_t search(const string_view& pattern, const string_view& str);
+
+/**
+ *  \brief Match pattern within string.
+ */
+match_t match(const string_view& pattern, const string_view& str);
+
+// TODO: This could use an LRU cache...
 
 // TODO: need to implement a cache here..
 // Abstract away the actual pattern/regex compilation.
 
-// re.search(pattern, string, flags=0)
-// re.match(pattern, string, flags=0)
 // re.split(pattern, string, maxsplit=0, flags=0)
 // re.findall(pattern, string, flags=0)
 // re.finditer(pattern, string, flags=0)

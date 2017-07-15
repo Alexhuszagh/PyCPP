@@ -386,6 +386,7 @@ endif()
 if(BUILD_RE)
     list(APPEND SOURCE_FILES
         pycpp/re/match.cc
+        pycpp/re/re.cc
     )
 endif()
 
@@ -456,6 +457,7 @@ endif()
 
 set(TEST_FILES
     test/main.cc
+    test/cache/lru.cc
     test/reference/deque.cc
     test/reference/vector.cc
     test/safe/stdlib.cc
