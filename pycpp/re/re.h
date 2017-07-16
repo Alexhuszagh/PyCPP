@@ -40,7 +40,14 @@ match_t match(const std::string& pattern, const string_view& str);
 // re.finditer(pattern, string, flags=0)
 // re.sub(pattern, repl, string, count=0, flags=0)
 // re.subn(pattern, repl, string, count=0, flags=0)
-// re.escape(pattern)
+
+/**
+ *  \brief Escape all characters except for ASCII numbers and letters.
+ *
+ *  Escapes all ASCII non-alphanumeric characters, assuming
+ *  UTF-8 source encoding.
+ */
+std::string escape(const string_view& str);
 
 /**
  *  \brief Purge the regex cache.

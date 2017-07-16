@@ -7,6 +7,30 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// HELPERS
+// -------
+
+static std::string add_group0(const string_view& view)
+{
+    // DESCRIPTION
+    // We need to add our "group 0" to the regular expression.
+    // Normally, RE2 doesn't store string information unless
+    // you **explicitly** provide it.
+
+    // There are two "patches" here: One is the addition of a capture
+    // group for the entire string.
+
+    // The other is ".*", which allows trailing characters for
+    // `FullMatchN`. This means `FullMatchN` requires specificity
+    // at the start of a string, but not at the end.
+
+    std::string str = "(";
+    str.append(view.data(), view.size());
+    str += ").*";
+
+    return str;
+}
+
 // OBJECTS
 // -------
 
@@ -44,20 +68,15 @@ regex_impl_t::~regex_impl_t()
 void regex_impl_t::initialize()
 {
     argc = re2.NumberOfCapturingGroups();
-    if (argc) {
-        // named capture groups
-        argv = new re2::RE2::Arg[argc];
-        argp = new re2::RE2::Arg*[argc];
-        piece = new re2::StringPiece[argc+1];
+    // named capture groups
+    argv = new re2::RE2::Arg[argc];
+    argp = new re2::RE2::Arg*[argc];
+    piece = new re2::StringPiece[argc];
 
-        for (size_t i = 0; i < argc; ++i) {
-            // always have the 0-index piece as the whole group
-            argv[i] = &piece[i+1];
-            argp[i] = &argv[i];
-        }
-    } else {
-        // always store 0 index for start/end matching
-        piece = new re2::StringPiece[1];
+    for (size_t i = 0; i < argc; ++i) {
+        // always have the 0-index piece as the whole group
+        argv[i] = &piece[i];
+        argp[i] = &argv[i];
     }
 }
 
@@ -75,7 +94,7 @@ void regex_impl_t::clear()
 
 
 regex_t::regex_t(const string_view& view):
-    ptr_(new regex_impl_t(view))
+    ptr_(new regex_impl_t(add_group0(view)))
 {
     if (!ptr_->re2.ok()) {
         throw std::runtime_error("Invalid regular expression pattern.");
@@ -104,17 +123,8 @@ match_t regex_t::search(const string_view& str, size_t pos, size_t endpos)
     auto view = str.substr(pos, endpos);
     re2::StringPiece input(view.data(), view.size());
 
-    // TODO: verify this is accurate...
-    if (ptr_->argc) {
-        // capturing groups
-        if (re2::RE2::PartialMatchN(input, ptr_->re2, ptr_->argp, ptr_->argc)) {
-            return match_t(*this, str, pos, endpos);
-        }
-    } else {
-        // no capturing groups
-        if (re2::RE2::PartialMatch(input, ptr_->re2, ptr_->piece)) {
-            return match_t(*this, str, pos, endpos);
-        }
+    if (re2::RE2::PartialMatchN(input, ptr_->re2, ptr_->argp, ptr_->argc)) {
+        return match_t(*this, str, pos, endpos);
     }
 
     return match_t();
@@ -126,17 +136,8 @@ match_t regex_t::match(const string_view& str, size_t pos, size_t endpos)
     auto view = str.substr(pos, endpos);
     re2::StringPiece input(view.data(), view.size());
 
-    // TODO: verify this is accurate...
-    if (ptr_->argc) {
-        // capturing groups
-        if (re2::RE2::FullMatchN(input, ptr_->re2, ptr_->argp, ptr_->argc)) {
-            return match_t(*this, str, pos, endpos);
-        }
-    } else {
-        // no capturing groups
-        if (re2::RE2::FullMatch(input, ptr_->re2, ptr_->piece)) {
-            return match_t(*this, str, pos, endpos);
-        }
+    if (re2::RE2::FullMatchN(input, ptr_->re2, ptr_->argp, ptr_->argc)) {
+        return match_t(*this, str, pos, endpos);
     }
 
     return match_t();

@@ -32,9 +32,10 @@ match_impl_t::~match_impl_t()
 }
 
 
-match_t::match_t(match_t&& rhs):
-    ptr_(std::move(rhs.ptr_))
-{}
+match_t::match_t(match_t&& rhs)
+{
+    std::swap(ptr_, rhs.ptr_);
+}
 
 
 match_t & match_t::operator=(match_t&& rhs)
@@ -50,7 +51,7 @@ match_t::~match_t()
 
 const string_view& match_t::group(size_t index) const
 {
-    assert(index <= ptr_->argc);
+    assert(index < ptr_->argc);
     return ptr_->groups[index];
 }
 
@@ -58,8 +59,8 @@ const string_view& match_t::group(size_t index) const
 match_groups match_t::groups() const
 {
     match_groups list;
-    list.reserve(ptr_->argc);
-    for (size_t i = 1; i <= ptr_->argc; ++i) {
+    list.reserve(ptr_->argc - 1);
+    for (size_t i = 1; i < ptr_->argc; ++i) {
         list.emplace_back(group(i));
     }
 
@@ -113,7 +114,8 @@ size_t match_t::endpos() const
 
 size_t match_t::lastindex() const
 {
-    return ptr_->argc;
+    // always have extra arg for group0
+    return ptr_->argc - 1;
 }
 
 
@@ -149,8 +151,8 @@ match_t::match_t(regex_t& regex, const string_view& view, size_t pos, size_t end
     ptr_->pos = pos;
     ptr_->endpos = endpos;
     ptr_->argc = regex.ptr_->argc;
-    ptr_->groups = new string_view[ptr_->argc + 1];
-    for (size_t i = 0; i < ptr_->argc + 1; ++i) {
+    ptr_->groups = new string_view[ptr_->argc];
+    for (size_t i = 0; i < ptr_->argc; ++i) {
         auto piece = regex.ptr_->piece[i];
         ptr_->groups[i] = string_view(piece.data(), piece.size());
     }

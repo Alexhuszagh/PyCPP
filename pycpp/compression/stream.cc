@@ -16,7 +16,6 @@ PYCPP_BEGIN_NAMESPACE
     [this](const void*& src, size_t srclen, void*& dst,                 \
            size_t dstlen, size_t char_size)                             \
     {                                                                   \
-        std::cout << src << " " << srclen << " " << dst << " " << dstlen << std::endl; \
         if (srclen) {                                                   \
             ctx.compress(src, srclen, dst, dstlen);                     \
         } else {                                                        \

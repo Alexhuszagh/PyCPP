@@ -4,6 +4,7 @@
 #include <pycpp/cache/lru.h>
 #include <pycpp/re/re.h>
 #include <pycpp/re/regex.h>
+#include <iostream>         // TODO: remove
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -29,7 +30,7 @@ static regex_t& compile(const std::string& pattern)
 {
     auto it = REGEX_CACHE.find(pattern);
     if (it == REGEX_CACHE.end()) {
-        REGEX_CACHE.insert(pattern, regex_t(pattern));
+        it = REGEX_CACHE.insert(pattern, regex_t(pattern)).first;
     }
 
     return *it;
@@ -48,6 +49,26 @@ match_t search(const std::string& pattern, const string_view& str)
 match_t match(const std::string& pattern, const string_view& str)
 {
     return compile(pattern).match(str);
+}
+
+
+std::string escape(const string_view& str)
+{
+    std::string output;
+    output.reserve(str.size() * 2 + 1);
+
+    for (const char c: str) {
+        if ((c >= 0 && c <= 47) ||      // Null - /
+            (c >= 58 && c <= 64) ||     // : - @
+            (c >= 91 && c <= 96) ||     // [ - `]
+            (c >= 123 && c <= 126)) {   // ( - ~
+            output.push_back('\\');
+        }
+        output.push_back(c);
+    }
+
+    output.shrink_to_fit();
+    return output;
 }
 
 

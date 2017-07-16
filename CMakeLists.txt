@@ -559,6 +559,14 @@ if(BUILD_MATH)
     )
 endif()
 
+if(BUILD_RE)
+    list(APPEND TEST_FILES
+        test/re/match.cc
+        test/re/re.cc
+        test/re/regex.cc
+    )
+endif()
+
 if (BUILD_STREAM)
     list(APPEND TEST_FILES
         test/stream/fstream.cc
