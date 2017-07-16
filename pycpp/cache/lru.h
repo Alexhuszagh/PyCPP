@@ -442,11 +442,11 @@ auto lru_cache<K, V, H, P, A>::erase(const_iterator pos) -> iterator
 template <typename K, typename V, typename H, typename P, typename A>
 auto lru_cache<K, V, H, P, A>::erase(const key_type& key) -> size_type
 {
-    const_iterator it = find(key);
-    if (it == cend()) {
+    auto it = map_.find(key);
+    if (it == map_.cend()) {
         return 0;
     }
-    erase(it);
+    erase(LRU_CONST_ITERATOR(it->second));
     return 1;
 }
 
@@ -454,8 +454,8 @@ auto lru_cache<K, V, H, P, A>::erase(const key_type& key) -> size_type
 template <typename K, typename V, typename H, typename P, typename A>
 auto lru_cache<K, V, H, P, A>::erase(const_iterator first, const_iterator last) -> iterator
 {
-    for (; first != last; ++first) {
-        erase(first);
+    for (; first != last; ) {
+        first = LRU_CONST_ITERATOR(erase(first).base());
     }
     return LRU_ITERATOR(last.base());
 }

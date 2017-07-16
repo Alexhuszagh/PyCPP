@@ -127,7 +127,36 @@ TEST(lru_cache, lookup)
 
 
 TEST(lru_cache, modifiers)
-{}
+{
+    using cache_type = lru_cache<int, int>;
+
+    cache_type cache(50);
+    EXPECT_EQ(cache.size(), 0);
+
+    for (size_t i = 0; i < 50; ++i) {
+        cache.insert(i, 2*i);
+    }
+    EXPECT_EQ(cache.size(), 50);
+    EXPECT_EQ(cache.at(0), 0);
+
+    cache.erase(cache.cbegin());
+    EXPECT_EQ(cache.size(), 49);
+
+    cache.erase(1);
+    EXPECT_EQ(cache.size(), 48);
+
+    cache.erase(cache.cbegin(), cache.cend());
+    EXPECT_EQ(cache.size(), 0);
+
+    cache_type copy(cache);
+    cache.insert(1, 1);
+    cache.swap(copy);
+    EXPECT_EQ(copy.size(), 1);
+    EXPECT_EQ(cache.size(), 0);
+
+    copy.clear();
+    EXPECT_EQ(copy.size(), 0);
+}
 
 
 TEST(lru_cache, bucket)
