@@ -109,6 +109,12 @@ TEST(re, split)
 }
 
 
+TEST(re, sub)
+{
+    EXPECT_EQ(sub("(\\w+)", "+\\1", "These are a bunch of words"), "+These +are +a +bunch +of +words");
+}
+
+
 TEST(re, escape)
 {
     EXPECT_EQ(escape(string_view("\0", 1)), std::string("\\\0", 2));

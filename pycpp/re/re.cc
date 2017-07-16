@@ -69,6 +69,12 @@ match_groups split(const std::string& pattern, const string_view& str, size_t ma
 }
 
 
+std::string sub(const std::string& pattern, const string_view& repl, const string_view& str)
+{
+    return compile(pattern).sub(repl, str);
+}
+
+
 std::string escape(const string_view& str)
 {
     std::string output;

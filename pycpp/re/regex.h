@@ -38,8 +38,7 @@ public:
     match_groups split(const string_view& str, size_t maxsplit = -1);
     match_groups findall(const string_view& str, size_t start = 0, size_t endpos = string_view::npos);
     match_range finditer(const string_view& str, size_t start = 0, size_t endpos = string_view::npos);
-    // sub
-    // subn
+    std::string sub(const string_view& repl, const string_view& str);
     size_t groups() const;
     const std::map<std::string, int>& groupindex() const;
 

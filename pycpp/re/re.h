@@ -45,8 +45,10 @@ match_groups findall(const std::string& pattern, const string_view& str);
  */
 match_range finditer(const std::string& pattern, const string_view& str);
 
-// re.sub(pattern, repl, string, count=0, flags=0)
-// re.subn(pattern, repl, string, count=0, flags=0)
+/**
+ *  \brief Replace all matches of pattern in str with repl.
+ */
+std::string sub(const std::string& pattern, const string_view& repl, const string_view& str);
 
 /**
  *  \brief Escape all characters except for ASCII numbers and letters.

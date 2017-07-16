@@ -69,4 +69,17 @@ TEST(regex, split)
     EXPECT_EQ(whitespace[4], " ");
     EXPECT_EQ(whitespace[5], " ");
     EXPECT_EQ(whitespace[6], "");
+
+    // limit split
+    whitespace = regex.split(data, 1);
+    ASSERT_EQ(whitespace.size(), 2);
+    EXPECT_EQ(whitespace[0], "");
+    EXPECT_EQ(whitespace[1], " are a bunch of words");
+}
+
+
+TEST(regex, sub)
+{
+    regexp_t regex("(\\w+)");
+    EXPECT_EQ(regex.sub("+\\1", "These are a bunch of words"), "+These +are +a +bunch +of +words");
 }

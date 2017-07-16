@@ -1,7 +1,3 @@
-- Regular expressions
-    - RE2 backbone
-    - Add RE2 to project.
-
 - Need to finish the compression streams
     - ifstream
     - ofstream

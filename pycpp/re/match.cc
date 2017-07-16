@@ -10,7 +10,6 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-
 /**
  *  \brief Implied base class for the regular expression match object.
  */

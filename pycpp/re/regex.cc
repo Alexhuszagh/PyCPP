@@ -40,6 +40,7 @@ static std::string add_group0(const string_view& view)
 struct regex_impl_t
 {
     re2::RE2 re2;
+    re2::RE2 sub;
     size_t argc = 0;
     re2::RE2::Arg* argv = nullptr;
     re2::RE2::Arg** argp = nullptr;
@@ -53,7 +54,8 @@ struct regex_impl_t
 
 
 regex_impl_t::regex_impl_t(const string_view& view):
-    re2(re2::StringPiece(view.data(), view.size()))
+    re2(re2::StringPiece(add_group0(view))),
+    sub(re2::StringPiece(view.data(), view.size()))
 {
     initialize();
 }
@@ -94,7 +96,7 @@ void regex_impl_t::clear()
 
 
 regexp_t::regexp_t(const string_view& view):
-    ptr_(new regex_impl_t(add_group0(view)))
+    ptr_(new regex_impl_t(view))
 {
     if (!ptr_->re2.ok()) {
         throw std::runtime_error("Invalid regular expression pattern.");
@@ -177,6 +179,16 @@ match_range regexp_t::finditer(const string_view& str, size_t pos, size_t endpos
 {
     auto view = str.substr(pos, endpos);
     return match_range(match_iterator_t(*this, view));
+}
+
+
+std::string regexp_t::sub(const string_view& repl, const string_view& str)
+{
+    std::string data(str);
+    re2::StringPiece repl_(repl.data(), repl.size());
+    re2::RE2::GlobalReplace(&data, ptr_->sub, repl_);
+
+    return data;
 }
 
 
