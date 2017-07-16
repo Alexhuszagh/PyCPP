@@ -3,15 +3,9 @@
 
 #include <pycpp/compression/core.h>
 #include <pycpp/compression/zlib.h>
-#include <pycpp/safe/stdlib.h>
 #include <zlib.h>
 
 PYCPP_BEGIN_NAMESPACE
-
-// MACROS
-// ------
-
-#define CHECK(EX) (void)((EX) >= 0 || (throw std::runtime_error(#EX), 0))
 
 // HELPERS
 // -------
@@ -236,55 +230,14 @@ size_t zlib_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
 std::string zlib_compress(const std::string &str)
 {
     size_t dstlen = zlib_compress_bound(str.size());
-    auto *dst = safe_malloc(dstlen);
-
-    size_t out;
-    try {
-        out = zlib_compress(str.data(), str.size(), dst, dstlen);
-    } catch (std::exception&) {
-        safe_free(dst);
-        throw;
-    }
-    std::string output(reinterpret_cast<const char*>(dst), out);
-    safe_free(dst);
-
-    return output;
+    return compress_bound(str, dstlen, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
+        return zlib_compress(src, srclen, dst, dstlen);
+    });
 }
 
 std::string zlib_decompress(const std::string &str)
 {
-    // configurations
-    size_t dstlen = BUFFER_SIZE;
-    size_t srclen = str.size();
-    size_t dst_pos = 0;
-    size_t src_pos = 0;
-    char* buffer = (char*) safe_malloc(dstlen);
-    void* dst = (void*) buffer;
-    const void* src = (const void*) str.data();
-
-    // initialize our decompression
-    compression_status status = compression_ok;
-    try {
-        zlib_decompressor ctx;
-        while (status != compression_eof) {
-            dstlen *= 2;
-            buffer = (char*) safe_realloc(buffer, dstlen);
-            dst = (void*) (buffer + dst_pos);
-            status = ctx.decompress(src, srclen - src_pos, dst, dstlen - dst_pos);
-            dst_pos = std::distance(buffer, (char*) dst);
-            src_pos = std::distance(str.data(), (const char*) src);
-        }
-    } catch (...) {
-        safe_free(dst);
-        throw;
-    }
-
-    // create our output string
-    size_t out = std::distance(buffer, (char*) dst);
-    std::string output(buffer, out);
-    safe_free(buffer);
-
-    return output;
+    return ctx_decompress<zlib_decompressor>(str);
 }
 
 
@@ -305,19 +258,9 @@ size_t zlib_decompress(const void *src, size_t srclen, void* dst, size_t dstlen,
 
 std::string zlib_decompress(const std::string &str, size_t bound)
 {
-    auto *dst = safe_malloc(bound);
-
-    size_t out;
-    try {
-        out = zlib_decompress(str.data(), str.size(), dst, bound, bound);
-    } catch (std::exception&) {
-        safe_free(dst);
-        throw;
-    }
-    std::string output(reinterpret_cast<const char*>(dst), out);
-    safe_free(dst);
-
-    return output;
+    return decompress_bound(str, bound, [](const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound) {
+        return zlib_decompress(src, srclen, dst, dstlen, bound);
+    });
 }
 
 

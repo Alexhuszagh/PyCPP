@@ -307,6 +307,7 @@ if(BUILD_COMPRESSION)
         pycpp/compression/bzip2.cc
         pycpp/compression/detect.cc
         pycpp/compression/exception.cc
+        pycpp/compression/gzip.cc
         pycpp/compression/lzma.cc
         pycpp/compression/stream.cc
         pycpp/compression/zlib.cc
@@ -510,6 +511,7 @@ if(BUILD_COMPRESSION)
         test/compression/blosc.cc
         test/compression/bzip2.cc
         test/compression/detect.cc
+        test/compression/gzip.cc
         test/compression/lzma.cc
         test/compression/stream.cc
         test/compression/zlib.cc
