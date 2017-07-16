@@ -342,14 +342,14 @@ void md5_hash::update(const secure_string_view& str)
 }
 
 
-size_t md5_hash::digest(void* dst, size_t dstlen) const
+void md5_hash::digest(void*& dst, size_t dstlen) const
 {
     md5_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, MD5_HASH_SIZE, md5_final);
 }
 
 
-size_t md5_hash::hexdigest(void* dst, size_t dstlen) const
+void md5_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     md5_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, MD5_HASH_SIZE, md5_final);

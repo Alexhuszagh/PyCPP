@@ -90,9 +90,8 @@ void hash_update(void* ctx, const void* src, long srclen, void (*cb)(void*, cons
 
 /**
  *  \brief Get digest from context.
- // TODO: change to update dst
  */
-size_t hash_digest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*));
+void hash_digest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)(void*, void*));
 
 /**
  *  \brief Get digest from context.
@@ -101,9 +100,8 @@ secure_string hash_digest(void* ctx, long hashlen, void (*cb)(void*, void*));
 
 /**
  *  \brief Get hexdigest from context.
- // TODO: change to update dst
  */
-size_t hash_hexdigest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*));
+void hash_hexdigest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)(void*, void*));
 
 /**
  *  \brief Get hexdigest from context.

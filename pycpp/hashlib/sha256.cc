@@ -286,14 +286,14 @@ void sha2_224_hash::update(const secure_string_view& str)
 }
 
 
-size_t sha2_224_hash::digest(void* dst, size_t dstlen) const
+void sha2_224_hash::digest(void*& dst, size_t dstlen) const
 {
     sha2_256_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, SHA224_HASH_SIZE, sha256_final);
 }
 
 
-size_t sha2_224_hash::hexdigest(void* dst, size_t dstlen) const
+void sha2_224_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     sha2_256_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, SHA224_HASH_SIZE, sha256_final);
@@ -356,14 +356,14 @@ void sha2_256_hash::update(const secure_string_view& str)
 }
 
 
-size_t sha2_256_hash::digest(void* dst, size_t dstlen) const
+void sha2_256_hash::digest(void*& dst, size_t dstlen) const
 {
     sha2_256_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, SHA256_HASH_SIZE, sha256_final);
 }
 
 
-size_t sha2_256_hash::hexdigest(void* dst, size_t dstlen) const
+void sha2_256_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     sha2_256_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, SHA256_HASH_SIZE, sha256_final);

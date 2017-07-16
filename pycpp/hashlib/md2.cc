@@ -154,14 +154,14 @@ void md2_hash::update(const secure_string_view& str)
 void md2_hash::digest(void*& dst, size_t dstlen) const
 {
     md2_context copy = *ctx;
-    return hash_digest(&copy, dst, dstlen, MD2_HASH_SIZE, md2_final);
+    hash_digest(&copy, dst, dstlen, MD2_HASH_SIZE, md2_final);
 }
 
 
 void md2_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     md2_context copy = *ctx;
-    return hash_hexdigest(&copy, dst, dstlen, MD2_HASH_SIZE, md2_final);
+    hash_hexdigest(&copy, dst, dstlen, MD2_HASH_SIZE, md2_final);
 }
 
 

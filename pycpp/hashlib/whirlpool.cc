@@ -793,14 +793,14 @@ void whirlpool_hash::update(const secure_string_view& str)
 }
 
 
-size_t whirlpool_hash::digest(void* dst, size_t dstlen) const
+void whirlpool_hash::digest(void*& dst, size_t dstlen) const
 {
     whirlpool_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, WHIRLPOOL_HASH_SIZE, whirlpool_final);
 }
 
 
-size_t whirlpool_hash::hexdigest(void* dst, size_t dstlen) const
+void whirlpool_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     whirlpool_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, WHIRLPOOL_HASH_SIZE, whirlpool_final);

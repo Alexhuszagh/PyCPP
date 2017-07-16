@@ -328,17 +328,15 @@ endif()
 
 if (BUILD_HASHLIB)
     list(APPEND SOURCE_FILES
-# TODO: restore
-#        pycpp/hashlib/crc32.cc
-#        pycpp/hashlib/hash.cc
-#        pycpp/hashlib/md2.cc
-#        pycpp/hashlib/md4.cc
-#        pycpp/hashlib/md5.cc
-#        pycpp/hashlib/sha1.cc
-#        pycpp/hashlib/sha3.cc
-#        pycpp/hashlib/sha256.cc
-#        pycpp/hashlib/sha512.cc
-#        pycpp/hashlib/whirlpool.cc
+        pycpp/hashlib/hash.cc
+        pycpp/hashlib/md2.cc
+        pycpp/hashlib/md4.cc
+        pycpp/hashlib/md5.cc
+        pycpp/hashlib/sha1.cc
+        pycpp/hashlib/sha3.cc
+        pycpp/hashlib/sha256.cc
+        pycpp/hashlib/sha512.cc
+        pycpp/hashlib/whirlpool.cc
     )
 endif()
 
@@ -523,8 +521,7 @@ if (BUILD_FILESYSTEM)
 endif()
 
 if (BUILD_HASHLIB)
-# TODO: restore
-#    list(APPEND TEST_FILES test/hashlib.cc)
+    list(APPEND TEST_FILES test/hashlib.cc)
 endif()
 
 if (BUILD_JSON)

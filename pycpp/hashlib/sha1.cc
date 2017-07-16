@@ -303,14 +303,14 @@ void sha1_hash::update(const secure_string_view& str)
 }
 
 
-size_t sha1_hash::digest(void* dst, size_t dstlen) const
+void sha1_hash::digest(void*& dst, size_t dstlen) const
 {
     sha1_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, SHA1_HASH_SIZE, sha1_final);
 }
 
 
-size_t sha1_hash::hexdigest(void* dst, size_t dstlen) const
+void sha1_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     sha1_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, SHA1_HASH_SIZE, sha1_final);

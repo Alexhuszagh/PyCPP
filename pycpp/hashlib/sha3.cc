@@ -377,14 +377,14 @@ void sha3_224_hash::update(const secure_string_view& str)
 }
 
 
-size_t sha3_224_hash::digest(void* dst, size_t dstlen) const
+void sha3_224_hash::digest(void*& dst, size_t dstlen) const
 {
     sha3_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, SHA3_224_HASH_SIZE, sha3_final);
 }
 
 
-size_t sha3_224_hash::hexdigest(void* dst, size_t dstlen) const
+void sha3_224_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     sha3_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, SHA3_224_HASH_SIZE, sha3_final);
@@ -448,14 +448,14 @@ void sha3_256_hash::update(const secure_string_view& str)
 }
 
 
-size_t sha3_256_hash::digest(void* dst, size_t dstlen) const
+void sha3_256_hash::digest(void*& dst, size_t dstlen) const
 {
     sha3_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, SHA3_256_HASH_SIZE, sha3_final);
 }
 
 
-size_t sha3_256_hash::hexdigest(void* dst, size_t dstlen) const
+void sha3_256_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     sha3_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, SHA3_256_HASH_SIZE, sha3_final);
@@ -519,14 +519,14 @@ void sha3_384_hash::update(const secure_string_view& str)
 }
 
 
-size_t sha3_384_hash::digest(void* dst, size_t dstlen) const
+void sha3_384_hash::digest(void*& dst, size_t dstlen) const
 {
     sha3_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, SHA3_384_HASH_SIZE, sha3_final);
 }
 
 
-size_t sha3_384_hash::hexdigest(void* dst, size_t dstlen) const
+void sha3_384_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     sha3_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, SHA3_384_HASH_SIZE, sha3_final);
@@ -590,14 +590,14 @@ void sha3_512_hash::update(const secure_string_view& str)
 }
 
 
-size_t sha3_512_hash::digest(void* dst, size_t dstlen) const
+void sha3_512_hash::digest(void*& dst, size_t dstlen) const
 {
     sha3_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, SHA3_512_HASH_SIZE, sha3_final);
 }
 
 
-size_t sha3_512_hash::hexdigest(void* dst, size_t dstlen) const
+void sha3_512_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     sha3_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, SHA3_512_HASH_SIZE, sha3_final);

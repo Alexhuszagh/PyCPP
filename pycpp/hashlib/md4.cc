@@ -316,14 +316,14 @@ void md4_hash::update(const secure_string_view& str)
 }
 
 
-size_t md4_hash::digest(void* dst, size_t dstlen) const
+void md4_hash::digest(void*& dst, size_t dstlen) const
 {
     md4_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, MD4_HASH_SIZE, md4_final);
 }
 
 
-size_t md4_hash::hexdigest(void* dst, size_t dstlen) const
+void md4_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     md4_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, MD4_HASH_SIZE, md4_final);

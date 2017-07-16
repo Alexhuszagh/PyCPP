@@ -326,14 +326,14 @@ void sha2_384_hash::update(const secure_string_view& str)
 }
 
 
-size_t sha2_384_hash::digest(void* dst, size_t dstlen) const
+void sha2_384_hash::digest(void*& dst, size_t dstlen) const
 {
     sha2_512_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, SHA384_HASH_SIZE, sha512_final);
 }
 
 
-size_t sha2_384_hash::hexdigest(void* dst, size_t dstlen) const
+void sha2_384_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     sha2_512_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, SHA384_HASH_SIZE, sha512_final);
@@ -396,14 +396,14 @@ void sha2_512_hash::update(const secure_string_view& str)
 }
 
 
-size_t sha2_512_hash::digest(void* dst, size_t dstlen) const
+void sha2_512_hash::digest(void*& dst, size_t dstlen) const
 {
     sha2_512_context copy = *ctx;
     return hash_digest(&copy, dst, dstlen, SHA512_HASH_SIZE, sha512_final);
 }
 
 
-size_t sha2_512_hash::hexdigest(void* dst, size_t dstlen) const
+void sha2_512_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     sha2_512_context copy = *ctx;
     return hash_hexdigest(&copy, dst, dstlen, SHA512_HASH_SIZE, sha512_final);
