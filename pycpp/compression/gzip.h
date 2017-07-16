@@ -30,7 +30,7 @@ struct gzip_decompressor_impl;
 struct gzip_compressor
 {
 public:
-    gzip_compressor(int compress_level = 6);
+    gzip_compressor(int compress_level = 9);
     gzip_compressor(gzip_compressor&&);
     gzip_compressor & operator=(gzip_compressor&&);
     ~gzip_compressor();
@@ -84,6 +84,5 @@ size_t gzip_decompress(const void *src, size_t srclen, void* dst, size_t dstlen,
  *  \param bound            Known size of decompressed buffer.
  */
 std::string gzip_decompress(const std::string &str, size_t bound);
-
 
 PYCPP_END_NAMESPACE

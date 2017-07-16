@@ -7,9 +7,82 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/compression/exception.h>
+#include <memory>
+#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 
+// FORWARD
+// -------
+
+struct lzma_compressor;
+struct lzma_compressor_impl;
+struct lzma_decompressor;
+struct lzma_decompressor_impl;
+
+// OBJECTS
+// -------
+
+/**
+ *  \brief Wrapper for a LZMA2 compressor.
+ */
+struct lzma_compressor
+{
+public:
+    lzma_compressor(int compress_level = 6);
+    lzma_compressor(lzma_compressor&&);
+    lzma_compressor & operator=(lzma_compressor&&);
+    ~lzma_compressor();
+    compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+    bool flush(void*& dst, size_t dstlen);
+
+private:
+    std::unique_ptr<lzma_compressor_impl> ptr_;
+};
+
+
+/**
+ *  \brief Wrapper for a LZMA2 decompressor.
+ */
+struct lzma_decompressor
+{
+public:
+    lzma_decompressor();
+    lzma_decompressor(lzma_decompressor&&);
+    lzma_decompressor & operator=(lzma_decompressor&&);
+    ~lzma_decompressor();
+    compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+
+private:
+    std::unique_ptr<lzma_decompressor_impl> ptr_;
+};
+
+// FUNCTIONS
+// ---------
+
+/** \brief LZMA2-compress data. Returns number of bytes converted.
+ */
+size_t lzma_compress(const void *src, size_t srclen, void* dst, size_t dstlen);
+
+/** \brief LZMA2-compress data.
+ */
+std::string lzma_compress(const std::string &str);
+
+/** \brief LZMA2-decompress data.
+ */
+std::string lzma_decompress(const std::string &str);
+
+/** \brief LZMA2-decompress data. Returns number of bytes converted.
+ *
+ *  \param bound            Known size of decompressed buffer.
+ */
+size_t lzma_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound);
+
+/** \brief LZMA2-decompress data.
+ *
+ *  \param bound            Known size of decompressed buffer.
+ */
+std::string lzma_decompress(const std::string &str, size_t bound);
 
 PYCPP_END_NAMESPACE

@@ -33,7 +33,8 @@ static constexpr int BUFFER_SIZE = 8092;
 template <typename Stream>
 struct filter_impl
 {
-    using char_type = typename std::remove_reference<decltype(std::declval<Stream>().next_in)>::type;
+    using in_type = typename std::remove_reference<decltype(std::declval<Stream>().next_in)>::type;
+    using out_type = typename std::remove_reference<decltype(std::declval<Stream>().next_out)>::type;
 
     int status;
     Stream stream;
@@ -65,7 +66,7 @@ filter_impl<S>::filter_impl()
 template <typename S>
 void filter_impl<S>::before(void* dst, size_t dstlen)
 {
-    stream.next_out = (char_type) dst;
+    stream.next_out = (out_type) dst;
     stream.avail_out = dstlen;
 }
 
@@ -73,9 +74,9 @@ void filter_impl<S>::before(void* dst, size_t dstlen)
 template <typename S>
 void filter_impl<S>::before(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
-    stream.next_in = (char_type) src;
+    stream.next_in = (in_type) src;
     stream.avail_in = srclen;
-    stream.next_out = (char_type) dst;
+    stream.next_out = (out_type) dst;
     stream.avail_out = dstlen;
 }
 

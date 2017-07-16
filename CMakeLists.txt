@@ -310,7 +310,6 @@ if(BUILD_COMPRESSION)
         pycpp/compression/gzip.cc
         pycpp/compression/lzma.cc
         pycpp/compression/stream.cc
-        pycpp/compression/zlib.cc
     )
 endif()
 

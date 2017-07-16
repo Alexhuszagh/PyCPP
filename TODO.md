@@ -6,8 +6,6 @@
     - LZMA
     - BLOSC
 
-    - I can move even more logic out of the source code to a private header...
-
 - Mathlib
     - Need array/axis unittests
 
