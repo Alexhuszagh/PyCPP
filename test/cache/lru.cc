@@ -179,10 +179,6 @@ TEST(lru_cache, cache_size)
         cache.insert(i, 2*i);
     }
     EXPECT_EQ(cache.size(), 50);
-
-    // TODO: add 50 elements
-    // access 1
-    // TODO: add more
-    // ensure size is 50 and the one accessed remains...
-    exit(0);
+    EXPECT_NE(cache.find(0), cache.end());
+    EXPECT_EQ(cache.find(1), cache.end());
 }

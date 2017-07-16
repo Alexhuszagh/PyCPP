@@ -566,7 +566,7 @@ template <typename K, typename V, typename H, typename P, typename A>
 void lru_cache<K, V, H, P, A>::clean()
 {
     while(map_.size() > cache_size()) {
-        pop(LRU_CONST_ITERATOR(list_.rbegin().base()));
+        pop(LRU_CONST_ITERATOR(--list_.end()));
     }
 }
 
