@@ -90,18 +90,17 @@ void check_bzstatus(int error)
 /**
  *  \brief Implied base class for the BZ2 compressor.
  */
-struct bz2_compressor_impl: compressor_impl<bz_stream>
+struct bz2_compressor_impl: filter_impl<bz_stream>
 {
-    using base = compressor_impl<bz_stream>;
+    using base = filter_impl<bz_stream>;
     static const int small = BZ2_SMALL;
     static const int verbosity = BZ2_VERBOSITY;
 
     bz2_compressor_impl(int block_size = BZ2_BLOCK_SIZE);
     ~bz2_compressor_impl();
 
-    virtual void compress() override;
+    virtual void call() override;
     bool flush(void*& dst, size_t dstlen);
-
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
 
@@ -122,7 +121,7 @@ bz2_compressor_impl::~bz2_compressor_impl()
 }
 
 
-void bz2_compressor_impl::compress()
+void bz2_compressor_impl::call()
 {
     while (stream.avail_in && stream.avail_out && status != BZ_STREAM_END) {
         status = BZ2_bzCompress(&stream, BZ_RUN);
@@ -155,36 +154,26 @@ compression_status bz2_compressor_impl::operator()(const void*& src, size_t srcl
 /**
  *  \brief Implied base class for the BZ2 decompressor.
  */
-struct bz2_decompressor_impl
+struct bz2_decompressor_impl: filter_impl<bz_stream>
 {
+    using base = filter_impl<bz_stream>;
     static const int small = BZ2_SMALL;
     static const int verbosity = BZ2_VERBOSITY;
-    int status = BZ_OK;
-    bz_stream stream;
 
     bz2_decompressor_impl();
     ~bz2_decompressor_impl();
 
-    void before(void* dst, size_t dstlen);
-    void before(const void* src, size_t srclen, void* dst, size_t dstlen);
-    void decompress();
-    compression_status check_status(const void* src, void* dst) const;
-    void after(void*& dst);
-    void after(const void*& src, void*& dst);
-
+    virtual void call();
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
 
 
 bz2_decompressor_impl::bz2_decompressor_impl()
 {
+    status = BZ_OK;
     stream.bzalloc = nullptr;
     stream.bzfree = nullptr;
     stream.opaque = nullptr;
-    stream.avail_in = 0;
-    stream.next_in = nullptr;
-    stream.avail_out = 0;
-    stream.next_out = nullptr;
     CHECK(BZ2_bzDecompressInit(&stream, verbosity, small));
 }
 
@@ -195,23 +184,7 @@ bz2_decompressor_impl::~bz2_decompressor_impl()
 }
 
 
-void bz2_decompressor_impl::before(void* dst, size_t dstlen)
-{
-    stream.next_out = (char*) dst;
-    stream.avail_out = dstlen;
-}
-
-
-void bz2_decompressor_impl::before(const void* src, size_t srclen, void* dst, size_t dstlen)
-{
-    stream.next_in = (char*) src;
-    stream.avail_in = srclen;
-    stream.next_out = (char*) dst;
-    stream.avail_out = dstlen;
-}
-
-
-void bz2_decompressor_impl::decompress()
+void bz2_decompressor_impl::call()
 {
     while (stream.avail_in && stream.avail_out && status != BZ_STREAM_END) {
         status = BZ2_bzDecompress(&stream);
@@ -220,58 +193,9 @@ void bz2_decompressor_impl::decompress()
 }
 
 
-compression_status bz2_decompressor_impl::check_status(const void* src, void* dst) const
-{
-    if (status == BZ_STREAM_END) {
-        return compression_eof;
-    } else if (stream.next_out == dst) {
-        return compression_need_input;
-    } else if (stream.next_in == src) {
-        return compression_need_output;
-    }
-}
-
-
-void bz2_decompressor_impl::after(void*& dst)
-{
-    dst = stream.next_out;
-}
-
-
-void bz2_decompressor_impl::after(const void*& src, void*& dst)
-{
-    src = stream.next_in;
-    dst = stream.next_out;
-}
-
-
 compression_status bz2_decompressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // no input data, or already reached stream end
-    if (status == BZ_STREAM_END) {
-        return compression_eof;
-    } else if (srclen == 0 && stream.avail_in == 0) {
-        return compression_need_input;
-    } else if (dstlen == 0) {
-        return compression_need_output;
-    }
-
-    bool use_src = (stream.next_in == nullptr || stream.avail_in == 0);
-    if (use_src) {
-        before(src, srclen, dst, dstlen);
-    } else {
-        // have remaining input data
-        before(dst, dstlen);
-    }
-    decompress();
-    compression_status code = check_status(src, dst);
-    if (use_src) {
-        after(src, dst);
-    } else {
-        after(dst);
-    }
-
-    return code;
+    return base::operator()(src, srclen, dst, dstlen, BZ_STREAM_END);
 }
 
 

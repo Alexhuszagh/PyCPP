@@ -52,15 +52,14 @@ void check_zstatus(int error)
 /**
  *  \brief Implied base class for the ZLIB compressor.
  */
-struct zlib_compressor_impl: compressor_impl<z_stream>
+struct zlib_compressor_impl: filter_impl<z_stream>
 {
-    using base = compressor_impl<z_stream>;
+    using base = filter_impl<z_stream>;
     zlib_compressor_impl(int level = Z_DEFAULT_COMPRESSION);
     ~zlib_compressor_impl();
 
-    virtual void compress();
+    virtual void call();
     bool flush(void*& dst, size_t dstlen);
-
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
 
@@ -81,7 +80,7 @@ zlib_compressor_impl::~zlib_compressor_impl()
 }
 
 
-void zlib_compressor_impl::compress()
+void zlib_compressor_impl::call()
 {
     while (stream.avail_in && stream.avail_out && status != Z_STREAM_END) {
         status = deflate(&stream, Z_NO_FLUSH);
@@ -114,34 +113,23 @@ compression_status zlib_compressor_impl::operator()(const void*& src, size_t src
 /**
  *  \brief Implied base class for the ZLIB decompressor.
  */
-struct zlib_decompressor_impl
+struct zlib_decompressor_impl: filter_impl<z_stream>
 {
-    int status = Z_OK;
-    z_stream stream;
-
+    using base = filter_impl<z_stream>;
     zlib_decompressor_impl();
     ~zlib_decompressor_impl();
 
-    void before(void* dst, size_t dstlen);
-    void before(const void* src, size_t srclen, void* dst, size_t dstlen);
-    void decompress();
-    compression_status check_status(const void* src, void* dst) const;
-    void after(void*& dst);
-    void after(const void*& src, void*& dst);
-
+    virtual void call();
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
 
 
 zlib_decompressor_impl::zlib_decompressor_impl()
 {
+    status = Z_OK;
     stream.zalloc = Z_NULL;
     stream.zfree = Z_NULL;
     stream.opaque = Z_NULL;
-    stream.avail_in = 0;
-    stream.next_in = nullptr;
-    stream.avail_out = 0;
-    stream.next_out = nullptr;
     CHECK(inflateInit(&stream));
 }
 
@@ -152,23 +140,7 @@ zlib_decompressor_impl::~zlib_decompressor_impl()
 }
 
 
-void zlib_decompressor_impl::before(void* dst, size_t dstlen)
-{
-    stream.next_out = (Bytef*) dst;
-    stream.avail_out = dstlen;
-}
-
-
-void zlib_decompressor_impl::before(const void* src, size_t srclen, void* dst, size_t dstlen)
-{
-    stream.next_in = (Bytef*) src;
-    stream.avail_in = srclen;
-    stream.next_out = (Bytef*) dst;
-    stream.avail_out = dstlen;
-}
-
-
-void zlib_decompressor_impl::decompress()
+void zlib_decompressor_impl::call()
 {
     while (stream.avail_in && stream.avail_out && status != Z_STREAM_END) {
         status = inflate(&stream, Z_NO_FLUSH);
@@ -177,58 +149,9 @@ void zlib_decompressor_impl::decompress()
 }
 
 
-compression_status zlib_decompressor_impl::check_status(const void* src, void* dst) const
-{
-    if (status == Z_STREAM_END) {
-        return compression_eof;
-    } else if (stream.next_out == dst) {
-        return compression_need_input;
-    } else if (stream.next_in == src) {
-        return compression_need_output;
-    }
-}
-
-
-void zlib_decompressor_impl::after(void*& dst)
-{
-    dst = stream.next_out;
-}
-
-
-void zlib_decompressor_impl::after(const void*& src, void*& dst)
-{
-    src = stream.next_in;
-    dst = stream.next_out;
-}
-
-
 compression_status zlib_decompressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // no input data, or already reached stream end
-    if (status == Z_STREAM_END) {
-        return compression_eof;
-    } else if (srclen == 0 && stream.avail_in == 0) {
-        return compression_need_input;
-    } else if (dstlen == 0) {
-        return compression_need_output;
-    }
-
-    bool use_src = (stream.next_in == nullptr || stream.avail_in == 0);
-    if (use_src) {
-        before(src, srclen, dst, dstlen);
-    } else {
-        // have remaining input data
-        before(dst, dstlen);
-    }
-    decompress();
-    compression_status code = check_status(src, dst);
-    if (use_src) {
-        after(src, dst);
-    } else {
-        after(dst);
-    }
-
-    return code;
+    return base::operator()(src, srclen, dst, dstlen, Z_STREAM_END);
 }
 
 

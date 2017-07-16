@@ -16,42 +16,38 @@ PYCPP_BEGIN_NAMESPACE
 // CONSTANTS
 // ---------
 
-static constexpr int BUFFER_SIZE = 4096;
+static constexpr int BUFFER_SIZE = 8092;
 
 // DECLARATION
 // -----------
 
 /**
- *  \brief Implied base class for a compressor.
+ *  \brief Implied base class for a compressor/decompressor.
  */
 template <typename Stream>
-struct compressor_impl
+struct filter_impl
 {
     using char_type = typename std::remove_reference<decltype(std::declval<Stream>().next_in)>::type;
 
     int status;
     Stream stream;
 
-    compressor_impl();
+    filter_impl();
 
     void before(void* dst, size_t dstlen);
     void before(const void* src, size_t srclen, void* dst, size_t dstlen);
     void after(void*& dst);
     void after(const void*& src, void*& dst);
+
+    virtual void call() = 0;
     compression_status check_status(const void* src, void* dst, int stream_end) const;
-
-    template <typename CallBack>
-    bool flush(void*& dst, size_t dstlen, CallBack cb);
-
-    virtual void compress() = 0;
+    template <typename Cb> bool flush(void*& dst, size_t dstlen, Cb cb);
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen, int stream_end);
 };
 
-// DEFINITION
-// ----------
 
 template <typename S>
-compressor_impl<S>::compressor_impl()
+filter_impl<S>::filter_impl()
 {
     stream.avail_in = 0;
     stream.next_in = nullptr;
@@ -61,7 +57,7 @@ compressor_impl<S>::compressor_impl()
 
 
 template <typename S>
-void compressor_impl<S>::before(void* dst, size_t dstlen)
+void filter_impl<S>::before(void* dst, size_t dstlen)
 {
     stream.next_out = (char_type) dst;
     stream.avail_out = dstlen;
@@ -69,7 +65,7 @@ void compressor_impl<S>::before(void* dst, size_t dstlen)
 
 
 template <typename S>
-void compressor_impl<S>::before(const void* src, size_t srclen, void* dst, size_t dstlen)
+void filter_impl<S>::before(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
     stream.next_in = (char_type) src;
     stream.avail_in = srclen;
@@ -79,14 +75,14 @@ void compressor_impl<S>::before(const void* src, size_t srclen, void* dst, size_
 
 
 template <typename S>
-void compressor_impl<S>::after(void*& dst)
+void filter_impl<S>::after(void*& dst)
 {
     dst = stream.next_out;
 }
 
 
 template <typename S>
-void compressor_impl<S>::after(const void*& src, void*& dst)
+void filter_impl<S>::after(const void*& src, void*& dst)
 {
     src = stream.next_in;
     dst = stream.next_out;
@@ -94,7 +90,7 @@ void compressor_impl<S>::after(const void*& src, void*& dst)
 
 
 template <typename S>
-compression_status compressor_impl<S>::check_status(const void* src, void* dst, int stream_end) const
+compression_status filter_impl<S>::check_status(const void* src, void* dst, int stream_end) const
 {
     if (status == stream_end) {
         return compression_eof;
@@ -107,8 +103,8 @@ compression_status compressor_impl<S>::check_status(const void* src, void* dst, 
 
 
 template <typename S>
-template <typename CallBack>
-bool compressor_impl<S>::flush(void*& dst, size_t dstlen, CallBack cb)
+template <typename Cb>
+bool filter_impl<S>::flush(void*& dst, size_t dstlen, Cb cb)
 {
     if (dst == nullptr) {
         return false;
@@ -122,7 +118,7 @@ bool compressor_impl<S>::flush(void*& dst, size_t dstlen, CallBack cb)
 
 
 template <typename S>
-compression_status compressor_impl<S>::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen, int stream_end)
+compression_status filter_impl<S>::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen, int stream_end)
 {
     // no input data, or already reached stream end
     if (status == stream_end) {
@@ -141,7 +137,7 @@ compression_status compressor_impl<S>::operator()(const void*& src, size_t srcle
         before(dst, dstlen);
     }
 
-    compress();
+    call();
 
     compression_status code = check_status(src, dst, stream_end);
     if (use_src) {
