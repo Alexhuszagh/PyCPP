@@ -21,19 +21,19 @@ PYCPP_BEGIN_NAMESPACE
  */
 #if defined(OS_WINDOWS)                     // WINDOWS
 
-#   define WIDE_PATH_IFSTREAM(name, base, flags)                                                \
-        name##_##base(const std::string &name, std::ios_base::openmode = flags);                \
-        void open(const std::string &name, std::ios_base::openmode = flags);
+#   define WIDE_PATH_IFSTREAM(name)                                                                         \
+        name##_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);             \
+        void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
 
-#   define WIDE_PATH_OFSTREAM(name, base, flags)                                                \
-        name##_##base(const std::string &name, std::ios_base::openmode = flags);                \
-        name##_##base(const std::string &name, int level, std::ios_base::openmode = flags);     \
-        void open(const std::string &name, std::ios_base::openmode = flags);
+#   define WIDE_PATH_OFSTREAM(name)                                                                         \
+        name##_ofstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::out);            \
+        name##_ofstream(const std::wstring &name, int level, std::ios_base::openmode = std::ios_base::out); \
+        void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::out);
 
 #else                                       // POSIX
 
-#   define WIDE_PATH_IFSTREAM(name, base, flags)
-#   define WIDE_PATH_OFSTREAM(name, base, flags)
+#   define WIDE_PATH_IFSTREAM(name)
+#   define WIDE_PATH_OFSTREAM(name)
 
 #endif                                      // WINDOWS
 
@@ -104,7 +104,7 @@ PYCPP_BEGIN_NAMESPACE
                                                                                                 \
         name##_ifstream(const std::string &name, std::ios_base::openmode = std::ios_base::in);  \
         void open(const std::string &name, std::ios_base::openmode = std::ios_base::in);        \
-        WIDE_PATH_IFSTREAM(name, base, std::ios_base::in)                                       \
+        WIDE_PATH_IFSTREAM(name)                                                                \
                                                                                                 \
     private:                                                                                    \
         name##_decompressor ctx;                                                                \
@@ -129,7 +129,7 @@ PYCPP_BEGIN_NAMESPACE
         name##_ofstream(const std::string &name, std::ios_base::openmode = std::ios_base::out);             \
         name##_ofstream(const std::string &name, int level, std::ios_base::openmode = std::ios_base::out);  \
         void open(const std::string &name, std::ios_base::openmode = std::ios_base::out);                   \
-        WIDE_PATH_OFSTREAM(name, base, std::ios_base::out)                                                  \
+        WIDE_PATH_OFSTREAM(name)                                                                            \
                                                                                                             \
     private:                                                                                                \
         name##_compressor ctx;                                                                              \
