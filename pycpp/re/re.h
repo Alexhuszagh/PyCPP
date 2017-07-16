@@ -23,12 +23,12 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Search for pattern within string.
  */
-match_t search(const string_view& pattern, const string_view& str);
+match_t search(const std::string& pattern, const string_view& str);
 
 /**
  *  \brief Match pattern within string.
  */
-match_t match(const string_view& pattern, const string_view& str);
+match_t match(const std::string& pattern, const string_view& str);
 
 // TODO: This could use an LRU cache...
 
@@ -41,9 +41,10 @@ match_t match(const string_view& pattern, const string_view& str);
 // re.sub(pattern, repl, string, count=0, flags=0)
 // re.subn(pattern, repl, string, count=0, flags=0)
 // re.escape(pattern)
-// re.purge()
 
-// I can use an ordered_map for the queue...
-// Purge items after N
+/**
+ *  \brief Purge the regex cache.
+ */
+void purge();
 
 PYCPP_END_NAMESPACE
