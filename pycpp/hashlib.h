@@ -71,8 +71,8 @@ enum hash_algorithm
                                                                         \
         void update(const void* src, size_t srclen);                    \
         void update(const secure_string_view& str);                     \
-        size_t digest(void* dst, size_t dstlen) const;                  \
-        size_t hexdigest(void* dst, size_t dstlen) const;               \
+        void digest(void*& dst, size_t dstlen) const;                   \
+        void hexdigest(void*& dst, size_t dstlen) const;                \
         secure_string digest() const;                                   \
         secure_string hexdigest() const;                                \
                                                                         \
@@ -90,6 +90,7 @@ void hash_update(void* ctx, const void* src, long srclen, void (*cb)(void*, cons
 
 /**
  *  \brief Get digest from context.
+ // TODO: change to update dst
  */
 size_t hash_digest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*));
 
@@ -100,6 +101,7 @@ secure_string hash_digest(void* ctx, long hashlen, void (*cb)(void*, void*));
 
 /**
  *  \brief Get hexdigest from context.
+ // TODO: change to update dst
  */
 size_t hash_hexdigest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*));
 
@@ -131,8 +133,8 @@ public:
 
     void update(const void* src, size_t srclen);
     void update(const secure_string_view& str);
-    size_t digest(void* dst, size_t dstlen) const;
-    size_t hexdigest(void* dst, size_t dstlen) const;
+    void digest(void*& dst, size_t dstlen) const;
+    void hexdigest(void*& dst, size_t dstlen) const;
     secure_string digest() const;
     secure_string hexdigest() const;
 

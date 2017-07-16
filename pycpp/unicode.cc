@@ -388,10 +388,11 @@ fail:
  *  \return     Number of bytes written to dst.
  */
 template <typename Iter8, typename Iter16>
-size_t utf8_to_utf16_array(Iter8 src_first, Iter8 src_last,
-                           Iter16 dst_first, Iter16 dst_last,
+size_t utf8_to_utf16_array(Iter8 &src_first, Iter8 src_last,
+                           Iter16 &dst_first, Iter16 dst_last,
                            bool strict = true)
 {
+    // convert bytes
     auto src = src_first;
     auto dst = dst_first;
     while (src < src_last && dst < dst_last) {
@@ -404,7 +405,12 @@ size_t utf8_to_utf16_array(Iter8 src_first, Iter8 src_last,
         }
     }
 
-    return dst - dst_first;
+    // get progress
+    size_t distance = std::distance(dst_first, dst);
+    src = src_first;
+    dst = dst_first;
+
+    return distance;
 }
 
 
@@ -414,10 +420,11 @@ size_t utf8_to_utf16_array(Iter8 src_first, Iter8 src_last,
  *  \return     Number of bytes written to dst.
  */
 template <typename Iter8, typename Iter32>
-size_t utf8_to_utf32_array(Iter8 src_first, Iter8 src_last,
-                           Iter32 dst_first, Iter32 dst_last,
+size_t utf8_to_utf32_array(Iter8 &src_first, Iter8 src_last,
+                           Iter32 &dst_first, Iter32 dst_last,
                            bool strict = true)
 {
+    // convert bytes
     auto src = src_first;
     auto dst = dst_first;
     while (src < src_last && dst < dst_last) {
@@ -426,7 +433,12 @@ size_t utf8_to_utf32_array(Iter8 src_first, Iter8 src_last,
         }
     }
 
-    return dst - dst_first;
+    // get progress
+    size_t distance = std::distance(dst_first, dst);
+    src = src_first;
+    dst = dst_first;
+
+    return distance;
 }
 
 
@@ -436,10 +448,11 @@ size_t utf8_to_utf32_array(Iter8 src_first, Iter8 src_last,
  *  \return     Number of bytes written to dst.
  */
 template <typename Iter16, typename Iter8>
-size_t utf16_to_utf8_array(Iter16 src_first, Iter16 src_last,
-                           Iter8 dst_first, Iter8 dst_last,
+size_t utf16_to_utf8_array(Iter16 &src_first, Iter16 src_last,
+                           Iter8 &dst_first, Iter8 dst_last,
                            bool strict = true)
 {
+    // convert bytes
     auto src = src_first;
     auto dst = dst_first;
     while (src < src_last && dst < dst_last) {
@@ -452,7 +465,12 @@ size_t utf16_to_utf8_array(Iter16 src_first, Iter16 src_last,
         }
     }
 
-    return dst - dst_first;
+    // get progress
+    size_t distance = std::distance(dst_first, dst);
+    src = src_first;
+    dst = dst_first;
+
+    return distance;
 }
 
 
@@ -462,10 +480,11 @@ size_t utf16_to_utf8_array(Iter16 src_first, Iter16 src_last,
  *  \return     Number of bytes written to dst.
  */
 template <typename Iter16, typename Iter32>
-size_t utf16_to_utf32_array(Iter16 src_first, Iter16 src_last,
-                            Iter32 dst_first, Iter32 dst_last,
+size_t utf16_to_utf32_array(Iter16 &src_first, Iter16 src_last,
+                            Iter32 &dst_first, Iter32 dst_last,
                             bool strict = true)
 {
+    // convert bytes
     auto src = src_first;
     auto dst = dst_first;
     while (src < src_last && dst < dst_last) {
@@ -474,7 +493,12 @@ size_t utf16_to_utf32_array(Iter16 src_first, Iter16 src_last,
         }
     }
 
-    return dst - dst_first;
+    // get progress
+    size_t distance = std::distance(dst_first, dst);
+    src = src_first;
+    dst = dst_first;
+
+    return distance;
 }
 
 
@@ -484,10 +508,11 @@ size_t utf16_to_utf32_array(Iter16 src_first, Iter16 src_last,
  *  \return     Number of bytes written to dst.
  */
 template <typename Iter32, typename Iter8>
-size_t utf32_to_utf8_array(Iter32 src_first, Iter32 src_last,
-                           Iter8 dst_first, Iter8 dst_last,
+size_t utf32_to_utf8_array(Iter32 &src_first, Iter32 src_last,
+                           Iter8 &dst_first, Iter8 dst_last,
                            bool strict = true)
 {
+    // convert bytes
     auto src = src_first;
     auto dst = dst_first;
     while (src < src_last && dst < dst_last) {
@@ -496,7 +521,12 @@ size_t utf32_to_utf8_array(Iter32 src_first, Iter32 src_last,
         }
     }
 
-    return dst - dst_first;
+    // get progress
+    size_t distance = std::distance(dst_first, dst);
+    src = src_first;
+    dst = dst_first;
+
+    return distance;
 }
 
 
@@ -506,10 +536,11 @@ size_t utf32_to_utf8_array(Iter32 src_first, Iter32 src_last,
  *  \return     Number of bytes written to dst.
  */
 template <typename Iter32, typename Iter16>
-size_t utf32_to_utf16_array(Iter32 src_first, Iter32 src_last,
-                            Iter16 dst_first, Iter16 dst_last,
+size_t utf32_to_utf16_array(Iter32 &src_first, Iter32 src_last,
+                            Iter16 &dst_first, Iter16 dst_last,
                             bool strict = true)
 {
+    // convert bytes
     auto src = src_first;
     auto dst = dst_first;
     while (src < src_last && dst < dst_last) {
@@ -518,7 +549,12 @@ size_t utf32_to_utf16_array(Iter32 src_first, Iter32 src_last,
         }
     }
 
-    return dst - dst_first;
+    // get progress
+    size_t distance = std::distance(dst_first, dst);
+    src = src_first;
+    dst = dst_first;
+
+    return distance;
 }
 
 
@@ -526,48 +562,49 @@ size_t utf32_to_utf16_array(Iter32 src_first, Iter32 src_last,
 // -------------------
 
 
-size_t utf8_to_utf16_ptr(const uint8_t *src_first, const uint8_t* src_last,
-                         uint16_t* dst_first, uint16_t* dst_last,
+size_t utf8_to_utf16_ptr(const uint8_t*& src_first, const uint8_t* src_last,
+                         uint16_t*& dst_first, uint16_t* dst_last,
                          bool strict = true)
 {
+    // TODO: change this to a size_t function, but it binds by reference...
     return utf8_to_utf16_array(src_first, src_last, dst_first, dst_last, strict);
 }
 
 
-size_t utf8_to_utf32_ptr(const uint8_t *src_first, const uint8_t* src_last,
-                         uint32_t* dst_first, uint32_t* dst_last,
+size_t utf8_to_utf32_ptr(const uint8_t*& src_first, const uint8_t* src_last,
+                         uint32_t*& dst_first, uint32_t* dst_last,
                          bool strict = true)
 {
     return utf8_to_utf32_array(src_first, src_last, dst_first, dst_last, strict);
 }
 
 
-size_t utf16_to_utf8_ptr(const uint16_t *src_first, const uint16_t* src_last,
-                         uint8_t* dst_first, uint8_t* dst_last,
+size_t utf16_to_utf8_ptr(const uint16_t*& src_first, const uint16_t* src_last,
+                         uint8_t*& dst_first, uint8_t* dst_last,
                          bool strict = true)
 {
     return utf16_to_utf8_array(src_first, src_last, dst_first, dst_last, strict);
 }
 
 
-size_t utf16_to_utf32_ptr(const uint16_t *src_first, const uint16_t* src_last,
-                          uint32_t* dst_first, uint32_t* dst_last,
+size_t utf16_to_utf32_ptr(const uint16_t*& src_first, const uint16_t* src_last,
+                          uint32_t*& dst_first, uint32_t* dst_last,
                           bool strict = true)
 {
     return utf16_to_utf32_array(src_first, src_last, dst_first, dst_last, strict);
 }
 
 
-size_t utf32_to_utf8_ptr(const uint32_t *src_first, const uint32_t* src_last,
-                         uint8_t* dst_first, uint8_t* dst_last,
+size_t utf32_to_utf8_ptr(const uint32_t*& src_first, const uint32_t* src_last,
+                         uint8_t*& dst_first, uint8_t* dst_last,
                          bool strict = true)
 {
     return utf32_to_utf8_array(src_first, src_last, dst_first, dst_last, strict);
 }
 
 
-size_t utf32_to_utf16_ptr(const uint32_t *src_first, const uint32_t* src_last,
-                          uint16_t* dst_first, uint16_t* dst_last,
+size_t utf32_to_utf16_ptr(const uint32_t*& src_first, const uint32_t* src_last,
+                          uint16_t*& dst_first, uint16_t* dst_last,
                           bool strict = true)
 {
     return utf32_to_utf16_array(src_first, src_last, dst_first, dst_last, strict);
@@ -594,10 +631,10 @@ struct to_wide
         // arguments
         const size_t srclen = str.size() / size1;
         const size_t dstlen = srclen;
-        auto *src_first = reinterpret_cast<const Char1*>(str.data());
-        auto *src_last = src_first + srclen;
-        auto *dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
-        auto *dst_last = dst_first + dstlen;
+        auto* src_first = reinterpret_cast<const Char1*>(str.data());
+        auto* src_last = src_first + srclen;
+        auto* dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
+        auto* dst_last = dst_first + dstlen;
 
         size_t out;
         try {
@@ -630,10 +667,10 @@ struct to_narrow
         // arguments
         const size_t srclen = str.size() / size1;
         const size_t dstlen = srclen * 4;
-        auto *src_first = reinterpret_cast<const Char1*>(str.data());
-        auto *src_last = src_first + srclen;
-        auto *dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
-        auto *dst_last = dst_first + dstlen;
+        auto* src_first = reinterpret_cast<const Char1*>(str.data());
+        auto* src_last = src_first + srclen;
+        auto* dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
+        auto* dst_last = dst_first + dstlen;
 
         size_t out;
         try {

@@ -28,14 +28,15 @@ void hash_update(void* ctx, const void* src, long srclen, void (*cb)(void*, cons
 }
 
 
-size_t hash_digest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*))
+void hash_digest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)(void*, void*))
 {
     if (dstlen < hashlen) {
         throw std::runtime_error("dstlen not large enough to store hash digest.");
     }
 
     cb(ctx, dst);
-    return hashlen;
+    // TODO: here...
+    //return hashlen;
 }
 
 
@@ -58,7 +59,7 @@ secure_string hash_digest(void* ctx, long hashlen, void (*cb)(void*, void*))
 }
 
 
-size_t hash_hexdigest(void* ctx, void* dst, long dstlen, long hashlen, void (*cb)(void*, void*))
+size_t hash_hexdigest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)(void*, void*))
 {
     if (dstlen < 2 * hashlen) {
         throw std::runtime_error("dstlen not large enough to store hash hexdigest.");
@@ -214,53 +215,54 @@ static void get_hash(Memory& mem, hash_algorithm algorithm, Function& function)
             function(reinterpret_cast<md2_hash&>(mem));
             break;
 
-        case md4_hash_algorithm:
-            function(reinterpret_cast<md4_hash&>(mem));
-            break;
-
-        case md5_hash_algorithm:
-            function(reinterpret_cast<md5_hash&>(mem));
-            break;
-
-        case sha1_hash_algorithm:
-            function(reinterpret_cast<sha1_hash&>(mem));
-            break;
-
-        case sha2_224_hash_algorithm:
-            function(reinterpret_cast<sha2_224_hash&>(mem));
-            break;
-
-        case sha2_256_hash_algorithm:
-            function(reinterpret_cast<sha2_256_hash&>(mem));
-            break;
-
-        case sha2_384_hash_algorithm:
-            function(reinterpret_cast<sha2_384_hash&>(mem));
-            break;
-
-        case sha2_512_hash_algorithm:
-            function(reinterpret_cast<sha2_512_hash&>(mem));
-            break;
-
-        case sha3_224_hash_algorithm:
-            function(reinterpret_cast<sha3_224_hash&>(mem));
-            break;
-
-        case sha3_256_hash_algorithm:
-            function(reinterpret_cast<sha3_256_hash&>(mem));
-            break;
-
-        case sha3_384_hash_algorithm:
-            function(reinterpret_cast<sha3_384_hash&>(mem));
-            break;
-
-        case sha3_512_hash_algorithm:
-            function(reinterpret_cast<sha3_512_hash&>(mem));
-            break;
-
-        case whirlpool_hash_algorithm:
-            function(reinterpret_cast<whirlpool_hash&>(mem));
-            break;
+// TODO: restore
+//        case md4_hash_algorithm:
+//            function(reinterpret_cast<md4_hash&>(mem));
+//            break;
+//
+//        case md5_hash_algorithm:
+//            function(reinterpret_cast<md5_hash&>(mem));
+//            break;
+//
+//        case sha1_hash_algorithm:
+//            function(reinterpret_cast<sha1_hash&>(mem));
+//            break;
+//
+//        case sha2_224_hash_algorithm:
+//            function(reinterpret_cast<sha2_224_hash&>(mem));
+//            break;
+//
+//        case sha2_256_hash_algorithm:
+//            function(reinterpret_cast<sha2_256_hash&>(mem));
+//            break;
+//
+//        case sha2_384_hash_algorithm:
+//            function(reinterpret_cast<sha2_384_hash&>(mem));
+//            break;
+//
+//        case sha2_512_hash_algorithm:
+//            function(reinterpret_cast<sha2_512_hash&>(mem));
+//            break;
+//
+//        case sha3_224_hash_algorithm:
+//            function(reinterpret_cast<sha3_224_hash&>(mem));
+//            break;
+//
+//        case sha3_256_hash_algorithm:
+//            function(reinterpret_cast<sha3_256_hash&>(mem));
+//            break;
+//
+//        case sha3_384_hash_algorithm:
+//            function(reinterpret_cast<sha3_384_hash&>(mem));
+//            break;
+//
+//        case sha3_512_hash_algorithm:
+//            function(reinterpret_cast<sha3_512_hash&>(mem));
+//            break;
+//
+//        case whirlpool_hash_algorithm:
+//            function(reinterpret_cast<whirlpool_hash&>(mem));
+//            break;
 
         default:
             throw std::runtime_error("Unrecognized hashing algorithm.");
@@ -345,19 +347,19 @@ void hash::update(const secure_string_view& str)
 }
 
 
-size_t hash::digest(void* dst, size_t dstlen) const
+void hash::digest(void*& dst, size_t dstlen) const
 {
     digest_cstring functor = {dst, dstlen};
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
-    return functor.length;
+//    return functor.length;
 }
 
 
-size_t hash::hexdigest(void* dst, size_t dstlen) const
+void hash::hexdigest(void*& dst, size_t dstlen) const
 {
     hexdigest_cstring functor = {dst, dstlen};
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
-    return functor.length;
+//    return functor.length;
 }
 
 

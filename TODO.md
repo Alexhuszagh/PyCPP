@@ -1,6 +1,11 @@
 - All the functions that take void* need to take void*&
-    - unicode.h
+    - Need to return void, and let the /src/dst report the progress.
+    - Need hex_i8... SHIT
+    - Hex first.
+        -Do hashlib, the PunyCode, then CaseMap, then UniCode
+            - Independent -> Dependent
     - punycode.h
+    - unicode.h
 
 - Need to finish the compression modules
     - GZIP
