@@ -1,16 +1,12 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/compression/core.h>
 #include <pycpp/compression/zlib.h>
 #include <pycpp/safe/stdlib.h>
 #include <zlib.h>
 
 PYCPP_BEGIN_NAMESPACE
-
-// CONSTANTS
-// ---------
-
-static constexpr int BUFFER_SIZE = 4096;
 
 // MACROS
 // ------
@@ -56,21 +52,14 @@ void check_zstatus(int error)
 /**
  *  \brief Implied base class for the ZLIB compressor.
  */
-struct zlib_compressor_impl
+struct zlib_compressor_impl: compressor_impl<z_stream>
 {
-    int status = Z_OK;
-    z_stream stream;
-
+    using base = compressor_impl<z_stream>;
     zlib_compressor_impl(int level = Z_DEFAULT_COMPRESSION);
     ~zlib_compressor_impl();
 
-    void before(void* dst, size_t dstlen);
-    void before(const void* src, size_t srclen, void* dst, size_t dstlen);
-    void compress();
+    virtual void compress();
     bool flush(void*& dst, size_t dstlen);
-    compression_status check_status(const void* src, void* dst) const;
-    void after(void*& dst);
-    void after(const void*& src, void*& dst);
 
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
@@ -78,13 +67,10 @@ struct zlib_compressor_impl
 
 zlib_compressor_impl::zlib_compressor_impl(int level)
 {
+    status = Z_OK;
     stream.zalloc = Z_NULL;
     stream.zfree = Z_NULL;
     stream.opaque = Z_NULL;
-    stream.avail_in = 0;
-    stream.next_in = nullptr;
-    stream.avail_out = 0;
-    stream.next_out = nullptr;
     CHECK(deflateInit(&stream, level));
 }
 
@@ -92,22 +78,6 @@ zlib_compressor_impl::zlib_compressor_impl(int level)
 zlib_compressor_impl::~zlib_compressor_impl()
 {
     deflateEnd(&stream);
-}
-
-
-void zlib_compressor_impl::before(void* dst, size_t dstlen)
-{
-    stream.next_out = (Bytef*) dst;
-    stream.avail_out = dstlen;
-}
-
-
-void zlib_compressor_impl::before(const void* src, size_t srclen, void* dst, size_t dstlen)
-{
-    stream.next_in = (Bytef*) src;
-    stream.avail_in = srclen;
-    stream.next_out = (Bytef*) dst;
-    stream.avail_out = dstlen;
 }
 
 
@@ -122,76 +92,22 @@ void zlib_compressor_impl::compress()
 
 bool zlib_compressor_impl::flush(void*& dst, size_t dstlen)
 {
-    if (dst == nullptr) {
-        return false;
-    }
-    before(dst, dstlen);
-    bool code;
-    if (dstlen) {
-        status = deflate(&stream, Z_FINISH);
-        code = status == Z_OK;
-    } else {
-        status = deflate(&stream, Z_FULL_FLUSH);
-        code = status == Z_OK;
-    }
-    after(dst);
-
-    return status;
-}
-
-
-compression_status zlib_compressor_impl::check_status(const void* src, void* dst) const
-{
-    if (status == Z_STREAM_END) {
-        return compression_eof;
-    } else if (stream.next_out == dst) {
-        return compression_need_input;
-    } else if (stream.next_in == src) {
-        return compression_need_output;
-    }
-}
-
-
-void zlib_compressor_impl::after(void*& dst)
-{
-    dst = stream.next_out;
-}
-
-
-void zlib_compressor_impl::after(const void*& src, void*& dst)
-{
-    src = stream.next_in;
-    dst = stream.next_out;
+    return base::flush(dst, dstlen, [&]()
+    {
+        if (dstlen) {
+            status = deflate(&stream, Z_FINISH);
+            return status == Z_STREAM_END || status == Z_OK;
+        } else {
+            status = deflate(&stream, Z_FULL_FLUSH);
+            return status == Z_STREAM_END || status == Z_OK;
+        }
+    });
 }
 
 
 compression_status zlib_compressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // no input data, or already reached stream end
-    if (status == Z_STREAM_END) {
-        return compression_eof;
-    } else if (srclen == 0 && stream.avail_in == 0) {
-        return compression_need_input;
-    } else if (dst == nullptr || dstlen == 0) {
-        return compression_need_output;
-    }
-
-    bool use_src = (stream.next_in == nullptr || stream.avail_in == 0);
-    if (use_src) {
-        before(src, srclen, dst, dstlen);
-    } else {
-        // have remaining input data
-        before(dst, dstlen);
-    }
-    compress();
-    compression_status code = check_status(src, dst);
-    if (use_src) {
-        after(src, dst);
-    } else {
-        after(dst);
-    }
-
-    return code;
+    return base::operator()(src, srclen, dst, dstlen, Z_STREAM_END);
 }
 
 

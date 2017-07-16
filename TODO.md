@@ -1,16 +1,13 @@
 - Need to finish the compression modules
-    - ZLIB
-        - Streams...
-        - Error handling...
     - GZIP
+        - Needs to be implemented in terms of ZLIB...
+            - inflateInit2(&stream, 16+MAX_WBITS);
+            - deflateInit2 (I believe...)
     - LZMA
     - BLOSC
 
 - Mathlib
     - Need array/axis unittests
-
-- filesystem
-    - move_* implements need to be **durable** across filesystems.
 
 - Atomic Operations
     - Check boltsons

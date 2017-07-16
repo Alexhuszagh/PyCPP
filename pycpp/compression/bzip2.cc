@@ -3,6 +3,7 @@
 
 #include <pycpp/architecture.h>
 #include <pycpp/compression/bzip2.h>
+#include <pycpp/compression/core.h>
 #include <pycpp/safe/stdlib.h>
 #include <bzlib.h>
 #include <string.h>
@@ -22,7 +23,6 @@ static constexpr int BZ2_SMALL = 0;
 static constexpr int BZ2_BLOCK_SIZE = 9;
 static constexpr int BZ2_VERBOSITY = 0;
 static constexpr int BZ2_WORK_FACTOR = 30;
-static constexpr int BUFFER_SIZE = 4096;
 
 #if SYSTEM_ARCHITECTURE == 16
     static const uint16_t UNCOMPRESSED_MAX = 0xFB24ULL;
@@ -90,23 +90,17 @@ void check_bzstatus(int error)
 /**
  *  \brief Implied base class for the BZ2 compressor.
  */
-struct bz2_compressor_impl
+struct bz2_compressor_impl: compressor_impl<bz_stream>
 {
+    using base = compressor_impl<bz_stream>;
     static const int small = BZ2_SMALL;
     static const int verbosity = BZ2_VERBOSITY;
-    int status = BZ_OK;
-    bz_stream stream;
 
     bz2_compressor_impl(int block_size = BZ2_BLOCK_SIZE);
     ~bz2_compressor_impl();
 
-    void before(void* dst, size_t dstlen);
-    void before(const void* src, size_t srclen, void* dst, size_t dstlen);
-    void compress();
+    virtual void compress() override;
     bool flush(void*& dst, size_t dstlen);
-    compression_status check_status(const void* src, void* dst) const;
-    void after(void*& dst);
-    void after(const void*& src, void*& dst);
 
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
@@ -114,13 +108,10 @@ struct bz2_compressor_impl
 
 bz2_compressor_impl::bz2_compressor_impl(int block_size)
 {
+    status = BZ_OK;
     stream.bzalloc = nullptr;
     stream.bzfree = nullptr;
     stream.opaque = nullptr;
-    stream.avail_in = 0;
-    stream.next_in = nullptr;
-    stream.avail_out = 0;
-    stream.next_out = nullptr;
     CHECK(BZ2_bzCompressInit(&stream, block_size, verbosity, small));
 }
 
@@ -128,22 +119,6 @@ bz2_compressor_impl::bz2_compressor_impl(int block_size)
 bz2_compressor_impl::~bz2_compressor_impl()
 {
     BZ2_bzCompressEnd(&stream);
-}
-
-
-void bz2_compressor_impl::before(void* dst, size_t dstlen)
-{
-    stream.next_out = (char*) dst;
-    stream.avail_out = dstlen;
-}
-
-
-void bz2_compressor_impl::before(const void* src, size_t srclen, void* dst, size_t dstlen)
-{
-    stream.next_in = (char*) src;
-    stream.avail_in = srclen;
-    stream.next_out = (char*) dst;
-    stream.avail_out = dstlen;
 }
 
 
@@ -158,76 +133,22 @@ void bz2_compressor_impl::compress()
 
 bool bz2_compressor_impl::flush(void*& dst, size_t dstlen)
 {
-    if (dst == nullptr) {
-        return false;
-    }
-    before(dst, dstlen);
-    bool code;
-    if (dstlen) {
-        status = BZ2_bzCompress(&stream, BZ_FINISH);
-        code = status == BZ_FINISH_OK;
-    } else {
-        status = BZ2_bzCompress(&stream, BZ_FLUSH);
-        code = status == BZ_FLUSH_OK;
-    }
-    after(dst);
-
-    return status;
-}
-
-
-compression_status bz2_compressor_impl::check_status(const void* src, void* dst) const
-{
-    if (status == BZ_STREAM_END) {
-        return compression_eof;
-    } else if (stream.next_out == dst) {
-        return compression_need_input;
-    } else if (stream.next_in == src) {
-        return compression_need_output;
-    }
-}
-
-
-void bz2_compressor_impl::after(void*& dst)
-{
-    dst = stream.next_out;
-}
-
-
-void bz2_compressor_impl::after(const void*& src, void*& dst)
-{
-    src = stream.next_in;
-    dst = stream.next_out;
+    return base::flush(dst, dstlen, [&]()
+    {
+        if (dstlen) {
+            status = BZ2_bzCompress(&stream, BZ_FINISH);
+            return status == BZ_FINISH_OK || status == BZ_STREAM_END;
+        } else {
+            status = BZ2_bzCompress(&stream, BZ_FLUSH);
+            return status == BZ_FLUSH_OK || status == BZ_STREAM_END;
+        }
+    });
 }
 
 
 compression_status bz2_compressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // no input data, or already reached stream end
-    if (status == BZ_STREAM_END) {
-        return compression_eof;
-    } else if (srclen == 0 && stream.avail_in == 0) {
-        return compression_need_input;
-    } else if (dst == nullptr || dstlen == 0) {
-        return compression_need_output;
-    }
-
-    bool use_src = (stream.next_in == nullptr || stream.avail_in == 0);
-    if (use_src) {
-        before(src, srclen, dst, dstlen);
-    } else {
-        // have remaining input data
-        before(dst, dstlen);
-    }
-    compress();
-    compression_status code = check_status(src, dst);
-    if (use_src) {
-        after(src, dst);
-    } else {
-        after(dst);
-    }
-
-    return code;
+    return base::operator()(src, srclen, dst, dstlen, BZ_STREAM_END);
 }
 
 

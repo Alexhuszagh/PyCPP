@@ -34,7 +34,7 @@ TEST(zlib, zlib_compressor)
         src = zlib.data();
         dst = buffer;
         EXPECT_EQ(ctx.compress(src, zlib.size(), dst, 0), compression_need_output);
-        EXPECT_EQ(ctx.compress(src, zlib.size(), dst, 4096), compression_ok);
+        EXPECT_EQ(ctx.compress(src, zlib.size(), dst, 4096), compression_need_output);
         EXPECT_TRUE(ctx.flush(dst, 4096));
         EXPECT_EQ(std::distance(buffer, (char*) dst), ZLIB_COMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, ZLIB_COMPRESSED.data(), ZLIB_COMPRESSED.size()), 0);
@@ -43,7 +43,7 @@ TEST(zlib, zlib_compressor)
         ctx = zlib_compressor();
         src = zlib.data();
         dst = buffer;
-        EXPECT_EQ(ctx.compress(src, zlib.size(), dst, 4096), compression_ok);
+        EXPECT_EQ(ctx.compress(src, zlib.size(), dst, 4096), compression_need_output);
         EXPECT_TRUE(ctx.flush(dst, 4096));
         EXPECT_EQ(std::distance(buffer, (char*) dst), ZLIB_COMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, ZLIB_COMPRESSED.data(), ZLIB_COMPRESSED.size()), 0);
