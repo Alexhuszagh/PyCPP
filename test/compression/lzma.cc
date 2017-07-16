@@ -54,3 +54,50 @@ TEST(lzma, lzma_compressor)
 
     delete[] buffer;
 }
+
+
+TEST(lzma, lzma_decompressor)
+{
+    char* buffer = new char[4096];
+    std::string lzma = LZMA_COMPRESSED;
+    const void* src;
+    void* dst;
+
+    try {
+        // first example
+        lzma_decompressor ctx;
+        src = lzma.data();
+        dst = buffer;
+        EXPECT_EQ(ctx.decompress(src, lzma.size(), dst, 0), compression_need_output);
+        EXPECT_EQ(ctx.decompress(src, lzma.size(), dst, 4096), compression_eof);
+        EXPECT_EQ(std::distance(buffer, (char*) dst), LZMA_DECOMPRESSED.size());
+        EXPECT_EQ(strncmp(buffer, LZMA_DECOMPRESSED.data(), LZMA_DECOMPRESSED.size()), 0);
+
+        // second example
+        ctx = lzma_decompressor();
+        src = lzma.data();
+        dst = buffer;
+        EXPECT_EQ(ctx.decompress(src, lzma.size(), dst, 4096), compression_eof);
+        EXPECT_EQ(std::distance(buffer, (char*) dst), LZMA_DECOMPRESSED.size());
+        EXPECT_EQ(strncmp(buffer, LZMA_DECOMPRESSED.data(), LZMA_DECOMPRESSED.size()), 0);
+
+    } catch(...) {
+        EXPECT_TRUE(false);
+    }
+
+    delete[] buffer;
+}
+
+
+TEST(lzma, lzma_compress)
+{
+    // don't tie to any specific configuration
+    EXPECT_EQ(lzma_decompress(lzma_compress(LZMA_DECOMPRESSED)), LZMA_DECOMPRESSED);
+}
+
+
+TEST(lzma, lzma_decompress)
+{
+    EXPECT_EQ(lzma_decompress(LZMA_COMPRESSED), LZMA_DECOMPRESSED);
+    EXPECT_EQ(lzma_decompress(LZMA_COMPRESSED, LZMA_DECOMPRESSED.size()), LZMA_DECOMPRESSED);
+}

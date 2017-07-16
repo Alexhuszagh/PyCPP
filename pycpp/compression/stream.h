@@ -9,6 +9,7 @@
 
 #include <pycpp/compression/blosc.h>
 #include <pycpp/compression/bzip2.h>
+#include <pycpp/compression/gzip.h>
 #include <pycpp/compression/lzma.h>
 #include <pycpp/compression/zlib.h>
 #include <pycpp/stream/filter.h>
@@ -153,14 +154,12 @@ PYCPP_BEGIN_NAMESPACE
 
 COMPRESSED_STREAM_DEFINITION(bz2);
 COMPRESSED_STREAM_DEFINITION(zlib);
+COMPRESSED_STREAM_DEFINITION(lzma);
 
 // TODO:
-// blosc_stream
-// blosc_file
-// lzma_stream
-// lzma_file
-// compressed_stream
-// compressed_file
+// blosc
+// gzip
+// general compressed stream
 
 // CLEANUP
 // -------

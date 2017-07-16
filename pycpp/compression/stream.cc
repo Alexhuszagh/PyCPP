@@ -256,6 +256,11 @@ PYCPP_BEGIN_NAMESPACE
 
 COMPRESSED_STREAM_DEFINITION(bz2)
 COMPRESSED_STREAM_DEFINITION(zlib)
+COMPRESSED_STREAM_DEFINITION(lzma)
+// TODO:
+// blosc
+// gzip
+// general compressed stream
 
 // CLEANUP
 // -------

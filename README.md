@@ -14,6 +14,7 @@ Python-like C++ environment with independent, lightweight utilities for cross-pl
 
 - [Introduction](#introduction)
 - [Design](#design)
+- [Separation of Logic](#separation-of-logic)
 - [Namespace](#namespace)
 - [Building](#building)
 - [Performance](#performance)
@@ -124,6 +125,48 @@ Supported features include:
 - [Decompressing streams](/pycpp/compression/stream.h).
 
 **WARNING:** PyCPP includes cryptographic hashes and ciphers, which are tested via fuzzing. The buffer containing these objects is reset upon object destruction, to minimize side-channel attacks. However, they should be assumed to be insecure, until audited.
+
+## Separation of Logic
+
+One of the most notable design flaws in the C++ standard library is combination of discrete logic into a single interface, most notably with IOStreams. Specializing IOStreams for a new features requires overriding low-level, poorly documented methods, and attempts to remedy this (most notably Boost.IOStreams) still require copious amounts of boilerplate.
+
+To provide a clear separation of logic and therefore a more friendly API, PyCPP provides stream overloads taking a generic callback that transforms the input sequence to the output. For example, to convert all characters within a stream to lowercase, we can use `ascii_tolower` and our `filter_callback`.
+
+```cpp
+#include <pycpp/casemap.h>          // ascii_tolower
+#include <pycpp/stream/filter.h>    // filter_istream
+#include <sstream>
+
+void transform_tolower(const void*& src, size_t srclen,
+    void*& dst, size_t dstlen,
+    size_t char_size)
+{
+    // cast to our expected types
+    const char* src_ = reinterpret_cast<const char*>(src);
+    char* dst_ = reinterpret_cast<char*>(dst);
+
+    // copy bytes
+    while (srclen-- && dstlen--) {
+        *dst_++ = ascii_tolower(*src_++);
+    }
+
+    // reassign to buffer
+    src = (const void*) src_;
+    dst = (void*) dst_;
+}
+
+
+int main(void)
+{
+    std::istringstream sstream("THIS IS A MESSAGE");
+    filter_istream stream(sstream, transform_tolower);
+    std::string line;
+    std::getline(stream, line);
+    std::cout << line << std::endl;     // "this is a message";
+}
+```
+
+Similar choices to separate discrete logic are found throughout PyCPP, simplifying numerous interfaces in the standard library.
 
 ## Namespace
 

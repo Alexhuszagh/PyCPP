@@ -104,7 +104,49 @@ compression_status lzma_compressor_impl::operator()(const void*& src, size_t src
 }
 
 
-// TODO: need lzma_decompressor_impl
+/**
+ *  \brief Implied base class for the LZMA2 decompressor.
+ */
+struct lzma_decompressor_impl: filter_impl<lzma_stream>
+{
+    using base = filter_impl<lzma_stream>;
+    static const uint64_t memlimit = UINT64_MAX;
+    static const uint32_t flags = LZMA_TELL_ANY_CHECK | LZMA_TELL_NO_CHECK;
+
+    lzma_decompressor_impl();
+    ~lzma_decompressor_impl();
+
+    virtual void call();
+    compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+};
+
+
+lzma_decompressor_impl::lzma_decompressor_impl()
+{
+    stream = LZMA_STREAM_INIT;
+    CHECK(lzma_stream_decoder(&stream, memlimit, flags));
+}
+
+
+lzma_decompressor_impl::~lzma_decompressor_impl()
+{
+    lzma_end(&stream);
+}
+
+
+void lzma_decompressor_impl::call()
+{
+    while (stream.avail_in && stream.avail_out && status != LZMA_STREAM_END) {
+        status = lzma_code(&stream, LZMA_RUN);
+        check_xzstatus(status);
+    }
+}
+
+
+compression_status lzma_decompressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+{
+    return base::operator()(src, srclen, dst, dstlen, LZMA_STREAM_END);
+}
 
 
 lzma_compressor::lzma_compressor(int level):
@@ -139,7 +181,88 @@ bool lzma_compressor::flush(void*& dst, size_t dstlen)
     return ptr_->flush(dst, dstlen);
 }
 
-// TODO: need lzma_decompressor
+lzma_decompressor::lzma_decompressor():
+    ptr_(new lzma_decompressor_impl)
+{}
 
+
+lzma_decompressor::lzma_decompressor(lzma_decompressor&& rhs):
+    ptr_(std::move(rhs.ptr_))
+{}
+
+
+lzma_decompressor & lzma_decompressor::operator=(lzma_decompressor&& rhs)
+{
+    std::swap(ptr_, rhs.ptr_);
+    return *this;
+}
+
+
+lzma_decompressor::~lzma_decompressor()
+{}
+
+
+compression_status lzma_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+{
+    return (*ptr_)(src, srclen, dst, dstlen);
+}
+
+// FUNCTIONS
+// ---------
+
+
+size_t lzma_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
+{
+    static uint32_t level = LZMA_PRESET_DEFAULT;
+    static lzma_check check = LZMA_CHECK_CRC64;
+    size_t dstpos = 0;
+    if (srclen) {
+        CHECK(lzma_easy_buffer_encode(level, check, nullptr, (const uint8_t*) src, srclen, (uint8_t*) dst, &dstpos, dstlen));
+    } else {
+        // compression no bytes
+        char c = 0;
+        CHECK(lzma_easy_buffer_encode(level, check, nullptr, (const uint8_t*) &c, 0, (uint8_t*) dst, &dstpos, dstlen));
+    }
+    return dstpos;
+}
+
+
+std::string lzma_compress(const std::string &str)
+{
+    size_t dstlen = lzma_compress_bound(str.size());
+    return compress_bound(str, dstlen, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
+        return lzma_compress(src, srclen, dst, dstlen);
+    });
+}
+
+
+std::string lzma_decompress(const std::string &str)
+{
+    return ctx_decompress<lzma_decompressor>(str);
+}
+
+
+size_t lzma_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound)
+{
+    static uint64_t memlimit = UINT64_MAX;
+    size_t srcpos = 0;
+    size_t dstpos = 0;
+    if (srclen) {
+        CHECK(lzma_stream_buffer_decode(&memlimit, 0, nullptr, (const uint8_t*) src, &srcpos, srclen, (uint8_t*) dst, &dstpos, dstlen));
+    } else {
+        // compression no bytes
+        char c = 0;
+        CHECK(lzma_stream_buffer_decode(&memlimit, 0, nullptr, (const uint8_t*) &c, &srcpos, 0, (uint8_t*) dst, &dstpos, dstlen));
+    }
+    return dstpos;
+}
+
+
+std::string lzma_decompress(const std::string &str, size_t bound)
+{
+    return decompress_bound(str, bound, [](const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound) {
+        return lzma_decompress(src, srclen, dst, dstlen, bound);
+    });
+}
 
 PYCPP_END_NAMESPACE

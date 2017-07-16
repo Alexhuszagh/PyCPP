@@ -1,3 +1,7 @@
+- All the functions that take void* need to take void*&
+    - unicode.h
+    - punycode.h
+
 - Need to finish the compression modules
     - GZIP
         - Needs to be implemented in terms of ZLIB...
