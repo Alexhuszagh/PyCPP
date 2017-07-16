@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/re/match.h>
+#include <map>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -34,13 +35,13 @@ public:
 
     match_t search(const string_view& str, size_t start = 0, size_t endpos = string_view::npos);
     match_t match(const string_view& str, size_t start = 0, size_t endpos = string_view::npos);
-    // split
+    match_groups split(const string_view& str, size_t maxsplit = -1);
     match_groups findall(const string_view& str, size_t start = 0, size_t endpos = string_view::npos);
     match_range finditer(const string_view& str, size_t start = 0, size_t endpos = string_view::npos);
     // sub
     // subn
-    // groups
-    // groupindex
+    size_t groups() const;
+    const std::map<std::string, int>& groupindex() const;
 
 private:
     friend class match_t;

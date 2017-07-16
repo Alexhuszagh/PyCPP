@@ -14,7 +14,7 @@ PYCPP_USING_NAMESPACE
 // -----
 
 
-TEST(re, regex)
+TEST(regex, search)
 {
     regexp_t regex("\\w+");
     std::string data = "These are a bunch of words";
@@ -33,4 +33,40 @@ TEST(re, regex)
     EXPECT_EQ(m.end(), 9);
     EXPECT_EQ(m.group(), "are");
     EXPECT_EQ(m.lastindex(), 0);
+}
+
+
+TEST(regex, match)
+{
+    regexp_t regex("\\w+");
+    std::string data = "These are a bunch of words";
+
+    // first example
+    auto m = regex.match(data);
+    ASSERT_TRUE(bool(m));
+    EXPECT_EQ(m.start(), 0);
+    EXPECT_EQ(m.end(), 5);
+    EXPECT_EQ(m.group(), "These");
+    EXPECT_EQ(m.lastindex(), 0);
+
+    m = regex.match(data, m.end());
+    ASSERT_FALSE(bool(m));
+}
+
+
+TEST(regex, split)
+{
+    regexp_t regex("\\w+");
+    std::string data = "These are a bunch of words";
+
+    // first example
+    auto whitespace = regex.split(data);
+    ASSERT_EQ(whitespace.size(), 7);
+    EXPECT_EQ(whitespace[0], "");
+    EXPECT_EQ(whitespace[1], " ");
+    EXPECT_EQ(whitespace[2], " ");
+    EXPECT_EQ(whitespace[3], " ");
+    EXPECT_EQ(whitespace[4], " ");
+    EXPECT_EQ(whitespace[5], " ");
+    EXPECT_EQ(whitespace[6], "");
 }

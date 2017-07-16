@@ -30,7 +30,10 @@ match_t search(const std::string& pattern, const string_view& str);
  */
 match_t match(const std::string& pattern, const string_view& str);
 
-// re.split(pattern, string, maxsplit=0, flags=0)
+/**
+ *  \brief Split string by pattern.
+ */
+match_groups split(const std::string& pattern, const string_view& str, size_t maxsplit = -1);
 
 /**
  *  \brief Get all matches from pattern within a string.

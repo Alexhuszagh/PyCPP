@@ -92,6 +92,23 @@ TEST(re, finditer)
 }
 
 
+TEST(re, split)
+{
+    std::string data = "These are a bunch of words";
+
+    // first example
+    auto whitespace = split("\\w+", data);
+    ASSERT_EQ(whitespace.size(), 7);
+    EXPECT_EQ(whitespace[0], "");
+    EXPECT_EQ(whitespace[1], " ");
+    EXPECT_EQ(whitespace[2], " ");
+    EXPECT_EQ(whitespace[3], " ");
+    EXPECT_EQ(whitespace[4], " ");
+    EXPECT_EQ(whitespace[5], " ");
+    EXPECT_EQ(whitespace[6], "");
+}
+
+
 TEST(re, escape)
 {
     EXPECT_EQ(escape(string_view("\0", 1)), std::string("\\\0", 2));

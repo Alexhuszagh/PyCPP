@@ -63,6 +63,12 @@ match_range finditer(const std::string& pattern, const string_view& str)
 }
 
 
+match_groups split(const std::string& pattern, const string_view& str, size_t maxsplit)
+{
+    return compile(pattern).split(str);
+}
+
+
 std::string escape(const string_view& str)
 {
     std::string output;

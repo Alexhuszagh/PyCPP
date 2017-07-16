@@ -144,6 +144,25 @@ match_t regexp_t::match(const string_view& str, size_t pos, size_t endpos)
 }
 
 
+match_groups regexp_t::split(const string_view& str, size_t maxsplit)
+{
+    match_groups groups;
+    size_t pos = 0;
+    auto r = finditer(str);
+    for (auto &match: r) {
+        if (!maxsplit) {
+            break;
+        }
+        groups.emplace_back(str.substr(pos, match.start() - pos));
+        pos = match.end();
+        --maxsplit;
+    }
+    groups.emplace_back(str.substr(pos));
+
+    return groups;
+}
+
+
 match_groups regexp_t::findall(const string_view& str, size_t pos, size_t endpos)
 {
     match_groups groups;
@@ -158,6 +177,19 @@ match_range regexp_t::finditer(const string_view& str, size_t pos, size_t endpos
 {
     auto view = str.substr(pos, endpos);
     return match_range(match_iterator_t(*this, view));
+}
+
+
+size_t regexp_t::groups() const
+{
+    // always have extra arg for group0
+    return ptr_->argc - 1;
+}
+
+
+const std::map<std::string, int>& regexp_t::groupindex() const
+{
+    return ptr_->re2.NamedCapturingGroups();
 }
 
 
