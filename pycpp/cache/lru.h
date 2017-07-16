@@ -207,9 +207,9 @@ template <typename K, typename V, typename H, typename P, typename A>
 auto lru_cache<K, V, H, P, A>::operator=(const self& rhs) -> self&
 {
     cache_size_ = rhs.cache_size_;
-    list_ = rhs.list_;
-    for (auto it = list_.begin(); it != list_.end(); ++it) {
-        map_.insert(std::make_pair(it->first, it));
+    for (const value_type& value: rhs.list_) {
+        list_.emplace_back(std::make_pair(value.first, value.second));
+        map_.insert(std::make_pair(value.first, list_.rbegin().base()));
     }
 
     return *this;
@@ -306,7 +306,7 @@ auto lru_cache<K, V, H, P, A>::operator[](const key_type& key) -> mapped_type&
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        return *put(key, value_type());
+        return *put(key, mapped_type());
     }
 
     return *get(LRU_ITERATOR(it->second));
@@ -318,7 +318,7 @@ auto lru_cache<K, V, H, P, A>::operator[](key_type&& key) -> mapped_type&
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        return *put(key, value_type());
+        return *put(key, mapped_type());
     }
 
     return *get(LRU_ITERATOR(it->second));
