@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/range.h>
 #include <pycpp/view/string.h>
 #include <map>
 #include <memory>
@@ -20,13 +21,15 @@ PYCPP_BEGIN_NAMESPACE
 
 struct match_impl_t;
 struct match_t;
-struct regex_t;
+struct match_iterator_t;
+struct regexp_t;
 
 // ALIAS
 // -----
 
 using match_groups = std::vector<string_view>;
 using match_groupdict = std::map<string_view, string_view>;
+using match_range = range<match_iterator_t>;
 
 // OBJECTS
 // -------
@@ -53,15 +56,64 @@ public:
     size_t lastindex() const;
     string_view lastgroup() const;
     const string_view& string() const;
+
+    bool operator==(const match_t&) const;
+    bool operator!=(const match_t&) const;
     explicit operator bool() const;
 
 private:
-    friend class regex_t;
+    friend class regexp_t;
+    friend class match_iterator_t;
 
     match_t();
-    match_t(regex_t&, const string_view&, size_t, size_t);
+    match_t(regexp_t&, const string_view&, size_t, size_t);
 
     std::unique_ptr<match_impl_t> ptr_;
 };
+
+
+/**
+ *  \brief Forward iterator over matches in a regex.
+ */
+struct match_iterator_t: std::iterator<std::forward_iterator_tag, match_t>
+{
+public:
+    // MEMBER TYPES
+    // ------------
+    typedef match_iterator_t self;
+    typedef std::iterator<std::forward_iterator_tag, match_t> base;
+    using typename base::value_type;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    typedef value_type* pointer;
+    typedef const value_type* const_pointer;
+
+    // MEMBER FUNCTIONS
+    // ----------------
+    match_iterator_t();
+    match_iterator_t(regexp_t& regex, const string_view& str);
+    ~match_iterator_t();
+    match_iterator_t(const self&);
+    self& operator=(const self&);
+    match_iterator_t(self&&);
+    self& operator=(self&&);
+
+    reference operator*();
+    const_reference operator*() const;
+    pointer operator->();
+    const_pointer operator->() const;
+    match_iterator_t& operator++();
+    match_iterator_t operator++(int);
+    bool operator==(const match_iterator_t&) const;
+    bool operator!=(const match_iterator_t&) const;
+
+    void swap(self&);
+
+private:
+    std::shared_ptr<match_t> match_;
+    regexp_t* regex_ = nullptr;
+    string_view str_;
+};
+
 
 PYCPP_END_NAMESPACE

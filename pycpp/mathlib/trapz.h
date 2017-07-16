@@ -9,7 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/parallel.h>
-#include <pycpp/range.h>
+#include <pycpp/xrange.h>
 #include <algorithm>
 
 PYCPP_BEGIN_NAMESPACE
@@ -28,7 +28,7 @@ double trapz(Iter first, Iter last, double dx = 1)
 {
     double integral = 0;
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance-1, 1);
+    auto r = xrange<size_t>(0, distance-1, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double yi = first[i];
         double yj = first[i+1];
@@ -57,7 +57,7 @@ double trapz(YIter y_first,
 {
     double integral = 0;
     size_t distance = std::min(std::distance(y_first, y_last), std::distance(x_first, x_last));
-    auto r = range<size_t>(0, distance-1, 1);
+    auto r = xrange<size_t>(0, distance-1, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double xi = x_first[i];
         double xj = x_first[i+1];
@@ -87,7 +87,7 @@ double trapz(Iter first,
 {
     double integral = 0;
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance-1, 1);
+    auto r = xrange<size_t>(0, distance-1, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double yi = fun(first[i]);
         double yj = fun(first[i+1]);
@@ -123,7 +123,7 @@ double trapz(YIter y_first,
 {
     double integral = 0;
     size_t distance = std::min(std::distance(y_first, y_last), std::distance(x_first, x_last));
-    auto r = range<size_t>(0, distance-1, 1);
+    auto r = xrange<size_t>(0, distance-1, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double xi = x_fun(x_first[i]);
         double xj = x_fun(x_first[i+1]);

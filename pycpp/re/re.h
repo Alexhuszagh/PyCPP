@@ -8,7 +8,7 @@
  *  rely on a global cache to store compiled regex objects,
  *  storing the last N (typically 100) compiled regular expression
  *  objects. If you need thread safety, you should instantiate a
- *  separate `regex_t` object per thread.
+ *  separate `regexp_t` object per thread.
  */
 
 #pragma once
@@ -30,14 +30,18 @@ match_t search(const std::string& pattern, const string_view& str);
  */
 match_t match(const std::string& pattern, const string_view& str);
 
-// TODO: This could use an LRU cache...
-
-// TODO: need to implement a cache here..
-// Abstract away the actual pattern/regex compilation.
-
 // re.split(pattern, string, maxsplit=0, flags=0)
-// re.findall(pattern, string, flags=0)
-// re.finditer(pattern, string, flags=0)
+
+/**
+ *  \brief Get all matches from pattern within a string.
+ */
+match_groups findall(const std::string& pattern, const string_view& str);
+
+/**
+ *  \brief Iteratively find matches within string.
+ */
+match_range finditer(const std::string& pattern, const string_view& str);
+
 // re.sub(pattern, repl, string, count=0, flags=0)
 // re.subn(pattern, repl, string, count=0, flags=0)
 

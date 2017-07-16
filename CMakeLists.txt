@@ -281,7 +281,6 @@ set(SOURCE_FILES
     pycpp/byteorder.cc
     pycpp/casemap.cc
     pycpp/codec.cc
-    pycpp/coroutine.cc
     pycpp/getline.cc
     pycpp/gettimeofday.cc
     pycpp/hex.cc
@@ -475,7 +474,6 @@ set(TEST_FILES
     test/casemap.cc
     test/codec.cc
     test/compiler.cc
-    test/coroutine.cc
     test/enum.cc
     test/getline.cc
     test/gettimeofday.cc
@@ -489,7 +487,7 @@ set(TEST_FILES
     test/pimpl.cc
     test/punycode.cc
     test/random.cc
-    test/range.cc
+    test/xrange.cc
     test/stringlib.cc
     test/tls.cc
     test/unicode.cc

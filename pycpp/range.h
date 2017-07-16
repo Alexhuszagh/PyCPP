@@ -2,58 +2,101 @@
 //  :license: Boost, see licenses/boost.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief High-performance generic type implementation.
+ *  \brief C++ iterator range adaptors (inspired by Boost).
  */
 
 #pragma once
 
-#include <pycpp/coroutine.h>
-#include <cassert>
+#include <pycpp/config.h>
+#include <iterator>
 
 PYCPP_BEGIN_NAMESPACE
 
-// FUNCTIONS
-// ---------
-
+// DECLARATION
+// -----------
 
 /**
- *  \brief Create generator from range [start, stop) using step intervals.
+ *  \brief Boost-inspired range adaptor.
  */
-template <typename Compare, typename T>
-generator<T> range_impl(Compare comp, T start, T stop, T step)
+template <typename Iterator>
+struct range
 {
-    return generator<T>([=](generator<T>& gen) mutable {
-        COROUTINE_REENTER(gen.coroutine()) {
-            for (; comp(start, stop); start += step) {
-                COROUTINE_YIELD gen.store(start);
-            }
-        }
-    });
+public:
+    // MEMBER TYPES
+    // ------------
+    using iterator = Iterator;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using value_type = typename std::iterator_traits<iterator>::value_type;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    typedef value_type* pointer;
+    typedef const value_type* const_pointer;
+
+    // MEMBER FUNCTIONS
+    // ----------------
+    range(iterator first = iterator(), iterator last = iterator());
+    iterator begin() const;
+    iterator end() const;
+    reverse_iterator rbegin() const;
+    reverse_iterator rend() const;
+    bool empty() const;
+    size_t distance() const;
+
+private:
+    iterator first;
+    iterator last;
+};
+
+// DEFINITION
+// ----------
+
+
+template <typename Iterator>
+range<Iterator>::range(iterator first, iterator last):
+    first(first),
+    last(last)
+{}
+
+
+template <typename Iterator>
+auto range<Iterator>::begin() const -> iterator
+{
+    return first;
 }
 
 
-/**
- *  \brief Create generator from range [start, stop) using step intervals.
- */
-template <typename T>
-generator<T> range(T start, T stop, T step = 1)
+template <typename Iterator>
+auto range<Iterator>::end() const -> iterator
 {
-    assert((step > 0) ^ (stop - start < 0));
-    if (step > 0) {
-        return range_impl(std::less<T>(), start, stop, step);
-    }
-    return range_impl(std::greater<T>(), start, stop, step);
+    return last;
 }
 
 
-/**
- *  \brief Create generator from range [0, stop).
- */
-template <typename T>
-generator<T> range(T stop)
+template <typename Iterator>
+auto range<Iterator>::rbegin() const -> reverse_iterator
 {
-    return range(0, stop, 1);
+    return reverse_iterator(last);
 }
 
+
+template <typename Iterator>
+auto range<Iterator>::rend() const -> reverse_iterator
+{
+    return reverse_iterator(first);
+}
+
+
+template <typename Iterator>
+bool range<Iterator>::empty() const
+{
+    return first == last;
+}
+
+
+template <typename Iterator>
+size_t range<Iterator>::distance() const
+{
+    return std::distance(first, last);
+}
 
 PYCPP_END_NAMESPACE

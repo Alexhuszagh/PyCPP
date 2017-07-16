@@ -219,6 +219,13 @@ TEST(path, samefile)
 }
 
 
+TEST(directory, iterdir)
+{
+    auto r = iterdir("test/directory");
+    ASSERT_EQ(r.distance(), 2);
+}
+
+
 TEST(directory, listdir)
 {
     auto list = listdir("test/directory");

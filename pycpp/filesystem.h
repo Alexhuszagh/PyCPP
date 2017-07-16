@@ -17,6 +17,7 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/range.h>
 #include <pycpp/filesystem/iterator.h>
 #include <pycpp/filesystem/path.h>
 #include <pycpp/filesystem/stat.h>
@@ -160,6 +161,11 @@ bool isabs(const path_t& path);
 bool samefile(const path_t& p1, const path_t& p2);
 
 // DIRECTORY
+
+/**
+ *  \brief Iterate over all items in the directory.
+ */
+range<directory_iterator> iterdir(const path_t& path);
 
 /**
  *  \brief List all items in the directory.
@@ -363,6 +369,7 @@ bool samefile(const backup_path_t& p1, const backup_path_t& p2);
 
 // DIRECTORY
 
+range<directory_iterator> iterdir(const backup_path_t& path);
 backup_path_list_t listdir(const backup_path_t& path);
 
 // SPLIT

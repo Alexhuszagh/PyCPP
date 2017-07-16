@@ -10,7 +10,7 @@ PYCPP_BEGIN_NAMESPACE
 
 
 template <typename Path>
-bool move_path_impl(const Path& src, const Path& dst, bool replace)
+static bool move_path_impl(const Path& src, const Path& dst, bool replace)
 {
     auto src_lstat = lstat(src);
     if (islink(src_lstat)) {
@@ -24,7 +24,7 @@ bool move_path_impl(const Path& src, const Path& dst, bool replace)
 
 
 template <typename Path>
-bool copy_link_impl(const Path& src, const Path& dst, bool replace)
+static bool copy_link_impl(const Path& src, const Path& dst, bool replace)
 {
     auto target = read_link(src);
     return mklink(target, dst, replace);
@@ -32,7 +32,7 @@ bool copy_link_impl(const Path& src, const Path& dst, bool replace)
 
 
 template <typename Path>
-bool copy_path_impl(const Path& src, const Path& dst, bool recursive, bool replace)
+static bool copy_path_impl(const Path& src, const Path& dst, bool recursive, bool replace)
 {
     auto src_lstat = lstat(src);
     if (islink(src_lstat)) {
@@ -46,7 +46,7 @@ bool copy_path_impl(const Path& src, const Path& dst, bool recursive, bool repla
 
 
 template <typename Path>
-bool remove_path_impl(const Path& path, bool recursive)
+static bool remove_path_impl(const Path& path, bool recursive)
 {
     auto path_lstat = lstat(path);
     if (islink(path_lstat)) {
@@ -59,14 +59,20 @@ bool remove_path_impl(const Path& path, bool recursive)
 }
 
 
+template <typename Path>
+static range<directory_iterator> iterdir_impl(const Path& path)
+{
+    return range<directory_iterator>(directory_iterator(path));
+}
+
+
+
 template <typename Path, typename ToPath>
-std::deque<Path> listdir_impl(const Path& path, ToPath topath)
+static std::deque<Path> listdir_impl(const Path& path, ToPath topath)
 {
     std::deque<Path> list;
-    directory_iterator first(path);
-    directory_iterator last;
-    for (; first != last; ++first) {
-        list.emplace_back(topath(first->basename()));
+    for (auto entry: iterdir_impl(path)) {
+        list.emplace_back(topath(entry.basename()));
     }
 
     return list;
@@ -97,6 +103,12 @@ bool copy_path(const path_t& src, const path_t& dst, bool recursive, bool replac
 bool remove_path(const path_t& path, bool recursive)
 {
     return remove_path_impl(path, recursive);
+}
+
+
+range<directory_iterator> iterdir(const path_t& path)
+{
+    return iterdir_impl(path);
 }
 
 
@@ -131,6 +143,12 @@ bool copy_path(const backup_path_t& src, const backup_path_t& dst, bool recursiv
 bool remove_path(const backup_path_t& path, bool recursive)
 {
     return remove_path_impl(path, recursive);
+}
+
+
+range<directory_iterator> iterdir(const backup_path_t& path)
+{
+    return iterdir_impl(path);
 }
 
 

@@ -9,7 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/parallel.h>
-#include <pycpp/range.h>
+#include <pycpp/xrange.h>
 #include <algorithm>
 #include <iterator>
 
@@ -88,7 +88,7 @@ double average(ValueIter value_first,
     double sum = 0;
     double weight = 0;
     size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double w = weight_first[i];
         sum += value_first[i] * w;
@@ -127,7 +127,7 @@ double average(ValueIter value_first,
     double sum = 0;
     double weight = 0;
     size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double w = weighter(weight_first[i]);
         sum += summer(value_first[i]) * w;

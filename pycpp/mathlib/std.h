@@ -207,7 +207,7 @@ double variance(double mean,
     double sum = 0;
     double weight = 0;
     size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double v = pow(value_first[i] - mean, 2);
         double w = weight_first[i];
@@ -321,7 +321,7 @@ double variance(double mean,
     double sum = 0;
     double weight = 0;
     size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double v = pow(summer(value_first[i]) - mean, 2);
         double w = weighter(weight_first[i]);

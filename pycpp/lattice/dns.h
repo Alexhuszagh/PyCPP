@@ -44,14 +44,13 @@ struct address_iterator_t: std::iterator<std::forward_iterator_tag, addrinfo>
     typedef address_iterator_t self;
     typedef std::iterator<std::forward_iterator_tag, addrinfo> base;
     using typename base::value_type;
-    typedef addrinfo& reference;
-    typedef const addrinfo& const_reference;
-    typedef addrinfo* pointer;
-    typedef const addrinfo* const_pointer;
+    typedef value_type& reference;
+    typedef const value_type& const_reference;
+    typedef value_type* pointer;
+    typedef const value_type* const_pointer;
 
     // MEMBER FUNCTIONS
     // ----------------
-
     address_iterator_t() = default;
     address_iterator_t(const self&) = default;
     self& operator=(const self&) = default;
@@ -64,10 +63,10 @@ struct address_iterator_t: std::iterator<std::forward_iterator_tag, addrinfo>
     const_reference operator*() const;
     pointer operator->();
     const_pointer operator->() const;
-    address_iterator_t & operator++();
+    address_iterator_t& operator++();
     address_iterator_t operator++(int);
-    bool operator==(const address_iterator_t& other) const;
-    bool operator!=(const address_iterator_t& other) const;
+    bool operator==(const address_iterator_t&) const;
+    bool operator!=(const address_iterator_t&) const;
 
 private:
     pointer ptr = nullptr;

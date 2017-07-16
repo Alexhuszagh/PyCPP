@@ -7,6 +7,7 @@
 
 #include <pycpp/re/re.h>
 #include <gtest/gtest.h>
+#include <deque>
 
 PYCPP_USING_NAMESPACE
 
@@ -60,6 +61,34 @@ TEST(re, syntax)
 
     m = match("^\\w+", data);
     ASSERT_TRUE(bool(m));
+}
+
+
+TEST(re, findall)
+{
+    std::string data = "These are a bunch of words";
+    auto words = findall("\\w+", data);
+    EXPECT_EQ(words.size(), 6);
+    EXPECT_EQ(words.front(), "These");
+}
+
+
+TEST(re, finditer)
+{
+    std::string data = "These are a bunch of words";
+    std::deque<std::string> actual;
+    std::deque<std::string> expected = {
+        "These",
+        "are",
+        "a",
+        "bunch",
+        "of",
+        "words",
+    };
+    for (auto &match: finditer("\\w+", data)) {
+        actual.emplace_back(std::string(match.group(0)));
+    }
+    EXPECT_EQ(actual, expected);
 }
 
 

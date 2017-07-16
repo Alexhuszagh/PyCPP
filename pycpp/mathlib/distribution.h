@@ -9,7 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/parallel.h>
-#include <pycpp/range.h>
+#include <pycpp/xrange.h>
 #include <pycpp/iterator/category.h>
 #include <algorithm>
 #include <math.h>
@@ -260,7 +260,7 @@ enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 norm_pdf(SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         dst[i] = norm_pdf(first[i]);
     });
@@ -280,7 +280,7 @@ enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         dst[i] = gaussian_pdf(first[i], mean, sigma);
     });
@@ -302,7 +302,7 @@ enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         dst[i] = cauchy_pdf(first[i]);
     });
@@ -322,7 +322,7 @@ enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         dst[i] = lorentzian_pdf(first[i], mean, fwhm);
     });
@@ -342,7 +342,7 @@ enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 norm_cdf(SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         dst[i] = norm_cdf(first[i]);
     });
@@ -362,7 +362,7 @@ enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         dst[i] = gaussian_cdf(first[i], mean, sigma);
     });
@@ -384,7 +384,7 @@ enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 cauchy_cdf(SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         dst[i] = cauchy_cdf(first[i]);
     });
@@ -404,7 +404,7 @@ enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
-    auto r = range<size_t>(0, distance, 1);
+    auto r = xrange<size_t>(0, distance, 1);
     std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         dst[i] = lorentzian_cdf(first[i], mean, fwhm);
     });
