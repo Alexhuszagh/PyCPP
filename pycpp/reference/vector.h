@@ -18,6 +18,27 @@ PYCPP_BEGIN_NAMESPACE
 
 namespace detail
 {
+// MACROS
+// ------
+
+/**
+ *  \brief Macro wrapper to automate iterator construction.
+ */
+#define REFERENCE_VECTOR_ITERATOR(it)                                   \
+    iterator(it, [](pointer& p) -> reference                            \
+    {                                                                   \
+        return *p;                                                      \
+    })
+
+/**
+ *  \brief Macro wrapper to automate const_iterator construction.
+ */
+#define REFERENCE_VECTOR_CONST_ITERATOR(it)                             \
+    const_iterator(it, [](const_pointer p) -> const_reference           \
+    {                                                                   \
+        return *p;                                                      \
+    })
+
 // DECLARATION
 // -----------
 
@@ -134,54 +155,42 @@ reference_vector_base<T>::reference_vector_base(size_type n, reference r)
 template <typename T>
 auto reference_vector_base<T>::begin() -> iterator
 {
-    return iterator(vector_.begin(), [](pointer& p) -> reference {
-        return *p;
-    });
+    return REFERENCE_VECTOR_ITERATOR(vector_.begin());
 }
 
 
 template <typename T>
 auto reference_vector_base<T>::begin() const -> const_iterator
 {
-    return const_iterator(vector_.begin(), [](const_pointer p) -> const_reference {
-        return *p;
-    });
+    return REFERENCE_VECTOR_CONST_ITERATOR(vector_.begin());
 }
 
 
 template <typename T>
 auto reference_vector_base<T>::cbegin() const -> const_iterator
 {
-    return const_iterator(vector_.begin(), [](const_pointer p) -> const_reference {
-        return *p;
-    });
+    return REFERENCE_VECTOR_CONST_ITERATOR(vector_.begin());
 }
 
 
 template <typename T>
 auto reference_vector_base<T>::end() -> iterator
 {
-    return iterator(vector_.end(), [](pointer p) -> reference {
-        return *p;
-    });
+    return REFERENCE_VECTOR_ITERATOR(vector_.end());
 }
 
 
 template <typename T>
 auto reference_vector_base<T>::end() const -> const_iterator
 {
-    return const_iterator(vector_.end(), [](const_pointer p) -> const_reference {
-        return *p;
-    });
+    return REFERENCE_VECTOR_CONST_ITERATOR(vector_.end());
 }
 
 
 template <typename T>
 auto reference_vector_base<T>::cend() const -> const_iterator
 {
-    return const_iterator(vector_.end(), [](const_pointer p) -> const_reference {
-        return *p;
-    });
+    return REFERENCE_VECTOR_CONST_ITERATOR(vector_.end());
 }
 
 
@@ -445,6 +454,12 @@ bool reference_vector_base<T>::operator>=(const self& rhs) const
 {
     return greater_equal(*this, rhs);
 }
+
+// CLEANUP
+// -------
+
+#undef REFERENCE_VECTOR_ITERATOR
+#undef REFERENCE_VECTOR_CONST_ITERATOR
 
 }   /* detail */
 

@@ -56,3 +56,13 @@ TEST(lru_cache, at)
     }
     EXPECT_TRUE(false);
 }
+
+
+TEST(lru_cache, lookup)
+{
+    using cache_type = lru_cache<int, int>;
+
+    cache_type cache(50);
+    cache.find(1);
+    cache.find(5);
+}

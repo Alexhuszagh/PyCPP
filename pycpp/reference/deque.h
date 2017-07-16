@@ -18,6 +18,27 @@ PYCPP_BEGIN_NAMESPACE
 
 namespace detail
 {
+// MACROS
+// ------
+
+/**
+ *  \brief Macro wrapper to automate iterator construction.
+ */
+#define REFERENCE_DEQUE_ITERATOR(it)                                    \
+    iterator(it, [](pointer& p) -> reference                            \
+    {                                                                   \
+        return *p;                                                      \
+    })
+
+/**
+ *  \brief Macro wrapper to automate const_iterator construction.
+ */
+#define REFERENCE_DEQUE_CONST_ITERATOR(it)                              \
+    const_iterator(it, [](const_pointer p) -> const_reference           \
+    {                                                                   \
+        return *p;                                                      \
+    })
+
 // DECLARATION
 // -----------
 
@@ -132,54 +153,42 @@ reference_deque_base<T>::reference_deque_base(size_type n, reference r)
 template <typename T>
 auto reference_deque_base<T>::begin() -> iterator
 {
-    return iterator(deque_.begin(), [](pointer& p) -> reference {
-        return *p;
-    });
+    return REFERENCE_DEQUE_ITERATOR(deque_.begin());
 }
 
 
 template <typename T>
 auto reference_deque_base<T>::begin() const -> const_iterator
 {
-    return const_iterator(deque_.begin(), [](const_pointer p) -> const_reference {
-        return *p;
-    });
+    return REFERENCE_DEQUE_CONST_ITERATOR(deque_.begin());
 }
 
 
 template <typename T>
 auto reference_deque_base<T>::cbegin() const -> const_iterator
 {
-    return const_iterator(deque_.begin(), [](const_pointer p) -> const_reference {
-        return *p;
-    });
+    return REFERENCE_DEQUE_CONST_ITERATOR(deque_.begin());
 }
 
 
 template <typename T>
 auto reference_deque_base<T>::end() -> iterator
 {
-    return iterator(deque_.end(), [](pointer p) -> reference {
-        return *p;
-    });
+    return REFERENCE_DEQUE_ITERATOR(deque_.end());
 }
 
 
 template <typename T>
 auto reference_deque_base<T>::end() const -> const_iterator
 {
-    return const_iterator(deque_.end(), [](const_pointer p) -> const_reference {
-        return *p;
-    });
+    return REFERENCE_DEQUE_CONST_ITERATOR(deque_.end());
 }
 
 
 template <typename T>
 auto reference_deque_base<T>::cend() const -> const_iterator
 {
-    return const_iterator(deque_.end(), [](const_pointer p) -> const_reference {
-        return *p;
-    });
+    return REFERENCE_DEQUE_CONST_ITERATOR(deque_.end());
 }
 
 
@@ -444,11 +453,16 @@ bool reference_deque_base<T>::operator>=(const self& rhs) const
     return greater_equal(*this, rhs);
 }
 
+// CLEANUP
+// -------
+
+#undef REFERENCE_DEQUE_ITERATOR
+#undef REFERENCE_DEQUE_CONST_ITERATOR
+
 }   /* detail */
 
 // OBJECTS
 // -------
-
 
 /**
  *  \brief Deque wrapper that handles reference values.
