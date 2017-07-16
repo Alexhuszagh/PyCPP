@@ -234,6 +234,7 @@ if(BUILD_COMPRESSION)
     # ZLIB
     add_external_project(zlib_external third_party/zlib)
     add_external_target(z third_party/zlib third_party/zlib STATIC zlib_external)
+    list(APPEND z_INCLUDE_DIR "${CMAKE_BINARY_DIR}/third_party/zlib")
     include_directories(${z_INCLUDE_DIR})
 
     # BZIP2

@@ -21,7 +21,7 @@ static std::string BZ2_DECOMPRESSED("\x54\x68\x65\x20\x4d\x49\x54\x20\x4c\x69\x6
 // -----
 
 
-TEST(bzip2, bz2_compressor)
+TEST(bz2, bz2_compressor)
 {
     char* buffer = new char[4096];
     std::string bz2 = BZ2_DECOMPRESSED;
@@ -56,7 +56,7 @@ TEST(bzip2, bz2_compressor)
 }
 
 
-TEST(bzip2, bz2_decompressor)
+TEST(bz2, bz2_decompressor)
 {
     char* buffer = new char[4096];
     std::string bz2 = BZ2_COMPRESSED;
@@ -89,14 +89,14 @@ TEST(bzip2, bz2_decompressor)
 }
 
 
-TEST(bzip2, bzip2_compress)
+TEST(bz2, bz2_compress)
 {
-    EXPECT_EQ(bzip2_compress(BZ2_DECOMPRESSED), BZ2_COMPRESSED);
+    EXPECT_EQ(bz2_compress(BZ2_DECOMPRESSED), BZ2_COMPRESSED);
 }
 
 
-TEST(bzip2, bzip2_decompress)
+TEST(bz2, bz2_decompress)
 {
-    EXPECT_EQ(bzip2_decompress(BZ2_COMPRESSED), BZ2_DECOMPRESSED);
-    EXPECT_EQ(bzip2_decompress(BZ2_COMPRESSED, BZ2_DECOMPRESSED.size()), BZ2_DECOMPRESSED);
+    EXPECT_EQ(bz2_decompress(BZ2_COMPRESSED), BZ2_DECOMPRESSED);
+    EXPECT_EQ(bz2_decompress(BZ2_COMPRESSED, BZ2_DECOMPRESSED.size()), BZ2_DECOMPRESSED);
 }

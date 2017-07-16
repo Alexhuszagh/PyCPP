@@ -1,9 +1,7 @@
-- Need to finish the compression streams
-    - ifstream
-    - ofstream
-
 - Need to finish the compression modules
     - ZLIB
+        - Streams...
+        - Error handling...
     - GZIP
     - LZMA
     - BLOSC

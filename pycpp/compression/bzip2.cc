@@ -13,7 +13,7 @@ PYCPP_BEGIN_NAMESPACE
 // MACROS
 // ------
 
-#define BZ2_CHECK(EX) (void)((EX) >= 0 || (throw std::runtime_error(#EX), 0))
+#define CHECK(EX) (void)((EX) >= 0 || (throw std::runtime_error(#EX), 0))
 
 // CONSTANTS
 // ---------
@@ -37,13 +37,14 @@ static constexpr int BUFFER_SIZE = 4096;
 // HELPERS
 // -------
 
-/** The maximum buffer size can be calculated by padding the buffer by
+/**
+ *  The maximum buffer size can be calculated by padding the buffer by
  *  1%, + 600 bytes.
  *
  *  \reference
  *      http://www.bzip.org/1.0.3/html/util-fns.html
  */
-static size_t bzip2_compress_bound(size_t size)
+static size_t bz2_compress_bound(size_t size)
 {
     if (size > UNCOMPRESSED_MAX) {
         throw std::overflow_error("Maximum compressed size would overflow size_t.");
@@ -91,8 +92,8 @@ void check_bzstatus(int error)
  */
 struct bz2_compressor_impl
 {
-    int small = BZ2_SMALL;
-    int verbosity = BZ2_VERBOSITY;
+    static const int small = BZ2_SMALL;
+    static const int verbosity = BZ2_VERBOSITY;
     int status = BZ_OK;
     bz_stream stream;
 
@@ -120,7 +121,7 @@ bz2_compressor_impl::bz2_compressor_impl(int block_size)
     stream.next_in = nullptr;
     stream.avail_out = 0;
     stream.next_out = nullptr;
-    BZ2_CHECK(BZ2_bzCompressInit(&stream, block_size, verbosity, small));
+    CHECK(BZ2_bzCompressInit(&stream, block_size, verbosity, small));
 }
 
 
@@ -235,8 +236,8 @@ compression_status bz2_compressor_impl::operator()(const void*& src, size_t srcl
  */
 struct bz2_decompressor_impl
 {
-    int small = BZ2_SMALL;
-    int verbosity = BZ2_VERBOSITY;
+    static const int small = BZ2_SMALL;
+    static const int verbosity = BZ2_VERBOSITY;
     int status = BZ_OK;
     bz_stream stream;
 
@@ -263,7 +264,7 @@ bz2_decompressor_impl::bz2_decompressor_impl()
     stream.next_in = nullptr;
     stream.avail_out = 0;
     stream.next_out = nullptr;
-    BZ2_CHECK(BZ2_bzDecompressInit(&stream, verbosity, small));
+    CHECK(BZ2_bzDecompressInit(&stream, verbosity, small));
 }
 
 
@@ -416,7 +417,7 @@ compression_status bz2_decompressor::decompress(const void*& src, size_t srclen,
 // ---------
 
 
-size_t bzip2_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
+size_t bz2_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
 {
     // configurations
     auto block_size = BZ2_BLOCK_SIZE;
@@ -426,24 +427,24 @@ size_t bzip2_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
     unsigned int srclen_ = srclen;
     unsigned int dstlen_ = dstlen;
     if (srclen) {
-        BZ2_CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) src, srclen_, block_size, verbosity, work_factor));
+        CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) src, srclen_, block_size, verbosity, work_factor));
     } else {
         // compression no bytes
         char c = 0;
-        BZ2_CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) &c, 0, block_size, verbosity, work_factor));
+        CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) &c, 0, block_size, verbosity, work_factor));
     }
     return dstlen_;
 }
 
 
-std::string bzip2_compress(const std::string &str)
+std::string bz2_compress(const std::string &str)
 {
-    size_t dstlen = bzip2_compress_bound(str.size());
+    size_t dstlen = bz2_compress_bound(str.size());
     auto *dst = safe_malloc(dstlen);
 
     size_t out;
     try {
-        out = bzip2_compress(str.data(), str.size(), dst, dstlen);
+        out = bz2_compress(str.data(), str.size(), dst, dstlen);
     } catch (std::exception&) {
         safe_free(dst);
         throw;
@@ -455,7 +456,7 @@ std::string bzip2_compress(const std::string &str)
 }
 
 
-std::string bzip2_decompress(const std::string &str)
+std::string bz2_decompress(const std::string &str)
 {
     // configurations
     size_t dstlen = BUFFER_SIZE;
@@ -492,7 +493,7 @@ std::string bzip2_decompress(const std::string &str)
 }
 
 
-size_t bzip2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound)
+size_t bz2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound)
 {
     // configurations
     auto small = BZ2_SMALL;
@@ -501,23 +502,23 @@ size_t bzip2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen
     unsigned int srclen_ = srclen;
     unsigned int dstlen_ = dstlen;
     if (srclen) {
-        BZ2_CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) src, srclen_, small, verbosity));
+        CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) src, srclen_, small, verbosity));
     } else {
         // compression no bytes
         char c = 0;
-        BZ2_CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) &c, 0, small, verbosity));
+        CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) &c, 0, small, verbosity));
     }
     return dstlen_;
 }
 
 
-std::string bzip2_decompress(const std::string &str, size_t bound)
+std::string bz2_decompress(const std::string &str, size_t bound)
 {
     auto *dst = safe_malloc(bound);
 
     size_t out;
     try {
-        out = bzip2_decompress(str.data(), str.size(), dst, bound, bound);
+        out = bz2_decompress(str.data(), str.size(), dst, bound, bound);
     } catch (std::exception&) {
         safe_free(dst);
         throw;
