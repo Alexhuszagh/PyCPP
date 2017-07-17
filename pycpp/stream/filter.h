@@ -31,11 +31,11 @@ PYCPP_BEGIN_NAMESPACE
  *  in `dst`, returning a pair containing the number of bytes read
  *  (`first`) and the number of bytes written (`second`).
  */
-typedef std::function<void(
+using filter_callback = std::function<void(
     const void*& src, size_t srclen,
     void*& dst, size_t dstlen,
-    size_t char_size)>
-filter_callback;
+    size_t char_size)
+>;
 
 
 /**

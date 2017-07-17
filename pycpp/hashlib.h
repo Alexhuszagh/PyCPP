@@ -9,6 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/secure/string.h>
+#include <functional>
 #include <string>
 #include <utility>
 

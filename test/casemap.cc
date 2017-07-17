@@ -11,47 +11,92 @@
 
 PYCPP_USING_NAMESPACE
 
+// HELPERS
+// -------
+
+static void test_lowlevel(const std::string& input, const std::string& expected, casemap_lowlevel_callback cb)
+{
+    const char* src = input.data();
+    char* dst = new char[20];
+    const void* src_first = src;
+    void* dst_first = dst;
+
+    try {
+        cb(src_first, input.size(), dst_first, 20);
+        EXPECT_EQ(std::distance(dst, (char*) dst_first), expected.size());
+        EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
+    } catch (...) {
+        delete[] dst;
+        throw;
+    }
+
+    delete[] dst;
+}
+
 // TESTS
 // -----
 
-
 TEST(casemap, ascii_tolower)
 {
+    // high-level
     EXPECT_EQ(ascii_tolower("lower"), "lower");
     EXPECT_EQ(ascii_tolower("LOWER"), "lower");
     EXPECT_EQ(ascii_tolower("LOWER-/"), "lower-/");
     EXPECT_EQ(ascii_tolower("-/LOW+"), "-/low+");
+
+    // low-level
+    test_lowlevel("LOWER", "lower", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        ascii_tolower(src, srclen, dst, dstlen);
+    });
 }
 
 
 TEST(casemap, ascii_toupper)
 {
+    // high-level
     EXPECT_EQ(ascii_toupper("LOWER"), "LOWER");
     EXPECT_EQ(ascii_toupper("lower"), "LOWER");
     EXPECT_EQ(ascii_toupper("lower-/"), "LOWER-/");
     EXPECT_EQ(ascii_toupper("-/low+"), "-/LOW+");
+
+    // low-level
+    test_lowlevel("lower", "LOWER", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        ascii_toupper(src, srclen, dst, dstlen);
+    });
 }
 
 
 TEST(casemap, ascii_totitle)
 {
+    // high-level
     EXPECT_EQ(ascii_totitle("LOWER"), "Lower");
     EXPECT_EQ(ascii_totitle("lower"), "Lower");
     EXPECT_EQ(ascii_totitle("lower-/"), "Lower-/");
     EXPECT_EQ(ascii_totitle("-/low+"), "-/Low+");
     EXPECT_EQ(ascii_totitle("aaaAA0aa"), "Aaaaa0aa");
     EXPECT_EQ(ascii_totitle("aaaAA.aa"), "Aaaaa.Aa");
+
+    // low-level
+    test_lowlevel("lower", "Lower", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        ascii_totitle(src, srclen, dst, dstlen);
+    });
 }
 
 
 TEST(casemap, ascii_capitalize)
 {
+    // high-level
     EXPECT_EQ(ascii_capitalize("LOWER"), "Lower");
     EXPECT_EQ(ascii_capitalize("lower"), "Lower");
     EXPECT_EQ(ascii_capitalize("lower-/"), "Lower-/");
     EXPECT_EQ(ascii_capitalize("-/low+"), "-/low+");
     EXPECT_EQ(ascii_capitalize("aaaAA0aa"), "Aaaaa0aa");
     EXPECT_EQ(ascii_capitalize("aaaAA.aa"), "Aaaaa.aa");
+
+    // low-level
+    test_lowlevel("aaaAA.aa", "Aaaaa.aa", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        ascii_capitalize(src, srclen, dst, dstlen);
+    });
 }
 
 
@@ -485,6 +530,7 @@ TEST(casemap, utf16_totitle)
 
 TEST(casemap, utf32_tolower)
 {
+    // high-level
     std::vector<std::pair<std::string, std::string>> tests = {
 #if BYTE_ORDER == LITTLE_ENDIAN
         {
@@ -518,11 +564,17 @@ TEST(casemap, utf32_tolower)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf32_tolower(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf32_tolower(src, srclen, dst, dstlen);
+    });
 }
 
 
 TEST(casemap, utf32_toupper)
 {
+    // high-level
     std::vector<std::pair<std::string, std::string>> tests = {
 #if BYTE_ORDER == LITTLE_ENDIAN
         {
@@ -556,11 +608,17 @@ TEST(casemap, utf32_toupper)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf32_toupper(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf32_toupper(src, srclen, dst, dstlen);
+    });
 }
 
 
 TEST(casemap, utf32_totitle)
 {
+    // high-level
     std::vector<std::pair<std::string, std::string>> tests = {
 #if BYTE_ORDER == LITTLE_ENDIAN
         {
@@ -594,4 +652,9 @@ TEST(casemap, utf32_totitle)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf32_totitle(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf32_totitle(src, srclen, dst, dstlen);
+    });
 }

@@ -48,6 +48,28 @@ static const std::string UTF16_3 = {0, 109, 0, -22, 0, 109, 0, 101};
 static const std::string UTF32_3 = {0, 0, 0, 109, 0, 0, 0, -22, 0, 0, 0, 109, 0, 0, 0, 101};
 #endif
 
+// HELPERS
+// -------
+
+static void test_lowlevel(const std::string& input, const std::string& expected, punycode_lowlevel_callback cb)
+{
+    const char* src = input.data();
+    char* dst = new char[20];
+    const void* src_first = src;
+    void* dst_first = dst;
+
+    try {
+        cb(src_first, input.size(), dst_first, 20);
+        EXPECT_EQ(std::distance(dst, (char*) dst_first), expected.size());
+        EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
+    } catch (...) {
+        delete[] dst;
+        throw;
+    }
+
+    delete[] dst;
+}
+
 // TESTS
 // -----
 
@@ -80,6 +102,22 @@ TEST(punycode, punycode)
     EXPECT_EQ(punycode_to_utf8(expected), UTF8_3);
     EXPECT_EQ(punycode_to_utf16(expected), UTF16_3);
     EXPECT_EQ(punycode_to_utf32(expected), UTF32_3);
+}
+
+
+TEST(punycode, utf32_to_punycode)
+{
+    test_lowlevel(UTF32, "3e0bk47br7k", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf32_to_punycode(src, srclen, dst, dstlen);
+    });
+}
+
+
+TEST(punycode, punycode_to_utf32)
+{
+    test_lowlevel("3e0bk47br7k", UTF32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        punycode_to_utf32(src, srclen, dst, dstlen);
+    });
 }
 
 

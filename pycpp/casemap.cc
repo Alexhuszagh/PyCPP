@@ -57,23 +57,25 @@ struct casemap
      *  \brief Overload when the dst overallocates.
      */
     template <typename Iter1, typename Iter2, typename Function>
-    size_t operator()(Iter1 src_first, Iter1 src_last,
-                      Iter2 dst,
-                      Function function)
+    size_t operator()(Iter1 &src_first, Iter1 src_last,
+                      Iter2 &dst, Function function)
     {
-        for (Iter1 src = src_first; src < src_last; ++src) {
+        Iter1 src = src_first;
+        for (; src < src_last; ++src) {
             filler()(dst, function(*src));
         }
 
-        return std::distance(src_first, src_last) * filler::shift;
+        size_t distance = std::distance(src_first, src_last) * filler::shift;
+        src_first = src;
+        return distance;
     }
 
     /**
      *  \brief Overload when the dst length may terminate early.
      */
     template <typename Iter1, typename Iter2, typename Function>
-    size_t operator()(Iter1 src_first, Iter1 src_last,
-                      Iter2 dst_first, Iter2 dst_last,
+    size_t operator()(Iter1 &src_first, Iter1 src_last,
+                      Iter2 &dst_first, Iter2 dst_last,
                       Function function)
     {
         auto dst = dst_first;
@@ -81,7 +83,9 @@ struct casemap
             filler()(dst, function(*src_first));
         }
 
-        return dst - dst_first;
+        size_t distance = std::distance(dst_first, dst);
+        dst_first = dst;
+        return distance;
     }
 };
 
@@ -98,8 +102,8 @@ struct capitalize
      *  \brief Overload when the dst overallocates.
      */
     template <typename Iter1, typename Iter2, typename ToUpper, typename ToLower>
-    size_t operator()(Iter1 src_first, Iter1 src_last,
-                      Iter2 dst,
+    size_t operator()(Iter1 &src_first, Iter1 src_last,
+                      Iter2 &dst,
                       ToUpper upper,
                       ToLower lower)
     {
@@ -111,15 +115,17 @@ struct capitalize
             filler()(dst, lower(*src));
         }
 
-        return std::distance(src_first, src_last) * filler::shift;
+        size_t distance = std::distance(src_first, src_last) * filler::shift;
+        src_first = src;
+        return distance;
     }
 
     /**
      *  \brief Overload when the dst length may terminate early.
      */
     template <typename Iter1, typename Iter2, typename ToUpper, typename ToLower>
-    size_t operator()(Iter1 src_first, Iter1 src_last,
-                      Iter2 dst_first, Iter2 dst_last,
+    size_t operator()(Iter1 &src_first, Iter1 src_last,
+                      Iter2 &dst_first, Iter2 dst_last,
                       ToUpper upper,
                       ToLower lower)
     {
@@ -131,7 +137,9 @@ struct capitalize
             filler()(dst, upper(*src_first));
         }
 
-        return dst - dst_first;
+        size_t distance = std::distance(dst_first, dst);
+        dst_first = dst;
+        return distance;
     }
 };
 
@@ -168,18 +176,21 @@ struct title_tokenizer
      *  \brief Overload when the dst overallocates.
      */
     template <typename Iter1, typename Iter2, typename ToUpper, typename ToLower, typename IsBoundary>
-    size_t operator()(Iter1 src_first, Iter1 src_last,
-                      Iter2 dst,
+    size_t operator()(Iter1 &src_first, Iter1 src_last,
+                      Iter2 &dst,
                       ToUpper to_upper,
                       ToLower to_lower,
                       IsBoundary is_boundary)
     {
         bool is_upper = true;
-        for (Iter1 src = src_first; src < src_last; ++src) {
+        Iter1 src = src_first;
+        for (; src < src_last; ++src) {
             add_byte(dst, *src, is_upper, to_upper, to_lower, is_boundary);
         }
 
-        return std::distance(src_first, src_last) * filler::shift;
+        size_t distance = std::distance(src_first, src) * filler::shift;
+        src_first = src;
+        return distance;
     }
 
 
@@ -187,8 +198,8 @@ struct title_tokenizer
      *  \brief Overload when the dst length may terminate early.
      */
     template <typename Iter1, typename Iter2, typename ToUpper, typename ToLower, typename IsBoundary>
-    size_t operator()(Iter1 src_first, Iter1 src_last,
-                      Iter2 dst_first, Iter2 dst_last,
+    size_t operator()(Iter1 &src_first, Iter1 src_last,
+                      Iter2 &dst_first, Iter2 dst_last,
                       ToUpper to_upper,
                       ToLower to_lower,
                       IsBoundary is_boundary)
@@ -199,7 +210,9 @@ struct title_tokenizer
             add_byte(dst, *src_first, is_upper, to_upper, to_lower, is_boundary);
         }
 
-        return dst - dst_first;
+        size_t distance = std::distance(dst_first, dst);
+        dst_first = dst;
+        return distance;
     }
 };
 
@@ -282,33 +295,49 @@ uint32_t utf32_toupper(uint32_t c)
 // ASCII
 
 
-size_t ascii_tolower(const void *src, size_t srclen, void* dst, size_t dstlen)
+void ascii_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     typedef casemap<char, char> functor;
-    auto src_first = reinterpret_cast<const char*>(src);
-    auto src_last = src_first + srclen;
-    auto dst_first = reinterpret_cast<char*>(dst);
-    auto dst_last = dst_first + dstlen;
 
+    // get preferred formats
+    const char* src_first = (const char*) src;
+    const char* src_last = src_first + srclen;
+    char* dst_first = (char*) dst;
+    char* dst_last = dst_first + dstlen;
+
+    // call conversion
     if (srclen <= dstlen) {
-        return functor()(src_first, src_last, dst_first, lowercase_ascii);
+        functor()(src_first, src_last, dst_first, lowercase_ascii);
+    } else {
+        functor()(src_first, src_last, dst_first, dst_last, lowercase_ascii);
     }
-    return functor()(src_first, src_last, dst_first, dst_last, lowercase_ascii);
+
+    // assign to pointers
+    dst = dst_first;
+    src = src_first;
 }
 
 
-size_t ascii_toupper(const void *src, size_t srclen, void* dst, size_t dstlen)
+void ascii_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     typedef casemap<char, char> functor;
-    auto src_first = reinterpret_cast<const char*>(src);
-    auto src_last = src_first + srclen;
-    auto dst_first = reinterpret_cast<char*>(dst);
-    auto dst_last = dst_first + dstlen;
 
+    // get preferred formats
+    const char* src_first = (const char*) src;
+    const char* src_last = src_first + srclen;
+    char* dst_first = (char*) dst;
+    char* dst_last = dst_first + dstlen;
+
+    // call conversion
     if (srclen <= dstlen) {
-        return functor()(src_first, src_last, dst_first, uppercase_ascii);
+        functor()(src_first, src_last, dst_first, uppercase_ascii);
+    } else {
+        functor()(src_first, src_last, dst_first, dst_last, uppercase_ascii);
     }
-    return functor()(src_first, src_last, dst_first, dst_last, uppercase_ascii);
+
+    // assign to pointers
+    dst = dst_first;
+    src = src_first;
 }
 
 
@@ -317,7 +346,9 @@ std::string ascii_tolower(const std::string &str)
     typedef casemap<char, char> functor;
     std::string lower;
     lower.reserve(str.size());
-    functor()(str.begin(), str.end(), std::back_inserter(lower), lowercase_ascii);
+    auto src_first = str.begin();
+    auto dst_first = std::back_inserter(lower);
+    functor()(src_first, str.end(), dst_first, lowercase_ascii);
 
     return lower;
 }
@@ -328,32 +359,40 @@ std::string ascii_toupper(const std::string &str)
     typedef casemap<char, char> functor;
     std::string upper;
     upper.reserve(str.size());
-    functor()(str.begin(), str.end(), std::back_inserter(upper), uppercase_ascii);
+    auto src_first = str.begin();
+    auto dst_first = std::back_inserter(upper);
+    functor()(src_first, str.end(), dst_first, uppercase_ascii);
 
     return upper;
 }
 
 
-size_t ascii_totitle(const void *src, size_t srclen, void* dst, size_t dstlen)
+void ascii_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     typedef title_tokenizer<char, char> functor;
-    auto src_first = reinterpret_cast<const char*>(src);
-    auto src_last = src_first + srclen;
-    auto dst_first = reinterpret_cast<char*>(dst);
-    auto dst_last = dst_first + dstlen;
 
+    // get preferred formats
+    const char* src_first = (const char*) src;
+    const char* src_last = src_first + srclen;
+    char* dst_first = (char*) dst;
+    char* dst_last = dst_first + dstlen;
+
+    // call conversion
     if (srclen <= dstlen) {
-        return functor()(src_first, src_last, dst_first,
-                         uppercase_ascii,
-                         lowercase_ascii,
-                         is_ascii_boundary);
+        functor()(src_first, src_last, dst_first,
+                  uppercase_ascii,
+                  lowercase_ascii,
+                  is_ascii_boundary);
+    } else {
+        functor()(src_first, src_last, dst_first,
+                  uppercase_ascii,
+                  lowercase_ascii,
+                  is_ascii_boundary);
     }
-    return functor()(src_first, src_last, dst_first,
-                     uppercase_ascii,
-                     lowercase_ascii,
-                     is_ascii_boundary);
 
-    return 0;
+    // assign to pointers
+    dst = dst_first;
+    src = src_first;
 }
 
 
@@ -362,7 +401,9 @@ std::string ascii_totitle(const std::string &str)
     typedef title_tokenizer<char, char> functor;
     std::string title;
     title.reserve(str.size());
-    functor()(str.begin(), str.end(), std::back_inserter(title),
+    auto src_first = str.begin();
+    auto dst_first = std::back_inserter(title);
+    functor()(src_first, str.end(), dst_first,
               uppercase_ascii,
               lowercase_ascii,
               is_ascii_boundary);
@@ -371,24 +412,30 @@ std::string ascii_totitle(const std::string &str)
 }
 
 
-size_t ascii_capitalize(const void *src, size_t srclen, void* dst, size_t dstlen)
+void ascii_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     typedef capitalize<char, char> functor;
-    auto src_first = reinterpret_cast<const char*>(src);
-    auto src_last = src_first + srclen;
-    auto dst_first = reinterpret_cast<char*>(dst);
-    auto dst_last = dst_first + dstlen;
 
+    // get preferred formats
+    const char* src_first = (const char*) src;
+    const char* src_last = src_first + srclen;
+    char* dst_first = (char*) dst;
+    char* dst_last = dst_first + dstlen;
+
+    // call conversion
     if (srclen <= dstlen) {
-        return functor()(src_first, src_last, dst_first,
-                         uppercase_ascii,
-                         lowercase_ascii);
+        functor()(src_first, src_last, dst_first,
+                  uppercase_ascii,
+                  lowercase_ascii);
+    } else {
+        functor()(src_first, src_last, dst_first,
+                  uppercase_ascii,
+                  lowercase_ascii);
     }
-    return functor()(src_first, src_last, dst_first,
-                     uppercase_ascii,
-                     lowercase_ascii);
 
-    return 0;
+    // assign to pointers
+    dst = dst_first;
+    src = src_first;
 }
 
 
@@ -397,7 +444,9 @@ std::string ascii_capitalize(const std::string &str)
     typedef capitalize<char, char> functor;
     std::string title;
     title.reserve(str.size());
-    functor()(str.begin(), str.end(), std::back_inserter(title),
+    auto src_first = str.begin();
+    auto dst_first = std::back_inserter(title);
+    functor()(src_first, str.end(), dst_first,
               uppercase_ascii,
               lowercase_ascii);
 
@@ -408,8 +457,9 @@ std::string ascii_capitalize(const std::string &str)
 // UNICODE
 
 
-size_t utf8_tolower(const void *src, size_t srclen, void* dst, size_t dstlen)
+size_t utf8_tolower(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
+    // TODO: SHIT...
     auto u32 = utf8_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
     auto lower = utf32_tolower(u32);
 
@@ -423,8 +473,9 @@ std::string utf8_tolower(const std::string &str)
 }
 
 
-size_t utf8_toupper(const void *src, size_t srclen, void* dst, size_t dstlen)
+size_t utf8_toupper(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
+    // TODO: SHIT...
     auto u32 = utf8_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
     auto upper = utf32_toupper(u32);
 
@@ -438,8 +489,9 @@ std::string utf8_toupper(const std::string &str)
 }
 
 
-size_t utf8_totitle(const void *src, size_t srclen, void* dst, size_t dstlen)
+size_t utf8_totitle(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
+    // TODO: SHIT...
     auto u32 = utf8_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
     auto upper = utf32_totitle(u32);
 
@@ -453,8 +505,9 @@ std::string utf8_totitle(const std::string &str)
 }
 
 
-size_t utf8_capitalize(const void *src, size_t srclen, void* dst, size_t dstlen)
+size_t utf8_capitalize(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
+    // TODO: SHIT...
     auto u32 = utf8_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
     auto upper = utf32_capitalize(u32);
 
@@ -468,8 +521,9 @@ std::string utf8_capitalize(const std::string &str)
 }
 
 
-size_t utf16_tolower(const void *src, size_t srclen, void* dst, size_t dstlen)
+size_t utf16_tolower(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
+    // TODO: SHIT...
     auto u32 = utf16_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
     auto lower = utf32_tolower(u32);
 
@@ -489,8 +543,9 @@ std::u16string utf16_tolower(const std::u16string &str)
 }
 
 
-size_t utf16_toupper(const void *src, size_t srclen, void* dst, size_t dstlen)
+size_t utf16_toupper(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
+    // TODO: SHIT...
     auto u32 = utf16_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
     auto upper = utf32_toupper(u32);
 
@@ -510,8 +565,9 @@ std::u16string utf16_toupper(const std::u16string &str)
 }
 
 
-size_t utf16_totitle(const void *src, size_t srclen, void* dst, size_t dstlen)
+size_t utf16_totitle(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
+    // TODO: SHIT...
     auto u32 = utf16_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
     auto upper = utf32_totitle(u32);
 
@@ -531,8 +587,9 @@ std::u16string utf16_totitle(const std::u16string &str)
 }
 
 
-size_t utf16_capitalize(const void *src, size_t srclen, void* dst, size_t dstlen)
+size_t utf16_capitalize(const void* src, size_t srclen, void* dst, size_t dstlen)
 {
+    // TODO: SHIT...
     auto u32 = utf16_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
     auto upper = utf32_capitalize(u32);
 
@@ -552,18 +609,26 @@ std::u16string utf16_capitalize(const std::u16string &str)
 }
 
 
-size_t utf32_tolower(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf32_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     typedef casemap<uint32_t, uint32_t> functor;
-    auto src_first = reinterpret_cast<const uint32_t*>(src);
-    auto src_last = src_first + (srclen / 4);
-    auto dst_first = reinterpret_cast<uint32_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 4);
 
+    // get preferred formats
+    const uint32_t* src_first = (const uint32_t*) src;
+    const uint32_t* src_last = src_first + (srclen / 4);
+    uint32_t* dst_first = (uint32_t*) dst;
+    uint32_t* dst_last = dst_first + (dstlen / 4);
+
+    // call conversion
     if (srclen <= dstlen) {
-        return functor()(src_first, src_last, dst_first, lowercase_utf32);
+        functor()(src_first, src_last, dst_first, lowercase_utf32);
+    } else {
+        functor()(src_first, src_last, dst_first, dst_last, lowercase_utf32);
     }
-    return functor()(src_first, src_last, dst_first, dst_last, lowercase_utf32);
+
+    // assign to pointers
+    dst = dst_first;
+    src = src_first;
 }
 
 
@@ -573,8 +638,8 @@ std::string utf32_tolower(const std::string &str)
     std::string lower;
     lower.reserve(str.size());
 
-    auto src_first = reinterpret_cast<const uint32_t*>(str.data());
-    auto src_last = src_first + (str.size() / 4);
+    const uint32_t* src_first = (const uint32_t*) str.data();
+    const uint32_t* src_last = src_first + (str.size() / 4);
     auto dst = std::back_inserter(lower);
     functor()(src_first, src_last, dst, lowercase_utf32);
 
@@ -587,24 +652,34 @@ std::u32string utf32_tolower(const std::u32string &str)
     typedef casemap<uint32_t, uint32_t> functor;
     std::u32string lower;
     lower.reserve(str.size());
-    functor()(str.begin(), str.end(), std::back_inserter(lower), lowercase_utf32);
+    auto src_first = str.begin();
+    auto dst_first = std::back_inserter(lower);
+    functor()(src_first, str.end(), dst_first, lowercase_utf32);
 
     return lower;
 }
 
 
-size_t utf32_toupper(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf32_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     typedef casemap<uint32_t, uint32_t> functor;
-    auto src_first = reinterpret_cast<const uint32_t*>(src);
-    auto src_last = src_first + (srclen / 4);
-    auto dst_first = reinterpret_cast<uint32_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 4);
 
+    // get preferred formats
+    const uint32_t* src_first = (const uint32_t*) src;
+    const uint32_t* src_last = src_first + (srclen / 4);
+    uint32_t* dst_first = (uint32_t*) dst;
+    uint32_t* dst_last = dst_first + (dstlen / 4);
+
+    // call conversion
     if (srclen <= dstlen) {
-        return functor()(src_first, src_last, dst_first, uppercase_utf32);
+        functor()(src_first, src_last, dst_first, uppercase_utf32);
+    } else {
+        functor()(src_first, src_last, dst_first, dst_last, uppercase_utf32);
     }
-    return functor()(src_first, src_last, dst_first, dst_last, uppercase_utf32);
+
+    // assign to pointers
+    dst = dst_first;
+    src = src_first;
 }
 
 
@@ -614,10 +689,10 @@ std::string utf32_toupper(const std::string &str)
     std::string upper;
     upper.reserve(str.size() * 1.5);
 
-    auto src_first = reinterpret_cast<const uint32_t*>(str.data());
-    auto src_last = src_first + (str.size() / 4);
-    auto dst = std::back_inserter(upper);
-    functor()(src_first, src_last, dst, uppercase_utf32);
+    const uint32_t* src_first = (const uint32_t*) str.data();
+    const uint32_t* src_last = src_first + (str.size() / 4);
+    auto dst_first = std::back_inserter(upper);
+    functor()(src_first, src_last, dst_first, uppercase_utf32);
 
     return upper;
 }
@@ -628,30 +703,40 @@ std::u32string utf32_toupper(const std::u32string &str)
     typedef casemap<uint32_t, uint32_t> functor;
     std::u32string upper;
     upper.reserve(str.size() * 1.5);
-    functor()(str.begin(), str.end(), std::back_inserter(upper), uppercase_utf32);
+    auto src_first = str.begin();
+    auto dst_first = std::back_inserter(upper);
+    functor()(src_first, str.end(), dst_first, uppercase_utf32);
 
     return upper;
 }
 
 
-size_t utf32_totitle(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf32_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     typedef title_tokenizer<uint32_t, uint32_t> functor;
-    auto src_first = reinterpret_cast<const uint32_t*>(src);
-    auto src_last = src_first + (srclen / 4);
-    auto dst_first = reinterpret_cast<uint32_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 4);
 
+    // get preferred formats
+    const uint32_t* src_first = (const uint32_t*) src;
+    const uint32_t* src_last = src_first + (srclen / 4);
+    uint32_t* dst_first = (uint32_t*) dst;
+    uint32_t* dst_last = dst_first + (dstlen / 4);
+
+    // call conversion
     if (srclen <= dstlen) {
-        return functor()(src_first, src_last, dst_first,
-                         uppercase_utf32,
-                         lowercase_utf32,
-                         is_utf32_boundary);
+        functor()(src_first, src_last, dst_first,
+                  uppercase_utf32,
+                  lowercase_utf32,
+                  is_utf32_boundary);
+    } else {
+        functor()(src_first, src_last, dst_first,
+                  uppercase_utf32,
+                  lowercase_utf32,
+                  is_utf32_boundary);
     }
-    return functor()(src_first, src_last, dst_first,
-                     uppercase_utf32,
-                     lowercase_utf32,
-                     is_utf32_boundary);
+
+    // assign to pointers
+    dst = dst_first;
+    src = src_first;
 }
 
 
@@ -661,8 +746,8 @@ std::string utf32_totitle(const std::string &str)
     std::string upper;
     upper.reserve(str.size());
 
-    auto src_first = reinterpret_cast<const uint32_t*>(str.data());
-    auto src_last = src_first + (str.size() / 4);
+    const uint32_t* src_first = (const uint32_t*) str.data();
+    const uint32_t* src_last = src_first + (str.size() / 4);
     auto dst = std::back_inserter(upper);
     functor()(src_first, src_last, dst,
               uppercase_utf32,
@@ -678,7 +763,9 @@ std::u32string utf32_totitle(const std::u32string &str)
     typedef title_tokenizer<uint32_t, uint32_t> functor;
     std::u32string upper;
     upper.reserve(str.size());
-    functor()(str.begin(), str.end(), std::back_inserter(upper),
+    auto src_first = str.begin();
+    auto dst_first = std::back_inserter(upper);
+    functor()(src_first, str.end(), dst_first,
               uppercase_utf32,
               lowercase_utf32,
               is_utf32_boundary);
@@ -687,22 +774,30 @@ std::u32string utf32_totitle(const std::u32string &str)
 }
 
 
-size_t utf32_capitalize(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf32_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     typedef capitalize<uint32_t, uint32_t> functor;
-    auto src_first = reinterpret_cast<const uint32_t*>(src);
-    auto src_last = src_first + (srclen / 4);
-    auto dst_first = reinterpret_cast<uint32_t*>(dst);
-    auto dst_last = dst_first + (dstlen / 4);
 
+    // get preferred formats
+    const uint32_t* src_first = (const uint32_t*) src;
+    const uint32_t* src_last = src_first + (srclen / 4);
+    uint32_t* dst_first = (uint32_t*) dst;
+    uint32_t* dst_last = dst_first + (dstlen / 4);
+
+    // call conversion
     if (srclen <= dstlen) {
-        return functor()(src_first, src_last, dst_first,
-                         uppercase_utf32,
-                         lowercase_utf32);
+        functor()(src_first, src_last, dst_first,
+                  uppercase_utf32,
+                  lowercase_utf32);
+    } else {
+        functor()(src_first, src_last, dst_first,
+                  uppercase_utf32,
+                  lowercase_utf32);
     }
-    return functor()(src_first, src_last, dst_first,
-                     uppercase_utf32,
-                     lowercase_utf32);
+
+    // assign to pointers
+    dst = dst_first;
+    src = src_first;
 }
 
 
@@ -712,8 +807,8 @@ std::string utf32_capitalize(const std::string &str)
     std::string upper;
     upper.reserve(str.size());
 
-    auto src_first = reinterpret_cast<const uint32_t*>(str.data());
-    auto src_last = src_first + (str.size() / 4);
+    const uint32_t* src_first = (const uint32_t*) str.data();
+    const uint32_t* src_last = src_first + (str.size() / 4);
     auto dst = std::back_inserter(upper);
     functor()(src_first, src_last, dst,
               uppercase_utf32,
@@ -728,7 +823,9 @@ std::u32string utf32_capitalize(const std::u32string &str)
     typedef capitalize<uint32_t, uint32_t> functor;
     std::u32string upper;
     upper.reserve(str.size());
-    functor()(str.begin(), str.end(), std::back_inserter(upper),
+    auto src_first = str.begin();
+    auto dst_first = std::back_inserter(upper);
+    functor()(src_first, str.end(), dst_first,
               uppercase_utf32,
               lowercase_utf32);
 

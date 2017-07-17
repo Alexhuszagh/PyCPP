@@ -8,9 +8,20 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <functional>
 #include <string>
 
 PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+using hex_lowlevel_callback = std::function<void(
+    const void*& src, size_t srclen,
+    void*& dst, size_t dstlen)
+>;
+
+using hex_highlevel_callback = std::function<std::string(const std::string&)>;
 
 // FUNCTIONS
 // ---------
