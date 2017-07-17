@@ -2,6 +2,9 @@
     - lzma.lzma_decompress isn't working when linked to libcxx
     - Works fine with stdlibcxx
 
+- Issues with static linking on MSVC
+    - Fuck everything.
+
 - Mathlib
     - Need array/axis unittests
 

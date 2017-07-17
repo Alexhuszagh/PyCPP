@@ -190,7 +190,6 @@ macro(add_external_project name path)
                    "-DCMAKE_COMPILER_PREFIX=${CMAKE_COMPILER_PREFIX}"
                    "-DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}"
                    "-DBUILD_TESTS=OFF"
-                   "-DLZMA_API_STATIC=1"
        INSTALL_COMMAND ""
     )
 
