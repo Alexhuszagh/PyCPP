@@ -185,6 +185,8 @@ cmake .                         # `-DBUILD_TESTS=ON`
 make -j 5                       # "msbuild pycpp.sln" for MSVC
 ```
 
+> **WARNING** Linking with libc++ (LLVM) causes issues with the LZMA compressors and decompressors. Any patches would be wonderful, in the meantime, please use GCC or link with libstdc++.
+
 ## Performance
 
 To avoid long build times, PyCPP avoids inlining functions at all costs, and minimizes template definitions within headers, coming with a slight performance penalty. Using link-time optimization should remedy these issues, and mitigate the need for explicit inlining.

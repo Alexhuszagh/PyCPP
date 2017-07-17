@@ -37,7 +37,7 @@ void check_xzstatus(int error)
         case LZMA_PROG_ERROR:
             throw compression_error(compression_internal_error);
         default:
-                throw compression_error(compression_unexpected_error);
+            throw compression_error(compression_unexpected_error);
     }
 }
 
