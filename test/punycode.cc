@@ -108,7 +108,6 @@ TEST(punycode, punycode)
 TEST(punycode, utf8_to_punycode)
 {
     test_lowlevel(UTF8, "3e0bk47br7k", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        printf("%s\n", src);
         utf8_to_punycode(src, srclen, dst, dstlen);
     });
 }

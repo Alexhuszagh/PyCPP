@@ -223,16 +223,25 @@ WEAK_ATTRIBUTE void* secure_memmove(void* dst, const void* src, size_t len)
 // ------
 
 
+WEAK_ATTRIBUTE void memcmp_prevent_lto(volatile const uint8_t* lhs, volatile const uint8_t* rhs, size_t len)
+{
+    (void) lhs;
+    (void) rhs;
+    (void) len;
+}
+
 /**
  *  Some memcmp implementations use SSE/AVX instructions, meaning
  *  sensitive data will be stored in SSE registers after zeroing
  *  the data. Implement a slow memcmp version to ensure no SSE
  *  instructions are used.
  */
-WEAK_ATTRIBUTE int memcmp_slow(const void* lhs, const void* rhs, size_t len)
+int memcmp_slow(const void* lhs, const void* rhs, size_t len)
 {
     volatile const uint8_t* s1 = (volatile const uint8_t*) lhs;
     volatile const uint8_t* s2 = (volatile const uint8_t*) rhs;
+
+    memcmp_prevent_lto(s1, s2, len);
 
     unsigned char u1, u2;
     for ( ; len-- ; s1++, s2++) {
@@ -677,7 +686,7 @@ static MALLOC_ATTRIBUTE void* secure_malloc_impl(size_t size)
     memcpy(canary_ptr, canary, CANARY_SIZE);
     memcpy(base_ptr, &unprotected_size, sizeof(size_t));
 
-    // set base_ptr page to be read0only
+    // set base_ptr page to be read-only
     secure_mprotect_readonly_impl(base_ptr, page_size);
     assert(unprotected_ptr_from_user_ptr(user_ptr) == unprotected_ptr);
 
