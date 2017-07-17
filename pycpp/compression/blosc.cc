@@ -5,6 +5,7 @@
 #include <pycpp/compression/blosc.h>
 #include <pycpp/compression/core.h>
 #include <blosc.h>
+#include <algorithm>
 #include <cstring>
 #include <thread>
 

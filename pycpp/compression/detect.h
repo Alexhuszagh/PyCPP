@@ -9,6 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/os.h>
+#include <pycpp/stream/filter.h>
 #include <pycpp/view/string.h>
 #include <pycpp/view/vector.h>
 #include <string>
