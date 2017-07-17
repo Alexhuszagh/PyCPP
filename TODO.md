@@ -1,5 +1,4 @@
 - CMake config doesn't work for lzma
-    - lzma_sha256_state not defined on OS x
     - Not working on MSVC either...
 
 - zlib.h isn't working either (FUCK)
