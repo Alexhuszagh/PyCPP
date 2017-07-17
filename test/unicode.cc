@@ -49,6 +49,28 @@ static const std::string UTF16_3 = {0, 109, 0, -22, 0, 109, 0, 101};
 static const std::string UTF32_3 = {0, 0, 0, 109, 0, 0, 0, -22, 0, 0, 0, 109, 0, 0, 0, 101};
 #endif
 
+// HELPERS
+// -------
+
+static void test_lowlevel(const std::string& input, const std::string& expected, unicode_lowlevel_callback cb)
+{
+    const char* src = input.data();
+    char* dst = new char[20];
+    const void* src_first = src;
+    void* dst_first = dst;
+
+    try {
+        cb(src_first, input.size(), dst_first, 20);
+        EXPECT_EQ(std::distance(dst, (char*) dst_first), expected.size());
+        EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
+    } catch (...) {
+        delete[] dst;
+        throw;
+    }
+
+    delete[] dst;
+}
+
 // TESTS
 // -----
 
@@ -252,6 +274,29 @@ TEST(unicode, codepoint_conversions)
     EXPECT_EQ(utf32_to_utf16(UTF32_2), UTF16_2);
     EXPECT_EQ(utf32_to_utf8(UTF32_3), UTF8_3);
     EXPECT_EQ(utf32_to_utf16(UTF32_3), UTF16_3);
+}
+
+
+TEST(unicode, lowlevel)
+{
+    test_lowlevel(UTF8, UTF16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf8_to_utf16(src, srclen, dst, dstlen);
+    });
+    test_lowlevel(UTF8, UTF32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf8_to_utf32(src, srclen, dst, dstlen);
+    });
+    test_lowlevel(UTF16, UTF8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf16_to_utf8(src, srclen, dst, dstlen);
+    });
+    test_lowlevel(UTF16, UTF32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf16_to_utf32(src, srclen, dst, dstlen);
+    });
+    test_lowlevel(UTF32, UTF8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf32_to_utf8(src, srclen, dst, dstlen);
+    });
+    test_lowlevel(UTF32, UTF16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf32_to_utf16(src, srclen, dst, dstlen);
+    });
 }
 
 

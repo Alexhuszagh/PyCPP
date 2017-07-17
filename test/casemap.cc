@@ -217,6 +217,11 @@ TEST(casemap, utf8_tolower)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf8_tolower(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf8_tolower(src, srclen, dst, dstlen);
+    });
 }
 
 
@@ -365,6 +370,11 @@ TEST(casemap, utf8_toupper)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf8_toupper(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf8_toupper(src, srclen, dst, dstlen);
+    });
 }
 
 
@@ -388,6 +398,11 @@ TEST(casemap, utf8_totitle)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf8_totitle(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf8_totitle(src, srclen, dst, dstlen);
+    });
 }
 
 
@@ -411,6 +426,11 @@ TEST(casemap, utf8_capitalize)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf8_capitalize(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf8_capitalize(src, srclen, dst, dstlen);
+    });
 }
 
 
@@ -449,6 +469,11 @@ TEST(casemap, utf16_tolower)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf16_tolower(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf16_tolower(src, srclen, dst, dstlen);
+    });
 }
 
 
@@ -487,6 +512,11 @@ TEST(casemap, utf16_toupper)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf16_toupper(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf16_toupper(src, srclen, dst, dstlen);
+    });
 }
 
 
@@ -525,6 +555,11 @@ TEST(casemap, utf16_totitle)
     for (const auto &pair: tests) {
         EXPECT_EQ(utf16_totitle(pair.first), pair.second);
     }
+
+    // low-level
+    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf16_totitle(src, srclen, dst, dstlen);
+    });
 }
 
 

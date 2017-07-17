@@ -82,7 +82,7 @@ std::string ascii_capitalize(const std::string &str);
 
 /** \brief Convert UTF8 string to lower-case. Returns number of bytes converted.
  */
-size_t utf8_tolower(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf8_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF8 string to lower-case.
  */
@@ -90,7 +90,7 @@ std::string utf8_tolower(const std::string &str);
 
 /** \brief Convert UTF8 string to upper-case. Returns number of bytes converted.
  */
-size_t utf8_toupper(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf8_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF8 string to upper-case.
  */
@@ -98,7 +98,7 @@ std::string utf8_toupper(const std::string &str);
 
 /** \brief Convert UTF8 string to title-case. Returns number of bytes converted.
  */
-size_t utf8_totitle(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf8_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF8 string to title-case.
  */
@@ -106,7 +106,7 @@ std::string utf8_totitle(const std::string &str);
 
 /** \brief Capitalize UTF8 string. Returns number of bytes converted.
  */
-size_t utf8_capitalize(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf8_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Capitalize UTF8 string.
  */
@@ -116,7 +116,7 @@ std::string utf8_capitalize(const std::string &str);
 
 /** \brief Convert UTF16 string to lower-case. Returns number of bytes converted.
  */
-size_t utf16_tolower(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf16_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF16 string to lower-case.
  */
@@ -128,7 +128,7 @@ std::u16string utf16_tolower(const std::u16string &str);
 
 /** \brief Convert UTF16 string to upper-case. Returns number of bytes converted.
  */
-size_t utf16_toupper(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf16_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF16 string to upper-case.
  */
@@ -140,7 +140,7 @@ std::u16string utf16_toupper(const std::u16string &str);
 
 /** \brief Convert UTF16 string to title-case. Returns number of bytes converted.
  */
-size_t utf16_totitle(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf16_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF16 string to title-case.
  */
@@ -152,7 +152,7 @@ std::u16string utf16_totitle(const std::u16string &str);
 
 /** \brief Capitalize UTF16 string. Returns number of bytes converted.
  */
-size_t utf16_capitalize(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf16_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Capitalize UTF16 string.
  */

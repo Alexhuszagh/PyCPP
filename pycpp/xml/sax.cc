@@ -54,10 +54,7 @@ static int stream_close(void*)
 static void internal_subset_handler(void* data, const xmlChar* name,
                                     const xmlChar* external_id,
                                     const xmlChar* system_id)
-{
-    xml_sax_handler* handler = (xml_sax_handler*) data;
-    // TODO: implement.
-}
+{}
 
 
 static void start_document_handler(void* data)
@@ -96,10 +93,7 @@ static void characters_handler(void* data, const xmlChar* ch, int len)
 
 
 static void reference_handler(void* data, const xmlChar* name)
-{
-    xml_sax_handler* handler = (xml_sax_handler*) data;
-//    handler->characters(string_view((char*) ch, len));
-}
+{}
 
 
 static void ignorable_whitespace_handler(void* data, const xmlChar* ch, int len)
@@ -265,7 +259,6 @@ void reader_impl::parse(std::istream& stream, handler_wrapper& wrapper)
 
     // handle errors
     if (error != 0) {
-        // TODO: create a real message
         throw std::runtime_error("Unknown runtime error during SAX2.");
     }
 }

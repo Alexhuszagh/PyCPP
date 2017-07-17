@@ -23,12 +23,15 @@ static S2& to_wide(const S1& s1, S2& s2, Function function)
     // get parameters
     size_t srclen = s1.size() * sizeof(Char1);
     size_t dstlen = srclen * 4 / sizeof(Char1);
-    const char* src = reinterpret_cast<const char*>(s1.data());
+    const char* src = (const char*) s1.data();
     char* dst = new char[dstlen];
+    const void* src_first = (const void*) src;
+    void* dst_first = (void*) dst;
 
     // convert string
-    size_t length = function(src, srclen, dst, dstlen);
-    s2 = S2(reinterpret_cast<Char2*>(dst), length);
+    function(src_first, srclen, dst_first, dstlen);
+    size_t length = std::distance(dst, (char*) dst_first);
+    s2 = S2((Char2*) dst, length / sizeof(Char2));
     delete[] dst;
 
     return s2;
@@ -51,12 +54,15 @@ static S2& to_narrow(const S1& s1, S2& s2, Function function)
     // constant.
     size_t srclen = s1.size() * sizeof(Char1);
     size_t dstlen = sizeof(Char1) == 2 ? srclen * 1.5 : srclen;
-    const char* src = reinterpret_cast<const char*>(s1.data());
+    const char* src = (const char*) s1.data();
     char* dst = new char[dstlen];
+    const void* src_first = (const void*) src;
+    void* dst_first = (void*) dst;
 
     // convert string
-    size_t length = function(src, srclen, dst, dstlen);
-    s2 = S2(reinterpret_cast<Char2*>(dst), length);
+    function(src_first, srclen, dst_first, dstlen);
+    size_t length = std::distance(dst, (char*) dst_first);
+    s2 = S2((Char2*) dst, length / sizeof(Char2));
     delete[] dst;
 
     return s2;
@@ -66,11 +72,12 @@ static S2& to_narrow(const S1& s1, S2& s2, Function function)
 // FUNCTIONS
 // ---------
 
+
 std::u16string codec_utf8_utf16(const std::string& str)
 {
     std::u16string u16;
-    return to_wide(str, u16, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
-        return utf8_to_utf16(src, srclen, dst, dstlen);
+    return to_wide(str, u16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf8_to_utf16(src, srclen, dst, dstlen);
     });
 }
 
@@ -78,8 +85,8 @@ std::u16string codec_utf8_utf16(const std::string& str)
 std::u32string codec_utf8_utf32(const std::string& str)
 {
     std::u32string u32;
-    return to_wide(str, u32, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
-        return utf8_to_utf32(src, srclen, dst, dstlen);
+    return to_wide(str, u32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf8_to_utf32(src, srclen, dst, dstlen);
     });
 }
 
@@ -87,8 +94,8 @@ std::u32string codec_utf8_utf32(const std::string& str)
 std::string codec_utf16_utf8(const std::u16string& str)
 {
     std::string u8;
-    return to_narrow(str, u8, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
-        return utf16_to_utf8(src, srclen, dst, dstlen);
+    return to_narrow(str, u8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf16_to_utf8(src, srclen, dst, dstlen);
     });
 }
 
@@ -96,8 +103,8 @@ std::string codec_utf16_utf8(const std::u16string& str)
 std::u32string codec_utf16_utf32(const std::u16string& str)
 {
     std::u32string u32;
-    return to_wide(str, u32, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
-        return utf16_to_utf32(src, srclen, dst, dstlen);
+    return to_wide(str, u32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf16_to_utf32(src, srclen, dst, dstlen);
     });
 }
 
@@ -105,8 +112,8 @@ std::u32string codec_utf16_utf32(const std::u16string& str)
 std::string codec_utf32_utf8(const std::u32string& str)
 {
     std::string u8;
-    return to_narrow(str, u8, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
-        return utf32_to_utf8(src, srclen, dst, dstlen);
+    return to_narrow(str, u8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf32_to_utf8(src, srclen, dst, dstlen);
     });
 }
 
@@ -114,8 +121,8 @@ std::string codec_utf32_utf8(const std::u32string& str)
 std::u16string codec_utf32_utf16(const std::u32string& str)
 {
     std::u16string u16;
-    return to_narrow(str, u16, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
-        return utf32_to_utf16(src, srclen, dst, dstlen);
+    return to_narrow(str, u16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf32_to_utf16(src, srclen, dst, dstlen);
     });
 }
 

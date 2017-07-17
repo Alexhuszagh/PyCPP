@@ -12,9 +12,20 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <functional>
 #include <string>
 
 PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+using unicode_lowlevel_callback = std::function<void(
+    const void*& src, size_t srclen,
+    void*& dst, size_t dstlen)
+>;
+
+using unicode_highlevel_callback = std::function<std::string(const std::string&)>;
 
 // FUNCTIONS
 // ---------
@@ -105,7 +116,7 @@ bool is_unicode(const std::string &str);
 
 /** \brief Convert UTF-8 to UTF-16. Returns number of bytes converted.
  */
-size_t utf8_to_utf16(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf8_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF-8 string to UTF-16.
  */
@@ -113,7 +124,7 @@ std::string utf8_to_utf16(const std::string& str);
 
 /** \brief Convert UTF-8 to UTF-32. Returns number of bytes converted.
  */
-size_t utf8_to_utf32(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf8_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF-8 string to UTF-32.
  */
@@ -121,7 +132,7 @@ std::string utf8_to_utf32(const std::string& str);
 
 /** \brief Convert UTF-16 to UTF-8. Returns number of bytes converted.
  */
-size_t utf16_to_utf8(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf16_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF-16 string to UTF-8.
  */
@@ -129,7 +140,7 @@ std::string utf16_to_utf8(const std::string& str);
 
 /** \brief Convert UTF-16 to UTF-32. Returns number of bytes converted.
  */
-size_t utf16_to_utf32(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf16_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF-16 string to UTF-32.
  */
@@ -137,7 +148,7 @@ std::string utf16_to_utf32(const std::string& str);
 
 /** \brief Convert UTF-32 to UTF-8. Returns number of bytes converted.
  */
-size_t utf32_to_utf8(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf32_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF-32 string to UTF-8.
  */
@@ -145,7 +156,7 @@ std::string utf32_to_utf8(const std::string& str);
 
 /** \brief Convert UTF-32 to UTF-16. Returns number of bytes converted.
  */
-size_t utf32_to_utf16(const void* src, size_t srclen, void* dst, size_t dstlen);
+void utf32_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief Convert UTF-32 string to UTF-16.
  */

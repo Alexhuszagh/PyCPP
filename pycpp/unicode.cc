@@ -405,10 +405,10 @@ size_t utf8_to_utf16_array(Iter8 &src_first, Iter8 src_last,
         }
     }
 
-    // get progress
+    // store_pointers
     size_t distance = std::distance(dst_first, dst);
-    src = src_first;
-    dst = dst_first;
+    src_first = src;
+    dst_first = dst;
 
     return distance;
 }
@@ -433,10 +433,10 @@ size_t utf8_to_utf32_array(Iter8 &src_first, Iter8 src_last,
         }
     }
 
-    // get progress
+    // store_pointers
     size_t distance = std::distance(dst_first, dst);
-    src = src_first;
-    dst = dst_first;
+    src_first = src;
+    dst_first = dst;
 
     return distance;
 }
@@ -465,10 +465,10 @@ size_t utf16_to_utf8_array(Iter16 &src_first, Iter16 src_last,
         }
     }
 
-    // get progress
+    // store_pointers
     size_t distance = std::distance(dst_first, dst);
-    src = src_first;
-    dst = dst_first;
+    src_first = src;
+    dst_first = dst;
 
     return distance;
 }
@@ -493,10 +493,10 @@ size_t utf16_to_utf32_array(Iter16 &src_first, Iter16 src_last,
         }
     }
 
-    // get progress
+    // store_pointers
     size_t distance = std::distance(dst_first, dst);
-    src = src_first;
-    dst = dst_first;
+    src_first = src;
+    dst_first = dst;
 
     return distance;
 }
@@ -521,10 +521,10 @@ size_t utf32_to_utf8_array(Iter32 &src_first, Iter32 src_last,
         }
     }
 
-    // get progress
+    // store_pointers
     size_t distance = std::distance(dst_first, dst);
-    src = src_first;
-    dst = dst_first;
+    src_first = src;
+    dst_first = dst;
 
     return distance;
 }
@@ -549,10 +549,10 @@ size_t utf32_to_utf16_array(Iter32 &src_first, Iter32 src_last,
         }
     }
 
-    // get progress
+    // store_pointers
     size_t distance = std::distance(dst_first, dst);
-    src = src_first;
-    dst = dst_first;
+    src_first = src;
+    dst_first = dst;
 
     return distance;
 }
@@ -566,7 +566,6 @@ size_t utf8_to_utf16_ptr(const uint8_t*& src_first, const uint8_t* src_last,
                          uint16_t*& dst_first, uint16_t* dst_last,
                          bool strict = true)
 {
-    // TODO: change this to a size_t function, but it binds by reference...
     return utf8_to_utf16_array(src_first, src_last, dst_first, dst_last, strict);
 }
 
@@ -631,20 +630,22 @@ struct to_wide
         // arguments
         const size_t srclen = str.size() / size1;
         const size_t dstlen = srclen;
-        auto* src_first = reinterpret_cast<const Char1*>(str.data());
-        auto* src_last = src_first + srclen;
-        auto* dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
-        auto* dst_last = dst_first + dstlen;
+        void* src = (void*) str.data();
+        void* dst = safe_malloc(dstlen * size2);
+        const Char1* src_first = (const Char1*) src;
+        const Char1* src_last = src_first + srclen;
+        Char2* dst_first = (Char2*) dst;
+        Char2* dst_last = dst_first + dstlen;
 
-        size_t out;
         try {
-            out = function(src_first, src_last, dst_first, dst_last, true);
-        } catch(std::exception&) {
-            safe_free(dst_first);
+            function(src_first, src_last, dst_first, dst_last, true);
+        } catch (std::exception&) {
+            safe_free(dst);
             throw;
         }
-        std::string output(reinterpret_cast<const char*>(dst_first), out * size2);
-        safe_free(dst_first);
+        size_t length = std::distance((char*) dst, (char*) dst_first);
+        std::string output((const char*) dst, length);
+        safe_free(dst);
 
         return output;
     }
@@ -667,20 +668,22 @@ struct to_narrow
         // arguments
         const size_t srclen = str.size() / size1;
         const size_t dstlen = srclen * 4;
-        auto* src_first = reinterpret_cast<const Char1*>(str.data());
-        auto* src_last = src_first + srclen;
-        auto* dst_first = reinterpret_cast<Char2*>(safe_malloc(dstlen * size2));
-        auto* dst_last = dst_first + dstlen;
+        void* src = (void*) str.data();
+        void* dst = safe_malloc(dstlen * size2);
+        const Char1* src_first = (const Char1*) src;
+        const Char1* src_last = src_first + srclen;
+        Char2* dst_first = (Char2*) dst;
+        Char2* dst_last = dst_first + dstlen;
 
-        size_t out;
         try {
-            out = function(src_first, src_last, dst_first, dst_last, true);
+            function(src_first, src_last, dst_first, dst_last, true);
         } catch (std::exception&) {
-            safe_free(dst_first);
+            safe_free(dst);
             throw;
         }
-        std::string output(reinterpret_cast<const char*>(dst_first), out * size2);
-        safe_free(dst_first);
+        size_t length = std::distance((char*) dst, (char*) dst_first);
+        std::string output((const char*) dst, length);
+        safe_free(dst);
 
         return output;
     }
@@ -776,14 +779,20 @@ bool is_unicode(const std::string &str)
 // CONVERSIONS
 
 
-size_t utf8_to_utf16(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf8_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    auto src_first = reinterpret_cast<const uint8_t*>(src);
-    auto src_last = src_first + srclen;
-    auto dst_first = reinterpret_cast<uint16_t*>(dst);
-    auto dst_last = dst_first + (dstlen * 2);
+    // get preferred format
+    const uint8_t* src_first = (const uint8_t*) src;
+    const uint8_t* src_last = src_first + srclen;
+    uint16_t* dst_first = (uint16_t*) dst;
+    uint16_t* dst_last = dst_first + (dstlen * 2);
 
-    return utf8_to_utf16_ptr(src_first, src_last, dst_first, dst_last);
+    // convert
+    utf8_to_utf16_ptr(src_first, src_last, dst_first, dst_last);
+
+    // store pointers
+    src = src_first;
+    dst = dst_first;
 }
 
 
@@ -793,14 +802,20 @@ std::string utf8_to_utf16(const std::string& str)
 }
 
 
-size_t utf8_to_utf32(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf8_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    auto src_first = reinterpret_cast<const uint8_t*>(src);
-    auto src_last = src_first + srclen;
-    auto dst_first = reinterpret_cast<uint32_t*>(dst);
-    auto dst_last = dst_first + (dstlen * 4);
+    // get preferred format
+    const uint8_t* src_first = (const uint8_t*) src;
+    const uint8_t* src_last = src_first + srclen;
+    uint32_t* dst_first = (uint32_t*) dst;
+    uint32_t* dst_last = dst_first + (dstlen * 4);
 
-    return utf8_to_utf32_ptr(src_first, src_last, dst_first, dst_last);
+    // convert
+    utf8_to_utf32_ptr(src_first, src_last, dst_first, dst_last);
+
+    // store pointers
+    src = src_first;
+    dst = dst_first;
 }
 
 
@@ -810,14 +825,20 @@ std::string utf8_to_utf32(const std::string& str)
 }
 
 
-size_t utf16_to_utf8(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf16_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    auto src_first = reinterpret_cast<const uint16_t*>(src);
-    auto src_last = src_first + (srclen / 2);
-    auto dst_first = reinterpret_cast<uint8_t*>(dst);
-    auto dst_last = dst_first + dstlen;
+    // get preferred format
+    const uint16_t* src_first = (const uint16_t*) src;
+    const uint16_t* src_last = src_first + (srclen / 2);
+    uint8_t* dst_first = (uint8_t*) dst;
+    uint8_t* dst_last = dst_first + dstlen;
 
-    return utf16_to_utf8_ptr(src_first, src_last, dst_first, dst_last);
+    // convert
+    utf16_to_utf8_ptr(src_first, src_last, dst_first, dst_last);
+
+    // store pointers
+    src = src_first;
+    dst = dst_first;
 }
 
 
@@ -827,14 +848,20 @@ std::string utf16_to_utf8(const std::string& str)
 }
 
 
-size_t utf16_to_utf32(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf16_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    auto src_first = reinterpret_cast<const uint16_t*>(src);
-    auto src_last = src_first + (srclen / 2);
-    auto dst_first = reinterpret_cast<uint32_t*>(dst);
-    auto dst_last = dst_first + (dstlen * 4);
+    // get preferred format
+    const uint16_t* src_first = (const uint16_t*) src;
+    const uint16_t* src_last = src_first + (srclen / 2);
+    uint32_t* dst_first = (uint32_t*) dst;
+    uint32_t* dst_last = dst_first + (dstlen * 4);
 
-    return utf16_to_utf32_ptr(src_first, src_last, dst_first, dst_last);
+    // convert
+    utf16_to_utf32_ptr(src_first, src_last, dst_first, dst_last);
+
+    // store pointers
+    src = src_first;
+    dst = dst_first;
 }
 
 
@@ -844,14 +871,20 @@ std::string utf16_to_utf32(const std::string& str)
 }
 
 
-size_t utf32_to_utf8(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf32_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    auto src_first = reinterpret_cast<const uint32_t*>(src);
-    auto src_last = src_first + (srclen / 4);
-    auto dst_first = reinterpret_cast<uint8_t*>(dst);
-    auto dst_last = dst_first + dstlen;
+    // get preferred format
+    const uint32_t* src_first = (const uint32_t*) src;
+    const uint32_t* src_last = src_first + (srclen / 4);
+    uint8_t* dst_first = (uint8_t*) dst;
+    uint8_t* dst_last = dst_first + dstlen;
 
-    return utf32_to_utf8_ptr(src_first, src_last, dst_first, dst_last);
+    // convert
+    utf32_to_utf8_ptr(src_first, src_last, dst_first, dst_last);
+
+    // store pointers
+    src = src_first;
+    dst = dst_first;
 }
 
 
@@ -861,14 +894,20 @@ std::string utf32_to_utf8(const std::string& str)
 }
 
 
-size_t utf32_to_utf16(const void *src, size_t srclen, void* dst, size_t dstlen)
+void utf32_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    auto src_first = reinterpret_cast<const uint32_t*>(src);
-    auto src_last = src_first + (srclen / 4);
-    auto dst_first = reinterpret_cast<uint16_t*>(dst);
-    auto dst_last = dst_first + (dstlen * 2);
+    // get preferred format
+    const uint32_t* src_first = (const uint32_t*) src;
+    const uint32_t* src_last = src_first + (srclen / 4);
+    uint16_t* dst_first = (uint16_t*) dst;
+    uint16_t* dst_last = dst_first + (dstlen * 2);
 
-    return utf32_to_utf16_ptr(src_first, src_last, dst_first, dst_last);
+    // convert
+    utf32_to_utf16_ptr(src_first, src_last, dst_first, dst_last);
+
+    // store pointers
+    src = src_first;
+    dst = dst_first;
 }
 
 

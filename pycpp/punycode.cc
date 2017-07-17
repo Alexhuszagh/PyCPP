@@ -287,15 +287,47 @@ void decode_impl(Iter8 &src, size_t srclen,
     dst += di;
 }
 
+
+template <typename Cb1, typename Cb2>
+static void punycode_conversion(const void*& src, size_t srclen, void*& dst, size_t dstlen, Cb1 cb1, Cb2 cb2)
+{
+    // get preferred formats
+    size_t u32_size = srclen * 4;
+    char* u32 = new char[u32_size];
+    const void* u32_src = (const void*) u32;
+    void* u32_dst = (void*) u32;
+
+    // convert
+    try {
+        cb1(src, srclen, u32_dst, u32_size);
+        u32_size = std::distance(u32, (char*) u32_dst);
+        cb2(u32_src, u32_size, dst, dstlen);
+    } catch (...) {
+        delete[] u32;
+        throw;
+    }
+
+    // free
+    delete[] u32;
+}
+
 // FUNCTIONS
 // ---------
 
 
-size_t utf8_to_punycode(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf8_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-// TODO: restore
-//    auto u32 = utf8_to_utf32(std::string((const char*) src, srclen));
-//    return utf32_to_punycode(u32.data(), u32.size(), dst, dstlen);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf8_to_utf32(src, srclen, dst, dstlen);
+    };
+
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_punycode(src, srclen, dst, dstlen);
+    };
+
+    punycode_conversion(src, srclen, dst, dstlen, cb1, cb2);
 }
 
 
@@ -305,11 +337,19 @@ std::string utf8_to_punycode(const std::string &str)
 }
 
 
-size_t utf16_to_punycode(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf16_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-// TODO: restore
-//    auto u32 = utf16_to_utf32(std::string((const char*) src, srclen));
-//    return utf32_to_punycode(u32.data(), u32.size(), dst, dstlen);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf16_to_utf32(src, srclen, dst, dstlen);
+    };
+
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_punycode(src, srclen, dst, dstlen);
+    };
+
+    punycode_conversion(src, srclen, dst, dstlen, cb1, cb2);
 }
 
 
@@ -360,11 +400,18 @@ std::string utf32_to_punycode(const std::string &str)
 }
 
 
-size_t punycode_to_utf8(const void* src, size_t srclen, void* dst, size_t dstlen)
+void punycode_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-// TODO: restore
-//    auto u32 = punycode_to_utf32(std::string((const char*) src, srclen));
-//    return utf32_to_utf8(u32.data(), u32.size(), dst, dstlen);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        punycode_to_utf32(src, srclen, dst, dstlen);
+    };
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf8(src, srclen, dst, dstlen);
+    };
+
+    punycode_conversion(src, srclen, dst, dstlen, cb1, cb2);
 }
 
 
@@ -374,11 +421,18 @@ std::string punycode_to_utf8(const std::string &str)
 }
 
 
-size_t punycode_to_utf16(const void* src, size_t srclen, void* dst, size_t dstlen)
+void punycode_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-// TODO: restore
-//    auto u32 = punycode_to_utf32(std::string((const char*) src, srclen));
-//    return utf32_to_utf16(u32.data(), u32.size(), dst, dstlen);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        punycode_to_utf32(src, srclen, dst, dstlen);
+    };
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf16(src, srclen, dst, dstlen);
+    };
+
+    punycode_conversion(src, srclen, dst, dstlen, cb1, cb2);
 }
 
 

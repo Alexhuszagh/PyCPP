@@ -15,13 +15,6 @@ PYCPP_USING_NAMESPACE
 // -----
 
 
-TEST(re, match_t)
-{
-    // TODO: implement...
-    //
-}
-
-
 TEST(re, match_iterator_t)
 {
     std::string data = "These are a bunch of words";

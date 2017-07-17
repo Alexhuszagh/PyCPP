@@ -105,10 +105,43 @@ TEST(punycode, punycode)
 }
 
 
+TEST(punycode, utf8_to_punycode)
+{
+    test_lowlevel(UTF8, "3e0bk47br7k", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        printf("%s\n", src);
+        utf8_to_punycode(src, srclen, dst, dstlen);
+    });
+}
+
+
+TEST(punycode, utf16_to_punycode)
+{
+    test_lowlevel(UTF16, "3e0bk47br7k", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        utf16_to_punycode(src, srclen, dst, dstlen);
+    });
+}
+
+
 TEST(punycode, utf32_to_punycode)
 {
     test_lowlevel(UTF32, "3e0bk47br7k", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
         utf32_to_punycode(src, srclen, dst, dstlen);
+    });
+}
+
+
+TEST(punycode, punycode_to_utf8)
+{
+    test_lowlevel("3e0bk47br7k", UTF8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        punycode_to_utf8(src, srclen, dst, dstlen);
+    });
+}
+
+
+TEST(punycode, punycode_to_utf16)
+{
+    test_lowlevel("3e0bk47br7k", UTF16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        punycode_to_utf16(src, srclen, dst, dstlen);
     });
 }
 

@@ -217,6 +217,37 @@ struct title_tokenizer
 };
 
 
+template <typename Cb1, typename Cb2, typename Cb3>
+static void casemap_conversion(const void*& src, size_t srclen, void*& dst, size_t dstlen, Cb1 cb1, Cb2 cb2, Cb3 cb3)
+{
+    // get preferred formats
+    size_t u32_size = srclen * 4;
+    char* u32 = new char[u32_size];
+    const void* u32_src = (const void*) u32;
+    void* u32_dst = (void*) u32;
+
+    try {
+        // convert to UTF32
+        cb1(src, srclen, u32_dst, u32_size);
+        u32_size = std::distance(u32, (char*) u32_dst);
+
+        // process array
+        u32_dst = (void*) u32;
+        cb2(u32_src, u32_size, u32_dst, u32_size);
+
+        // convert back to original encoding
+        const void* u32_src = (const void*) u32;
+        cb3(u32_src, u32_size, dst, dstlen);
+    } catch (...) {
+        delete[] u32;
+        throw;
+    }
+
+    // free
+    delete[] u32;
+}
+
+
 static char lowercase_ascii(char c)
 {
     return ::tolower(c);
@@ -457,13 +488,24 @@ std::string ascii_capitalize(const std::string &str)
 // UNICODE
 
 
-size_t utf8_tolower(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf8_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // TODO: SHIT...
-    auto u32 = utf8_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
-    auto lower = utf32_tolower(u32);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf8_to_utf32(src, srclen, dst, dstlen);
+    };
 
-    return utf32_to_utf8(lower.data(), lower.size(), dst, dstlen);
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_tolower(src, srclen, dst, dstlen);
+    };
+
+    auto cb3 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf8(src, srclen, dst, dstlen);
+    };
+
+    casemap_conversion(src, srclen, dst, dstlen, cb1, cb2, cb3);
 }
 
 
@@ -473,13 +515,24 @@ std::string utf8_tolower(const std::string &str)
 }
 
 
-size_t utf8_toupper(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf8_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // TODO: SHIT...
-    auto u32 = utf8_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
-    auto upper = utf32_toupper(u32);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf8_to_utf32(src, srclen, dst, dstlen);
+    };
 
-    return utf32_to_utf8(upper.data(), upper.size(), dst, dstlen);
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_toupper(src, srclen, dst, dstlen);
+    };
+
+    auto cb3 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf8(src, srclen, dst, dstlen);
+    };
+
+    casemap_conversion(src, srclen, dst, dstlen, cb1, cb2, cb3);
 }
 
 
@@ -489,13 +542,24 @@ std::string utf8_toupper(const std::string &str)
 }
 
 
-size_t utf8_totitle(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf8_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // TODO: SHIT...
-    auto u32 = utf8_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
-    auto upper = utf32_totitle(u32);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf8_to_utf32(src, srclen, dst, dstlen);
+    };
 
-    return utf32_to_utf8(upper.data(), upper.size(), dst, dstlen);
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_totitle(src, srclen, dst, dstlen);
+    };
+
+    auto cb3 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf8(src, srclen, dst, dstlen);
+    };
+
+    casemap_conversion(src, srclen, dst, dstlen, cb1, cb2, cb3);
 }
 
 
@@ -505,13 +569,24 @@ std::string utf8_totitle(const std::string &str)
 }
 
 
-size_t utf8_capitalize(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf8_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // TODO: SHIT...
-    auto u32 = utf8_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
-    auto upper = utf32_capitalize(u32);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf8_to_utf32(src, srclen, dst, dstlen);
+    };
 
-    return utf32_to_utf8(upper.data(), upper.size(), dst, dstlen);
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_capitalize(src, srclen, dst, dstlen);
+    };
+
+    auto cb3 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf8(src, srclen, dst, dstlen);
+    };
+
+    casemap_conversion(src, srclen, dst, dstlen, cb1, cb2, cb3);
 }
 
 
@@ -521,13 +596,24 @@ std::string utf8_capitalize(const std::string &str)
 }
 
 
-size_t utf16_tolower(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf16_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // TODO: SHIT...
-    auto u32 = utf16_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
-    auto lower = utf32_tolower(u32);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf16_to_utf32(src, srclen, dst, dstlen);
+    };
 
-    return utf32_to_utf16(lower.data(), lower.size(), dst, dstlen);
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_tolower(src, srclen, dst, dstlen);
+    };
+
+    auto cb3 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf16(src, srclen, dst, dstlen);
+    };
+
+    casemap_conversion(src, srclen, dst, dstlen, cb1, cb2, cb3);
 }
 
 
@@ -543,13 +629,24 @@ std::u16string utf16_tolower(const std::u16string &str)
 }
 
 
-size_t utf16_toupper(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf16_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // TODO: SHIT...
-    auto u32 = utf16_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
-    auto upper = utf32_toupper(u32);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf16_to_utf32(src, srclen, dst, dstlen);
+    };
 
-    return utf32_to_utf16(upper.data(), upper.size(), dst, dstlen);
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_toupper(src, srclen, dst, dstlen);
+    };
+
+    auto cb3 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf16(src, srclen, dst, dstlen);
+    };
+
+    casemap_conversion(src, srclen, dst, dstlen, cb1, cb2, cb3);
 }
 
 
@@ -565,13 +662,24 @@ std::u16string utf16_toupper(const std::u16string &str)
 }
 
 
-size_t utf16_totitle(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf16_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // TODO: SHIT...
-    auto u32 = utf16_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
-    auto upper = utf32_totitle(u32);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf16_to_utf32(src, srclen, dst, dstlen);
+    };
 
-    return utf32_to_utf16(upper.data(), upper.size(), dst, dstlen);
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_totitle(src, srclen, dst, dstlen);
+    };
+
+    auto cb3 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf16(src, srclen, dst, dstlen);
+    };
+
+    casemap_conversion(src, srclen, dst, dstlen, cb1, cb2, cb3);
 }
 
 
@@ -587,13 +695,24 @@ std::u16string utf16_totitle(const std::u16string &str)
 }
 
 
-size_t utf16_capitalize(const void* src, size_t srclen, void* dst, size_t dstlen)
+void utf16_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    // TODO: SHIT...
-    auto u32 = utf16_to_utf32(std::string(reinterpret_cast<const char*>(src), srclen));
-    auto upper = utf32_capitalize(u32);
+    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf16_to_utf32(src, srclen, dst, dstlen);
+    };
 
-    return utf32_to_utf16(upper.data(), upper.size(), dst, dstlen);
+    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_capitalize(src, srclen, dst, dstlen);
+    };
+
+    auto cb3 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
+    {
+        utf32_to_utf16(src, srclen, dst, dstlen);
+    };
+
+    casemap_conversion(src, srclen, dst, dstlen, cb1, cb2, cb3);
 }
 
 
