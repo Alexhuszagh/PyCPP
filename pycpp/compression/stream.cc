@@ -400,6 +400,7 @@ void decompressing_istream::open(std::istream& stream)
 
 decompressing_istream::decompressing_istream(decompressing_istream&& rhs)
 {
+    std::swap(format, rhs.format);
     std::swap(ctx, rhs.ctx);
     filter_istream::swap(rhs);
 }
@@ -407,13 +408,66 @@ decompressing_istream::decompressing_istream(decompressing_istream&& rhs)
 
 decompressing_istream & decompressing_istream::operator=(decompressing_istream&& rhs)
 {
+    std::swap(format, rhs.format);
     std::swap(ctx, rhs.ctx);
     filter_istream::swap(rhs);
     return *this;
 }
 
-// TODO:
-// general compressed stream
+
+decompressing_ifstream::decompressing_ifstream()
+{}
+
+
+decompressing_ifstream::decompressing_ifstream(decompressing_ifstream&& rhs)
+{
+    std::swap(format, rhs.format);
+    std::swap(ctx, rhs.ctx);
+    filter_istream::swap(rhs);
+}
+
+
+decompressing_ifstream & decompressing_ifstream::operator=(decompressing_ifstream&& rhs)
+{
+    std::swap(format, rhs.format);
+    std::swap(ctx, rhs.ctx);
+    filter_istream::swap(rhs);
+    return *this;
+}
+
+
+decompressing_ifstream::~decompressing_ifstream()
+{
+    filter_ifstream::close();
+    delete_decompressor(format, ctx);
+}
+
+
+decompressing_ifstream::decompressing_ifstream(const std::string &name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+void decompressing_ifstream::open(const std::string &name, std::ios_base::openmode mode)
+{
+    filter_ifstream::open(name, mode);
+    new_decompressor(*this, name, format, ctx);
+}
+
+#ifdef PYCPP_HAVE_WFOPEN
+
+decompressing_ifstream::decompressing_ifstream(const std::wstring &name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+void decompressing_ifstream::open(const std::wstring &name, std::ios_base::openmode mode)
+{
+    filter_ifstream::open(name, mode);
+    new_decompressor(*this, name, format, ctx);
+}
+
+#endif
 
 // CLEANUP
 // -------
