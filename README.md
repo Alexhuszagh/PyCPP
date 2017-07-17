@@ -185,8 +185,6 @@ cmake .                         # `-DBUILD_TESTS=ON`
 make -j 5                       # "msbuild pycpp.sln" for MSVC
 ```
 
-> **WARNING** On macOS, PyCPP does not build properly with XCode's Clang compiler. You must use a more modern Clang or GCC version from Homebrew.
-
 ## Performance
 
 To avoid long build times, PyCPP avoids inlining functions at all costs, and minimizes template definitions within headers, coming with a slight performance penalty. Using link-time optimization should remedy these issues, and mitigate the need for explicit inlining.

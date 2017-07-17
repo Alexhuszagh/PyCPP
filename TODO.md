@@ -1,5 +1,6 @@
-- Unresolved symbols in liblzma on MSVC...
-    - This is just fucking fantastic...
+- Issue with libcxx
+    - lzma.lzma_decompress isn't working when linked to libcxx
+    - Works fine with stdlibcxx
 
 - Mathlib
     - Need array/axis unittests
