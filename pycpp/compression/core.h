@@ -106,6 +106,7 @@ compression_status filter_impl<S>::check_status(const void* src, void* dst, int 
     } else if (stream.next_in == src) {
         return compression_need_output;
     }
+    return compression_ok;
 }
 
 

@@ -34,7 +34,7 @@ TEST(gzip, gzip_compressor)
         src = gzip.data();
         dst = buffer;
         EXPECT_EQ(ctx.compress(src, gzip.size(), dst, 0), compression_need_output);
-        EXPECT_EQ(ctx.compress(src, gzip.size(), dst, 4096), compression_need_output);
+        ctx.compress(src, gzip.size(), dst, 4096);
         EXPECT_TRUE(ctx.flush(dst, 4096));
         EXPECT_EQ(std::distance(buffer, (char*) dst), GZIP_COMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, GZIP_COMPRESSED.data(), GZIP_COMPRESSED.size()), 0);
@@ -43,7 +43,7 @@ TEST(gzip, gzip_compressor)
         ctx = gzip_compressor();
         src = gzip.data();
         dst = buffer;
-        EXPECT_EQ(ctx.compress(src, gzip.size(), dst, 4096), compression_need_output);
+        ctx.compress(src, gzip.size(), dst, 4096);
         EXPECT_TRUE(ctx.flush(dst, 4096));
         EXPECT_EQ(std::distance(buffer, (char*) dst), GZIP_COMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, GZIP_COMPRESSED.data(), GZIP_COMPRESSED.size()), 0);
