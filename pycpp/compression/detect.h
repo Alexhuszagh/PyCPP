@@ -21,6 +21,22 @@ PYCPP_BEGIN_NAMESPACE
 
 using magic_bytes = vector_view<string_view>;
 
+// ENUMS
+// -----
+
+/**
+ *  \brief Enumerated values for all supported compression formats.
+ */
+enum compression_format
+{
+    compression_none = 0,
+    compression_bz2,
+    compression_zlib,
+    compression_gzip,
+    compression_lzma,
+    compression_blosc,
+};
+
 // MACROS
 // ------
 

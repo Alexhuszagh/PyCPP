@@ -1,8 +1,6 @@
-- Need to finish the compression modules
-    - GZIP
-        - Needs to be implemented in terms of ZLIB...
-            - inflateInit2(&stream, 16+MAX_WBITS);
-            - deflateInit2 (I believe...)
+- Compression
+    - Finish the generalized streams
+    - Write unittests for them...
 
 - Mathlib
     - Need array/axis unittests

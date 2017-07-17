@@ -8,7 +8,6 @@ PYCPP_BEGIN_NAMESPACE
 // MACROS
 // ------
 
-
 /**
  *  \brief Callback function for compression.
  */
@@ -37,7 +36,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Provides wide-path overloads for Windows.
  */
-#if defined(OS_WINDOWS)                     // WINDOWS
+#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
 
 #   define WIDE_PATH_IFSTREAM(name)                                                                             \
                                                                                                                 \
@@ -246,10 +245,124 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Defines the compressed streams.
  */
 #define COMPRESSED_STREAM_DEFINITION(name)                                                                      \
-    COMPRESSED_ISTREAM(name);                                                                                   \
-    COMPRESSED_OSTREAM(name);                                                                                   \
-    COMPRESSED_IFSTREAM(name);                                                                                  \
-    COMPRESSED_OFSTREAM(name);
+    COMPRESSED_ISTREAM(name)                                                                                    \
+    COMPRESSED_OSTREAM(name)                                                                                    \
+    COMPRESSED_IFSTREAM(name)                                                                                   \
+    COMPRESSED_OFSTREAM(name)
+
+// HELPERS
+// -------
+
+
+template <typename Stream>
+static void new_bz2_decompressor(Stream& stream, compression_format& format, void*& ctx)
+{
+    format = compression_bz2;
+    ctx = (void*) new bz2_decompressor;
+    stream.rdbuf()->set_callback([ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
+        ((bz2_decompressor*) ctx)->decompress(src, srclen, dst, dstlen);
+    });
+}
+
+
+template <typename Stream>
+static void new_zlib_decompressor(Stream& stream, compression_format& format, void*& ctx)
+{
+    format = compression_zlib;
+    ctx = (void*) new zlib_decompressor;
+    stream.rdbuf()->set_callback([ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
+        ((zlib_decompressor*) ctx)->decompress(src, srclen, dst, dstlen);
+    });
+}
+
+
+template <typename Stream>
+static void new_gzip_decompressor(Stream& stream, compression_format& format, void*& ctx)
+{
+    format = compression_gzip;
+    ctx = (void*) new gzip_decompressor;
+    stream.rdbuf()->set_callback([ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
+        ((gzip_decompressor*) ctx)->decompress(src, srclen, dst, dstlen);
+    });
+}
+
+
+template <typename Stream>
+static void new_lzma_decompressor(Stream& stream, compression_format& format, void*& ctx)
+{
+    format = compression_lzma;
+    ctx = (void*) new lzma_decompressor;
+    stream.rdbuf()->set_callback([ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
+        ((lzma_decompressor*) ctx)->decompress(src, srclen, dst, dstlen);
+    });
+}
+
+
+template <typename Stream>
+static void new_decompressor(Stream& stream, char c, compression_format& format, void*& ctx)
+{
+    // detect format based on the first character
+    // It may be wrong, but then we have a corrupt stream
+    // Also, since all these bytes are binary, and not
+    // **too** common, we should be pretty safe.
+    switch (c) {
+        case '\x42':            /* bzip2 */
+            new_bz2_decompressor(stream, format, ctx);
+            break;
+
+        case '\x78':            /* zlib */
+            new_zlib_decompressor(stream, format, ctx);
+            break;
+
+        case '\x1f':            /* gzip */
+            new_gzip_decompressor(stream, format, ctx);
+            break;
+
+        case '\xFD':            /* lzma */
+            new_lzma_decompressor(stream, format, ctx);
+            break;
+
+        default:
+            break;
+    }
+}
+
+
+template <typename Stream, typename Path>
+typename std::enable_if<!std::is_arithmetic<Path>::value, void>::type
+static new_decompressor(Stream& stream, const Path& path, compression_format& format, void*& ctx)
+{
+    if (is_bz2::path(path)) {
+        new_bz2_decompressor(stream, format, ctx);
+    } else if (is_zlib::path(path)) {
+        new_zlib_decompressor(stream, format, ctx);
+    } else if (is_gzip::path(path)) {
+        new_gzip_decompressor(stream, format, ctx);
+    } else if (is_lzma::path(path)) {
+        new_lzma_decompressor(stream, format, ctx);
+    }
+}
+
+
+static void delete_decompressor(compression_format& format, void*& ctx)
+{
+    switch (format) {
+        case compression_bz2:
+            delete (bz2_decompressor*) ctx;
+            break;
+        case compression_zlib:
+            delete (zlib_decompressor*) ctx;
+            break;
+        case compression_gzip:
+            delete (gzip_decompressor*) ctx;
+            break;
+        case compression_lzma:
+            delete (lzma_decompressor*) ctx;
+            break;
+        default:
+            break;
+    }
+}
 
 // OBJECTS
 // -------
@@ -257,7 +370,48 @@ PYCPP_BEGIN_NAMESPACE
 COMPRESSED_STREAM_DEFINITION(bz2)
 COMPRESSED_STREAM_DEFINITION(zlib)
 COMPRESSED_STREAM_DEFINITION(lzma)
-COMPRESSED_STREAM_DEFINITION(gzip)
+COMPRESSED_STREAM_DEFINITION(gzip);
+
+
+decompressing_istream::decompressing_istream()
+{}
+
+
+decompressing_istream::~decompressing_istream()
+{
+    filter_istream::close();
+    delete_decompressor(format, ctx);
+}
+
+
+decompressing_istream::decompressing_istream(std::istream& stream)
+{
+    open(stream);
+}
+
+
+void decompressing_istream::open(std::istream& stream)
+{
+    char c = stream.peek();
+    filter_istream::open(stream);
+    new_decompressor(*this, c, format, ctx);
+}
+
+
+decompressing_istream::decompressing_istream(decompressing_istream&& rhs)
+{
+    std::swap(ctx, rhs.ctx);
+    filter_istream::swap(rhs);
+}
+
+
+decompressing_istream & decompressing_istream::operator=(decompressing_istream&& rhs)
+{
+    std::swap(ctx, rhs.ctx);
+    filter_istream::swap(rhs);
+    return *this;
+}
+
 // TODO:
 // general compressed stream
 

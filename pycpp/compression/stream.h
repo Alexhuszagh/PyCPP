@@ -9,6 +9,7 @@
 
 #include <pycpp/compression/blosc.h>
 #include <pycpp/compression/bzip2.h>
+#include <pycpp/compression/detect.h>
 #include <pycpp/compression/gzip.h>
 #include <pycpp/compression/lzma.h>
 #include <pycpp/compression/zlib.h>
@@ -22,7 +23,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Provides wide-path overloads for Windows.
  */
-#if defined(OS_WINDOWS)                     // WINDOWS
+#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
 
 #   define WIDE_PATH_IFSTREAM(name)                                                                         \
         name##_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);             \
@@ -156,8 +157,83 @@ COMPRESSED_STREAM_DEFINITION(zlib);
 COMPRESSED_STREAM_DEFINITION(lzma);
 COMPRESSED_STREAM_DEFINITION(gzip);
 
-// TODO:
-// general compressed stream
+
+/**
+ *  \brief Compression-agnostic wrapper around an istream.
+ */
+struct decompressing_istream: filter_istream
+{
+public:
+    decompressing_istream();
+    decompressing_istream(const decompressing_istream&) = delete;
+    decompressing_istream & operator=(const decompressing_istream&) = delete;
+    ~decompressing_istream();
+
+    decompressing_istream(std::istream& stream);
+    void open(std::istream& stream);
+
+protected:
+    decompressing_istream(decompressing_istream&&);
+    decompressing_istream & operator=(decompressing_istream&&);
+
+private:
+    compression_format format = compression_none;
+    void *ctx = nullptr;
+};
+
+
+/**
+ *  \brief Compression-agnostic wrapper around an ostream.
+ */
+struct compressing_ostream: filter_ostream
+{
+public:
+    // TODO: implement..
+
+private:
+    compression_format format = compression_none;
+    void *ctx = nullptr;
+};
+
+
+/**
+ *  \brief Compression-agnostic wrapper around an ifstream.
+ */
+struct decompressing_ifstream: filter_ifstream
+{
+public:
+    decompressing_ifstream();
+    decompressing_ifstream(const decompressing_ifstream&) = delete;
+    decompressing_ifstream & operator=(const decompressing_ifstream&) = delete;
+    decompressing_ifstream(decompressing_ifstream&&);
+    decompressing_ifstream & operator=(decompressing_ifstream&&);
+    ~decompressing_ifstream();
+
+    decompressing_ifstream(const std::string &name, std::ios_base::openmode = std::ios_base::in);
+    void open(const std::string &name, std::ios_base::openmode = std::ios_base::in);
+#if defined(PYCPP_HAVE_WFOPEN)
+    decompressing_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
+    void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
+#endif
+
+private:
+    compression_format format = compression_none;
+    void *ctx = nullptr;
+};
+
+
+/**
+ *  \brief Compression-agnostic wrapper around an ofstream.
+ */
+struct compressing_ofstream: filter_ofstream
+{
+public:
+    // TODO: implement..
+
+private:
+    compression_format format = compression_none;
+    void *ctx = nullptr;
+};
 
 // CLEANUP
 // -------
