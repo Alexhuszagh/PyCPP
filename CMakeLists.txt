@@ -248,6 +248,7 @@ if(BUILD_COMPRESSION)
     include_directories(${bz2_INCLUDE_DIR})
 
     # XZ
+    add_definitions(-DLZMA_API_STATIC=1)
     add_external_project(xz_external third_party/xz)
     add_external_target(lzma third_party/xz/src/liblzma/api third_party/xz/src/liblzma/ STATIC xz_external)
     include_directories(${lzma_INCLUDE_DIR})

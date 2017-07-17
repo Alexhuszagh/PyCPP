@@ -1,7 +1,5 @@
-- CMake config doesn't work for lzma
-    - Not working on MSVC either...
-
-- zlib.h isn't working either (FUCK)
+- Unresolved symbols in liblzma on MSVC...
+    - This is just fucking fantastic...
 
 - Mathlib
     - Need array/axis unittests
