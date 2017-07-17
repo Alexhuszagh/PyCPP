@@ -23,9 +23,8 @@ static std::string DECOMPRESSED("\x54\x68\x65\x20\x4d\x49\x54\x20\x4c\x69\x63\x6
 // TESTS
 // -----
 
+#if defined(HAVE_BZIP2)
 
-// TODO: restore
-#if 0
 TEST(compression_stream, bz2_istream)
 {
     std::istringstream sstream(BZ2_COMPRESSED);
@@ -48,6 +47,9 @@ TEST(compression_stream, bz2_ostream)
     EXPECT_EQ(sstream.str(), BZ2_COMPRESSED);
 }
 
+#endif                  // HAVE_BZIP2
+
+#if defined(HAVE_ZLIB)
 
 TEST(compression_stream, zlib_istream)
 {
@@ -69,29 +71,6 @@ TEST(compression_stream, zlib_ostream)
     }
 
     EXPECT_EQ(sstream.str(), ZLIB_COMPRESSED);
-}
-
-
-TEST(compression_stream, lzma_istream)
-{
-    std::istringstream sstream(LZMA_COMPRESSED);
-    lzma_istream lzma(sstream);
-    std::ostringstream ostream;
-    ostream << lzma.rdbuf();
-
-    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-}
-
-
-TEST(compression_stream, lzma_ostream)
-{
-    std::ostringstream sstream;
-    {
-        lzma_ostream lzma(sstream);
-        lzma << DECOMPRESSED;
-    }
-
-    EXPECT_EQ(sstream.str(), LZMA_COMPRESSED);
 }
 
 
@@ -118,31 +97,55 @@ TEST(compression_stream, gzip_ostream)
     EXPECT_EQ(gzip_decompress(sstream.str()), DECOMPRESSED);
 }
 
+#endif                  // HAVE_ZLIB
 
+#if defined(HAVE_LZMA)
+
+TEST(compression_stream, lzma_istream)
+{
+    std::istringstream sstream(LZMA_COMPRESSED);
+    lzma_istream lzma(sstream);
+    std::ostringstream ostream;
+    ostream << lzma.rdbuf();
+
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+}
+
+
+TEST(compression_stream, lzma_ostream)
+{
+    std::ostringstream sstream;
+    {
+        lzma_ostream lzma(sstream);
+        lzma << DECOMPRESSED;
+    }
+
+    EXPECT_EQ(sstream.str(), LZMA_COMPRESSED);
+}
+
+#endif                  // HAVE_LZMA
 
 TEST(compression_stream, decompressing_istream)
 {
-    // bzip2
+    // declare variables
     std::ostringstream ostream;
-    std::istringstream sstream(BZ2_COMPRESSED);
+    std::istringstream sstream;
+
+#if defined(HAVE_BZIP2)
+    // bzip2
+    ostream = std::ostringstream();
+    sstream = std::istringstream(BZ2_COMPRESSED);
     {
         decompressing_istream compressed(sstream);
         ostream << compressed.rdbuf();
     }
     EXPECT_EQ(ostream.str(), DECOMPRESSED);
+#endif                  // HAVE_BZIP2
 
+#if defined(HAVE_ZLIB)
     // zlib
     ostream = std::ostringstream();
     sstream = std::istringstream(ZLIB_COMPRESSED);
-    {
-        decompressing_istream compressed(sstream);
-        ostream << compressed.rdbuf();
-    }
-    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-
-    // lzma
-    ostream = std::ostringstream();
-    sstream = std::istringstream(LZMA_COMPRESSED);
     {
         decompressing_istream compressed(sstream);
         ostream << compressed.rdbuf();
@@ -157,5 +160,16 @@ TEST(compression_stream, decompressing_istream)
         ostream << compressed.rdbuf();
     }
     EXPECT_EQ(ostream.str(), DECOMPRESSED);
+#endif                  // HAVE_ZLIB
+
+#if defined(HAVE_LZMA)
+    // lzma
+    ostream = std::ostringstream();
+    sstream = std::istringstream(LZMA_COMPRESSED);
+    {
+        decompressing_istream compressed(sstream);
+        ostream << compressed.rdbuf();
+    }
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+#endif                  // HAVE_LZMA
 }
-#endif

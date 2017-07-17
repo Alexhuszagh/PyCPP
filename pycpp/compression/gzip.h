@@ -7,6 +7,8 @@
 
 #pragma once
 
+#if defined(HAVE_ZLIB)
+
 #include <pycpp/compression/exception.h>
 #include <memory>
 #include <string>
@@ -86,3 +88,5 @@ void gzip_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
 std::string gzip_decompress(const std::string &str, size_t bound);
 
 PYCPP_END_NAMESPACE
+
+#endif                  // HAVE_ZLIB

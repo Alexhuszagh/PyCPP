@@ -5,6 +5,8 @@
  *  \brief BLOSC compression and decompression unittests.
  */
 
+#if defined(HAVE_BLOSC)
+
 #include <pycpp/compression/blosc.h>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -32,3 +34,5 @@ TEST(blosc, blosc_decompress)
     EXPECT_EQ(blosc_decompress(BLOSC_COMPRESSED), BLOSC_DECOMPRESSED);
     EXPECT_EQ(blosc_decompress(BLOSC_COMPRESSED, BLOSC_DECOMPRESSED.size()), BLOSC_DECOMPRESSED);
 }
+
+#endif                  // HAVE_BLOSC

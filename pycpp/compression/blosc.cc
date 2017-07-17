@@ -1,6 +1,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#if defined(HAVE_BLOSC)
+
 #include <pycpp/architecture.h>
 #include <pycpp/compression/blosc.h>
 #include <pycpp/compression/core.h>
@@ -136,3 +138,5 @@ std::string blosc_decompress(const std::string &str, size_t bound)
 }
 
 PYCPP_END_NAMESPACE
+
+#endif                  // HAVE_BLOSC

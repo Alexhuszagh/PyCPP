@@ -5,6 +5,8 @@
  *  \brief BZIP2 compression and decompression unittests.
  */
 
+#if defined(HAVE_LZMA)
+
 #include <pycpp/compression/lzma.h>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -101,3 +103,5 @@ TEST(lzma, lzma_decompress)
     EXPECT_EQ(lzma_decompress(LZMA_COMPRESSED), LZMA_DECOMPRESSED);
     EXPECT_EQ(lzma_decompress(LZMA_COMPRESSED, LZMA_DECOMPRESSED.size()), LZMA_DECOMPRESSED);
 }
+
+#endif                  // HAVE_LZMA

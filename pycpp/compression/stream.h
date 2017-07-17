@@ -152,11 +152,18 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-COMPRESSED_STREAM_DEFINITION(bz2);
-COMPRESSED_STREAM_DEFINITION(zlib);
-COMPRESSED_STREAM_DEFINITION(lzma);
-COMPRESSED_STREAM_DEFINITION(gzip);
+#if defined(HAVE_BZIP2)
+    COMPRESSED_STREAM_DEFINITION(bz2);
+#endif
 
+#if defined(HAVE_ZLIB)
+    COMPRESSED_STREAM_DEFINITION(zlib);
+    COMPRESSED_STREAM_DEFINITION(gzip);
+#endif
+
+#if defined(HAVE_LZMA)
+    COMPRESSED_STREAM_DEFINITION(lzma);
+#endif
 
 /**
  *  \brief Compression-agnostic wrapper around an istream.

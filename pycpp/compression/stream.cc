@@ -253,6 +253,7 @@ PYCPP_BEGIN_NAMESPACE
 // HELPERS
 // -------
 
+#if defined(HAVE_BZIP2)
 
 template <typename Stream>
 static void new_bz2_decompressor(Stream& stream, compression_format& format, void*& ctx)
@@ -264,6 +265,9 @@ static void new_bz2_decompressor(Stream& stream, compression_format& format, voi
     });
 }
 
+#endif              // HAVE_BZIP2
+
+#if defined(HAVE_ZLIB)
 
 template <typename Stream>
 static void new_zlib_decompressor(Stream& stream, compression_format& format, void*& ctx)
@@ -286,6 +290,9 @@ static void new_gzip_decompressor(Stream& stream, compression_format& format, vo
     });
 }
 
+#endif              // HAVE_ZLIB
+
+#if defined(HAVE_LZMA)
 
 template <typename Stream>
 static void new_lzma_decompressor(Stream& stream, compression_format& format, void*& ctx)
@@ -297,6 +304,8 @@ static void new_lzma_decompressor(Stream& stream, compression_format& format, vo
     });
 }
 
+#endif              // HAVE_LZMA
+
 
 template <typename Stream>
 static void new_decompressor(Stream& stream, char c, compression_format& format, void*& ctx)
@@ -306,10 +315,14 @@ static void new_decompressor(Stream& stream, char c, compression_format& format,
     // Also, since all these bytes are binary, and not
     // **too** common, we should be pretty safe.
     switch (c) {
+
+#if defined(HAVE_BZIP2)
         case '\x42':            /* bzip2 */
             new_bz2_decompressor(stream, format, ctx);
             break;
+#endif              // HAVE_BZIP2
 
+#if defined(HAVE_ZLIB)
         case '\x78':            /* zlib */
             new_zlib_decompressor(stream, format, ctx);
             break;
@@ -317,10 +330,13 @@ static void new_decompressor(Stream& stream, char c, compression_format& format,
         case '\x1f':            /* gzip */
             new_gzip_decompressor(stream, format, ctx);
             break;
+#endif              // HAVE_ZLIB
 
+#if defined(HAVE_LZMA)
         case '\xFD':            /* lzma */
             new_lzma_decompressor(stream, format, ctx);
             break;
+#endif              // HAVE_LZMA
 
         default:
             break;
@@ -332,33 +348,56 @@ template <typename Stream, typename Path>
 typename std::enable_if<!std::is_arithmetic<Path>::value, void>::type
 static new_decompressor(Stream& stream, const Path& path, compression_format& format, void*& ctx)
 {
+#if defined(HAVE_BZIP2)
     if (is_bz2::path(path)) {
         new_bz2_decompressor(stream, format, ctx);
-    } else if (is_zlib::path(path)) {
+        return;
+    }
+#endif              // HAVE_BZIP2
+
+#if defined(HAVE_ZLIB)
+    if (is_zlib::path(path)) {
         new_zlib_decompressor(stream, format, ctx);
+        return;
     } else if (is_gzip::path(path)) {
         new_gzip_decompressor(stream, format, ctx);
-    } else if (is_lzma::path(path)) {
+        return;
+    }
+#endif              // HAVE_ZLIB
+
+#if defined(HAVE_LZMA)
+    if (is_lzma::path(path)) {
         new_lzma_decompressor(stream, format, ctx);
     }
+#endif              // HAVE_LZMA
 }
 
 
 static void delete_decompressor(compression_format format, void* ctx)
 {
     switch (format) {
+#if defined(HAVE_BZIP2)
         case compression_bz2:
             delete (bz2_decompressor*) ctx;
             break;
+#endif              // HAVE_BZIP2
+
+#if defined(HAVE_ZLIB)
         case compression_zlib:
             delete (zlib_decompressor*) ctx;
             break;
+
         case compression_gzip:
             delete (gzip_decompressor*) ctx;
             break;
+#endif              // HAVE_ZLIB
+
+#if defined(HAVE_LZMA)
         case compression_lzma:
             delete (lzma_decompressor*) ctx;
             break;
+#endif              // HAVE_LZMA
+
         default:
             break;
     }
@@ -367,10 +406,18 @@ static void delete_decompressor(compression_format format, void* ctx)
 // OBJECTS
 // -------
 
-COMPRESSED_STREAM_DEFINITION(bz2)
-COMPRESSED_STREAM_DEFINITION(zlib)
-COMPRESSED_STREAM_DEFINITION(lzma)
-COMPRESSED_STREAM_DEFINITION(gzip);
+#if defined(HAVE_BZIP2)
+    COMPRESSED_STREAM_DEFINITION(bz2);
+#endif
+
+#if defined(HAVE_ZLIB)
+    COMPRESSED_STREAM_DEFINITION(zlib);
+    COMPRESSED_STREAM_DEFINITION(gzip);
+#endif
+
+#if defined(HAVE_LZMA)
+    COMPRESSED_STREAM_DEFINITION(lzma);
+#endif
 
 
 decompressing_istream::decompressing_istream()

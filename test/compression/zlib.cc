@@ -5,6 +5,8 @@
  *  \brief ZLIB compression and decompression unittests.
  */
 
+#if defined(HAVE_ZLIB)
+
 #include <pycpp/compression/zlib.h>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -100,3 +102,5 @@ TEST(zlib, zlib_decompress)
     EXPECT_EQ(zlib_decompress(ZLIB_COMPRESSED), ZLIB_DECOMPRESSED);
     EXPECT_EQ(zlib_decompress(ZLIB_COMPRESSED, ZLIB_DECOMPRESSED.size()), ZLIB_DECOMPRESSED);
 }
+
+#endif                  // HAVE_ZLIB

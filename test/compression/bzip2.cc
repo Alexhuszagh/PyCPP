@@ -5,6 +5,8 @@
  *  \brief BZIP2 compression and decompression unittests.
  */
 
+#if defined(HAVE_BZIP2)
+
 #include <pycpp/compression/bzip2.h>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -100,3 +102,5 @@ TEST(bz2, bz2_decompress)
     EXPECT_EQ(bz2_decompress(BZ2_COMPRESSED), BZ2_DECOMPRESSED);
     EXPECT_EQ(bz2_decompress(BZ2_COMPRESSED, BZ2_DECOMPRESSED.size()), BZ2_DECOMPRESSED);
 }
+
+#endif                  // HAVE_BZIP2

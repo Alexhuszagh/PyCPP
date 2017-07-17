@@ -57,19 +57,53 @@ if(WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_FILESYSTEM OR WIT
     set(BUILD_XML ${WITH_XML})
 endif()
 
-add_definitions(
-    -DBUILD_CIPHER=${BUILD_CIPHER}
-    -DBUILD_COLLECTIONS=${BUILD_COLLECTIONS}
-    -DBUILD_COMPRESSION=${BUILD_COMPRESSION}
-    -DBUILD_FILESYSTEM=${BUILD_FILESYSTEM}
-    -DBUILD_HASHLIB=${BUILD_HASHLIB}
-    -DBUILD_JSON=${BUILD_JSON}
-    -DBUILD_LATTICE=${BUILD_LATTICE}
-    -DBUILD_MATH=${BUILD_MATH}
-    -DBUILD_RE=${BUILD_RE}
-    -DBUILD_STREAM=${BUILD_STREAM}
-    -DBUILD_XML=${BUILD_XML}
-)
+if (BUILD_CIPHER)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_CIPHER=1")
+endif()
+
+if (BUILD_COLLECTIONS)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_COLLECTIONS=1")
+endif()
+
+if (BUILD_COMPRESSION)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_COMPRESSION=1")
+endif()
+
+if (BUILD_FILESYSTEM)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_FILESYSTEM=1")
+endif()
+
+if (BUILD_HASHLIB)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_HASHLIB=1")
+endif()
+
+if (BUILD_COMPRESSION)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_COMPRESSION=1")
+endif()
+
+if (BUILD_JSON)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_JSON=1")
+endif()
+
+if (BUILD_LATTICE)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_LATTICE=1")
+endif()
+
+if (BUILD_MATH)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_MATH=1")
+endif()
+
+if (BUILD_RE)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_RE=1")
+endif()
+
+if (BUILD_STREAM)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_STREAM=1")
+endif()
+
+if (BUILD_XML)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_XML=1")
+endif()
 
 if(BUILD_STATIC)
     if(UNIX)
@@ -100,7 +134,7 @@ enable_language(C)
 
 CHECK_INCLUDE_FILE(sys/mman.h HAVE_SYS_MMAN_H)
 if(HAVE_SYS_MMAN_H)
-    add_definitions(-DHAVE_SYS_MMAN_H=1)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_SYS_MMAN_H=1")
 endif()
 
 # FUNCTIONS
@@ -110,48 +144,48 @@ include(CheckFunctionExists)
 
 CHECK_FUNCTION_EXISTS(explicit_bzero HAVE_EXPLICIT_BZERO)
 if(HAVE_EXPLICIT_BZERO)
-    add_definitions(-DHAVE_EXPLICIT_BZERO=1)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_EXPLICIT_BZERO=1")
 endif()
 
 CHECK_FUNCTION_EXISTS(memset_s HAVE_MEMSET_S)
 if(HAVE_MEMSET_S)
-    add_definitions(-DHAVE_MEMSET_S=1)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_MEMSET_S=1")
 endif()
 
 CHECK_FUNCTION_EXISTS(memcpy_s HAVE_MEMCPY_S)
 if(HAVE_MEMCPY_S)
-    add_definitions(-DHAVE_MEMCPY_S=1)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_MEMCPY_S=1")
 endif()
 
 CHECK_FUNCTION_EXISTS(memmove_s HAVE_MEMMOVE_S)
 if(HAVE_MEMMOVE_S)
-    add_definitions(-DHAVE_MEMMOVE_S=1)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_MEMMOVE_S=1")
 endif()
 
 CHECK_FUNCTION_EXISTS(posix_memalign HAVE_POSIX_MEMALIGN)
 if(HAVE_POSIX_MEMALIGN)
-    add_definitions(-DHAVE_POSIX_MEMALIGN=1)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_POSIX_MEMALIGN=1")
 endif()
 
 CHECK_FUNCTION_EXISTS(madvise HAVE_MADVISE)
 if(HAVE_MADVISE)
-    add_definitions(-DHAVE_MADVISE=1)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_MADVISE=1")
 endif()
 
 CHECK_FUNCTION_EXISTS(mlock HAVE_MLOCK)
 if(HAVE_MLOCK)
-    add_definitions(-DHAVE_MLOCK=1)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_MLOCK=1")
 endif()
 
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 if(HAVE_MMAP)
-    add_definitions(-DHAVE_MMAP=1)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_MMAP=1")
 endif()
 
 if(HAVE_SYS_MMAN_H)
     CHECK_FUNCTION_EXISTS(mprotect HAVE_MPROTECT)
     if(HAVE_MPROTECT)
-        add_definitions(-DHAVE_MPROTECT=1)
+        list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_MPROTECT=1")
     endif()
 endif()
 
@@ -221,59 +255,94 @@ macro(add_external_target name includedir libdir build_type external)
     set_target_properties(${name} PROPERTIES INCLUDE_DIRECTORIES ${${name}_INCLUDE_DIR})
 endmacro(add_external_target)
 
+# WINDOWS
+# -------
+
+# Need to specify proper exception handling for Windows.
+if(MSVC)
+    list(APPEND PYCPP_COMPILE_OPTIONS "/EHsc")
+endif()
+
+if(MSVC)
+    list(APPEND PYCPP_LIBRARIES ws2_32.lib crypt32.lib kernel32.lib)
+elseif(MINGW OR MSYS)
+    list(APPEND PYCPP_LIBRARIES -lws2_32 -lcrypt32 -lkernel32)
+endif()
+
 
 # LIBRARY
 # -------
 
-include_directories(
+set(PYCPP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}")
+set(WARNINGS_INCLUDE_DIRS third_party/warnings/src)
+set(MULTI_INDEX_INCLUDE_DIRS third_party/multi_index/include)
+set(BRIGAND_INCLUDE_DIRS third_party/multi_index/third_party/brigand/include)
+
+list(APPEND PYCPP_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}
-    third_party/warnings/src
-    third_party/multi_index/include
-    third_party/multi_index/third_party/brigand/include
+    ${WARNINGS_INCLUDE_DIRS}
+    ${MULTI_INDEX_INCLUDE_DIRS}
+    ${BRIGAND_INCLUDE_DIRS}
 )
 
-add_definitions(-DPYCPP_NAMESPACE=${PYCPP_NAMESPACE})
-
+list(APPEND PYCPP_COMPILE_DEFINITIONS "-DPYCPP_NAMESPACE=${PYCPP_NAMESPACE}")
 
 if(BUILD_COMPRESSION)
     # ZLIB
     add_external_project(zlib_external third_party/zlib)
     add_external_target(z third_party/zlib third_party/zlib STATIC zlib_external)
     list(APPEND z_INCLUDE_DIR "${CMAKE_BINARY_DIR}/third_party/zlib")
-    include_directories(${z_INCLUDE_DIR})
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_ZLIB=1")
+    list(APPEND PYCPP_DEPENDENCIES z)
+    list(APPEND PYCPP_LIBRARIES z)
+    list(APPEND PYCPP_INCLUDE_DIRS ${z_INCLUDE_DIR})
 
     # BZIP2
     add_external_project(bzip2_external third_party/bzip2)
     add_external_target(bz2 third_party/bzip2 third_party/bzip2 STATIC bzip2_external)
-    include_directories(${bz2_INCLUDE_DIR})
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_BZIP2=1")
+    list(APPEND PYCPP_DEPENDENCIES bz2)
+    list(APPEND PYCPP_LIBRARIES bz2)
+    list(APPEND PYCPP_INCLUDE_DIRS ${bz2_INCLUDE_DIR})
 
     # XZ
-    add_definitions(-DLZMA_API_STATIC=1)
-    add_external_project(xz_external third_party/xz)
-    add_external_target(lzma third_party/xz/src/liblzma/api third_party/xz/src/liblzma/ STATIC xz_external)
-    include_directories(${lzma_INCLUDE_DIR})
+    # TODO: restore
+#    add_external_project(xz_external third_party/xz)
+#    add_external_target(lzma third_party/xz/src/liblzma/api third_party/xz/src/liblzma/ STATIC xz_external)
+#    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_LZMA=1" "-DLZMA_API_STATIC=1")
+#    list(APPEND PYCPP_DEPENDENCIES lzma)
+#    list(APPEND PYCPP_LIBRARIES lzma)
+#    list(APPEND PYCPP_INCLUDE_DIRS ${lzma_INCLUDE_DIR})
 
     # BLOSC
     add_external_project(blosc_external third_party/c-blosc)
     add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
-    include_directories(${blosc_INCLUDE_DIR})
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_BLOSC=1")
+    list(APPEND PYCPP_DEPENDENCIES blosc)
+    list(APPEND PYCPP_LIBRARIES blosc)
+    list(APPEND PYCPP_INCLUDE_DIRS ${blosc_INCLUDE_DIR})
 endif()
 
 if(BUILD_JSON)
-    include_directories(third_party/rapidjson/include)
+    set(RAPIDJSON_INCLUDE_DIRS third_party/rapidjson/include)
+    list(APPEND PYCPP_INCLUDE_DIRS ${RAPIDJSON_INCLUDE_DIRS})
 endif()
 
 if(BUILD_RE)
     add_external_project(re2_external third_party/re2)
     add_external_target(re2 third_party/re2 third_party/re2 STATIC re2_external)
-    include_directories(${re2_INCLUDE_DIR})
+    list(APPEND PYCPP_DEPENDENCIES re2)
+    list(APPEND PYCPP_LIBRARIES re2)
+    list(APPEND PYCPP_INCLUDE_DIRS ${re2_INCLUDE_DIR})
 endif()
 
 if(BUILD_XML)
-    add_definitions(-DLIBXML_STATIC)
     add_external_project(xml2_external third_party/libxml2)
     add_external_target(xml2 third_party/libxml2/include third_party/libxml2 STATIC xml2_external)
-    include_directories(${xml2_INCLUDE_DIR})
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DLIBXML_STATIC=1")
+    list(APPEND PYCPP_DEPENDENCIES xml2)
+    list(APPEND PYCPP_LIBRARIES xml2)
+    list(APPEND PYCPP_INCLUDE_DIRS ${xml2_INCLUDE_DIR})
 endif()
 
 set(SOURCE_FILES
@@ -412,50 +481,25 @@ if(BUILD_XML)
     )
 endif()
 
+#include_directories(${PYCPP_INCLUDE_DIRS})
+
 if(BUILD_STATIC)
     add_library(pycpp STATIC ${SOURCE_FILES})
 else()
     add_library(pycpp SHARED ${SOURCE_FILES})
 endif()
 
-if(BUILD_COMPRESSION)
-    add_dependencies(pycpp z bz2 lzma blosc)
-endif()
 
-if(BUILD_RE)
-    add_dependencies(pycpp re2)
-endif()
+# INTERFACE
+# ---------
 
-if(BUILD_XML)
-    add_dependencies(pycpp xml2)
-endif()
+target_compile_definitions(pycpp PUBLIC ${PYCPP_COMPILE_DEFINITIONS})
+target_compile_options(pycpp PUBLIC ${PYCPP_COMPILE_OPTIONS})
+add_dependencies(pycpp ${PYCPP_DEPENDENCIES})
+target_include_directories(pycpp PUBLIC ${PYCPP_INCLUDE_DIRS})
+target_link_libraries(pycpp PUBLIC ${PYCPP_LIBRARIES})
 
-set(PYCPP_LIBRARIES pycpp)
-
-# Need to specify proper exception handling for Windows.
-if(MSVC)
-    set_target_properties(pycpp PROPERTIES
-        COMPILE_OPTIONS "/EHsc"
-    )
-endif()
-
-if(MSVC)
-    list(APPEND PYCPP_LIBRARIES ws2_32.lib crypt32.lib kernel32.lib)
-elseif(MINGW OR MSYS)
-    list(APPEND PYCPP_LIBRARIES -lws2_32 -lcrypt32 -lkernel32)
-endif()
-
-if(BUILD_COMPRESSION)
-    list(APPEND PYCPP_LIBRARIES z bz2 lzma blosc)
-endif()
-
-if(BUILD_RE)
-    list(APPEND PYCPP_LIBRARIES re2)
-endif()
-
-if(BUILD_XML)
-    list(APPEND PYCPP_LIBRARIES xml2)
-endif()
+list(APPEND PYCPP_LIBRARIES pycpp)
 
 # TESTS
 # -----
@@ -618,16 +662,5 @@ if(BUILD_TESTS)
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 
-    add_dependencies(pycpp_tests gtest gtest_main)
-    if(BUILD_COMPRESSION)
-        add_dependencies(pycpp_tests z bz2 lzma blosc)
-    endif()
-
-    if(BUILD_RE)
-        add_dependencies(pycpp_tests re2)
-    endif()
-
-    if(BUILD_XML)
-        add_dependencies(pycpp_tests xml2)
-    endif()
+    add_dependencies(pycpp_tests ${PYCPP_DEPENDENCIES} gtest gtest_main)
 endif()

@@ -1,6 +1,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#if defined(HAVE_ZLIB)
+
 // This module is basically identical to zlib,
 // so just include the private error handling.
 #include <pycpp/byteorder.h>
@@ -426,3 +428,5 @@ std::string gzip_decompress(const std::string &str, size_t bound)
 }
 
 PYCPP_END_NAMESPACE
+
+#endif                  // HAVE_ZLIB

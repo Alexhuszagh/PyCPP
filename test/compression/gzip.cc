@@ -5,6 +5,8 @@
  *  \brief GZIP compression and decompression unittests.
  */
 
+#if defined(HAVE_ZLIB)
+
 #include <pycpp/compression/gzip.h>
 #include <gtest/gtest.h>
 #include <sstream>
@@ -102,3 +104,5 @@ TEST(gzip, gzip_decompress)
     EXPECT_EQ(gzip_decompress(GZIP_COMPRESSED), GZIP_DECOMPRESSED);
     EXPECT_EQ(gzip_decompress(GZIP_COMPRESSED, GZIP_DECOMPRESSED.size()), GZIP_DECOMPRESSED);
 }
+
+#endif                  // HAVE_ZLIB
