@@ -24,7 +24,7 @@ static std::string DECOMPRESSED("\x54\x68\x65\x20\x4d\x49\x54\x20\x4c\x69\x63\x6
 // -----
 
 
-TEST(bz2_stream, bz2_istream)
+TEST(compression_stream, bz2_istream)
 {
     std::istringstream sstream(BZ2_COMPRESSED);
     bz2_istream bz2(sstream);
@@ -35,7 +35,7 @@ TEST(bz2_stream, bz2_istream)
 }
 
 
-TEST(bz2_stream, bz2_ostream)
+TEST(compression_stream, bz2_ostream)
 {
     std::ostringstream sstream;
     {
@@ -47,7 +47,7 @@ TEST(bz2_stream, bz2_ostream)
 }
 
 
-TEST(zlib_stream, zlib_istream)
+TEST(compression_stream, zlib_istream)
 {
     std::istringstream sstream(ZLIB_COMPRESSED);
     zlib_istream zlib(sstream);
@@ -58,7 +58,7 @@ TEST(zlib_stream, zlib_istream)
 }
 
 
-TEST(zlib_stream, zlib_ostream)
+TEST(compression_stream, zlib_ostream)
 {
     std::ostringstream sstream;
     {
@@ -70,7 +70,7 @@ TEST(zlib_stream, zlib_ostream)
 }
 
 
-TEST(lzma_stream, lzma_istream)
+TEST(compression_stream, lzma_istream)
 {
     std::istringstream sstream(LZMA_COMPRESSED);
     lzma_istream lzma(sstream);
@@ -81,7 +81,7 @@ TEST(lzma_stream, lzma_istream)
 }
 
 
-TEST(lzma_stream, lzma_ostream)
+TEST(compression_stream, lzma_ostream)
 {
     std::ostringstream sstream;
     {
@@ -93,7 +93,7 @@ TEST(lzma_stream, lzma_ostream)
 }
 
 
-TEST(gzip_stream, gzip_istream)
+TEST(compression_stream, gzip_istream)
 {
     std::istringstream sstream(GZIP_COMPRESSED);
     gzip_istream gzip(sstream);
@@ -104,25 +104,7 @@ TEST(gzip_stream, gzip_istream)
 }
 
 
-static std::string string_to_hex(const std::string& input)
-{
-    static const char* const lut = "0123456789abcdef";
-
-    std::string output;
-    output.reserve(4 * input.length());
-    for (size_t i = 0; i < input.length(); ++i)
-    {
-        const unsigned char c = input[i];
-        output.push_back('\\');
-        output.push_back('x');
-        output.push_back(lut[c >> 4]);
-        output.push_back(lut[c & 15]);
-    }
-    return output;
-}
-
-
-TEST(gzip_stream, gzip_ostream)
+TEST(compression_stream, gzip_ostream)
 {
     std::ostringstream sstream;
     {
@@ -132,4 +114,45 @@ TEST(gzip_stream, gzip_ostream)
 
     // don't check exact values, just check it can decompress
     EXPECT_EQ(gzip_decompress(sstream.str()), DECOMPRESSED);
+}
+
+
+
+TEST(compression_stream, decompressing_istream)
+{
+    // bzip2
+    std::ostringstream ostream;
+    std::istringstream sstream(BZ2_COMPRESSED);
+    {
+        decompressing_istream compressed(sstream);
+        ostream << compressed.rdbuf();
+    }
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+
+    // zlib
+    ostream = std::ostringstream();
+    sstream = std::istringstream(ZLIB_COMPRESSED);
+    {
+        decompressing_istream compressed(sstream);
+        ostream << compressed.rdbuf();
+    }
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+
+    // lzma
+    ostream = std::ostringstream();
+    sstream = std::istringstream(LZMA_COMPRESSED);
+    {
+        decompressing_istream compressed(sstream);
+        ostream << compressed.rdbuf();
+    }
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+
+    // gzip
+    ostream = std::ostringstream();
+    sstream = std::istringstream(GZIP_COMPRESSED);
+    {
+        decompressing_istream compressed(sstream);
+        ostream << compressed.rdbuf();
+    }
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
 }

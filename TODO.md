@@ -1,7 +1,3 @@
-- Compression
-    - Finish the generalized streams
-    - Write unittests for them...
-
 - Mathlib
     - Need array/axis unittests
 

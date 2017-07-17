@@ -183,20 +183,6 @@ private:
 
 
 /**
- *  \brief Compression-agnostic wrapper around an ostream.
- */
-struct compressing_ostream: filter_ostream
-{
-public:
-    // TODO: implement..
-
-private:
-    compression_format format = compression_none;
-    void *ctx = nullptr;
-};
-
-
-/**
  *  \brief Compression-agnostic wrapper around an ifstream.
  */
 struct decompressing_ifstream: filter_ifstream
@@ -215,20 +201,6 @@ public:
     decompressing_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
     void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
 #endif
-
-private:
-    compression_format format = compression_none;
-    void *ctx = nullptr;
-};
-
-
-/**
- *  \brief Compression-agnostic wrapper around an ofstream.
- */
-struct compressing_ofstream: filter_ofstream
-{
-public:
-    // TODO: implement..
 
 private:
     compression_format format = compression_none;

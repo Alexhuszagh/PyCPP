@@ -259,7 +259,7 @@ static void new_bz2_decompressor(Stream& stream, compression_format& format, voi
 {
     format = compression_bz2;
     ctx = (void*) new bz2_decompressor;
-    stream.rdbuf()->set_callback([ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
+    stream.rdbuf()->set_callback([&ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
         ((bz2_decompressor*) ctx)->decompress(src, srclen, dst, dstlen);
     });
 }
@@ -270,7 +270,7 @@ static void new_zlib_decompressor(Stream& stream, compression_format& format, vo
 {
     format = compression_zlib;
     ctx = (void*) new zlib_decompressor;
-    stream.rdbuf()->set_callback([ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
+    stream.rdbuf()->set_callback([&ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
         ((zlib_decompressor*) ctx)->decompress(src, srclen, dst, dstlen);
     });
 }
@@ -281,7 +281,7 @@ static void new_gzip_decompressor(Stream& stream, compression_format& format, vo
 {
     format = compression_gzip;
     ctx = (void*) new gzip_decompressor;
-    stream.rdbuf()->set_callback([ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
+    stream.rdbuf()->set_callback([&ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
         ((gzip_decompressor*) ctx)->decompress(src, srclen, dst, dstlen);
     });
 }
@@ -292,7 +292,7 @@ static void new_lzma_decompressor(Stream& stream, compression_format& format, vo
 {
     format = compression_lzma;
     ctx = (void*) new lzma_decompressor;
-    stream.rdbuf()->set_callback([ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
+    stream.rdbuf()->set_callback([&ctx] (const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size) {
         ((lzma_decompressor*) ctx)->decompress(src, srclen, dst, dstlen);
     });
 }
@@ -344,7 +344,7 @@ static new_decompressor(Stream& stream, const Path& path, compression_format& fo
 }
 
 
-static void delete_decompressor(compression_format& format, void*& ctx)
+static void delete_decompressor(compression_format format, void* ctx)
 {
     switch (format) {
         case compression_bz2:
@@ -380,6 +380,7 @@ decompressing_istream::decompressing_istream()
 decompressing_istream::~decompressing_istream()
 {
     filter_istream::close();
+    rdbuf()->set_callback(nullptr);
     delete_decompressor(format, ctx);
 }
 
@@ -439,6 +440,7 @@ decompressing_ifstream & decompressing_ifstream::operator=(decompressing_ifstrea
 decompressing_ifstream::~decompressing_ifstream()
 {
     filter_ifstream::close();
+    rdbuf()->set_callback(nullptr);
     delete_decompressor(format, ctx);
 }
 
