@@ -22,8 +22,10 @@
 #   define PYCPP_BEGIN_NAMESPACE
 #   define PYCPP_END_NAMESPACE
 #   define PYCPP_USING_NAMESPACE
+#   undef PYCPP_HAVE_NAMESPACE
 #else                                       // HAVE NAMESPACE
 #   define PYCPP_BEGIN_NAMESPACE namespace PYCPP_NAMESPACE {
 #   define PYCPP_END_NAMESPACE }
 #   define PYCPP_USING_NAMESPACE using namespace PYCPP_NAMESPACE;
+#   define PYCPP_HAVE_NAMESPACE
 #endif

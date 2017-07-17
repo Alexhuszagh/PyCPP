@@ -12,6 +12,8 @@
 #include <pycpp/multi_index/ordered_index_fwd.h>
 #include <multi_index_container.hpp>
 
+#if defined(PYCPP_HAVE_NAMESPACE)
+
 PYCPP_BEGIN_NAMESPACE
 
 template <
@@ -22,3 +24,5 @@ template <
 using multi_index_container = multi_index::multi_index_container<Value, IndexSpecifierList, Allocator>;
 
 PYCPP_END_NAMESPACE
+
+#endif                  // PYCPP_HAVE_NAMESPACE
