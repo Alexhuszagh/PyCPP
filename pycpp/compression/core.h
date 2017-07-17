@@ -10,6 +10,7 @@
 #include <pycpp/compression/exception.h>
 #include <pycpp/safe/stdlib.h>
 #include <cstdlib>
+#include <string>
 #include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE

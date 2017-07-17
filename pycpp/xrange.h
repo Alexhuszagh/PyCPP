@@ -10,6 +10,7 @@
 #include <pycpp/ordering.h>
 #include <pycpp/range.h>
 #include <cmath>
+#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 
