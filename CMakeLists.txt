@@ -185,6 +185,7 @@ macro(add_external_project name path)
                    "-DCMAKE_RC_COMPILER=${CMAKE_RC_COMPILER}"
                    "-DCMAKE_COMPILER_PREFIX=${CMAKE_COMPILER_PREFIX}"
                    "-DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}"
+                   "-DBUILD_TESTS=OFF"
        INSTALL_COMMAND ""
     )
 
@@ -611,4 +612,17 @@ if(BUILD_TESTS)
         COMMAND pycpp_tests
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
+
+    add_dependencies(pycpp_tests gtest gtest_main)
+    if(BUILD_COMPRESSION)
+        add_dependencies(pycpp_tests z bz2 lzma blosc)
+    endif()
+
+    if(BUILD_RE)
+        add_dependencies(pycpp_tests re2)
+    endif()
+
+    if(BUILD_XML)
+        add_dependencies(pycpp_tests xml2)
+    endif()
 endif()
