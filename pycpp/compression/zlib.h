@@ -61,9 +61,9 @@ private:
 // FUNCTIONS
 // ---------
 
-/** \brief ZLIB-compress data. Returns number of bytes converted.
+/** \brief ZLIB-compress data.
  */
-size_t zlib_compress(const void *src, size_t srclen, void* dst, size_t dstlen);
+void zlib_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief ZLIB-compress data.
  */
@@ -73,11 +73,11 @@ std::string zlib_compress(const std::string &str);
  */
 std::string zlib_decompress(const std::string &str);
 
-/** \brief ZLIB-decompress data. Returns number of bytes converted.
+/** \brief ZLIB-decompress data.
  *
  *  \param bound            Known size of decompressed buffer.
  */
-size_t zlib_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound);
+void zlib_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound);
 
 /** \brief ZLIB-decompress data.
  *

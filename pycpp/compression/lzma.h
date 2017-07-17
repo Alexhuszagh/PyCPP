@@ -61,9 +61,9 @@ private:
 // FUNCTIONS
 // ---------
 
-/** \brief LZMA2-compress data. Returns number of bytes converted.
+/** \brief LZMA2-compress data.
  */
-size_t lzma_compress(const void *src, size_t srclen, void* dst, size_t dstlen);
+void lzma_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief LZMA2-compress data.
  */
@@ -73,11 +73,11 @@ std::string lzma_compress(const std::string &str);
  */
 std::string lzma_decompress(const std::string &str);
 
-/** \brief LZMA2-decompress data. Returns number of bytes converted.
+/** \brief LZMA2-decompress data.
  *
  *  \param bound            Known size of decompressed buffer.
  */
-size_t lzma_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound);
+void lzma_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound);
 
 /** \brief LZMA2-decompress data.
  *

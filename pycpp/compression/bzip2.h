@@ -61,9 +61,9 @@ private:
 // FUNCTIONS
 // ---------
 
-/** \brief BZIP2-compress data. Returns number of bytes converted.
+/** \brief BZIP2-compress data.
  */
-size_t bz2_compress(const void *src, size_t srclen, void* dst, size_t dstlen);
+void bz2_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
 /** \brief BZIP2-compress data.
  */
@@ -73,11 +73,11 @@ std::string bz2_compress(const std::string &str);
  */
 std::string bz2_decompress(const std::string &str);
 
-/** \brief BZIP2-decompress data. Returns number of bytes converted.
+/** \brief BZIP2-decompress data.
  *
  *  \param bound            Known size of decompressed buffer.
  */
-size_t bz2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound);
+void bz2_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound);
 
 /** \brief BZIP2-decompress data.
  *

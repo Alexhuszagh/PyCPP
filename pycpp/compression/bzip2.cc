@@ -256,7 +256,7 @@ compression_status bz2_decompressor::decompress(const void*& src, size_t srclen,
 // ---------
 
 
-size_t bz2_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
+void bz2_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     // configurations
     auto block_size = BZ2_BLOCK_SIZE;
@@ -272,15 +272,18 @@ size_t bz2_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
         char c = 0;
         CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) &c, 0, block_size, verbosity, work_factor));
     }
-    return dstlen_;
+
+    // update pointers
+    src = ((char*) src) + srclen_;
+    dst = ((char*) dst) + dstlen_;
 }
 
 
 std::string bz2_compress(const std::string &str)
 {
     size_t dstlen = bz2_compress_bound(str.size());
-    return compress_bound(str, dstlen, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
-        return bz2_compress(src, srclen, dst, dstlen);
+    return compress_bound(str, dstlen, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        bz2_compress(src, srclen, dst, dstlen);
     });
 }
 
@@ -291,7 +294,7 @@ std::string bz2_decompress(const std::string &str)
 }
 
 
-size_t bz2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound)
+void bz2_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound)
 {
     // configurations
     auto small = BZ2_SMALL;
@@ -306,14 +309,17 @@ size_t bz2_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, 
         char c = 0;
         CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) &c, 0, small, verbosity));
     }
-    return dstlen_;
+
+    // update pointers
+    src = ((char*) src) + srclen_;
+    dst = ((char*) dst) + dstlen_;
 }
 
 
 std::string bz2_decompress(const std::string &str, size_t bound)
 {
-    return decompress_bound(str, bound, [](const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound) {
-        return bz2_decompress(src, srclen, dst, dstlen, bound);
+    return decompress_bound(str, bound, [](const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound) {
+        bz2_decompress(src, srclen, dst, dstlen, bound);
     });
 }
 

@@ -211,7 +211,7 @@ compression_status lzma_decompressor::decompress(const void*& src, size_t srclen
 // ---------
 
 
-size_t lzma_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
+void lzma_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     static uint32_t level = LZMA_PRESET_DEFAULT;
     static lzma_check check = LZMA_CHECK_CRC64;
@@ -223,15 +223,18 @@ size_t lzma_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
         char c = 0;
         CHECK(lzma_easy_buffer_encode(level, check, nullptr, (const uint8_t*) &c, 0, (uint8_t*) dst, &dstpos, dstlen));
     }
-    return dstpos;
+
+    // update pointers
+    src = ((char*) src) + srclen;
+    dst = ((char*) dst) + dstpos;
 }
 
 
 std::string lzma_compress(const std::string &str)
 {
     size_t dstlen = lzma_compress_bound(str.size());
-    return compress_bound(str, dstlen, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
-        return lzma_compress(src, srclen, dst, dstlen);
+    return compress_bound(str, dstlen, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        lzma_compress(src, srclen, dst, dstlen);
     });
 }
 
@@ -242,7 +245,7 @@ std::string lzma_decompress(const std::string &str)
 }
 
 
-size_t lzma_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound)
+void lzma_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound)
 {
     static uint64_t memlimit = UINT64_MAX;
     size_t srcpos = 0;
@@ -254,14 +257,17 @@ size_t lzma_decompress(const void *src, size_t srclen, void* dst, size_t dstlen,
         char c = 0;
         CHECK(lzma_stream_buffer_decode(&memlimit, 0, nullptr, (const uint8_t*) &c, &srcpos, 0, (uint8_t*) dst, &dstpos, dstlen));
     }
-    return dstpos;
+
+    // update pointers
+    src = ((char*) src) + srcpos;
+    dst = ((char*) dst) + dstpos;
 }
 
 
 std::string lzma_decompress(const std::string &str, size_t bound)
 {
-    return decompress_bound(str, bound, [](const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound) {
-        return lzma_decompress(src, srclen, dst, dstlen, bound);
+    return decompress_bound(str, bound, [](const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound) {
+        lzma_decompress(src, srclen, dst, dstlen, bound);
     });
 }
 

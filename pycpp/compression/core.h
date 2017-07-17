@@ -201,16 +201,19 @@ std::string ctx_decompress(const std::string& str)
 template <typename Function>
 std::string compress_bound(const std::string &str, size_t dstlen, Function function)
 {
-    auto *dst = safe_malloc(dstlen);
+    const char* src = str.data();
+    char *dst = (char*) safe_malloc(dstlen);
+    const void* src_first = (const void*) src;
+    void* dst_first = (void*) dst;
 
-    size_t out;
     try {
-        out = function(str.data(), str.size(), dst, dstlen);
+        function(src_first, str.size(), dst_first, dstlen);
     } catch (std::exception&) {
         safe_free(dst);
         throw;
     }
-    std::string output(reinterpret_cast<const char*>(dst), out);
+    size_t length = std::distance(dst, (char*) dst_first);
+    std::string output(dst, length);
     safe_free(dst);
 
     return output;
@@ -220,16 +223,19 @@ std::string compress_bound(const std::string &str, size_t dstlen, Function funct
 template <typename Function>
 std::string decompress_bound(const std::string &str, size_t bound, Function function)
 {
-    auto *dst = safe_malloc(bound);
+    const char* src = str.data();
+    char *dst = (char*) safe_malloc(bound);
+    const void* src_first = (const void*) src;
+    void* dst_first = (void*) dst;
 
-    size_t out;
     try {
-        out = function(str.data(), str.size(), dst, bound, bound);
+        function(src_first, str.size(), dst_first, bound, bound);
     } catch (std::exception&) {
         safe_free(dst);
         throw;
     }
-    std::string output(reinterpret_cast<const char*>(dst), out);
+    size_t length = std::distance(dst, (char*) dst_first);
+    std::string output(dst, length);
     safe_free(dst);
 
     return output;

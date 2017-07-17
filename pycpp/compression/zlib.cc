@@ -212,7 +212,7 @@ compression_status zlib_decompressor::decompress(const void*& src, size_t srclen
 // ---------
 
 
-size_t zlib_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
+void zlib_compress(const void*& src, size_t srclen, void* &dst, size_t dstlen)
 {
     uLong srclen_ = srclen;
     uLong dstlen_ = dstlen;
@@ -223,14 +223,17 @@ size_t zlib_compress(const void *src, size_t srclen, void* dst, size_t dstlen)
         Bytef c = 0;
         CHECK(compress((Bytef*) dst, &dstlen_, &c, 0));
     }
-    return dstlen_;
+
+    // update pointers
+    src = ((char*) src) + srclen_;
+    dst = ((char*) dst) + dstlen_;
 }
 
 
 std::string zlib_compress(const std::string &str)
 {
     size_t dstlen = zlib_compress_bound(str.size());
-    return compress_bound(str, dstlen, [](const void *src, size_t srclen, void* dst, size_t dstlen) {
+    return compress_bound(str, dstlen, [](const void*& src, size_t srclen, void* &dst, size_t dstlen) {
         return zlib_compress(src, srclen, dst, dstlen);
     });
 }
@@ -242,7 +245,7 @@ std::string zlib_decompress(const std::string &str)
 }
 
 
-size_t zlib_decompress(const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound)
+void zlib_decompress(const void*& src, size_t srclen, void* &dst, size_t dstlen, size_t bound)
 {
     uLong srclen_ = srclen;
     uLong dstlen_ = dstlen;
@@ -253,14 +256,17 @@ size_t zlib_decompress(const void *src, size_t srclen, void* dst, size_t dstlen,
         Bytef c = 0;
         CHECK(uncompress((Bytef*) dst, &dstlen_, &c, 0));
     }
-    return dstlen_;
+
+    // update pointers
+    src = ((char*) src) + srclen_;
+    dst = ((char*) dst) + dstlen_;
 }
 
 
 std::string zlib_decompress(const std::string &str, size_t bound)
 {
-    return decompress_bound(str, bound, [](const void *src, size_t srclen, void* dst, size_t dstlen, size_t bound) {
-        return zlib_decompress(src, srclen, dst, dstlen, bound);
+    return decompress_bound(str, bound, [](const void*& src, size_t srclen, void* &dst, size_t dstlen, size_t bound) {
+        zlib_decompress(src, srclen, dst, dstlen, bound);
     });
 }
 
