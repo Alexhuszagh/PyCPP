@@ -92,4 +92,44 @@ TEST(lzma_stream, lzma_ostream)
     EXPECT_EQ(sstream.str(), LZMA_COMPRESSED);
 }
 
-// TODO: implement gzip...
+
+TEST(gzip_stream, gzip_istream)
+{
+    std::istringstream sstream(GZIP_COMPRESSED);
+    gzip_istream gzip(sstream);
+    std::ostringstream ostream;
+    ostream << gzip.rdbuf();
+
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+}
+
+
+static std::string string_to_hex(const std::string& input)
+{
+    static const char* const lut = "0123456789abcdef";
+
+    std::string output;
+    output.reserve(4 * input.length());
+    for (size_t i = 0; i < input.length(); ++i)
+    {
+        const unsigned char c = input[i];
+        output.push_back('\\');
+        output.push_back('x');
+        output.push_back(lut[c >> 4]);
+        output.push_back(lut[c & 15]);
+    }
+    return output;
+}
+
+
+TEST(gzip_stream, gzip_ostream)
+{
+    std::ostringstream sstream;
+    {
+        gzip_ostream gzip(sstream);
+        gzip << DECOMPRESSED;
+    }
+
+    // don't check exact values, just check it can decompress
+    EXPECT_EQ(gzip_decompress(sstream.str()), DECOMPRESSED);
+}

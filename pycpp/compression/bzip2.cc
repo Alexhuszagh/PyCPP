@@ -323,5 +323,4 @@ std::string bz2_decompress(const std::string &str, size_t bound)
     });
 }
 
-
 PYCPP_END_NAMESPACE

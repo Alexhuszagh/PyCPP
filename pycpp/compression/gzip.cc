@@ -1,7 +1,5 @@
-//  :copyright: (c) 2003-2007 Jonathan Turkanis.
-//  :copyright: (c) 2008 CodeRage, LLC (turkanis at coderage dot com).
 //  :copyright: (c) 2017 Alex Huszagh.
-//  :license: Boost, see licenses/boost.md for more details.
+//  :license: MIT, see licenses/mit.md for more details.
 
 // This module is basically identical to zlib,
 // so just include the private error handling.
@@ -17,11 +15,23 @@ PYCPP_BEGIN_NAMESPACE
 // ------
 
 #define WINDOW_BITS 15
-#define GZIP_ENCODING 16
 
 // HELPERS
 // -------
 
+
+static size_t gzip_compress_bound(size_t size)
+{
+    // need an extra 10 bytes for the header
+    return zlib_compress_bound(size) + 10;
+}
+
+/**
+ *  Create the GZIP header. Use a default filetime, filename,
+ *  and comment by default, since these features aren't useful,
+ *  and just mess up reproducibility of the produced bytes
+ *  for testing purposes.
+ */
 static std::string gzip_header(int level,
     std::time_t mtime = 0,
     const std::string& filename = "",
@@ -42,12 +52,22 @@ static std::string gzip_header(int level,
     header += (char) 0x1f;                  /* magic number */
     header += (char) 0x8b;                  /* magic number */
     header += (char) 0x08;                  /*    deflate   */
-    header += (char) 0x00;                  /*     flags    */
+
+    // flags
+    int flags = 0;
+    if (has_filename) {
+        flags += 8;
+    }
+    if (has_comment) {
+        flags += 16;
+    }
+    header += (char) flags;
 
     // mtime
     uint32_t mtime_le = htole32(mtime);
     header.append((char*) &mtime_le, sizeof(uint32_t));
 
+    // write remaining header
     if (level == Z_BEST_COMPRESSION) {
         header += (char) 0x02;              /*  extra flags */
     } else if (level == Z_BEST_SPEED) {
@@ -57,6 +77,7 @@ static std::string gzip_header(int level,
     }
     header += (char) 0xff;                  /*  OS unknown  */
 
+    // write filename and comments
     if (has_filename) {
         header += filename;
         header += (char) 0x00;
@@ -77,10 +98,12 @@ static std::string gzip_header(int level,
  */
 struct gzip_compressor_impl: filter_impl<z_stream>
 {
+    using base = filter_impl<z_stream>;
+
     std::string header;
     uLong crc = 0;
     size_t size = 0;
-    using base = filter_impl<z_stream>;
+
     gzip_compressor_impl(int level = 9);
     ~gzip_compressor_impl();
 
@@ -101,8 +124,6 @@ gzip_compressor_impl::gzip_compressor_impl(int level)
     stream.zfree = Z_NULL;
     stream.opaque = Z_NULL;
     CHECK(deflateInit2(&stream, level, Z_DEFLATED, -WINDOW_BITS, 8, Z_DEFAULT_STRATEGY));
-    // TODO: inflateInit2 will use -WINDOW_BITS
-    // inflateInit2(s, window_bits)
 }
 
 
@@ -188,7 +209,120 @@ compression_status gzip_compressor_impl::operator()(const void*& src, size_t src
 }
 
 
-// TODO: need to implement the gzip decompress_impl
+/**
+ *  \brief Implied base class for the GZIP decompressor.
+ */
+struct gzip_decompressor_impl: filter_impl<z_stream>
+{
+    using base = filter_impl<z_stream>;
+
+    bool header_done = false;
+    uLong crc = 0;
+    size_t size = 0;
+
+    gzip_decompressor_impl();
+    ~gzip_decompressor_impl();
+
+    void read_header();
+    void read_footer();
+    virtual void call();
+    compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+};
+
+
+gzip_decompressor_impl::gzip_decompressor_impl()
+{
+    status = Z_OK;
+    stream.zalloc = Z_NULL;
+    stream.zfree = Z_NULL;
+    stream.opaque = Z_NULL;
+    CHECK(inflateInit2(&stream, -WINDOW_BITS));
+}
+
+
+gzip_decompressor_impl::~gzip_decompressor_impl()
+{
+    inflateEnd(&stream);
+}
+
+
+static void read_string(z_stream& stream)
+{
+    // no filename nor comment
+    void* tmp = memchr(stream.next_in, 0, stream.avail_in);
+    stream.avail_in -= std::distance(stream.next_in, (Bytef*) tmp);
+    if (!stream.avail_in) {
+        throw std::runtime_error("Unable to read header.");
+    }
+    --stream.avail_in;
+    ++stream.next_in;
+}
+
+
+void gzip_decompressor_impl::read_header()
+{
+    if (!header_done && stream.avail_in >= 10) {
+        // read our header
+        char flags = stream.next_in[3];
+        stream.next_in += 10;
+        stream.avail_in -= 10;
+        if (flags == 8 || flags == 16) {
+            // has flag or comment but not both
+            read_string(stream);
+        } else if (flags == 24) {
+            // has both filename and comment
+            read_string(stream);
+            read_string(stream);
+        }
+
+        header_done = true;
+    }
+}
+
+
+void gzip_decompressor_impl::read_footer()
+{
+    if (status == Z_STREAM_END && stream.avail_in >= 8) {
+        uint32_t* buf = (uint32_t*) stream.next_in;
+        uint32_t crc_ = le32toh(*buf++);
+        uint32_t size_ = le32toh(*buf++);
+
+        if (crc_ != crc) {
+            throw std::runtime_error("CRC mismatch in GZIP decompression.");
+        }
+        if (size_ != (size & 0xffffffff)) {
+            throw std::runtime_error("Size mismatch in GZIP decompression.");
+        }
+    }
+}
+
+
+void gzip_decompressor_impl::call()
+{
+    read_header();
+    if (!header_done) {
+        return;
+    }
+
+    while (stream.avail_in && stream.avail_out && status != Z_STREAM_END) {
+        Bytef* dst = stream.next_out;
+        status = inflate(&stream, Z_NO_FLUSH);
+        check_zstatus(status);
+
+        // store out CRC and length information
+        size_t length = std::distance(dst, stream.next_out);
+        size += length;
+        crc = crc32(crc, dst, length);
+    }
+
+    read_footer();
+}
+
+
+compression_status gzip_decompressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+{
+    return base::operator()(src, srclen, dst, dstlen, Z_STREAM_END);
+}
 
 
 gzip_compressor::gzip_compressor(int level):
@@ -223,6 +357,72 @@ bool gzip_compressor::flush(void*& dst, size_t dstlen)
     return ptr_->flush(dst, dstlen);
 }
 
-// TODO: need to implement the gzip decompressor
+
+gzip_decompressor::gzip_decompressor():
+    ptr_(new gzip_decompressor_impl)
+{}
+
+
+gzip_decompressor::gzip_decompressor(gzip_decompressor&& rhs):
+    ptr_(std::move(rhs.ptr_))
+{}
+
+
+gzip_decompressor & gzip_decompressor::operator=(gzip_decompressor&& rhs)
+{
+    std::swap(ptr_, rhs.ptr_);
+    return *this;
+}
+
+
+gzip_decompressor::~gzip_decompressor()
+{}
+
+
+compression_status gzip_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+{
+    return (*ptr_)(src, srclen, dst, dstlen);
+}
+
+// FUNCTIONS
+// ---------
+
+
+void gzip_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+{
+    gzip_compressor ctx;
+    ctx.compress(src, srclen, dst, dstlen);
+    ctx.flush(dst, dstlen);
+}
+
+
+std::string gzip_compress(const std::string &str)
+{
+    size_t dstlen = gzip_compress_bound(str.size());
+    return compress_bound(str, dstlen, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
+        gzip_compress(src, srclen, dst, dstlen);
+    });
+}
+
+
+std::string gzip_decompress(const std::string &str)
+{
+    return ctx_decompress<gzip_decompressor>(str);
+}
+
+
+void gzip_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound)
+{
+    gzip_decompressor ctx;
+    ctx.decompress(src, srclen, dst, dstlen);
+}
+
+
+std::string gzip_decompress(const std::string &str, size_t bound)
+{
+    return decompress_bound(str, bound, [](const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound) {
+        gzip_decompress(src, srclen, dst, dstlen, bound);
+    });
+}
 
 PYCPP_END_NAMESPACE
