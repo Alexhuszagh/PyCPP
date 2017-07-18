@@ -2,11 +2,7 @@
     - lzma.lzma_decompress isn't working when linked to libcxx
     - Works fine with stdlibcxx
 
-- Win64, issue with secure_string...
-    - Secure_malloc is failing...
-
-- Issues with static linking on MSVC
-    - Fuck everything.
+- Windows is just seg-faulting... LOLS
 
 - Mathlib
     - Need array/axis unittests
