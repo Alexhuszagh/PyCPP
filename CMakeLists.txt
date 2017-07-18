@@ -305,6 +305,7 @@ if(BUILD_COMPRESSION)
     list(APPEND PYCPP_LIBRARIES bz2)
     list(APPEND PYCPP_INCLUDE_DIRS ${bz2_INCLUDE_DIR})
 
+# TODO: this is causing external symbol errors on MSVC
     # XZ
 #    add_external_project(xz_external third_party/xz)
 #    add_external_target(lzma third_party/xz/src/liblzma/api third_party/xz/src/liblzma/ STATIC xz_external)
@@ -313,13 +314,15 @@ if(BUILD_COMPRESSION)
 #    list(APPEND PYCPP_LIBRARIES lzma)
 #    list(APPEND PYCPP_INCLUDE_DIRS ${lzma_INCLUDE_DIR})
 
-    # BLOSC
-    add_external_project(blosc_external third_party/c-blosc)
-    add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_BLOSC=1")
-    list(APPEND PYCPP_DEPENDENCIES blosc)
-    list(APPEND PYCPP_LIBRARIES blosc)
-    list(APPEND PYCPP_INCLUDE_DIRS ${blosc_INCLUDE_DIR})
+# TODO: this is linking to the shared library, need
+# to disable the shared library on Windows.
+#    # BLOSC
+#    add_external_project(blosc_external third_party/c-blosc)
+#    add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
+#    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_BLOSC=1")
+#    list(APPEND PYCPP_DEPENDENCIES blosc)
+#    list(APPEND PYCPP_LIBRARIES blosc)
+#    list(APPEND PYCPP_INCLUDE_DIRS ${blosc_INCLUDE_DIR})
 endif()
 
 if(BUILD_JSON)
