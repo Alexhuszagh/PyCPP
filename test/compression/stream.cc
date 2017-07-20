@@ -125,34 +125,34 @@ TEST(compression_stream, lzma_ostream)
 
 #endif                  // HAVE_LZMA
 
+TEST(compression_stream, decompressing_istream)
+{
+    // declare variables
+    std::ostringstream ostream;
+    std::istringstream sstream;
+
+#if defined(HAVE_BZIP2)
+    // bzip2
+    ostream = std::ostringstream();
+    sstream = std::istringstream(BZ2_COMPRESSED);
+    {
+        decompressing_istream compressed(sstream);
+        ostream << compressed.rdbuf();
+    }
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+#endif                  // HAVE_BZIP2
+
+#if defined(HAVE_ZLIB)
+    // zlib
+    ostream = std::ostringstream();
+    sstream = std::istringstream(ZLIB_COMPRESSED);
+    {
+        decompressing_istream compressed(sstream);
+        ostream << compressed.rdbuf();
+    }
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+
 // TODO: restore
-//TEST(compression_stream, decompressing_istream)
-//{
-//    // declare variables
-//    std::ostringstream ostream;
-//    std::istringstream sstream;
-//
-//#if defined(HAVE_BZIP2)
-//    // bzip2
-//    ostream = std::ostringstream();
-//    sstream = std::istringstream(BZ2_COMPRESSED);
-//    {
-//        decompressing_istream compressed(sstream);
-//        ostream << compressed.rdbuf();
-//    }
-//    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-//#endif                  // HAVE_BZIP2
-//
-//#if defined(HAVE_ZLIB)
-//    // zlib
-//    ostream = std::ostringstream();
-//    sstream = std::istringstream(ZLIB_COMPRESSED);
-//    {
-//        decompressing_istream compressed(sstream);
-//        ostream << compressed.rdbuf();
-//    }
-//    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-//
 //    // gzip
 //    ostream = std::ostringstream();
 //    sstream = std::istringstream(GZIP_COMPRESSED);
@@ -161,16 +161,16 @@ TEST(compression_stream, lzma_ostream)
 //        ostream << compressed.rdbuf();
 //    }
 //    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-//#endif                  // HAVE_ZLIB
-//
-//#if defined(HAVE_LZMA)
-//    // lzma
-//    ostream = std::ostringstream();
-//    sstream = std::istringstream(LZMA_COMPRESSED);
-//    {
-//        decompressing_istream compressed(sstream);
-//        ostream << compressed.rdbuf();
-//    }
-//    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-//#endif                  // HAVE_LZMA
-//}
+#endif                  // HAVE_ZLIB
+
+#if defined(HAVE_LZMA)
+    // lzma
+    ostream = std::ostringstream();
+    sstream = std::istringstream(LZMA_COMPRESSED);
+    {
+        decompressing_istream compressed(sstream);
+        ostream << compressed.rdbuf();
+    }
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+#endif                  // HAVE_LZMA
+}
