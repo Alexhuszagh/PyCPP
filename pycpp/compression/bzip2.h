@@ -55,6 +55,7 @@ public:
     bz2_decompressor & operator=(bz2_decompressor&&);
     ~bz2_decompressor();
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+    bool flush(void*& dst, size_t dstlen);
 
 private:
     std::unique_ptr<bz2_decompressor_impl> ptr_;

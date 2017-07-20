@@ -116,6 +116,7 @@ struct zlib_decompressor_impl: filter_impl<z_stream>
     ~zlib_decompressor_impl();
 
     virtual void call();
+    bool flush(void*& dst, size_t dstlen);
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
 
@@ -142,6 +143,14 @@ void zlib_decompressor_impl::call()
         status = inflate(&stream, Z_NO_FLUSH);
         check_zstatus(status);
     }
+}
+
+
+
+bool zlib_decompressor_impl::flush(void*& dst, size_t dstlen)
+{
+    // null-op, always flushed
+    return true;
 }
 
 
@@ -208,6 +217,12 @@ zlib_decompressor::~zlib_decompressor()
 compression_status zlib_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     return (*ptr_)(src, srclen, dst, dstlen);
+}
+
+
+bool zlib_decompressor::flush(void*& dst, size_t dstlen)
+{
+    return ptr_->flush(dst, dstlen);
 }
 
 // FUNCTIONS

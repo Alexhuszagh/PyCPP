@@ -55,6 +55,7 @@ public:
     zlib_decompressor & operator=(zlib_decompressor&&);
     ~zlib_decompressor();
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+    bool flush(void*& dst, size_t dstlen);
 
 private:
     std::unique_ptr<zlib_decompressor_impl> ptr_;

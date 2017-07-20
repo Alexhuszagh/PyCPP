@@ -55,6 +55,7 @@ public:
     gzip_decompressor & operator=(gzip_decompressor&&);
     ~gzip_decompressor();
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
+    bool flush(void*& dst, size_t dstlen);
 
 private:
     std::unique_ptr<gzip_decompressor_impl> ptr_;

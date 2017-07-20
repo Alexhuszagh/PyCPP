@@ -67,6 +67,8 @@ filter_impl<S>::filter_impl()
 template <typename S>
 void filter_impl<S>::before(void* dst, size_t dstlen)
 {
+    stream.next_in = nullptr;
+    stream.avail_in = 0;
     stream.next_out = (out_type) dst;
     stream.avail_out = dstlen;
 }
@@ -186,6 +188,11 @@ std::string ctx_decompress(const std::string& str)
             dst_pos = std::distance(buffer, (char*) dst);
             src_pos = std::distance(str.data(), (const char*) src);
         }
+
+        // flush remaining buffer
+        ctx.flush(dst, dstlen - dst_pos);
+        dst_pos = std::distance(buffer, (char*) dst);
+
     } catch (...) {
         safe_free(dst);
         throw;

@@ -228,6 +228,7 @@ struct gzip_decompressor_impl: filter_impl<z_stream>
     void read_header();
     void read_footer();
     virtual void call();
+    bool flush(void*& dst, size_t dstlen);
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
 
@@ -321,6 +322,13 @@ void gzip_decompressor_impl::call()
 }
 
 
+bool gzip_decompressor_impl::flush(void*& dst, size_t dstlen)
+{
+    // null-op, always flushed
+    return true;
+}
+
+
 compression_status gzip_decompressor_impl::operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     return base::operator()(src, srclen, dst, dstlen, Z_STREAM_END);
@@ -384,6 +392,12 @@ gzip_decompressor::~gzip_decompressor()
 compression_status gzip_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     return (*ptr_)(src, srclen, dst, dstlen);
+}
+
+
+bool gzip_decompressor::flush(void*& dst, size_t dstlen)
+{
+    return ptr_->flush(dst, dstlen);
 }
 
 // FUNCTIONS

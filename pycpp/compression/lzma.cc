@@ -66,6 +66,7 @@ struct lzma_compressor_impl: filter_impl<lzma_stream>
 lzma_compressor_impl::lzma_compressor_impl(int level)
 {
     stream = LZMA_STREAM_INIT;
+    status = LZMA_OK;
     CHECK(lzma_easy_encoder(&stream, level, LZMA_CHECK_CRC64));
 }
 
@@ -78,6 +79,7 @@ lzma_compressor_impl::~lzma_compressor_impl()
 
 void lzma_compressor_impl::call()
 {
+    printf("stream.avail_in is %zu and stream.avail_out is %zu\n", stream.avail_in, stream.avail_out);
     while (stream.avail_in && stream.avail_out && status != LZMA_STREAM_END) {
         status = lzma_code(&stream, LZMA_RUN);
         check_xzstatus(status);
@@ -87,6 +89,7 @@ void lzma_compressor_impl::call()
 
 bool lzma_compressor_impl::flush(void*& dst, size_t dstlen)
 {
+    printf("Dstlen is %zu\n", dstlen);
     return base::flush(dst, dstlen, [&]()
     {
         if (dstlen) {
@@ -119,6 +122,7 @@ struct lzma_decompressor_impl: filter_impl<lzma_stream>
     ~lzma_decompressor_impl();
 
     virtual void call();
+    bool flush(void*& dst, size_t dstlen);
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
 
@@ -126,6 +130,7 @@ struct lzma_decompressor_impl: filter_impl<lzma_stream>
 lzma_decompressor_impl::lzma_decompressor_impl()
 {
     stream = LZMA_STREAM_INIT;
+    status = LZMA_OK;
     CHECK(lzma_stream_decoder(&stream, memlimit, flags));
 }
 
@@ -138,10 +143,27 @@ lzma_decompressor_impl::~lzma_decompressor_impl()
 
 void lzma_decompressor_impl::call()
 {
+    printf("stream.avail_in is %zu and stream.avail_out is %zu\n", stream.avail_in, stream.avail_out);
     while (stream.avail_in && stream.avail_out && status != LZMA_STREAM_END) {
         status = lzma_code(&stream, LZMA_RUN);
         check_xzstatus(status);
     }
+}
+
+
+bool lzma_decompressor_impl::flush(void*& dst, size_t dstlen)
+{
+    printf("Dstlen is %zu\n", dstlen);
+    return base::flush(dst, dstlen, [&]()
+    {
+        if (dstlen) {
+            status = lzma_code(&stream, LZMA_FINISH);
+            return status == LZMA_STREAM_END || status == LZMA_OK;
+        } else {
+            status = lzma_code(&stream, LZMA_FULL_FLUSH);
+            return status == LZMA_STREAM_END || status == LZMA_OK;
+        }
+    });
 }
 
 
@@ -207,6 +229,12 @@ lzma_decompressor::~lzma_decompressor()
 compression_status lzma_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     return (*ptr_)(src, srclen, dst, dstlen);
+}
+
+
+bool lzma_decompressor::flush(void*& dst, size_t dstlen)
+{
+    return ptr_->flush(dst, dstlen);
 }
 
 // FUNCTIONS

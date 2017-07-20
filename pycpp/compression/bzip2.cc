@@ -160,6 +160,7 @@ struct bz2_decompressor_impl: filter_impl<bz_stream>
     ~bz2_decompressor_impl();
 
     virtual void call();
+    bool flush(void*& dst, size_t dstlen);
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 };
 
@@ -186,6 +187,13 @@ void bz2_decompressor_impl::call()
         status = BZ2_bzDecompress(&stream);
         check_bzstatus(status);
     }
+}
+
+
+bool bz2_decompressor_impl::flush(void*& dst, size_t dstlen)
+{
+    // null-op, always flushed
+    return true;
 }
 
 
@@ -252,6 +260,12 @@ bz2_decompressor::~bz2_decompressor()
 compression_status bz2_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     return (*ptr_)(src, srclen, dst, dstlen);
+}
+
+
+bool bz2_decompressor::flush(void*& dst, size_t dstlen)
+{
+    return ptr_->flush(dst, dstlen);
 }
 
 // FUNCTIONS
