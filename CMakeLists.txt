@@ -308,7 +308,6 @@ if(BUILD_COMPRESSION)
     list(APPEND PYCPP_LIBRARIES bz2)
     list(APPEND PYCPP_INCLUDE_DIRS ${bz2_INCLUDE_DIR})
 
-# TODO: this is causing external symbol errors on MSVC
     # XZ
     add_external_project(xz_external third_party/xz)
     add_external_target(lzma third_party/xz/src/liblzma/api third_party/xz/src/liblzma/ STATIC xz_external)
