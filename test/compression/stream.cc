@@ -25,16 +25,15 @@ static std::string DECOMPRESSED("\x54\x68\x65\x20\x4d\x49\x54\x20\x4c\x69\x63\x6
 
 #if defined(HAVE_BZIP2)
 
-// TODO: restore
-//TEST(compression_stream, bz2_istream)
-//{
-//    std::istringstream sstream(BZ2_COMPRESSED);
-//    bz2_istream bz2(sstream);
-//    std::ostringstream ostream;
-//    ostream << bz2.rdbuf();
-//
-//    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-//}
+TEST(compression_stream, bz2_istream)
+{
+    std::istringstream sstream(BZ2_COMPRESSED);
+    bz2_istream bz2(sstream);
+    std::ostringstream ostream;
+    ostream << bz2.rdbuf();
+
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+}
 
 
 TEST(compression_stream, bz2_ostream)
@@ -52,16 +51,15 @@ TEST(compression_stream, bz2_ostream)
 
 #if defined(HAVE_ZLIB)
 
-// TODO: restore
-//TEST(compression_stream, zlib_istream)
-//{
-//    std::istringstream sstream(ZLIB_COMPRESSED);
-//    zlib_istream zlib(sstream);
-//    std::ostringstream ostream;
-//    ostream << zlib.rdbuf();
-//
-//    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-//}
+TEST(compression_stream, zlib_istream)
+{
+    std::istringstream sstream(ZLIB_COMPRESSED);
+    zlib_istream zlib(sstream);
+    std::ostringstream ostream;
+    ostream << zlib.rdbuf();
+
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+}
 
 
 TEST(compression_stream, zlib_ostream)
@@ -76,19 +74,17 @@ TEST(compression_stream, zlib_ostream)
 }
 
 
-// TODO: restore
-//TEST(compression_stream, gzip_istream)
-//{
-//    std::istringstream sstream(GZIP_COMPRESSED);
-//    gzip_istream gzip(sstream);
-//    std::ostringstream ostream;
-//    ostream << gzip.rdbuf();
-//
-//    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-//}
+TEST(compression_stream, gzip_istream)
+{
+    std::istringstream sstream(GZIP_COMPRESSED);
+    gzip_istream gzip(sstream);
+    std::ostringstream ostream;
+    ostream << gzip.rdbuf();
+
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+}
 
 
-// TODO: restore
 //TEST(compression_stream, gzip_ostream)
 //{
 //    std::ostringstream sstream;
@@ -105,30 +101,27 @@ TEST(compression_stream, zlib_ostream)
 
 #if defined(HAVE_LZMA)
 
-// TODO: restore
-//TEST(compression_stream, lzma_istream)
-//{
-//    std::istringstream sstream(LZMA_COMPRESSED);
-//    lzma_istream lzma(sstream);
-//    std::ostringstream ostream;
-//    ostream << lzma.rdbuf();
-//
-//    EXPECT_EQ(ostream.str(), DECOMPRESSED);
-//}
+TEST(compression_stream, lzma_istream)
+{
+    std::istringstream sstream(LZMA_COMPRESSED);
+    lzma_istream lzma(sstream);
+    std::ostringstream ostream;
+    ostream << lzma.rdbuf();
+
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+}
 
 
-// TODO: actual stream is 0, expected is LZMA_COMPRESSED
-// TODO: this bug is rare...
-//TEST(compression_stream, lzma_ostream)
-//{
-//    std::ostringstream sstream;
-//    {
-//        lzma_ostream lzma(sstream);
-//        lzma << DECOMPRESSED;
-//    }
-//
-//    EXPECT_EQ(sstream.str(), LZMA_COMPRESSED);
-//}
+TEST(compression_stream, lzma_ostream)
+{
+    std::ostringstream sstream;
+    {
+        lzma_ostream lzma(sstream);
+        lzma << DECOMPRESSED;
+    }
+
+    EXPECT_EQ(sstream.str(), LZMA_COMPRESSED);
+}
 
 #endif                  // HAVE_LZMA
 
