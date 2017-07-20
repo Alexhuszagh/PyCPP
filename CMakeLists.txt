@@ -223,7 +223,10 @@ macro(add_external_project name path)
                    "-DCMAKE_RC_COMPILER=${CMAKE_RC_COMPILER}"
                    "-DCMAKE_COMPILER_PREFIX=${CMAKE_COMPILER_PREFIX}"
                    "-DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}"
+                   "-DBUILD_SHARED=OFF"
                    "-DBUILD_TESTS=OFF"
+                   "-DBUILD_BENCHMARKS=OFF"
+                   "-DBLOSC_INSTALL=OFF"
        INSTALL_COMMAND ""
     )
 
@@ -316,13 +319,14 @@ if(BUILD_COMPRESSION)
 
 # TODO: this is linking to the shared library, need
 # to disable the shared library on Windows.
-#    # BLOSC
-#    add_external_project(blosc_external third_party/c-blosc)
-#    add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
-#    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_BLOSC=1")
-#    list(APPEND PYCPP_DEPENDENCIES blosc)
-#    list(APPEND PYCPP_LIBRARIES blosc)
-#    list(APPEND PYCPP_INCLUDE_DIRS ${blosc_INCLUDE_DIR})
+# Check if passing disable shared does anything
+    # BLOSC
+    add_external_project(blosc_external third_party/c-blosc)
+    add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_BLOSC=1")
+    list(APPEND PYCPP_DEPENDENCIES blosc)
+    list(APPEND PYCPP_LIBRARIES blosc)
+    list(APPEND PYCPP_INCLUDE_DIRS ${blosc_INCLUDE_DIR})
 endif()
 
 if(BUILD_JSON)

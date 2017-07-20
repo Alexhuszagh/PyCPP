@@ -3,6 +3,7 @@
     - Works fine with stdlibcxx
 
 - Windows is just seg-faulting... LOLS
+    - Nevermind, blosc is linking to the dynamic library... FUCK EVERYTHING...
 
 - Mathlib
     - Need array/axis unittests
