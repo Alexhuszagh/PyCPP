@@ -79,7 +79,6 @@ lzma_compressor_impl::~lzma_compressor_impl()
 
 void lzma_compressor_impl::call()
 {
-    printf("stream.avail_in is %zu and stream.avail_out is %zu\n", stream.avail_in, stream.avail_out);
     while (stream.avail_in && stream.avail_out && status != LZMA_STREAM_END) {
         status = lzma_code(&stream, LZMA_RUN);
         check_xzstatus(status);
@@ -89,7 +88,6 @@ void lzma_compressor_impl::call()
 
 bool lzma_compressor_impl::flush(void*& dst, size_t dstlen)
 {
-    printf("Dstlen is %zu\n", dstlen);
     return base::flush(dst, dstlen, [&]()
     {
         if (dstlen) {
@@ -143,7 +141,6 @@ lzma_decompressor_impl::~lzma_decompressor_impl()
 
 void lzma_decompressor_impl::call()
 {
-    printf("stream.avail_in is %zu and stream.avail_out is %zu\n", stream.avail_in, stream.avail_out);
     while (stream.avail_in && stream.avail_out && status != LZMA_STREAM_END) {
         status = lzma_code(&stream, LZMA_RUN);
         check_xzstatus(status);
@@ -153,7 +150,6 @@ void lzma_decompressor_impl::call()
 
 bool lzma_decompressor_impl::flush(void*& dst, size_t dstlen)
 {
-    printf("Dstlen is %zu\n", dstlen);
     return base::flush(dst, dstlen, [&]()
     {
         if (dstlen) {

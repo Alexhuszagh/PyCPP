@@ -28,8 +28,13 @@ PYCPP_BEGIN_NAMESPACE
  */
 #define DECOMPRESS_CALLBACK                                                                                     \
     [this](const void*& src, size_t srclen, void*& dst,                                                         \
-           size_t dstlen, size_t char_size) {                                                                   \
-        ctx.decompress(src, srclen, dst, dstlen);                                                               \
+           size_t dstlen, size_t char_size)                                                                     \
+    {                                                                                                           \
+        if (srclen) {                                                                                           \
+            ctx.decompress(src, srclen, dst, dstlen);                                                           \
+        } else {                                                                                                \
+            ctx.flush(dst, dstlen);                                                                             \
+        }                                                                                                       \
     }
 
 

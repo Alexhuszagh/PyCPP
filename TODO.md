@@ -1,8 +1,4 @@
-- Issue with libcxx
-    - lzma.lzma_decompress isn't working when linked to libcxx
-    - Works fine with stdlibcxx
-- TODO: need to check included files from the ./configure, makefile build...
-
+- TODO: need to fix the compressed streams.
 
 - Mathlib
     - Need array/axis unittests
