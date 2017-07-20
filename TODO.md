@@ -4,6 +4,7 @@
 
 - Windows is just seg-faulting... LOLS
     - Nevermind, blosc is linking to the dynamic library... FUCK EVERYTHING...
+    - Try this...
 
 - Mathlib
     - Need array/axis unittests
