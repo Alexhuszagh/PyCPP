@@ -9,9 +9,6 @@ enable_testing()
 # FLAGS
 # -----
 
-set(CMAKE_CXX_STANDARD 11)
-set(CXX_STANDARD TRUE)
-
 # MODULES
 option(BUILD_CIPHER "Build cipher library" ON)
 option(BUILD_COLLECTIONS "Build collections library" ON)
@@ -119,11 +116,19 @@ if(BUILD_STATIC)
     endif()
 endif()
 
+if (BUILD_MATH)
+    # libdynd needs C++14 support
+    set(CMAKE_CXX_STANDARD 14)
+else()
+    set(CMAKE_CXX_STANDARD 11)
+endif()
+set(CXX_STANDARD TRUE)
+
 # Need to manually set compiler flags for Travis CI & Appveyor
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++14")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++${CMAKE_CXX_STANDARD}")
 endif()
 
 # INCLUDES
@@ -197,11 +202,14 @@ include(ExternalProject)
 #
 #   Add external project.
 #
+#   Takes optional N arguments after the name and path
+#   to specify additional flags for the build sequence.
+#
 #   \param name             Name of external project
 #   \param path             Path to source directory
-#   \param external         Name of the external target
 #
 macro(add_external_project name path)
+    set(extra_args ${ARGN})
     # Create external project
     set(${name}_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/${path})
     set(${name}_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/${path})
@@ -223,10 +231,7 @@ macro(add_external_project name path)
                    "-DCMAKE_RC_COMPILER=${CMAKE_RC_COMPILER}"
                    "-DCMAKE_COMPILER_PREFIX=${CMAKE_COMPILER_PREFIX}"
                    "-DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}"
-                   "-DBUILD_SHARED=OFF"
-                   "-DBUILD_TESTS=OFF"
-                   "-DBUILD_BENCHMARKS=OFF"
-                   "-DBLOSC_INSTALL=OFF"
+                   "${extra_args}"
        INSTALL_COMMAND ""
     )
 
@@ -317,7 +322,12 @@ if(BUILD_COMPRESSION)
     list(APPEND PYCPP_INCLUDE_DIRS ${lzma_INCLUDE_DIR})
 
     # BLOSC
-    add_external_project(blosc_external third_party/c-blosc)
+    add_external_project(blosc_external third_party/c-blosc
+        "-DBUILD_SHARED=OFF"
+        "-DBUILD_TESTS=OFF"
+        "-DBUILD_BENCHMARKS=OFF"
+        "-DBLOSC_INSTALL=OFF"
+    )
     add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
     list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_BLOSC=1")
     list(APPEND PYCPP_DEPENDENCIES blosc)
@@ -328,6 +338,25 @@ endif()
 if(BUILD_JSON)
     set(RAPIDJSON_INCLUDE_DIRS third_party/rapidjson/include)
     list(APPEND PYCPP_INCLUDE_DIRS ${RAPIDJSON_INCLUDE_DIRS})
+endif()
+
+if(BUILD_MATH)
+    add_external_project(dynd_external third_party/libdynd
+        "-DDYND_SHARED_LIB=OFF"
+        "-DDYND_LLVM=OFF"
+        "-DDYND_INSTALL_LIB=OFF"
+        "-DDYND_BUILD_TESTS=OFF"
+        "-DDYND_BUILD_BENCHMARKS=OFF"
+        "-DDYND_BUILD_PLUGINS=OFF"
+        "-DDYND_BUILD_DOCS=OFF"
+        "-DDYND_COVERAGE=OFF"
+    )
+    add_external_target(dynd third_party/libdynd/include third_party/libdynd STATIC dynd_external)
+    list(APPEND ${dynd_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/third_party/libdynd/include")
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_DYND=1")
+    list(APPEND PYCPP_DEPENDENCIES dynd)
+    list(APPEND PYCPP_LIBRARIES dynd)
+    list(APPEND PYCPP_INCLUDE_DIRS ${dynd_INCLUDE_DIR})
 endif()
 
 if(BUILD_RE)

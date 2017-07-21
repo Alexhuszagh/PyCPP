@@ -28,3 +28,6 @@
 [submodule "third_party/zlib"]
 	path = third_party/zlib
 	url = https://github.com/Alexhuszagh/zlib
+[submodule "third_party/libdynd"]
+	path = third_party/libdynd
+	url = https://github.com/Alexhuszagh/libdynd
