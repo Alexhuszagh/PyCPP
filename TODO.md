@@ -2,10 +2,6 @@
     - Wrap it nicely
     - http://libdynd.org/introduction/
 
-    - C:\projects\crosscxx\third_party\libdynd\src\dynd\type_registry.cpp(153):
-        - error C2220: warning treated as error
-        - no 'object' file generated [C:\projects\crosscxx\third_party\libdynd\libdyndt.vcxproj]
-
     - TeaCI
         - /drone/src/github.com/Alexhuszagh/PyCPP/third_party/libdynd/include/dynd/config.hpp:988:12: error: ‘std::cbrt’ has not been declared
         - using std::cbrt;

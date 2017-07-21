@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/parallel.h>
 #include <pycpp/xrange.h>
 #include <algorithm>
