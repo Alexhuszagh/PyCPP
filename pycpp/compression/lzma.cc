@@ -190,6 +190,12 @@ lzma_compressor::~lzma_compressor()
 {}
 
 
+void lzma_compressor::close()
+{
+    ptr_.reset();
+}
+
+
 compression_status lzma_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     return (*ptr_)(src, srclen, dst, dstlen);
@@ -220,6 +226,12 @@ lzma_decompressor & lzma_decompressor::operator=(lzma_decompressor&& rhs)
 
 lzma_decompressor::~lzma_decompressor()
 {}
+
+
+void lzma_decompressor::close()
+{
+    ptr_.reset();
+}
 
 
 compression_status lzma_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)

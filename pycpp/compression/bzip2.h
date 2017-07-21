@@ -36,6 +36,7 @@ public:
     bz2_compressor(bz2_compressor&&);
     bz2_compressor & operator=(bz2_compressor&&);
     ~bz2_compressor();
+    void close();
     compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
 
@@ -54,6 +55,7 @@ public:
     bz2_decompressor(bz2_decompressor&&);
     bz2_decompressor & operator=(bz2_decompressor&&);
     ~bz2_decompressor();
+    void close();
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
 

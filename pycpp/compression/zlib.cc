@@ -181,6 +181,12 @@ zlib_compressor::~zlib_compressor()
 {}
 
 
+void zlib_compressor::close()
+{
+    ptr_.reset();
+}
+
+
 compression_status zlib_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     return (*ptr_)(src, srclen, dst, dstlen);
@@ -212,6 +218,12 @@ zlib_decompressor & zlib_decompressor::operator=(zlib_decompressor&& rhs)
 
 zlib_decompressor::~zlib_decompressor()
 {}
+
+
+void zlib_decompressor::close()
+{
+    ptr_.reset();
+}
 
 
 compression_status zlib_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)

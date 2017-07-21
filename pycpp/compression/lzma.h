@@ -36,6 +36,7 @@ public:
     lzma_compressor(lzma_compressor&&);
     lzma_compressor & operator=(lzma_compressor&&);
     ~lzma_compressor();
+    void close();
     compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
 
@@ -54,6 +55,7 @@ public:
     lzma_decompressor(lzma_decompressor&&);
     lzma_decompressor & operator=(lzma_decompressor&&);
     ~lzma_decompressor();
+    void close();
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
 

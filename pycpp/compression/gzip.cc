@@ -199,7 +199,9 @@ bool gzip_compressor_impl::flush(void*& dst, size_t dstlen)
             return status == Z_STREAM_END || status == Z_OK;
         }
     });
-    write_footer(dst);
+    if (code) {
+        write_footer(dst);
+    }
 
     return code;
 }
@@ -356,6 +358,12 @@ gzip_compressor::~gzip_compressor()
 {}
 
 
+void gzip_compressor::close()
+{
+    ptr_.reset();
+}
+
+
 compression_status gzip_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     return (*ptr_)(src, srclen, dst, dstlen);
@@ -387,6 +395,12 @@ gzip_decompressor & gzip_decompressor::operator=(gzip_decompressor&& rhs)
 
 gzip_decompressor::~gzip_decompressor()
 {}
+
+
+void gzip_decompressor::close()
+{
+    ptr_.reset();
+}
 
 
 compression_status gzip_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)

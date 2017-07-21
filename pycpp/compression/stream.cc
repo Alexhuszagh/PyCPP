@@ -96,6 +96,8 @@ PYCPP_BEGIN_NAMESPACE
     name##_istream::~name##_istream()                                                                           \
     {                                                                                                           \
         filter_istream::close();                                                                                \
+        rdbuf()->set_callback(nullptr);                                                                         \
+        ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
     void name##_istream::open(std::istream& stream)                                                             \
@@ -141,6 +143,8 @@ PYCPP_BEGIN_NAMESPACE
     name##_ostream::~name##_ostream()                                                                           \
     {                                                                                                           \
         filter_ostream::close();                                                                                \
+        rdbuf()->set_callback(nullptr);                                                                         \
+        ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
     void name##_ostream::open(std::ostream& stream)                                                             \
@@ -183,6 +187,8 @@ PYCPP_BEGIN_NAMESPACE
     name##_ifstream::~name##_ifstream()                                                                         \
     {                                                                                                           \
         filter_ifstream::close();                                                                               \
+        rdbuf()->set_callback(nullptr);                                                                         \
+        ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
     name##_ifstream::name##_ifstream(const std::string &name, std::ios_base::openmode mode)                     \
@@ -196,7 +202,6 @@ PYCPP_BEGIN_NAMESPACE
     }                                                                                                           \
                                                                                                                 \
     WIDE_PATH_IFSTREAM(name)
-
 
 
 /**
@@ -225,6 +230,8 @@ PYCPP_BEGIN_NAMESPACE
     name##_ofstream::~name##_ofstream()                                                                         \
     {                                                                                                           \
         filter_ofstream::close();                                                                               \
+        rdbuf()->set_callback(nullptr);                                                                         \
+        ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
     name##_ofstream::name##_ofstream(const std::string &name, std::ios_base::openmode mode)                     \

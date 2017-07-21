@@ -85,17 +85,17 @@ TEST(compression_stream, gzip_istream)
 }
 
 
-//TEST(compression_stream, gzip_ostream)
-//{
-//    std::ostringstream sstream;
-//    {
-//        gzip_ostream gzip(sstream);
-//        gzip << DECOMPRESSED;
-//    }
-//
-//    // don't check exact values, just check it can decompress
-//    EXPECT_EQ(gzip_decompress(sstream.str()), DECOMPRESSED);
-//}
+TEST(compression_stream, gzip_ostream)
+{
+    std::ostringstream sstream;
+    {
+        gzip_ostream gzip(sstream);
+        gzip << DECOMPRESSED;
+    }
+
+    // don't check exact values, just check it can decompress
+    EXPECT_EQ(gzip_decompress(sstream.str()), DECOMPRESSED);
+}
 
 #endif                  // HAVE_ZLIB
 
@@ -152,15 +152,14 @@ TEST(compression_stream, decompressing_istream)
     }
     EXPECT_EQ(ostream.str(), DECOMPRESSED);
 
-// TODO: restore
-//    // gzip
-//    ostream = std::ostringstream();
-//    sstream = std::istringstream(GZIP_COMPRESSED);
-//    {
-//        decompressing_istream compressed(sstream);
-//        ostream << compressed.rdbuf();
-//    }
-//    EXPECT_EQ(ostream.str(), DECOMPRESSED);
+    // gzip
+    ostream = std::ostringstream();
+    sstream = std::istringstream(GZIP_COMPRESSED);
+    {
+        decompressing_istream compressed(sstream);
+        ostream << compressed.rdbuf();
+    }
+    EXPECT_EQ(ostream.str(), DECOMPRESSED);
 #endif                  // HAVE_ZLIB
 
 #if defined(HAVE_LZMA)

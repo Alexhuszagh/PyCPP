@@ -224,6 +224,12 @@ bz2_compressor::~bz2_compressor()
 {}
 
 
+void bz2_compressor::close()
+{
+    ptr_.reset();
+}
+
+
 compression_status bz2_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
     return (*ptr_)(src, srclen, dst, dstlen);
@@ -255,6 +261,12 @@ bz2_decompressor & bz2_decompressor::operator=(bz2_decompressor&& rhs)
 
 bz2_decompressor::~bz2_decompressor()
 {}
+
+
+void bz2_decompressor::close()
+{
+    ptr_.reset();
+}
 
 
 compression_status bz2_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
