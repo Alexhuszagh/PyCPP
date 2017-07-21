@@ -564,13 +564,84 @@ static bool remove_dir_recursive_impl(const Path& path)
 
 
 template <typename Path>
-bool remove_dir_impl(const Path& path, bool recursive)
+static bool remove_dir_impl(const Path& path, bool recursive)
 {
     if (recursive) {
         return remove_dir_recursive_impl(path);
     } else {
         return remove_dir_shallow_impl(path);
     }
+}
+
+// FILE UTILS
+
+
+static DWORD convert_access_mode(std::ios_base::openmode mode)
+{
+    if ((mode & std::ios_base::in) && (mode & std::ios_base::out)) {
+        return GENERIC_READ | GENERIC_WRITE;
+    } else if (mode & std::ios_base::in) {
+        return GENERIC_READ;
+    } else if (mode & std::ios_base::out) {
+        return GENERIC_WRITE;
+    }
+
+    return 0;
+}
+
+
+static DWORD convert_create_mode(std::ios_base::openmode mode)
+{
+    if (mode & std::ios_base::trunc) {
+        return CREATE_ALWAYS;
+    } else if (mode & std::ios_base::out) {
+        return OPEN_ALWAYS;
+    } else {
+        return OPEN_EXISTING;
+    }
+}
+
+
+template <typename Pointer, typename Function>
+static HANDLE file_open_impl(const Pointer &path, std::ios_base::openmode mode, Function function)
+{
+    HANDLE handle;
+    DWORD access = convert_access_mode(mode);
+    DWORD share = 0;
+    LPSECURITY_ATTRIBUTES security = nullptr;
+    DWORD create = convert_create_mode(mode);
+    DWORD flags = 0;
+    HANDLE file = nullptr;
+
+    return function(path.data(), access, share, security, create, flags, file);
+}
+
+
+template <typename Path>
+static bool file_allocate_impl(const Path& path, size_t size)
+{
+    fd_t fd = file_open(path, std::ios_base::out);
+    if (fd == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+    bool status = file_allocate(fd, size);
+    file_close(fd);
+
+    return status;
+}
+
+
+template <typename Path>
+static bool file_truncate_impl(const Path& path, size_t size)
+{
+    fd_t fd = file_open(path, std::ios_base::out);
+    if (fd == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+    bool status = file_truncate(fd, size);
+    file_close(fd);
+
+    return status;
 }
 
 
@@ -769,6 +840,67 @@ bool makedirs(const path_t& path, int mode)
     return false;
 }
 
+// FILE UTILS
+
+
+fd_t file_open(const path_t& path, std::ios_base::openmode mode)
+{
+    const wchar_t* p = (const wchar_t*) path.data();
+    return file_open_impl(p, mode, CreateFileW);
+}
+
+int64_t file_read(fd_t fd, void* buf, size_t count)
+{
+    DWORD read;
+    if (!ReadFile(fd, buf, count, &read, nullptr)) {
+        return -1;
+    }
+
+    return read;
+}
+
+
+void file_close(fd_t fd)
+{
+    CloseHandle(fd);
+}
+
+
+bool file_allocate(fd_t fd, size_t size)
+{
+    if (fd == INVALID_HANDLE_VALUE) {
+        throw std::runtime_error("File handle is not valid.");
+    }
+
+    LARGE_INTEGER size;
+    size.QuadPart = bytes;
+    CHECK_BOOL(::SetFilePointerEx(fd, size, nullptr, FILE_BEGIN));
+    CHECK_BOOL(::SetEndOfFile(fd));
+    if (::SetFilePointer(fd, 0, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER) {
+        return false;
+    }
+
+    return true;
+}
+
+
+bool file_truncate(fd_t fd, size_t size)
+{
+    return file_allocate(fd, size);
+}
+
+
+bool file_allocate(const path_t& path, size_t size)
+{
+    return file_allocate_impl(path, size);
+}
+
+
+bool file_truncate(const path_t& path, size_t size)
+{
+    return file_truncate_impl(path, size);
+}
+
 #endif
 
 
@@ -940,6 +1072,25 @@ bool makedirs(const backup_path_t& path, int mode)
     }
 
     return false;
+}
+
+// FILE UTILS
+
+fd_t file_open(const backup_path_t& path, std::ios_base::openmode mode)
+{
+    return file_open_impl(path.data(), mode, CreateFileA);
+}
+
+
+bool file_allocate(const backup_path_t& path, size_t size)
+{
+    return file_allocate_impl(path, size);
+}
+
+
+bool file_truncate(const backup_path_t& path, size_t size)
+{
+    return file_truncate_impl(path, size);
 }
 
 PYCPP_END_NAMESPACE

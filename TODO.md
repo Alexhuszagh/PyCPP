@@ -1,4 +1,5 @@
-- TODO: need to fix the compressed streams.
+- TODO: Need a larger than memory array....
+    - How???
 
 - Mathlib
     - Need array/axis unittests

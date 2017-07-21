@@ -8,7 +8,8 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <pycpp/mathlib/arange.h>
+// TODO: restore
+//#include <pycpp/mathlib/arange.h>
 #include <pycpp/reference/vector.h>
 #include <array>
 #include <string>
@@ -223,23 +224,24 @@ auto sample(Iter first, Iter last, size_t k) -> reference_vector<decltype(*std::
         throw std::runtime_error("Cannot sample k elements from range size N if k > N.");
     }
 
+// TODO: restore
     // partial fisher yates shuffling on the indexes
-    auto index = arange<size_t>(0, distance, 1);
-    auto index_view = index.view();
-    for (size_t i = k; i >= 1; --i) {
-        auto j = randint(0, distance-1);
-        std::swap(index_view[i-1], index_view[j]);
-    }
-
-    // fill vector
-    reference_vector<decltype(*std::declval<Iter>())> vector;
-    vector.reserve(k);
-    for (size_t i = 0; i < k; ++i) {
-        size_t j = index_view[i];
-        vector.push_back(first[j]);
-    }
-
-    return vector;
+//    auto index = arange<size_t>(0, distance, 1);
+//    auto index_view = index.view();
+//    for (size_t i = k; i >= 1; --i) {
+//        auto j = randint(0, distance-1);
+//        std::swap(index_view[i-1], index_view[j]);
+//    }
+//
+//    // fill vector
+//    reference_vector<decltype(*std::declval<Iter>())> vector;
+//    vector.reserve(k);
+//    for (size_t i = 0; i < k; ++i) {
+//        size_t j = index_view[i];
+//        vector.push_back(first[j]);
+//    }
+//
+//    return vector;
 }
 
 

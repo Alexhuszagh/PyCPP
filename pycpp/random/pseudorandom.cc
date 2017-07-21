@@ -4,7 +4,8 @@
 #include <pycpp/optional.h>
 #include <pycpp/random.h>
 #include <pycpp/tls.h>
-#include <pycpp/mathlib/axis.h>
+// TODO: restore
+//#include <pycpp/mathlib/axis.h>
 #include <chrono>
 #include <cmath>
 #include <cstring>
@@ -229,9 +230,10 @@ random_int_list_t randrange(random_int_t start, random_int_t stop, size_t step, 
     auto distance = (stop - start) / step;
     std::uniform_int_distribution<random_int_t> distribution(0, distance);
     auto list = random_list(distribution, n);
-    ndarray_axis<random_int_t> axis(list.data(), list.size(), 1);
-    axis *= step;
-    axis += start;
+// TODO: restore
+//    ndarray_axis<random_int_t> axis(list.data(), list.size(), 1);
+//    axis *= step;
+//    axis += start;
 
     return list;
 }

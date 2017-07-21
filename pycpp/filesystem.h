@@ -18,6 +18,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/range.h>
+#include <pycpp/filesystem/fd.h>
 #include <pycpp/filesystem/iterator.h>
 #include <pycpp/filesystem/path.h>
 #include <pycpp/filesystem/stat.h>
@@ -345,6 +346,43 @@ bool remove_dir(const path_t& path, bool recursive = true);
  */
 bool remove_path(const path_t& path, bool recursive = true);
 
+// FILE UTILS
+
+/**
+ *  \brief Open descriptor to file, as if by POSIX `open()`.
+ */
+fd_t file_open(const path_t& path, std::ios_base::openmode mode);
+
+/**
+ *  \brief Read from descriptor to file, as if by POSIX `read()`.
+ */
+int64_t file_read(fd_t fd, void* buf, size_t count);
+
+/**
+ *  \brief Close descriptor to file, as if by POSIX `close()`.
+ */
+void file_close(fd_t fd);
+
+/**
+ *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
+ */
+bool file_allocate(fd_t fd, size_t size);
+
+/**
+ *  \brief Truncate file size to `size` (n bytes).
+ */
+bool file_truncate(fd_t fd, size_t size);
+
+/**
+ *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
+ */
+bool file_allocate(const path_t& path, size_t size);
+
+/**
+ *  \brief Truncate file size to `size` (n bytes).
+ */
+bool file_truncate(const path_t& path, size_t size);
+
 #if defined(OS_WINDOWS)          // BACKUP PATH
 
 // RUNTIME
@@ -411,6 +449,12 @@ bool remove_link(const backup_path_t& path);
 bool remove_file(const backup_path_t& path);
 bool remove_dir(const backup_path_t& path, bool recursive = true);
 bool remove_path(const backup_path_t& path, bool recursive = true);
+
+// FILE UTILS
+
+fd_t file_open(const backup_path_t& path);
+bool file_allocate(const backup_path_t& path, size_t size);
+bool file_truncate(const backup_path_t& path, size_t size);
 
 #endif
 

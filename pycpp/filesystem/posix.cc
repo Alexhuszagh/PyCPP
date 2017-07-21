@@ -12,6 +12,7 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
 #include <pycpp/unicode.h>
+#include <fcntl.h>
 #include <limits.h>
 #include <unistd.h>
 #include <wordexp.h>
@@ -419,6 +420,67 @@ static bool copy_dir_impl(const Path&src, const Path& dst, bool recursive, bool 
     }
 }
 
+// FILE UTILS
+
+
+static int convert_openmode(std::ios_base::openmode mode)
+{
+    int flags = 0;
+
+    // read/write
+    if ((mode & std::ios_base::in) && (mode & std::ios_base::out)) {
+        flags |= O_RDWR;
+    } else if (mode & std::ios_base::in) {
+        flags |= O_WRONLY;
+    } else if (mode & std::ios_base::out) {
+        flags |= O_RDONLY;
+    }
+
+    // create file
+    if (mode & std::ios_base::out) {
+        flags |= O_CREAT;
+    }
+
+    // append
+    if (mode & std::ios_base::app) {
+        flags |= O_APPEND;
+    }
+
+    // truncate
+    if (mode & std::ios_base::trunc) {
+        flags |= O_TRUNC;
+    }
+
+    return flags;
+}
+
+
+template <typename Path>
+static bool file_allocate_impl(const Path& path, size_t size)
+{
+    fd_t fd = file_open(path, std::ios_base::out);
+    if (fd < 0) {
+        return false;
+    }
+    bool status = file_allocate(fd, size);
+    file_close(fd);
+
+    return status;
+}
+
+
+template <typename Path>
+static bool file_truncate_impl(const Path& path, size_t size)
+{
+    fd_t fd = file_open(path, std::ios_base::out);
+    if (fd < 0) {
+        return false;
+    }
+    bool status = file_truncate(fd, size);
+    file_close(fd);
+
+    return status;
+}
 
 // FUNCTIONS
 // ---------
@@ -624,6 +686,53 @@ bool makedirs(const path_t& path, int mode)
     }
 
     return false;
+}
+
+// FILE UTILS
+
+
+fd_t file_open(const path_t& path, std::ios_base::openmode mode)
+{
+    return open(path.data(), convert_openmode(mode));
+}
+
+
+int64_t file_read(fd_t fd, void* buf, size_t count)
+{
+    return read(fd, buf, count);
+}
+
+
+void file_close(fd_t fd)
+{
+    close(fd);
+}
+
+
+#if !defined(OS_MACOS)
+
+bool file_allocate(fd_t fd, size_t size)
+{
+    return posix_fallocate(fd, 0, size) == 0;
+}
+
+#endif              // MACOS
+
+bool file_allocate(const path_t& path, size_t size)
+{
+    return file_allocate_impl(path, size);
+}
+
+
+bool file_truncate(fd_t fd, size_t size)
+{
+    return ftruncate(fd, size) == 0;
+}
+
+
+bool file_truncate(const path_t& path, size_t size)
+{
+    return file_truncate_impl(path, size);
 }
 
 #endif

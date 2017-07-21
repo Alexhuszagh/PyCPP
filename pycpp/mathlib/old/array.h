@@ -93,7 +93,10 @@ public:
     void reshape(dimensions&& dims);
 
     // VIEWS
+    // TODO: depricate
+    // view should return an identical view
     axis_type view();
+//    axis_type flatview();
     // TODO: need to be able to get by axis...
 
     void swap(self& arr);
@@ -258,7 +261,7 @@ auto ndarray<T, A>::crend() const -> const_reverse_iterator
 template <typename T, typename A>
 auto ndarray<T, A>::operator+=(const value_type& rhs) -> self&
 {
-    view() += rhs;
+    flatview() += rhs;
     return *this;
 }
 
@@ -266,7 +269,7 @@ auto ndarray<T, A>::operator+=(const value_type& rhs) -> self&
 template <typename T, typename A>
 auto ndarray<T, A>::operator-=(const value_type& rhs) -> self&
 {
-    view() -= rhs;
+    flatview() -= rhs;
     return *this;
 }
 
@@ -274,7 +277,7 @@ auto ndarray<T, A>::operator-=(const value_type& rhs) -> self&
 template <typename T, typename A>
 auto ndarray<T, A>::operator*=(const value_type& rhs) -> self&
 {
-    view() *= rhs;
+    flatview() *= rhs;
     return *this;
 }
 
@@ -282,7 +285,7 @@ auto ndarray<T, A>::operator*=(const value_type& rhs) -> self&
 template <typename T, typename A>
 auto ndarray<T, A>::operator/=(const value_type& rhs) -> self&
 {
-    view() /= rhs;
+    flatview() /= rhs;
     return *this;
 }
 
@@ -350,6 +353,15 @@ void ndarray<T, A>::reshape(dimensions&& dims)
 template <typename T, typename A>
 auto ndarray<T, A>::view() -> axis_type
 {
+    // TODO: change to keep the current dimensions
+    return axis_type(vector_.data(), vector_.size(), 1);
+}
+
+
+template <typename T, typename A>
+auto ndarray<T, A>::flatview() -> axis_type
+{
+    // TODO: change to pass dims of {0}
     return axis_type(vector_.data(), vector_.size(), 1);
 }
 

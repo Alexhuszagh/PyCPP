@@ -5,15 +5,18 @@
  *  \brief NumPy-like arange unittests.
  */
 
-#include <pycpp/mathlib/arange.h>
+// TODO: restore
+//#include <pycpp/mathlib/arange.h>
 #include <gtest/gtest.h>
 
-PYCPP_USING_NAMESPACE
+//PYCPP_USING_NAMESPACE
 
 // TESTS
 // -----
 
 
+// TODO: restore
+#if 0
 TEST(mathlib, arange)
 {
     auto r1 = arange<int>(0, 5);
@@ -28,3 +31,4 @@ TEST(mathlib, arange)
     auto r2 = arange<size_t>(0, 5, 2);
     EXPECT_EQ(std::vector<size_t>(r2.begin(), r2.end()), std::vector<size_t>({0, 2, 4}));
 }
+#endif

@@ -5,10 +5,11 @@
  *  \brief Numerical array unittests.
  */
 
-#include <pycpp/mathlib/array.h>
+// TODO: restore
+//#include <pycpp/mathlib/array.h>
 #include <gtest/gtest.h>
 
-PYCPP_USING_NAMESPACE
+//PYCPP_USING_NAMESPACE
 
 // TESTS
 // -----
