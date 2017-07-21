@@ -22,6 +22,7 @@
 #include <pycpp/filesystem/path.h>
 #include <pycpp/filesystem/stat.h>
 #include <pycpp/iterator/range.h>
+#include <ios>
 
 PYCPP_BEGIN_NAMESPACE
 
