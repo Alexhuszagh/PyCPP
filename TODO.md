@@ -2,10 +2,6 @@
     - Wrap it nicely
     - http://libdynd.org/introduction/
 
-    - TeaCI
-        - /drone/src/github.com/Alexhuszagh/PyCPP/third_party/libdynd/include/dynd/config.hpp:988:12: error: ‘std::cbrt’ has not been declared
-        - using std::cbrt;
-
 - Mathlib
     - Need array/axis unittests
 
