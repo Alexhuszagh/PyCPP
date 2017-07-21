@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <iterator>
+#include <pycpp/iterator/category.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -31,6 +30,7 @@ public:
     typedef const value_type& const_reference;
     typedef value_type* pointer;
     typedef const value_type* const_pointer;
+    using difference_type = typename std::iterator_traits<iterator>::difference_type;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -41,6 +41,13 @@ public:
     reverse_iterator rend() const;
     bool empty() const;
     size_t distance() const;
+
+    template <typename It>
+    enable_if_t<is_random_access_iterator<It>::value, reference>
+    operator[](difference_type n) const
+    {
+        return first[n];
+    }
 
 private:
     iterator first;

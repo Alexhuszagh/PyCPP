@@ -17,11 +17,11 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <pycpp/range.h>
 #include <pycpp/filesystem/fd.h>
 #include <pycpp/filesystem/iterator.h>
 #include <pycpp/filesystem/path.h>
 #include <pycpp/filesystem/stat.h>
+#include <pycpp/iterator/range.h>
 
 PYCPP_BEGIN_NAMESPACE
 

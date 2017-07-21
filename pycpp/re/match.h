@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <pycpp/range.h>
+#include <pycpp/iterator/range.h>
 #include <pycpp/view/string.h>
 #include <map>
 #include <memory>

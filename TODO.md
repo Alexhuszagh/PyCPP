@@ -1,5 +1,6 @@
-- TODO: Need a larger than memory array....
-    - How???
+- Use DyND for the NumPy interface
+    - Wrap it nicely
+    - http://libdynd.org/introduction/
 
 - Mathlib
     - Need array/axis unittests

@@ -7,6 +7,7 @@
 
 #include <pycpp/random.h>
 #include <gtest/gtest.h>
+#include <numeric>
 
 PYCPP_USING_NAMESPACE
 
@@ -101,20 +102,18 @@ TEST(random, weibullvariate)
 }
 
 
-// TODO: restore
-//TEST(random, randrange)
-//{
-//    EXPECT_TRUE(check_range<random_int_t>(randrange(5, 10, 1), 5, 10));
-//    EXPECT_TRUE(check_range<random_int_t>(randrange(5, 10, 1, 100), 5, 10));
-//}
+TEST(random, randrange)
+{
+    EXPECT_TRUE(check_range<random_int_t>(randrange(5, 10, 1), 5, 10));
+    EXPECT_TRUE(check_range<random_int_t>(randrange(5, 10, 1, 100), 5, 10));
+}
 
 
-// TODO: restore
-//TEST(random, randint)
-//{
-//    EXPECT_TRUE(check_range<random_int_t>(randint(5, 10), 5, 10));
-//    EXPECT_TRUE(check_range<random_int_t>(randint(5, 10, 100), 5, 10));
-//}
+TEST(random, randint)
+{
+    EXPECT_TRUE(check_range<random_int_t>(randint(5, 10), 5, 10));
+    EXPECT_TRUE(check_range<random_int_t>(randint(5, 10, 100), 5, 10));
+}
 
 
 TEST(random, randnum)
@@ -168,21 +167,20 @@ TEST(random, choice)
 }
 
 
-// TODO: restore
-//TEST(random, sample)
-//{
-//    random_list_t list = uniform(0, 1, 500);
-//    random_list_t copy(list);
-//    auto total = std::accumulate(list.begin(), list.end(), 0.);
-//    for (size_t i = 0; i < 499; ++i) {
-//        auto value = sample(list.begin(), list.end(), i);
-//        auto sum = std::accumulate(value.begin(), value.end(), 0.);
-//        EXPECT_EQ(value.size(), i);
-//        EXPECT_TRUE(sum < total);
-//        EXPECT_TRUE(i > 50 ? sum > 0 : true);
-//        EXPECT_EQ(list, copy);
-//    }
-//}
+TEST(random, sample)
+{
+    random_list_t list = uniform(0, 1, 500);
+    random_list_t copy(list);
+    auto total = std::accumulate(list.begin(), list.end(), 0.);
+    for (size_t i = 0; i < 499; ++i) {
+        auto value = sample(list.begin(), list.end(), i);
+        auto sum = std::accumulate(value.begin(), value.end(), 0.);
+        EXPECT_EQ(value.size(), i);
+        EXPECT_TRUE(sum < total);
+        EXPECT_TRUE(i > 50 ? sum > 0 : true);
+        EXPECT_EQ(list, copy);
+    }
+}
 
 
 TEST(random, shuffle)

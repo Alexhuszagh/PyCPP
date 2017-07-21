@@ -14,6 +14,9 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// OBJECTS
+// -------
+
 /**
  *  \brief Transformation iterator implied base class.
  */
