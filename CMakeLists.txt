@@ -597,16 +597,17 @@ endif()
 
 if(BUILD_MATH)
     list(APPEND TEST_FILES
-        test/mathlib/array.cc
         test/mathlib/arange.cc
         test/mathlib/average.cc
-        test/mathlib/axis.cc
         test/mathlib/binomial.cc
         test/mathlib/distribution.cc
         test/mathlib/dot.cc
         test/mathlib/factorial.cc
         test/mathlib/std.cc
         test/mathlib/trapz.cc
+        test/ndarray/array.cc
+        test/ndarray/iterator.cc
+        test/ndarray/view.cc
     )
 endif()
 

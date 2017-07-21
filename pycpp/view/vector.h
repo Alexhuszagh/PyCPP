@@ -66,8 +66,8 @@ public:
 
     vector_view(const stl_type& vec);
     self& operator=(const stl_type& vec);
-    vector_view(const_pointer t, size_type n);
-    vector_view(const_pointer first, const_pointer last);
+    vector_view(pointer t, size_type n);
+    vector_view(pointer first, pointer last);
 
     // ITERATORS
     const_iterator begin() const;
@@ -92,6 +92,7 @@ public:
     const_reference front() const;
     reference back();
     const_reference back() const;
+    pointer data() noexcept;
     const_pointer data() const noexcept;
 
     // MODIFIERS
@@ -335,14 +336,14 @@ auto vector_view<T>::operator=(self&& vec) -> self&
 }
 
 template <typename T>
-vector_view<T>::vector_view(const std::vector<T>& vec):
+vector_view<T>::vector_view(const stl_type& vec):
     data_(vec.data()),
     size_(vec.size())
 {}
 
 
 template <typename T>
-auto vector_view<T>::operator=(const std::vector<T>& vec) -> self&
+auto vector_view<T>::operator=(const stl_type& vec) -> self&
 {
     data_ = vec.data();
     size_ = vec.size();
@@ -351,14 +352,14 @@ auto vector_view<T>::operator=(const std::vector<T>& vec) -> self&
 
 
 template <typename T>
-vector_view<T>::vector_view(const_pointer t, size_type n):
+vector_view<T>::vector_view(pointer t, size_type n):
     data_(t),
     size_(n)
 {}
 
 
 template <typename T>
-vector_view<T>::vector_view(const_pointer first, const_pointer last):
+vector_view<T>::vector_view(pointer first, pointer last):
     data_(first),
     size_(last - first)
 {}
@@ -493,6 +494,13 @@ auto vector_view<T>::back() const -> const_reference
 {
     assert(!empty() && "vector::back(): vector is empty");
     return *(data_ + size_ - 1);
+}
+
+
+template <typename T>
+auto vector_view<T>::data() noexcept -> pointer
+{
+    return const_cast<pointer>(data_);
 }
 
 
