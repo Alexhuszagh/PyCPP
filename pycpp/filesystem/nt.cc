@@ -872,9 +872,9 @@ bool file_allocate(fd_t fd, size_t size)
         throw std::runtime_error("File handle is not valid.");
     }
 
-    LARGE_INTEGER size;
-    size.QuadPart = bytes;
-    CHECK_BOOL(::SetFilePointerEx(fd, size, nullptr, FILE_BEGIN));
+    LARGE_INTEGER bytes;
+    bytes.QuadPart = size;
+    CHECK_BOOL(::SetFilePointerEx(fd, bytes, nullptr, FILE_BEGIN));
     CHECK_BOOL(::SetEndOfFile(fd));
     if (::SetFilePointer(fd, 0, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER) {
         return false;
