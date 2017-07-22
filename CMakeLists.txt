@@ -245,7 +245,7 @@ macro(add_external_project name path)
                    "-DCMAKE_RC_COMPILER=${CMAKE_RC_COMPILER}"
                    "-DCMAKE_COMPILER_PREFIX=${CMAKE_COMPILER_PREFIX}"
                    "-DCMAKE_FIND_ROOT_PATH=${CMAKE_FIND_ROOT_PATH}"
-                   "${extra_args}"
+                   ${extra_args}
        INSTALL_COMMAND ""
     )
 
@@ -343,11 +343,15 @@ if(BUILD_COMPRESSION)
         "-DBLOSC_INSTALL=OFF"
     )
     if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-        list(APPEND BLOSC_FLAGS -DCMAKE_C_FLAGS+="-Werror -Wno-implicit-function-declaration")
+        if (MINGW OR MSYS)
+            list(APPEND BLOSC_FLAGS "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration -Wno-attributes")
+        else()
+            list(APPEND BLOSC_FLAGS "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration")
+        endif()
     elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-        list(APPEND BLOSC_FLAGS -DCMAKE_C_FLAGS+="-Werror -Wno-implicit-function-declaration")
+        list(APPEND BLOSC_FLAGS "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration -Wno-shift-negative-value")
     elseif(MSVC)
-        list(APPEND BLOSC_FLAGS -DCMAKE_C_FLAGS+="-Wx -wd4101 -wd4146 -wd4244 -wd4996")
+        list(APPEND BLOSC_FLAGS "-DCMAKE_C_FLAGS=-wd4101 -wd4146 -wd4244 -wd4996")
     endif()
 
     add_external_project(blosc_external third_party/c-blosc ${BLOSC_FLAGS})
