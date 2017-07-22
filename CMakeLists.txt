@@ -416,7 +416,6 @@ set(SOURCE_FILES
     pycpp/casemap.cc
     pycpp/codec.cc
     pycpp/getline.cc
-    pycpp/gettimeofday.cc
     pycpp/hex.cc
     pycpp/punycode.cc
     pycpp/runtime.cc
@@ -584,7 +583,6 @@ set(TEST_FILES
     test/compiler.cc
     test/enum.cc
     test/getline.cc
-    test/gettimeofday.cc
     test/hex.cc
     test/iterator.cc
     test/itertools.cc
