@@ -47,5 +47,5 @@ script:
   - mkdir -p build
   - cd build
   - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON ..
-  - make -j
+  - make -j4
   - ctest -C Release -V

@@ -10,7 +10,7 @@ build:
     - mkdir -p build
     - cd build
     - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DPYCPP_NAMESPACE:STRING=$PYCPP_NAMESPACE ..
-    - make -j
+    - make -j4
     - ctest -C Release -V
 
 matrix:
