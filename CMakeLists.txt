@@ -351,7 +351,7 @@ if(BUILD_COMPRESSION)
     elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
         list(APPEND BLOSC_FLAGS "-DCMAKE_C_FLAGS=-Wno-implicit-function-declaration -Wno-shift-negative-value")
     elseif(MSVC)
-        list(APPEND BLOSC_FLAGS "-DCMAKE_C_FLAGS=-wd4101 -wd4146 -wd4244 -wd4996")
+        list(APPEND BLOSC_FLAGS "-DCMAKE_CXX_FLAGS=-wd4101 -wd4146 -wd4244 -wd4530 -wd4577 -wd4996")
     endif()
 
     add_external_project(blosc_external third_party/c-blosc ${BLOSC_FLAGS})
