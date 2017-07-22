@@ -20,6 +20,7 @@ static bool move_path_impl(const Path& src, const Path& dst, bool replace)
     } else if (isdir(src_lstat)) {
         return move_dir(src, dst, replace);
     }
+    return false;
 }
 
 
@@ -42,6 +43,7 @@ static bool copy_path_impl(const Path& src, const Path& dst, bool recursive, boo
     } else if (isdir(src_lstat)) {
         return copy_dir(src, dst, recursive, replace);
     }
+    return false;
 }
 
 
@@ -56,6 +58,7 @@ static bool remove_path_impl(const Path& path, bool recursive)
     } else if (isdir(path_lstat)) {
         return remove_dir(path, recursive);
     }
+    return false;
 }
 
 

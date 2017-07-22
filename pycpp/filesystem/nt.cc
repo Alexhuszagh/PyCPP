@@ -613,7 +613,7 @@ static HANDLE file_open_impl(const Pointer &path, std::ios_base::openmode mode, 
     DWORD flags = 0;
     HANDLE file = nullptr;
 
-    return function(path.data(), access, share, security, create, flags, file);
+    return function(path, access, share, security, create, flags, file);
 }
 
 
@@ -869,13 +869,17 @@ void file_close(fd_t fd)
 bool file_allocate(fd_t fd, size_t size)
 {
     if (fd == INVALID_HANDLE_VALUE) {
-        throw std::runtime_error("File handle is not valid.");
+        return false;
     }
 
     LARGE_INTEGER bytes;
     bytes.QuadPart = size;
-    CHECK_BOOL(::SetFilePointerEx(fd, bytes, nullptr, FILE_BEGIN));
-    CHECK_BOOL(::SetEndOfFile(fd));
+    if (!::SetFilePointerEx(fd, bytes, nullptr, FILE_BEGIN)) {
+        return false;
+    }
+    if (!::SetEndOfFile(fd)) {
+        return false;
+    }
     if (::SetFilePointer(fd, 0, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER) {
         return false;
     }

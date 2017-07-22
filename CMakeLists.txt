@@ -336,12 +336,21 @@ if(BUILD_COMPRESSION)
     list(APPEND PYCPP_INCLUDE_DIRS ${lzma_INCLUDE_DIR})
 
     # BLOSC
-    add_external_project(blosc_external third_party/c-blosc
+    list(APPEND BLOSC_FLAGS
         "-DBUILD_SHARED=OFF"
         "-DBUILD_TESTS=OFF"
         "-DBUILD_BENCHMARKS=OFF"
         "-DBLOSC_INSTALL=OFF"
     )
+    if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+        list(APPEND BLOSC_FLAGS -DCMAKE_C_FLAGS+="-Werror -Wno-implicit-function-declaration")
+    elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+        list(APPEND BLOSC_FLAGS -DCMAKE_C_FLAGS+="-Werror -Wno-implicit-function-declaration")
+    elseif(MSVC)
+        list(APPEND BLOSC_FLAGS -DCMAKE_C_FLAGS+="-Wx")
+    endif()
+
+    add_external_project(blosc_external third_party/c-blosc ${BLOSC_FLAGS})
     add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
     list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_BLOSC=1")
     list(APPEND PYCPP_DEPENDENCIES blosc)

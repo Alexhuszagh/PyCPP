@@ -453,7 +453,7 @@ bool remove_path(const backup_path_t& path, bool recursive = true);
 
 // FILE UTILS
 
-fd_t file_open(const backup_path_t& path);
+fd_t file_open(const backup_path_t& path, std::ios_base::openmode mode);
 bool file_allocate(const backup_path_t& path, size_t size);
 bool file_truncate(const backup_path_t& path, size_t size);
 
