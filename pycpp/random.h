@@ -215,10 +215,10 @@ template <typename Iter>
 auto sample(Iter first, Iter last, size_t k) -> reference_vector<decltype(*std::declval<Iter>())>
 {
     // parameters
-    auto distance = std::distance(first, last);
+    std::ptrdiff_t distance = std::distance(first, last);
 
     // sanity check
-    if (k > distance) {
+    if (static_cast<std::ptrdiff_t>(k) > distance) {
         throw std::runtime_error("Cannot sample k elements from range size N if k > N.");
     }
 
