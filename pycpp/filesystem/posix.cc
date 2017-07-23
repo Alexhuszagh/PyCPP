@@ -674,7 +674,7 @@ bool copy_dir(const path_t& src, const path_t& dst, bool recursive, bool replace
 
 bool mkdir(const path_t& path, int mode)
 {
-    return PYCPP_NAMESPACE::mkdir(path.data(), mode) == 0;
+    return ::mkdir(path.data(), static_cast<mode_t>(mode)) == 0;
 }
 
 
