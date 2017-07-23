@@ -182,7 +182,7 @@ WEAK_ATTRIBUTE void* memmove_slow(void* dst, const void* src, size_t len)
     volatile const char* s = (volatile const char*) src;
 
     // check for non-overlapping regions
-    if (d - s >= len) {
+    if (static_cast<size_t>(d - s) >= len) {
         return secure_memcpy(dst, src, len);
     }
 
