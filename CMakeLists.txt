@@ -366,11 +366,18 @@ if(BUILD_MATH)
         "-DDYND_BUILD_DOCS=OFF"
         "-DDYND_COVERAGE=OFF"
     )
+    # Force lib prefix due to libdynd behavior
+    set(OLD_CMAKE_STATIC_LIBRARY_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
+    set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
     add_external_target(dynd third_party/libdynd/include third_party/libdynd STATIC dynd_external)
+    add_external_target(dyndt third_party/libdynd/include third_party/libdynd STATIC dynd_external)
+    set(CMAKE_STATIC_LIBRARY_PREFIX ${OLD_CMAKE_STATIC_LIBRARY_PREFIX})
+
+    # Include and set files
     list(APPEND ${dynd_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/third_party/libdynd/include")
     list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_DYND=1")
-    list(APPEND PYCPP_DEPENDENCIES dynd)
-    list(APPEND PYCPP_LIBRARIES dynd)
+    list(APPEND PYCPP_DEPENDENCIES dynd dyndt)
+    list(APPEND PYCPP_LIBRARIES dynd dyndt)
     list(APPEND PYCPP_INCLUDE_DIRS ${dynd_INCLUDE_DIR})
 endif()
 
