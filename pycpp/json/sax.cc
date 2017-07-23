@@ -72,14 +72,14 @@ bool handler_impl::Uint(unsigned value)
 
 bool handler_impl::Int64(int64_t value)
 {
-    handler->number(value);
+    handler->number(static_cast<double>(value));
     return true;
 }
 
 
 bool handler_impl::Uint64(uint64_t value)
 {
-    handler->number(value);
+    handler->number(static_cast<double>(value));
     return true;
 }
 
