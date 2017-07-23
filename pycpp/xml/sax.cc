@@ -40,7 +40,7 @@ static int stream_read(void* ctx, char* buffer, int length)
 {
     auto* stream = (std::istream*) ctx;
     stream->read(buffer, length);
-    return stream->gcount();
+    return static_cast<int>(stream->gcount());
 }
 
 
