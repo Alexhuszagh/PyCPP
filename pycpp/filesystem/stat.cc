@@ -218,7 +218,7 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
         ul.HighPart = info.nFileSizeHigh;
         ul.LowPart = info.nFileSizeLow;
         buffer->st_mode |= S_IFREG;
-        buffer->st_size = ul.QuadPart;
+        buffer->st_size = static_cast<off_t>(ul.QuadPart);
     }
 
     // get permissions
@@ -237,8 +237,8 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
 
     ul.HighPart = info.nFileIndexHigh;
     ul.LowPart = info.nFileIndexLow;
-    buffer->st_ino = ul.QuadPart;
-    buffer->st_nlink = info.nNumberOfLinks;
+    buffer->st_ino = static_cast<ino_t>(ul.QuadPart);
+    buffer->st_nlink = static_cast<nlink_t>(info.nNumberOfLinks);
 
     // Windows doesn't define these values
     buffer->st_gid = 0;
@@ -253,7 +253,6 @@ static int copy_stat(HANDLE handle, stat_t* buffer)
 template <typename Pointer, typename Function>
 static HANDLE get_handle(Pointer path, bool use_lstat, Function function)
 {
-    HANDLE handle;
     DWORD access = FILE_READ_ATTRIBUTES;
     DWORD share = 0;
     LPSECURITY_ATTRIBUTES security = nullptr;

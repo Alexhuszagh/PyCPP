@@ -66,7 +66,7 @@ static std::string gzip_header(int level,
     header += (char) flags;
 
     // mtime
-    uint32_t mtime_le = htole32(mtime);
+    uint32_t mtime_le = htole32(static_cast<uint32_t>(mtime));
     header.append((char*) &mtime_le, sizeof(uint32_t));
 
     // write remaining header

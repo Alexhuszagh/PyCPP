@@ -256,7 +256,7 @@ static void sha3_process_block(uint64_t* hash, const uint64_t* block, size_t blo
  *  Calculate message hash.
  *  Can be called repeatedly with chunks of the message to be hashed.
  */
-void sha3_update(void* ptr, const void *buf, long size)
+void sha3_update(void* ptr, const void *buf, size_t size)
 {
     auto* ctx = (sha3_context*) ptr;
     auto* msg = (const uint8_t*) buf;

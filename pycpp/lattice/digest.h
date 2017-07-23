@@ -21,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 // FORWARD
 // -------
 
-class parameters_t;
+struct parameters_t;
 struct url_t;
 
 // OBJECTS
@@ -58,7 +58,7 @@ struct digest_t: authentication_t
 /**
  *  \brief Quality of protection directive.
  */
-class quality_of_protection_t: public std::vector<std::string>
+struct quality_of_protection_t: public std::vector<std::string>
 {
 protected:
     typedef std::vector<std::string> Base;
@@ -80,7 +80,7 @@ public:
  *  \format
  *      Digest nonce="42148a112dd92b7e5b6ac4769c2a6693", opaque="35fa82343c10f5a83c7d9b8bb29d8518", realm="me@kennethreitz.com", qop=auth
  */
-class digest_challenge_t: public std::unordered_map<
+struct digest_challenge_t: public std::unordered_map<
         std::string,
         std::string,
         lowercase_hash,

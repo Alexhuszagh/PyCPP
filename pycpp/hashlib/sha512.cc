@@ -190,7 +190,7 @@ static void sha384_init(sha2_512_context *ctx)
 }
 
 
-static void sha512_update(void* ptr, const void* buf, long len)
+static void sha512_update(void* ptr, const void* buf, size_t len)
 {
     auto* ctx = (sha2_512_context*) ptr;
     auto* msg = (const uint8_t*) buf;
@@ -308,11 +308,11 @@ sha2_384_hash::~sha2_384_hash()
 
 void sha2_384_hash::update(const void* src, size_t srclen)
 {
-    long length = srclen;
+    size_t length = srclen;
     const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
 
     while (length > 0) {
-        long shift = length > 512 ? 512 : length;
+        size_t shift = length > 512 ? 512 : length;
         sha512_update(ctx, first, shift);
         length -= shift;
         first += shift;

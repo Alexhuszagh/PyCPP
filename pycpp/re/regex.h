@@ -43,7 +43,7 @@ public:
     const std::map<std::string, int>& groupindex() const;
 
 private:
-    friend class match_t;
+    friend struct match_t;
 
     std::unique_ptr<regex_impl_t> ptr_;
 };

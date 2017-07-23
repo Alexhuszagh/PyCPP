@@ -11,6 +11,8 @@
 
 #include <pycpp/os.h>
 #include <pycpp/random.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 #if defined(OS_WINDOWS)
 #   include <windows.h>
 #   include <wincrypt.h>
@@ -19,9 +21,6 @@
 #   include <fcntl.h>
 #   include <unistd.h>
 #endif
-
-#include <warnings/push.h>
-#include <warnings/narrowing-conversions.h>
 
 // MACROS
 // ------

@@ -61,8 +61,8 @@ public:
     explicit operator bool() const;
 
 private:
-    friend class regexp_t;
-    friend class match_iterator_t;
+    friend struct regexp_t;
+    friend struct match_iterator_t;
 
     match_t();
     match_t(regexp_t&, const string_view&, size_t, size_t);

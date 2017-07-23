@@ -7,6 +7,9 @@
 
 #pragma once
 
+#include <warnings/push.h>
+#include <warnings/not-enough-parameters-for-macro.h>
+
 // MACROS
 // ------
 
@@ -29,3 +32,5 @@
 #   define PYCPP_USING_NAMESPACE using namespace PYCPP_NAMESPACE;
 #   define PYCPP_HAVE_NAMESPACE
 #endif
+
+#include <warnings/pop.h>

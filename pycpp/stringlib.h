@@ -21,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 // FORWARD
 // -------
 
-class string_wrapper;
+struct string_wrapper;
 
 // ALIAS
 // -----

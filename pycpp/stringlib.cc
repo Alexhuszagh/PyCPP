@@ -64,10 +64,10 @@ static void rtrim_impl(string_t& str, const string_view& characters)
     auto* ptr = characters.data();
     size_t num = characters.size();
     int64_t index = str.size() - 1;
-    while (index >= 0 && memchr(ptr, str[index], num)) {
+    while (index >= 0 && memchr(ptr, str[static_cast<size_t>(index)], num)) {
         --index;
     }
-    str.erase(index+1);
+    str.erase(static_cast<size_t>(index)+1);
 }
 
 

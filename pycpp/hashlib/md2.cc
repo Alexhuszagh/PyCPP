@@ -69,12 +69,12 @@ static void md2_init(md2_context *ctx)
 }
 
 
-static void md2_update(void *ptr, const void* buf, long len)
+static void md2_update(void *ptr, const void* buf, size_t len)
 {
     auto* ctx = (md2_context*) ptr;
     auto* data = (const uint8_t*) buf;
 
-    for (long i = 0; i < len; ++i) {
+    for (size_t i = 0; i < len; ++i) {
         ctx->data[ctx->len] = data[i];
         ctx->len++;
         if (ctx->len == MD2_HASH_SIZE) {

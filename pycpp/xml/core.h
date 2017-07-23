@@ -79,8 +79,8 @@ public:
     void swap(self&);
 
 private:
-    friend class xml_node_t;
-    friend class xml_node_list_t;
+    friend struct xml_node_t;
+    friend struct xml_node_list_t;
 
     xml_node_iterator_t();
 
@@ -164,7 +164,7 @@ public:
     void swap(self&);
 
 private:
-    friend class xml_node_t;
+    friend struct xml_node_t;
 
     void *ptr_ = nullptr;
 };
@@ -239,7 +239,7 @@ public:
     void swap(self&);
 
 private:
-    friend class xml_node_list_t;
+    friend struct xml_node_list_t;
 
     xml_node_t(xml_node_impl_t*);
     std::shared_ptr<xml_node_impl_t> ptr_;

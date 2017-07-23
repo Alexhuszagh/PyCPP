@@ -213,7 +213,7 @@ void md5_init(md5_context* ctx)
 
 /** \brief Update hash with data.
  */
-static void md5_update(void* ptr, const void* data, long size)
+static void md5_update(void* ptr, const void* data, size_t size)
 {
     auto* ctx = (md5_context*) ptr;
 

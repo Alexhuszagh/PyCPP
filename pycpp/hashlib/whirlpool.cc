@@ -668,7 +668,7 @@ static void whirlpool_init(whirlpool_context* ctx)
  *  Calculate message hash.
  *  Can be called repeatedly with chunks of the message to be hashed.
  */
-static void whirlpool_update(void* ptr, const void* buf, long len)
+static void whirlpool_update(void* ptr, const void* buf, size_t len)
 {
     auto* ctx = (whirlpool_context*) ptr;
     auto* msg = (const uint8_t*) buf;

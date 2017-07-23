@@ -13,28 +13,20 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-// OBJECTS
-// -------
-
-
 #if defined(_WIN32)                 // WINDOWS
 
-struct stat_t
-{
-   dev_t          st_dev;
-   ino_t          st_ino;
-   unsigned short st_mode;
-   short          st_nlink;
-   short          st_uid;
-   short          st_gid;
-   dev_t          st_rdev;
-   off_t          st_size;
-   timespec       st_atim;
-   timespec       st_mtim;
-   timespec       st_ctim;
-};
+// ALIAS
+// -----
 
-#else                               // POSIX
+using mode_t = unsigned short;
+using nlink_t = short;
+using uid_t = short;
+using gid_t = short;
+
+#endif
+
+// OBJECTS
+// -------
 
 struct stat_t
 {
@@ -51,6 +43,5 @@ struct stat_t
     timespec st_ctim;
 };
 
-#endif
 
 PYCPP_END_NAMESPACE

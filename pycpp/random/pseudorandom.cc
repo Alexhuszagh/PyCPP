@@ -57,16 +57,18 @@ static mersene_twister& get_mersene_twister()
 
 static default_random& get_default_random()
 {
+    using uint = typename default_random::result_type;
+
     auto& generator = reinterpret_cast<default_random&>(DEFAULT_RANDOM);
     if (!DEFAULT_RANDOM_INIT) {
         DEFAULT_RANDOM_INIT = true;
         generator = default_random();
-        generator.seed(GLOBAL_SEED);
+        generator.seed(static_cast<uint>(GLOBAL_SEED));
     }
 
     if (SEED != GLOBAL_SEED) {
         SEED = GLOBAL_SEED;
-        generator.seed(SEED);
+        generator.seed(static_cast<uint>(SEED));
     }
 
     return generator;
@@ -113,9 +115,9 @@ size_t pseudorandom(void* dst, size_t dstlen, bool deterministic)
     }
 
     char* buffer = reinterpret_cast<char*>(dst);
-    size_t counter = dstlen / sizeof(uint32_t);
+    size_t counter = dstlen / sizeof(uint_fast64_t);
     while (counter--) {
-        uint32_t value = generator();
+        uint_fast64_t value = generator();
         memmove(buffer, &value, sizeof(value));
         buffer += sizeof(value);
     }

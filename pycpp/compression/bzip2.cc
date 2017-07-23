@@ -46,7 +46,7 @@ static size_t bz2_compress_bound(size_t size)
         throw std::overflow_error("Maximum compressed size would overflow size_t.");
     }
 
-    return (1.01 * size) + 600;
+    return static_cast<size_t>((1.01 * size) + 600);
 }
 
 

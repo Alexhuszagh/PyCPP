@@ -155,7 +155,7 @@ static void sha256_init(sha2_256_context* ctx)
  *  Calculate message hash.
  *  Can be called repeatedly with chunks of the message to be hashed.
  */
-static void sha256_update(void* ptr, const void* buf, long len)
+static void sha256_update(void* ptr, const void* buf, size_t len)
 {
     auto* ctx = (sha2_256_context*) ptr;
     auto* msg = (const uint8_t*) buf;

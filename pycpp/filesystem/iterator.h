@@ -71,8 +71,8 @@ public:
     bool operator!=(const self&) const;
 
 private:
-    friend class directory_data;
-    friend class directory_iterator;
+    friend struct directory_data;
+    friend struct directory_iterator;
 
     directory_data_ptr ptr_;
 };
@@ -164,8 +164,8 @@ public:
     bool operator!=(const self&) const;
 
 private:
-    friend class recursive_directory_data;
-    friend class recursive_directory_iterator;
+    friend struct recursive_directory_data;
+    friend struct recursive_directory_iterator;
 
     recursive_directory_data_ptr ptr_;
 };

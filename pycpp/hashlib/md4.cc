@@ -189,7 +189,7 @@ void md4_init(md4_context *ctx)
 }
 
 
-void md4_update(void *ptr, const void *data, long size)
+void md4_update(void *ptr, const void *data, size_t size)
 {
     auto* ctx = reinterpret_cast<md4_context*>(ptr);
 

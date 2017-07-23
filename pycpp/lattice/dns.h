@@ -27,7 +27,7 @@ PYCPP_BEGIN_NAMESPACE
 // TYPES
 // -----
 
-class address_cache_t;
+struct address_cache_t;
 typedef std::shared_ptr<address_cache_t> dns_cache_t;
 
 // OBJECTS

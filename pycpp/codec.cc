@@ -53,7 +53,7 @@ static S2& to_narrow(const S1& s1, S2& s2, Function function)
     // while each utf32 to utf16/utf8 at most keeps the buffer size
     // constant.
     size_t srclen = s1.size() * sizeof(Char1);
-    size_t dstlen = sizeof(Char1) == 2 ? srclen * 1.5 : srclen;
+    size_t dstlen = sizeof(Char1) == 2 ? static_cast<size_t>(srclen * 1.5) : srclen;
     const char* src = (const char*) s1.data();
     char* dst = new char[dstlen];
     const void* src_first = (const void*) src;

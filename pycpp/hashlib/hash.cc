@@ -14,13 +14,13 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 
-void hash_update(void* ctx, const void* src, long srclen, void (*cb)(void*, const void*, long))
+void hash_update(void* ctx, const void* src, size_t srclen, void (*cb)(void*, const void*, size_t))
 {
-    long length = srclen;
+    size_t length = srclen;
     const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
 
     while (length > 0) {
-        long shift = length > 512 ? 512 : length;
+        size_t shift = length > 512 ? 512 : length;
         cb(ctx, first, shift);
         length -= shift;
         first += shift;
@@ -28,7 +28,7 @@ void hash_update(void* ctx, const void* src, long srclen, void (*cb)(void*, cons
 }
 
 
-void hash_digest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)(void*, void*))
+void hash_digest(void* ctx, void*& dst, size_t dstlen, size_t hashlen, void (*cb)(void*, void*))
 {
     if (dstlen < hashlen) {
         throw std::runtime_error("dstlen not large enough to store hash digest.");
@@ -38,7 +38,7 @@ void hash_digest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)(vo
 }
 
 
-secure_string hash_digest(void* ctx, long hashlen, void (*cb)(void*, void*))
+secure_string hash_digest(void* ctx, size_t hashlen, void (*cb)(void*, void*))
 {
     void* dst = secure_malloc(hashlen);
     void* dst_first = dst;
@@ -58,7 +58,7 @@ secure_string hash_digest(void* ctx, long hashlen, void (*cb)(void*, void*))
 }
 
 
-void hash_hexdigest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)(void*, void*))
+void hash_hexdigest(void* ctx, void*& dst, size_t dstlen, size_t hashlen, void (*cb)(void*, void*))
 {
     if (dstlen < 2 * hashlen) {
         throw std::runtime_error("dstlen not large enough to store hash hexdigest.");
@@ -79,7 +79,7 @@ void hash_hexdigest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)
 }
 
 
-secure_string hash_hexdigest(void* ctx, long hashlen, void (*cb)(void*, void*))
+secure_string hash_hexdigest(void* ctx, size_t hashlen, void (*cb)(void*, void*))
 {
     void* dst = secure_malloc(hashlen * 2);
     void* dst_first = dst;

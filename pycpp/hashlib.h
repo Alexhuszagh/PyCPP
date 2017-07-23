@@ -87,27 +87,27 @@ enum hash_algorithm
 /**
  *  \brief Update hash from buffer.
  */
-void hash_update(void* ctx, const void* src, long srclen, void (*cb)(void*, const void*, long));
+void hash_update(void* ctx, const void* src, size_t srclen, void (*cb)(void*, const void*, size_t));
 
 /**
  *  \brief Get digest from context.
  */
-void hash_digest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)(void*, void*));
+void hash_digest(void* ctx, void*& dst, size_t dstlen, size_t hashlen, void (*cb)(void*, void*));
 
 /**
  *  \brief Get digest from context.
  */
-secure_string hash_digest(void* ctx, long hashlen, void (*cb)(void*, void*));
+secure_string hash_digest(void* ctx, size_t hashlen, void (*cb)(void*, void*));
 
 /**
  *  \brief Get hexdigest from context.
  */
-void hash_hexdigest(void* ctx, void*& dst, long dstlen, long hashlen, void (*cb)(void*, void*));
+void hash_hexdigest(void* ctx, void*& dst, size_t dstlen, size_t hashlen, void (*cb)(void*, void*));
 
 /**
  *  \brief Get hexdigest from context.
  */
-secure_string hash_hexdigest(void* ctx, long hashlen, void (*cb)(void*, void*));
+secure_string hash_hexdigest(void* ctx, size_t hashlen, void (*cb)(void*, void*));
 
 
 // OBJECTS

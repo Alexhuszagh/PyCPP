@@ -24,7 +24,7 @@ static size_t encoded_byte_count(const size_t length)
 {
     static constexpr double input = static_cast<double>(INPUT_INTERVAL);
     static constexpr double output = static_cast<double>(OUTPUT_INTERVAL);
-    return std::ceil(length * output / input);
+    return static_cast<size_t>(std::ceil(length * output / input));
 }
 
 
@@ -32,7 +32,7 @@ static size_t decoded_byte_count(const size_t length)
 {
     static constexpr double input = static_cast<double>(INPUT_INTERVAL);
     static constexpr double output = static_cast<double>(OUTPUT_INTERVAL);
-    return std::floor(length * input / output);
+    return static_cast<size_t>(std::floor(length * input / output));
 }
 
 /**
@@ -53,7 +53,7 @@ static size_t decoded_size(size_t length)
 {
     static constexpr double input = static_cast<double>(INPUT_INTERVAL);
     static constexpr double output = static_cast<double>(OUTPUT_INTERVAL);
-    return std::ceil(length * input) / output;
+    return static_cast<size_t>(std::ceil(length * input) / output);
 }
 
 

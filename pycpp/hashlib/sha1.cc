@@ -197,7 +197,7 @@ static void sha1_init(sha1_context* ctx)
 /**
  *  \brief Update hash with data.
  */
-static void sha1_update(void* ptr, const void* buf, long len)
+static void sha1_update(void* ptr, const void* buf, size_t len)
 {
     auto* ctx = (sha1_context*) ptr;
     auto* data = (const uint8_t*) buf;

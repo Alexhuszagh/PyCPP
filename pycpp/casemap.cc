@@ -806,7 +806,7 @@ std::string utf32_toupper(const std::string &str)
 {
     typedef casemap<uint32_t, uint8_t> functor;
     std::string upper;
-    upper.reserve(str.size() * 1.5);
+    upper.reserve(static_cast<size_t>(str.size() * 1.5));
 
     const uint32_t* src_first = (const uint32_t*) str.data();
     const uint32_t* src_last = src_first + (str.size() / 4);
@@ -821,7 +821,7 @@ std::u32string utf32_toupper(const std::u32string &str)
 {
     typedef casemap<uint32_t, uint32_t> functor;
     std::u32string upper;
-    upper.reserve(str.size() * 1.5);
+    upper.reserve(static_cast<size_t>(str.size() * 1.5));
     auto src_first = str.begin();
     auto dst_first = std::back_inserter(upper);
     functor()(src_first, str.end(), dst_first, uppercase_utf32);
