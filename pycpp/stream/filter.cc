@@ -121,7 +121,7 @@ auto filter_streambuf::underflow() -> int_type
         }
 
         // perform the callback
-        std::streamsize converted = do_callback();
+        converted = do_callback();
         if (!converted) {
             return traits_type::eof();
         }
