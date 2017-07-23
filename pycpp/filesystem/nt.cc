@@ -605,7 +605,6 @@ static DWORD convert_create_mode(std::ios_base::openmode mode)
 template <typename Pointer, typename Function>
 static HANDLE file_open_impl(const Pointer &path, std::ios_base::openmode mode, Function function)
 {
-    HANDLE handle;
     DWORD access = convert_access_mode(mode);
     DWORD share = 0;
     LPSECURITY_ATTRIBUTES security = nullptr;

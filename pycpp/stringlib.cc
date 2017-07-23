@@ -216,7 +216,7 @@ string_t replace_impl(const string_view& str, const string_view& sub, const stri
     string_t string;
     string.reserve(str.size());
     for (auto it = str.begin(); it != str.end(); ) {
-        auto distance = std::distance(it, str.end());
+        size_t distance = static_cast<size_t>(std::distance(it, str.end()));
         if (count && distance >= sub.size() && std::equal(sub.begin(), sub.end(), it)) {
             string.append(repl.data(), repl.size());
             it += sub.size();
