@@ -410,6 +410,7 @@ static bool move_dir_impl(const Path& src, const Path& dst, bool replace, MoveDi
             throw filesystem_error(filesystem_unexpected_error);
         }
     }
+    return false;
 }
 
 
