@@ -117,7 +117,7 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -std=c++${CMAKE_CXX_STANDARD}")
 elseif(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -WX /std:c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -WX -wd4018 /std:c++14")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /O0 /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /Ox /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
     set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MT /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
@@ -694,8 +694,7 @@ if(BUILD_TESTS)
     # Need to specify proper exception handling for Windows.
     if(MSVC)
         set_target_properties(pycpp_tests PROPERTIES
-            # GTest produces signed/unsigned comparison warnings
-            COMPILE_OPTIONS "/EHsc /wd4018"
+            COMPILE_OPTIONS "/EHsc"
         )
     endif()
 
