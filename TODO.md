@@ -1,3 +1,5 @@
+- Update AutoCOM so it is using the modern library
+
 - Use DyND for the NumPy interface
     - Wrap it nicely
     - http://libdynd.org/introduction/

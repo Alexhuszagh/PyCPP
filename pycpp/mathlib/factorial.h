@@ -28,7 +28,7 @@ N factorial(N n)
     if (n < 0) {
         return 0;
     } else {
-        return tgamma(n+1);
+        return static_cast<T>(tgamma(n+1));
     }
 }
 

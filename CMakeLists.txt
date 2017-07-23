@@ -678,7 +678,7 @@ if(BUILD_TESTS)
     endif()
 
     if(NOT TARGET gtest)
-        add_external_project(googletest_external third_party/googletest)
+        add_external_project(googletest_external third_party/googletest "-DCMAKE_CXX_FLAGS=-wd4018")
         add_external_target(gtest third_party/googletest/googletest/include third_party/googletest/googlemock/gtest STATIC googletest_external)
         add_external_target(gtest_main third_party/googletest/googletest/include third_party/googletest/googlemock/gtest STATIC googletest_external)
     endif()

@@ -201,7 +201,7 @@ auto choice(Iter first, Iter last) -> decltype(*std::declval<Iter>())
     if (first == last) {
         throw std::runtime_error("choice() on empty range.");
     }
-    return first[randrange(0, std::distance(first, last)-1, 1)];
+    return first[static_cast<size_t>(randrange(0, std::distance(first, last)-1, 1))];
 }
 
 
