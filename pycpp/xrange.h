@@ -273,7 +273,7 @@ range<xrange_iterator<T>> xrange(T start, T stop, T step = 1)
     }
 
     // force exactly step_count steps.
-    T step_count = std::ceil(double(distance) / step);
+    T step_count = static_cast<T>(std::ceil(double(distance) / step));
     stop = start + (step * step_count);
 
     return {iterator(start, step), iterator(stop, step)};

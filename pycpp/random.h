@@ -226,7 +226,7 @@ auto sample(Iter first, Iter last, size_t k) -> reference_vector<decltype(*std::
     auto r = xrange<size_t>(0, distance, 1);
     std::vector<size_t> index(r.begin(), r.end());
     for (size_t i = k; i >= 1; --i) {
-        auto j = randint(0, distance-1);
+        size_t j = static_cast<size_t>(randint(0, distance-1));
         std::swap(index[i-1], index[j]);
     }
 
@@ -251,9 +251,9 @@ auto sample(Iter first, Iter last, size_t k) -> reference_vector<decltype(*std::
 template <typename Iter>
 void shuffle(Iter first, Iter last)
 {
-    auto distance = std::distance(first, last);
+    size_t distance = static_cast<size_t>(std::distance(first, last));
     for (size_t i = distance; i >= 1; --i) {
-        auto j = randint(0, distance-1);
+        size_t j = static_cast<size_t>(randint(0, distance-1));
         std::swap(first[i-1], first[j]);
     }
 }
