@@ -538,11 +538,25 @@ endif()
 # INTERFACE
 # ---------
 
-target_compile_definitions(pycpp PUBLIC ${PYCPP_COMPILE_DEFINITIONS})
-target_compile_options(pycpp PUBLIC ${PYCPP_COMPILE_OPTIONS})
-add_dependencies(pycpp ${PYCPP_DEPENDENCIES})
-target_include_directories(pycpp PUBLIC ${PYCPP_INCLUDE_DIRS})
-target_link_libraries(pycpp PUBLIC ${PYCPP_LIBRARIES})
+if(PYCPP_COMPILE_DEFINITIONS)
+    target_compile_definitions(pycpp PUBLIC ${PYCPP_COMPILE_DEFINITIONS})
+endif()
+
+if(PYCPP_COMPILE_OPTIONS)
+    target_compile_options(pycpp PUBLIC ${PYCPP_COMPILE_OPTIONS})
+endif()
+
+if(PYCPP_DEPENDENCIES)
+    add_dependencies(pycpp ${PYCPP_DEPENDENCIES})
+endif()
+
+if(PYCPP_INCLUDE_DIRS)
+    target_include_directories(pycpp PUBLIC ${PYCPP_INCLUDE_DIRS})
+endif()
+
+if(PYCPP_LIBRARIES)
+    target_link_libraries(pycpp PUBLIC ${PYCPP_LIBRARIES})
+endif()
 
 list(APPEND PYCPP_LIBRARIES pycpp)
 
