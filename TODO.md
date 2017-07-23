@@ -1,4 +1,7 @@
 - Update AutoCOM so it is using the modern library
+    - Need install targets
+    - Same for PyCPP
+    - Track headers for install targets
 
 - Use DyND for the NumPy interface
     - Wrap it nicely

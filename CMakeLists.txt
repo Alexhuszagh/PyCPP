@@ -533,14 +533,11 @@ if(BUILD_XML)
     )
 endif()
 
-#include_directories(${PYCPP_INCLUDE_DIRS})
-
 if(BUILD_STATIC)
     add_library(pycpp STATIC ${SOURCE_FILES})
 else()
     add_library(pycpp SHARED ${SOURCE_FILES})
 endif()
-
 
 # INTERFACE
 # ---------
