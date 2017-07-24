@@ -43,17 +43,21 @@ struct in_place_type_t
     explicit in_place_type_t() = default;
 };
 
-template <typename T>
-constexpr in_place_type_t<T> in_place_type;
-
 template <size_t N>
 struct in_place_index_t
 {
     explicit in_place_index_t() = default;
 };
 
+#if defined(HAVE_CPP14)             // HAVE_CPP14
+
+template <typename T>
+constexpr in_place_type_t<T> in_place_type;
+
 template <size_t N>
 constexpr in_place_index_t<N> in_place_index;
+
+#endif                              // HAVE_CPP14
 
 #endif                              // HAVE_CPP17
 
