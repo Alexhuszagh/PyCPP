@@ -1,10 +1,10 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/punycode.h>
-#include <pycpp/stringlib.h>
-#include <pycpp/unicode.h>
 #include <pycpp/lattice/url.h>
+#include <pycpp/string/punycode.h>
+#include <pycpp/string/string.h>
+#include <pycpp/string/unicode.h>
 #include <cassert>
 
 PYCPP_BEGIN_NAMESPACE

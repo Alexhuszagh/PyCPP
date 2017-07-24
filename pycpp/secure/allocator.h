@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <pycpp/secure/util.h>
+#include <pycpp/secure/stdlib.h>
 #include <limits>
 #include <memory>
 #include <stdexcept>

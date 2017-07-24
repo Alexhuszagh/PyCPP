@@ -1,16 +1,11 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/compiler.h>
 #include <pycpp/lattice/dns.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 #include <cstdlib>
 #include <cstring>
-
-#if defined(HAVE_MSVC)
-#   pragma warning(push)
-#   pragma warning(disable:4800)
-#endif
-
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -168,6 +163,4 @@ address_iterator_t dns_lookup_t::end() const
 
 PYCPP_END_NAMESPACE
 
-#if defined(HAVE_MSVC)
-#   pragma warning(pop)
-#endif
+#include <warnings/pop.h>

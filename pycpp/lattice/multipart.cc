@@ -4,10 +4,10 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/hashlib.h>
-#include <pycpp/os.h>
 #include <pycpp/random.h>
-#include <pycpp/unicode.h>
 #include <pycpp/lattice/multipart.h>
+#include <pycpp/preprocessor/os.h>
+#include <pycpp/string/unicode.h>
 #include <fstream>
 #include <sstream>
 #include <unordered_map>

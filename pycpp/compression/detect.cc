@@ -1,8 +1,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/parallel.h>
 #include <pycpp/compression/detect.h>
+#include <pycpp/preprocessor/parallel.h>
 #include <pycpp/stream/fstream.h>
 
 PYCPP_BEGIN_NAMESPACE

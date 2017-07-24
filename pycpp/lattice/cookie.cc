@@ -2,8 +2,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/url.h>
 #include <pycpp/lattice/cookie.h>
+#include <pycpp/string/url.h>
 #include <sstream>
 
 

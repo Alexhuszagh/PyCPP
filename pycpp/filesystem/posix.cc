@@ -6,12 +6,12 @@
  */
 
 #include <pycpp/config.h>
-#include <pycpp/os.h>
+#include <pycpp/preprocessor/os.h>
 
 #if defined(OS_POSIX)                           // POSIX & MACOS
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
-#include <pycpp/unicode.h>
+#include <pycpp/string/unicode.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <unistd.h>

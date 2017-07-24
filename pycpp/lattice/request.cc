@@ -2,11 +2,11 @@
 //  :copyright: (c) 2015-2017 The Regents of the University of California.
 //  :license: MIT, see LICENSE.md for more details.
 
-#include <pycpp/base64.h>
-#include <pycpp/codec.h>
-#include <pycpp/os.h>
-#include <pycpp/unicode.h>
 #include <pycpp/lattice/request.h>
+#include <pycpp/preprocessor/os.h>
+#include <pycpp/string/base64.h>
+#include <pycpp/string/codec.h>
+#include <pycpp/string/unicode.h>
 #include <cstdio>
 #include <fstream>
 #include <sstream>

@@ -3,9 +3,9 @@
 
 #if defined(HAVE_BLOSC)
 
-#include <pycpp/architecture.h>
 #include <pycpp/compression/blosc.h>
 #include <pycpp/compression/core.h>
+#include <pycpp/preprocessor/architecture.h>
 #include <blosc.h>
 #include <algorithm>
 #include <cstring>

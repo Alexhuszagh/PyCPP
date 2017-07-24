@@ -15,8 +15,8 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-
-/** \brief `!=` implemented as `==`.
+/**
+ *  \brief `!=` implemented as `==`.
  */
 template <typename T>
 bool not_equal_to(const T& left, const T& right)
@@ -25,7 +25,8 @@ bool not_equal_to(const T& left, const T& right)
 }
 
 
-/** \brief `<=` implemented as `<`.
+/**
+ *  \brief `<=` implemented as `<`.
  */
 template <typename T>
 bool less_equal(const T& left, const T& right)
@@ -34,7 +35,8 @@ bool less_equal(const T& left, const T& right)
 }
 
 
-/** \brief `>` implemented as `<`.
+/**
+ *  \brief `>` implemented as `<`.
  */
 template <typename T>
 bool greater(const T& left, const T& right)
@@ -43,7 +45,8 @@ bool greater(const T& left, const T& right)
 }
 
 
-/** \brief `>=` implemented as `<`.
+/**
+ *  \brief `>=` implemented as `<`.
  */
 template <typename T>
 bool greater_equal(const T& left, const T& right)

@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/config.h>
-#include <pycpp/compiler.h>
 #include <pycpp/lattice/dns.h>
 #include <pycpp/lattice/ssl.h>
+#include <pycpp/preprocessor/compiler.h>
 #include <cassert>
 
 #if defined(HAVE_MSVC)

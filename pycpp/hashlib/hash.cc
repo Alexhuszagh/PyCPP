@@ -6,7 +6,7 @@
  */
 
 #include <pycpp/hashlib.h>
-#include <pycpp/hex.h>
+#include <pycpp/string/hex.h>
 
 PYCPP_BEGIN_NAMESPACE
 

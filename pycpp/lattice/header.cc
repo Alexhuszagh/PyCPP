@@ -2,8 +2,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/casemap.h>
 #include <pycpp/lattice/header.h>
+#include <pycpp/string/casemap.h>
 #include <algorithm>
 #include <cctype>
 #include <sstream>

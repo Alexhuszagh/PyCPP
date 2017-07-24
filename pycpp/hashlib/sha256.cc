@@ -5,10 +5,10 @@
  *  [reference] https://github.com/rhash/RHash
  */
 
-#include <pycpp/architecture.h>
-#include <pycpp/byteorder.h>
 #include <pycpp/hashlib.h>
-#include <pycpp/processor.h>
+#include <pycpp/preprocessor/architecture.h>
+#include <pycpp/preprocessor/byteorder.h>
+#include <pycpp/preprocessor/processor.h>
 #include <cstring>
 #include <stdexcept>
 

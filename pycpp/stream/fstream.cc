@@ -16,8 +16,8 @@
  *  2. https://github.com/llvm-mirror/libcxx/blob/master/include/fstream#L132
  */
 
-#include <pycpp/codec.h>
 #include <pycpp/stream/fstream.h>
+#include <pycpp/string/codec.h>
 
 PYCPP_BEGIN_NAMESPACE
 

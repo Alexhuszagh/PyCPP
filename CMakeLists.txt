@@ -39,6 +39,7 @@ option(WITH_XML "Build (only) XML library" OFF)
 # OPTIONS
 option(BUILD_STATIC "Build static library" ON)
 option(BUILD_TESTS "Build pycpp library tests" OFF)
+SET(CXX_STANDARD "11" CACHE STRING "Minimum C++ standard to support.")
 SET(PYCPP_NAMESPACE "" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
 
 if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_LATTICE OR WITH_MATH OR WITH_RE OR WITH_STREAM OR WITH_XML)
@@ -103,21 +104,21 @@ if (BUILD_XML)
     list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_XML=1")
 endif()
 
-if (BUILD_MATH)
-    # libdynd needs C++14 support
-    set(CMAKE_CXX_STANDARD 14)
-else()
-    set(CMAKE_CXX_STANDARD 11)
+if (BUILD_MATH OR MSVC)
+    if (CXX_STANDARD LESS "14")
+        # libdynd needs C++14 support
+        set(CXX_STANDARD 14)
+    endif()
 endif()
-set(CXX_STANDARD TRUE)
+set(CMAKE_CXX_STANDARD ${CXX_STANDARD})
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -std=c++${CMAKE_CXX_STANDARD}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -std=c++${CXX_STANDARD}")
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -std=c++${CMAKE_CXX_STANDARD}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -std=c++${CXX_STANDARD}")
 elseif(MSVC)
     add_definitions(-D_CRT_SECURE_NO_WARNINGS=1)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -WX -wd4018 /std:c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -WX -wd4018 /std:c++${CXX_STANDARD}")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /O0 /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /Ox /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
     set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MT /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
@@ -399,24 +400,23 @@ if(BUILD_XML)
 endif()
 
 set(SOURCE_FILES
+    pycpp/preprocessor/byteorder.cc
     pycpp/random/pseudorandom.cc
     pycpp/random/sysrandom.cc
+    pycpp/runtime/os.cc
     pycpp/safe/stdlib.cc
-    pycpp/secure/util.cc
-    pycpp/any.cc
-    pycpp/base16.cc
-    pycpp/base32.cc
-    pycpp/base64.cc
-    pycpp/byteorder.cc
-    pycpp/casemap.cc
-    pycpp/codec.cc
-    pycpp/getline.cc
-    pycpp/hex.cc
-    pycpp/punycode.cc
-    pycpp/runtime.cc
-    pycpp/stringlib.cc
-    pycpp/unicode.cc
-    pycpp/url.cc
+    pycpp/secure/stdlib.cc
+    pycpp/string/base16.cc
+    pycpp/string/base32.cc
+    pycpp/string/base64.cc
+    pycpp/string/casemap.cc
+    pycpp/string/codec.cc
+    pycpp/string/getline.cc
+    pycpp/string/hex.cc
+    pycpp/string/punycode.cc
+    pycpp/string/string.cc
+    pycpp/string/unicode.cc
+    pycpp/string/url.cc
 )
 
 if(BUILD_CIPHER)
@@ -426,6 +426,10 @@ if(BUILD_CIPHER)
 endif()
 
 if(BUILD_COLLECTIONS)
+    list(APPEND SOURCE_FILES
+        pycpp/collections/any.cc
+        pycpp/collections/variant.cc
+    )
 endif()
 
 if(BUILD_COMPRESSION)
@@ -505,7 +509,7 @@ endif()
 
 if(BUILD_MATH)
     list(APPEND SOURCE_FILES
-        pycpp/mathlib/distribution.cc
+        pycpp/math/distribution.cc
     )
 endif()
 
@@ -570,40 +574,40 @@ list(APPEND PYCPP_LIBRARIES pycpp)
 set(TEST_FILES
     test/main.cc
     test/cache/lru.cc
+    test/preprocessor/architecture.cc
+    test/preprocessor/byteorder.cc
+    test/preprocessor/compiler.cc
+    test/preprocessor/parallel.cc
+    test/preprocessor/processor.cc
+    test/preprocessor/os.cc
+    test/preprocessor/tls.cc
     test/reference/deque.cc
     test/reference/vector.cc
+    test/runtime/os.cc
     test/safe/stdlib.cc
     test/secure/allocator.cc
     test/secure/string.cc
-    test/secure/util.cc
+    test/secure/stdlib.cc
+    test/string/base16.cc
+    test/string/base32.cc
+    test/string/base64.cc
+    test/string/casemap.cc
+    test/string/codec.cc
+    test/string/getline.cc
+    test/string/hex.cc
+    test/string/punycode.cc
+    test/string/string.cc
+    test/string/unicode.cc
+    test/string/url.cc
     test/view/string.cc
     test/view/vector.cc
-    test/any.cc
-    test/architecture.cc
-    test/base16.cc
-    test/base32.cc
-    test/base64.cc
-    test/byteorder.cc
-    test/casemap.cc
-    test/codec.cc
-    test/compiler.cc
     test/enum.cc
-    test/getline.cc
-    test/hex.cc
     test/iterator.cc
     test/itertools.cc
-    test/processor.cc
-    test/optional.cc
     test/ordering.cc
-    test/os.cc
     test/pimpl.cc
-    test/punycode.cc
     test/random.cc
     test/xrange.cc
-    test/stringlib.cc
-    test/tls.cc
-    test/unicode.cc
-    test/url.cc
 )
 
 if (BUILD_CIPHER)
@@ -612,7 +616,10 @@ endif()
 
 if(BUILD_COLLECTIONS)
     list(APPEND TEST_FILES
+        test/collections/any.cc
+        test/collections/optional.cc
         test/collections/ordereddict.cc
+        test/collections/variant.cc
     )
 endif()
 
@@ -657,13 +664,13 @@ endif()
 
 if(BUILD_MATH)
     list(APPEND TEST_FILES
-        test/mathlib/average.cc
-        test/mathlib/binomial.cc
-        test/mathlib/distribution.cc
-        test/mathlib/dot.cc
-        test/mathlib/factorial.cc
-        test/mathlib/std.cc
-        test/mathlib/trapz.cc
+        test/math/average.cc
+        test/math/binomial.cc
+        test/math/distribution.cc
+        test/math/dot.cc
+        test/math/factorial.cc
+        test/math/std.cc
+        test/math/trapz.cc
     )
 endif()
 

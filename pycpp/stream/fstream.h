@@ -8,11 +8,11 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <pycpp/compiler.h>
+#include <pycpp/preprocessor/compiler.h>
 #include <fstream>
 
 #if defined(HAVE_GCC)
-#   include <pycpp/os.h>
+#   include <pycpp/preprocessor/os.h>
 #   include <ext/stdio_filebuf.h>
 #   include <stdio.h>
 #   include <iostream>

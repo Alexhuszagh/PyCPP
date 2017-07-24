@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pycpp/codec.h>
-#include <pycpp/os.h>
+#include <pycpp/preprocessor/os.h>
+#include <pycpp/string/codec.h>
 #include <deque>
 #include <string>
 

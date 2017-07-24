@@ -6,7 +6,7 @@
  */
 
 #include <pycpp/config.h>
-#include <pycpp/os.h>
+#include <pycpp/preprocessor/os.h>
 
 #if defined(OS_WINDOWS)
 
@@ -15,9 +15,9 @@
 #   define _WIN32_WINNT _WIN32_WINNT_VISTA
 #endif
 
-#include <pycpp/casemap.h>
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
+#include <pycpp/string/casemap.h>
 #include <io.h>
 #include <windows.h>
 #include <sys/stat.h>

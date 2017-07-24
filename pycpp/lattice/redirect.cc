@@ -2,13 +2,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/compiler.h>
 #include <pycpp/lattice/redirect.h>
-
-#if defined(HAVE_MSVC)
-#   pragma warning(push)
-#   pragma warning(disable:4800)
-#endif
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -58,6 +54,4 @@ redirects_t::operator bool() const
 
 PYCPP_END_NAMESPACE
 
-#if defined(HAVE_MSVC)
-#   pragma warning(pop)
-#endif
+#include <warnings/pop.h>

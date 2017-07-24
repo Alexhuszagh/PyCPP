@@ -5,8 +5,8 @@
  *  \brief Windows socket adaptor.
  */
 
-#include <pycpp/compiler.h>
-#include <pycpp/os.h>
+#include <pycpp/preprocessor/compiler.h>
+#include <pycpp/preprocessor/os.h>
 #if defined(OS_WINDOWS)
 
 #include <pycpp/lattice/adaptor/windows.h>

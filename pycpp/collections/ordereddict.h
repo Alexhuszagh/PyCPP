@@ -9,7 +9,7 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <pycpp/compiler.h>
+#include <pycpp/preprocessor/compiler.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>

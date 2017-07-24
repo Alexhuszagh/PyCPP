@@ -2,8 +2,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/architecture.h>
 #include <pycpp/hashlib.h>
+#include <pycpp/preprocessor/architecture.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <cstdio>

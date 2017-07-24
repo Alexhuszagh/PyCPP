@@ -5,8 +5,8 @@
  *  \brief File-based stream unittests.
  */
 
-#include <pycpp/byteorder.h>
-#include <pycpp/os.h>
+#include <pycpp/preprocessor/byteorder.h>
+#include <pycpp/preprocessor/os.h>
 #include <pycpp/stream/fstream.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>

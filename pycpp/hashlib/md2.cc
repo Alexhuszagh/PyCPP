@@ -6,7 +6,7 @@
  */
 
 #include <pycpp/hashlib.h>
-#include <pycpp/processor.h>
+#include <pycpp/preprocessor/processor.h>
 #include <cstring>
 #include <stdexcept>
 

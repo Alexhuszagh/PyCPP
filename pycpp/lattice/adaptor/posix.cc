@@ -5,7 +5,7 @@
  *  \brief POSIX socket adaptor.
  */
 
-#include <pycpp/os.h>
+#include <pycpp/preprocessor/os.h>
 #if defined(OS_POSIX)
 
 #include <pycpp/lattice/adaptor/posix.h>

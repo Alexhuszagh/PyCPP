@@ -5,9 +5,9 @@
 
 // This module is basically identical to zlib,
 // so just include the private error handling.
-#include <pycpp/byteorder.h>
 #include <pycpp/compression/zlib.cc>
 #include <pycpp/compression/gzip.h>
+#include <pycpp/preprocessor/byteorder.h>
 #include <cstring>
 #include <ctime>
 

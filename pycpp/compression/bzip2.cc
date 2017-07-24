@@ -3,9 +3,9 @@
 
 #if defined(HAVE_BZIP2)
 
-#include <pycpp/architecture.h>
 #include <pycpp/compression/bzip2.h>
 #include <pycpp/compression/core.h>
+#include <pycpp/preprocessor/architecture.h>
 #include <bzlib.h>
 #include <string.h>
 #include <stdexcept>

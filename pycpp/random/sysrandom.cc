@@ -9,8 +9,8 @@
  *  are used for truly random bytes.
  */
 
-#include <pycpp/os.h>
 #include <pycpp/random.h>
+#include <pycpp/preprocessor/os.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #if defined(OS_WINDOWS)

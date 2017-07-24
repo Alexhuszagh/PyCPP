@@ -1,3 +1,21 @@
+- Need a C++11 variant structure
+- Need to add typedefs to any and make it mirror std::any
+    - emplace
+    - make_any
+    - any_cast
+    - unittests
+
+- Need to use variant/optional/any only when std version isn't available
+    - any -- DONE
+    - optional -- DONE
+    -- variant
+
+- Filesystem unittests
+    - This is a major point of failure: don't slack
+
+- Defaultdict
+- namedtuple
+
 - Update AutoCOM so it is using the modern library
     - Need install targets
     - Same for PyCPP

@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/stringlib.h>
+#include <pycpp/string/string.h>
 #include <pycpp/xml/dom.h>
 #include <sstream>
 #include <stdexcept>

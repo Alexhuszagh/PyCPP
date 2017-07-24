@@ -2,14 +2,14 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/casemap.h>
 #include <pycpp/hashlib.h>
-#include <pycpp/hex.h>
 #include <pycpp/random.h>
-#include <pycpp/stringlib.h>
 #include <pycpp/lattice/digest.h>
 #include <pycpp/lattice/parameter.h>
 #include <pycpp/lattice/url.h>
+#include <pycpp/string/casemap.h>
+#include <pycpp/string/hex.h>
+#include <pycpp/string/string.h>
 #include <algorithm>
 #include <cstring>
 #include <iomanip>

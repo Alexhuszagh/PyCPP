@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <pycpp/os.h>
+#include <pycpp/preprocessor/os.h>
 
 #if defined(OS_POSIX)
 

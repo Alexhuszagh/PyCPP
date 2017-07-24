@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include <pycpp/os.h>
 #include <pycpp/lattice/adaptor/openssl.h>
 #include <pycpp/lattice/adaptor/nossl.h>
 #include <pycpp/lattice/adaptor/posix.h>
 #include <pycpp/lattice/adaptor/windows.h>
+#include <pycpp/preprocessor/os.h>
 
 PYCPP_BEGIN_NAMESPACE
 

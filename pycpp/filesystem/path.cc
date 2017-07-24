@@ -6,7 +6,7 @@
  */
 
 #include <pycpp/filesystem.h>
-#include <pycpp/stringlib.h>
+#include <pycpp/string/string.h>
 #include <algorithm>
 #if defined(OS_WINDOWS)
 #   include <windows.h>

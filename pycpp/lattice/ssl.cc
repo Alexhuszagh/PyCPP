@@ -1,14 +1,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/casemap.h>
-#include <pycpp/compiler.h>
 #include <pycpp/lattice/ssl.h>
-
-#if defined(HAVE_MSVC)
-#   pragma warning(push)
-#   pragma warning(disable:4715)
-#endif
+#include <pycpp/string/casemap.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -40,6 +34,7 @@ certificate_format_t certificate_file_t::format() const
     } else if (data == "p12") {
         return PKCS12;
     }
+    throw std::runtime_error("Unrecognized certificate format.");
 }
 
 
@@ -66,7 +61,3 @@ verify_peer_t::operator bool() const
 }
 
 PYCPP_END_NAMESPACE
-
-#if defined(HAVE_MSVC)
-#   pragma warning(pop)
-#endif
