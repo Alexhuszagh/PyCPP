@@ -103,6 +103,17 @@ struct guard
     void operator=(guard&&) = delete;
 };
 
+struct date
+{
+    int i;
+    date() = delete;
+    date(int i) : i{i} {};
+    date(date&& d) : i(d.i) { d.i = 0; }
+    date(const date&) = delete;
+    date& operator=(const date&) = delete;
+    date& operator=(date&& d) { i = d.i; d.i = 0; return *this;};
+};
+
 // TESTS
 // -----
 
@@ -330,3 +341,197 @@ TEST(optional, example_guard)
     oga = nullopt;
     EXPECT_FALSE(oga);
 };
+
+
+template <typename T>
+static T get_value(optional<T> src = nullopt, optional<T&> dst = nullopt)
+{
+    T cached{};
+
+    if (src) {
+        cached = *src;
+
+        if (dst) {
+            *dst = *src;
+        }
+    }
+    return cached;
+}
+
+
+TEST(optional, example_optional_arg)
+{
+    int iii = 0;
+    iii = get_value<int>(iii, iii);
+    iii = get_value<int>(iii);
+    iii = get_value<int>();
+
+    {
+        optional<guard> grd1{in_place, "res1", 1};
+        optional<guard> grd2;
+
+        grd2.emplace("res2", 2);
+        grd1 = nullopt;
+    }
+};
+
+
+static std::tuple<date, date, date> get_triplet()
+{
+    return std::tuple<date, date, date>{date{1}, date{2}, date{3}};
+}
+
+
+static void run_triplet(date const&, date const&, date const&)
+{}
+
+
+TEST(optional, example_date)
+{
+    optional<date> start, mid, end;
+
+    std::tie(start, mid, end) = get_triplet();
+    run_triplet(*start, *mid, *end);
+};
+
+
+template <typename T>
+static void unused(T&&)
+{}
+
+
+TEST(optional, example_conceptual_model)
+{
+    optional<int> oi = 0;
+    optional<int> oj = 1;
+    optional<int> ok = nullopt;
+
+    oi = 1;
+    oj = nullopt;
+    ok = 0;
+
+    unused(oi == nullopt);
+    unused(oj == 0);
+    unused(ok == 1);
+};
+
+
+static bool fun(std::string, optional<int> oi = nullopt)
+{
+    return bool(oi);
+}
+
+
+TEST(optional, example_converting_ctor)
+{
+    EXPECT_TRUE(fun("dog", 2));
+    EXPECT_FALSE(fun("dog"));
+    EXPECT_FALSE(fun("dog", nullopt));
+};
+
+
+TEST(optional, bad_comparison)
+{
+    optional<int> oi, oj;
+    int i;
+    bool b = (oi == oj);
+    b = (oi >= i);
+    b = (oi == i);
+    unused(b);
+};
+
+
+TEST(optional, value_or)
+{
+    optional<int> oi = 1;
+    int i = oi.value_or(0);
+    EXPECT_EQ(i, 1);
+
+    oi = nullopt;
+    EXPECT_EQ(oi.value_or(3), 3);
+
+    optional<std::string> os{"AAA"};
+    EXPECT_EQ(os.value_or("BBB"), "AAA");
+    os = {};
+    EXPECT_EQ(os.value_or("BBB"), "BBB");
+};
+
+
+TEST(optional, reset)
+{
+    optional<int> oi {1};
+    oi.reset();
+    EXPECT_FALSE(oi);
+
+    int i = 1;
+    optional<const int&> oir {i};
+    oir.reset();
+    EXPECT_FALSE(oir);
+};
+
+
+TEST(optional, mixed_order)
+{
+    optional<int> on {nullopt};
+    optional<int> o0 {0};
+    optional<int> o1 {1};
+
+    EXPECT_TRUE((on < 0));
+    EXPECT_TRUE((on < 1));
+    EXPECT_TRUE(!(o0 < 0));
+    EXPECT_TRUE((o0 < 1));
+    EXPECT_TRUE(!(o1 < 0));
+    EXPECT_TRUE(!(o1 < 1));
+
+    EXPECT_TRUE(!(on >= 0));
+    EXPECT_TRUE(!(on >= 1));
+    EXPECT_TRUE((o0 >= 0));
+    EXPECT_TRUE(!(o0 >= 1));
+    EXPECT_TRUE((o1 >= 0));
+    EXPECT_TRUE((o1 >= 1));
+
+    EXPECT_TRUE(!(on > 0));
+    EXPECT_TRUE(!(on > 1));
+    EXPECT_TRUE(!(o0 > 0));
+    EXPECT_TRUE(!(o0 > 1));
+    EXPECT_TRUE((o1 > 0));
+    EXPECT_TRUE(!(o1 > 1));
+
+    EXPECT_TRUE((on <= 0));
+    EXPECT_TRUE((on <= 1));
+    EXPECT_TRUE((o0 <= 0));
+    EXPECT_TRUE((o0 <= 1));
+    EXPECT_TRUE(!(o1 <= 0));
+    EXPECT_TRUE((o1 <= 1));
+
+    EXPECT_TRUE((0 > on));
+    EXPECT_TRUE((1 > on));
+    EXPECT_TRUE(!(0 > o0));
+    EXPECT_TRUE((1 > o0));
+    EXPECT_TRUE(!(0 > o1));
+    EXPECT_TRUE(!(1 > o1));
+
+    EXPECT_TRUE(!(0 <= on));
+    EXPECT_TRUE(!(1 <= on));
+    EXPECT_TRUE((0 <= o0));
+    EXPECT_TRUE(!(1 <= o0));
+    EXPECT_TRUE((0 <= o1));
+    EXPECT_TRUE((1 <= o1));
+
+    EXPECT_TRUE(!(0 < on));
+    EXPECT_TRUE(!(1 < on));
+    EXPECT_TRUE(!(0 < o0));
+    EXPECT_TRUE(!(1 < o0));
+    EXPECT_TRUE((0 < o1));
+    EXPECT_TRUE(!(1 < o1));
+
+    EXPECT_TRUE((0 >= on));
+    EXPECT_TRUE((1 >= on));
+    EXPECT_TRUE((0 >= o0));
+    EXPECT_TRUE((1 >= o0));
+    EXPECT_TRUE(!(0 >= o1));
+    EXPECT_TRUE((1 >= o1));
+};
+
+// TODO: finish the test suite here:
+// https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp

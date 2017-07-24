@@ -185,6 +185,12 @@ struct remove_all_extents<array<T, N>>: remove_all_extents<T>
 {};
 
 template <typename T>
+inline constexpr T* addressof_(T& t)
+{
+    return &t;
+}
+
+template <typename T>
 using remove_all_extents_t = typename remove_all_extents<T>::type;
 
 #include <warnings/push.h>
@@ -289,7 +295,6 @@ struct is_nothrow_swappable
 template <typename T>
 struct is_nothrow_swappable<T, false>: std::false_type
 {};
-
 
 struct equal_to
 {
@@ -968,7 +973,7 @@ protected:
     template <size_t I, typename T, typename... Args>
     inline static T& construct_alt(alt<I, T> &a, Args &&... args)
     {
-        ::new (static_cast<void *>(std::addressof(a))) alt<I, T>(in_place_t{}, std::forward<Args>(args)...);
+        ::new (static_cast<void *>(addressof_(a))) alt<I, T>(in_place_t{}, std::forward<Args>(args)...);
         return a.value;
     }
 
@@ -1247,7 +1252,7 @@ public:
             visitation::base::visit_alt_at(this->index(), swapper{}, *this, that);
         } else {
             impl *lhs = this;
-            impl *rhs = std::addressof(that);
+            impl *rhs = addressof_(that);
             if (lhs->move_nothrow() && !rhs->move_nothrow()) {
                 std::swap(lhs, rhs);
             }
@@ -1584,7 +1589,7 @@ namespace detail
 
 template <size_t I, typename V>
 inline constexpr auto generic_get_if(V *v) noexcept
-VARIANT_DECLTYPE_DECAY(v && holds_alternative<I>(*v) ? std::addressof(access::variant::get_alt<I>(*v).value) : nullptr)
+VARIANT_DECLTYPE_DECAY(v && holds_alternative<I>(*v) ? addressof_(access::variant::get_alt<I>(*v).value) : nullptr)
 
 }   /* detail */
 
