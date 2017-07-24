@@ -1,16 +1,10 @@
 - Internal compiler error with MSVC
     - Variant, line 555
 
-- Unittests
-    - any
-    - optional
-    - variant
-
 - Filesystem unittests
     - This is a major point of failure: don't slack
 
 - Defaultdict
-- namedtuple
 
 - Update AutoCOM so it is using the modern library
     - Need install targets

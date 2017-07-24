@@ -532,6 +532,3 @@ TEST(optional, mixed_order)
     EXPECT_TRUE(!(0 >= o1));
     EXPECT_TRUE((1 >= o1));
 };
-
-// TODO: finish the test suite here:
-// https://github.com/akrzemi1/Optional/blob/master/test_optional.cpp

@@ -25,7 +25,7 @@ any::any() noexcept:
 any::any(const any& rhs):
     vtable(rhs.vtable)
 {
-    if(!rhs.has_value()) {
+    if(rhs.has_value()) {
         rhs.vtable->copy(rhs.storage, storage);
     }
 }
@@ -34,7 +34,7 @@ any::any(const any& rhs):
 any::any(any&& rhs) noexcept:
     vtable(rhs.vtable)
 {
-    if(!rhs.has_value()) {
+    if(rhs.has_value()) {
         rhs.vtable->move(rhs.storage, storage);
         rhs.vtable = nullptr;
     }
@@ -62,7 +62,7 @@ any& any::operator=(any&& rhs) noexcept
 
 void any::reset() noexcept
 {
-    if(!has_value()) {
+    if(has_value()) {
         vtable->destroy(storage);
         vtable = nullptr;
     }
@@ -71,13 +71,13 @@ void any::reset() noexcept
 
 bool any::has_value() const noexcept
 {
-    return vtable == nullptr;
+    return vtable != nullptr;
 }
 
 
 const std::type_info& any::type() const noexcept
 {
-    return has_value()? typeid(void) : vtable->type();
+    return has_value() ? vtable->type() : typeid(void);
 }
 
 
