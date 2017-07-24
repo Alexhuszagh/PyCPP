@@ -759,7 +759,190 @@ TEST(variant, ctor_default)
 }
 
 
-// https://github.com/mpark/variant/blob/master/test/ctor.copy.cpp
-// https://github.com/mpark/variant/blob/master/test/assign.fwd.cpp
-// https://github.com/mpark/variant/blob/master/test/assign.move.cpp
-// https://github.com/mpark/variant/blob/master/test/assign.copy.cpp
+TEST(variant, ctor_copy)
+{
+    variant<int, std::string> v("hello");
+    EXPECT_EQ("hello", get<std::string>(v));
+    variant<int, std::string> w(v);
+    EXPECT_EQ("hello", get<std::string>(w));
+    EXPECT_EQ("hello", get<std::string>(v));
+
+    constexpr variant<int, const char *> cv(42);
+    static_assert(42 == get<int>(cv), "");
+    constexpr variant<int, const char *> cw(cv);
+    static_assert(42 == get<int>(cw), "");
+}
+
+
+TEST(variant, ctor_copy_valueless_by_exception)
+{
+    variant<int, move_thrower_t> v(42);
+    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_TRUE(v.valueless_by_exception());
+    variant<int, move_thrower_t> w(v);
+    EXPECT_TRUE(w.valueless_by_exception());
+}
+
+TEST(variant, assign_fwd_same_type)
+{
+    variant<int, std::string> v(101);
+    EXPECT_EQ(101, get<int>(v));
+    v = 202;
+    EXPECT_EQ(202, get<int>(v));
+}
+
+
+TEST(variant, assign_fwd_same_type_fwd)
+{
+    variant<int, std::string> v(1.1);
+    EXPECT_EQ(1, get<int>(v));
+    v = 2.2;
+    EXPECT_EQ(2, get<int>(v));
+}
+
+
+TEST(variant, assign_fwd_diff_type)
+{
+    variant<int, std::string> v(42);
+    EXPECT_EQ(42, get<int>(v));
+    v = "42";
+    EXPECT_EQ("42", get<std::string>(v));
+}
+
+
+TEST(variant, assign_fwd_diff_type_fwd)
+{
+    variant<int, std::string> v(42);
+    EXPECT_EQ(42, get<int>(v));
+    v = "42";
+    EXPECT_EQ("42", get<std::string>(v));
+}
+
+
+TEST(variant, assign_fwd_exact_match)
+{
+    variant<const char *, std::string> v;
+    v = std::string("hello");
+    EXPECT_EQ("hello", get<std::string>(v));
+}
+
+TEST(variant, assign_fwd_better_match)
+{
+    variant<int, double> v;
+    v = 'x';
+    EXPECT_EQ(static_cast<int>('x'), get<int>(v));
+}
+
+
+TEST(variant, assign_fwd_nomatch)
+{
+    struct x {};
+    static_assert(!std::is_assignable<variant<int, std::string>, x>{}, "variant<int, std::string> v; v = x;");
+}
+
+
+TEST(variant, assign_fwd_ambiguous)
+{
+    static_assert(!std::is_assignable<variant<short, long>, int>{}, "variant<short, long> v; v = 42;");
+}
+
+
+TEST(variant, assign_fwd_same_type_optimization)
+{
+    variant<int, std::string> v("hello world!");
+    const std::string &x = get<std::string>(v);
+    EXPECT_EQ("hello world!", x);
+    auto capacity = x.capacity();
+    v = "hello";
+    const std::string &y = get<std::string>(v);
+    EXPECT_EQ("hello", y);
+    EXPECT_EQ(capacity, y.capacity());
+}
+
+
+TEST(variant, assign_fwd_throw_on_assign)
+{
+    variant<int, move_thrower_t> v(in_place_type_t<move_thrower_t>{});
+    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_FALSE(v.valueless_by_exception());
+    EXPECT_EQ(1u, v.index());
+    v = 42;
+    EXPECT_FALSE(v.valueless_by_exception());
+    EXPECT_EQ(42, get<int>(v));
+}
+
+
+TEST(variant, assign_move_same_type)
+{
+    struct x {
+        constexpr x() {}
+        x(const x &) = delete;
+        x(x &&) noexcept { EXPECT_TRUE(false); }
+        x &operator=(const x &) = delete;
+        x &operator=(x &&) noexcept { EXPECT_TRUE(true); return *this; }
+    };
+    variant<x, int> v, w;
+    v = std::move(w);
+}
+
+TEST(variant, assign_move_diff_type)
+{
+    struct x {
+        constexpr x() {}
+        x(const x &) = delete;
+        x(x &&) noexcept { EXPECT_TRUE(true); }
+        x &operator=(const x &) = delete;
+        x &operator=(x &&) noexcept { EXPECT_TRUE(false); return *this; }
+    };
+    variant<x, int> v(42), w;
+    v = std::move(w);
+}
+
+TEST(variant, assign_move_valueless_by_exception)
+{
+    variant<int, move_thrower_t> v(42);
+    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_TRUE(v.valueless_by_exception());
+    variant<int, move_thrower_t> w(42);
+    w = std::move(v);
+    EXPECT_TRUE(w.valueless_by_exception());
+}
+
+
+TEST(variant, assign_copy_same_type)
+{
+    struct x {
+        constexpr x() {}
+        x(const x &) noexcept { EXPECT_TRUE(false); }
+        x(x &&) = default;
+        x &operator=(const x &) noexcept { EXPECT_TRUE(true); return *this; }
+        x &operator=(x &&) = delete;
+    };
+    variant<x, int> v, w;
+    v = w;
+}
+
+
+TEST(variant, assign_copy_diff_type)
+{
+    struct x {
+        constexpr x() {}
+        x(const x &) noexcept { EXPECT_TRUE(true); }
+        x(x &&) = default;
+        x &operator=(const x &) noexcept { EXPECT_TRUE(false); return *this; }
+        x &operator=(x &&) = delete;
+    };
+    variant<x, int> v(42), w;
+    v = w;
+}
+
+
+TEST(variant, assign_copy_valueless_by_exception)
+{
+    variant<int, move_thrower_t> v(42);
+    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_TRUE(v.valueless_by_exception());
+    variant<int, move_thrower_t> w(42);
+    w = v;
+    EXPECT_TRUE(w.valueless_by_exception());
+}

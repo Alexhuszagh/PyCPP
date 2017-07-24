@@ -1,18 +1,10 @@
-- Need a C++11 variant structure
-    - unittests
+- Internal compiler error with MSVC
+    - Variant, line 555
 
-- Optional unittests
-
-- Need to add typedefs to any and make it mirror std::any
-    - emplace
-    - make_any
-    - any_cast
-    - unittests
-
-- Need to use variant/optional/any only when std version isn't available
-    - any -- DONE
-    - optional -- DONE
-    -- variant -- DONE
+- Unittests
+    - any
+    - optional
+    - variant
 
 - Filesystem unittests
     - This is a major point of failure: don't slack
