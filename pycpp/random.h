@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/xrange.h>
+#include <pycpp/misc/xrange.h>
 #include <pycpp/reference/vector.h>
 #include <array>
 #include <string>

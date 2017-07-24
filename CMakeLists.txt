@@ -574,6 +574,10 @@ list(APPEND PYCPP_LIBRARIES pycpp)
 set(TEST_FILES
     test/main.cc
     test/cache/lru.cc
+    test/misc/enum.cc
+    test/misc/ordering.cc
+    test/misc/pimpl.cc
+    test/misc/xrange.cc
     test/preprocessor/architecture.cc
     test/preprocessor/byteorder.cc
     test/preprocessor/compiler.cc
@@ -601,13 +605,9 @@ set(TEST_FILES
     test/string/url.cc
     test/view/string.cc
     test/view/vector.cc
-    test/enum.cc
     test/iterator.cc
     test/itertools.cc
-    test/ordering.cc
-    test/pimpl.cc
     test/random.cc
-    test/xrange.cc
 )
 
 if (BUILD_CIPHER)

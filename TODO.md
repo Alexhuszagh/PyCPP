@@ -1,4 +1,8 @@
 - Need a C++11 variant structure
+    - unittests
+
+- Optional unittests
+
 - Need to add typedefs to any and make it mirror std::any
     - emplace
     - make_any
@@ -8,7 +12,7 @@
 - Need to use variant/optional/any only when std version isn't available
     - any -- DONE
     - optional -- DONE
-    -- variant
+    -- variant -- DONE
 
 - Filesystem unittests
     - This is a major point of failure: don't slack

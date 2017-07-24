@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pycpp/ordering.h>
 #include <pycpp/iterator/range.h>
+#include <pycpp/misc/ordering.h>
 #include <cmath>
 #include <stdexcept>
 

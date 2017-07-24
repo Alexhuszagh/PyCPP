@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <pycpp/ordering.h>
+#include <pycpp/misc/ordering.h>
 #include <pycpp/reference/core.h>
 #include <vector>
 

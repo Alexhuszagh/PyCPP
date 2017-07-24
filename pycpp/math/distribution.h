@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pycpp/xrange.h>
 #include <pycpp/iterator/category.h>
+#include <pycpp/misc/xrange.h>
 #include <pycpp/preprocessor/parallel.h>
 #include <algorithm>
 #include <math.h>

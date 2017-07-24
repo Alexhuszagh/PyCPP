@@ -5,7 +5,7 @@
  *  \brief Range coroutine unittests.
  */
 
-#include <pycpp/xrange.h>
+#include <pycpp/misc/xrange.h>
 #include <gtest/gtest.h>
 #include <numeric>
 

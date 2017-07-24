@@ -5,7 +5,7 @@
  *  \brief Ordering unittests.
  */
 
-#include <pycpp/ordering.h>
+#include <pycpp/misc/ordering.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE

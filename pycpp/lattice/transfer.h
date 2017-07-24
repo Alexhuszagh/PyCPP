@@ -9,7 +9,7 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <pycpp/enum.h>
+#include <pycpp/misc/enum.h>
 
 PYCPP_BEGIN_NAMESPACE
 

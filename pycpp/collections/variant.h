@@ -72,6 +72,12 @@ constexpr size_t variant_size_v = variant_size<T>::value;
         return __VA_ARGS__;                                             \
     }
 
+// TODO: remove
+#define RETURN(...)                                          \
+  noexcept(noexcept(__VA_ARGS__)) -> decltype(__VA_ARGS__) { \
+    return __VA_ARGS__;                                      \
+  }
+
 namespace detail
 {
 // DETAIL
@@ -206,6 +212,11 @@ template <typename Pmf, typename Ptr, typename... As>
 inline constexpr auto invoke(Pmf pmf, Ptr &&ptr, As &&... as) noexcept
 VARIANT_DECLTYPE_AUTO(((*std::forward<Ptr>(ptr)).*pmf)(std::forward<As>(as)...))
 
+namespace invoker
+{
+// INVOKER
+// -------
+
 template <typename Void, typename, typename...>
 struct invoke_result
 {};
@@ -215,8 +226,18 @@ struct invoke_result<void_t<decltype(invoke(std::declval<F>(), std::declval<Args
     identity<decltype(invoke(std::declval<F>(), std::declval<Args>()...))>
 {};
 
+}   /* invoker */
+
+template <typename F, typename... Args>
+using invoke_result = invoker::invoke_result<void, F, Args...>;
+
 template <typename F, typename... Args>
 using invoke_result_t = typename invoke_result<F, Args...>::type;
+
+namespace invocable
+{
+// INVOCABLE
+// ---------
 
 template <typename Void, typename, typename...>
 struct is_invocable: std::false_type
@@ -227,13 +248,20 @@ struct is_invocable<void_t<invoke_result_t<F, Args...>>, F, Args...>: std::true_
 {};
 
 template <typename Void, typename, typename, typename...>
-struct is_invocable_r: std::false_type
-{};
+struct is_invocable_r: std::false_type {};
 
 template <typename R, typename F, typename... Args>
 struct is_invocable_r<void_t<invoke_result_t<F, Args...>>, R, F, Args...>:
     std::is_convertible<invoke_result_t<F, Args...>, R>
 {};
+
+}   /* invocable */
+
+template <typename F, typename... Args>
+using is_invocable = invocable::is_invocable<void, F, Args...>;
+
+template <typename R, typename F, typename... Args>
+using is_invocable_r = invocable::is_invocable_r<void, R, F, Args...>;
 
 template <typename T>
 struct is_swappable_impl
@@ -1315,8 +1343,8 @@ public:
         impl_(in_place_index_t<0>{})
     {}
 
-    variant(const variant &) = default;
-    variant(variant &&) = default;
+    variant(const variant&) = default;
+    variant(variant&&) = default;
 
     template <
         typename Arg,
@@ -1328,7 +1356,7 @@ public:
         size_t I = detail::find_index_sfinae<T, Ts...>::value,
         detail::enable_if_t<std::is_constructible<T, Arg>::value, int> = 0
     >
-    inline constexpr variant(Arg &&arg) noexcept(std::is_nothrow_constructible<T, Arg>::value):
+    inline constexpr variant(Arg&& arg) noexcept(std::is_nothrow_constructible<T, Arg>::value):
         impl_(in_place_index_t<I>{}, std::forward<Arg>(arg))
     {}
 
@@ -1338,7 +1366,7 @@ public:
         typename T = detail::type_pack_element_t<I, Ts...>,
         detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
     >
-    inline explicit constexpr variant(in_place_index_t<I>, Args &&... args)
+    inline explicit constexpr variant(in_place_index_t<I>, Args&&... args)
     noexcept(std::is_nothrow_constructible<T, Args...>::value):
         impl_(in_place_index_t<I>{}, std::forward<Args>(args)...)
     {}
@@ -1390,7 +1418,7 @@ public:
         size_t I = detail::find_index_sfinae<T, Ts...>::value,
         detail::enable_if_t<(std::is_assignable<T &, Arg>::value && std::is_constructible<T, Arg>::value), int> = 0
     >
-    inline variant& operator=(Arg&& arg) noexcept((std::is_nothrow_assignable<T &, Arg>::value && std::is_nothrow_constructible<T, Arg>::value))
+    inline variant& operator=(Arg&& arg) noexcept((std::is_nothrow_assignable<T&, Arg>::value && std::is_nothrow_constructible<T, Arg>::value))
     {
         impl_.template assign<I>(std::forward<Arg>(arg));
         return *this;

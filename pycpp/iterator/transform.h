@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pycpp/ordering.h>
 #include <pycpp/iterator/category.h>
+#include <pycpp/misc/ordering.h>
 #include <tuple>
 #include <type_traits>
 

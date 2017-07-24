@@ -5,7 +5,7 @@
  *  \brief Pimpl unittests.
  */
 
-#include <pycpp/pimpl.h>
+#include <pycpp/misc/pimpl.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
