@@ -14,9 +14,13 @@ PYCPP_USING_NAMESPACE
 // -----
 
 
+#if BUILD_FILESYSTEM                    // BUILD_FILESYSTEM
+
 TEST(runtime, os)
 {
     EXPECT_TRUE(is_wine() || true);
     EXPECT_TRUE(is_docker() || true);
     EXPECT_TRUE(is_container() || true);
 }
+
+#endif                                  // BUILD_FILESYSTEM

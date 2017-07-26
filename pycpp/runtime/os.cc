@@ -19,6 +19,8 @@ PYCPP_BEGIN_NAMESPACE
 
 #if defined(OS_LINUX)                   // LINUX
 
+#if BUILD_FILESYSTEM                    // BUILD_FILESYTEM
+
 /**
  *  \brief Check if the `.dockerinit` file exists (deprecated).
  */
@@ -53,6 +55,8 @@ static bool read_proc_cgroup()
 
     return str.find("docker") != str.npos;
 }
+
+#endif                                  // BUILD_FILESYSTEM
 
 
 /**
@@ -102,6 +106,18 @@ bool is_wine()
 }
 
 
+bool is_container()
+{
+#if defined(OS_LINUX)                   // LINUX
+    return !read_pid1();
+#else                                   // NOT LINUX
+    return false;
+#endif
+}
+
+
+#if BUILD_FILESYSTEM                    // BUILD_FILESYSTEM
+
 /**
  *  This algorithm is prone to break, and aims to be stable among
  *  nearly every docker version available.
@@ -124,16 +140,7 @@ bool is_docker()
 #endif
 }
 
-
-
-bool is_container()
-{
-#if defined(OS_LINUX)                   // LINUX
-    return !read_pid1();
-#else                                   // NOT LINUX
-    return false;
-#endif
-}
+#endif                                  // BUILD_FILESYSTEM
 
 
 PYCPP_END_NAMESPACE

@@ -56,27 +56,46 @@ constexpr size_t variant_size_v = variant_size<T>::value;
 // MACROS
 // ------
 
-/**
- *  \brief decltype(auto) for C++11.
- */
-#define VARIANT_DECLTYPE_AUTO(...) -> decltype((__VA_ARGS__))           \
-    {                                                                   \
-        return __VA_ARGS__;                                             \
+#if defined(HAVE_MSVC) || defined(HAVE_CPP14)       // RETURN TYPE DEDUCTION
+
+#define PYCPP_AUTO auto
+#define PYCPP_AUTO_RETURN(...) { return __VA_ARGS__; }
+
+#define PYCPP_AUTO_NOEXCEPT_RETURN(...) noexcept { return __VA_ARGS__; }
+
+#define PYCPP_AUTO_REFREF auto&&
+#define PYCPP_AUTO_REFREF_RETURN(...) { return __VA_ARGS__; }
+
+#define PYCPP_DECLTYPE_AUTO decltype(auto)
+#define PYCPP_DECLTYPE_AUTO_RETURN(...) { return __VA_ARGS__; }
+
+#else                                               // NO RETURN TYPE DEDUCTION
+
+#define PYCPP_AUTO auto
+#define PYCPP_AUTO_RETURN(...) -> decay_t<decltype(__VA_ARGS__)> { return __VA_ARGS__; }
+
+#define PYCPP_AUTO_NOEXCEPT_RETURN(...)                                         \
+    noexcept(noexcept(__VA_ARGS__)) -> decltype(__VA_ARGS__)                    \
+    {                                                                           \
+        return __VA_ARGS__;                                                     \
     }
 
-/**
- *  \brief decay_t<decltype(auto)> for C++11.
- */
-#define VARIANT_DECLTYPE_DECAY(...) -> decay_t<decltype((__VA_ARGS__))> \
-    {                                                                   \
-        return __VA_ARGS__;                                             \
+
+#define PYCPP_AUTO_REFREF auto
+#define PYCPP_AUTO_REFREF_RETURN(...) -> decltype((__VA_ARGS__))                \
+    {                                                                           \
+      static_assert(std::is_reference<decltype((__VA_ARGS__))>::value, "");     \
+      return __VA_ARGS__;                                                       \
     }
 
-// TODO: remove
-#define RETURN(...)                                          \
-  noexcept(noexcept(__VA_ARGS__)) -> decltype(__VA_ARGS__) { \
-    return __VA_ARGS__;                                      \
-  }
+#define PYCPP_DECLTYPE_AUTO auto
+#define PYCPP_DECLTYPE_AUTO_RETURN(...) -> decltype(__VA_ARGS__)                \
+    {                                                                           \
+      return __VA_ARGS__;                                                       \
+    }
+
+#endif                                              // RETURN TYPE DEDUCTION
+
 
 namespace detail
 {
@@ -134,8 +153,53 @@ struct indexed_type: size_constant<I>,
     identity<T>
 {};
 
+template <typename T, T... Is>
+struct integer_sequence
+{
+    using value_type = T;
+    static constexpr size_t size() noexcept
+    {
+        return sizeof...(Is);
+    }
+};
+
+template <size_t... Is>
+using index_sequence = integer_sequence<size_t, Is...>;
+
+template <typename Lhs, typename Rhs>
+struct make_index_sequence_concat;
+
+template <size_t... Lhs, size_t... Rhs>
+struct make_index_sequence_concat<index_sequence<Lhs...>, index_sequence<Rhs...>>:
+    identity<index_sequence<Lhs..., (sizeof...(Lhs) + Rhs)...>>
+{};
+
+template <size_t N>
+struct make_index_sequence_impl;
+
+template <size_t N>
+using make_index_sequence = typename make_index_sequence_impl<N>::type;
+
+template <size_t N>
+struct make_index_sequence_impl: make_index_sequence_concat<
+    make_index_sequence<N / 2>,
+    make_index_sequence<N - (N / 2)>
+>
+{};
+
+template <>
+struct make_index_sequence_impl<0> : identity<index_sequence<>>
+{};
+
+template <>
+struct make_index_sequence_impl<1> : identity<index_sequence<0>>
+{};
+
+template <typename... Ts>
+using index_sequence_for = make_index_sequence<sizeof...(Ts)>;
+
 template <bool... Bs>
-using bool_sequence = std::integer_sequence<bool, Bs...>;
+using bool_sequence = integer_sequence<bool, Bs...>;
 
 template <bool... Bs>
 using all_ = std::is_same<bool_sequence<true, Bs...>, bool_sequence<Bs..., true>>;
@@ -147,7 +211,7 @@ private:
     template <typename> struct set;
 
     template <size_t... Is>
-    struct set<std::index_sequence<Is...>>: indexed_type<Is, Ts>...
+    struct set<index_sequence<Is...>>: indexed_type<Is, Ts>...
     {};
 
     template <typename T>
@@ -156,7 +220,7 @@ private:
     inline static std::enable_if<false> impl(...);
 
 public:
-    using type = decltype(impl(set<std::index_sequence_for<Ts...>>{}));
+    using type = decltype(impl(set<index_sequence_for<Ts...>>{}));
 };
 
 template <size_t I, typename... Ts>
@@ -197,26 +261,26 @@ using remove_all_extents_t = typename remove_all_extents<T>::type;
 #include <warnings/unused-parameter.h>
 
 template <typename F, typename... As>
-inline constexpr auto invoke(F &&f, As &&... as) noexcept
-VARIANT_DECLTYPE_AUTO(std::forward<F>(f)(std::forward<As>(as)...))
+inline constexpr auto invoke(F &&f, As &&... as)
+PYCPP_AUTO_NOEXCEPT_RETURN(std::forward<F>(f)(std::forward<As>(as)...))
 
 #include <warnings/pop.h>
 
 template <typename B, typename T, typename D>
-inline constexpr auto invoke(T B::*pmv, D &&d) noexcept
-VARIANT_DECLTYPE_AUTO(std::forward<D>(d).*pmv)
+inline constexpr auto invoke(T B::*pmv, D &&d)
+PYCPP_AUTO_NOEXCEPT_RETURN(std::forward<D>(d).*pmv)
 
 template <typename Pmv, typename Ptr>
-inline constexpr auto invoke(Pmv pmv, Ptr &&ptr) noexcept
-VARIANT_DECLTYPE_AUTO((*std::forward<Ptr>(ptr)).*pmv)
+inline constexpr auto invoke(Pmv pmv, Ptr &&ptr)
+PYCPP_AUTO_NOEXCEPT_RETURN((*std::forward<Ptr>(ptr)).*pmv)
 
 template <typename B, typename T, typename D, typename... As>
-inline constexpr auto invoke(T B::*pmf, D &&d, As &&... as) noexcept
-VARIANT_DECLTYPE_AUTO((std::forward<D>(d).*pmf)(std::forward<As>(as)...))
+inline constexpr auto invoke(T B::*pmf, D &&d, As &&... as)
+PYCPP_AUTO_NOEXCEPT_RETURN((std::forward<D>(d).*pmf)(std::forward<As>(as)...))
 
 template <typename Pmf, typename Ptr, typename... As>
-inline constexpr auto invoke(Pmf pmf, Ptr &&ptr, As &&... as) noexcept
-VARIANT_DECLTYPE_AUTO(((*std::forward<Ptr>(ptr)).*pmf)(std::forward<As>(as)...))
+inline constexpr auto invoke(Pmf pmf, Ptr &&ptr, As &&... as)
+PYCPP_AUTO_NOEXCEPT_RETURN(((*std::forward<Ptr>(ptr)).*pmf)(std::forward<As>(as)...))
 
 namespace invoker
 {
@@ -470,35 +534,35 @@ struct recursive_union
     struct get_alt_impl
     {
         template <typename V>
-        inline constexpr auto operator()(V &&v) const
-        VARIANT_DECLTYPE_AUTO(get_alt_impl<I - 1>{}(std::forward<V>(v).tail_))
+        inline constexpr PYCPP_AUTO_REFREF operator()(V &&v) const
+        PYCPP_AUTO_REFREF_RETURN(get_alt_impl<I - 1>{}(std::forward<V>(v).tail_))
     };
 
     template <bool Dummy>
     struct get_alt_impl<0, Dummy>
     {
         template <typename V>
-        inline constexpr auto operator()(V &&v) const
-        VARIANT_DECLTYPE_AUTO(std::forward<V>(v).head_)
+        inline constexpr PYCPP_AUTO_REFREF operator()(V &&v) const
+        PYCPP_AUTO_REFREF_RETURN(std::forward<V>(v).head_)
     };
 
     template <typename V, size_t I>
-    inline static constexpr auto get_alt(V &&v, in_place_index_t<I>)
-    VARIANT_DECLTYPE_AUTO(get_alt_impl<I>{}(std::forward<V>(v)))
+    inline static constexpr PYCPP_AUTO_REFREF get_alt(V &&v, in_place_index_t<I>)
+    PYCPP_AUTO_REFREF_RETURN(get_alt_impl<I>{}(std::forward<V>(v)))
 };
 
 struct base
 {
     template <size_t I, typename V>
-    inline static constexpr auto get_alt(V &&v)
-    VARIANT_DECLTYPE_AUTO(recursive_union::get_alt(data(std::forward<V>(v)), in_place_index_t<I>{}))
+    inline static constexpr PYCPP_AUTO_REFREF get_alt(V &&v)
+    PYCPP_AUTO_REFREF_RETURN(recursive_union::get_alt(data(std::forward<V>(v)), in_place_index_t<I>{}))
 };
 
 struct variant
 {
     template <size_t I, typename V>
-    inline static constexpr auto get_alt(V &&v)
-    VARIANT_DECLTYPE_AUTO(base::get_alt<I>(std::forward<V>(v).impl_))
+    inline static constexpr PYCPP_AUTO_REFREF get_alt(V &&v)
+    PYCPP_AUTO_REFREF_RETURN(base::get_alt<I>(std::forward<V>(v).impl_))
 };
 
 }   /* access */
@@ -545,29 +609,29 @@ private:
         template <typename F, typename... Vs>
         struct impl
         {
-            inline static constexpr auto dispatch(F f, Vs... vs)
-            VARIANT_DECLTYPE_AUTO(invoke(static_cast<F>(f), access::base::get_alt<Is>(static_cast<Vs>(vs))...))
+            inline static constexpr PYCPP_DECLTYPE_AUTO dispatch(F f, Vs... vs)
+            PYCPP_DECLTYPE_AUTO_RETURN(invoke(static_cast<F>(f), access::base::get_alt<Is>(static_cast<Vs>(vs))...))
         };
     };
 
     template <typename F, typename... Vs, size_t... Is>
-    inline static constexpr auto make_dispatch(std::index_sequence<Is...>)
-    VARIANT_DECLTYPE_DECAY(&dispatcher<Is...>::template impl<F, Vs...>::dispatch)
+    inline static constexpr PYCPP_AUTO make_dispatch(index_sequence<Is...>)
+    PYCPP_AUTO_RETURN(&dispatcher<Is...>::template impl<F, Vs...>::dispatch)
 
     template <size_t I, typename F, typename... Vs>
-    inline static constexpr auto make_fdiagonal_impl()
-    VARIANT_DECLTYPE_DECAY(make_dispatch<F, Vs...>(std::index_sequence<indexed_type<I, Vs>::value...>{}))
+    inline static constexpr PYCPP_AUTO make_fdiagonal_impl()
+    PYCPP_AUTO_RETURN(make_dispatch<F, Vs...>(index_sequence<indexed_type<I, Vs>::value...>{}))
 
     template <typename F, typename... Vs, size_t... Is>
-    inline static constexpr auto make_fdiagonal_impl(std::index_sequence<Is...>)
-    VARIANT_DECLTYPE_DECAY(make_farray(make_fdiagonal_impl<Is, F, Vs...>()...))
+    inline static constexpr PYCPP_AUTO make_fdiagonal_impl(index_sequence<Is...>)
+    PYCPP_AUTO_RETURN(make_farray(make_fdiagonal_impl<Is, F, Vs...>()...))
 
     template <typename F, typename V, typename... Vs>
     inline static constexpr auto make_fdiagonal()
-        -> decltype(make_fdiagonal_impl<F, V, Vs...>(std::make_index_sequence<decay_t<V>::size()>{}))
+        -> decltype(make_fdiagonal_impl<F, V, Vs...>(make_index_sequence<decay_t<V>::size()>{}))
     {
         static_assert(all((decay_t<V>::size() == decay_t<Vs>::size())...), "all of the variants must be the same size.");
-        return make_fdiagonal_impl<F, V, Vs...>(std::make_index_sequence<decay_t<V>::size()>{});
+        return make_fdiagonal_impl<F, V, Vs...>(make_index_sequence<decay_t<V>::size()>{});
     }
 
     template <typename F, typename... Vs>
@@ -577,39 +641,40 @@ private:
         struct impl;
 
         template <size_t... Is>
-        struct impl<std::index_sequence<Is...>>
+        struct impl<index_sequence<Is...>>
         {
-            inline constexpr auto operator()() const
-            VARIANT_DECLTYPE_DECAY(make_dispatch<F, Vs...>(std::index_sequence<Is...>{}))
+            inline constexpr PYCPP_AUTO operator()() const
+            PYCPP_AUTO_RETURN(make_dispatch<F, Vs...>(index_sequence<Is...>{}))
         };
 
         template <size_t... Is, size_t... Js, typename... Ls>
-        struct impl<std::index_sequence<Is...>, std::index_sequence<Js...>, Ls...>
+        struct impl<index_sequence<Is...>, index_sequence<Js...>, Ls...>
         {
-            inline constexpr auto operator()() const
-            VARIANT_DECLTYPE_DECAY(make_farray(impl<std::index_sequence<Is..., Js>, Ls...>{}()...))
+            inline constexpr PYCPP_AUTO operator()() const
+            PYCPP_AUTO_RETURN(make_farray(impl<index_sequence<Is..., Js>, Ls...>{}()...))
         };
     };
 
     template <typename F, typename... Vs>
-    inline static constexpr auto make_fmatrix()
-    VARIANT_DECLTYPE_DECAY(typename make_fmatrix_impl<F, Vs...>::template impl<std::index_sequence<>, std::make_index_sequence<decay_t<Vs>::size()>...>{}())
+    inline static constexpr PYCPP_AUTO make_fmatrix()
+    PYCPP_AUTO_RETURN(typename make_fmatrix_impl<F, Vs...>::template impl<index_sequence<>, make_index_sequence<decay_t<Vs>::size()>...>{}())
 
 public:
     template <typename Visitor, typename... Vs>
-    inline static constexpr auto visit_alt_at(size_t index, Visitor&& visitor, Vs&&... vs)
-    VARIANT_DECLTYPE_AUTO(
+    inline static constexpr PYCPP_DECLTYPE_AUTO visit_alt_at(size_t index, Visitor&& visitor, Vs&&... vs)
+    PYCPP_DECLTYPE_AUTO_RETURN(
         at(make_fdiagonal<Visitor&&, decltype(as_base(std::forward<Vs>(vs)))...>(), index)
         (std::forward<Visitor>(visitor), as_base(std::forward<Vs>(vs))...)
     )
 
     template <typename Visitor, typename... Vs>
-    inline static constexpr auto visit_alt(Visitor &&visitor, Vs&&... vs)
-    VARIANT_DECLTYPE_AUTO(
+    inline static constexpr PYCPP_DECLTYPE_AUTO visit_alt(Visitor &&visitor, Vs&&... vs)
+    PYCPP_DECLTYPE_AUTO_RETURN(
         at(make_fmatrix<Visitor &&, decltype(as_base(std::forward<Vs>(vs)))...>(), vs.index()...)
         (std::forward<Visitor>(visitor), as_base(std::forward<Vs>(vs))...)
     )
 };
+
 
 struct variant
 {
@@ -622,8 +687,8 @@ private:
 #include <warnings/push.h>
 #include <warnings/unused-parameter.h>
 
-        inline constexpr auto operator()(Visitor&& visitor, Values&&... values) const
-        VARIANT_DECLTYPE_AUTO(invoke(std::forward<Visitor>(visitor), std::forward<Values>(values)...))
+        inline constexpr PYCPP_DECLTYPE_AUTO operator()(Visitor&& visitor, Values&&... values) const
+        PYCPP_DECLTYPE_AUTO_RETURN(invoke(std::forward<Visitor>(visitor), std::forward<Values>(values)...))
 
 #include <warnings/pop.h>
 
@@ -635,8 +700,8 @@ private:
         Visitor &&visitor_;
 
         template <typename... Alts>
-        inline constexpr auto operator()(Alts &&... alts) const
-        VARIANT_DECLTYPE_AUTO(
+        inline constexpr PYCPP_DECLTYPE_AUTO operator()(Alts &&... alts) const
+        PYCPP_DECLTYPE_AUTO_RETURN(
             visit_exhaustive_visitor_check<Visitor, decltype((std::forward<Alts>(alts).value))...>{}(
                 std::forward<Visitor>(visitor_),
                 std::forward<Alts>(alts).value...
@@ -645,25 +710,25 @@ private:
     };
 
     template <typename Visitor>
-    inline static constexpr auto make_value_visitor(Visitor &&visitor)
-    VARIANT_DECLTYPE_DECAY(value_visitor<Visitor>{std::forward<Visitor>(visitor)})
+    inline static constexpr PYCPP_AUTO make_value_visitor(Visitor &&visitor)
+    PYCPP_AUTO_RETURN(value_visitor<Visitor>{std::forward<Visitor>(visitor)})
 
 public:
     template <typename Visitor, typename... Vs>
-    inline static constexpr auto visit_alt_at(size_t index, Visitor&& visitor, Vs&&... vs)
-    VARIANT_DECLTYPE_AUTO(base::visit_alt_at(index, std::forward<Visitor>(visitor), std::forward<Vs>(vs).impl_...))
+    inline static constexpr PYCPP_DECLTYPE_AUTO visit_alt_at(size_t index, Visitor&& visitor, Vs&&... vs)
+    PYCPP_DECLTYPE_AUTO_RETURN(base::visit_alt_at(index, std::forward<Visitor>(visitor), std::forward<Vs>(vs).impl_...))
 
     template <typename Visitor, typename... Vs>
-    inline static constexpr auto visit_alt(Visitor &&visitor, Vs&&... vs)
-    VARIANT_DECLTYPE_AUTO(base::visit_alt(std::forward<Visitor>(visitor), std::forward<Vs>(vs).impl_...))
+    inline static constexpr PYCPP_DECLTYPE_AUTO visit_alt(Visitor &&visitor, Vs&&... vs)
+    PYCPP_DECLTYPE_AUTO_RETURN(base::visit_alt(std::forward<Visitor>(visitor), std::forward<Vs>(vs).impl_...))
 
     template <typename Visitor, typename... Vs>
-    inline static constexpr auto visit_value_at(size_t index, Visitor&& visitor, Vs&&... vs)
-    VARIANT_DECLTYPE_AUTO(visit_alt_at(index, make_value_visitor(std::forward<Visitor>(visitor)), std::forward<Vs>(vs)...))
+    inline static constexpr PYCPP_DECLTYPE_AUTO visit_value_at(size_t index, Visitor&& visitor, Vs&&... vs)
+    PYCPP_DECLTYPE_AUTO_RETURN(visit_alt_at(index, make_value_visitor(std::forward<Visitor>(visitor)), std::forward<Vs>(vs)...))
 
     template <typename Visitor, typename... Vs>
-    inline static constexpr auto visit_value(Visitor&& visitor, Vs&&... vs)
-    VARIANT_DECLTYPE_AUTO(visit_alt(make_value_visitor(std::forward<Visitor>(visitor)), std::forward<Vs>(vs)...))
+    inline static constexpr PYCPP_DECLTYPE_AUTO visit_value(Visitor&& visitor, Vs&&... vs)
+    PYCPP_DECLTYPE_AUTO_RETURN(visit_alt(make_value_visitor(std::forward<Visitor>(visitor)), std::forward<Vs>(vs)...))
 };
 
 }   /* visitation */
@@ -1524,13 +1589,13 @@ struct generic_get_impl
     constexpr generic_get_impl(int)
     {}
 
-    constexpr auto operator()(V &&v) const
-    VARIANT_DECLTYPE_AUTO(access::variant::get_alt<I>(std::forward<V>(v)).value)
+    constexpr PYCPP_AUTO_REFREF operator()(V &&v) const
+    PYCPP_AUTO_REFREF_RETURN(access::variant::get_alt<I>(std::forward<V>(v)).value)
 };
 
 template <size_t I, typename V>
-inline constexpr auto generic_get(V&& v)
-VARIANT_DECLTYPE_AUTO(generic_get_impl<I, V>(holds_alternative<I>(v) ? 0 : (throw bad_variant_access(), 0))(std::forward<V>(v)))
+inline constexpr PYCPP_AUTO_REFREF generic_get(V&& v)
+PYCPP_AUTO_REFREF_RETURN(generic_get_impl<I, V>(holds_alternative<I>(v) ? 0 : (throw bad_variant_access(), 0))(std::forward<V>(v)))
 
 }  /* detail */
 
@@ -1588,8 +1653,8 @@ namespace detail
 // ------
 
 template <size_t I, typename V>
-inline constexpr auto generic_get_if(V *v) noexcept
-VARIANT_DECLTYPE_DECAY(v && holds_alternative<I>(*v) ? addressof_(access::variant::get_alt<I>(*v).value) : nullptr)
+inline constexpr PYCPP_AUTO generic_get_if(V *v) noexcept
+PYCPP_AUTO_RETURN(v && holds_alternative<I>(*v) ? addressof_(access::variant::get_alt<I>(*v).value) : nullptr)
 
 }   /* detail */
 
@@ -1676,8 +1741,8 @@ inline constexpr bool operator>=(const variant<Ts...>& lhs, const variant<Ts...>
 }
 
 template <typename Visitor, typename... Vs>
-inline constexpr auto visit(Visitor&& visitor, Vs&&... vs)
-VARIANT_DECLTYPE_AUTO(
+inline constexpr PYCPP_DECLTYPE_AUTO visit(Visitor&& visitor, Vs&&... vs)
+PYCPP_DECLTYPE_AUTO_RETURN(
     (detail::all(!vs.valueless_by_exception()...) ? (void)0 : throw bad_variant_access()),
     detail::visitation::variant::visit_value(std::forward<Visitor>(visitor), std::forward<Vs>(vs)...)
 )
@@ -1759,8 +1824,13 @@ constexpr bool is_enabled()
 // CLEANUP
 // -------
 
-#undef VARIANT_DECLTYPE_AUTO
-#undef VARIANT_DECLTYPE_DECAY
+#undef PYCPP_AUTO
+#undef PYCPP_AUTO_RETURN
+#undef PYCPP_AUTO_NOEXCEPT_RETURN
+#undef PYCPP_AUTO_REFREF
+#undef PYCPP_AUTO_REFREF_RETURN
+#undef PYCPP_DECLTYPE_AUTO
+#undef PYCPP_DECLTYPE_AUTO_RETURN
 
 #endif                              // HAVE_CPP17
 

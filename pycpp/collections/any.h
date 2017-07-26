@@ -408,14 +408,14 @@ inline T* any_cast(any* operand) noexcept
 template <typename T, typename... Ts>
 any make_any(Ts&&... ts)
 {
-    return any(in_place_type<T>, std::forward<Ts>(ts)...);
+    return any(in_place_type_t<T>(), std::forward<Ts>(ts)...);
 }
 
 
 template <typename T, typename U, typename ...Ts>
 any make_any(std::initializer_list<U> list, Ts&&... ts)
 {
-    return any(in_place_type<T>, list, std::forward<Ts>(ts)...);
+    return any(in_place_type_t<T>(), list, std::forward<Ts>(ts)...);
 }
 
 #endif                              // HAVE_CPP17
