@@ -261,7 +261,7 @@ using remove_all_extents_t = typename remove_all_extents<T>::type;
 #include <warnings/unused-parameter.h>
 
 template <typename F, typename... As>
-inline constexpr auto invoke(F &&f, As &&... as)
+inline constexpr auto invoke(F &&f, As&&... as)
 PYCPP_AUTO_NOEXCEPT_RETURN(std::forward<F>(f)(std::forward<As>(as)...))
 
 #include <warnings/pop.h>
@@ -271,15 +271,15 @@ inline constexpr auto invoke(T B::*pmv, D &&d)
 PYCPP_AUTO_NOEXCEPT_RETURN(std::forward<D>(d).*pmv)
 
 template <typename Pmv, typename Ptr>
-inline constexpr auto invoke(Pmv pmv, Ptr &&ptr)
+inline constexpr auto invoke(Pmv pmv, Ptr&& ptr)
 PYCPP_AUTO_NOEXCEPT_RETURN((*std::forward<Ptr>(ptr)).*pmv)
 
 template <typename B, typename T, typename D, typename... As>
-inline constexpr auto invoke(T B::*pmf, D &&d, As &&... as)
+inline constexpr auto invoke(T B::*pmf, D &&d, As&&... as)
 PYCPP_AUTO_NOEXCEPT_RETURN((std::forward<D>(d).*pmf)(std::forward<As>(as)...))
 
 template <typename Pmf, typename Ptr, typename... As>
-inline constexpr auto invoke(Pmf pmf, Ptr &&ptr, As &&... as)
+inline constexpr auto invoke(Pmf pmf, Ptr&& ptr, As&&... as)
 PYCPP_AUTO_NOEXCEPT_RETURN(((*std::forward<Ptr>(ptr)).*pmf)(std::forward<As>(as)...))
 
 namespace invoker
