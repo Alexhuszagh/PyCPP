@@ -56,12 +56,16 @@ constexpr size_t variant_size_v = variant_size<T>::value;
 // MACROS
 // ------
 
+#define PYCPP_AUTO_NOEXCEPT_RETURN(...)                                         \
+    noexcept(noexcept(__VA_ARGS__)) -> decltype(__VA_ARGS__)                    \
+    {                                                                           \
+        return __VA_ARGS__;                                                     \
+    }
+
 #if defined(HAVE_MSVC) || defined(HAVE_CPP14)       // RETURN TYPE DEDUCTION
 
 #define PYCPP_AUTO auto
 #define PYCPP_AUTO_RETURN(...) { return __VA_ARGS__; }
-
-#define PYCPP_AUTO_NOEXCEPT_RETURN(...) noexcept { return __VA_ARGS__; }
 
 #define PYCPP_AUTO_REFREF auto&&
 #define PYCPP_AUTO_REFREF_RETURN(...) { return __VA_ARGS__; }
@@ -73,12 +77,6 @@ constexpr size_t variant_size_v = variant_size<T>::value;
 
 #define PYCPP_AUTO auto
 #define PYCPP_AUTO_RETURN(...) -> decay_t<decltype(__VA_ARGS__)> { return __VA_ARGS__; }
-
-#define PYCPP_AUTO_NOEXCEPT_RETURN(...)                                         \
-    noexcept(noexcept(__VA_ARGS__)) -> decltype(__VA_ARGS__)                    \
-    {                                                                           \
-        return __VA_ARGS__;                                                     \
-    }
 
 
 #define PYCPP_AUTO_REFREF auto
