@@ -259,25 +259,25 @@ using remove_all_extents_t = typename remove_all_extents<T>::type;
 #include <warnings/unused-parameter.h>
 
 template <typename F, typename... As>
-inline constexpr auto invoke(F &&f, As&&... as)
+inline constexpr auto invoke_(F &&f, As&&... as)
 PYCPP_AUTO_NOEXCEPT_RETURN(std::forward<F>(f)(std::forward<As>(as)...))
 
 #include <warnings/pop.h>
 
 template <typename B, typename T, typename D>
-inline constexpr auto invoke(T B::*pmv, D &&d)
+inline constexpr auto invoke_(T B::*pmv, D &&d)
 PYCPP_AUTO_NOEXCEPT_RETURN(std::forward<D>(d).*pmv)
 
 template <typename Pmv, typename Ptr>
-inline constexpr auto invoke(Pmv pmv, Ptr&& ptr)
+inline constexpr auto invoke_(Pmv pmv, Ptr&& ptr)
 PYCPP_AUTO_NOEXCEPT_RETURN((*std::forward<Ptr>(ptr)).*pmv)
 
 template <typename B, typename T, typename D, typename... As>
-inline constexpr auto invoke(T B::*pmf, D &&d, As&&... as)
+inline constexpr auto invoke_(T B::*pmf, D &&d, As&&... as)
 PYCPP_AUTO_NOEXCEPT_RETURN((std::forward<D>(d).*pmf)(std::forward<As>(as)...))
 
 template <typename Pmf, typename Ptr, typename... As>
-inline constexpr auto invoke(Pmf pmf, Ptr&& ptr, As&&... as)
+inline constexpr auto invoke_(Pmf pmf, Ptr&& ptr, As&&... as)
 PYCPP_AUTO_NOEXCEPT_RETURN(((*std::forward<Ptr>(ptr)).*pmf)(std::forward<As>(as)...))
 
 namespace invoker
@@ -290,8 +290,8 @@ struct invoke_result
 {};
 
 template <typename F, typename... Args>
-struct invoke_result<void_t<decltype(invoke(std::declval<F>(), std::declval<Args>()...))>, F, Args...>:
-    identity<decltype(invoke(std::declval<F>(), std::declval<Args>()...))>
+struct invoke_result<void_t<decltype(invoke_(std::declval<F>(), std::declval<Args>()...))>, F, Args...>:
+    identity<decltype(invoke_(std::declval<F>(), std::declval<Args>()...))>
 {};
 
 }   /* invoker */
@@ -608,7 +608,7 @@ private:
         struct impl
         {
             inline static constexpr PYCPP_DECLTYPE_AUTO dispatch(F f, Vs... vs)
-            PYCPP_DECLTYPE_AUTO_RETURN(invoke(static_cast<F>(f), access::base::get_alt<Is>(static_cast<Vs>(vs))...))
+            PYCPP_DECLTYPE_AUTO_RETURN(invoke_(static_cast<F>(f), access::base::get_alt<Is>(static_cast<Vs>(vs))...))
         };
     };
 
@@ -632,6 +632,31 @@ private:
         return make_fdiagonal_impl<F, V, Vs...>(make_index_sequence<decay_t<V>::size()>{});
     }
 
+#if defined(HAVE_MSVC)
+    template <typename F, typename... Vs, std::size_t... Is>
+    inline static constexpr auto make_fmatrix_impl(
+        index_sequence<Is...> is) {
+      return make_dispatch<F, Vs...>(is);
+    }
+
+    template <typename F,
+              typename... Vs,
+              std::size_t... Is,
+              std::size_t... Js,
+              typename... Ls>
+    inline static constexpr auto make_fmatrix_impl(
+        index_sequence<Is...>, index_sequence<Js...>, Ls... ls) {
+      return make_farray(make_fmatrix_impl<F, Vs...>(
+          index_sequence<Is..., Js>{}, ls...)...);
+    }
+
+    template <typename F, typename... Vs>
+    inline static constexpr auto make_fmatrix() {
+      return make_fmatrix_impl<F, Vs...>(
+          index_sequence<>{},
+          make_index_sequence<decay_t<Vs>::size()>{}...);
+    }
+#else
     template <typename F, typename... Vs>
     struct make_fmatrix_impl
     {
@@ -656,6 +681,7 @@ private:
     template <typename F, typename... Vs>
     inline static constexpr PYCPP_AUTO make_fmatrix()
     PYCPP_AUTO_RETURN(typename make_fmatrix_impl<F, Vs...>::template impl<index_sequence<>, make_index_sequence<decay_t<Vs>::size()>...>{}())
+#endif
 
 public:
     template <typename Visitor, typename... Vs>
@@ -686,7 +712,7 @@ private:
 #include <warnings/unused-parameter.h>
 
         inline constexpr PYCPP_DECLTYPE_AUTO operator()(Visitor&& visitor, Values&&... values) const
-        PYCPP_DECLTYPE_AUTO_RETURN(invoke(std::forward<Visitor>(visitor), std::forward<Values>(values)...))
+        PYCPP_DECLTYPE_AUTO_RETURN(invoke_(std::forward<Visitor>(visitor), std::forward<Values>(values)...))
 
 #include <warnings/pop.h>
 
