@@ -1,10 +1,8 @@
-- Internal compiler error with MSVC
-    - Variant, line 555
-
 - Filesystem unittests
     - This is a major point of failure: don't slack
 
 - Defaultdict
+- Need an API around a key/value store.
 
 - Update AutoCOM so it is using the modern library
     - Need install targets
