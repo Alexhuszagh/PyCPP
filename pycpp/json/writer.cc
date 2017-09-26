@@ -5,6 +5,8 @@
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/prettywriter.h>
 
+#include <cassert>
+
 PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
@@ -104,6 +106,7 @@ bool json_stream_writer::is_pretty() const
 void json_stream_writer::start_object()
 {
     auto w = (rapidjson_prettywriter*) writer_;
+    assert(w && "Writer pointer cannot be null.");
     w->StartObject();
 }
 
@@ -111,6 +114,7 @@ void json_stream_writer::start_object()
 void json_stream_writer::end_object()
 {
     auto w = (rapidjson_prettywriter*) writer_;
+    assert(w && "Writer pointer cannot be null.");
     w->EndObject();
 }
 
@@ -118,6 +122,7 @@ void json_stream_writer::end_object()
 void json_stream_writer::start_array()
 {
     auto w = (rapidjson_prettywriter*) writer_;
+    assert(w && "Writer pointer cannot be null.");
     w->StartArray();
 }
 
@@ -125,6 +130,7 @@ void json_stream_writer::start_array()
 void json_stream_writer::end_array()
 {
     auto w = (rapidjson_prettywriter*) writer_;
+    assert(w && "Writer pointer cannot be null.");
     w->EndArray();
 }
 
@@ -132,6 +138,7 @@ void json_stream_writer::end_array()
 void json_stream_writer::key(const string_view& value)
 {
     auto w = (rapidjson_prettywriter*) writer_;
+    assert(w && "Writer pointer cannot be null.");
     w->Key(value.data(), value.size());
 }
 
@@ -139,6 +146,7 @@ void json_stream_writer::key(const string_view& value)
 void json_stream_writer::null()
 {
     auto w = (rapidjson_prettywriter*) writer_;
+    assert(w && "Writer pointer cannot be null.");
     w->Null();
 }
 
@@ -146,6 +154,7 @@ void json_stream_writer::null()
 void json_stream_writer::boolean(bool value)
 {
     auto w = (rapidjson_prettywriter*) writer_;
+    assert(w && "Writer pointer cannot be null.");
     w->Bool(value);
 }
 
@@ -153,6 +162,7 @@ void json_stream_writer::boolean(bool value)
 void json_stream_writer::number(double value)
 {
     auto w = (rapidjson_prettywriter*) writer_;
+    assert(w && "Writer pointer cannot be null.");
     w->Double(value);
 }
 
@@ -160,6 +170,7 @@ void json_stream_writer::number(double value)
 void json_stream_writer::string(const string_view& value)
 {
     auto w = (rapidjson_prettywriter*) writer_;
+    assert(w && "Writer pointer cannot be null.");
     w->String(value.data(), value.size());
 }
 
@@ -198,5 +209,15 @@ void json_file_writer::open(const std::wstring &name)
 }
 
 #endif
+
+
+json_string_writer::json_string_writer()
+{}
+
+
+std::string json_string_writer::str() const
+{
+    return sstream_.str();
+}
 
 PYCPP_END_NAMESPACE

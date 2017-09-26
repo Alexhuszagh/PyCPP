@@ -11,6 +11,8 @@
 #include <pycpp/stream/fstream.h>
 #include <pycpp/view/string.h>
 
+#include <sstream>
+
 PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
@@ -55,7 +57,7 @@ private:
 
 
 /**
- *  \brief Reader for stream-based document.
+ *  \brief Reader for file-based document.
  */
 struct json_file_reader: json_stream_reader
 {
@@ -75,6 +77,24 @@ public:
 
 private:
     ifstream file_;
+};
+
+
+/**
+ *  \brief Reader for string-based document.
+ */
+struct json_string_reader: json_stream_reader
+{
+public:
+    json_string_reader();
+    json_string_reader(const std::string &str);
+    void open(const std::string &str);
+    void parse(const std::string &str);
+
+    void parse();
+
+private:
+    std::istringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

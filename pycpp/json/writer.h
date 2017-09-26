@@ -12,6 +12,8 @@
 #include <pycpp/stream/fstream.h>
 #include <pycpp/view/string.h>
 
+#include <sstream>
+
 PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
@@ -68,7 +70,7 @@ private:
 
 
 /**
- *  \brief Writer for stream-based document.
+ *  \brief Writer for file-based document.
  */
 struct json_file_writer: json_stream_writer
 {
@@ -84,6 +86,19 @@ public:
 
 private:
     ofstream file_;
+};
+
+/**
+ *  \brief Writer for string-based document.
+ */
+struct json_string_writer: json_stream_writer
+{
+public:
+    json_string_writer();
+    std::string str() const;
+
+private:
+    std::ostringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

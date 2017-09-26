@@ -12,6 +12,8 @@
 #include <pycpp/stream/fstream.h>
 #include <pycpp/view/string.h>
 
+#include <sstream>
+
 PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
@@ -81,6 +83,20 @@ public:
 
 private:
     ofstream file_;
+};
+
+
+/**
+ *  \brief Writer for string-based document.
+ */
+struct xml_string_writer: xml_stream_writer
+{
+public:
+    xml_string_writer();
+    std::string str() const;
+
+private:
+    std::ostringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

@@ -212,4 +212,13 @@ void xml_file_writer::open(const std::wstring &name)
 #endif
 
 
+xml_string_writer::xml_string_writer()
+{}
+
+
+std::string xml_string_writer::str() const
+{
+    return sstream_.str();
+}
+
 PYCPP_END_NAMESPACE

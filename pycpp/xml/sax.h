@@ -12,6 +12,8 @@
 #include <pycpp/stream/fstream.h>
 #include <pycpp/view/string.h>
 
+#include <sstream>
+
 PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
@@ -84,6 +86,24 @@ public:
 
 private:
     ifstream file_;
+};
+
+
+/**
+ *  \brief Reader for string-based document.
+ */
+struct xml_string_reader: xml_stream_reader
+{
+public:
+    xml_string_reader();
+    xml_string_reader(const std::string &str);
+    void open(const std::string &str);
+    void parse(const std::string &str);
+
+    void parse();
+
+private:
+    std::istringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE
