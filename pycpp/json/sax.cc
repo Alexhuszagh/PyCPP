@@ -263,4 +263,33 @@ void json_file_reader::parse()
     json_stream_reader::parse(file_);
 }
 
+
+json_string_reader::json_string_reader()
+{}
+
+
+json_string_reader::json_string_reader(const std::string &str)
+{
+    open(str);
+}
+
+
+void json_string_reader::open(const std::string &str)
+{
+    sstream_ = std::istringstream(str, std::ios_base::binary);
+}
+
+
+void json_string_reader::parse(const std::string &str)
+{
+    open(str);
+    parse();
+}
+
+
+void json_string_reader::parse()
+{
+    json_stream_reader::parse(sstream_);
+}
+
 PYCPP_END_NAMESPACE

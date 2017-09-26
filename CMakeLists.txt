@@ -13,6 +13,7 @@ enable_testing()
 option(BUILD_CIPHER "Build cipher library" ON)
 option(BUILD_COLLECTIONS "Build collections library" ON)
 option(BUILD_COMPRESSION "Build compression library" ON)
+option(BUILD_CSV "Build CSV library" ON)
 option(BUILD_FILESYSTEM "Build filesystem library" ON)
 option(BUILD_HASHLIB "Build hash library" ON)
 option(BUILD_JSON "Build JSON library" ON)
@@ -27,6 +28,7 @@ option(WITH_CORE "Build (only) core library" OFF)
 option(WITH_CIPHER "Build (only) cipher library" OFF)
 option(WITH_COLLECTIONS "Build (only) collections library" OFF)
 option(WITH_COMPRESSION "Build (only) compression library" OFF)
+option(WITH_CSV "Build (only) CSV library" OFF)
 option(WITH_FILESYSTEM "Build (only) filesystem library" OFF)
 option(WITH_HASHLIB "Build (only) hash library" OFF)
 option(WITH_JSON "Build (only) JSON library" OFF)
@@ -42,10 +44,11 @@ option(BUILD_TESTS "Build pycpp library tests" OFF)
 SET(CXX_STANDARD "11" CACHE STRING "Minimum C++ standard to support.")
 SET(PYCPP_NAMESPACE "" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
 
-if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_LATTICE OR WITH_MATH OR WITH_RE OR WITH_STREAM OR WITH_XML)
+if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_LATTICE OR WITH_MATH OR WITH_RE OR WITH_STREAM OR WITH_XML)
     set(BUILD_CIPHER ${WITH_CIPHER})
     set(BUILD_COLLECTIONS ${WITH_COLLECTIONS})
     set(BUILD_COMPRESSION ${WITH_COMPRESSION})
+    set(BUILD_CSV ${WITH_CSV})
     set(BUILD_FILESYSTEM ${WITH_FILESYSTEM})
     set(BUILD_HASHLIB ${WITH_HASHLIB})
     set(BUILD_JSON ${WITH_JSON})
@@ -66,6 +69,10 @@ endif()
 
 if (BUILD_COMPRESSION)
     list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_COMPRESSION=1")
+endif()
+
+if (BUILD_CSV)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_CSV=1")
 endif()
 
 if (BUILD_FILESYSTEM)
@@ -445,6 +452,15 @@ if(BUILD_COMPRESSION)
     )
 endif()
 
+if (BUILD_CSV)
+    list(APPEND SOURCE_FILES
+        pycpp/csv/dict.cc
+        pycpp/csv/punct.cc
+        pycpp/csv/reader.cc
+        pycpp/csv/writer.cc
+    )
+endif()
+
 if (BUILD_FILESYSTEM)
     list(APPEND SOURCE_FILES
         pycpp/filesystem/exception.cc
@@ -634,6 +650,10 @@ if(BUILD_COMPRESSION)
         test/compression/stream.cc
         test/compression/zlib.cc
     )
+endif()
+
+if (BUILD_CSV)
+    list(APPEND TEST_FILES test/csv.cc)
 endif()
 
 if (BUILD_FILESYSTEM)

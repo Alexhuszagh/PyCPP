@@ -397,4 +397,33 @@ void xml_file_reader::parse()
     xml_stream_reader::parse(file_);
 }
 
+
+xml_string_reader::xml_string_reader()
+{}
+
+
+xml_string_reader::xml_string_reader(const std::string &str)
+{
+    open(str);
+}
+
+
+void xml_string_reader::open(const std::string &str)
+{
+    sstream_ = std::istringstream(str, std::ios_base::binary);
+}
+
+
+void xml_string_reader::parse(const std::string &str)
+{
+    open(str);
+    parse();
+}
+
+
+void xml_string_reader::parse()
+{
+    xml_stream_reader::parse(sstream_);
+}
+
 PYCPP_END_NAMESPACE
