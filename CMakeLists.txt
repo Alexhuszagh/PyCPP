@@ -357,7 +357,7 @@ if(BUILD_JSON)
 endif()
 
 if(BUILD_MATH)
-    # TODO: temporarily disabled libdynd, restore
+# TODO: temporarily disabled libdynd, restore
 #    add_external_project(dynd_external third_party/libdynd
 #        "-DDYND_SHARED_LIB=OFF"
 #        "-DDYND_LLVM=OFF"
