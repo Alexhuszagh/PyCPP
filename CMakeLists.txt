@@ -357,29 +357,30 @@ if(BUILD_JSON)
 endif()
 
 if(BUILD_MATH)
-    add_external_project(dynd_external third_party/libdynd
-        "-DDYND_SHARED_LIB=OFF"
-        "-DDYND_LLVM=OFF"
-        "-DDYND_INSTALL_LIB=OFF"
-        "-DDYND_BUILD_TESTS=OFF"
-        "-DDYND_BUILD_BENCHMARKS=OFF"
-        "-DDYND_BUILD_PLUGINS=OFF"
-        "-DDYND_BUILD_DOCS=OFF"
-        "-DDYND_COVERAGE=OFF"
-    )
-    # Force lib prefix due to libdynd behavior
-    set(OLD_CMAKE_STATIC_LIBRARY_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
-    set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
-    add_external_target(dynd third_party/libdynd/include third_party/libdynd STATIC dynd_external)
-    add_external_target(dyndt third_party/libdynd/include third_party/libdynd STATIC dynd_external)
-    set(CMAKE_STATIC_LIBRARY_PREFIX ${OLD_CMAKE_STATIC_LIBRARY_PREFIX})
-
-    # Include and set files
-    list(APPEND ${dynd_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/third_party/libdynd/include")
-    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_DYND=1")
-    list(APPEND PYCPP_DEPENDENCIES dynd dyndt)
-    list(APPEND PYCPP_LIBRARIES dynd dyndt)
-    list(APPEND PYCPP_INCLUDE_DIRS ${dynd_INCLUDE_DIR})
+# TODO: restore later, use in projects for now
+#    add_external_project(dynd_external third_party/libdynd
+#        "-DDYND_SHARED_LIB=OFF"
+#        "-DDYND_LLVM=OFF"
+#        "-DDYND_INSTALL_LIB=OFF"
+#        "-DDYND_BUILD_TESTS=OFF"
+#        "-DDYND_BUILD_BENCHMARKS=OFF"
+#        "-DDYND_BUILD_PLUGINS=OFF"
+#        "-DDYND_BUILD_DOCS=OFF"
+#        "-DDYND_COVERAGE=OFF"
+#    )
+#    # Force lib prefix due to libdynd behavior
+#    set(OLD_CMAKE_STATIC_LIBRARY_PREFIX ${CMAKE_STATIC_LIBRARY_PREFIX})
+#    set(CMAKE_STATIC_LIBRARY_PREFIX "lib")
+#    add_external_target(dynd third_party/libdynd/include third_party/libdynd STATIC dynd_external)
+#    add_external_target(dyndt third_party/libdynd/include third_party/libdynd STATIC dynd_external)
+#    set(CMAKE_STATIC_LIBRARY_PREFIX ${OLD_CMAKE_STATIC_LIBRARY_PREFIX})
+#
+#    # Include and set files
+#    list(APPEND ${dynd_INCLUDE_DIR} "${CMAKE_CURRENT_BINARY_DIR}/third_party/libdynd/include")
+#    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_DYND=1")
+#    list(APPEND PYCPP_DEPENDENCIES dynd dyndt)
+#    list(APPEND PYCPP_LIBRARIES dynd dyndt)
+#    list(APPEND PYCPP_INCLUDE_DIRS ${dynd_INCLUDE_DIR})
 endif()
 
 if(BUILD_RE)
