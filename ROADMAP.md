@@ -20,7 +20,7 @@
             - unittests
     - CSV
         - reader
-            - implementation
+            - implementation -- DONE
             - unittests
         - writer
             - implementation

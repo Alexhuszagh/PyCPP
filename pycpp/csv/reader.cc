@@ -58,25 +58,11 @@ static csv_row parse_csv_row(std::istream& stream, csvpunct& punct, size_t size)
 // OBJECTS
 // -------
 
-csv_stream_reader::csv_stream_reader(const csvpunct& punct):
-    punct_(punct)
+csv_stream_reader::csv_stream_reader()
 {}
 
 
-csv_stream_reader::csv_stream_reader(csvpunct&& punct):
-    punct_(std::move(punct))
-{}
-
-
-csv_stream_reader::csv_stream_reader(const csvpunct& punct, std::istream& stream, size_t skip):
-    punct_(punct)
-{
-    parse(stream, skip);
-}
-
-
-csv_stream_reader::csv_stream_reader(csvpunct&& punct, std::istream& stream, size_t skip):
-    punct_(std::move(punct))
+csv_stream_reader::csv_stream_reader(std::istream& stream, size_t skip)
 {
     parse(stream, skip);
 }
@@ -97,6 +83,18 @@ void csv_stream_reader::parse(std::istream& stream, size_t skip)
     for (size_t i = 0; i < header.size(); ++i) {
         header_[header[i]] = i;
     }
+}
+
+
+void csv_stream_reader::punctuation(const csvpunct& punct)
+{
+    punct_ = punct;
+}
+
+
+const csvpunct& csv_stream_reader::punctuation() const
+{
+    return punct_;
 }
 
 
@@ -130,6 +128,91 @@ auto csv_stream_reader::begin() -> iterator
 auto csv_stream_reader::end() -> iterator
 {
     return iterator();
+}
+
+
+csv_file_reader::csv_file_reader()
+{}
+
+
+csv_file_reader::csv_file_reader(const std::string &name)
+{
+    open(name);
+}
+
+
+void csv_file_reader::open(const std::string &name)
+{
+    file_.open(name, std::ios_base::binary);
+}
+
+
+void csv_file_reader::parse(const std::string &name, size_t skip)
+{
+    open(name);
+    parse(skip);
+}
+
+
+#if defined(PYCPP_HAVE_WFOPEN)
+
+
+csv_file_reader::csv_file_reader(const std::wstring &name)
+{
+    open(name);
+}
+
+
+void csv_file_reader::open(const std::wstring &name)
+{
+    file_.open(name, std::ios_base::binary);
+}
+
+
+void csv_file_reader::parse(const std::wstring &name, size_t skip)
+{
+    open(name);
+    parse(skip);
+}
+
+#endif
+
+
+void csv_file_reader::parse(size_t skip)
+{
+    if (!file_.is_open()) {
+        throw std::runtime_error("Must open file handle prior to parsing.");
+    }
+    csv_stream_reader::parse(file_, skip);
+}
+
+
+csv_string_reader::csv_string_reader()
+{}
+
+
+csv_string_reader::csv_string_reader(const std::string &str)
+{
+    open(str);
+}
+
+
+void csv_string_reader::open(const std::string &str)
+{
+    sstream_ = std::istringstream(str, std::ios_base::binary);
+}
+
+
+void csv_string_reader::parse(const std::string &str, size_t skip)
+{
+    open(str);
+    parse(skip);
+}
+
+
+void csv_string_reader::parse(size_t skip)
+{
+    csv_stream_reader::parse(sstream_, skip);
 }
 
 PYCPP_END_NAMESPACE
