@@ -16,6 +16,9 @@ PYCPP_BEGIN_NAMESPACE
 
 /**
  *  \brief Vocabulary for CSV punctuation.
+ *
+ *  Override the delimiter (','), quote ('"'), and escape
+ *  ("\\") methods to subclass. Common CSV dialects are provided.
  */
 struct csvpunct
 {
@@ -29,5 +32,26 @@ protected:
     virtual char do_quote() const;
     virtual char do_escape() const;
 };
+
+
+/**
+ *  \brief CSV punctuation for tab-delimited text files.
+ */
+struct tabpunct: csvpunct
+{
+protected:
+    virtual char do_delimiter() const;
+};
+
+
+/**
+ *  \brief CSV punctuation for pipe-delimited text files.
+ */
+struct pipepunct: csvpunct
+{
+protected:
+    virtual char do_delimiter() const;
+};
+
 
 PYCPP_END_NAMESPACE

@@ -43,4 +43,16 @@ char csvpunct::do_escape() const
     return '\\';
 }
 
+
+char tabpunct::do_delimiter() const
+{
+    return '\t';
+}
+
+
+char pipepunct::do_delimiter() const
+{
+    return '|';
+}
+
 PYCPP_END_NAMESPACE
