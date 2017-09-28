@@ -32,7 +32,6 @@ struct int_generator
 
     int operator()()
     {
-        std::cout << counter << std::endl;
         return counter++;
     }
 

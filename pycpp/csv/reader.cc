@@ -5,6 +5,7 @@
 #include <pycpp/string/getline.h>
 
 #include <cassert>
+#include <iostream>             // TODO: remove
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -53,6 +54,8 @@ static csv_row parse_csv_row(std::istream& stream, csvpunct& punct, size_t size)
     }
 
     row.emplace_back(std::string(word.data(), j));
+
+    return row;
 }
 
 // OBJECTS
@@ -75,6 +78,7 @@ void csv_stream_reader::parse(std::istream& stream, size_t skip)
     while (skip--) {
         getline(stream, line);
     }
+    stream_ = &stream;
 }
 
 
@@ -95,6 +99,7 @@ auto csv_stream_reader::operator()() -> value_type
     assert(stream_ && "Stream cannot be null.");
 
     value_type row;
+    std::cout << "operator()()\n" << std::endl;     // TODO: remove
     row = parse_csv_row(*stream_, punct_, row_length_);
     row_length_ = row.size();
     return row;
