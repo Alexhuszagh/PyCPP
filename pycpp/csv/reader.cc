@@ -75,14 +75,6 @@ void csv_stream_reader::parse(std::istream& stream, size_t skip)
     while (skip--) {
         getline(stream, line);
     }
-
-    // initialize reader
-    stream_ = &stream;
-    csv_row header = parse_csv_row(*stream_, punct_, 0);
-    header_.reserve(header.size());
-    for (size_t i = 0; i < header.size(); ++i) {
-        header_[header[i]] = i;
-    }
 }
 
 
@@ -101,7 +93,11 @@ const csvpunct& csv_stream_reader::punctuation() const
 auto csv_stream_reader::operator()() -> value_type
 {
     assert(stream_ && "Stream cannot be null.");
-    return parse_csv_row(*stream_, punct_, header_.size());
+
+    value_type row;
+    row = parse_csv_row(*stream_, punct_, row_length_);
+    row_length_ = row.size();
+    return row;
 }
 
 

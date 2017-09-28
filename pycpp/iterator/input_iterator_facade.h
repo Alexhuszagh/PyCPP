@@ -17,6 +17,7 @@
 
 #include <cassert>
 #include <iterator>
+#include <tuple>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -64,7 +65,7 @@ public:
 
 private:
     G* generator_ = nullptr;
-    V value_;
+    value_type value_ = value_type();
 };
 
 // DEFINITION
@@ -127,8 +128,12 @@ auto input_iterator_facade<G, V>::operator->() const -> const value_type*
 template <typename G, typename V>
 auto input_iterator_facade<G, V>::operator++() -> self_t&
 {
-    assert(generator_ && "Generator cannot be null.");
-    value_ = (*generator_)();
+    if (generator_ && *generator_) {
+        value_ = (*generator_)();
+    } else {
+        generator_ = nullptr;
+        value_ = value_type();
+    }
     return *this;
 }
 

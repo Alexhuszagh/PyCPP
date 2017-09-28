@@ -7,7 +7,17 @@
 
 #pragma once
 
+#include <pycpp/collections/ordereddict.h>
 #include <pycpp/csv/reader.h>
 #include <pycpp/csv/writer.h>
 
-// TODO: implement....
+PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+using csv_indexes = ordered_map<std::string, size_t>;
+
+// TODO: need csv_indexes for the...
+
+PYCPP_END_NAMESPACE

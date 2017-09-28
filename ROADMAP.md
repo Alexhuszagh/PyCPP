@@ -1,8 +1,7 @@
 # Roadmap
 
 **Short-term**
-- Need input iterator facade for a bool/eof issue...
-    - Need unittests
+
 - Need string readers/writers
     - JSON
         - writer

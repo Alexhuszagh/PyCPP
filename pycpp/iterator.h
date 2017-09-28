@@ -7,4 +7,5 @@
 
 #pragma once
 
+#include <pycpp/iterator/input_iterator_facade.h>
 #include <pycpp/iterator/transform.h>

@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <pycpp/collections/ordereddict.h>
 #include <pycpp/csv/punct.h>
 #include <pycpp/iterator/input_iterator_facade.h>
 #include <pycpp/stream/fstream.h>
@@ -22,7 +21,6 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 using csv_row = std::vector<std::string>;
-using csv_indexes = ordered_map<std::string, size_t>;
 
 // OBJECTS
 // -------
@@ -62,8 +60,8 @@ public:
 
 private:
     std::istream* stream_ = nullptr;
+    size_t row_length_ = 0;
     csvpunct punct_;
-    csv_indexes header_;
 };
 
 

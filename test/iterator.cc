@@ -11,14 +11,36 @@
 
 PYCPP_USING_NAMESPACE
 
-// FUNCTIONS
-// ---------
+// HELPERS
+// -------
 
 
 int mul2(int x)
 {
     return x * 2;
 }
+
+
+struct int_generator
+{
+    using value_type = int;
+    int counter;
+
+    int_generator(int c = 5):
+        counter(c)
+    {}
+
+    int operator()()
+    {
+        std::cout << counter << std::endl;
+        return counter++;
+    }
+
+    explicit operator bool() const
+    {
+        return counter < 5;
+    }
+};
 
 // TESTS
 // -----
@@ -59,3 +81,13 @@ TEST(iterator, transform_iterator)
     EXPECT_GE(last, first);
 }
 
+
+TEST(iterator, input_iterator_facade)
+{
+    using iterator = input_iterator_facade<int_generator>;
+    int_generator g(0);
+    auto v = std::vector<int>(iterator(g), iterator());
+    EXPECT_EQ(v.size(), 5);
+    EXPECT_EQ(v[0], 0);
+    EXPECT_EQ(v[4], 4);
+}
