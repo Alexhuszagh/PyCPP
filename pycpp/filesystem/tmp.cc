@@ -69,6 +69,14 @@ static path_t gettempprefix_impl()
 #endif
 
 
+static path_t gettempsuffix()
+{
+    // why not get 20 hex characters???
+    // TODO: implement
+    return path_t();
+}
+
+
 // VARIABLES
 // ---------
 
@@ -92,8 +100,8 @@ path_t gettempprefix()
 
 path_t gettempnam()
 {
-    // TODO: implement...
-    //return tempprefix;
+    path_list_t paths = {gettempdir(), gettempprefix() + gettempsuffix()};
+    return join(paths);
 }
 
 #if defined(OS_WINDOWS)          // WINDOWS NT && BACKUP PATH
