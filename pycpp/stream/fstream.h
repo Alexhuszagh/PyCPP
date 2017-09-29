@@ -31,7 +31,8 @@ PYCPP_BEGIN_NAMESPACE
 
 #if defined(HAVE_GCC)           // GCC
 
-/** \brief Stream supporting narrow and wide APIs on Windows.
+/**
+ *  \brief Stream supporting narrow and wide APIs on Windows.
  *
  *  fstream based off a GNU stdio_filebuf.
  */
@@ -66,7 +67,8 @@ private:
 };
 
 
-/** \brief Stream supporting narrow and wide APIs on Windows.
+/**
+ *  \brief Stream supporting narrow and wide APIs on Windows.
  *
  *  ifstream based off a GNU stdio_filebuf.
  */
@@ -100,7 +102,8 @@ private:
 };
 
 
-/** \brief Stream supporting narrow and wide APIs on Windows.
+/**
+ *  \brief Stream supporting narrow and wide APIs on Windows.
  *
  *  ofstream based off a GNU stdio_filebuf.
  */

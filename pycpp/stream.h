@@ -7,5 +7,6 @@
 
 #pragma once
 
+#include <stream/fd.h>
+#include <stream/filter.h>
 #include <stream/fstream.h>
-#include <stream/transform.h>

@@ -6,6 +6,19 @@
     - mkstemp?
     - mkdtemp?
 
+- TODO: need a file descriptor stream for this...
+
+- File descriptor streams:
+    - fd_fstream
+        - implementation
+        - unittests
+    - fd_ifstream
+        - implementation
+        - unittests
+    - fd_ofstream
+        - implementation
+        - unittests
+
 - Need string readers/writers
     - JSON
         - writer

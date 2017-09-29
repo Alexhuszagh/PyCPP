@@ -42,6 +42,11 @@ extern path_t TMP_SUFFIX_CHARACTERS;
 // FUNCTIONS
 // ---------
 
+
+// TODO: need a file descriptor stream for this...
+// temporary_file();
+
+//std::string temporary_directory();
 // mkstemp
 // mkdtemp
 // TODO: tmpnam??

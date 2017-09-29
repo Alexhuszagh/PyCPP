@@ -3,6 +3,8 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/random.h>
+// TODO: only if building the stream library....
+//#include <pycpp/stream/fd.h>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -541,8 +541,9 @@ endif()
 
 if(BUILD_STREAM)
     list(APPEND SOURCE_FILES
-        pycpp/stream/fstream.cc
+        pycpp/stream/fd.cc
         pycpp/stream/filter.cc
+        pycpp/stream/fstream.cc
     )
 endif()
 
@@ -707,8 +708,9 @@ endif()
 
 if (BUILD_STREAM)
     list(APPEND TEST_FILES
-        test/stream/fstream.cc
+        test/stream/fd.cc
         test/stream/filter.cc
+        test/stream/fstream.cc
     )
 endif()
 
