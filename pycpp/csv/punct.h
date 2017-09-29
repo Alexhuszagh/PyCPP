@@ -20,7 +20,7 @@ PYCPP_BEGIN_NAMESPACE
  *  Override the delimiter (','), quote ('"'), and escape
  *  ("\\") methods to subclass. Common CSV dialects are provided.
  */
-struct csvpunct
+struct csvpunct_impl
 {
 public:
     char delimiter() const;
@@ -35,22 +35,29 @@ protected:
 
 
 /**
- *  \brief CSV punctuation for tab-delimited text files.
+ *  \brief CSV punctuation for comma-separated values.
  */
-struct tabpunct: csvpunct
+struct csvpunct: csvpunct_impl
+{};
+
+
+/**
+ *  \brief CSV punctuation for tab-delimited values.
+ */
+struct tabpunct: csvpunct_impl
 {
 protected:
-    virtual char do_delimiter() const;
+    virtual char do_delimiter() const override;
 };
 
 
 /**
- *  \brief CSV punctuation for pipe-delimited text files.
+ *  \brief CSV punctuation for pipe-delimited values.
  */
-struct pipepunct: csvpunct
+struct pipepunct: csvpunct_impl
 {
 protected:
-    virtual char do_delimiter() const;
+    virtual char do_delimiter() const override;
 };
 
 

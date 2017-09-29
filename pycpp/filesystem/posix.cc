@@ -29,48 +29,6 @@ PYCPP_BEGIN_NAMESPACE
 
 
 /**
- *  \brief Get path to home directory.
- */
-template <typename Path, typename ToPath>
-static Path home_impl(ToPath topath)
-{
-    char *dir = std::getenv("HOME");
-    if (dir != nullptr) {
-        return topath(dir);
-    } else {
-        // home not defined, root user
-        return topath("/");
-    }
-}
-
-
-/**
- *  \brief Get path to temporary directory.
- */
-template <typename Path, typename ToPath>
-static Path tmpdir_impl(ToPath topath)
-{
-    char *dir = std::getenv("TMPDIR");
-    if (dir != nullptr) {
-        return topath(dir);
-    }
-
-    dir = std::getenv("TEMP");
-    if (dir != nullptr) {
-        return topath(dir);
-    }
-
-    dir = std::getenv("TMP");
-    if (dir != nullptr) {
-        return topath(dir);
-    } else {
-        // temp directory not defined, return root
-        return topath("/");
-    }
-}
-
-
-/**
  *  \brief Get iterator where last directory separator occurs.
  */
 template <typename Path>
@@ -162,17 +120,17 @@ static Path dir_name_impl(const Path& path)
 }
 
 
-template <typename Path, typename ToPath>
-static Path expanduser_impl(const Path& path, ToPath topath)
+template <typename Path>
+static Path expanduser_impl(const Path& path)
 {
     switch (path.size()) {
         case 0:
             return path;
         case 1:
-            return path[0] == '~' ? home_impl<Path>(topath) : path;
+            return path[0] == '~' ? gethomedir() : path;
         default: {
             if (path[0] == '~' && path_separators.find(path[1]) != path_separators.npos) {
-                return home_impl<Path>(topath) + path.substr(1);
+                return gethomedir() + path.substr(1);
             }
             return path;
         }
@@ -549,9 +507,7 @@ path_t dir_name(const path_t& path)
 
 path_t expanduser(const path_t& path)
 {
-    return expanduser_impl(path, [](const path_t& p) {
-        return p;
-    });
+    return expanduser_impl(path);
 }
 
 

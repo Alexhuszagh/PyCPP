@@ -5,7 +5,6 @@
 #include <pycpp/string/getline.h>
 
 #include <cassert>
-#include <iostream>             // TODO: remove
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -19,7 +18,7 @@ static std::string readline(std::istream& stream)
     return line;
 }
 
-static csv_row parse_csv_row(std::istream& stream, csvpunct& punct, size_t size)
+static csv_row parse_csv_row(std::istream& stream, csvpunct_impl& punct, size_t size)
 {
     csv_row row;
     std::string line = readline(stream);
@@ -61,11 +60,13 @@ static csv_row parse_csv_row(std::istream& stream, csvpunct& punct, size_t size)
 // OBJECTS
 // -------
 
-csv_stream_reader::csv_stream_reader()
+csv_stream_reader::csv_stream_reader():
+    punct_(new csvpunct)
 {}
 
 
-csv_stream_reader::csv_stream_reader(std::istream& stream, size_t skip)
+csv_stream_reader::csv_stream_reader(std::istream& stream, size_t skip):
+    punct_(new csvpunct)
 {
     parse(stream, skip);
 }
@@ -82,15 +83,15 @@ void csv_stream_reader::parse(std::istream& stream, size_t skip)
 }
 
 
-void csv_stream_reader::punctuation(const csvpunct& punct)
+void csv_stream_reader::punctuation(csvpunct_impl* punct)
 {
-    punct_ = punct;
+    punct_.reset(punct ? punct : new csvpunct);
 }
 
 
-const csvpunct& csv_stream_reader::punctuation() const
+const csvpunct_impl* csv_stream_reader::punctuation() const
 {
-    return punct_;
+    return punct_.get();
 }
 
 
@@ -99,8 +100,7 @@ auto csv_stream_reader::operator()() -> value_type
     assert(stream_ && "Stream cannot be null.");
 
     value_type row;
-    std::cout << "operator()()\n" << std::endl;     // TODO: remove
-    row = parse_csv_row(*stream_, punct_, row_length_);
+    row = parse_csv_row(*stream_, *punct_, row_length_);
     row_length_ = row.size();
     return row;
 }
@@ -138,7 +138,7 @@ csv_file_reader::csv_file_reader()
 
 csv_file_reader::csv_file_reader(const std::string &name)
 {
-    open(name);
+    parse(name, 0);
 }
 
 
@@ -160,7 +160,7 @@ void csv_file_reader::parse(const std::string &name, size_t skip)
 
 csv_file_reader::csv_file_reader(const std::wstring &name)
 {
-    open(name);
+    parse(name, 0);
 }
 
 
@@ -195,12 +195,14 @@ csv_string_reader::csv_string_reader()
 csv_string_reader::csv_string_reader(const std::string &str)
 {
     open(str);
+    parse(0);
 }
 
 
 void csv_string_reader::open(const std::string &str)
 {
     sstream_ = std::istringstream(str, std::ios_base::binary);
+    parse(0);
 }
 
 

@@ -2,6 +2,10 @@
 
 **Short-term**
 
+- Need custom tempfile support
+    - mkstemp?
+    - mkdtemp?
+
 - Need string readers/writers
     - JSON
         - writer
@@ -17,6 +21,11 @@
         - sax
             - implementation -- DONE
             - unittests
+        - writer
+            - implementation
+            - unittests
+
+- Need file readers/writers
     - CSV
         - reader
             - implementation -- DONE
@@ -25,19 +34,7 @@
             - implementation
             - unittests
 
-- Need file readers/writers
-    - CSV
-        - reader
-            - implementation
-            - unittests
-        - writer
-            - implementation
-            - unittests
-
 - Add CSV reader/dictreader
-    - reader
-        - implementation -- DONE
-        - unittests
     - writer
         - implementation
         - unittests

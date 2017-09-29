@@ -40,65 +40,6 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-template <typename Path, typename ToPath>
-static Path home_impl(ToPath topath)
-{
-    // check USERPROFILE
-    wchar_t *home = _wgetenv(L"USERPROFILE");
-    if (home != nullptr) {
-        return topath(home);
-    }
-
-    // check HOME
-    home = _wgetenv(L"HOME");
-    if (home != nullptr) {
-        return topath(home);
-    }
-
-    // combine HOMEDRIVE and HOMEPATH
-    wchar_t *drive = _wgetenv(L"HOMEDRIVE");
-    wchar_t *path = _wgetenv(L"HOMEPATH");
-    if (drive != nullptr && path != nullptr) {
-        // "c:", "\users\{user}"
-        return topath(drive) + topath(path);
-    }
-
-    // try SystemDrive
-    home = _wgetenv(L"SystemDrive");
-    if (home != nullptr) {
-        return topath(home);
-    } else {
-        return topath(L"c:");
-    }
-}
-
-
-/**
- *  \brief Get path to temporary directory.
- */
-template <typename Path, typename ToPath>
-static Path tmpdir_impl(ToPath topath)
-{
-    wchar_t *dir = _wgetenv(L"TMPDIR");
-    if (dir != nullptr) {
-        return topath(dir);
-    }
-
-    dir = _wgetenv(L"TEMP");
-    if (dir != nullptr) {
-        return topath(dir);
-    }
-
-    dir = _wgetenv(L"TMP");
-    if (dir != nullptr) {
-        return topath(dir);
-    } else {
-        // temp directory not defined, return root
-        return topath("/");
-    }
-}
-
-
 /**
  *  \brief Get iterator where last directory separator occurs.
  *  \warning splitdrive **must** be called prior to this.
@@ -282,17 +223,17 @@ static Path dir_name_impl(const Path& path)
 }
 
 
-template <typename Path, typename ToPath>
-static Path expanduser_impl(const Path& path, ToPath topath)
+template <typename Path, typename HomeFunc>
+static Path expanduser_impl(const Path& path, HomeFunc homefunc)
 {
     switch (path.size()) {
         case 0:
             return path;
         case 1:
-            return path[0] == '~' ? home_impl<Path>(topath) : path;
+            return path[0] == '~' ? homefunc() : path;
         default: {
             if (path[0] == '~' && path_separators.find(path[1]) != path_separators.npos) {
-                return home_impl<Path>(topath) + path.substr(1);
+                return homefunc() + path.substr(1);
             }
             return path;
         }
@@ -713,9 +654,7 @@ path_t dir_name(const path_t& path)
 
 path_t expanduser(const path_t& path)
 {
-    return expanduser_impl(path, [](const std::wstring& str) {
-        return path_t(reinterpret_cast<const char16_t*>(str.data()));
-    });
+    return expanduser_impl(path, gettempdirw);
 }
 
 
@@ -725,7 +664,7 @@ path_t expandvars(const path_t& path)
         return path;
     };
     auto topath = [](wchar_t* str, size_t l) {
-        return std::u16string(reinterpret_cast<char16_t*>(str), l);
+        return path_t(reinterpret_cast<char16_t*>(str), l);
     };
     return expandvars_impl(path, frompath, topath, ExpandEnvironmentStringsW);
 }
@@ -961,9 +900,7 @@ backup_path_t dir_name(const backup_path_t& path)
 
 backup_path_t expanduser(const backup_path_t& path)
 {
-    return expanduser_impl(path, [](const std::wstring& str) {
-        return path_to_backup_path(reinterpret_cast<const char16_t*>(str.data()));
-    });
+    return expanduser_impl(path, gettempdira);
 }
 
 
@@ -973,7 +910,7 @@ backup_path_t expandvars(const backup_path_t& path)
         return backup_path_to_path(path);
     };
     auto topath = [](wchar_t* str, size_t l) {
-        return path_to_backup_path(std::u16string(reinterpret_cast<char16_t*>(str), l));
+        return path_to_backup_path(path_t(reinterpret_cast<char16_t*>(str), l));
     };
     return expandvars_impl(path, frompath, topath, ExpandEnvironmentStringsW);
 }

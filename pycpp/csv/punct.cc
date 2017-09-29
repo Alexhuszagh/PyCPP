@@ -8,37 +8,37 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-char csvpunct::delimiter() const
+char csvpunct_impl::delimiter() const
 {
     return do_delimiter();
 }
 
 
-char csvpunct::quote() const
+char csvpunct_impl::quote() const
 {
     return do_quote();
 }
 
 
-char csvpunct::escape() const
+char csvpunct_impl::escape() const
 {
     return do_escape();
 }
 
 
-char csvpunct::do_delimiter() const
+char csvpunct_impl::do_delimiter() const
 {
     return ',';
 }
 
 
-char csvpunct::do_quote() const
+char csvpunct_impl::do_quote() const
 {
     return '"';
 }
 
 
-char csvpunct::do_escape() const
+char csvpunct_impl::do_escape() const
 {
     return '\\';
 }

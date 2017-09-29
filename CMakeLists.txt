@@ -465,12 +465,14 @@ if (BUILD_FILESYSTEM)
     list(APPEND SOURCE_FILES
         pycpp/filesystem/exception.cc
         pycpp/filesystem/filesystem.cc
+        pycpp/filesystem/home.cc
         pycpp/filesystem/iterator.cc
         pycpp/filesystem/mac.cc
         pycpp/filesystem/nt.cc
         pycpp/filesystem/path.cc
         pycpp/filesystem/posix.cc
         pycpp/filesystem/stat.cc
+        pycpp/filesystem/tmp.cc
     )
 endif()
 
