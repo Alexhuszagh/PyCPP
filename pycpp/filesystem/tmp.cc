@@ -31,6 +31,12 @@ static path_t gettempdir_impl()
     }
 }
 
+
+static path_t gettempprefix_impl()
+{
+    return path_t(reinterpret_cast<const char16_t*>(L"tmp"));
+}
+
 #else                           // POSIX
 
 static path_t gettempdir_impl()
@@ -54,14 +60,13 @@ static path_t gettempdir_impl()
     }
 }
 
-#endif
-
 
 static path_t gettempprefix_impl()
 {
-    // TODO: here
-    return path_t();
+    return path_t("tmp");
 }
+
+#endif
 
 
 // VARIABLES
@@ -84,7 +89,14 @@ path_t gettempprefix()
     return tempprefix;
 }
 
-#if defined(OS_WINDOWS)          // BACKUP PATH
+
+path_t gettempnam()
+{
+    // TODO: implement...
+    //return tempprefix;
+}
+
+#if defined(OS_WINDOWS)          // WINDOWS NT && BACKUP PATH
 
 path_t gettempdirw()
 {
@@ -98,6 +110,12 @@ path_t gettempprefixw()
 }
 
 
+path_t gettempnamw()
+{
+    return gettempnam();
+}
+
+
 backup_path_t gettempdira()
 {
     return path_to_backup_path(gettempdirw());
@@ -108,6 +126,14 @@ backup_path_t gettempprefixa()
 {
     return path_to_backup_path(gettempprefixw());
 }
+
+
+backup_path_t gettempnama()
+{
+    return path_to_backup_path(gettempnam());
+}
+
+#else                           // POSIX
 
 #endif
 

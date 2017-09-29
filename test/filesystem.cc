@@ -379,3 +379,30 @@ TEST(path, relpath)
     EXPECT_EQ(relpath("/usr/lib", "/usr/"), "lib");
     EXPECT_EQ(relpath("/usr/lib", "/usr"), "lib");
 }
+
+
+TEST(path, gethomedir)
+{
+    EXPECT_GE(gethomedir().size(), 1);
+    EXPECT_EQ(gethomedir(), homedir);
+    homedir = path_prefix("/home/user");
+    EXPECT_EQ(gethomedir(), homedir);
+}
+
+
+TEST(path, gettempdir)
+{
+    EXPECT_GE(gettempdir().size(), 1);
+    EXPECT_EQ(gettempdir(), tempdir);
+    tempdir = path_prefix("/tmp");
+    EXPECT_EQ(gettempdir(), tempdir);
+}
+
+
+TEST(path, gettempprefix)
+{
+    EXPECT_GE(gettempprefix().size(), 1);
+    EXPECT_EQ(gettempprefix(), tempprefix);
+    tempprefix = path_prefix("tmp");
+    EXPECT_EQ(gettempprefix(), tempprefix);
+}

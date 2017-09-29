@@ -29,6 +29,9 @@ extern path_t tempprefix;
 
 // mkstemp
 // mkdtemp
+// TODO: tmpnam??
+// Implement mkstemp, mkdtemp in terms of tmpnam, but use open(O_EXCL)
+// for exclusive to ensure no one can get the file name...
 
 /**
  * \brief Get path to temp directory.
@@ -40,17 +43,27 @@ path_t gettempdir();
  */
 path_t gettempprefix();
 
+/**
+ *  \brief Create a temporary filepath, similar to `tempnam`.
+ *
+ *  This uses the temp directory and temp prefix to create the
+ *  full path for the temporary file.
+ *
+ *  \warning This function is not secure, and should not be used.
+ */
+path_t gettempnam();
+
 // tempdir
 
 #if defined(OS_WINDOWS)          // BACKUP PATH
 
 path_t gettempdirw();
 path_t gettempprefixw();
+path_t gettempnamw();
 backup_path_t gettempdira();
 backup_path_t gettempprefixa();
+backup_path_t gettempnama();
 
 #endif
-
-// TODO: tmpnam??
 
 PYCPP_END_NAMESPACE
