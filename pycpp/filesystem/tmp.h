@@ -24,6 +24,21 @@ extern path_t tempdir;
  */
 extern path_t tempprefix;
 
+/**
+ *  \brief Maximum number of attempted temp paths to get an unused path (100).
+ */
+extern size_t TMP_MAX_PATHS;
+
+/**
+ *  \brief Number of bytes for the temporary path suffix (15).
+ */
+extern size_t TMP_SUFFIX_LENGTH;
+
+/**
+ *  \brief Characters used for temporary path suffixes.
+ */
+extern path_t TMP_SUFFIX_CHARACTERS;
+
 // FUNCTIONS
 // ---------
 

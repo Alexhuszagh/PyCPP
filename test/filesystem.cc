@@ -406,3 +406,15 @@ TEST(path, gettempprefix)
     tempprefix = path_prefix("tmp");
     EXPECT_EQ(gettempprefix(), tempprefix);
 }
+
+
+TEST(path, gettempnam)
+{
+    path_t path = gettempnam();
+    auto suffix = base_name(path).substr(tempprefix.size());
+    EXPECT_EQ(base_name(path).size(), tempprefix.size() + TMP_SUFFIX_LENGTH);
+    EXPECT_EQ(dir_name(path), gettempdir());
+    EXPECT_TRUE(std::all_of(suffix.begin(), suffix.end(), [](native_char_type c) {
+        return TMP_SUFFIX_CHARACTERS.find(c) != std::string::npos;
+    }));
+}

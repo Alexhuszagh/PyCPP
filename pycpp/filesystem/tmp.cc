@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/filesystem.h>
+#include <pycpp/random.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -71,9 +72,16 @@ static path_t gettempprefix_impl()
 
 static path_t gettempsuffix()
 {
-    // why not get 20 hex characters???
-    // TODO: implement
-    return path_t();
+    auto first = TMP_SUFFIX_CHARACTERS.begin();
+    auto last = TMP_SUFFIX_CHARACTERS.end();
+
+    path_t suffix;
+    suffix.reserve(TMP_SUFFIX_LENGTH);
+    for (size_t i = 0; i < TMP_SUFFIX_LENGTH; ++i) {
+        suffix.push_back(PYCPP_NAMESPACE::choice(first, last));
+    }
+
+    return suffix;
 }
 
 
@@ -82,6 +90,9 @@ static path_t gettempsuffix()
 
 path_t tempdir = gettempdir_impl();
 path_t tempprefix = gettempprefix_impl();
+size_t TMP_MAX_PATHS = 100;
+size_t TMP_SUFFIX_LENGTH = 15;
+path_t TMP_SUFFIX_CHARACTERS = path_prefix("abcdefghijklmnopqrstuvwxyz0123456789_");
 
 // FUNCTIONS
 // ---------
