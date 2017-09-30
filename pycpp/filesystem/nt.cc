@@ -788,7 +788,7 @@ fd_t file_open(const path_t& path, std::ios_base::openmode mode)
     return file_open_impl(p, mode, CreateFileW);
 }
 
-int64_t file_read(fd_t fd, void* buf, size_t count)
+std::streamsize file_read(fd_t fd, void* buf, std::streamsize count)
 {
     DWORD read;
     if (!ReadFile(fd, buf, count, &read, nullptr)) {
@@ -796,6 +796,17 @@ int64_t file_read(fd_t fd, void* buf, size_t count)
     }
 
     return read;
+}
+
+
+std::streamsize file_write(fd_t fd, void* buf, std::streamsize count)
+{
+    DWORD wrote;
+    if (!WriteFile(fd, buf, count, &wrote, nullptr)) {
+        return -1;
+    }
+
+    return wrote;
 }
 
 

@@ -1,7 +1,14 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/filesystem.h>
 #include <pycpp/stream/fd.h>
+#if defined(OS_WINDOWS)
+#   include <windows.h>
+#else
+#   include <unistd.h>
+#endif
+
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -48,12 +55,7 @@ fd_streambuf& fd_streambuf::operator=(fd_streambuf&& other)
 
 void fd_streambuf::close()
 {
-    // TODO: implement...
-//    sync();
-//    std::streamsize converted = do_callback();
-//    if (converted && filebuf && mode & std::ios_base::out) {
-//        filebuf->sputn(out_buffer, converted);
-//    }
+    sync();
 
     delete[] in_buffer;
     delete[] out_buffer;
@@ -83,12 +85,15 @@ auto fd_streambuf::underflow() -> int_type
     std::streamsize read;
 
     if (fd != INVALID_FD_VALUE) {
-// TODO: implement...
-//        read = filebuf->sgetn(in_buffer, buffer_size);
-//        in_first = in_buffer;
-//        in_last = in_buffer + read;
-//        setg(out_buffer, out_buffer, out_buffer + read);
-//        return traits_type::to_int_type(*gptr());
+        // TODO: is this right??
+        read = file_read(fd, in_buffer, buffer_size);
+        if (read == -1) {
+            // TODO: handle error
+        }
+        in_first = in_buffer;
+        in_last = in_buffer + read;
+        setg(out_buffer, out_buffer, out_buffer + read);
+        return traits_type::to_int_type(*gptr());
     }
     return traits_type::eof();
 }
@@ -100,20 +105,17 @@ auto fd_streambuf::overflow(int_type c) -> int_type
         return traits_type::eof();
     }
 
+    std::streamsize distance, wrote;
+    distance = std::distance(in_first, in_last);
     if (fd != INVALID_FD_VALUE) {
-// TODO: implement...
-// TODO: how do I implement this???
-//        if (in_first == 0) {
-//            in_first = in_buffer;
-//            in_last = in_buffer;
-//        } else if (in_last == in_first + buffer_size) {
-//            std::streamsize converted = do_callback();
-//            filebuf->sputn(out_buffer, converted);
-//        }
-//
-//        if (!traits_type::eq_int_type(c, traits_type::eof())) {
-//            *in_last++ = traits_type::to_char_type(c);
-//        }
+        // TODO: how do I know the out buffer size??
+        // Is this right???
+        wrote = file_write(fd, in_first, distance);
+        in_first += wrote;
+
+        if (!traits_type::eq_int_type(c, traits_type::eof())) {
+            *in_last++ = traits_type::to_char_type(c);
+        }
     }
     return traits_type::not_eof(c);
 }
@@ -125,9 +127,11 @@ int fd_streambuf::sync()
 
     // flush buffer on output
     if (fd != INVALID_FD_VALUE && mode & std::ios_base::out) {
-//        std::streamsize converted = do_callback();
-//        filebuf->sputn(out_buffer, converted);
-//        filebuf->pubsync();
+        // TODO: is this right??
+        std::streamsize distance, wrote;
+        distance = std::distance(in_first, in_last);
+        wrote = file_write(fd, in_first, distance);
+        in_first += wrote;
     }
 
     if (traits_type::eq_int_type(result, traits_type::eof())) {

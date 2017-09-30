@@ -653,9 +653,15 @@ fd_t file_open(const path_t& path, std::ios_base::openmode mode)
 }
 
 
-int64_t file_read(fd_t fd, void* buf, size_t count)
+std::streamsize file_read(fd_t fd, void* buf, std::streamsize count)
 {
     return read(fd, buf, count);
+}
+
+
+std::streamsize file_write(fd_t fd, void* buf, std::streamsize count)
+{
+    return write(fd, buf, count);
 }
 
 
@@ -667,26 +673,26 @@ void file_close(fd_t fd)
 
 #if !defined(OS_MACOS)
 
-bool file_allocate(fd_t fd, size_t size)
+bool file_allocate(fd_t fd, std::streamsize size)
 {
     return posix_fallocate(fd, 0, size) == 0;
 }
 
 #endif              // MACOS
 
-bool file_allocate(const path_t& path, size_t size)
+bool file_allocate(const path_t& path, std::streamsize size)
 {
     return file_allocate_impl(path, size);
 }
 
 
-bool file_truncate(fd_t fd, size_t size)
+bool file_truncate(fd_t fd, std::streamsize size)
 {
     return ftruncate(fd, size) == 0;
 }
 
 
-bool file_truncate(const path_t& path, size_t size)
+bool file_truncate(const path_t& path, std::streamsize size)
 {
     return file_truncate_impl(path, size);
 }

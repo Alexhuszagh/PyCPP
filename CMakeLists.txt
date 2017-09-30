@@ -541,10 +541,12 @@ endif()
 
 if(BUILD_STREAM)
     list(APPEND SOURCE_FILES
-        pycpp/stream/fd.cc
         pycpp/stream/filter.cc
         pycpp/stream/fstream.cc
     )
+    if(BUILD_FILESYSTEM)
+        list(APPEND SOURCE_FILES pycpp/stream/fd.cc)
+    endif()
 endif()
 
 if(BUILD_XML)
@@ -708,10 +710,12 @@ endif()
 
 if (BUILD_STREAM)
     list(APPEND TEST_FILES
-        test/stream/fd.cc
         test/stream/filter.cc
         test/stream/fstream.cc
     )
+    if(BUILD_FILESYSTEM)
+        list(APPEND TEST_FILES test/stream/fd.cc)
+    endif()
 endif()
 
 if (BUILD_XML)

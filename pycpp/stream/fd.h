@@ -53,10 +53,15 @@ protected:
     virtual int_type underflow();
     virtual int_type overflow(int_type = traits_type::eof());
     virtual int sync();
+    // TODO: I probably need these functions too..
+    // virtual setbuf
+    // virtual seekoff
+    // virtual seekpos
 
 private:
-//    friend class fd_istream;
-//    friend class fd_ostream;
+    friend class fd_fstream;
+    friend class fd_ifstream;
+    friend class fd_ofstream;
 
     std::ios_base::openmode mode;
     fd_t fd = INVALID_FD_VALUE;
@@ -77,8 +82,8 @@ public:
 //    ~fd_fstream();
     fd_fstream(const fd_fstream&) = delete;
     fd_fstream & operator=(const fd_fstream&) = delete;
-//    fd_fstream(fd_fstream &&other);
-//    fd_fstream & operator=(fd_fstream &&other);
+    fd_fstream(fd_fstream &&other);
+    fd_fstream & operator=(fd_fstream &&other);
     // TODO: more constructors...
 
     // TODO: here...
@@ -89,8 +94,7 @@ public:
     // void rdbuf(std::basic_filebuf<char> *buffer);
 
 private:
-    // TODO: doesn't this need two buffers??
-//    fd_streambuf buffer;
+    fd_streambuf buffer;
     bool close;
 };
 

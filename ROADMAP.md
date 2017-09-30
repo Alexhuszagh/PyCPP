@@ -2,11 +2,13 @@
 
 **Short-term**
 
+- TODO: need a file descriptor stream for this...
+    - fd.h
+
 - Need custom tempfile support
     - mkstemp?
+        - Implement using file descriptor stream
     - mkdtemp?
-
-- TODO: need a file descriptor stream for this...
 
 - File descriptor streams:
     - fd_fstream
