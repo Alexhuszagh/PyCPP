@@ -30,6 +30,11 @@ enum filesystem_code
     filesystem_destination_exists,
     filesystem_permissions_error,
     filesystem_too_many_file_descriptors,
+    filesystem_file_descriptor_not_open,
+    filesystem_seek_offset_not_valid,
+    filesystem_seek_offset_beyond_file,
+    filesystem_seek_offset_overflow,
+    filesystem_invalid_seek,
     filesystem_unexpected_error,
 };
 

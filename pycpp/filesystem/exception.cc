@@ -43,6 +43,16 @@ const char* filesystem_error::what() const throw ()
             return "Permissions error, cannot open file.";
         case filesystem_too_many_file_descriptors:
             return "Too many open file descriptors by the process.";
+        case filesystem_file_descriptor_not_open:
+            return "File descriptor is not open.";
+        case filesystem_seek_offset_not_valid:
+            return "Seek value is negative or otherwise invalid.";
+        case filesystem_seek_offset_beyond_file:
+            return "Illegal seek past end of file.";
+        case filesystem_seek_offset_overflow:
+            return "Resulting value cannot be represented by off_t.";
+        case filesystem_invalid_seek:
+            return "Illegal seek on a non-seekable resource.";
         case filesystem_unexpected_error:
         default:
             return "Unexpected error in stat.";

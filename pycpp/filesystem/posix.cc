@@ -414,28 +414,28 @@ static int convert_openmode(std::ios_base::openmode mode)
 
 
 template <typename Path>
-static bool file_allocate_impl(const Path& path, size_t size)
+static int fd_allocate_impl(const Path& path, std::streamsize size)
 {
-    fd_t fd = file_open(path, std::ios_base::out);
+    fd_t fd = fd_open(path, std::ios_base::out);
     if (fd < 0) {
         return false;
     }
-    bool status = file_allocate(fd, size);
-    file_close(fd);
+    int status = fd_allocate(fd, size);
+    fd_close(fd);       // ignore error, close() error makes no sense
 
     return status;
 }
 
 
 template <typename Path>
-static bool file_truncate_impl(const Path& path, size_t size)
+static int fd_truncate_impl(const Path& path, std::streamsize size)
 {
-    fd_t fd = file_open(path, std::ios_base::out);
+    fd_t fd = fd_open(path, std::ios_base::out);
     if (fd < 0) {
         return false;
     }
-    bool status = file_truncate(fd, size);
-    file_close(fd);
+    int status = fd_truncate(fd, size);
+    fd_close(fd);       // ignore error, close() error makes no sense
 
     return status;
 }
@@ -647,54 +647,75 @@ bool makedirs(const path_t& path, int mode)
 // FILE UTILS
 
 
-fd_t file_open(const path_t& path, std::ios_base::openmode mode)
+fd_t fd_open(const path_t& path, std::ios_base::openmode mode)
 {
     return open(path.data(), convert_openmode(mode));
 }
 
 
-std::streamsize file_read(fd_t fd, void* buf, std::streamsize count)
+std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count)
 {
     return read(fd, buf, count);
 }
 
 
-std::streamsize file_write(fd_t fd, void* buf, std::streamsize count)
+std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count)
 {
     return write(fd, buf, count);
 }
 
 
-void file_close(fd_t fd)
+std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
 {
-    close(fd);
+    int whence;
+    switch (way) {
+        case std::ios_base::beg:
+            whence = SEEK_SET;
+            break;
+        case std::ios_base::cur:
+            whence = SEEK_CUR;
+            break;
+        case std::ios_base::end:
+            whence = SEEK_END;
+            break;
+        default:
+            return pos_type(off_type(-1));
+    }
+
+    return lseek(fd, off, whence);
+}
+
+
+int fd_close(fd_t fd)
+{
+    return close(fd);
 }
 
 
 #if !defined(OS_MACOS)
 
-bool file_allocate(fd_t fd, std::streamsize size)
+int fd_allocate(fd_t fd, std::streamsize size)
 {
-    return posix_fallocate(fd, 0, size) == 0;
+    return posix_fallocate(fd, 0, size);
 }
 
 #endif              // MACOS
 
-bool file_allocate(const path_t& path, std::streamsize size)
+int fd_allocate(const path_t& path, std::streamsize size)
 {
-    return file_allocate_impl(path, size);
+    return fd_allocate_impl(path, size);
 }
 
 
-bool file_truncate(fd_t fd, std::streamsize size)
+int fd_truncate(fd_t fd, std::streamsize size)
 {
-    return ftruncate(fd, size) == 0;
+    return ftruncate(fd, size);
 }
 
 
-bool file_truncate(const path_t& path, std::streamsize size)
+int fd_truncate(const path_t& path, std::streamsize size)
 {
-    return file_truncate_impl(path, size);
+    return fd_truncate_impl(path, size);
 }
 
 #endif

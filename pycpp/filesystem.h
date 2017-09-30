@@ -354,46 +354,50 @@ bool remove_path(const path_t& path, bool recursive = true);
 /**
  *  \brief Open descriptor to file, as if by POSIX `open()`.
  */
-fd_t file_open(const path_t& path, std::ios_base::openmode mode);
+fd_t fd_open(const path_t& path, std::ios_base::openmode mode);
 
 /**
- *  \brief Read from descriptor to file, as if by POSIX `read()`.
+ *  \brief Read from descriptor, as if by POSIX `read()`.
  */
-std::streamsize file_read(fd_t fd, void* buf, std::streamsize count);
+std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count);
 
 /**
- *  \brief Read from descriptor to file, as if by POSIX `write()`.
+ *  \brief Write to descriptor, as if by POSIX `write()`.
  */
-std::streamsize file_write(fd_t fd, void* buf, std::streamsize count);
-
-// TODO: this needs to use stable identifiers from char_traits
-//std::streampos seek(std::streamoff off, std::ios_base::seekdir way)
-// TODO: file_seek
+std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count);
 
 /**
- *  \brief Close descriptor to file, as if by POSIX `close()`.
+ *  \brief Seek position in stream, as if by POSIX `lseek()`.
  */
-void file_close(fd_t fd);
+std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way = std::ios_base::beg);
 
 /**
- *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
+ *  \brief Close descriptor, as if by POSIX `close()`.
+ *  \warning `fd_close` returns any errors in closing the file, but
+ *  you are recommended to general ignore them.
+ *  See: https://lwn.net/Articles/576478/
  */
-bool file_allocate(fd_t fd, std::streamsize size);
-
-/**
- *  \brief Truncate file size to `size` (n bytes).
- */
-bool file_truncate(fd_t fd, std::streamsize size);
+int fd_close(fd_t fd);
 
 /**
  *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
  */
-bool file_allocate(const path_t& path, std::streamsize size);
+int fd_allocate(fd_t fd, std::streamsize size);
 
 /**
  *  \brief Truncate file size to `size` (n bytes).
  */
-bool file_truncate(const path_t& path, std::streamsize size);
+int fd_truncate(fd_t fd, std::streamsize size);
+
+/**
+ *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
+ */
+int fd_allocate(const path_t& path, std::streamsize size);
+
+/**
+ *  \brief Truncate file size to `size` (n bytes).
+ */
+int fd_truncate(const path_t& path, std::streamsize size);
 
 #if defined(OS_WINDOWS)          // BACKUP PATH
 
@@ -464,9 +468,9 @@ bool remove_path(const backup_path_t& path, bool recursive = true);
 
 // FILE UTILS
 
-fd_t file_open(const backup_path_t& path, std::ios_base::openmode mode);
-bool file_allocate(const backup_path_t& path, std::streamsize size);
-bool file_truncate(const backup_path_t& path, std::streamsize size);
+fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode);
+int fd_allocate(const backup_path_t& path, std::streamsize size);
+int fd_truncate(const backup_path_t& path, std::streamsize size);
 
 #endif
 

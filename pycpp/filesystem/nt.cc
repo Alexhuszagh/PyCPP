@@ -18,6 +18,7 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
 #include <pycpp/string/casemap.h>
+#include <errno.h>
 #include <io.h>
 #include <windows.h>
 #include <sys/stat.h>
@@ -39,6 +40,62 @@ PYCPP_BEGIN_NAMESPACE
 // HELPERS
 // -------
 
+// ERRNO
+
+static void handle_open_error(int code)
+{
+    switch (code) {
+        case 0:
+            return;
+        // TODO: implement...
+        default:
+            break;
+    }
+}
+
+
+static void handle_read_error(int code)
+{
+    switch (code) {
+        case 0:
+            return;
+        // TODO: implement...
+        default:
+            break;
+    }
+}
+
+
+static void handle_write_error(int code)
+{
+    switch (code) {
+        case 0:
+            return;
+        // TODO: implement...
+        default:
+            break;
+    }
+}
+
+
+static void handle_seek_error(int code)
+{
+    switch (code) {
+        case 0:
+            return;
+        // TODO: implement...
+        default:
+            break;
+    }
+}
+
+
+static void handle_close_error(int code)
+{
+    // ignore the error: close errors are difficult
+}
+
+// PATH
 
 /**
  *  \brief Get iterator where last directory separator occurs.
@@ -545,7 +602,7 @@ static DWORD convert_create_mode(std::ios_base::openmode mode)
 
 
 template <typename Pointer, typename Function>
-static HANDLE file_open_impl(const Pointer &path, std::ios_base::openmode mode, Function function)
+static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode mode, Function function)
 {
     DWORD access = convert_access_mode(mode);
     DWORD share = 0;
@@ -559,28 +616,28 @@ static HANDLE file_open_impl(const Pointer &path, std::ios_base::openmode mode, 
 
 
 template <typename Path>
-static bool file_allocate_impl(const Path& path, size_t size)
+static int fd_allocate_impl(const Path& path, std::streamsize size)
 {
-    fd_t fd = file_open(path, std::ios_base::out);
+    fd_t fd = fd_open(path, std::ios_base::out);
     if (fd == INVALID_HANDLE_VALUE) {
         return false;
     }
-    bool status = file_allocate(fd, size);
-    file_close(fd);
+    int status = fd_allocate(fd, size);
+    fd_close(fd);
 
     return status;
 }
 
 
 template <typename Path>
-static bool file_truncate_impl(const Path& path, size_t size)
+static int fd_truncate_impl(const Path& path, std::streamsize size)
 {
-    fd_t fd = file_open(path, std::ios_base::out);
+    fd_t fd = fd_open(path, std::ios_base::out);
     if (fd == INVALID_HANDLE_VALUE) {
         return false;
     }
-    bool status = file_truncate(fd, size);
-    file_close(fd);
+    int status = fd_truncate(fd, size);
+    fd_close(fd);
 
     return status;
 }
@@ -782,16 +839,21 @@ bool makedirs(const path_t& path, int mode)
 // FILE UTILS
 
 
-fd_t file_open(const path_t& path, std::ios_base::openmode mode)
+fd_t fd_open(const path_t& path, std::ios_base::openmode mode)
 {
     const wchar_t* p = (const wchar_t*) path.data();
-    return file_open_impl(p, mode, CreateFileW);
+    fd_t fd = fd_open_impl(p, mode, CreateFileW);
+    if (fd == INVALID_HANDLE_VALUE) {
+        handle_open_error(GetLastErrror());
+    }
+    return fd;
 }
 
-std::streamsize file_read(fd_t fd, void* buf, std::streamsize count)
+std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count)
 {
     DWORD read;
     if (!ReadFile(fd, buf, count, &read, nullptr)) {
+        handle_read_error(GetLastErrror());
         return -1;
     }
 
@@ -799,10 +861,11 @@ std::streamsize file_read(fd_t fd, void* buf, std::streamsize count)
 }
 
 
-std::streamsize file_write(fd_t fd, void* buf, std::streamsize count)
+std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count)
 {
     DWORD wrote;
     if (!WriteFile(fd, buf, count, &wrote, nullptr)) {
+        handle_write_error(GetLastErrror());
         return -1;
     }
 
@@ -810,49 +873,84 @@ std::streamsize file_write(fd_t fd, void* buf, std::streamsize count)
 }
 
 
-void file_close(fd_t fd)
+std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
 {
-    CloseHandle(fd);
+    DWORD method;
+    switch (way) {
+        case std::ios_base::beg:
+            method = FILE_BEGIN;
+            break;
+        case std::ios_base::cur:
+            method = FILE_CURRENT;
+            break;
+        case std::ios_base::end:
+            method = FILE_END;
+            break;
+        default:
+            return pos_type(off_type(-1));
+    }
+
+    LARGE_INTEGER bytes;
+    bytes.QuadPart = off;
+    DWORD status = SetFilePointer(fd, bytes.LowPart, &bytes.HighPart, FILE_BEGIN)
+    if (status == INVALID_SET_FILE_POINTER) {
+        handle_seek_error(GetLastErrror());
+        return -1;          // force POSIX-like behavior
+    }
+    return status;
 }
 
 
-bool file_allocate(fd_t fd, size_t size)
+int fd_close(fd_t fd)
+{
+    if (!CloseHandle(fd)) {
+        handle_close_error(GetLastErrror());
+        return -1;          // force POSIX-like behavior
+    }
+    return 0;
+}
+
+
+int fd_allocate(fd_t fd, std::streamsize size)
 {
     if (fd == INVALID_HANDLE_VALUE) {
-        return false;
+        return EBADF;
     }
 
     LARGE_INTEGER bytes;
     bytes.QuadPart = size;
-    if (!::SetFilePointerEx(fd, bytes, nullptr, FILE_BEGIN)) {
-        return false;
+    if (!::SetFilePointerEx(fd, bytes.LowPart, &bytes.HighPart, FILE_BEGIN)) {
+        // TODO: return the proper error value, do not set errno
+        return -1;
     }
     if (!::SetEndOfFile(fd)) {
-        return false;
+        // TODO: return the proper error value, do not set errno
+        return -1;
     }
     if (::SetFilePointer(fd, 0, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER) {
-        return false;
+        // TODO: return the proper error value, do not set errno
+        return -1;
     }
 
-    return true;
+    return 0;
 }
 
 
-bool file_truncate(fd_t fd, size_t size)
+int fd_truncate(fd_t fd, std::streamsize size)
 {
-    return file_allocate(fd, size);
+    return fd_allocate(fd, size);
 }
 
 
-bool file_allocate(const path_t& path, size_t size)
+int fd_allocate(const path_t& path, std::streamsize size)
 {
-    return file_allocate_impl(path, size);
+    return fd_allocate_impl(path, size);
 }
 
 
-bool file_truncate(const path_t& path, size_t size)
+int fd_truncate(const path_t& path, std::streamsize size)
 {
-    return file_truncate_impl(path, size);
+    return fd_truncate_impl(path, size);
 }
 
 #endif
@@ -1028,21 +1126,21 @@ bool makedirs(const backup_path_t& path, int mode)
 
 // FILE UTILS
 
-fd_t file_open(const backup_path_t& path, std::ios_base::openmode mode)
+fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode)
 {
-    return file_open_impl(path.data(), mode, CreateFileA);
+    return fd_open_impl(path.data(), mode, CreateFileA);
 }
 
 
-bool file_allocate(const backup_path_t& path, size_t size)
+bool fd_allocate(const backup_path_t& path, std::streamsize size)
 {
-    return file_allocate_impl(path, size);
+    return fd_allocate_impl(path, size);
 }
 
 
-bool file_truncate(const backup_path_t& path, size_t size)
+bool fd_truncate(const backup_path_t& path, std::streamsize size)
 {
-    return file_truncate_impl(path, size);
+    return fd_truncate_impl(path, size);
 }
 
 PYCPP_END_NAMESPACE
