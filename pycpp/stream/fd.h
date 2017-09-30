@@ -33,20 +33,19 @@ public:
     // ----------------
     static constexpr size_t buffer_size = 4096;
 
-//    // MEMBER FUNCTIONS
-//    // ----------------
-//    fd_streambuf(std::ios_base::openmode, std::streambuf* = nullptr, filter_callback = nullptr);
-//    virtual ~fd_streambuf();
-//
-//    fd_streambuf(const fd_streambuf&) = delete;
-//    fd_streambuf& operator=(const fd_streambuf&) = delete;
-//    fd_streambuf(fd_streambuf&&);
-//    fd_streambuf& operator=(fd_streambuf&&);
-//    void close();
-//    void swap(fd_streambuf&);
-//
-//    void set_filebuf(std::streambuf*);
-//    void set_callback(filter_callback);
+    // MEMBER FUNCTIONS
+    // ----------------
+    fd_streambuf(std::ios_base::openmode, fd_t fd);
+    virtual ~fd_streambuf();
+
+    fd_streambuf(const fd_streambuf&) = delete;
+    fd_streambuf& operator=(const fd_streambuf&) = delete;
+    fd_streambuf(fd_streambuf&&);
+    fd_streambuf& operator=(fd_streambuf&&);
+    void close();
+    void swap(fd_streambuf&);
+
+    void set_fd(fd_t fd);
 
 protected:
     // MEMBER FUNCTIONS
@@ -60,7 +59,7 @@ private:
 //    friend class fd_ostream;
 
     std::ios_base::openmode mode;
-    fd_t fd_;
+    fd_t fd = INVALID_FD_VALUE;
     char_type* in_buffer = nullptr;
     char_type* out_buffer = nullptr;
     char_type* in_first = nullptr;
