@@ -866,16 +866,13 @@ int fd_allocate(fd_t fd, std::streamsize size)
     LARGE_INTEGER bytes;
     bytes.QuadPart = size;
     if (!::SetFilePointerEx(fd, bytes, nullptr, FILE_BEGIN)) {
-        // TODO: return the proper error value, do not set errno
-        return -1;
+        return translate_win32_error(GetLastError());
     }
     if (!::SetEndOfFile(fd)) {
-        // TODO: return the proper error value, do not set errno
-        return -1;
+        return translate_win32_error(GetLastError());
     }
     if (::SetFilePointer(fd, 0, nullptr, FILE_BEGIN) == INVALID_SET_FILE_POINTER) {
-        // TODO: return the proper error value, do not set errno
-        return -1;
+        return translate_win32_error(GetLastError());
     }
 
     return 0;

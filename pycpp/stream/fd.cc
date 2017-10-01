@@ -12,69 +12,6 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-//// HELPERS
-//// -------
-//
-//static void handle_seek_error(int code)
-//{
-//    switch (code) {
-//        case 0:
-//            return;
-//        case EBADF:
-//            throw filesystem_error(filesystem_file_descriptor_not_open);
-//        case EINVAL:
-//            throw filesystem_error(filesystem_seek_offset_not_valid);
-//        case ENXIO:
-//            throw filesystem_error(filesystem_seek_offset_beyond_file);
-//        case EOVERFLOW:
-//            throw filesystem_error(filesystem_seek_offset_overflow);
-//        case ESPIPE:
-//            throw filesystem_error(filesystem_invalid_seek);
-//        default:
-//            throw filesystem_error(filesystem_unexpected_error);
-//    }
-//}
-//
-//
-//#if defined(OS_WINDOWS)                     // WINDOWS
-//
-///**
-// *  \brief Map GetLastError to errno.
-// */
-//static int get_error_code()
-//{
-//    DWORD error = GetLastError();
-//    switch (error) {
-////        case ERROR_FILE_NOT_FOUND:
-////        case ERROR_PATH_NOT_FOUND:
-////            return ENOENT;
-////        case ERROR_BAD_ARGUMENTS:
-////            return EINVAL;
-////        case ERROR_TOO_MANY_OPEN_FILES:
-////            return EMFILE;
-////        case ERROR_ACCESS_DENIED:
-////            if (PYCPP_SKIP_PERMISSIONS_ERROR) {
-////                return 0;
-////            }
-////            return EACCES;
-////        case ERROR_NOT_ENOUGH_MEMORY:
-////        case ERROR_OUTOFMEMORY:
-////            return ENOMEM;
-//        default:
-//            return -1;
-//    }
-//}
-//
-//#else                                       // POSIX
-//
-//static int get_error_code()
-//{
-//    return errno;
-//}
-//
-//#endif                                      // WINDOWS
-
-
 // OBJECTS
 // -------
 

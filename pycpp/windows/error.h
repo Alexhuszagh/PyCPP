@@ -16,6 +16,12 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 /**
+ *  \brief Translate a Win32 error from `GetLastError()` to `errno`.
+ */
+int translate_win32_error(int code);
+
+
+/**
  *  \brief Set `errno` appropriately from `GetLastError()`.
  */
 void set_errno_win32();
