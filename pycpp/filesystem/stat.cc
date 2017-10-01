@@ -292,13 +292,13 @@ static bool set_stat_impl(const Path& src, const Path& dst)
     TIME_T_TO_FILETIME(src_stat.st_atim.tv_sec, atime);
     TIME_T_TO_FILETIME(src_stat.st_mtim.tv_sec, mtime);
     if (!SetFileTime(handle, NULL, &atime, &mtime)) {
-        file_close(handle);
+        fd_close(handle);
         return false;
     }
 
     // we don't define st_uid, and st_gid, so don't implement them
 
-    file_close(handle);
+    fd_close(handle);
     return true;
 }
 
@@ -328,7 +328,7 @@ static int stat_impl(const Path& path, stat_t* buffer, bool use_lstat)
         return get_error_code();
     }
     int status = copy_stat(handle, buffer);
-    file_close(handle);
+    fd_close(handle);
     if (status) {
         return get_error_code();
     }
@@ -344,7 +344,7 @@ static path_t read_link_impl(HANDLE handle)
     // get our io control code
     auto buf = new REPARSE_DATA_BUFFER;
     DWORD io = get_ioctrl(handle, buf);
-    file_close(handle);
+    fd_close(handle);
 
     // handle errors
     if (io == 0) {

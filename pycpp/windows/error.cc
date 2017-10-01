@@ -7,7 +7,7 @@
 
 #if defined(OS_WINDOWS)
 #   include <errno.h>
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #endif
 
 PYCPP_BEGIN_NAMESPACE

@@ -844,7 +844,7 @@ fd_t fd_open(const path_t& path, std::ios_base::openmode mode)
     const wchar_t* p = (const wchar_t*) path.data();
     fd_t fd = fd_open_impl(p, mode, CreateFileW);
     if (fd == INVALID_HANDLE_VALUE) {
-        handle_open_error(GetLastErrror());
+        handle_open_error(GetLastError());
     }
     return fd;
 }
@@ -853,7 +853,7 @@ std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count)
 {
     DWORD read;
     if (!ReadFile(fd, buf, count, &read, nullptr)) {
-        handle_read_error(GetLastErrror());
+        handle_read_error(GetLastError());
         return -1;
     }
 
@@ -865,7 +865,7 @@ std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count)
 {
     DWORD wrote;
     if (!WriteFile(fd, buf, count, &wrote, nullptr)) {
-        handle_write_error(GetLastErrror());
+        handle_write_error(GetLastError());
         return -1;
     }
 
@@ -887,14 +887,14 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
             method = FILE_END;
             break;
         default:
-            return pos_type(off_type(-1));
+            return std::streampos(std::streamoff(-1));
     }
 
     LARGE_INTEGER bytes;
     bytes.QuadPart = off;
-    DWORD status = SetFilePointer(fd, bytes.LowPart, &bytes.HighPart, FILE_BEGIN)
+    DWORD status = SetFilePointer(fd, bytes.LowPart, &bytes.HighPart, FILE_BEGIN);
     if (status == INVALID_SET_FILE_POINTER) {
-        handle_seek_error(GetLastErrror());
+        handle_seek_error(GetLastError());
         return -1;          // force POSIX-like behavior
     }
     return status;
@@ -904,7 +904,7 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
 int fd_close(fd_t fd)
 {
     if (!CloseHandle(fd)) {
-        handle_close_error(GetLastErrror());
+        handle_close_error(GetLastError());
         return -1;          // force POSIX-like behavior
     }
     return 0;
@@ -919,7 +919,7 @@ int fd_allocate(fd_t fd, std::streamsize size)
 
     LARGE_INTEGER bytes;
     bytes.QuadPart = size;
-    if (!::SetFilePointerEx(fd, bytes.LowPart, &bytes.HighPart, FILE_BEGIN)) {
+    if (!::SetFilePointerEx(fd, bytes, nullptr, FILE_BEGIN)) {
         // TODO: return the proper error value, do not set errno
         return -1;
     }
@@ -1132,13 +1132,13 @@ fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode)
 }
 
 
-bool fd_allocate(const backup_path_t& path, std::streamsize size)
+int fd_allocate(const backup_path_t& path, std::streamsize size)
 {
     return fd_allocate_impl(path, size);
 }
 
 
-bool fd_truncate(const backup_path_t& path, std::streamsize size)
+int fd_truncate(const backup_path_t& path, std::streamsize size)
 {
     return fd_truncate_impl(path, size);
 }
