@@ -14,10 +14,10 @@
 
 #include <pycpp/random.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/preprocessor/errno.h>
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/secure/string.h>
 #include <assert.h>
-#include <errno.h>
 #include <stdlib.h>
 #include <new>
 #include <stdexcept>

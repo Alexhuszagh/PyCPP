@@ -8,3 +8,4 @@
 #pragma once
 
 #include <pycpp/windows/error.h>
+#include <pycpp/windows/winapi.h>

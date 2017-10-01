@@ -17,8 +17,9 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
+#include <pycpp/preprocessor/errno.h>
 #include <pycpp/string/casemap.h>
-#include <errno.h>
+#include <pycpp/windows/error.h>
 #include <io.h>
 #include <windows.h>
 #include <sys/stat.h>
@@ -39,61 +40,6 @@ PYCPP_BEGIN_NAMESPACE
 
 // HELPERS
 // -------
-
-// ERRNO
-
-static void handle_open_error(int code)
-{
-    switch (code) {
-        case 0:
-            return;
-        // TODO: implement...
-        default:
-            break;
-    }
-}
-
-
-static void handle_read_error(int code)
-{
-    switch (code) {
-        case 0:
-            return;
-        // TODO: implement...
-        default:
-            break;
-    }
-}
-
-
-static void handle_write_error(int code)
-{
-    switch (code) {
-        case 0:
-            return;
-        // TODO: implement...
-        default:
-            break;
-    }
-}
-
-
-static void handle_seek_error(int code)
-{
-    switch (code) {
-        case 0:
-            return;
-        // TODO: implement...
-        default:
-            break;
-    }
-}
-
-
-static void handle_close_error(int code)
-{
-    // ignore the error: close errors are difficult
-}
 
 // PATH
 
@@ -844,7 +790,7 @@ fd_t fd_open(const path_t& path, std::ios_base::openmode mode)
     const wchar_t* p = (const wchar_t*) path.data();
     fd_t fd = fd_open_impl(p, mode, CreateFileW);
     if (fd == INVALID_HANDLE_VALUE) {
-        handle_open_error(GetLastError());
+        set_errno_win32();
     }
     return fd;
 }
@@ -853,7 +799,7 @@ std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count)
 {
     DWORD read;
     if (!ReadFile(fd, buf, count, &read, nullptr)) {
-        handle_read_error(GetLastError());
+        set_errno_win32();
         return -1;
     }
 
@@ -865,7 +811,7 @@ std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count)
 {
     DWORD wrote;
     if (!WriteFile(fd, buf, count, &wrote, nullptr)) {
-        handle_write_error(GetLastError());
+        set_errno_win32();
         return -1;
     }
 
@@ -894,7 +840,7 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
     bytes.QuadPart = off;
     DWORD status = SetFilePointer(fd, bytes.LowPart, &bytes.HighPart, FILE_BEGIN);
     if (status == INVALID_SET_FILE_POINTER) {
-        handle_seek_error(GetLastError());
+        set_errno_win32();
         return -1;          // force POSIX-like behavior
     }
     return status;
@@ -904,7 +850,7 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
 int fd_close(fd_t fd)
 {
     if (!CloseHandle(fd)) {
-        handle_close_error(GetLastError());
+        set_errno_win32();
         return -1;          // force POSIX-like behavior
     }
     return 0;

@@ -4,7 +4,7 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
-#include <errno.h>
+#include <pycpp/preprocessor/errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 
