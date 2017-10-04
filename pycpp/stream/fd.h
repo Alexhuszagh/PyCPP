@@ -59,9 +59,9 @@ protected:
     // virtual seekpos
 
 private:
-    friend class fd_fstream;
-    friend class fd_ifstream;
-    friend class fd_ofstream;
+    friend class fd_stream;
+    friend class fd_istream;
+    friend class fd_ostream;
 
     std::ios_base::openmode mode;
     fd_t fd = INVALID_FD_VALUE;
@@ -75,81 +75,83 @@ private:
 /**
  *  \brief Stream wrapper using file descriptors.
  */
-struct fd_fstream: std::iostream
+struct fd_stream: std::iostream
 {
 public:
-//    fd_fstream();
-//    ~fd_fstream();
-    fd_fstream(const fd_fstream&) = delete;
-    fd_fstream & operator=(const fd_fstream&) = delete;
-    fd_fstream(fd_fstream &&other);
-    fd_fstream & operator=(fd_fstream &&other);
-    // TODO: more constructors...
+    fd_stream();
+    ~fd_stream();
+    fd_stream(const fd_stream&) = delete;
+    fd_stream & operator=(const fd_stream&) = delete;
+    fd_stream(fd_stream &&other);
+    fd_stream & operator=(fd_stream &&other);
 
-    // TODO: here...
-    // bool is_open() const;
-    // void close();
-    // void swap(fd_fstream &other);
-    // std::basic_filebuf<char>* rdbuf() const;
-    // void rdbuf(std::basic_filebuf<char> *buffer);
+    fd_stream(fd_t fd, bool close = false);
+    void open(fd_t fd, bool close = false);
+    void close();
+    bool is_open() const;
+
+    void swap(fd_stream &other);
+    fd_streambuf* rdbuf() const;
+    void rdbuf(fd_streambuf* buffer);
 
 private:
     fd_streambuf buffer;
-    bool close;
+    bool close_ = false;
 };
 
 
 /**
  *  \brief Input stream wrapper using file descriptors.
  */
-struct fd_ifstream: std::iostream
+struct fd_istream: std::istream
 {
-public:
-//    fd_ifstream();
-//    ~fd_ifstream();
-    fd_ifstream(const fd_ifstream&) = delete;
-    fd_ifstream & operator=(const fd_ifstream&) = delete;
-//    fd_ifstream(fd_ifstream &&other);
-//    fd_ifstream & operator=(fd_ifstream &&other);
-    // TODO: more constructors...
+    fd_istream();
+    ~fd_istream();
+    fd_istream(const fd_istream&) = delete;
+    fd_istream & operator=(const fd_istream&) = delete;
+    fd_istream(fd_istream &&other);
+    fd_istream & operator=(fd_istream &&other);
 
-    // TODO: here...
-    // bool is_open() const;
-    // void close();
-    // void swap(fd_ifstream &other);
-    // std::basic_filebuf<char>* rdbuf() const;
-    // void rdbuf(std::basic_filebuf<char> *buffer);
+    fd_istream(fd_t fd, bool close = false);
+    void open(fd_t fd, bool close = false);
+    void close();
+    bool is_open() const;
+
+    void swap(fd_istream &other);
+    fd_streambuf* rdbuf() const;
+    void rdbuf(fd_streambuf* buffer);
 
 private:
     fd_streambuf buffer;
-    bool close;
+    bool close_ = false;
 };
 
 
 /**
  *  \brief Output stream wrapper using file descriptors.
  */
-struct fd_ofstream: std::iostream
+struct fd_ostream: std::ostream
 {
 public:
-//    fd_ofstream();
-//    ~fd_ofstream();
-    fd_ofstream(const fd_ofstream&) = delete;
-    fd_ofstream & operator=(const fd_ofstream&) = delete;
-//    fd_ofstream(fd_ofstream &&other);
-//    fd_ofstream & operator=(fd_ofstream &&other);
-    // TODO: more constructors...
+    fd_ostream();
+    ~fd_ostream();
+    fd_ostream(const fd_ostream&) = delete;
+    fd_ostream & operator=(const fd_ostream&) = delete;
+    fd_ostream(fd_ostream &&other);
+    fd_ostream & operator=(fd_ostream &&other);
 
-    // TODO: here...
-    // bool is_open() const;
-    // void close();
-    // void swap(fd_ofstream &other);
-    // std::basic_filebuf<char>* rdbuf() const;
-    // void rdbuf(std::basic_filebuf<char> *buffer);
+    fd_ostream(fd_t fd, bool close = false);
+    void open(fd_t fd, bool close = false);
+    void close();
+    bool is_open() const;
+
+    void swap(fd_ostream &other);
+    fd_streambuf* rdbuf() const;
+    void rdbuf(fd_streambuf* buffer);
 
 private:
     fd_streambuf buffer;
-    bool close;
+    bool close_ = false;
 };
 
 PYCPP_END_NAMESPACE
