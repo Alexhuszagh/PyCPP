@@ -679,7 +679,7 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
             whence = SEEK_END;
             break;
         default:
-            return pos_type(off_type(-1));
+            return std::streampos(std::streamoff(-1));
     }
 
     return lseek(fd, off, whence);
