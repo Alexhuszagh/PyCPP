@@ -151,6 +151,18 @@ int fd_streambuf::sync()
 }
 
 
+auto fd_streambuf::seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode) -> pos_type
+{
+    return fd_seek(fd, off, way);
+}
+
+
+auto fd_streambuf::seekpos(pos_type pos, std::ios_base::openmode) -> pos_type
+{
+    return fd_seek(fd, pos);
+}
+
+
 void fd_streambuf::set_fd(fd_t fd)
 {
     close();

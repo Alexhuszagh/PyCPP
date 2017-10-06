@@ -53,10 +53,8 @@ protected:
     virtual int_type underflow();
     virtual int_type overflow(int_type = traits_type::eof());
     virtual int sync();
-    // TODO: I probably need these functions too..
-    // virtual setbuf
-    // virtual seekoff
-    // virtual seekpos
+    virtual pos_type seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode openmode = std::ios_base::in | std::ios_base::out);
+    virtual pos_type seekpos(pos_type pos, std::ios_base::openmode openmode = std::ios_base::in | std::ios_base::out);
 
 private:
     void set_readp();
