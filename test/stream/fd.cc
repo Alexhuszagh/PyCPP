@@ -111,6 +111,7 @@ TEST(fd_stream, iostream)
         return std::remove(path.data()) == 0;
     });
 #endif
+    exit(0);        // TODO: remove
 }
 
 // TODO: implement...

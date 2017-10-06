@@ -55,6 +55,7 @@ fd_streambuf& fd_streambuf::operator=(fd_streambuf&& other)
 
 void fd_streambuf::close()
 {
+    std::cout << "fd_streambuf::close()" << std::endl;
     sync();
 
     delete[] in_buffer;
@@ -78,6 +79,7 @@ void fd_streambuf::swap(fd_streambuf& other)
 
 auto fd_streambuf::underflow() -> int_type
 {
+    std::cout << mode << " " << "underflow()" << std::endl;
     if (!(mode & std::ios_base::in)) {
         return traits_type::eof();
     }
@@ -100,6 +102,7 @@ auto fd_streambuf::underflow() -> int_type
 
 auto fd_streambuf::overflow(int_type c) -> int_type
 {
+    std::cout << mode << " " << "overflow()" << std::endl;
     if (!(mode & std::ios_base::out)) {
         return traits_type::eof();
     }
@@ -125,6 +128,7 @@ auto fd_streambuf::overflow(int_type c) -> int_type
 
 int fd_streambuf::sync()
 {
+    std::cout << mode << " " << "sync()" << std::endl;
     auto result = overflow(traits_type::eof());
 
     // flush buffer on output
@@ -145,6 +149,7 @@ int fd_streambuf::sync()
 
 void fd_streambuf::set_fd(fd_t fd)
 {
+    std::cout << mode << " " << "set_fd()" << std::endl;
     close();
     this->fd = fd;
 }
@@ -163,6 +168,7 @@ fd_stream::fd_stream():
 fd_stream::~fd_stream()
 {
     close();
+    std::cout << "~fd_stream" << std::endl;
 }
 
 
