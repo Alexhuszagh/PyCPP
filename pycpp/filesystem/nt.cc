@@ -592,11 +592,11 @@ static int fd_truncate_impl(const Path& path, std::streamsize size)
 // CONSTANTS
 // ---------
 
-// TODO:
-//extern mode_t S_IWR_USR_GRP;
-//extern mode_t S_IWRX_USR_GRP;
-//extern mode_t S_IWR_USR_GRP_OTH;
-//extern mode_t S_IWRX_USR_GRP_OTH;
+// Windows has minimal permissions modes.
+mode_t S_IWR_USR_GRP = _S_IREAD | _S_IWRITE;
+mode_t S_IWRX_USR_GRP = S_IWR_USR_GRP;
+mode_t S_IWR_USR_GRP_OTH = S_IWR_USR_GRP;
+mode_t S_IWRX_USR_GRP_OTH = S_IWR_USR_GRP;
 
 // FUNCTIONS
 // ---------
@@ -768,6 +768,7 @@ bool mkdir(const path_t& path, int mode)
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     if (CreateDirectoryW(data, nullptr)) {
         int mask = 0;
+        // Windows doesn't allow write-only files. Keep for expressivity.
         if (mode & S_IRUSR) {
             mask |= _S_IREAD;
         }
