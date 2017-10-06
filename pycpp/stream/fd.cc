@@ -22,15 +22,16 @@ fd_streambuf::fd_streambuf(std::ios_base::openmode mode, fd_t fd):
     mode(mode),
     fd(fd)
 {
-    in_buffer = new char_type[buffer_size];
-    out_buffer = new char_type[buffer_size];
     if (mode & std::ios_base::in) {
-        setg(0, 0, 0);
-        setp(out_buffer, out_buffer + buffer_size);
-    } else {
-        setg(in_buffer, in_buffer, in_buffer+ buffer_size);
-        setp(0, 0);
+        in_first = new char_type[buffer_size];
     }
+    if (mode & std::ios_base::out) {
+        out_first = new char_type[buffer_size];
+        out_last = out_first;
+    }
+
+    setg(0, 0, 0);
+    setp(0, 0);
 }
 
 
@@ -55,45 +56,50 @@ fd_streambuf& fd_streambuf::operator=(fd_streambuf&& other)
 
 void fd_streambuf::close()
 {
-    std::cout << "fd_streambuf::close()" << std::endl;
     sync();
 
-    delete[] in_buffer;
-    delete[] out_buffer;
+    delete[] in_first;
+    delete[] out_first;
     in_first = nullptr;
     in_last = nullptr;
-    in_buffer = nullptr;
-    out_buffer = nullptr;
+    out_first = nullptr;
+    out_last = nullptr;
 }
 
 
 void fd_streambuf::swap(fd_streambuf& other)
 {
     std::swap(fd, other.fd);
-    std::swap(in_buffer, other.in_buffer);
-    std::swap(out_buffer, other.out_buffer);
     std::swap(in_first, other.in_first);
     std::swap(in_last, other.in_last);
+    std::swap(out_first, other.out_first);
+    std::swap(out_last, other.out_last);
+
+    // reset internal buffer pointers
+    setg(0, 0, 0);
+    setp(0, 0);
+    other.setg(0, 0, 0);
+    other.setp(0, 0);
 }
 
 
 auto fd_streambuf::underflow() -> int_type
 {
-    std::cout << mode << " " << "underflow()" << std::endl;
     if (!(mode & std::ios_base::in)) {
         return traits_type::eof();
     }
 
-    std::streamsize read;
+    set_readp();
 
+    std::streamsize read;
     if (fd != INVALID_FD_VALUE) {
-        read = fd_read(fd, in_buffer, buffer_size);
-        if (read == -1) {
+        read = fd_read(fd, in_first, buffer_size);
+        if (read == 0 || read == -1) {
+            // 0 indicates EOF, -1 indicates error.
             return traits_type::eof();
         }
-        in_first = in_buffer;
-        in_last = in_buffer + read;
-        setg(out_buffer, out_buffer, out_buffer + read);
+        in_last = in_first + read;
+        setg(in_first, in_first, in_first + read);
         return traits_type::to_int_type(*gptr());
     }
     return traits_type::eof();
@@ -102,24 +108,22 @@ auto fd_streambuf::underflow() -> int_type
 
 auto fd_streambuf::overflow(int_type c) -> int_type
 {
-    std::cout << mode << " " << "overflow()" << std::endl;
     if (!(mode & std::ios_base::out)) {
         return traits_type::eof();
     }
 
+    set_writep();
+
     std::streamsize distance, wrote;
-    distance = std::distance(in_first, in_last);
     if (fd != INVALID_FD_VALUE) {
-        // TODO: how do I know the out buffer size??
-        // Is this right???
-        wrote = fd_write(fd, in_first, distance);
-        if (wrote == -1) {
-            return traits_type::eof();
+        distance = std::distance(out_first, out_last);
+        if (distance == buffer_size) {
+            wrote = fd_write(fd, out_first, distance);
+            out_last = out_first;
         }
-        in_first += wrote;
 
         if (!traits_type::eq_int_type(c, traits_type::eof())) {
-            *in_last++ = traits_type::to_char_type(c);
+            *out_last++ = traits_type::to_char_type(c);
         }
     }
     return traits_type::not_eof(c);
@@ -128,16 +132,16 @@ auto fd_streambuf::overflow(int_type c) -> int_type
 
 int fd_streambuf::sync()
 {
-    std::cout << mode << " " << "sync()" << std::endl;
     auto result = overflow(traits_type::eof());
 
     // flush buffer on output
+    std::streamsize distance, wrote;
     if (fd != INVALID_FD_VALUE && mode & std::ios_base::out) {
-        // TODO: is this right??
-        std::streamsize distance, wrote;
-        distance = std::distance(in_first, in_last);
-        wrote = fd_write(fd, in_first, distance);
-        in_first += wrote;
+        distance = std::distance(out_first, out_last);
+        if (distance > 0) {
+            wrote = fd_write(fd, out_first, distance);
+            out_last = out_first;
+        }
     }
 
     if (traits_type::eq_int_type(result, traits_type::eof())) {
@@ -149,9 +153,22 @@ int fd_streambuf::sync()
 
 void fd_streambuf::set_fd(fd_t fd)
 {
-    std::cout << mode << " " << "set_fd()" << std::endl;
     close();
     this->fd = fd;
+}
+
+
+void fd_streambuf::set_readp()
+{
+    setp(in_first, in_first + buffer_size);
+    setg(0, 0, 0);
+}
+
+
+void fd_streambuf::set_writep()
+{
+    setg(out_first, out_first, out_first + buffer_size);
+    setp(0, 0);
 }
 
 
@@ -168,7 +185,6 @@ fd_stream::fd_stream():
 fd_stream::~fd_stream()
 {
     close();
-    std::cout << "~fd_stream" << std::endl;
 }
 
 
@@ -211,7 +227,6 @@ void fd_stream::rdbuf(fd_streambuf* buffer)
 {
     std::ios::rdbuf(buffer);
 }
-
 
 
 bool fd_stream::is_open() const

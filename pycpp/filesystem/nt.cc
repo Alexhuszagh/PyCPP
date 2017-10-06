@@ -548,12 +548,13 @@ static DWORD convert_create_mode(std::ios_base::openmode mode)
 
 
 template <typename Pointer, typename Function>
-static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode mode, Function function)
+static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode openmode, mode_t permission, Function function)
 {
-    DWORD access = convert_access_mode(mode);
+    // TODO: need mode_t values for permission
+    DWORD access = convert_access_mode(openmode);
     DWORD share = 0;
     LPSECURITY_ATTRIBUTES security = nullptr;
-    DWORD create = convert_create_mode(mode);
+    DWORD create = convert_create_mode(openmode);
     DWORD flags = 0;
     HANDLE file = nullptr;
 
@@ -588,6 +589,14 @@ static int fd_truncate_impl(const Path& path, std::streamsize size)
     return status;
 }
 
+// CONSTANTS
+// ---------
+
+// TODO:
+//extern mode_t S_IWR_USR_GRP;
+//extern mode_t S_IWRX_USR_GRP;
+//extern mode_t S_IWR_USR_GRP_OTH;
+//extern mode_t S_IWRX_USR_GRP_OTH;
 
 // FUNCTIONS
 // ---------

@@ -389,9 +389,9 @@ static int convert_openmode(std::ios_base::openmode mode)
     if ((mode & std::ios_base::in) && (mode & std::ios_base::out)) {
         flags |= O_RDWR;
     } else if (mode & std::ios_base::in) {
-        flags |= O_WRONLY;
-    } else if (mode & std::ios_base::out) {
         flags |= O_RDONLY;
+    } else if (mode & std::ios_base::out) {
+        flags |= O_WRONLY;
     }
 
     // create file
@@ -439,6 +439,14 @@ static int fd_truncate_impl(const Path& path, std::streamsize size)
 
     return status;
 }
+
+// CONSTANTS
+// ---------
+
+mode_t S_IWR_USR_GRP = S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP;
+mode_t S_IWRX_USR_GRP = S_IWR_USR_GRP | S_IXUSR | S_IXGRP;
+mode_t S_IWR_USR_GRP_OTH = S_IWR_USR_GRP | S_IROTH | S_IWOTH;
+mode_t S_IWRX_USR_GRP_OTH = S_IWRX_USR_GRP | S_IROTH | S_IWOTH | S_IXOTH;
 
 // FUNCTIONS
 // ---------
@@ -647,21 +655,22 @@ bool makedirs(const path_t& path, int mode)
 // FILE UTILS
 
 
-fd_t fd_open(const path_t& path, std::ios_base::openmode mode)
+fd_t fd_open(const path_t& path, std::ios_base::openmode openmode, mode_t permission)
 {
-    return open(path.data(), convert_openmode(mode));
+    // TODO: mode
+    return ::open(path.data(), convert_openmode(openmode));
 }
 
 
 std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count)
 {
-    return read(fd, buf, count);
+    return ::read(fd, buf, count);
 }
 
 
 std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count)
 {
-    return write(fd, buf, count);
+    return ::write(fd, buf, count);
 }
 
 
@@ -682,13 +691,13 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
             return std::streampos(std::streamoff(-1));
     }
 
-    return lseek(fd, off, whence);
+    return ::lseek(fd, off, whence);
 }
 
 
 int fd_close(fd_t fd)
 {
-    return close(fd);
+    return ::close(fd);
 }
 
 

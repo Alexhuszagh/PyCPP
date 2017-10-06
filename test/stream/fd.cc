@@ -16,8 +16,6 @@
 #   include <io.h>
 #endif
 
-#include <fstream>  // TODO: remove
-
 // CONSTANTS
 // ---------
 
@@ -45,22 +43,19 @@ struct test_stream
         fd_t fd;
         std::string expected = "Single line";
 
-//        fd = fd_open(path, std::ios_base::out);
-//        OStream ostream(fd, true);
-        std::ofstream ostream(path);
+        fd = fd_open(path, std::ios_base::out);
+        OStream ostream(fd, true);
         ostream << expected << std::endl;
         ostream.close();
 
         fd = fd_open(path, std::ios_base::in);
         IStream istream(fd, true);
-//        std::ifstream istream(path);
         std::string result;
         std::getline(istream, result);
         istream.close();
 
         EXPECT_EQ(result, expected);
         EXPECT_TRUE(remove_file(path));
-        exit(0);
     }
 };
 
@@ -68,27 +63,26 @@ struct test_stream
 // -----
 
 
-//TEST(fd_stream, fd_stream)
-//{
-//    typedef test_stream<fd_stream, fd_stream> tester;
-//
-//    tester()(UTF8_ENGLISH, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//
-//#if defined(PYCPP_HAVE_WFOPEN)         // WINDOWS
-//    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//    tester()(UTF16_KOREAN, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//#else                           // POSIX
-//    tester()(UTF8_KOREAN, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//#endif
-//}
+TEST(fd_stream, fd_stream)
+{
+    typedef test_stream<fd_stream, fd_stream> tester;
+
+    tester()(UTF8_ENGLISH, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+#if defined(PYCPP_HAVE_WFOPEN)         // WINDOWS
+    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+    tester()(UTF16_KOREAN, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+#else                           // POSIX
+    tester()(UTF8_KOREAN, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+#endif
+}
 
 
 TEST(fd_stream, iostream)
@@ -111,7 +105,4 @@ TEST(fd_stream, iostream)
         return std::remove(path.data()) == 0;
     });
 #endif
-    exit(0);        // TODO: remove
 }
-
-// TODO: implement...

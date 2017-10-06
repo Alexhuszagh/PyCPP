@@ -45,14 +45,7 @@ filter_streambuf::filter_streambuf(std::ios_base::openmode m, std::streambuf* f,
 {
     in_buffer = new char_type[buffer_size];
     out_buffer = new char_type[buffer_size];
-    if (mode & std::ios_base::in) {
-        setg(0, 0, 0);
-        setp(out_buffer, out_buffer + buffer_size);
-    } else {
-        setg(in_buffer, in_buffer, in_buffer+ buffer_size);
-        setp(0, 0);
-    }
-
+    set_pointers();
     set_callback(c);
 }
 
@@ -87,8 +80,8 @@ void filter_streambuf::close()
     delete[] in_buffer;
     delete[] out_buffer;
     filebuf = nullptr;
-    in_first = nullptr;
-    in_last = nullptr;
+    first = nullptr;
+    last = nullptr;
     in_buffer = nullptr;
     out_buffer = nullptr;
 }
@@ -100,8 +93,12 @@ void filter_streambuf::swap(filter_streambuf& other)
     std::swap(filebuf, other.filebuf);
     std::swap(in_buffer, other.in_buffer);
     std::swap(out_buffer, other.out_buffer);
-    std::swap(in_first, other.in_first);
-    std::swap(in_last, other.in_last);
+    std::swap(first, other.first);
+    std::swap(last, other.last);
+
+    // reset internal buffer pointers
+    set_pointers();
+    other.set_pointers();
 }
 
 
@@ -114,10 +111,10 @@ auto filter_streambuf::underflow() -> int_type
     std::streamsize read, converted;
 
     if (filebuf) {
-        if (in_first == 0) {
+        if (first == nullptr) {
             read = filebuf->sgetn(in_buffer, buffer_size);
-            in_first = in_buffer;
-            in_last = in_buffer + read;
+            first = in_buffer;
+            last = in_buffer + read;
         }
 
         // perform the callback
@@ -133,31 +130,43 @@ auto filter_streambuf::underflow() -> int_type
 }
 
 
+void filter_streambuf::set_pointers()
+{
+    if (mode & std::ios_base::in) {
+        setg(0, 0, 0);
+        setp(out_buffer, out_buffer + buffer_size);
+    } else {
+        setg(in_buffer, in_buffer, in_buffer + buffer_size);
+        setp(0, 0);
+    }
+}
+
+
 std::streamsize filter_streambuf::do_callback()
 {
     size_t distance;
     std::streamsize processed, converted;
 
     // prep arguments
-    distance = std::distance(in_first, in_last);
-    const void* src = (const void*) in_first;
+    distance = std::distance(first, last);
+    const void* src = (const void*) first;
     void* dst = (void*) out_buffer;
 
     // do callback
     callback(src, distance, dst, buffer_size, sizeof(char_type));
 
     // get callback data
-    processed = std::distance(in_first, (char*)src);
+    processed = std::distance(first, (char*)src);
     converted = std::distance(out_buffer, (char*)dst);
 
     // store state
     if (processed < distance) {
         // overflow in bytes written to dst, store state
-        in_first += processed;
+        first += processed;
     } else {
         // fully converted
-        in_first = nullptr;
-        in_last = nullptr;
+        first = nullptr;
+        last = nullptr;
     }
 
     return converted;
@@ -171,16 +180,16 @@ auto filter_streambuf::overflow(int_type c) -> int_type
     }
 
     if (filebuf) {
-        if (in_first == 0) {
-            in_first = in_buffer;
-            in_last = in_buffer;
-        } else if (in_last == in_first + buffer_size) {
+        if (first == nullptr) {
+            first = in_buffer;
+            last = in_buffer;
+        } else if (last == first + buffer_size) {
             std::streamsize converted = do_callback();
             filebuf->sputn(out_buffer, converted);
         }
 
         if (!traits_type::eq_int_type(c, traits_type::eof())) {
-            *in_last++ = traits_type::to_char_type(c);
+            *last++ = traits_type::to_char_type(c);
         }
     }
     return traits_type::not_eof(c);

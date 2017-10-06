@@ -28,6 +28,29 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// CONSTANTS
+// ---------
+
+/**
+ *  \brief Read/write permission for user/group.
+ */
+extern mode_t S_IWR_USR_GRP;
+
+/**
+ *  \brief Read/write/execute permission for user/group.
+ */
+extern mode_t S_IWRX_USR_GRP;
+
+/**
+ *  \brief Read/write permission for user/group/other.
+ */
+extern mode_t S_IWR_USR_GRP_OTH;
+
+/**
+ *  \brief Read/write/execute permission for user/group/other.
+ */
+extern mode_t S_IWRX_USR_GRP_OTH;
+
 // FUNCTIONS
 // ---------
 
@@ -354,7 +377,7 @@ bool remove_path(const path_t& path, bool recursive = true);
 /**
  *  \brief Open descriptor to file, as if by POSIX `open()`.
  */
-fd_t fd_open(const path_t& path, std::ios_base::openmode mode);
+fd_t fd_open(const path_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP);
 
 /**
  *  \brief Read from descriptor, as if by POSIX `read()`.

@@ -79,6 +79,7 @@ protected:
     virtual int sync();
 
 private:
+    void set_pointers();
     std::streamsize do_callback();
 
     friend class filter_istream;
@@ -89,8 +90,8 @@ private:
     filter_callback callback = nullptr;
     char_type* in_buffer = nullptr;
     char_type* out_buffer = nullptr;
-    char_type* in_first = nullptr;
-    char_type* in_last = nullptr;
+    char_type* first = nullptr;
+    char_type* last = nullptr;
 };
 
 

@@ -59,16 +59,19 @@ protected:
     // virtual seekpos
 
 private:
+    void set_readp();
+    void set_writep();
+
     friend class fd_stream;
     friend class fd_istream;
     friend class fd_ostream;
 
     std::ios_base::openmode mode;
     fd_t fd = INVALID_FD_VALUE;
-    char_type* in_buffer = nullptr;
-    char_type* out_buffer = nullptr;
     char_type* in_first = nullptr;
     char_type* in_last = nullptr;
+    char_type* out_first = nullptr;
+    char_type* out_last = nullptr;
 };
 
 

@@ -4,6 +4,8 @@
 
 - TODO: need a file descriptor stream for this...
     - fd.h
+        - Getting EBADF for read/writes...
+            - Maybe a fucked up swap/MOVE constructor on the streambuf?
 
 - Need custom tempfile support
     - mkstemp?
