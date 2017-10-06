@@ -116,5 +116,4 @@ TEST(fd_stream, seek)
     tester()(UTF8_ENGLISH, [](const std::string& path) {
         return std::remove(path.data()) == 0;
     }, 4);
-    exit(0);
 }
