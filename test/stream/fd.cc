@@ -38,7 +38,7 @@ template <typename IStream, typename OStream>
 struct test_stream
 {
     template <typename String, typename RemoveFile>
-    void operator()(const String &path, RemoveFile remove_file)
+    void operator()(const String &path, RemoveFile remove_file, size_t seekg = 0)
     {
         fd_t fd;
         std::string expected = "Single line";
@@ -50,11 +50,12 @@ struct test_stream
 
         fd = fd_open(path, std::ios_base::in);
         IStream istream(fd, true);
+        istream.seekg(seekg);
         std::string result;
         std::getline(istream, result);
         istream.close();
 
-        EXPECT_EQ(result, expected);
+        EXPECT_EQ(result, expected.substr(seekg));
         EXPECT_TRUE(remove_file(path));
     }
 };
@@ -105,4 +106,15 @@ TEST(fd_stream, iostream)
         return std::remove(path.data()) == 0;
     });
 #endif
+}
+
+
+TEST(fd_stream, seek)
+{
+    typedef test_stream<fd_istream, fd_ostream> tester;
+
+    tester()(UTF8_ENGLISH, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    }, 4);
+    exit(0);
 }
