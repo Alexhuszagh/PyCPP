@@ -53,6 +53,10 @@ extern path_t TMP_SUFFIX_CHARACTERS;
  *  \brief Create a temporary file using the given prefix and directory.
  *
  *  The file will automatically be removed when the stream is closed.
+ *  This is analogous to mkstemp, and the file is opened
+ *  with read/write access that only the current user can access.
+ *  The file is opened exclusively, and cannot be shared by other
+ *  processes for security reasons.
  */
 fd_stream temporary_file(const path_t& dir = path_t(), const path_t& prefix = path_t());
 
@@ -60,6 +64,8 @@ fd_stream temporary_file(const path_t& dir = path_t(), const path_t& prefix = pa
  *  \brief Create a temporary directory using the given prefix and directory.
  *
  *  The resulting directory's name will be returned so you may remove it.
+ *  This is analogous to mkdtemp, and the directory may only be accessed
+ *  by the current user.
  */
 path_t temporary_directory(const path_t& dir = path_t(), const path_t& prefix = path_t());
 
