@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/filesystem/path.h>
+#include <pycpp/stream/fd.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -26,6 +27,12 @@ extern path_t tempprefix;
 
 /**
  *  \brief Maximum number of attempted temp paths to get an unused path (100).
+ *
+ *  \warning This is not like TMP_MAX. If half of the default 3e21
+ *  file paths are already exhausted, which would take more than
+ *  a 10,000 times the largest storage data array (120 petabytes)
+ *  in existence, the chance of failing to produce a unique file path
+ *  is 1e-31, practically 0. This is not a bug, it's a feature.
  */
 extern size_t TMP_MAX_PATHS;
 
@@ -42,16 +49,19 @@ extern path_t TMP_SUFFIX_CHARACTERS;
 // FUNCTIONS
 // ---------
 
+/**
+ *  \brief Create a temporary file using the given prefix and directory.
+ *
+ *  The file will automatically be removed when the stream is closed.
+ */
+fd_stream temporary_file(const path_t& dir = path_t(), const path_t& prefix = path_t());
 
-// TODO: need a file descriptor stream for this...
-// temporary_file();
-
-//std::string temporary_directory();
-// mkstemp
-// mkdtemp
-// TODO: tmpnam??
-// Implement mkstemp, mkdtemp in terms of tmpnam, but use open(O_EXCL)
-// for exclusive to ensure no one can get the file name...
+/**
+ *  \brief Create a temporary directory using the given prefix and directory.
+ *
+ *  The resulting directory's name will be returned so you may remove it.
+ */
+path_t temporary_directory(const path_t& dir = path_t(), const path_t& prefix = path_t());
 
 /**
  * \brief Get path to temp directory.
@@ -71,7 +81,7 @@ path_t gettempprefix();
  *
  *  \warning This function is not secure, and should not be used.
  */
-path_t gettempnam();
+path_t gettempnam(const path_t& dir = path_t(), const path_t& prefix = path_t());
 
 // tempdir
 
@@ -79,10 +89,10 @@ path_t gettempnam();
 
 path_t gettempdirw();
 path_t gettempprefixw();
-path_t gettempnamw();
+path_t gettempnamw(const path_t& dir = path_t(), const path_t& prefix = path_t());
 backup_path_t gettempdira();
 backup_path_t gettempprefixa();
-backup_path_t gettempnama();
+backup_path_t gettempnama(const backup_path_t& dir = backup_path_t(), const backup_path_t& prefix = backup_path_t());
 
 #endif
 

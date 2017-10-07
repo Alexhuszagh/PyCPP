@@ -4,6 +4,12 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/random.h>
 #include <pycpp/stream/fd.h>
+#if defined(OS_WINDOWS)          // WINDOWS NT
+#   include <windows.h>
+#else                           // POSIX
+#   include <fcntl.h>
+#   include <unistd.h>
+#endif
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -39,6 +45,31 @@ static path_t gettempprefix_impl()
     return path_t(reinterpret_cast<const char16_t*>(L"tmp"));
 }
 
+
+static fd_stream temporary_file_impl(const path_t& dir, const path_t& prefix)
+{
+
+    path_t name;
+    fd_t fd;
+    DWORD access = GENERIC_READ | GENERIC_WRITE;
+    DWORD share = 0;
+    LPSECURITY_ATTRIBUTES security = nullptr;
+    DWORD create = OPEN_EXISTING;
+    DWORD flags = 0;
+    HANDLE file = nullptr;
+
+    for (size_t i = 0; i < TMP_MAX_PATHS; ++i) {
+        name = gettempnam(dir, prefix);
+        auto path = reinterpret_cast<const wchar_t*>(name.data());
+        fd = CreateFileW(path, access, share, security, create, flags, file);
+        if (fd != INVALID_FD_VALUE) {
+            return fd_stream(fd, true);
+        }
+    }
+
+    throw std::runtime_error("Unable to find suitable temporary file name.");
+}
+
 #else                           // POSIX
 
 static path_t gettempdir_impl()
@@ -67,6 +98,24 @@ static path_t gettempprefix_impl()
 {
     return path_t("tmp");
 }
+
+static fd_stream temporary_file_impl(const path_t& dir, const path_t& prefix)
+{
+    path_t name;
+    fd_t fd;
+    int flags = flags = O_RDWR | O_CREAT | O_EXCL;
+    mode_t permission = S_IRUSR | S_IWUSR;
+
+    for (size_t i = 0; i < TMP_MAX_PATHS; ++i) {
+        fd = ::open(name.data(), flags, permission);
+        if (fd != INVALID_FD_VALUE) {
+            return fd_stream(fd, true);
+        }
+    }
+
+    throw std::runtime_error("Unable to find suitable temporary file name.");
+}
+
 
 #endif
 
@@ -98,6 +147,28 @@ path_t TMP_SUFFIX_CHARACTERS = path_prefix("abcdefghijklmnopqrstuvwxyz0123456789
 // FUNCTIONS
 // ---------
 
+
+fd_stream temporary_file(const path_t& dir, const path_t& prefix)
+{
+    return temporary_file_impl(dir, prefix);
+}
+
+
+path_t temporary_directory(const path_t& dir, const path_t& prefix)
+{
+    path_t name;
+    mode_t permission = S_IRUSR | S_IWUSR;
+    for (size_t i = 0; i < TMP_MAX_PATHS; ++i) {
+        name = gettempnam(dir, prefix);
+        if (mkdir(name, permission)) {
+            return name;
+        }
+    }
+
+    throw std::runtime_error("Unable to find suitable temporary file name.");
+}
+
+
 path_t gettempdir()
 {
     return tempdir;
@@ -110,9 +181,18 @@ path_t gettempprefix()
 }
 
 
-path_t gettempnam()
+path_t gettempnam(const path_t& dir, const path_t& prefix)
 {
-    path_list_t paths = {gettempdir(), gettempprefix() + gettempsuffix()};
+    path_list_t paths;
+    if (prefix.empty() && dir.empty()) {
+        paths = {gettempdir(), gettempprefix() + gettempsuffix()};
+    } else if (dir.empty()) {
+        paths = {gettempdir(), prefix + gettempsuffix()};
+    } else if (prefix.empty()) {
+        paths = {dir, gettempprefix() + gettempsuffix()};
+    } else {
+        paths = {dir, prefix + gettempsuffix()};
+    }
     return join(paths);
 }
 
@@ -130,9 +210,9 @@ path_t gettempprefixw()
 }
 
 
-path_t gettempnamw()
+path_t gettempnamw(const path_t& dir, const path_t& prefix)
 {
-    return gettempnam();
+    return gettempnam(dir, prefix);
 }
 
 
@@ -148,9 +228,9 @@ backup_path_t gettempprefixa()
 }
 
 
-backup_path_t gettempnama()
+backup_path_t gettempnama(const backup_path_t& dir, const backup_path_t& prefix)
 {
-    return path_to_backup_path(gettempnam());
+    return path_to_backup_path(gettempnam(backup_path_to_path(dir), backup_path_to_path(prefix)));
 }
 
 #else                           // POSIX
