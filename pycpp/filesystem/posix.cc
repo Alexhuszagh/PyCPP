@@ -9,15 +9,15 @@
 #include <pycpp/preprocessor/os.h>
 
 #if defined(OS_POSIX)                           // POSIX & MACOS
-#include <pycpp/filesystem.h>
-#include <pycpp/filesystem/exception.h>
-#include <pycpp/string/unicode.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <unistd.h>
-#include <wordexp.h>
-#include <algorithm>
-#include <cstdlib>
+#   include <pycpp/filesystem.h>
+#   include <pycpp/filesystem/exception.h>
+#   include <pycpp/string/unicode.h>
+#   include <fcntl.h>
+#   include <limits.h>
+#   include <unistd.h>
+#   include <wordexp.h>
+#   include <algorithm>
+#   include <cstdlib>
 #endif
 
 PYCPP_BEGIN_NAMESPACE
@@ -440,6 +440,33 @@ static int fd_truncate_impl(const Path& path, std::streamsize size)
     return status;
 }
 
+
+#if defined(OS_MACOS)                  // MACOS
+
+/**
+ *  \brief `posix_fallocate` implementation for macOS, which is missing it.
+ */
+static int posix_fallocate(int fd, off_t offset, off_t len)
+{
+    fstore_t store = {F_ALLOCATECONTIG, F_PEOFPOSMODE, offset, len, 0};
+    int status = fcntl(fd, F_PREALLOCATE, &store);
+    if (status == -1) {
+        store.fst_flags = F_ALLOCATEALL;
+        status = fcntl(fd, F_PREALLOCATE, &store);
+    }
+
+    if (status != -1) {
+        // required for OS X to properly report the length
+        // fnctl returns anything but -1 on success, but truncate returns
+        // 0 on success, so we can guarantee -1 is error, 0 is success.
+        status = ftruncate(fd, len);
+    }
+
+    return status;
+}
+
+#endif                                  // MACOS
+
 // CONSTANTS
 // ---------
 
@@ -701,14 +728,11 @@ int fd_close(fd_t fd)
 }
 
 
-#if !defined(OS_MACOS)
-
 int fd_allocate(fd_t fd, std::streamsize size)
 {
     return posix_fallocate(fd, 0, size);
 }
 
-#endif              // MACOS
 
 int fd_allocate(const path_t& path, std::streamsize size)
 {
