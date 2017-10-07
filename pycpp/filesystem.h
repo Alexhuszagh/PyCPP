@@ -506,7 +506,7 @@ bool remove_path(const backup_path_t& path, bool recursive = true);
 
 // FILE UTILS
 
-fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode);
+fd_t fd_open(const backup_path_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP);
 int fd_chmod(const backup_path_t& path, mode_t permissions);
 int fd_allocate(const backup_path_t& path, std::streamsize size);
 int fd_truncate(const backup_path_t& path, std::streamsize size);
