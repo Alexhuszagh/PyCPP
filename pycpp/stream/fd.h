@@ -76,7 +76,7 @@ private:
 /**
  *  \brief Stream wrapper using file descriptors.
  */
-class fd_stream: std::iostream
+class fd_stream: public std::iostream
 {
 public:
     fd_stream();
@@ -104,8 +104,9 @@ private:
 /**
  *  \brief Input stream wrapper using file descriptors.
  */
-class fd_istream: std::istream
+class fd_istream: public std::istream
 {
+public:
     fd_istream();
     ~fd_istream();
     fd_istream(const fd_istream&) = delete;
@@ -131,7 +132,7 @@ private:
 /**
  *  \brief Output stream wrapper using file descriptors.
  */
-class fd_ostream: std::ostream
+class fd_ostream: public std::ostream
 {
 public:
     fd_ostream();
