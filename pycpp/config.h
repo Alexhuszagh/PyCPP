@@ -8,7 +8,7 @@
 #pragma once
 
 #include <warnings/push.h>
-#include <warnings/narrowing-conversions.h>
+#include <warnings/not-enough-parameters-for-macro.h>
 
 // MACROS
 // ------
