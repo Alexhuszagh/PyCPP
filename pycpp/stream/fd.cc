@@ -3,9 +3,7 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/stream/fd.h>
-#if defined(OS_WINDOWS)
-#   include <windows.h>
-#else
+#if !defined(OS_WINDOWS)
 #   include <unistd.h>
 #endif
 
