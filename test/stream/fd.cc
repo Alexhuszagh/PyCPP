@@ -67,76 +67,80 @@ struct test_stream
 TEST(fd_streambuf, fd_streambuf)
 {
     std::string path("sample_path");
+    size_t size = 11;
+    std::string in("Single Line");
+    std::vector<char> out(size);
 
     // open
     fd_t fd = fd_open(path, std::ios_base::in | std::ios_base::out);
     fd_streambuf buf(std::ios_base::in | std::ios_base::out, fd);
 
     // write
-    buf.sputn("Single Line", 12);
+    EXPECT_EQ(buf.sputn(in.data(), in.size()), size);
+
+    // seek
+    EXPECT_EQ(buf.pubseekpos(0), 0);
 
     // read
+    EXPECT_EQ(buf.sgetn(out.data(), out.size()), size);
+    EXPECT_EQ(in, std::string(out.data(), out.size()));
 
     // cleanup
     buf.close();
     EXPECT_TRUE(remove_file(path));
-
-    // TODO: need fd stream tests
-    exit(0);
 }
 
 
-// TODO: restore
-//TEST(fd_stream, fd_stream)
-//{
-//    typedef test_stream<fd_stream, fd_stream> tester;
-//
-//    tester()(UTF8_ENGLISH, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//#if defined(PYCPP_HAVE_WFOPEN)         // WINDOWS
-//    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//    tester()(UTF16_KOREAN, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//#else                           // POSIX
-//    tester()(UTF8_KOREAN, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//#endif
-//}
-//
-//
-//TEST(fd_stream, iostream)
-//{
-//    typedef test_stream<fd_istream, fd_ostream> tester;
-//
-//    tester()(UTF8_ENGLISH, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//
-//#if defined(PYCPP_HAVE_WFOPEN)         // WINDOWS
-//    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//    tester()(UTF16_KOREAN, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//#else                           // POSIX
-//    tester()(UTF8_KOREAN, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//#endif
-//}
-//
-//
-//TEST(fd_stream, seek)
-//{
-//    typedef test_stream<fd_istream, fd_ostream> tester;
-//
-//    tester()(UTF8_ENGLISH, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    }, 4);
-//}
+TEST(fd_stream, fd_stream)
+{
+    typedef test_stream<fd_stream, fd_stream> tester;
+
+    tester()(UTF8_ENGLISH, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+#if defined(PYCPP_HAVE_WFOPEN)         // WINDOWS
+    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+    tester()(UTF16_KOREAN, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+#else                           // POSIX
+    tester()(UTF8_KOREAN, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+#endif
+}
+
+
+TEST(fd_stream, iostream)
+{
+    typedef test_stream<fd_istream, fd_ostream> tester;
+
+    tester()(UTF8_ENGLISH, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+
+#if defined(PYCPP_HAVE_WFOPEN)         // WINDOWS
+    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+    tester()(UTF16_KOREAN, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+#else                           // POSIX
+    tester()(UTF8_KOREAN, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+#endif
+}
+
+
+TEST(fd_stream, seek)
+{
+    typedef test_stream<fd_istream, fd_ostream> tester;
+
+    tester()(UTF8_ENGLISH, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    }, 4);
+}

@@ -408,6 +408,11 @@ std::streampos fd_tell(fd_t fd);
 int fd_close(fd_t fd);
 
 /**
+ *  \brief Change file permissions, as if by `fchmod()`.
+ */
+int fd_chmod(fd_t fd, mode_t permissions);
+
+/**
  *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
  */
 int fd_allocate(fd_t fd, std::streamsize size);
@@ -416,6 +421,11 @@ int fd_allocate(fd_t fd, std::streamsize size);
  *  \brief Truncate file size to `size` (n bytes).
  */
 int fd_truncate(fd_t fd, std::streamsize size);
+
+/**
+ *  \brief Change file permissions, as if by `fchmod()`.
+ */
+int fd_chmod(const path_t& path, mode_t permissions);
 
 /**
  *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
@@ -497,6 +507,7 @@ bool remove_path(const backup_path_t& path, bool recursive = true);
 // FILE UTILS
 
 fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode);
+int fd_chmod(const backup_path_t& path, mode_t permissions);
 int fd_allocate(const backup_path_t& path, std::streamsize size);
 int fd_truncate(const backup_path_t& path, std::streamsize size);
 

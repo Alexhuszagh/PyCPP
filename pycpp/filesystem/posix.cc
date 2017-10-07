@@ -11,6 +11,7 @@
 #if defined(OS_POSIX)                           // POSIX & MACOS
 #   include <pycpp/filesystem.h>
 #   include <pycpp/filesystem/exception.h>
+#   include <pycpp/preprocessor/sysstat.h>
 #   include <pycpp/string/unicode.h>
 #   include <fcntl.h>
 #   include <limits.h>
@@ -414,6 +415,20 @@ static int convert_openmode(std::ios_base::openmode mode)
 
 
 template <typename Path>
+static int fd_chmod_impl(const Path& path, mode_t permissions)
+{
+    fd_t fd = fd_open(path, std::ios_base::in | std::ios_base::out);
+    if (fd < 0) {
+        return false;
+    }
+    int status = fd_chmod(fd, permissions);
+    fd_close(fd);       // ignore error, close() error makes no sense
+
+    return status;
+}
+
+
+template <typename Path>
 static int fd_allocate_impl(const Path& path, std::streamsize size)
 {
     fd_t fd = fd_open(path, std::ios_base::out);
@@ -684,8 +699,7 @@ bool makedirs(const path_t& path, int mode)
 
 fd_t fd_open(const path_t& path, std::ios_base::openmode openmode, mode_t permission)
 {
-    // TODO: mode
-    return ::open(path.data(), convert_openmode(openmode));
+    return ::open(path.data(), convert_openmode(openmode), permission);
 }
 
 
@@ -725,6 +739,18 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
 int fd_close(fd_t fd)
 {
     return ::close(fd);
+}
+
+
+int fd_chmod(fd_t fd, mode_t permissions)
+{
+    return ::fchmod(fd, permissions);
+}
+
+
+int fd_chmod(const path_t& path, mode_t permissions)
+{
+    return fd_chmod_impl(path, permissions);
 }
 
 

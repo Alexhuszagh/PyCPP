@@ -2,8 +2,6 @@
 
 **Short-term**
 
-- Fix bug with file descriptor stream
-
 - Need string readers/writers
     - JSON
         - writer
