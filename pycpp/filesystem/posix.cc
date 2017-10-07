@@ -695,7 +695,7 @@ std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count)
 }
 
 
-std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count)
+std::streamsize fd_write(fd_t fd, const void* buf, std::streamsize count)
 {
     return ::write(fd, buf, count);
 }

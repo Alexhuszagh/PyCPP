@@ -387,12 +387,17 @@ std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count);
 /**
  *  \brief Write to descriptor, as if by POSIX `write()`.
  */
-std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count);
+std::streamsize fd_write(fd_t fd, const void* buf, std::streamsize count);
 
 /**
  *  \brief Seek position in stream, as if by POSIX `lseek()`.
  */
 std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way = std::ios_base::beg);
+
+/**
+ *  \brief Tell current position in stream, as if by POSIX `lseek()`.
+ */
+std::streampos fd_tell(fd_t fd);
 
 /**
  *  \brief Close descriptor, as if by POSIX `close()`.

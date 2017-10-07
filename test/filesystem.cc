@@ -418,3 +418,30 @@ TEST(path, gettempnam)
         return TMP_SUFFIX_CHARACTERS.find(c) != std::string::npos;
     }));
 }
+
+
+TEST(fd, fd_utils)
+{
+    std::string path("sample_path");
+    std::string in("Single Line");
+    std::vector<char> out(11);
+
+    // fd_open
+    fd_t fd = fd_open(path, std::ios_base::in | std::ios_base::out, S_IWR_USR_GRP_OTH);
+    EXPECT_NE(fd, INVALID_FD_VALUE);
+
+    // fd_write
+    EXPECT_EQ(fd_write(fd, in.data(), in.size()), 11);
+    EXPECT_EQ(fd_tell(fd), 11);
+
+    // fd_seek
+    EXPECT_EQ(fd_seek(fd, 0, std::ios_base::beg), 0);
+
+    // fd_read
+    EXPECT_EQ(fd_read(fd, out.data(), out.size()), 11);
+    EXPECT_EQ(in, std::string(out.data(), out.size()));
+
+    // fd_close
+    EXPECT_EQ(fd_close(fd), 0);
+    EXPECT_TRUE(remove_file(path));
+}
