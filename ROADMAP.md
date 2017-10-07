@@ -2,22 +2,6 @@
 
 **Short-term**
 
-- Need custom tempfile support
-    - mkstemp?
-        - Implement using file descriptor stream
-    - mkdtemp?
-
-- File descriptor streams:
-    - fd_fstream
-        - implementation
-        - unittests
-    - fd_ifstream
-        - implementation
-        - unittests
-    - fd_ofstream
-        - implementation
-        - unittests
-
 - Need string readers/writers
     - JSON
         - writer

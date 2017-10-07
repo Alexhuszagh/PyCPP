@@ -198,6 +198,18 @@ path_t gettempnam(const path_t& dir, const path_t& prefix)
 
 #if defined(OS_WINDOWS)          // WINDOWS NT && BACKUP PATH
 
+fd_stream temporary_filew(const path_t& dir, const path_t& prefix)
+{
+    return temporary_file(dir, prefix);
+}
+
+
+path_t temporary_directoryw(const path_t& dir, const path_t& prefix)
+{
+    return temporary_directory(dir, prefix);
+}
+
+
 path_t gettempdirw()
 {
     return gettempdir();
@@ -213,6 +225,18 @@ path_t gettempprefixw()
 path_t gettempnamw(const path_t& dir, const path_t& prefix)
 {
     return gettempnam(dir, prefix);
+}
+
+
+fd_stream temporary_filea(const backup_path_t& dir, const backup_path_t& prefix)
+{
+    return temporary_directory(backup_path_to_path(dir), backup_path_to_path(prefix));
+}
+
+
+backup_path_t temporary_directorya(const backup_path_t& dir, const backup_path_t& prefix)
+{
+    return path_to_backup_path(temporary_directory(backup_path_to_path(dir), backup_path_to_path(prefix)));
 }
 
 
