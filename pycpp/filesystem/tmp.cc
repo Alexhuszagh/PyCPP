@@ -2,8 +2,10 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/filesystem.h>
+#include <pycpp/preprocessor/sysstat.h>
 #include <pycpp/random.h>
 #include <pycpp/stream/fd.h>
+
 #if defined(OS_WINDOWS)          // WINDOWS NT
 #   include <windows.h>
 #else                           // POSIX

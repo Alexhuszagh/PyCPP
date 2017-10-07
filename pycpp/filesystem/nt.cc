@@ -18,23 +18,14 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
 #include <pycpp/preprocessor/errno.h>
+#include <pycpp/preprocessor/sysstat.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/windows/error.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 #include <io.h>
 #include <windows.h>
-#include <sys/stat.h>
 #include <algorithm>
-
-// MACROS
-// ------
-
-#ifndef S_IRUSR
-#   define S_IRUSR 00400
-#endif
-
-#ifndef S_IWUSR
-#   define S_IWUSR 00200
-#endif
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -795,10 +786,10 @@ bool makedirs(const path_t& path, int mode)
 // FILE UTILS
 
 
-fd_t fd_open(const path_t& path, std::ios_base::openmode mode)
+fd_t fd_open(const path_t& path, std::ios_base::openmode mode, mode_t permission)
 {
     const wchar_t* p = (const wchar_t*) path.data();
-    fd_t fd = fd_open_impl(p, mode, CreateFileW);
+    fd_t fd = fd_open_impl(p, mode, permission, CreateFileW);
     if (fd == INVALID_HANDLE_VALUE) {
         set_errno_win32();
     }
@@ -1079,9 +1070,9 @@ bool makedirs(const backup_path_t& path, int mode)
 
 // FILE UTILS
 
-fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode)
+fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t permission)
 {
-    return fd_open_impl(path.data(), mode, CreateFileA);
+    return fd_open_impl(path.data(), mode, permission, CreateFileA);
 }
 
 
@@ -1097,5 +1088,7 @@ int fd_truncate(const backup_path_t& path, std::streamsize size)
 }
 
 PYCPP_END_NAMESPACE
+
+#include <warnings/pop.h>
 
 #endif
