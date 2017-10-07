@@ -432,14 +432,14 @@ TEST(fd, fd_utils)
     EXPECT_NE(fd, INVALID_FD_VALUE);
 
     // fd_write
-    EXPECT_EQ(fd_write(fd, in.data(), in.size()), size);
-    EXPECT_EQ(fd_tell(fd), size);
+    EXPECT_EQ((size_t) fd_write(fd, in.data(), in.size()), size);
+    EXPECT_EQ((size_t) fd_tell(fd), size);
 
     // fd_seek
-    EXPECT_EQ(fd_seek(fd, 0, std::ios_base::beg), 0);
+    EXPECT_EQ((size_t) fd_seek(fd, 0, std::ios_base::beg), 0);
 
     // fd_read
-    EXPECT_EQ(fd_read(fd, out.data(), out.size()), size);
+    EXPECT_EQ((size_t) fd_read(fd, out.data(), out.size()), size);
     EXPECT_EQ(in, std::string(out.data(), out.size()));
 
     // fd_close
