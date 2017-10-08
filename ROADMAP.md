@@ -2,6 +2,14 @@
 
 **Short-term**
 
+- Add CSV reader/dictreader
+    - writer
+        - implementation
+        - unittests
+    - dict
+        - implementation
+        - unittests
+
 - Need string readers/writers
     - JSON
         - writer
@@ -20,20 +28,3 @@
         - writer
             - implementation
             - unittests
-
-- Need file readers/writers
-    - CSV
-        - reader
-            - implementation -- DONE
-            - unittests
-        - writer
-            - implementation
-            - unittests
-
-- Add CSV reader/dictreader
-    - writer
-        - implementation
-        - unittests
-    - dict
-        - implementation
-        - unittests
