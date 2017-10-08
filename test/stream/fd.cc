@@ -76,13 +76,13 @@ TEST(fd_streambuf, fd_streambuf)
     fd_streambuf buf(std::ios_base::in | std::ios_base::out, fd);
 
     // write
-    EXPECT_EQ(buf.sputn(in.data(), in.size()), size);
+    EXPECT_EQ((size_t) buf.sputn(in.data(), in.size()), size);
 
     // seek
-    EXPECT_EQ(buf.pubseekpos(0), 0);
+    EXPECT_EQ((size_t) buf.pubseekpos(0), 0);
 
     // read
-    EXPECT_EQ(buf.sgetn(out.data(), out.size()), size);
+    EXPECT_EQ((size_t) buf.sgetn(out.data(), out.size()), size);
     EXPECT_EQ(in, std::string(out.data(), out.size()));
 
     // cleanup
