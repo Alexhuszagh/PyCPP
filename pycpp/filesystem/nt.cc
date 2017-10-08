@@ -848,14 +848,13 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
             return std::streampos(std::streamoff(-1));
     }
 
-    LARGE_INTEGER bytes;
-    bytes.QuadPart = off;
-    DWORD status = SetFilePointer(fd, bytes.LowPart, &bytes.HighPart, FILE_BEGIN);
-    if (status == INVALID_SET_FILE_POINTER) {
+    LARGE_INTEGER in, out;
+    in.QuadPart = off;
+    if (!::SetFilePointerEx(fd, in, &out, FILE_BEGIN)) {
         set_errno_win32();
         return -1;          // force POSIX-like behavior
     }
-    return status;
+    return out.QuadPart;
 }
 
 
