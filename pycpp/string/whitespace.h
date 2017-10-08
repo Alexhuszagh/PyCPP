@@ -15,6 +15,8 @@ PYCPP_BEGIN_NAMESPACE
 // CONSTANTS
 // ---------
 
+static constexpr char WINDOWS_NEWLINE[] = "\r\n";
+static constexpr char POSIX_NEWLINE[] = "\n";
 #if OS_WINDOWS
     static constexpr char NEWLINE[] = "\r\n";
 #else

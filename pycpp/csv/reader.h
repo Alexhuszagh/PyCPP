@@ -13,15 +13,8 @@
 
 #include <memory>
 #include <sstream>
-#include <string>
-#include <vector>
 
 PYCPP_BEGIN_NAMESPACE
-
-// ALIAS
-// -----
-
-using csv_row = std::vector<std::string>;
 
 // OBJECTS
 // -------
@@ -29,12 +22,10 @@ using csv_row = std::vector<std::string>;
 /**
  *  \brief Generic reader for CSV file.
  *
- *  This reader is mostly analogous to Python's `csv.reader` object, with
- *  one notable exception: it stores the CSV headers rather than treating
- *  them as a new row.
+ *  This reader is mostly analogous to Python's `csv.reader` object.
  *
- *  The punctation can be altered similar to an STL locale, The
- *  CSV reader takes ownership of the punct object.
+ *  The punctation can be altered similar to an STL locale using `punctuation()`,
+ *  the CSV reader takes ownership of the punct object.
  */
 struct csv_stream_reader
 {

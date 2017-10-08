@@ -144,7 +144,7 @@ csv_file_reader::csv_file_reader(const std::string &name)
 
 void csv_file_reader::open(const std::string &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::in | std::ios_base::binary);
 }
 
 
@@ -166,7 +166,7 @@ csv_file_reader::csv_file_reader(const std::wstring &name)
 
 void csv_file_reader::open(const std::wstring &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::in | std::ios_base::binary);
 }
 
 
