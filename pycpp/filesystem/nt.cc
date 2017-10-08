@@ -850,7 +850,7 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
 
     LARGE_INTEGER in, out;
     in.QuadPart = off;
-    if (!::SetFilePointerEx(fd, in, &out, FILE_BEGIN)) {
+    if (!::SetFilePointerEx(fd, in, &out, method)) {
         set_errno_win32();
         return -1;          // force POSIX-like behavior
     }
