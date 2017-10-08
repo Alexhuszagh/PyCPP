@@ -7,7 +7,7 @@
 #include <pycpp/stream/fd.h>
 
 #if defined(OS_WINDOWS)          // WINDOWS NT
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #else                           // POSIX
 #   include <fcntl.h>
 #   include <unistd.h>

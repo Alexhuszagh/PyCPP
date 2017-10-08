@@ -9,7 +9,7 @@
 #include <sys/types.h>
 
 #if defined(OS_WINDOWS)
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #   include <winerror.h>
 #   include <tuple>
 #else

@@ -10,7 +10,7 @@
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/os.h>
 #if defined(OS_WINDOWS)             // WINDOWS
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #endif
 
 PYCPP_BEGIN_NAMESPACE

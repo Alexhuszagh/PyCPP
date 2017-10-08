@@ -21,10 +21,10 @@
 #include <pycpp/preprocessor/sysstat.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/windows/error.h>
+#include <pycpp/windows/winapi.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <io.h>
-#include <windows.h>
 #include <algorithm>
 
 PYCPP_BEGIN_NAMESPACE
