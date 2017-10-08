@@ -87,6 +87,7 @@ TEST(fd_streambuf, fd_streambuf)
 
     // cleanup
     buf.close();
+    fd_close(fd);
     EXPECT_TRUE(remove_file(path));
 }
 
