@@ -42,9 +42,9 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    csv_stream_writer(csv_quoting = CSV_QUOTE_MINIMAL);
-    csv_stream_writer(std::ostream&, csv_quoting = CSV_QUOTE_MINIMAL);
-    void open(std::ostream&);
+    csv_stream_writer(csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_stream_writer(std::ostream&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(std::ostream&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
     void quoting(csv_quoting);
@@ -66,13 +66,13 @@ private:
 struct csv_file_writer: csv_stream_writer
 {
 public:
-    csv_file_writer(csv_quoting = CSV_QUOTE_MINIMAL);
-    csv_file_writer(const std::string &name, csv_quoting = CSV_QUOTE_MINIMAL);
-    void open(const std::string &name);
+    csv_file_writer(csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_file_writer(const std::string &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(const std::string &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    csv_file_writer(const std::wstring &name. csv_quoting = CSV_QUOTE_MINIMAL);
-    void open(const std::wstring &name);
+    csv_file_writer(const std::wstring &name. csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(const std::wstring &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 #endif
 
 private:
@@ -86,7 +86,7 @@ private:
 struct csv_string_writer: csv_stream_writer
 {
 public:
-    csv_string_writer(csv_quoting = CSV_QUOTE_MINIMAL);
+    csv_string_writer(csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     std::string str() const;
 
 private:

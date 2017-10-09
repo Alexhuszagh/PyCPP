@@ -42,9 +42,9 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    csv_dict_stream_reader();
-    csv_dict_stream_reader(std::istream&, size_t skip = 0);
-    void parse(std::istream&, size_t skip = 0);
+    csv_dict_stream_reader(csvpunct_impl* = nullptr);
+    csv_dict_stream_reader(std::istream&, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(std::istream&, size_t skip = 0, csvpunct_impl* = nullptr);
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
 
@@ -69,18 +69,14 @@ private:
 struct csv_dict_file_reader: csv_dict_stream_reader
 {
 public:
-    csv_dict_file_reader();
-    csv_dict_file_reader(const std::string &name);
-    void open(const std::string &name);
-    void parse(const std::string &name, size_t skip = 0);
+    csv_dict_file_reader(csvpunct_impl* = nullptr);
+    csv_dict_file_reader(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    csv_dict_file_reader(const std::wstring &name);
-    void open(const std::wstring &name);
-    void parse(const std::wstring &name, size_t skip = 0);
+    csv_dict_file_reader(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
 #endif
-
-    void parse(size_t skip = 0);
 
 private:
     ifstream file_;
@@ -93,12 +89,9 @@ private:
 struct csv_dict_string_reader: csv_dict_stream_reader
 {
 public:
-    csv_dict_string_reader();
-    csv_dict_string_reader(const std::string &str);
-    void open(const std::string &str);
-    void parse(const std::string &str, size_t skip = 0);
-
-    void parse(size_t skip = 0);
+    csv_dict_string_reader(csvpunct_impl* = nullptr);
+    csv_dict_string_reader(const std::string &str, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const std::string &str, size_t skip = 0, csvpunct_impl* = nullptr);
 
 private:
     std::istringstream sstream_;
@@ -107,6 +100,7 @@ private:
 // WRITER
 
 
+#if 0       // TODO: restore
 /**
  *  \brief Generic writer for CSV file.
  *
@@ -173,5 +167,6 @@ public:
 private:
     std::ostringstream sstream_;
 };
+#endif
 
 PYCPP_END_NAMESPACE

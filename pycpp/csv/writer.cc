@@ -71,23 +71,23 @@ static std::string quote_value(const std::string& value, csvpunct_impl& punct, c
 // OBJECTS
 // -------
 
-csv_stream_writer::csv_stream_writer(csv_quoting quoting):
+csv_stream_writer::csv_stream_writer(csv_quoting quoting, csvpunct_impl* punct):
     quoting_(quoting),
-    punct_(new csvpunct)
+    punct_(punct ? punct : new csvpunct)
 {}
 
 
-csv_stream_writer::csv_stream_writer(std::ostream& stream, csv_quoting quoting):
-    quoting_(quoting),
-    punct_(new csvpunct)
+csv_stream_writer::csv_stream_writer(std::ostream& stream, csv_quoting quoting, csvpunct_impl* punct)
 {
-    open(stream);
+    open(stream, quoting, punct);
 }
 
 
-void csv_stream_writer::open(std::ostream& stream)
+void csv_stream_writer::open(std::ostream& stream, csv_quoting q, csvpunct_impl* p)
 {
     stream_ = &stream;
+    punctuation(p);
+    quoting(q);
 }
 
 
@@ -133,47 +133,45 @@ void csv_stream_writer::operator()(const value_type& row)
 }
 
 
-csv_file_writer::csv_file_writer(csv_quoting quoting):
-    csv_stream_writer(quoting)
+csv_file_writer::csv_file_writer(csv_quoting quoting, csvpunct_impl* punct):
+    csv_stream_writer(quoting, punct)
 {}
 
 
-csv_file_writer::csv_file_writer(const std::string &name, csv_quoting quoting):
-    csv_stream_writer(quoting)
+csv_file_writer::csv_file_writer(const std::string &name, csv_quoting quoting, csvpunct_impl* punct)
 {
-    open(name);
+    open(name, quoting, punct);
 }
 
 
-void csv_file_writer::open(const std::string &name)
+void csv_file_writer::open(const std::string &name, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
-    csv_stream_writer::open(file_);
+    csv_stream_writer::open(file_, quoting, punct);
 }
 
 
 #if defined(PYCPP_HAVE_WFOPEN)
 
-csv_file_writer::csv_file_writer(const std::wstring &name, csv_quoting quoting):
+csv_file_writer::csv_file_writer(const std::wstring &name, csv_quoting quoting, csvpunct_impl* punct):
     csv_stream_writer(quoting)
 {
     open(name);
 }
 
 
-void csv_file_writer::open(const std::wstring &name)
+void csv_file_writer::open(const std::wstring &name, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
-    csv_stream_writer::open(file_);
+    csv_stream_writer::open(file_, quoting, punct);
 }
 
 #endif
 
-csv_string_writer::csv_string_writer(csv_quoting quoting):
-    csv_stream_writer(quoting),
+csv_string_writer::csv_string_writer(csv_quoting quoting, csvpunct_impl* punct):
     sstream_(std::ios_base::out | std::ios_base::binary)
 {
-    csv_stream_writer::open(sstream_);
+    csv_stream_writer::open(sstream_, quoting, punct);
 }
 
 

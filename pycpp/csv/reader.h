@@ -38,9 +38,9 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    csv_stream_reader();
-    csv_stream_reader(std::istream&, size_t skip = 0);
-    void parse(std::istream&, size_t skip = 0);
+    csv_stream_reader(csvpunct_impl* = nullptr);
+    csv_stream_reader(std::istream&, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(std::istream&, size_t skip = 0, csvpunct_impl* = nullptr);
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
 
@@ -66,18 +66,14 @@ private:
 struct csv_file_reader: csv_stream_reader
 {
 public:
-    csv_file_reader();
-    csv_file_reader(const std::string &name);
-    void open(const std::string &name);
-    void parse(const std::string &name, size_t skip = 0);
+    csv_file_reader(csvpunct_impl* = nullptr);
+    csv_file_reader(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    csv_file_reader(const std::wstring &name);
-    void open(const std::wstring &name);
-    void parse(const std::wstring &name, size_t skip = 0);
+    csv_file_reader(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
 #endif
-
-    void parse(size_t skip = 0);
 
 private:
     ifstream file_;
@@ -90,12 +86,9 @@ private:
 struct csv_string_reader: csv_stream_reader
 {
 public:
-    csv_string_reader();
-    csv_string_reader(const std::string &str);
-    void open(const std::string &str);
-    void parse(const std::string &str, size_t skip = 0);
-
-    void parse(size_t skip = 0);
+    csv_string_reader(csvpunct_impl* = nullptr);
+    csv_string_reader(const std::string &str, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const std::string &str, size_t skip = 0, csvpunct_impl* = nullptr);
 
 private:
     std::istringstream sstream_;

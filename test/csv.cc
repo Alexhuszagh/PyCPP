@@ -33,12 +33,12 @@ static const csv_row CSV_ROW = {
     {-29, -126, -90, -29, -126, -91, -29, -126, -83, -29, -125, -91, 44},
     {-16, -97, -101, -126}
 };
-static const csv_map CSV_MAP = {
-    {{84, 104, 105, 115}, {-32, -72, -96, -32, -72, -124, -32, -72, -89, -32, -72, -78}},
-    {{-28, -67, -112, -24, -105, -92, 32, -27, -71, -71, -27, -92, -85}, {32, -39, -125, -39, -118, -40, -88, -39, -120, -40, -79, -40, -81, 32, -39, -124, -39, -124, -39, -125, -40, -86, -40, -89, -40, -88, -40, -87, 32, -40, -88, -40, -89, -39, -124, -40, -71, -40, -79, -40, -88, -39, -118}},
-    {{77, -61, -86, 109, 101, 115}, {-29, -126, -90, -29, -126, -91, -29, -126, -83, -29, -125, -91, 44}},
-    {{-20, -71, -100, -22, -75, -84}, {-16, -97, -101, -126}},
-};
+//static const csv_map CSV_MAP = {
+//    {{84, 104, 105, 115}, {-32, -72, -96, -32, -72, -124, -32, -72, -89, -32, -72, -78}},
+//    {{-28, -67, -112, -24, -105, -92, 32, -27, -71, -71, -27, -92, -85}, {32, -39, -125, -39, -118, -40, -88, -39, -120, -40, -79, -40, -81, 32, -39, -124, -39, -124, -39, -125, -40, -86, -40, -89, -40, -88, -40, -87, 32, -40, -88, -40, -89, -39, -124, -40, -71, -40, -79, -40, -88, -39, -118}},
+//    {{77, -61, -86, 109, 101, 115}, {-29, -126, -90, -29, -126, -91, -29, -126, -83, -29, -125, -91, 44}},
+//    {{-20, -71, -100, -22, -75, -84}, {-16, -97, -101, -126}},
+//};
 
 // TESTS
 // -----
@@ -120,8 +120,7 @@ TEST(csv_stream_reader, iterator)
 TEST(csv_stream_reader, punctuation)
 {
     std::istringstream sstream(CSV_TAB_ALL);
-    csv_stream_reader reader(sstream);
-    reader.punctuation(new tabpunct);
+    csv_stream_reader reader(sstream, 0, new tabpunct);
     EXPECT_TRUE(bool(reader));
     EXPECT_EQ(reader(), CSV_HEADER);
     EXPECT_TRUE(bool(reader));
@@ -140,8 +139,7 @@ TEST(csv_file_reader, simple_all)
     ostream.close();
 
     {
-        csv_file_reader reader(path);
-        reader.punctuation(new tabpunct);
+        csv_file_reader reader(path, 0, new tabpunct);
         EXPECT_TRUE(bool(reader));
         EXPECT_EQ(reader(), CSV_HEADER);
         EXPECT_TRUE(bool(reader));
@@ -198,8 +196,7 @@ TEST(csv_stream_writer, punctuation)
 {
     std::ostringstream sstream;
     {
-        csv_stream_writer writer(sstream, CSV_QUOTE_ALL);
-        writer.punctuation(new tabpunct);
+        csv_stream_writer writer(sstream, CSV_QUOTE_ALL, new tabpunct);
         writer(CSV_HEADER);
         writer(CSV_ROW);
     }
@@ -214,8 +211,7 @@ TEST(csv_file_writer, simple_all)
 {
     std::string path("sample_csv_path");
     {
-        csv_file_writer writer(path, CSV_QUOTE_ALL);
-        writer.punctuation(new tabpunct);
+        csv_file_writer writer(path, CSV_QUOTE_ALL, new tabpunct);
         writer(CSV_HEADER);
         writer(CSV_ROW);
     }
@@ -234,8 +230,7 @@ TEST(csv_file_writer, simple_all)
 
 TEST(csv_string_writer, simple_all)
 {
-    csv_string_writer writer(CSV_QUOTE_ALL);
-    writer.punctuation(new tabpunct);
+    csv_string_writer writer(CSV_QUOTE_ALL, new tabpunct);
     writer(CSV_HEADER);
     writer(CSV_ROW);
     EXPECT_EQ(replace(writer.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
@@ -244,6 +239,8 @@ TEST(csv_string_writer, simple_all)
 
 // DICT READER
 
+// TODO: restore
+#if 0
 TEST(csv_dict_stream_reader, simple_all)
 {
     std::istringstream sstream(CSV_SIMPLE_ALL);
@@ -333,3 +330,4 @@ TEST(csv_dict_string_reader, simple_all)
 // DICT WRITER
 
 // TODO: here
+#endif

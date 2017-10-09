@@ -20,19 +20,21 @@ static csv_indexes parse_header(const csv_row& header)
 // OBJECTS
 // -------
 
-csv_dict_stream_reader::csv_dict_stream_reader()
+
+csv_dict_stream_reader::csv_dict_stream_reader(csvpunct_impl* punct):
+    reader_(punct)
 {}
 
 
-csv_dict_stream_reader::csv_dict_stream_reader(std::istream& stream, size_t skip)
+csv_dict_stream_reader::csv_dict_stream_reader(std::istream& stream, size_t skip, csvpunct_impl* punct)
 {
-    parse(stream, skip);
+    open(stream, skip, punct);
 }
 
 
-void csv_dict_stream_reader::parse(std::istream& stream, size_t skip)
+void csv_dict_stream_reader::open(std::istream& stream, size_t skip, csvpunct_impl* punct)
 {
-    reader_.parse(stream, skip);
+    reader_.open(stream, skip, punct);
     header_ = parse_header(reader_());
 }
 
@@ -85,91 +87,60 @@ auto csv_dict_stream_reader::end() -> iterator
 }
 
 
-csv_dict_file_reader::csv_dict_file_reader()
+csv_dict_file_reader::csv_dict_file_reader(csvpunct_impl* punct):
+    csv_dict_stream_reader(punct)
 {}
 
 
-csv_dict_file_reader::csv_dict_file_reader(const std::string &name)
+csv_dict_file_reader::csv_dict_file_reader(const std::string &name, size_t skip, csvpunct_impl* punct)
 {
-    parse(name, 0);
+    open(name, skip, punct);
 }
 
 
-void csv_dict_file_reader::open(const std::string &name)
+void csv_dict_file_reader::open(const std::string &name, size_t skip, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
-}
-
-
-void csv_dict_file_reader::parse(const std::string &name, size_t skip)
-{
-    open(name);
-    parse(skip);
+    csv_dict_stream_reader::open(file_, skip, punct);
 }
 
 
 #if defined(PYCPP_HAVE_WFOPEN)
 
 
-csv_dict_file_reader::csv_dict_file_reader(const std::wstring &name)
+csv_dict_file_reader::csv_dict_file_reader(const std::wstring &name, size_t skip, csvpunct_impl* punct)
 {
-    parse(name, 0);
+    open(name, skip, punct);
 }
 
 
-void csv_dict_file_reader::open(const std::wstring &name)
+void csv_dict_file_reader::open(const std::wstring &name, size_t skip, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
-}
-
-
-void csv_dict_file_reader::parse(const std::wstring &name, size_t skip)
-{
-    open(name);
-    parse(skip);
+    csv_dict_stream_reader::open(file_, skip, punct);
 }
 
 #endif
 
 
-void csv_dict_file_reader::parse(size_t skip)
-{
-    if (!file_.is_open()) {
-        throw std::runtime_error("Must open file handle prior to parsing.");
-    }
-    csv_dict_stream_reader::parse(file_, skip);
-}
-
-
-csv_dict_string_reader::csv_dict_string_reader()
+csv_dict_string_reader::csv_dict_string_reader(csvpunct_impl* punct):
+    csv_dict_stream_reader(punct)
 {}
 
 
-csv_dict_string_reader::csv_dict_string_reader(const std::string &str)
+csv_dict_string_reader::csv_dict_string_reader(const std::string &str, size_t skip, csvpunct_impl* punct)
 {
-    open(str);
-    parse(0);
+    open(str, skip, punct);
 }
 
 
-void csv_dict_string_reader::open(const std::string &str)
+void csv_dict_string_reader::open(const std::string &str, size_t skip, csvpunct_impl* punct)
 {
     sstream_ = std::istringstream(str, std::ios_base::binary);
+    csv_dict_stream_reader::open(sstream_, skip, punct);
 }
 
-
-void csv_dict_string_reader::parse(const std::string &str, size_t skip)
-{
-    open(str);
-    parse(skip);
-}
-
-
-void csv_dict_string_reader::parse(size_t skip)
-{
-    csv_dict_stream_reader::parse(sstream_, skip);
-}
-
+#if 0               // TODO: restore
 
 csv_dict_stream_writer::csv_dict_stream_writer(csv_quoting quoting):
     writer_(quoting)
@@ -285,5 +256,6 @@ std::string csv_dict_string_writer::str() const
 {
     return sstream_.str();
 }
+#endif
 
 PYCPP_END_NAMESPACE
