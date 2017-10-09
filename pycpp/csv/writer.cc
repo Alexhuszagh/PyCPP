@@ -103,6 +103,18 @@ const csvpunct_impl* csv_stream_writer::punctuation() const
 }
 
 
+void csv_stream_writer::quoting(csv_quoting q)
+{
+    quoting_ = q;
+}
+
+
+const csv_quoting csv_stream_writer::quoting() const
+{
+    return quoting_;
+}
+
+
 void csv_stream_writer::operator()(const value_type& row)
 {
     std::string output;

@@ -155,7 +155,6 @@ csv_dict_string_reader::csv_dict_string_reader(const std::string &str)
 void csv_dict_string_reader::open(const std::string &str)
 {
     sstream_ = std::istringstream(str, std::ios_base::binary);
-    parse(0);
 }
 
 
