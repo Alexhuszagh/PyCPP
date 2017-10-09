@@ -2,11 +2,11 @@
 
 **Short-term**
 
-- Add CSV reader/dictreader
+- Add dict CSV reader/writer
     - writer
         - implementation
         - unittests
-    - dict
+    - reader
         - implementation
         - unittests
 
