@@ -226,11 +226,13 @@ void csv_dict_stream_writer::operator()(const value_type& row)
 }
 
 
-csv_dict_file_writer::csv_dict_file_writer()
+csv_dict_file_writer::csv_dict_file_writer(csv_quoting quoting):
+    csv_dict_stream_writer(quoting)
 {}
 
 
-csv_dict_file_writer::csv_dict_file_writer(const std::string &name, const csv_row& header)
+csv_dict_file_writer::csv_dict_file_writer(const std::string &name, const csv_row& header, csv_quoting quoting):
+    csv_dict_stream_writer(quoting)
 {
     open(name, header);
 }
@@ -244,7 +246,8 @@ void csv_dict_file_writer::open(const std::string &name, const csv_row& header)
 
 #if defined(PYCPP_HAVE_WFOPEN)
 
-csv_dict_file_writer::csv_dict_file_writer(const std::wstring &name, const csv_row& header)
+csv_dict_file_writer::csv_dict_file_writer(const std::wstring &name, const csv_row& header, csv_quoting quoting):
+    csv_dict_stream_writer(quoting)
 {
     open(name, header);
 }
@@ -259,21 +262,29 @@ void csv_dict_file_writer::open(const std::wstring &name, const csv_row& header)
 #endif
 
 
-csv_dict_string_writer::csv_dict_string_writer()
+csv_dict_string_writer::csv_dict_string_writer(csv_quoting quoting):
+    csv_dict_stream_writer(quoting),
+    sstream_(std::ios_base::out | std::ios_base::binary)
 {}
 
 
-csv_dict_string_writer::csv_dict_string_writer(const std::string &str, const csv_row& header)
+csv_dict_string_writer::csv_dict_string_writer(const csv_row& header, csv_quoting quoting):
+    csv_dict_stream_writer(quoting),
+    sstream_(std::ios_base::out | std::ios_base::binary)
 {
-    open(str, header);
+    open(header);
 }
 
 
-void csv_dict_string_writer::open(const std::string &str, const csv_row& header)
+void csv_dict_string_writer::open(const csv_row& header)
 {
-    sstream_ = std::ostringstream(str, std::ios_base::out | std::ios_base::binary);
     csv_dict_stream_writer::open(sstream_, header);
 }
 
+
+std::string csv_dict_string_writer::str() const
+{
+    return sstream_.str();
+}
 
 PYCPP_END_NAMESPACE

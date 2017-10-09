@@ -21,7 +21,6 @@ static const std::string CSV_SIMPLE_ALL = {34, 84, 104, 105, 115, 34, 44, 34, -2
 static const std::string CSV_SKIP2_ALL = {10, 10, 34, 84, 104, 105, 115, 34, 44, 34, -28, -67, -112, -24, -105, -92, 32, -27, -71, -71, -27, -92, -85, 34, 44, 34, 77, -61, -86, 109, 101, 115, 34, 44, 34, -20, -71, -100, -22, -75, -84, 34, 10, 34, -32, -72, -96, -32, -72, -124, -32, -72, -89, -32, -72, -78, 34, 44, 34, 32, -39, -125, -39, -118, -40, -88, -39, -120, -40, -79, -40, -81, 32, -39, -124, -39, -124, -39, -125, -40, -86, -40, -89, -40, -88, -40, -87, 32, -40, -88, -40, -89, -39, -124, -40, -71, -40, -79, -40, -88, -39, -118, 34, 44, 34, -29, -126, -90, -29, -126, -91, -29, -126, -83, -29, -125, -91, 44, 34, 44, 34, -16, -97, -101, -126, 34, 10};
 static const std::string CSV_TAB_ALL = {34, 84, 104, 105, 115, 34, 9, 34, -28, -67, -112, -24, -105, -92, 32, -27, -71, -71, -27, -92, -85, 34, 9, 34, 77, -61, -86, 109, 101, 115, 34, 9, 34, -20, -71, -100, -22, -75, -84, 34, 10, 34, -32, -72, -96, -32, -72, -124, -32, -72, -89, -32, -72, -78, 34, 9, 34, 32, -39, -125, -39, -118, -40, -88, -39, -120, -40, -79, -40, -81, 32, -39, -124, -39, -124, -39, -125, -40, -86, -40, -89, -40, -88, -40, -87, 32, -40, -88, -40, -89, -39, -124, -40, -71, -40, -79, -40, -88, -39, -118, 34, 9, 34, -29, -126, -90, -29, -126, -91, -29, -126, -83, -29, -125, -91, 44, 34, 9, 34, -16, -97, -101, -126, 34, 10};
 static const std::string CSV_SIMPLE_MINIMAL = {84, 104, 105, 115, 44, -28, -67, -112, -24, -105, -92, 32, -27, -71, -71, -27, -92, -85, 44, 77, -61, -86, 109, 101, 115, 44, -20, -71, -100, -22, -75, -84, 10, -32, -72, -96, -32, -72, -124, -32, -72, -89, -32, -72, -78, 44, 32, -39, -125, -39, -118, -40, -88, -39, -120, -40, -79, -40, -81, 32, -39, -124, -39, -124, -39, -125, -40, -86, -40, -89, -40, -88, -40, -87, 32, -40, -88, -40, -89, -39, -124, -40, -71, -40, -79, -40, -88, -39, -118, 44, 34, -29, -126, -90, -29, -126, -91, -29, -126, -83, -29, -125, -91, 44, 34, 44, -16, -97, -101, -126, 10};
-// TODO: need to have minimal
 static const csv_row ROW1 = {
     {84, 104, 105, 115},
     {-28, -67, -112, -24, -105, -92, 32, -27, -71, -71, -27, -92, -85},
@@ -37,6 +36,8 @@ static const csv_row ROW2 = {
 
 // TESTS
 // -----
+
+// PUNCTUATION
 
 TEST(csvpunct, delimiter)
 {
@@ -57,6 +58,8 @@ TEST(csvpunct, escape)
     csvpunct punct;
     EXPECT_EQ(punct.escape(), '\\');
 }
+
+// SIMPLE READER
 
 
 TEST(csv_stream_reader, simple_all)
@@ -156,6 +159,9 @@ TEST(csv_string_reader, simple_all)
 }
 
 
+// SIMPLE WRITER
+
+
 TEST(csv_stream_writer, simple_all)
 {
     std::ostringstream sstream;
@@ -194,3 +200,46 @@ TEST(csv_stream_writer, punctuation)
     // force POSIX-like newlines
     EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
 }
+
+
+#if defined(BUILD_FILESYSTEM)
+
+TEST(csv_file_writer, simple_all)
+{
+    std::string path("sample_csv_path");
+    {
+        csv_file_writer writer(path, CSV_QUOTE_ALL);
+        writer.punctuation(new tabpunct);
+        writer(ROW1);
+        writer(ROW2);
+    }
+
+    std::stringstream sstream;
+    ifstream istream(path);
+    sstream << istream.rdbuf();
+    istream.close();
+
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
+    EXPECT_TRUE(remove_file(path));
+}
+
+#endif          // BUILD_FILESYSTEM
+
+
+TEST(csv_string_writer, simple_all)
+{
+    csv_string_writer writer(CSV_QUOTE_ALL);
+    writer.punctuation(new tabpunct);
+    writer(ROW1);
+    writer(ROW2);
+    EXPECT_EQ(replace(writer.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
+}
+
+
+// DICT READER
+
+// TODO: here
+
+// DICT WRITER
+
+// TODO: here

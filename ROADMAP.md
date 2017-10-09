@@ -4,10 +4,10 @@
 
 - Add dict CSV reader/writer
     - writer
-        - implementation
+        - implementation -- DONE
         - unittests
     - reader
-        - implementation
+        - implementation -- DONE
         - unittests
 
 - Need string readers/writers

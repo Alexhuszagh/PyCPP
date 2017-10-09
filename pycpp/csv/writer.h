@@ -66,12 +66,12 @@ private:
 struct csv_file_writer: csv_stream_writer
 {
 public:
-    csv_file_writer();
-    csv_file_writer(const std::string &name);
+    csv_file_writer(csv_quoting = CSV_QUOTE_MINIMAL);
+    csv_file_writer(const std::string &name, csv_quoting = CSV_QUOTE_MINIMAL);
     void open(const std::string &name);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    csv_file_writer(const std::wstring &name);
+    csv_file_writer(const std::wstring &name. csv_quoting = CSV_QUOTE_MINIMAL);
     void open(const std::wstring &name);
 #endif
 
@@ -86,9 +86,8 @@ private:
 struct csv_string_writer: csv_stream_writer
 {
 public:
-    csv_string_writer();
-    csv_string_writer(const std::string &str);
-    void open(const std::string &str);
+    csv_string_writer(csv_quoting = CSV_QUOTE_MINIMAL);
+    std::string str() const;
 
 private:
     std::ostringstream sstream_;

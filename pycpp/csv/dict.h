@@ -145,13 +145,13 @@ private:
 struct csv_dict_file_writer: csv_dict_stream_writer
 {
 public:
-    csv_dict_file_writer();
-    csv_dict_file_writer(const std::string &name, const csv_row& header);
-    void open(const std::string &name, const csv_row& header);
+    csv_dict_file_writer(csv_quoting = CSV_QUOTE_MINIMAL);
+    csv_dict_file_writer(const std::string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL);
+    void open(const std::string&, const csv_row&);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    csv_dict_file_writer(const std::wstring &name, const csv_row& header);
-    void open(const std::wstring &name, const csv_row& header);
+    csv_dict_file_writer(const std::wstring&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL);
+    void open(const std::wstring&, const csv_row&);
 #endif
 
 private:
@@ -165,9 +165,10 @@ private:
 struct csv_dict_string_writer: csv_dict_stream_writer
 {
 public:
-    csv_dict_string_writer();
-    csv_dict_string_writer(const std::string &str, const csv_row& header);
-    void open(const std::string &str, const csv_row& header);
+    csv_dict_string_writer(csv_quoting = CSV_QUOTE_MINIMAL);
+    csv_dict_string_writer(const csv_row& header, csv_quoting = CSV_QUOTE_MINIMAL);
+    void open(const csv_row& header);
+    std::string str() const;
 
 private:
     std::ostringstream sstream_;

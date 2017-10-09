@@ -121,11 +121,13 @@ void csv_stream_writer::operator()(const value_type& row)
 }
 
 
-csv_file_writer::csv_file_writer()
+csv_file_writer::csv_file_writer(csv_quoting quoting):
+    csv_stream_writer(quoting)
 {}
 
 
-csv_file_writer::csv_file_writer(const std::string &name)
+csv_file_writer::csv_file_writer(const std::string &name, csv_quoting quoting):
+    csv_stream_writer(quoting)
 {
     open(name);
 }
@@ -140,7 +142,8 @@ void csv_file_writer::open(const std::string &name)
 
 #if defined(PYCPP_HAVE_WFOPEN)
 
-csv_file_writer::csv_file_writer(const std::wstring &name)
+csv_file_writer::csv_file_writer(const std::wstring &name, csv_quoting quoting):
+    csv_stream_writer(quoting)
 {
     open(name);
 }
@@ -154,20 +157,17 @@ void csv_file_writer::open(const std::wstring &name)
 
 #endif
 
-csv_string_writer::csv_string_writer()
-{}
-
-
-csv_string_writer::csv_string_writer(const std::string &str)
+csv_string_writer::csv_string_writer(csv_quoting quoting):
+    csv_stream_writer(quoting),
+    sstream_(std::ios_base::out | std::ios_base::binary)
 {
-    open(str);
+    csv_stream_writer::open(sstream_);
 }
 
 
-void csv_string_writer::open(const std::string &str)
+std::string csv_string_writer::str() const
 {
-    sstream_ = std::ostringstream(str, std::ios_base::out | std::ios_base::binary);
-    csv_stream_writer::open(sstream_);
+    return sstream_.str();
 }
 
 PYCPP_END_NAMESPACE
