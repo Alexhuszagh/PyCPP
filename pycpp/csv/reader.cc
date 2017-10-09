@@ -65,9 +65,10 @@ csv_stream_reader::csv_stream_reader(csvpunct_impl* punct):
 {}
 
 
-csv_stream_reader::csv_stream_reader(std::istream& stream, size_t skip, csvpunct_impl* punct)
+csv_stream_reader::csv_stream_reader(std::istream& stream, size_t skip, csvpunct_impl* punct):
+    punct_(punct ? punct : new csvpunct)
 {
-    open(stream, skip, punct);
+    open(stream, skip, nullptr);
 }
 
 
@@ -79,7 +80,9 @@ void csv_stream_reader::open(std::istream& stream, size_t skip, csvpunct_impl* p
         getline(stream, line);
     }
     stream_ = &stream;
-    punctuation(punct);
+    if (punct) {
+        punctuation(punct);
+    }
 }
 
 

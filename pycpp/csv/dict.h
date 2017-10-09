@@ -100,7 +100,6 @@ private:
 // WRITER
 
 
-#if 0       // TODO: restore
 /**
  *  \brief Generic writer for CSV file.
  *
@@ -116,9 +115,9 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    csv_dict_stream_writer(csv_quoting = CSV_QUOTE_MINIMAL);
-    csv_dict_stream_writer(std::ostream&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL);
-    void open(std::ostream&, const csv_row&);
+    csv_dict_stream_writer(csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_dict_stream_writer(std::ostream&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(std::ostream&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
     void quoting(csv_quoting);
@@ -139,13 +138,13 @@ private:
 struct csv_dict_file_writer: csv_dict_stream_writer
 {
 public:
-    csv_dict_file_writer(csv_quoting = CSV_QUOTE_MINIMAL);
-    csv_dict_file_writer(const std::string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL);
-    void open(const std::string&, const csv_row&);
+    csv_dict_file_writer(csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_dict_file_writer(const std::string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(const std::string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    csv_dict_file_writer(const std::wstring&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL);
-    void open(const std::wstring&, const csv_row&);
+    csv_dict_file_writer(const std::wstring&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(const std::wstring&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 #endif
 
 private:
@@ -159,14 +158,13 @@ private:
 struct csv_dict_string_writer: csv_dict_stream_writer
 {
 public:
-    csv_dict_string_writer(csv_quoting = CSV_QUOTE_MINIMAL);
-    csv_dict_string_writer(const csv_row& header, csv_quoting = CSV_QUOTE_MINIMAL);
-    void open(const csv_row& header);
+    csv_dict_string_writer(csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_dict_string_writer(const csv_row& header, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(const csv_row& header, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     std::string str() const;
 
 private:
     std::ostringstream sstream_;
 };
-#endif
 
 PYCPP_END_NAMESPACE

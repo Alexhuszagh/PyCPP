@@ -77,16 +77,19 @@ csv_stream_writer::csv_stream_writer(csv_quoting quoting, csvpunct_impl* punct):
 {}
 
 
-csv_stream_writer::csv_stream_writer(std::ostream& stream, csv_quoting quoting, csvpunct_impl* punct)
+csv_stream_writer::csv_stream_writer(std::ostream& stream, csv_quoting quoting, csvpunct_impl* punct):
+    punct_(punct ? punct : new csvpunct)
 {
-    open(stream, quoting, punct);
+    open(stream, quoting, nullptr);
 }
 
 
 void csv_stream_writer::open(std::ostream& stream, csv_quoting q, csvpunct_impl* p)
 {
     stream_ = &stream;
-    punctuation(p);
+    if (p) {
+        punctuation(p);
+    }
     quoting(q);
 }
 

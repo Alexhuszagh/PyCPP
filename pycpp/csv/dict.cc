@@ -140,23 +140,22 @@ void csv_dict_string_reader::open(const std::string &str, size_t skip, csvpunct_
     csv_dict_stream_reader::open(sstream_, skip, punct);
 }
 
-#if 0               // TODO: restore
 
-csv_dict_stream_writer::csv_dict_stream_writer(csv_quoting quoting):
-    writer_(quoting)
+csv_dict_stream_writer::csv_dict_stream_writer(csv_quoting quoting, csvpunct_impl* punct):
+    writer_(quoting, punct)
 {}
 
 
-csv_dict_stream_writer::csv_dict_stream_writer(std::ostream& stream, const csv_row& header, csv_quoting quoting):
-    writer_(stream, quoting)
+csv_dict_stream_writer::csv_dict_stream_writer(std::ostream& stream, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct):
+    writer_(stream, quoting, punct)
 {
     header_ = parse_header(header);
 }
 
 
-void csv_dict_stream_writer::open(std::ostream& stream, const csv_row& header)
+void csv_dict_stream_writer::open(std::ostream& stream, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
-    writer_.open(stream);
+    writer_.open(stream, quoting, punct);
     header_ = parse_header(header);
 }
 
@@ -196,59 +195,56 @@ void csv_dict_stream_writer::operator()(const value_type& row)
 }
 
 
-csv_dict_file_writer::csv_dict_file_writer(csv_quoting quoting):
-    csv_dict_stream_writer(quoting)
+csv_dict_file_writer::csv_dict_file_writer(csv_quoting quoting, csvpunct_impl* punct):
+    csv_dict_stream_writer(quoting, punct)
 {}
 
 
-csv_dict_file_writer::csv_dict_file_writer(const std::string &name, const csv_row& header, csv_quoting quoting):
-    csv_dict_stream_writer(quoting)
+csv_dict_file_writer::csv_dict_file_writer(const std::string &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
-    open(name, header);
+    open(name, header, quoting, punct);
 }
 
 
-void csv_dict_file_writer::open(const std::string &name, const csv_row& header)
+void csv_dict_file_writer::open(const std::string &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
-    csv_dict_stream_writer::open(file_, header);
+    csv_dict_stream_writer::open(file_, header, quoting, punct);
 }
 
 #if defined(PYCPP_HAVE_WFOPEN)
 
-csv_dict_file_writer::csv_dict_file_writer(const std::wstring &name, const csv_row& header, csv_quoting quoting):
-    csv_dict_stream_writer(quoting)
+csv_dict_file_writer::csv_dict_file_writer(const std::wstring &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
-    open(name, header);
+    open(name, header, quoting, punct);
 }
 
 
-void csv_dict_file_writer::open(const std::wstring &name, const csv_row& header)
+void csv_dict_file_writer::open(const std::wstring &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
-    csv_dict_stream_writer::open(file_, header);
+    csv_dict_stream_writer::open(file_, header, quoting, punct);
 }
 
 #endif
 
 
-csv_dict_string_writer::csv_dict_string_writer(csv_quoting quoting):
-    csv_dict_stream_writer(quoting),
+csv_dict_string_writer::csv_dict_string_writer(csv_quoting quoting, csvpunct_impl* punct):
+    csv_dict_stream_writer(quoting, punct),
     sstream_(std::ios_base::out | std::ios_base::binary)
 {}
 
 
-csv_dict_string_writer::csv_dict_string_writer(const csv_row& header, csv_quoting quoting):
-    csv_dict_stream_writer(quoting),
+csv_dict_string_writer::csv_dict_string_writer(const csv_row& header, csv_quoting quoting, csvpunct_impl* punct):
     sstream_(std::ios_base::out | std::ios_base::binary)
 {
-    open(header);
+    open(header, quoting, punct);
 }
 
 
-void csv_dict_string_writer::open(const csv_row& header)
+void csv_dict_string_writer::open(const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
-    csv_dict_stream_writer::open(sstream_, header);
+    csv_dict_stream_writer::open(sstream_, header,quoting, punct);
 }
 
 
@@ -256,6 +252,5 @@ std::string csv_dict_string_writer::str() const
 {
     return sstream_.str();
 }
-#endif
 
 PYCPP_END_NAMESPACE
