@@ -5,6 +5,18 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// HELPERS
+// -------
+
+static csv_indexes parse_header(const csv_row& header)
+{
+    csv_indexes map;
+    for (size_t i = 0; i < header.size(); i++) {
+        map.emplace(std::move(header[i]), i);
+    }
+    return map;
+}
+
 // OBJECTS
 // -------
 
@@ -21,12 +33,7 @@ csv_dict_stream_reader::csv_dict_stream_reader(std::istream& stream, size_t skip
 void csv_dict_stream_reader::parse(std::istream& stream, size_t skip)
 {
     reader_.parse(stream, skip);
-
-    // set the header indexes
-    csv_row header = reader_();
-    for (size_t i = 0; i < header.size(); i++) {
-        header_.emplace(std::move(header[i]), i);
-    }
+    header_ = parse_header(reader_());
 }
 
 
@@ -163,5 +170,60 @@ void csv_dict_string_reader::parse(size_t skip)
 {
     csv_dict_stream_reader::parse(sstream_, skip);
 }
+
+
+csv_dict_stream_writer::csv_dict_stream_writer(csv_quoting quoting):
+    writer_(quoting)
+{}
+
+
+csv_dict_stream_writer::csv_dict_stream_writer(std::ostream& stream, const csv_row& header, csv_quoting quoting):
+    writer_(stream, quoting)
+{
+    header_ = parse_header(header);
+}
+
+
+void csv_dict_stream_writer::open(std::ostream& stream, const csv_row& header)
+{
+    writer_.open(stream);
+    header_ = parse_header(header);
+}
+
+
+void csv_dict_stream_writer::punctuation(csvpunct_impl* p)
+{
+    writer_.punctuation(p);
+}
+
+
+const csvpunct_impl* csv_dict_stream_writer::punctuation() const
+{
+    return writer_.punctuation();
+}
+
+
+void csv_dict_stream_writer::quoting(csv_quoting q)
+{
+    writer_.quoting(q);
+}
+
+
+const csv_quoting csv_dict_stream_writer::quoting() const
+{
+    return writer_.quoting();
+}
+
+
+void csv_dict_stream_writer::operator()(const value_type& row)
+{
+    csv_row flat(row.size());
+    for (const auto& pair: row) {
+        size_t index = header_.at(pair.first);
+        flat[index] = pair.second;
+    }
+    writer_(flat);
+}
+
 
 PYCPP_END_NAMESPACE

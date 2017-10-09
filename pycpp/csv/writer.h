@@ -42,8 +42,8 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    csv_stream_writer(csv_quoting quoting = CSV_QUOTE_MINIMAL);
-    csv_stream_writer(std::ostream&, csv_quoting quoting = CSV_QUOTE_MINIMAL);
+    csv_stream_writer(csv_quoting = CSV_QUOTE_MINIMAL);
+    csv_stream_writer(std::ostream&, csv_quoting = CSV_QUOTE_MINIMAL);
     void open(std::ostream&);
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
