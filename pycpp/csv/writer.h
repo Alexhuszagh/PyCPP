@@ -59,4 +59,39 @@ private:
     std::shared_ptr<csvpunct_impl> punct_;
 };
 
+
+/**
+ *  \brief Writer for file-based document.
+ */
+struct csv_file_writer: csv_stream_writer
+{
+public:
+    csv_file_writer();
+    csv_file_writer(const std::string &name);
+    void open(const std::string &name);
+
+#if defined(PYCPP_HAVE_WFOPEN)
+    csv_file_writer(const std::wstring &name);
+    void open(const std::wstring &name);
+#endif
+
+private:
+    ofstream file_;
+};
+
+
+/**
+ *  \brief Writer for string-based document.
+ */
+struct csv_string_writer: csv_stream_writer
+{
+public:
+    csv_string_writer();
+    csv_string_writer(const std::string &str);
+    void open(const std::string &str);
+
+private:
+    std::ostringstream sstream_;
+};
+
 PYCPP_END_NAMESPACE

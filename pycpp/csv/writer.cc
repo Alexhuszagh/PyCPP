@@ -121,4 +121,53 @@ void csv_stream_writer::operator()(const value_type& row)
 }
 
 
+csv_file_writer::csv_file_writer()
+{}
+
+
+csv_file_writer::csv_file_writer(const std::string &name)
+{
+    open(name);
+}
+
+
+void csv_file_writer::open(const std::string &name)
+{
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    csv_stream_writer::open(file_);
+}
+
+
+#if defined(PYCPP_HAVE_WFOPEN)
+
+csv_file_writer::csv_file_writer(const std::wstring &name)
+{
+    open(name);
+}
+
+
+void csv_file_writer::open(const std::wstring &name)
+{
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    csv_stream_writer::open(file_);
+}
+
+#endif
+
+csv_string_writer::csv_string_writer()
+{}
+
+
+csv_string_writer::csv_string_writer(const std::string &str)
+{
+    open(str);
+}
+
+
+void csv_string_writer::open(const std::string &str)
+{
+    sstream_ = std::ostringstream(str, std::ios_base::out | std::ios_base::binary);
+    csv_stream_writer::open(sstream_);
+}
+
 PYCPP_END_NAMESPACE

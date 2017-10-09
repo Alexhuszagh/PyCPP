@@ -78,4 +78,90 @@ auto csv_dict_stream_reader::end() -> iterator
 }
 
 
+csv_dict_file_reader::csv_dict_file_reader()
+{}
+
+
+csv_dict_file_reader::csv_dict_file_reader(const std::string &name)
+{
+    parse(name, 0);
+}
+
+
+void csv_dict_file_reader::open(const std::string &name)
+{
+    file_.open(name, std::ios_base::in | std::ios_base::binary);
+}
+
+
+void csv_dict_file_reader::parse(const std::string &name, size_t skip)
+{
+    open(name);
+    parse(skip);
+}
+
+
+#if defined(PYCPP_HAVE_WFOPEN)
+
+
+csv_dict_file_reader::csv_dict_file_reader(const std::wstring &name)
+{
+    parse(name, 0);
+}
+
+
+void csv_dict_file_reader::open(const std::wstring &name)
+{
+    file_.open(name, std::ios_base::in | std::ios_base::binary);
+}
+
+
+void csv_dict_file_reader::parse(const std::wstring &name, size_t skip)
+{
+    open(name);
+    parse(skip);
+}
+
+#endif
+
+
+void csv_dict_file_reader::parse(size_t skip)
+{
+    if (!file_.is_open()) {
+        throw std::runtime_error("Must open file handle prior to parsing.");
+    }
+    csv_dict_stream_reader::parse(file_, skip);
+}
+
+
+csv_dict_string_reader::csv_dict_string_reader()
+{}
+
+
+csv_dict_string_reader::csv_dict_string_reader(const std::string &str)
+{
+    open(str);
+    parse(0);
+}
+
+
+void csv_dict_string_reader::open(const std::string &str)
+{
+    sstream_ = std::istringstream(str, std::ios_base::binary);
+    parse(0);
+}
+
+
+void csv_dict_string_reader::parse(const std::string &str, size_t skip)
+{
+    open(str);
+    parse(skip);
+}
+
+
+void csv_dict_string_reader::parse(size_t skip)
+{
+    csv_dict_stream_reader::parse(sstream_, skip);
+}
+
 PYCPP_END_NAMESPACE

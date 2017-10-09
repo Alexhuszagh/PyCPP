@@ -62,6 +62,48 @@ private:
     csv_indexes header_;
 };
 
+
+/**
+ *  \brief Dict reader for file-based document.
+ */
+struct csv_dict_file_reader: csv_dict_stream_reader
+{
+public:
+    csv_dict_file_reader();
+    csv_dict_file_reader(const std::string &name);
+    void open(const std::string &name);
+    void parse(const std::string &name, size_t skip = 0);
+
+#if defined(PYCPP_HAVE_WFOPEN)
+    csv_dict_file_reader(const std::wstring &name);
+    void open(const std::wstring &name);
+    void parse(const std::wstring &name, size_t skip = 0);
+#endif
+
+    void parse(size_t skip = 0);
+
+private:
+    ifstream file_;
+};
+
+
+/**
+ *  \brief Dict reader for string-based document.
+ */
+struct csv_dict_string_reader: csv_dict_stream_reader
+{
+public:
+    csv_dict_string_reader();
+    csv_dict_string_reader(const std::string &str);
+    void open(const std::string &str);
+    void parse(const std::string &str, size_t skip = 0);
+
+    void parse(size_t skip = 0);
+
+private:
+    std::istringstream sstream_;
+};
+
 // WRITER
 
 // TODO: need the stream writer
