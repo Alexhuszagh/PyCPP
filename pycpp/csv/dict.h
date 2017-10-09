@@ -145,14 +145,14 @@ private:
 struct csv_dict_file_writer: csv_dict_stream_writer
 {
 public:
-//    csv_dict_file_writer();
-//    csv_dict_file_writer(const std::string &name);
-//    void open(const std::string &name);
-//
-//#if defined(PYCPP_HAVE_WFOPEN)
-//    csv_dict_file_writer(const std::wstring &name);
-//    void open(const std::wstring &name);
-//#endif
+    csv_dict_file_writer();
+    csv_dict_file_writer(const std::string &name, const csv_row& header);
+    void open(const std::string &name, const csv_row& header);
+
+#if defined(PYCPP_HAVE_WFOPEN)
+    csv_dict_file_writer(const std::wstring &name, const csv_row& header);
+    void open(const std::wstring &name, const csv_row& header);
+#endif
 
 private:
     ofstream file_;
@@ -165,9 +165,9 @@ private:
 struct csv_dict_string_writer: csv_dict_stream_writer
 {
 public:
-//    csv_dict_string_writer();
-//    csv_dict_string_writer(const std::string &str);
-//    void open(const std::string &str);
+    csv_dict_string_writer();
+    csv_dict_string_writer(const std::string &str, const csv_row& header);
+    void open(const std::string &str, const csv_row& header);
 
 private:
     std::ostringstream sstream_;
