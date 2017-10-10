@@ -38,7 +38,7 @@ static bool detect_stream(std::istream& stream, const magic_bytes& magic)
 
 static bool detect_path(const std::string& path, const magic_bytes& magic)
 {
-    ifstream stream(path, std::ios_base::binary);
+    ifstream stream(path, std::ios_base::in | std::ios_base::binary);
     return detect_stream(stream, magic);
 }
 
@@ -47,14 +47,14 @@ static bool detect_path(const std::string& path, const magic_bytes& magic)
 
 static bool detect_path(const std::wstring& path, const magic_bytes& magic)
 {
-    ifstream stream(path, std::ios_base::binary);
+    ifstream stream(path, std::ios_base::in | std::ios_base::binary);
     return detect_stream(stream, magic);
 }
 
 
 static bool detect_path(const std::u16string& path, const magic_bytes& magic)
 {
-    ifstream stream(path, std::ios_base::binary);
+    ifstream stream(path, std::ios_base::in | std::ios_base::binary);
     return detect_stream(stream, magic);
 }
 

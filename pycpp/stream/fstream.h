@@ -46,14 +46,20 @@ public:
     fstream(fstream &&other);
     fstream & operator=(fstream &&other);
 
-    fstream(const std::string &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::string &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const char* name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const char* name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    fstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    fstream(const std::u16string &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::u16string &name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const wchar_t* name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const wchar_t* name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const char16_t* name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const char16_t* name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 #endif
 
     // DATA
@@ -84,14 +90,20 @@ public:
     ifstream(ifstream &&other);
     ifstream & operator=(ifstream &&other);
 
-    ifstream(const std::string &name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::string &name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const char* name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const char* name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    ifstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::in);
-    ifstream(const std::u16string &name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::u16string &name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const wchar_t* name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const wchar_t* name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const char16_t* name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const char16_t* name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
 #endif
 
     bool is_open() const;
@@ -121,14 +133,20 @@ public:
     ofstream(ofstream &&other);
     ofstream & operator=(ofstream &&other);
 
-    ofstream(const std::string &name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::string &name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const char* name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const char* name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    ofstream(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::wstring &name, std::ios_base::openmode mode = std::ios_base::out);
-    ofstream(const std::u16string &name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::u16string &name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const wchar_t* name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const wchar_t* name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const char16_t* name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const char16_t* name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
 #endif
 
     bool is_open() const;
@@ -142,7 +160,56 @@ private:
     std::basic_filebuf<char> buffer;
 };
 
-#else                   // NON-GCC COMPILER
+#elif defined(HAVE_MSVC)        // MSVC
+
+/**
+ *  \brief Stream supporting narrow and wide APIs on Windows.
+ */
+class fstream: public std::fstream
+{
+public:
+    using std::fstream::fstream;
+#if defined(PYCPP_HAVE_WFOPEN)
+    fstream(const char16_t* name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const char16_t* name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+#endif
+};
+
+
+/**
+ *  \brief Stream supporting narrow and wide APIs on Windows.
+ */
+class ifstream: public std::ifstream
+{
+public:
+    using std::ifstream::ifstream;
+#if defined(PYCPP_HAVE_WFOPEN)
+    ifstream(const char16_t* name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const char16_t* name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
+#endif
+};
+
+
+/**
+ *  \brief Stream supporting narrow and wide APIs on Windows.
+ */
+class ofstream: public std::ofstream
+{
+public:
+    using std::ofstream::ofstream;
+#if defined(PYCPP_HAVE_WFOPEN)
+    ofstream(const char16_t* name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const char16_t* name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
+#endif
+};
+
+#else                           // NON-GCC/MSVC COMPILER
 
 typedef std::fstream fstream;
 typedef std::ifstream ifstream;

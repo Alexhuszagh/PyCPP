@@ -79,11 +79,11 @@ std::string c_ios_mode(std::ios_base::openmode mode)
 /**
  *  \brief Get C FILE pointer from narrow filename.
  */
-FILE * get_c_file(const std::string &narrow, std::ios_base::openmode mode)
+FILE * get_c_file(const char* narrow, std::ios_base::openmode mode)
 {
     auto str = c_ios_mode(mode);
     if (str.size()) {
-        return fopen(narrow.data(), str.data());
+        return fopen(narrow, str.data());
     }
     return nullptr;
 }
@@ -94,13 +94,12 @@ FILE * get_c_file(const std::string &narrow, std::ios_base::openmode mode)
 /**
  *  \brief Get C FILE pointer from wide filename.
  */
-FILE * get_c_file(const std::wstring &wide,
-    const std::ios_base::openmode mode)
+FILE * get_c_file(const wchar_t* wide, const std::ios_base::openmode mode)
 {
     auto str = c_ios_mode(mode);
     if (str.size()) {
         auto data = reinterpret_cast<const wchar_t*>(codec_utf8_utf16(str).data());
-        return _wfopen(wide.data(), data);
+        return _wfopen(wide, data);
     }
     return nullptr;
 }
@@ -109,13 +108,12 @@ FILE * get_c_file(const std::wstring &wide,
 /**
  *  \brief Get C FILE pointer from wide filename.
  */
-FILE * get_c_file(const std::u16string &wide,
-    const std::ios_base::openmode mode)
+FILE * get_c_file(const char16_t* wide, const std::ios_base::openmode mode)
 {
     auto str = c_ios_mode(mode);
     if (str.size()) {
         auto data = reinterpret_cast<const wchar_t*>(codec_utf8_utf16(str).data());
-        return _wfopen(reinterpret_cast<const wchar_t*>(wide.data()), data);
+        return _wfopen(reinterpret_cast<const wchar_t*>(wide), data);
     }
     return nullptr;
 }
@@ -152,26 +150,38 @@ fstream & fstream::operator=(fstream &&other)
 }
 
 
-fstream::fstream(const std::string &name, std::ios_base::openmode mode)
+fstream::fstream(const char* name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void fstream::open(const std::string &name, std::ios_base::openmode mode)
+void fstream::open(const char* name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
+}
+
+
+fstream::fstream(const std::string& name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void fstream::open(const std::string& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
 }
 
 #ifdef PYCPP_HAVE_WFOPEN
 
-fstream::fstream(const std::wstring &name, std::ios_base::openmode mode)
+fstream::fstream(const wchar_t* name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void fstream::open(const std::wstring &name, std::ios_base::openmode mode)
+void fstream::open(const wchar_t* name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
@@ -179,16 +189,41 @@ void fstream::open(const std::wstring &name, std::ios_base::openmode mode)
 }
 
 
-fstream::fstream(const std::u16string &name, std::ios_base::openmode mode)
+fstream::fstream(const std::wstring& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void fstream::open(const std::u16string &name, std::ios_base::openmode mode)
+
+void fstream::open(const std::wstring& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
+}
+
+
+fstream::fstream(const char16_t* name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void fstream::open(const char16_t* name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
+}
+
+
+fstream::fstream(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void fstream::open(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
 }
 
 #endif
@@ -261,26 +296,38 @@ ifstream & ifstream::operator=(ifstream &&other)
 }
 
 
-ifstream::ifstream(const std::string &name, std::ios_base::openmode mode)
+ifstream::ifstream(const char* name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void ifstream::open(const std::string &name, std::ios_base::openmode mode)
+void ifstream::open(const char* name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
+}
+
+
+ifstream::ifstream(const std::string& name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void ifstream::open(const std::string& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
 }
 
 #ifdef PYCPP_HAVE_WFOPEN
 
-ifstream::ifstream(const std::wstring &name, std::ios_base::openmode mode)
+ifstream::ifstream(const wchar_t* name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void ifstream::open(const std::wstring &name, std::ios_base::openmode mode)
+void ifstream::open(const wchar_t* name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
@@ -288,16 +335,40 @@ void ifstream::open(const std::wstring &name, std::ios_base::openmode mode)
 }
 
 
-ifstream::ifstream(const std::u16string &name, std::ios_base::openmode mode)
+ifstream::ifstream(const std::wstring& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void ifstream::open(const std::u16string &name, std::ios_base::openmode mode)
+
+void ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
+}
+
+
+ifstream::ifstream(const char16_t* name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+void ifstream::open(const char16_t* name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
+}
+
+
+ifstream::ifstream(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
 }
 
 #endif
@@ -367,26 +438,38 @@ ofstream & ofstream::operator=(ofstream &&other)
 }
 
 
-ofstream::ofstream(const std::string &name, std::ios_base::openmode mode)
+ofstream::ofstream(const char* name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void ofstream::open(const std::string &name, std::ios_base::openmode mode)
+void ofstream::open(const char* name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
 }
+
+
+ofstream::ofstream(const std::string& name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+void ofstream::open(const std::string& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
+}
+
 
 #ifdef PYCPP_HAVE_WFOPEN
 
-ofstream::ofstream(const std::wstring &name, std::ios_base::openmode mode)
+ofstream::ofstream(const wchar_t* name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void ofstream::open(const std::wstring &name, std::ios_base::openmode mode)
+void ofstream::open(const wchar_t* name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
@@ -394,16 +477,38 @@ void ofstream::open(const std::wstring &name, std::ios_base::openmode mode)
 }
 
 
-ofstream::ofstream(const std::u16string &name, std::ios_base::openmode mode)
+ofstream::ofstream(const std::wstring& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void ofstream::open(const std::u16string &name, std::ios_base::openmode mode)
+void ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
+}
+
+
+ofstream::ofstream(const char16_t* name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+void ofstream::open(const char16_t* name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
+}
+
+
+ofstream::ofstream(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+void ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
 }
 
 #endif
@@ -447,6 +552,73 @@ void ofstream::swap(ofstream &other)
     // set filebuffers
     std::ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
+}
+
+#elif defined(HAVE_MSVC)                // MSVC
+
+fstream::fstream(const char16_t* name, std::ios_base::openmode mode):
+    std::fstream(reinterpret_cast<const wchar_t*>(name), mode)
+{}
+
+
+void fstream::open(const char16_t* name, std::ios_base::openmode mode)
+{
+    std::fstream::open(reinterpret_cast<const wchar_t*>(name), mode);
+}
+
+
+fstream::fstream(const std::string& name, std::ios_base::openmode mode):
+    std::fstream(reinterpret_cast<const wchar_t*>(name.data()), mode)
+{}
+
+
+void fstream::open(const std::string& name, std::ios_base::openmode mode)
+{
+    std::fstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
+}
+
+
+ifstream::ifstream(const char16_t* name, std::ios_base::openmode mode):
+    std::ifstream(reinterpret_cast<const wchar_t*>(name), mode)
+{}
+
+
+void ifstream::open(const char16_t* name, std::ios_base::openmode mode)
+{
+    std::ifstream::open(reinterpret_cast<const wchar_t*>(name), mode);
+}
+
+
+ifstream::ifstream(const std::string& name, std::ios_base::openmode mode):
+    std::ifstream(reinterpret_cast<const wchar_t*>(name.data()), mode)
+{}
+
+
+void ifstream::open(const std::string& name, std::ios_base::openmode mode)
+{
+    std::ifstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
+}
+
+
+ofstream::ofstream(const char16_t* name, std::ios_base::openmode mode)
+    std::ofstream(reinterpret_cast<const wchar_t*>(name), mode)
+{}
+
+
+void ofstream::open(const char16_t* name, std::ios_base::openmode mode)
+{
+    std::ofstream::open(reinterpret_cast<const wchar_t*>(name), mode);
+}
+
+
+ofstream::ofstream(const std::string& name, std::ios_base::openmode mode)
+    std::ofstream(reinterpret_cast<const wchar_t*>(name.data()), mode)
+{}
+
+
+void ofstream::open(const std::string& name, std::ios_base::openmode mode)
+{
+    std::ofstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
 
 #endif
