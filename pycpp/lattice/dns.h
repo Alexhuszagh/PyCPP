@@ -13,7 +13,7 @@
 #if defined(OS_WINDOWS)
 #   include <winsock2.h>
 #   include <ws2tcpip.h>
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #else
 #   include <netdb.h>
 #endif

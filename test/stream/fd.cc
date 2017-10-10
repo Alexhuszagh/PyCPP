@@ -64,6 +64,34 @@ struct test_stream
 // -----
 
 
+TEST(fd_streambuf, fd_streambuf)
+{
+    std::string path("sample_path");
+    size_t size = 11;
+    std::string in("Single Line");
+    std::vector<char> out(size);
+
+    // open
+    fd_t fd = fd_open(path, std::ios_base::in | std::ios_base::out);
+    fd_streambuf buf(std::ios_base::in | std::ios_base::out, fd);
+
+    // write
+    EXPECT_EQ((size_t) buf.sputn(in.data(), in.size()), size);
+
+    // seek
+    EXPECT_EQ((size_t) buf.pubseekpos(0), 0);
+
+    // read
+    EXPECT_EQ((size_t) buf.sgetn(out.data(), out.size()), size);
+    EXPECT_EQ(in, std::string(out.data(), out.size()));
+
+    // cleanup
+    buf.close();
+    fd_close(fd);
+    EXPECT_TRUE(remove_file(path));
+}
+
+
 TEST(fd_stream, fd_stream)
 {
     typedef test_stream<fd_stream, fd_stream> tester;

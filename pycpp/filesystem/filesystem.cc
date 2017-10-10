@@ -122,6 +122,12 @@ path_list_t listdir(const path_t& path)
     });
 }
 
+
+std::streampos fd_tell(fd_t fd)
+{
+    return fd_seek(fd, 0, std::ios_base::cur);
+}
+
 #if defined(OS_WINDOWS)          // BACKUP PATH
 
 

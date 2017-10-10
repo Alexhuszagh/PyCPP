@@ -18,23 +18,14 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
 #include <pycpp/preprocessor/errno.h>
+#include <pycpp/preprocessor/sysstat.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/windows/error.h>
+#include <pycpp/windows/winapi.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 #include <io.h>
-#include <windows.h>
-#include <sys/stat.h>
 #include <algorithm>
-
-// MACROS
-// ------
-
-#ifndef S_IRUSR
-#   define S_IRUSR 00400
-#endif
-
-#ifndef S_IWUSR
-#   define S_IWUSR 00200
-#endif
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -548,9 +539,11 @@ static DWORD convert_create_mode(std::ios_base::openmode mode)
 
 
 template <typename Pointer, typename Function>
-static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode openmode, mode_t permission, Function function)
+static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode openmode, mode_t, Function function)
 {
-    // TODO: need mode_t values for permission
+    // ignore permissions since Windows uses a different
+    // file-system permission model
+    // Effectively, ignore it.
     DWORD access = convert_access_mode(openmode);
     DWORD share = 0;
     LPSECURITY_ATTRIBUTES security = nullptr;
@@ -559,6 +552,15 @@ static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode openmode
     HANDLE file = nullptr;
 
     return function(path, access, share, security, create, flags, file);
+}
+
+
+template <typename Path>
+static int fd_chmod_impl(const Path& path, std::streamsize size)
+{
+    // Windows doesn't support POSIX-style permissions.
+    // Null-op and return false.
+    return -1;
 }
 
 
@@ -795,10 +797,10 @@ bool makedirs(const path_t& path, int mode)
 // FILE UTILS
 
 
-fd_t fd_open(const path_t& path, std::ios_base::openmode mode)
+fd_t fd_open(const path_t& path, std::ios_base::openmode mode, mode_t permission)
 {
     const wchar_t* p = (const wchar_t*) path.data();
-    fd_t fd = fd_open_impl(p, mode, CreateFileW);
+    fd_t fd = fd_open_impl(p, mode, permission, CreateFileW);
     if (fd == INVALID_HANDLE_VALUE) {
         set_errno_win32();
     }
@@ -817,7 +819,7 @@ std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count)
 }
 
 
-std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count)
+std::streamsize fd_write(fd_t fd, const void* buf, std::streamsize count)
 {
     DWORD wrote;
     if (!WriteFile(fd, buf, count, &wrote, nullptr)) {
@@ -846,14 +848,13 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
             return std::streampos(std::streamoff(-1));
     }
 
-    LARGE_INTEGER bytes;
-    bytes.QuadPart = off;
-    DWORD status = SetFilePointer(fd, bytes.LowPart, &bytes.HighPart, FILE_BEGIN);
-    if (status == INVALID_SET_FILE_POINTER) {
+    LARGE_INTEGER in, out;
+    in.QuadPart = off;
+    if (!::SetFilePointerEx(fd, in, &out, method)) {
         set_errno_win32();
         return -1;          // force POSIX-like behavior
     }
-    return status;
+    return out.QuadPart;
 }
 
 
@@ -864,6 +865,14 @@ int fd_close(fd_t fd)
         return -1;          // force POSIX-like behavior
     }
     return 0;
+}
+
+
+int fd_chmod(fd_t, mode_t)
+{
+    // Windows doesn't support Unix-style permissions.
+    // All major cross-platform libraries ignore this.
+    return false;
 }
 
 
@@ -892,6 +901,12 @@ int fd_allocate(fd_t fd, std::streamsize size)
 int fd_truncate(fd_t fd, std::streamsize size)
 {
     return fd_allocate(fd, size);
+}
+
+
+int fd_chmod(const path_t& path, mode_t permissions)
+{
+    return fd_chmod_impl(path, permissions);
 }
 
 
@@ -1079,9 +1094,15 @@ bool makedirs(const backup_path_t& path, int mode)
 
 // FILE UTILS
 
-fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode)
+fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t permission)
 {
-    return fd_open_impl(path.data(), mode, CreateFileA);
+    return fd_open_impl(path.data(), mode, permission, CreateFileA);
+}
+
+
+int fd_chmod(const backup_path_t& path, mode_t permissions)
+{
+    return fd_chmod_impl(path, permissions);
 }
 
 
@@ -1097,5 +1118,7 @@ int fd_truncate(const backup_path_t& path, std::streamsize size)
 }
 
 PYCPP_END_NAMESPACE
+
+#include <warnings/pop.h>
 
 #endif

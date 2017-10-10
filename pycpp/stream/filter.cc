@@ -429,6 +429,19 @@ void filter_ifstream::open(const std::wstring &name, std::ios_base::openmode mod
     rdbuf()->set_callback(c);
 }
 
+
+filter_ifstream::filter_ifstream(const std::u16string &name, std::ios_base::openmode mode, filter_callback c):
+    filter_istream(file, c)
+{
+    open(name, mode, c);
+}
+
+void filter_ifstream::open(const std::u16string &name, std::ios_base::openmode mode, filter_callback c)
+{
+    file.open(name, mode);
+    rdbuf()->set_callback(c);
+}
+
 #endif
 
 
@@ -499,6 +512,19 @@ filter_ofstream::filter_ofstream(const std::wstring &name, std::ios_base::openmo
 }
 
 void filter_ofstream::open(const std::wstring &name, std::ios_base::openmode mode, filter_callback c)
+{
+    file.open(name, mode);
+    rdbuf()->set_callback(c);
+}
+
+
+filter_ofstream::filter_ofstream(const std::u16string &name, std::ios_base::openmode mode, filter_callback c):
+    filter_ostream(file, c)
+{
+    open(name, mode, c);
+}
+
+void filter_ofstream::open(const std::u16string &name, std::ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);

@@ -13,7 +13,6 @@
 #if !defined(COMPILER_DETECTED) && defined(_MSC_VER)
 #   define HAVE_MSVC 1
 #   define COMPILER_DETECTED HAVE_MSVC
-#   define COMPILER_PATCH_VERSION 0
 #   if _MSC_VER >= 1911
 #      define HAVE_MSVC_14 1
 #      define COMPILER_MAJOR_VERSION 15
@@ -23,46 +22,57 @@
 #      define HAVE_MSVC_14 1
 #      define COMPILER_MAJOR_VERSION 14
 #      define COMPILER_MINOR_VERSION 1
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1900
 #      define HAVE_MSVC_14 1
 #      define COMPILER_MAJOR_VERSION 14
 #      define COMPILER_MINOR_VERSION 0
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1800
 #      define HAVE_MSVC_12 1
 #      define COMPILER_MAJOR_VERSION 12
 #      define COMPILER_MINOR_VERSION 0
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1700
 #      define HAVE_MSVC_11 1
 #      define COMPILER_MAJOR_VERSION 11
 #      define COMPILER_MINOR_VERSION 0
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1600
 #      define HAVE_MSVC_10 1
 #      define COMPILER_MAJOR_VERSION 10
 #      define COMPILER_MINOR_VERSION 0
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1500
 #      define HAVE_MSVC_9 1
 #      define COMPILER_MAJOR_VERSION 9
 #      define COMPILER_MINOR_VERSION 0
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1400
 #      define HAVE_MSVC_8 1
 #      define COMPILER_MAJOR_VERSION 8
 #      define COMPILER_MINOR_VERSION 0
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1310
 #      define HAVE_MSVC_7 1
 #      define COMPILER_MAJOR_VERSION 7
 #      define COMPILER_MINOR_VERSION 1
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1300
 #      define HAVE_MSVC_7 1
 #      define COMPILER_MAJOR_VERSION 7
 #      define COMPILER_MINOR_VERSION 0
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1200
 #      define HAVE_MSVC_6 1
 #      define COMPILER_MAJOR_VERSION 6
 #      define COMPILER_MINOR_VERSION 0
+#      define COMPILER_PATCH_VERSION 0
 #   elif _MSC_VER == 1100
 #      define HAVE_MSVC_5 1
 #      define COMPILER_MAJOR_VERSION 5
 #      define COMPILER_MINOR_VERSION 0
+#      define COMPILER_PATCH_VERSION 0
 #   endif
 #endif
 

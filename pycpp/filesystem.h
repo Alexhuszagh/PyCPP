@@ -12,6 +12,11 @@
  *  for the string encoding. You should use the native path
  *  type whenever possible for Unicode support: narrow paths
  *  on Windows do not support Unicode characters.
+ *
+ *  UTF-8 strings are represented by `std::string`, while UTF-16
+ *  strings are represented by `std::u16string`. However,
+ *  for compatibility reasons with the Win32 API, all stream
+ *  constructors also accept `std::wstring` as paths.
  */
 
 #pragma once
@@ -387,12 +392,17 @@ std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count);
 /**
  *  \brief Write to descriptor, as if by POSIX `write()`.
  */
-std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count);
+std::streamsize fd_write(fd_t fd, const void* buf, std::streamsize count);
 
 /**
  *  \brief Seek position in stream, as if by POSIX `lseek()`.
  */
 std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way = std::ios_base::beg);
+
+/**
+ *  \brief Tell current position in stream, as if by POSIX `lseek()`.
+ */
+std::streampos fd_tell(fd_t fd);
 
 /**
  *  \brief Close descriptor, as if by POSIX `close()`.
@@ -403,6 +413,11 @@ std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way =
 int fd_close(fd_t fd);
 
 /**
+ *  \brief Change file permissions, as if by `fchmod()`.
+ */
+int fd_chmod(fd_t fd, mode_t permissions);
+
+/**
  *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
  */
 int fd_allocate(fd_t fd, std::streamsize size);
@@ -411,6 +426,11 @@ int fd_allocate(fd_t fd, std::streamsize size);
  *  \brief Truncate file size to `size` (n bytes).
  */
 int fd_truncate(fd_t fd, std::streamsize size);
+
+/**
+ *  \brief Change file permissions, as if by `fchmod()`.
+ */
+int fd_chmod(const path_t& path, mode_t permissions);
 
 /**
  *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
@@ -491,7 +511,8 @@ bool remove_path(const backup_path_t& path, bool recursive = true);
 
 // FILE UTILS
 
-fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode);
+fd_t fd_open(const backup_path_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP);
+int fd_chmod(const backup_path_t& path, mode_t permissions);
 int fd_allocate(const backup_path_t& path, std::streamsize size);
 int fd_truncate(const backup_path_t& path, std::streamsize size);
 

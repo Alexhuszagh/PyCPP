@@ -27,7 +27,7 @@
 #endif
 
 #if defined(OS_WINDOWS)
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #else
 #   include <string.h>
 #   include <strings.h>

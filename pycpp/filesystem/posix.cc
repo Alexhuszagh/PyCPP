@@ -9,15 +9,16 @@
 #include <pycpp/preprocessor/os.h>
 
 #if defined(OS_POSIX)                           // POSIX & MACOS
-#include <pycpp/filesystem.h>
-#include <pycpp/filesystem/exception.h>
-#include <pycpp/string/unicode.h>
-#include <fcntl.h>
-#include <limits.h>
-#include <unistd.h>
-#include <wordexp.h>
-#include <algorithm>
-#include <cstdlib>
+#   include <pycpp/filesystem.h>
+#   include <pycpp/filesystem/exception.h>
+#   include <pycpp/preprocessor/sysstat.h>
+#   include <pycpp/string/unicode.h>
+#   include <fcntl.h>
+#   include <limits.h>
+#   include <unistd.h>
+#   include <wordexp.h>
+#   include <algorithm>
+#   include <cstdlib>
 #endif
 
 PYCPP_BEGIN_NAMESPACE
@@ -414,6 +415,20 @@ static int convert_openmode(std::ios_base::openmode mode)
 
 
 template <typename Path>
+static int fd_chmod_impl(const Path& path, mode_t permissions)
+{
+    fd_t fd = fd_open(path, std::ios_base::in | std::ios_base::out);
+    if (fd < 0) {
+        return false;
+    }
+    int status = fd_chmod(fd, permissions);
+    fd_close(fd);       // ignore error, close() error makes no sense
+
+    return status;
+}
+
+
+template <typename Path>
 static int fd_allocate_impl(const Path& path, std::streamsize size)
 {
     fd_t fd = fd_open(path, std::ios_base::out);
@@ -439,6 +454,33 @@ static int fd_truncate_impl(const Path& path, std::streamsize size)
 
     return status;
 }
+
+
+#if defined(OS_MACOS)                  // MACOS
+
+/**
+ *  \brief `posix_fallocate` implementation for macOS, which is missing it.
+ */
+static int posix_fallocate(int fd, off_t offset, off_t len)
+{
+    fstore_t store = {F_ALLOCATECONTIG, F_PEOFPOSMODE, offset, len, 0};
+    int status = fcntl(fd, F_PREALLOCATE, &store);
+    if (status == -1) {
+        store.fst_flags = F_ALLOCATEALL;
+        status = fcntl(fd, F_PREALLOCATE, &store);
+    }
+
+    if (status != -1) {
+        // required for OS X to properly report the length
+        // fnctl returns anything but -1 on success, but truncate returns
+        // 0 on success, so we can guarantee -1 is error, 0 is success.
+        status = ftruncate(fd, len);
+    }
+
+    return status;
+}
+
+#endif                                  // MACOS
 
 // CONSTANTS
 // ---------
@@ -657,8 +699,7 @@ bool makedirs(const path_t& path, int mode)
 
 fd_t fd_open(const path_t& path, std::ios_base::openmode openmode, mode_t permission)
 {
-    // TODO: mode
-    return ::open(path.data(), convert_openmode(openmode));
+    return ::open(path.data(), convert_openmode(openmode), permission);
 }
 
 
@@ -668,7 +709,7 @@ std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count)
 }
 
 
-std::streamsize fd_write(fd_t fd, void* buf, std::streamsize count)
+std::streamsize fd_write(fd_t fd, const void* buf, std::streamsize count)
 {
     return ::write(fd, buf, count);
 }
@@ -701,14 +742,23 @@ int fd_close(fd_t fd)
 }
 
 
-#if !defined(OS_MACOS)
+int fd_chmod(fd_t fd, mode_t permissions)
+{
+    return ::fchmod(fd, permissions);
+}
+
+
+int fd_chmod(const path_t& path, mode_t permissions)
+{
+    return fd_chmod_impl(path, permissions);
+}
+
 
 int fd_allocate(fd_t fd, std::streamsize size)
 {
     return posix_fallocate(fd, 0, size);
 }
 
-#endif              // MACOS
 
 int fd_allocate(const path_t& path, std::streamsize size)
 {

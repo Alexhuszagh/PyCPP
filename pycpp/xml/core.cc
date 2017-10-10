@@ -582,7 +582,7 @@ xml_node_t xml_node_t::fromstring(const xml_string_t& str)
         xml_stream_reader reader;
         xml_dom_handler handler(node);
         reader.set_handler(handler);
-        reader.parse(stream);
+        reader.open(stream);
     }
 
     // we want the first child, the actual element parsed

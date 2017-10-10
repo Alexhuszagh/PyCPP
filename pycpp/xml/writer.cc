@@ -209,6 +209,19 @@ void xml_file_writer::open(const std::wstring &name)
     file_.open(name, std::ios_base::binary);
 }
 
+
+xml_file_writer::xml_file_writer(const std::u16string &name):
+    file_(name)
+{
+    reset(file_);
+}
+
+
+void xml_file_writer::open(const std::u16string &name)
+{
+    file_.open(name, std::ios_base::binary);
+}
+
 #endif
 
 

@@ -9,7 +9,7 @@
 #include <pycpp/string/string.h>
 #include <algorithm>
 #if defined(OS_WINDOWS)
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #endif
 
 PYCPP_BEGIN_NAMESPACE

@@ -14,7 +14,7 @@
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #if defined(OS_WINDOWS)
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #   include <wincrypt.h>
 #   include <stdexcept>
 #else

@@ -2,10 +2,12 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/filesystem.h>
+#include <pycpp/preprocessor/sysstat.h>
 #include <pycpp/random.h>
 #include <pycpp/stream/fd.h>
+
 #if defined(OS_WINDOWS)          // WINDOWS NT
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #else                           // POSIX
 #   include <fcntl.h>
 #   include <unistd.h>
@@ -230,7 +232,7 @@ path_t gettempnamw(const path_t& dir, const path_t& prefix)
 
 fd_stream temporary_filea(const backup_path_t& dir, const backup_path_t& prefix)
 {
-    return temporary_directory(backup_path_to_path(dir), backup_path_to_path(prefix));
+    return temporary_file(backup_path_to_path(dir), backup_path_to_path(prefix));
 }
 
 

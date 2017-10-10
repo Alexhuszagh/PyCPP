@@ -3,9 +3,7 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/stream/fd.h>
-#if defined(OS_WINDOWS)
-#   include <windows.h>
-#else
+#if !defined(OS_WINDOWS)
 #   include <unistd.h>
 #endif
 
@@ -202,6 +200,7 @@ fd_stream::~fd_stream()
 
 fd_stream::fd_stream(fd_stream&& other):
     buffer(std::move(other.buffer)),
+    std::iostream(&buffer),
     close_(std::move(other.close_))
 {
     std::ios::rdbuf(&buffer);
@@ -286,6 +285,7 @@ fd_istream::~fd_istream()
 
 fd_istream::fd_istream(fd_istream&& other):
     buffer(std::move(other.buffer)),
+    std::istream(&buffer),
     close_(std::move(other.close_))
 {
     std::ios::rdbuf(&buffer);
@@ -374,6 +374,7 @@ fd_ostream::~fd_ostream()
 
 fd_ostream::fd_ostream(fd_ostream&& other):
     buffer(std::move(other.buffer)),
+    std::ostream(&buffer),
     close_(std::move(other.close_))
 {
     std::ios::rdbuf(&buffer);

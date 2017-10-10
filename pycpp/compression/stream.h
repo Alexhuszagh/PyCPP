@@ -25,14 +25,19 @@ PYCPP_BEGIN_NAMESPACE
  */
 #if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
 
-#   define WIDE_PATH_IFSTREAM(name)                                                                         \
-        name##_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);             \
-        void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
+#   define WIDE_PATH_IFSTREAM(name)                                                                             \
+        name##_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);                 \
+        void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);                       \
+        name##_ifstream(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);               \
+        void open(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);
 
-#   define WIDE_PATH_OFSTREAM(name)                                                                         \
-        name##_ofstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::out);            \
-        name##_ofstream(const std::wstring &name, int level, std::ios_base::openmode = std::ios_base::out); \
-        void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::out);
+#   define WIDE_PATH_OFSTREAM(name)                                                                             \
+        name##_ofstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::out);                \
+        name##_ofstream(const std::wstring &name, int level, std::ios_base::openmode = std::ios_base::out);     \
+        void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::out);                      \
+        name##_ofstream(const std::u16string &name, std::ios_base::openmode = std::ios_base::out);              \
+        name##_ofstream(const std::u16string &name, int level, std::ios_base::openmode = std::ios_base::out);   \
+        void open(const std::u16string &name, std::ios_base::openmode = std::ios_base::out);
 
 #else                                       // POSIX
 
@@ -207,6 +212,8 @@ public:
 #if defined(PYCPP_HAVE_WFOPEN)
     decompressing_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
     void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
+    decompressing_ifstream(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);
+    void open(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);
 #endif
 
 private:

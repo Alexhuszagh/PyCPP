@@ -9,7 +9,35 @@
 
 #include <pycpp/config.h>
 
+#include <string>
+#include <vector>
+
 PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+using csv_row = std::vector<std::string>;
+
+// ENUMS
+// -----
+
+/**
+ *  \brief Quoting styles for CSV files.
+ *
+ *  CSV_QUOTE_ALL:          Quote all values.
+ *  CSV_QUOTE_MINIMAL:      Quote only values containing control characters.
+ *  CSV_QUOTE_NONE:         Never quote (may produce malformed CSV output).
+ *
+ *  QUOTE_NONNUMERIC is not present in the C++ API, due to C++'s static
+ *  typing.
+ */
+enum csv_quoting
+{
+    CSV_QUOTE_ALL = 0,
+    CSV_QUOTE_MINIMAL,
+    CSV_QUOTE_NONE,
+};
 
 // OBJECTS
 // -------

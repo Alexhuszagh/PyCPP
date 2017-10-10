@@ -11,8 +11,8 @@
 
 #include <pycpp/lattice/adaptor/windows.h>
 #include <pycpp/lattice/util.h>
+#include <pycpp/windows/winapi.h>
 #include <winsock2.h>
-#include <windows.h>
 #include <cstdlib>
 
 #if defined(HAVE_MSVC)

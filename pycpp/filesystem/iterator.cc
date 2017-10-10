@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <tuple>
 #if defined(OS_WINDOWS)
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #else
 #   include <dirent.h>
 #endif

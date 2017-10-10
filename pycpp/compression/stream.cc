@@ -53,6 +53,16 @@ PYCPP_BEGIN_NAMESPACE
         void name##_ifstream::open(const std::wstring &name, std::ios_base::openmode mode)                      \
         {                                                                                                       \
             filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                                             \
+        }                                                                                                       \
+                                                                                                                \
+        name##_ifstream::name##_ifstream(const std::u16string &name, std::ios_base::openmode mode)              \
+        {                                                                                                       \
+            open(name, mode);                                                                                   \
+        }                                                                                                       \
+                                                                                                                \
+        void name##_ifstream::open(const std::u16string &name, std::ios_base::openmode mode)                    \
+        {                                                                                                       \
+            filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                                             \
         }
 
 #   define WIDE_PATH_OFSTREAM(name)                                                                             \
@@ -69,6 +79,22 @@ PYCPP_BEGIN_NAMESPACE
         }                                                                                                       \
                                                                                                                 \
         void name##_ofstream::open(const std::wstring &name, std::ios_base::openmode mode)                      \
+        {                                                                                                       \
+            filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                               \
+        }                                                                                                       \
+                                                                                                                \
+        name##_ofstream::name##_ofstream(const std::u16string &name, std::ios_base::openmode mode)              \
+        {                                                                                                       \
+            open(name, mode);                                                                                   \
+        }                                                                                                       \
+                                                                                                                \
+        name##_ofstream::name##_ofstream(const std::u16string &name, int level, std::ios_base::openmode mode):  \
+            ctx(level)                                                                                          \
+        {                                                                                                       \
+            open(name, mode);                                                                                   \
+        }                                                                                                       \
+                                                                                                                \
+        void name##_ofstream::open(const std::u16string &name, std::ios_base::openmode mode)                    \
         {                                                                                                       \
             filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                               \
         }
@@ -523,6 +549,19 @@ decompressing_ifstream::decompressing_ifstream(const std::wstring &name, std::io
 }
 
 void decompressing_ifstream::open(const std::wstring &name, std::ios_base::openmode mode)
+{
+    filter_ifstream::open(name, mode);
+    new_decompressor(*this, name, format, ctx);
+}
+
+
+decompressing_ifstream::decompressing_ifstream(const std::u16string &name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void decompressing_ifstream::open(const std::u16string &name, std::ios_base::openmode mode)
 {
     filter_ifstream::open(name, mode);
     new_decompressor(*this, name, format, ctx);

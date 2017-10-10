@@ -5,11 +5,11 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
 #include <pycpp/preprocessor/errno.h>
+#include <pycpp/preprocessor/sysstat.h>
 #include <sys/types.h>
-#include <sys/stat.h>
 
 #if defined(OS_WINDOWS)
-#   include <windows.h>
+#   include <pycpp/windows/winapi.h>
 #   include <winerror.h>
 #   include <tuple>
 #else

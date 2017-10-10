@@ -105,7 +105,7 @@ void xml_document_t::load(std::istream& stream)
     xml_stream_reader reader;
     xml_dom_handler handler(*this);
     reader.set_handler(handler);
-    reader.parse(stream);
+    reader.open(stream);
 }
 
 
@@ -119,6 +119,13 @@ void xml_document_t::load(const std::string& path)
 #if defined(PYCPP_HAVE_WFOPEN)
 
 void xml_document_t::load(const std::wstring& path)
+{
+    ifstream stream(path);
+    load(stream);
+}
+
+
+void xml_document_t::load(const std::u16string& path)
 {
     ifstream stream(path);
     load(stream);
@@ -152,6 +159,13 @@ void xml_document_t::dump(const std::string& path, char c, int width)
 #if defined(PYCPP_HAVE_WFOPEN)
 
 void xml_document_t::dump(const std::wstring& path, char c, int width)
+{
+    ofstream stream(path);
+    dump(stream, c, width);
+}
+
+
+void xml_document_t::dump(const std::u16string& path, char c, int width)
 {
     ofstream stream(path);
     dump(stream, c, width);
