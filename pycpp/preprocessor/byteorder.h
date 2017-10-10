@@ -78,9 +78,9 @@
 
 #elif defined(__WINDOWS__)
 
-#   include <ws2tcpip.h>
 #   include <winsock2.h>
 #   include <windows.h>
+#   include <ws2tcpip.h>
 
 #   ifndef BIG_ENDIAN
         /* Windows does not always set byte order, such as MSVC */

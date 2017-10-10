@@ -8,7 +8,7 @@
 
 #pragma once
 
-#define _WINSOCKAPI_            // prevent winsock from getting included
+#include <winsock2.h>
 #include <windows.h>
 
 // MACROS
