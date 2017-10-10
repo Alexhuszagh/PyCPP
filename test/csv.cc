@@ -33,12 +33,12 @@ static const csv_row CSV_ROW = {
     {-29, -126, -90, -29, -126, -91, -29, -126, -83, -29, -125, -91, 44},
     {-16, -97, -101, -126}
 };
-//static const csv_map CSV_MAP = {
-//    {{84, 104, 105, 115}, {-32, -72, -96, -32, -72, -124, -32, -72, -89, -32, -72, -78}},
-//    {{-28, -67, -112, -24, -105, -92, 32, -27, -71, -71, -27, -92, -85}, {32, -39, -125, -39, -118, -40, -88, -39, -120, -40, -79, -40, -81, 32, -39, -124, -39, -124, -39, -125, -40, -86, -40, -89, -40, -88, -40, -87, 32, -40, -88, -40, -89, -39, -124, -40, -71, -40, -79, -40, -88, -39, -118}},
-//    {{77, -61, -86, 109, 101, 115}, {-29, -126, -90, -29, -126, -91, -29, -126, -83, -29, -125, -91, 44}},
-//    {{-20, -71, -100, -22, -75, -84}, {-16, -97, -101, -126}},
-//};
+static const csv_map CSV_MAP = {
+    {{84, 104, 105, 115}, {-32, -72, -96, -32, -72, -124, -32, -72, -89, -32, -72, -78}},
+    {{-28, -67, -112, -24, -105, -92, 32, -27, -71, -71, -27, -92, -85}, {32, -39, -125, -39, -118, -40, -88, -39, -120, -40, -79, -40, -81, 32, -39, -124, -39, -124, -39, -125, -40, -86, -40, -89, -40, -88, -40, -87, 32, -40, -88, -40, -89, -39, -124, -40, -71, -40, -79, -40, -88, -39, -118}},
+    {{77, -61, -86, 109, 101, 115}, {-29, -126, -90, -29, -126, -91, -29, -126, -83, -29, -125, -91, 44}},
+    {{-20, -71, -100, -22, -75, -84}, {-16, -97, -101, -126}},
+};
 
 // TESTS
 // -----
@@ -239,8 +239,6 @@ TEST(csv_string_writer, simple_all)
 
 // DICT READER
 
-// TODO: restore
-#if 0
 TEST(csv_dict_stream_reader, simple_all)
 {
     std::istringstream sstream(CSV_SIMPLE_ALL);
@@ -286,9 +284,7 @@ TEST(csv_dict_stream_reader, iterator)
 TEST(csv_dict_stream_reader, punctuation)
 {
     std::istringstream sstream(CSV_TAB_ALL);
-    csv_dict_stream_reader reader;
-    reader.punctuation(new tabpunct);
-    reader.parse(sstream);
+    csv_dict_stream_reader reader(sstream, 0, new tabpunct);
     EXPECT_TRUE(bool(reader));
     EXPECT_EQ(reader(), CSV_MAP);
     EXPECT_FALSE(bool(reader));
@@ -305,9 +301,7 @@ TEST(csv_dict_file_reader, simple_all)
     ostream.close();
 
     {
-        csv_dict_file_reader reader;
-        reader.punctuation(new tabpunct);
-        reader.parse(path);
+        csv_dict_file_reader reader(path, 0, new tabpunct);
         EXPECT_TRUE(bool(reader));
         EXPECT_EQ(reader(), CSV_MAP);
         EXPECT_FALSE(bool(reader));
@@ -329,5 +323,66 @@ TEST(csv_dict_string_reader, simple_all)
 
 // DICT WRITER
 
-// TODO: here
-#endif
+TEST(csv_dict_stream_writer, simple_all)
+{
+    std::ostringstream sstream;
+    {
+        csv_dict_stream_writer writer(sstream, CSV_HEADER, CSV_QUOTE_ALL);
+        writer(CSV_MAP);
+    }
+    // force POSIX-like newlines
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_SIMPLE_ALL);
+}
+
+
+TEST(csv_dict_stream_writer, simple_minimal)
+{
+    std::ostringstream sstream;
+    {
+        csv_dict_stream_writer writer(sstream, CSV_HEADER, CSV_QUOTE_MINIMAL);
+        writer(CSV_MAP);
+    }
+    // force POSIX-like newlines
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_SIMPLE_MINIMAL);
+}
+
+
+TEST(csv_dict_stream_writer, punctuation)
+{
+    std::ostringstream sstream;
+    {
+        csv_dict_stream_writer writer(sstream, CSV_HEADER, CSV_QUOTE_ALL, new tabpunct);
+        writer(CSV_MAP);
+    }
+    // force POSIX-like newlines
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
+}
+
+#if defined(BUILD_FILESYSTEM)
+
+TEST(csv_dict_file_writer, simple_all)
+{
+    std::string path("sample_csv_path");
+    {
+        csv_dict_file_writer writer(path, CSV_HEADER, CSV_QUOTE_ALL, new tabpunct);
+        writer(CSV_MAP);
+    }
+
+    std::stringstream sstream;
+    ifstream istream(path);
+    sstream << istream.rdbuf();
+    istream.close();
+
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
+    EXPECT_TRUE(remove_file(path));
+}
+
+#endif          // BUILD_FILESYSTEM
+
+
+TEST(csv_dict_string_writer, simple_all)
+{
+    csv_dict_string_writer writer(CSV_HEADER, CSV_QUOTE_ALL, new tabpunct);
+    writer(CSV_MAP);
+    EXPECT_EQ(replace(writer.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
+}

@@ -146,10 +146,9 @@ csv_dict_stream_writer::csv_dict_stream_writer(csv_quoting quoting, csvpunct_imp
 {}
 
 
-csv_dict_stream_writer::csv_dict_stream_writer(std::ostream& stream, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct):
-    writer_(stream, quoting, punct)
+csv_dict_stream_writer::csv_dict_stream_writer(std::ostream& stream, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
-    header_ = parse_header(header);
+    open(stream, header, quoting, punct);
 }
 
 
@@ -157,6 +156,7 @@ void csv_dict_stream_writer::open(std::ostream& stream, const csv_row& header, c
 {
     writer_.open(stream, quoting, punct);
     header_ = parse_header(header);
+    writer_(header);
 }
 
 
@@ -227,7 +227,6 @@ void csv_dict_file_writer::open(const std::wstring &name, const csv_row& header,
 }
 
 #endif
-
 
 csv_dict_string_writer::csv_dict_string_writer(csv_quoting quoting, csvpunct_impl* punct):
     csv_dict_stream_writer(quoting, punct),
