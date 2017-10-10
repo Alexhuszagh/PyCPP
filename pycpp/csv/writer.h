@@ -71,7 +71,7 @@ public:
     void open(const std::string &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 
 #if defined(PYCPP_HAVE_WFOPEN)
-    csv_file_writer(const std::wstring &name. csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_file_writer(const std::wstring &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void open(const std::wstring &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 #endif
 
