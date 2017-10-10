@@ -55,6 +55,7 @@ struct json_document_t: json_value_t
     void load(const std::string&);
 #if defined(PYCPP_HAVE_WFOPEN)
     void load(const std::wstring&);
+    void load(const std::u16string&);
 #endif
 
     std::string dumps(char = ' ', int = 4);
@@ -62,6 +63,7 @@ struct json_document_t: json_value_t
     void dump(const std::string&, char = ' ', int = 4);
 #if defined(PYCPP_HAVE_WFOPEN)
     void dump(const std::wstring&, char = ' ', int = 4);
+    void dump(const std::u16string&, char = ' ', int = 4);
 #endif
 };
 

@@ -124,6 +124,13 @@ void xml_document_t::load(const std::wstring& path)
     load(stream);
 }
 
+
+void xml_document_t::load(const std::u16string& path)
+{
+    ifstream stream(path);
+    load(stream);
+}
+
 #endif
 
 
@@ -152,6 +159,13 @@ void xml_document_t::dump(const std::string& path, char c, int width)
 #if defined(PYCPP_HAVE_WFOPEN)
 
 void xml_document_t::dump(const std::wstring& path, char c, int width)
+{
+    ofstream stream(path);
+    dump(stream, c, width);
+}
+
+
+void xml_document_t::dump(const std::u16string& path, char c, int width)
 {
     ofstream stream(path);
     dump(stream, c, width);

@@ -168,6 +168,19 @@ void csv_file_reader::open(const std::wstring &name, size_t skip, csvpunct_impl*
     csv_stream_reader::open(file_, skip, punct);
 }
 
+
+csv_file_reader::csv_file_reader(const std::u16string &name, size_t skip, csvpunct_impl* punct)
+{
+    open(name, skip, punct);
+}
+
+
+void csv_file_reader::open(const std::u16string &name, size_t skip, csvpunct_impl* punct)
+{
+    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    csv_stream_reader::open(file_, skip, punct);
+}
+
 #endif
 
 

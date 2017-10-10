@@ -79,6 +79,8 @@ public:
 #if defined(PYCPP_HAVE_WFOPEN)
     xml_file_writer(const std::wstring &name);
     void open(const std::wstring &name);
+    xml_file_writer(const std::u16string &name);
+    void open(const std::u16string &name);
 #endif
 
 private:

@@ -120,6 +120,20 @@ void csv_dict_file_reader::open(const std::wstring &name, size_t skip, csvpunct_
     csv_dict_stream_reader::open(file_, skip, punct);
 }
 
+
+
+csv_dict_file_reader::csv_dict_file_reader(const std::u16string &name, size_t skip, csvpunct_impl* punct)
+{
+    open(name, skip, punct);
+}
+
+
+void csv_dict_file_reader::open(const std::u16string &name, size_t skip, csvpunct_impl* punct)
+{
+    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    csv_dict_stream_reader::open(file_, skip, punct);
+}
+
 #endif
 
 
@@ -221,6 +235,19 @@ csv_dict_file_writer::csv_dict_file_writer(const std::wstring &name, const csv_r
 
 
 void csv_dict_file_writer::open(const std::wstring &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+{
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    csv_dict_stream_writer::open(file_, header, quoting, punct);
+}
+
+
+csv_dict_file_writer::csv_dict_file_writer(const std::u16string &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+{
+    open(name, header, quoting, punct);
+}
+
+
+void csv_dict_file_writer::open(const std::u16string &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     csv_dict_stream_writer::open(file_, header, quoting, punct);

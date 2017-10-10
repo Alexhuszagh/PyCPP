@@ -240,6 +240,19 @@ void json_file_reader::open(const std::wstring &name)
     json_stream_reader::open(file_);
 }
 
+
+json_file_reader::json_file_reader(const std::u16string &name)
+{
+    open(name);
+}
+
+
+void json_file_reader::open(const std::u16string &name)
+{
+    file_.open(name, std::ios_base::binary);
+    json_stream_reader::open(file_);
+}
+
 #endif
 
 

@@ -175,6 +175,8 @@ public:
 #if defined(PYCPP_HAVE_WFOPEN)
     filter_ifstream(const std::wstring&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
     void open(const std::wstring&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    filter_ifstream(const std::u16string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    void open(const std::u16string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
 #endif
 
     bool is_open() const;
@@ -207,6 +209,8 @@ public:
 #if defined(PYCPP_HAVE_WFOPEN)
     filter_ofstream(const std::wstring&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
     void open(const std::wstring&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    filter_ofstream(const std::u16string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    void open(const std::u16string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
 #endif
 
     bool is_open() const;

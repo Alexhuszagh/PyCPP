@@ -169,6 +169,20 @@ void csv_file_writer::open(const std::wstring &name, csv_quoting quoting, csvpun
     csv_stream_writer::open(file_, quoting, punct);
 }
 
+
+csv_file_writer::csv_file_writer(const std::u16string &name, csv_quoting quoting, csvpunct_impl* punct):
+    csv_stream_writer(quoting)
+{
+    open(name);
+}
+
+
+void csv_file_writer::open(const std::u16string &name, csv_quoting quoting, csvpunct_impl* punct)
+{
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    csv_stream_writer::open(file_, quoting, punct);
+}
+
 #endif
 
 csv_string_writer::csv_string_writer(csv_quoting quoting, csvpunct_impl* punct):

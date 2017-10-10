@@ -374,6 +374,19 @@ void xml_file_reader::open(const std::wstring &name)
     xml_stream_reader::open(file_);
 }
 
+
+xml_file_reader::xml_file_reader(const std::u16string &name)
+{
+    open(name);
+}
+
+
+void xml_file_reader::open(const std::u16string &name)
+{
+    file_.open(name, std::ios_base::binary);
+    xml_stream_reader::open(file_);
+}
+
 #endif
 
 

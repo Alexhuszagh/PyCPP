@@ -208,6 +208,19 @@ void json_file_writer::open(const std::wstring &name)
     file_.open(name, std::ios_base::binary);
 }
 
+
+json_file_writer::json_file_writer(const std::u16string &name):
+    file_(name)
+{
+    reset(file_);
+}
+
+
+void json_file_writer::open(const std::u16string &name)
+{
+    file_.open(name, std::ios_base::binary);
+}
+
 #endif
 
 

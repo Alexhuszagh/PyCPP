@@ -46,6 +46,7 @@ enum compression_format
 #if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
 #   define DETECT_PATH                                      \
         static bool path(const std::wstring& path);         \
+        static bool path(const std::u16string& path);       \
         static bool path(const std::string& path);
 #else                                       // POSIX
 #   define DETECT_PATH                                      \

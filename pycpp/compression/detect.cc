@@ -51,6 +51,13 @@ static bool detect_path(const std::wstring& path, const magic_bytes& magic)
     return detect_stream(stream, magic);
 }
 
+
+static bool detect_path(const std::u16string& path, const magic_bytes& magic)
+{
+    ifstream stream(path, std::ios_base::binary);
+    return detect_stream(stream, magic);
+}
+
 #endif                                      // WINDOWS
 
 
@@ -89,6 +96,12 @@ bool is_bz2::path(const std::string& path)
 #if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
 
 bool is_bz2::path(const std::wstring& path)
+{
+    return detect_path(path, magic());
+}
+
+
+bool is_bz2::path(const std::u16string& path)
 {
     return detect_path(path, magic());
 }
@@ -139,6 +152,12 @@ bool is_zlib::path(const std::wstring& path)
     return detect_path(path, magic());
 }
 
+
+bool is_zlib::path(const std::u16string& path)
+{
+    return detect_path(path, magic());
+}
+
 #endif                                      // WINDOWS
 
 // GZIP
@@ -177,6 +196,12 @@ bool is_gzip::path(const std::wstring& path)
     return detect_path(path, magic());
 }
 
+
+bool is_gzip::path(const std::u16string& path)
+{
+    return detect_path(path, magic());
+}
+
 #endif                                      // WINDOWS
 
 // LZMA
@@ -211,6 +236,12 @@ bool is_lzma::path(const std::string& path)
 #if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
 
 bool is_lzma::path(const std::wstring& path)
+{
+    return detect_path(path, magic());
+}
+
+
+bool is_lzma::path(const std::u16string& path)
 {
     return detect_path(path, magic());
 }
@@ -261,6 +292,12 @@ bool is_blosc::path(const std::string& path)
 #if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
 
 bool is_blosc::path(const std::wstring& path)
+{
+    return detect_path(path, magic());
+}
+
+
+bool is_blosc::path(const std::u16string& path)
 {
     return detect_path(path, magic());
 }

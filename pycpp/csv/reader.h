@@ -73,6 +73,8 @@ public:
 #if defined(PYCPP_HAVE_WFOPEN)
     csv_file_reader(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_file_reader(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
 #endif
 
 private:

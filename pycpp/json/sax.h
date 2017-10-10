@@ -69,6 +69,8 @@ public:
 #if defined(PYCPP_HAVE_WFOPEN)
     json_file_reader(const std::wstring &name);
     void open(const std::wstring &name);
+    json_file_reader(const std::u16string &name);
+    void open(const std::u16string &name);
 #endif
 
 private:
