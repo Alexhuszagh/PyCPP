@@ -207,7 +207,7 @@ void json_document_t::load(std::istream& stream)
     json_stream_reader reader;
     json_dom_handler handler(*this);
     reader.set_handler(handler);
-    reader.parse(stream);
+    reader.open(stream);
 }
 
 

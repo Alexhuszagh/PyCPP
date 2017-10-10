@@ -47,7 +47,7 @@ struct json_stream_reader
 public:
     json_stream_reader();
 
-    void parse(std::istream&);
+    void open(std::istream&);
     void set_handler(json_sax_handler&);
 
 private:
@@ -65,15 +65,11 @@ public:
     json_file_reader();
     json_file_reader(const std::string &name);
     void open(const std::string &name);
-    void parse(const std::string &name);
 
 #if defined(PYCPP_HAVE_WFOPEN)
     json_file_reader(const std::wstring &name);
     void open(const std::wstring &name);
-    void parse(const std::wstring &name);
 #endif
-
-    void parse();
 
 private:
     ifstream file_;
@@ -89,9 +85,6 @@ public:
     json_string_reader();
     json_string_reader(const std::string &str);
     void open(const std::string &str);
-    void parse(const std::string &str);
-
-    void parse();
 
 private:
     std::istringstream sstream_;

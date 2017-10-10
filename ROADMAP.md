@@ -10,6 +10,9 @@
         - sax
             - implementation -- DONE
             - unittests
+        - dom
+            - implementation -- DONE
+            - unittests
     - XML
         - writer
             - implementation -- DONE
@@ -17,6 +20,6 @@
         - sax
             - implementation -- DONE
             - unittests
-        - writer
-            - implementation
+        - dom
+            - implementation -- DONE
             - unittests

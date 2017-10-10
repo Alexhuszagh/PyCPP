@@ -322,7 +322,7 @@ xml_stream_reader::xml_stream_reader()
 {}
 
 
-void xml_stream_reader::parse(std::istream& s)
+void xml_stream_reader::open(std::istream& s)
 {
     stream_ = &s;
     if (!handler_) {
@@ -355,13 +355,7 @@ xml_file_reader::xml_file_reader(const std::string &name)
 void xml_file_reader::open(const std::string &name)
 {
     file_.open(name, std::ios_base::binary);
-}
-
-
-void xml_file_reader::parse(const std::string &name)
-{
-    open(name);
-    parse();
+    xml_stream_reader::open(file_);
 }
 
 
@@ -377,25 +371,10 @@ xml_file_reader::xml_file_reader(const std::wstring &name)
 void xml_file_reader::open(const std::wstring &name)
 {
     file_.open(name, std::ios_base::binary);
-}
-
-
-void xml_file_reader::parse(const std::wstring &name)
-{
-    open(name);
-    parse();
+    xml_stream_reader::open(file_);
 }
 
 #endif
-
-
-void xml_file_reader::parse()
-{
-    if (!file_.is_open()) {
-        throw std::runtime_error("Must open file handle prior to parsing.");
-    }
-    xml_stream_reader::parse(file_);
-}
 
 
 xml_string_reader::xml_string_reader()
@@ -411,19 +390,7 @@ xml_string_reader::xml_string_reader(const std::string &str)
 void xml_string_reader::open(const std::string &str)
 {
     sstream_ = std::istringstream(str, std::ios_base::binary);
-}
-
-
-void xml_string_reader::parse(const std::string &str)
-{
-    open(str);
-    parse();
-}
-
-
-void xml_string_reader::parse()
-{
-    xml_stream_reader::parse(sstream_);
+    xml_stream_reader::open(sstream_);
 }
 
 PYCPP_END_NAMESPACE

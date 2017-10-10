@@ -105,7 +105,7 @@ void xml_document_t::load(std::istream& stream)
     xml_stream_reader reader;
     xml_dom_handler handler(*this);
     reader.set_handler(handler);
-    reader.parse(stream);
+    reader.open(stream);
 }
 
 
