@@ -104,20 +104,6 @@ FILE * get_c_file(const wchar_t* wide, const std::ios_base::openmode mode)
     return nullptr;
 }
 
-
-/**
- *  \brief Get C FILE pointer from wide filename.
- */
-FILE * get_c_file(const char16_t* wide, const std::ios_base::openmode mode)
-{
-    auto str = c_ios_mode(mode);
-    if (str.size()) {
-        auto data = reinterpret_cast<const wchar_t*>(codec_utf8_utf16(str).data());
-        return _wfopen(reinterpret_cast<const wchar_t*>(wide), data);
-    }
-    return nullptr;
-}
-
 #endif
 
 // OBJECTS
@@ -209,9 +195,7 @@ fstream::fstream(const char16_t* name, std::ios_base::openmode mode)
 
 void fstream::open(const char16_t* name, std::ios_base::openmode mode)
 {
-    file = get_c_file(name, mode);
-    buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    open(reinterpret_cast<const wchar_t*>(name), mode);
 }
 
 
@@ -354,9 +338,7 @@ ifstream::ifstream(const char16_t* name, std::ios_base::openmode mode)
 
 void ifstream::open(const char16_t* name, std::ios_base::openmode mode)
 {
-    file = get_c_file(name, mode);
-    buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    open(reinterpret_cast<const wchar_t*>(name), mode);
 }
 
 
@@ -495,9 +477,7 @@ ofstream::ofstream(const char16_t* name, std::ios_base::openmode mode)
 
 void ofstream::open(const char16_t* name, std::ios_base::openmode mode)
 {
-    file = get_c_file(name, mode);
-    buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    open(reinterpret_cast<const wchar_t*>(name), mode);
 }
 
 
@@ -556,70 +536,270 @@ void ofstream::swap(ofstream &other)
 
 #elif defined(HAVE_MSVC)                // MSVC
 
-fstream::fstream(const char16_t* name, std::ios_base::openmode mode):
-    std::fstream(reinterpret_cast<const wchar_t*>(name), mode)
+// FSTREAM
+
+fstream::fstream()
 {}
 
 
-void fstream::open(const char16_t* name, std::ios_base::openmode mode)
+fstream::fstream(fstream &&other)
 {
-    std::fstream::open(reinterpret_cast<const wchar_t*>(name), mode);
+    std::fstream::swap(other);
+}
+
+
+fstream & fstream::operator=(fstream &&other)
+{
+    std::fstream::swap(other);
+    return *this;
+}
+
+
+fstream::fstream(const char* name, std::ios_base::openmode mode):
+    std::fstream(name, mode)
+{}
+
+void fstream::open(const char* name, std::ios_base::openmode mode)
+{
+    std::fstream::open(name, mode);
 }
 
 
 fstream::fstream(const std::string& name, std::ios_base::openmode mode):
-    std::fstream(reinterpret_cast<const wchar_t*>(name.data()), mode)
+    std::fstream(name, mode)
 {}
 
 
 void fstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    std::fstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
+    std::fstream::open(name, mode);
+}
+
+#ifdef PYCPP_HAVE_WFOPEN
+
+fstream::fstream(const wchar_t* name, std::ios_base::openmode mode):
+    std::fstream(name, mode)
+{}
+
+void fstream::open(const wchar_t* name, std::ios_base::openmode mode)
+{
+    std::fstream::open(name, mode);
 }
 
 
-ifstream::ifstream(const char16_t* name, std::ios_base::openmode mode):
-    std::ifstream(reinterpret_cast<const wchar_t*>(name), mode)
+fstream::fstream(const std::wstring& name, std::ios_base::openmode mode):
+    std::fstream(name, mode)
+{
+}
+
+
+void fstream::open(const std::wstring& name, std::ios_base::openmode mode)
+{
+    std::fstream::open(name, mode);
+}
+
+
+fstream::fstream(const char16_t* name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void fstream::open(const char16_t* name, std::ios_base::openmode mode)
+{
+    open(reinterpret_cast<const wchar_t*>(name), mode);
+}
+
+
+fstream::fstream(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void fstream::open(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
+}
+
+#endif
+
+// IFSTREAM
+
+ifstream::ifstream()
 {}
 
 
-void ifstream::open(const char16_t* name, std::ios_base::openmode mode)
+ifstream::ifstream(ifstream &&other)
 {
-    std::ifstream::open(reinterpret_cast<const wchar_t*>(name), mode);
+    std::ifstream::swap(other);
+}
+
+
+ifstream & ifstream::operator=(ifstream &&other)
+{
+    std::ifstream::swap(other);
+    return *this;
+}
+
+
+ifstream::ifstream(const char* name, std::ios_base::openmode mode):
+    std::ifstream(name, mode)
+{}
+
+void ifstream::open(const char* name, std::ios_base::openmode mode)
+{
+    std::ifstream::open(name, mode);
 }
 
 
 ifstream::ifstream(const std::string& name, std::ios_base::openmode mode):
-    std::ifstream(reinterpret_cast<const wchar_t*>(name.data()), mode)
+    std::ifstream(name, mode)
 {}
 
 
 void ifstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    std::ifstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
+    std::ifstream::open(name, mode);
+}
+
+#ifdef PYCPP_HAVE_WFOPEN
+
+ifstream::ifstream(const wchar_t* name, std::ios_base::openmode mode):
+    std::ifstream(name, mode)
+{}
+
+void ifstream::open(const wchar_t* name, std::ios_base::openmode mode)
+{
+    std::ifstream::open(name, mode);
 }
 
 
-ofstream::ofstream(const char16_t* name, std::ios_base::openmode mode)
-    std::ofstream(reinterpret_cast<const wchar_t*>(name), mode)
+ifstream::ifstream(const std::wstring& name, std::ios_base::openmode mode):
+    std::ifstream(name, mode)
+{
+}
+
+
+void ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
+{
+    std::ifstream::open(name, mode);
+}
+
+
+ifstream::ifstream(const char16_t* name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void ifstream::open(const char16_t* name, std::ios_base::openmode mode)
+{
+    open(reinterpret_cast<const wchar_t*>(name), mode);
+}
+
+
+ifstream::ifstream(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
+}
+
+#endif
+
+// OFSTREAM
+
+
+ofstream::ofstream()
 {}
 
 
-void ofstream::open(const char16_t* name, std::ios_base::openmode mode)
+ofstream::ofstream(ofstream &&other)
 {
-    std::ofstream::open(reinterpret_cast<const wchar_t*>(name), mode);
+    std::ofstream::swap(other);
 }
 
 
-ofstream::ofstream(const std::string& name, std::ios_base::openmode mode)
-    std::ofstream(reinterpret_cast<const wchar_t*>(name.data()), mode)
+ofstream & ofstream::operator=(ofstream &&other)
+{
+    std::ofstream::swap(other);
+    return *this;
+}
+
+
+ofstream::ofstream(const char* name, std::ios_base::openmode mode):
+    std::ofstream(name, mode)
+{}
+
+void ofstream::open(const char* name, std::ios_base::openmode mode)
+{
+    std::ofstream::open(name, mode);
+}
+
+
+ofstream::ofstream(const std::string& name, std::ios_base::openmode mode):
+    std::ofstream(name, mode)
 {}
 
 
 void ofstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    std::ofstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
+    std::ofstream::open(name, mode);
 }
+
+#ifdef PYCPP_HAVE_WFOPEN
+
+ofstream::ofstream(const wchar_t* name, std::ios_base::openmode mode):
+    std::ofstream(name, mode)
+{}
+
+void ofstream::open(const wchar_t* name, std::ios_base::openmode mode)
+{
+    std::ofstream::open(name, mode);
+}
+
+
+ofstream::ofstream(const std::wstring& name, std::ios_base::openmode mode):
+    std::ofstream(name, mode)
+{
+}
+
+
+void ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
+{
+    std::ofstream::open(name, mode);
+}
+
+
+ofstream::ofstream(const char16_t* name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void ofstream::open(const char16_t* name, std::ios_base::openmode mode)
+{
+    open(reinterpret_cast<const wchar_t*>(name), mode);
+}
+
+
+ofstream::ofstream(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name, mode);
+}
+
+
+void ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
+{
+    open(name.data(), mode);
+}
+
+#endif
 
 #endif
 
