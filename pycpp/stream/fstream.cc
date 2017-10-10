@@ -542,6 +542,10 @@ fstream::fstream()
 {}
 
 
+fstream::~fstream()
+{}
+
+
 fstream::fstream(fstream &&other)
 {
     std::fstream::swap(other);
@@ -627,6 +631,10 @@ void fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 // IFSTREAM
 
 ifstream::ifstream()
+{}
+
+
+ifstream::~ifstream()
 {}
 
 
@@ -716,6 +724,10 @@ void ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 
 
 ofstream::ofstream()
+{}
+
+
+ofstream::~ofstream()
 {}
 
 
