@@ -723,6 +723,7 @@ if (BUILD_XML)
     list(APPEND TEST_FILES
         test/xml/dom.cc
         test/xml/sax.cc
+        test/xml/writer.cc
     )
 endif()
 

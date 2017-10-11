@@ -16,6 +16,8 @@ PYCPP_USING_NAMESPACE
 
 TEST(json, dom)
 {
+    // don't worry about compliance testing:
+    // the backends are robustly tested
     json_document_t document;
     document.loads(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
 
