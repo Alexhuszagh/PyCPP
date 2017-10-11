@@ -83,5 +83,25 @@ TEST(default_map, capacity)
     EXPECT_GT(m2.max_size(), 1);
 }
 
-// TODO: need a shared_ptr
-// TODO: need a class with no default consntructor
+
+TEST(default_map, iterators)
+{}
+
+
+TEST(default_map, element_access)
+{}
+
+
+TEST(default_map, modifiers)
+{}
+
+
+TEST(default_map, observers)
+{}
+
+
+TEST(default_map, operators)
+{}
+
+
+// DEFAULT UNORDERED MAP
