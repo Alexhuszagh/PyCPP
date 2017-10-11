@@ -5,9 +5,26 @@
  *  \brief JSON writer unittests.
  */
 
+#include <pycpp/filesystem.h>
 #include <pycpp/json.h>
+#include <pycpp/stream/fstream.h>
+#include <pycpp/string/whitespace.h>
 #include <gtest/gtest.h>
 
+// HELPERS
+// -------
+
+
+template <typename SaxWriter>
+static void test_json_writer(SaxWriter& writer)
+{
+    writer.start_object();
+    writer.key("k1");
+    writer.string("v1");
+    writer.key("k2");
+    writer.number(5);
+    writer.end_object();
+}
 
 // TESTS
 // -----
@@ -18,8 +35,11 @@ TEST(json, json_stream_writer)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::stringstream sstream;
-    json_stream_writer reader(sstream);
-    EXPECT_EQ(sstream.str(), "");
+    json_stream_writer writer(sstream);
+    test_json_writer(writer);
+    // force POSIX-like newlines
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), "");
+    exit(0);
 }
 
 
