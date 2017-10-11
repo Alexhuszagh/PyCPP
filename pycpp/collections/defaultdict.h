@@ -46,7 +46,7 @@ public:
     // MEMBER TYPES
     // ------------
     using base_t = Map<Key, T, Compare, Alloc>;
-    using self_t = default_map<Key, T, Compare, Alloc>;
+    using self_t = default_map<Key, T, Compare, Alloc, Map>;
     using callback_type = default_map_callback<T>;
     using key_type = typename base_t::key_type;
     using mapped_type = typename base_t::mapped_type;
@@ -111,19 +111,36 @@ public:
     std::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
 
     // MODIFIERS
-    // TODO:
-//    void swap(self_t& rhs);
+    template <typename... Ts> std::pair<iterator, bool> emplace(Ts&&... ts);
+    template <typename... Ts> iterator emplace_hint(const_iterator position, Ts&&... ts);
+    std::pair<iterator, bool> insert(const value_type& val);
+    template <typename U> std::pair<iterator, bool> insert(U&& val);
+    iterator insert(const_iterator position, const value_type& val);
+    template <typename U> iterator insert(const_iterator position, U&& val);
+    template <typename Iter> void insert(Iter first, Iter last);
+    void insert(std::initializer_list<value_type> list);
+    iterator erase(const_iterator position);
+    size_type erase(const key_type& k);
+    iterator erase(const_iterator first, const_iterator last);
+    void clear() noexcept;
+    void swap(self_t& rhs);
 
     // OBSERVERS
     allocator_type get_allocator() const noexcept;
     key_compare key_comp() const;
     value_compare value_comp() const;
 
+    // OPERATORS
+    bool operator==(const self_t& rhs) const;
+    bool operator!=(const self_t& rhs) const;
+
 private:
     base_t map_;
     callback_type callback_ = nullptr;
 
-    // TODO: friend functions
+    // FRIEND
+    template <typename K, typename U, typename C, typename A, template <typename, typename, typename, typename> typename M>
+    friend void swap(const default_map<K, U, C, A, M>& lhs, const default_map<K, U, C, A, M>& rhs);
 };
 
 
@@ -144,7 +161,7 @@ public:
     // MEMBER TYPES
     // ------------
     using base_t = Map<Key, T, Hash, Pred, Alloc>;
-    using self_t = default_unordered_map<Key, T, Hash, Pred, Alloc>;
+    using self_t = default_unordered_map<Key, T, Hash, Pred, Alloc, Map>;
     using callback_type = default_map_callback<T>;
     using key_type = typename base_t::key_type;
     using mapped_type = typename base_t::mapped_type;
@@ -206,8 +223,19 @@ public:
     std::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
 
     // MODIFIERS
-    // TODO:
-//    void swap(self_t& rhs);
+    template <typename... Ts> std::pair<iterator, bool> emplace(Ts&&... ts);
+    template <typename... Ts> iterator emplace_hint(const_iterator position, Ts&&... ts);
+    std::pair<iterator, bool> insert(const value_type& val);
+    template <typename U> std::pair<iterator, bool> insert(U&& val);
+    iterator insert(const_iterator position, const value_type& val);
+    template <typename U> iterator insert(const_iterator position, U&& val);
+    template <typename Iter> void insert(Iter first, Iter last);
+    void insert(std::initializer_list<value_type> list);
+    iterator erase(const_iterator position);
+    size_type erase(const key_type& k);
+    iterator erase(const_iterator first, const_iterator last);
+    void clear() noexcept;
+    void swap(self_t& rhs);
 
     // BUCKETS
     size_type bucket_count() const noexcept;
@@ -227,11 +255,17 @@ public:
     hasher hash_function() const;
     key_equal key_eq() const;
 
+    // OPERATORS
+    bool operator==(const self_t& rhs) const;
+    bool operator!=(const self_t& rhs) const;
+
 private:
     base_t map_;
     callback_type callback_ = nullptr;
 
-    // TODO: friend functions
+    // FRIEND
+    template <typename K, typename U, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+    friend void swap(const default_unordered_map<K, U, H, P, A, M>& lhs, const default_unordered_map<K, U, H, P, A, M>& rhs);
 };
 
 // DEFINITION
@@ -413,14 +447,22 @@ auto default_map<K, T, C, A, M>::crend() const noexcept -> const_reverse_iterato
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
 auto default_map<K, T, C, A, M>::operator[](const key_type& k) -> mapped_type&
 {
-    return map_[k];
+    auto it = map_.find(k);
+    if (it == map_.end()) {
+        it = map_.emplace_hint(it, k, callback_());
+    }
+    return it->second;
 }
 
 
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
 auto default_map<K, T, C, A, M>::operator[](key_type&& k) -> mapped_type&
 {
-    return map_[std::forward<key_type>(k)];
+    auto it = map_.find(k);
+    if (it == map_.end()) {
+        it = map_.emplace_hint(it, std::forward<key_type>(k), callback_());
+    }
+    return it->second;
 }
 
 
@@ -502,6 +544,103 @@ auto default_map<K, T, C, A, M>::equal_range(const key_type& k) const -> std::pa
 
 
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+template <typename... Ts>
+auto default_map<K, T, C, A, M>::emplace(Ts&&... ts) -> std::pair<iterator, bool>
+{
+    return map_.emplace(std::forward<Ts>(ts)...);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+template <typename... Ts>
+auto default_map<K, T, C, A, M>::emplace_hint(const_iterator position, Ts&&... ts) -> iterator
+{
+    return map_.emplace_hint(position, std::forward<Ts>(ts)...);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::insert(const value_type& val) -> std::pair<iterator, bool>
+{
+    return map_.insert(val);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+template <typename U>
+auto default_map<K, T, C, A, M>::insert(U&& val) -> std::pair<iterator, bool>
+{
+    return map_.insert(std::forward<U>(val));
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::insert(const_iterator position, const value_type& val) -> iterator
+{
+    return map_.insert(position, val);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+template <typename U>
+auto default_map<K, T, C, A, M>::insert(const_iterator position, U&& val) -> iterator
+{
+    return map_.insert(position, std::forward<U>(val));
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+template <typename Iter>
+void default_map<K, T, C, A, M>::insert(Iter first, Iter last)
+{
+    map_.insert(first, last);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+void default_map<K, T, C, A, M>::insert(std::initializer_list<value_type> list)
+{
+    map_.insert(list);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::erase(const_iterator position) -> iterator
+{
+    return map_.erase(position);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::erase(const key_type& k) -> size_type
+{
+    return map_.erase(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::erase(const_iterator first, const_iterator last) -> iterator
+{
+    return map_.erase(first, last);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+void default_map<K, T, C, A, M>::clear() noexcept
+{
+    map_.clear();
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+void default_map<K, T, C, A, M>::swap(self_t& rhs)
+{
+    std::swap(map_, rhs.map_);
+    std::swap(callback_, rhs.callback_);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
 auto default_map<K, T, C, A, M>::get_allocator() const noexcept -> allocator_type
 {
     return map_.get_allocator();
@@ -519,6 +658,27 @@ template <typename K, typename T, typename C, typename A, template <typename, ty
 auto default_map<K, T, C, A, M>::value_comp() const -> value_compare
 {
     return map_.value_comp();
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+bool default_map<K, T, C, A, M>::operator==(const self_t& rhs) const
+{
+    return std::tie(map_, callback_) == std::tie(rhs.map_, rhs.callback_);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+bool default_map<K, T, C, A, M>::operator!=(const self_t& rhs) const
+{
+    return !operator==(rhs);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+void swap(const default_map<K, T, C, A, M>& lhs, const default_map<K, T, C, A, M>& rhs)
+{
+    lhs.swap(rhs);
 }
 
 // DEFAULT UNORDERED MAP
@@ -689,14 +849,22 @@ auto default_unordered_map<K, T, H, P, A, M>::cend(size_type n) const noexcept -
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
 auto default_unordered_map<K, T, H, P, A, M>::operator[](const key_type& k) -> mapped_type&
 {
-    return map_[k];
+    auto it = map_.find(k);
+    if (it == map_.end()) {
+        it = map_.emplace_hint(it, k, callback_());
+    }
+    return it->second;
 }
 
 
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
 auto default_unordered_map<K, T, H, P, A, M>::operator[](key_type&& k) -> mapped_type&
 {
-    return map_[std::forward<key_type>(k)];
+    auto it = map_.find(k);
+    if (it == map_.end()) {
+        it = map_.emplace_hint(it, std::forward<key_type>(k), callback_());
+    }
+    return it->second;
 }
 
 
@@ -746,6 +914,103 @@ template <typename K, typename T, typename H, typename P, typename A, template <
 auto default_unordered_map<K, T, H, P, A, M>::equal_range(const key_type& k) const -> std::pair<const_iterator, const_iterator>
 {
     return map_.equal_range(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+template <typename... Ts>
+auto default_unordered_map<K, T, H, P, A, M>::emplace(Ts&&... ts) -> std::pair<iterator, bool>
+{
+    return map_.emplace(std::forward<Ts>(ts)...);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+template <typename... Ts>
+auto default_unordered_map<K, T, H, P, A, M>::emplace_hint(const_iterator position, Ts&&... ts) -> iterator
+{
+    return map_.emplace_hint(position, std::forward<Ts>(ts)...);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::insert(const value_type& val) -> std::pair<iterator, bool>
+{
+    return map_.insert(val);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+template <typename U>
+auto default_unordered_map<K, T, H, P, A, M>::insert(U&& val) -> std::pair<iterator, bool>
+{
+    return map_.insert(std::forward<U>(val));
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::insert(const_iterator position, const value_type& val) -> iterator
+{
+    return map_.insert(position, val);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+template <typename U>
+auto default_unordered_map<K, T, H, P, A, M>::insert(const_iterator position, U&& val) -> iterator
+{
+    return map_.insert(position, std::forward<U>(val));
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+template <typename Iter>
+void default_unordered_map<K, T, H, P, A, M>::insert(Iter first, Iter last)
+{
+    map_.insert(first, last);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+void default_unordered_map<K, T, H, P, A, M>::insert(std::initializer_list<value_type> list)
+{
+    map_.insert(list);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::erase(const_iterator position) -> iterator
+{
+    return map_.erase(position);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::erase(const key_type& k) -> size_type
+{
+    return map_.erase(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::erase(const_iterator first, const_iterator last) -> iterator
+{
+    return map_.erase(first, last);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+void default_unordered_map<K, T, H, P, A, M>::clear() noexcept
+{
+    map_.clear();
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+void default_unordered_map<K, T, H, P, A, M>::swap(self_t& rhs)
+{
+    std::swap(map_, rhs.map_);
+    std::swap(callback_, rhs.callback_);
 }
 
 
@@ -830,6 +1095,27 @@ template <typename K, typename T, typename H, typename P, typename A, template <
 auto default_unordered_map<K, T, H, P, A, M>::key_eq() const -> key_equal
 {
     return map_.key_eq();
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+bool default_unordered_map<K, T, H, P, A, M>::operator==(const self_t& rhs) const
+{
+    return std::tie(map_, callback_) == std::tie(rhs.map_, rhs.callback_);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+bool default_unordered_map<K, T, H, P, A, M>::operator!=(const self_t& rhs) const
+{
+    return !operator==(rhs);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+void swap(const default_unordered_map<K, T, H, P, A, M>& lhs, const default_unordered_map<K, T, H, P, A, M>& rhs)
+{
+    lhs.swap(rhs);
 }
 
 PYCPP_END_NAMESPACE
