@@ -48,8 +48,10 @@ TEST(xml, xml_file_writer)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string path("test.xml");
-    xml_file_writer writer(path);
-    test_xml_writer(writer);
+    {
+        xml_file_writer writer(path);
+        test_xml_writer(writer);
+    }
     std::stringstream sstream;
     {
         ifstream istream(path);

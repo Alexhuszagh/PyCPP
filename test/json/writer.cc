@@ -50,8 +50,10 @@ TEST(json, json_file_writer)
     // the backends are robustly tested
     std::string path("test.xml");
     std::string str;
-    json_file_writer writer(path);
-    test_json_writer(writer);
+    {
+        json_file_writer writer(path);
+        test_json_writer(writer);
+    }
     std::ostringstream sstream;
     {
         ifstream istream(path);
