@@ -64,7 +64,7 @@ json_stream_writer::json_stream_writer(char c, int width)
 json_stream_writer::json_stream_writer(std::ostream& s, char c, int width)
 {
     set_indent(c, width);
-    reset(s);
+    open(s);
 }
 
 
@@ -75,7 +75,7 @@ json_stream_writer::~json_stream_writer()
 }
 
 
-void json_stream_writer::reset(std::ostream& s)
+void json_stream_writer::open(std::ostream& s)
 {
     // cleanup
     delete (rapidjson_ostream*) stream_;
@@ -176,56 +176,56 @@ void json_stream_writer::string(const string_view& value)
 
 
 json_file_writer::json_file_writer()
-{
-    reset(file_);
-}
+{}
 
 
-json_file_writer::json_file_writer(const std::string &name):
-    file_(name)
+json_file_writer::json_file_writer(const std::string &name)
 {
-    reset(file_);
+    open(name);
 }
 
 
 void json_file_writer::open(const std::string &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    json_stream_writer::open(file_);
 }
 
 #if defined(PYCPP_HAVE_WFOPEN)
 
 
-json_file_writer::json_file_writer(const std::wstring &name):
-    file_(name)
+json_file_writer::json_file_writer(const std::wstring &name)
 {
-    reset(file_);
+    open(name);
 }
 
 
 void json_file_writer::open(const std::wstring &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    json_stream_writer::open(file_);
 }
 
 
-json_file_writer::json_file_writer(const std::u16string &name):
-    file_(name)
+json_file_writer::json_file_writer(const std::u16string &name)
 {
-    reset(file_);
+    open(name);
 }
 
 
 void json_file_writer::open(const std::u16string &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    json_stream_writer::open(file_);
 }
 
 #endif
 
 
 json_string_writer::json_string_writer()
-{}
+{
+    json_stream_writer::open(sstream_);
+}
 
 
 std::string json_string_writer::str() const

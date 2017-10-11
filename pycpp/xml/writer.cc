@@ -74,7 +74,7 @@ xml_stream_writer::xml_stream_writer(char c, int width)
 xml_stream_writer::xml_stream_writer(std::ostream& s, char c, int width)
 {
     set_indent(c, width);
-    reset(s);
+    open(s);
 }
 
 
@@ -87,7 +87,7 @@ xml_stream_writer::~xml_stream_writer()
 }
 
 
-void xml_stream_writer::reset(std::ostream& s)
+void xml_stream_writer::open(std::ostream& s)
 {
     // cleanup
     if (writer_) {
@@ -177,56 +177,56 @@ void xml_stream_writer::write_attribute_ns(const string_view& uri, const string_
 
 
 xml_file_writer::xml_file_writer()
-{
-    reset(file_);
-}
+{}
 
 
-xml_file_writer::xml_file_writer(const std::string &name):
-    file_(name)
+xml_file_writer::xml_file_writer(const std::string &name)
 {
-    reset(file_);
+    open(name);
 }
 
 
 void xml_file_writer::open(const std::string &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    xml_stream_writer::open(file_);
 }
 
 #if defined(PYCPP_HAVE_WFOPEN)
 
 
-xml_file_writer::xml_file_writer(const std::wstring &name):
-    file_(name)
+xml_file_writer::xml_file_writer(const std::wstring &name)
 {
-    reset(file_);
+    open(name);
 }
 
 
 void xml_file_writer::open(const std::wstring &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    xml_stream_writer::open(file_);
 }
 
 
-xml_file_writer::xml_file_writer(const std::u16string &name):
-    file_(name)
+xml_file_writer::xml_file_writer(const std::u16string &name)
 {
-    reset(file_);
+    open(name);
 }
 
 
 void xml_file_writer::open(const std::u16string &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    xml_stream_writer::open(file_);
 }
 
 #endif
 
 
 xml_string_writer::xml_string_writer()
-{}
+{
+    xml_stream_writer::open(sstream_);
+}
 
 
 std::string xml_string_writer::str() const

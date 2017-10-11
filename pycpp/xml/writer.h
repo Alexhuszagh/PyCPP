@@ -46,7 +46,7 @@ public:
     xml_stream_writer(std::ostream&, char = ' ', int = 4);
     ~xml_stream_writer();
 
-    void reset(std::ostream&);
+    void open(std::ostream&);
     void set_indent(char = ' ', int = 4);
 
     virtual void start_element(const string_view&) override;

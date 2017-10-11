@@ -8,6 +8,7 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/json.h>
 #include <pycpp/stream/fstream.h>
+#include <pycpp/string/string.h>
 #include <pycpp/string/whitespace.h>
 #include <gtest/gtest.h>
 
@@ -38,8 +39,7 @@ TEST(json, json_stream_writer)
     json_stream_writer writer(sstream);
     test_json_writer(writer);
     // force POSIX-like newlines
-    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), "");
-    exit(0);
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}");
 }
 
 
@@ -47,15 +47,19 @@ TEST(json, json_file_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-//    std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
-//    std::string path("test.json");
-//    {
-//        ofstream ostream(path);
-//        ostream << str << std::endl;
-//    }
-//    json_file_writer reader;
-//    test_json_writer(reader, path);
-//    EXPECT_TRUE(remove_file(path));
+    std::string path("test.xml");
+    std::string str;
+    json_file_writer writer(path);
+    test_json_writer(writer);
+
+    {
+        std::stringstream sstream;
+        ifstream istream(path);
+        sstream << istream.rdbuf();
+        // force POSIX-like newlines
+        EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}");
+    }
+    EXPECT_TRUE(remove_file(path));
 }
 
 
@@ -63,7 +67,8 @@ TEST(json, json_string_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-//    std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
-//    json_string_writer reader;
-//    test_json_writer(reader, str);
+    json_string_writer writer;
+    test_json_writer(writer);
+    // force POSIX-like newlines
+    EXPECT_EQ(replace(writer.str(), NEWLINE, POSIX_NEWLINE), "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}");
 }

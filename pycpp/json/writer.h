@@ -47,7 +47,7 @@ public:
     json_stream_writer(std::ostream&, char = ' ', int = 4);
     ~json_stream_writer();
 
-    void reset(std::ostream&);
+    void open(std::ostream&);
     void set_indent(char = ' ', int = 4);
     bool is_pretty() const;
 
