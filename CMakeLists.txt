@@ -640,6 +640,7 @@ endif()
 if(BUILD_COLLECTIONS)
     list(APPEND TEST_FILES
         test/collections/any.cc
+        test/collections/defaultdict.cc
         test/collections/optional.cc
         test/collections/ordereddict.cc
         test/collections/variant.cc
