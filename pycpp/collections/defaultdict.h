@@ -664,7 +664,7 @@ auto default_map<K, T, C, A, M>::value_comp() const -> value_compare
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
 bool default_map<K, T, C, A, M>::operator==(const self_t& rhs) const
 {
-    return std::tie(map_, callback_) == std::tie(rhs.map_, rhs.callback_);
+    return map_ == rhs.map_;
 }
 
 
@@ -1101,7 +1101,7 @@ auto default_unordered_map<K, T, H, P, A, M>::key_eq() const -> key_equal
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 bool default_unordered_map<K, T, H, P, A, M>::operator==(const self_t& rhs) const
 {
-    return std::tie(map_, callback_) == std::tie(rhs.map_, rhs.callback_);
+    return map_ == rhs.map_;
 }
 
 

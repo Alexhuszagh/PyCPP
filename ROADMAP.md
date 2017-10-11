@@ -2,9 +2,6 @@
 
 **Mid-Term**
 
-- Defaultdict
-    - unittests
-
 - Need an API around a key/value store.
 
 - Update AutoCOM so it is using the modern library
