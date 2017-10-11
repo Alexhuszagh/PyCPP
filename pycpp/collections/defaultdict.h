@@ -66,9 +66,9 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    default_map(callback_type callback = default_constructor<value_type>);
-    default_map(std::initializer_list<value_type>, callback_type callback = default_constructor<value_type>);
-    template <typename Iter> default_map(Iter first, Iter last, callback_type callback = default_constructor<value_type>);
+    default_map(callback_type callback = default_constructor<mapped_type>);
+    default_map(std::initializer_list<value_type>, callback_type callback = default_constructor<mapped_type>);
+    template <typename Iter> default_map(Iter first, Iter last, callback_type callback = default_constructor<mapped_type>);
     default_map(const self_t&);
     self_t& operator=(const self_t&);
     default_map(self_t&&);
@@ -182,9 +182,9 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    default_unordered_map(callback_type callback = default_constructor<value_type>);
-    default_unordered_map(std::initializer_list<value_type>, callback_type callback = default_constructor<value_type>);
-    template <typename Iter> default_unordered_map(Iter first, Iter last, callback_type callback = default_constructor<value_type>);
+    default_unordered_map(callback_type callback = default_constructor<mapped_type>);
+    default_unordered_map(std::initializer_list<value_type>, callback_type callback = default_constructor<mapped_type>);
+    template <typename Iter> default_unordered_map(Iter first, Iter last, callback_type callback = default_constructor<mapped_type>);
     default_unordered_map(const self_t&);
     self_t& operator=(const self_t&);
     default_unordered_map(self_t&&);
