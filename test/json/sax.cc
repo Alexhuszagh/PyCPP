@@ -66,8 +66,10 @@ TEST(json, json_file_reader)
         ofstream ostream(path);
         ostream << str << std::endl;
     }
-    json_file_reader reader;
-    test_json_reader(reader, path);
+    {
+        json_file_reader reader;
+        test_json_reader(reader, path);
+    }
     EXPECT_TRUE(remove_file(path));
 }
 

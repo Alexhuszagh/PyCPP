@@ -51,8 +51,10 @@ TEST(xml, xml_file_writer)
     xml_file_writer writer(path);
     test_xml_writer(writer);
     std::stringstream sstream;
-    ifstream istream(path);
-    sstream << istream.rdbuf();
+    {
+        ifstream istream(path);
+        sstream << istream.rdbuf();
+    }
     // force POSIX-like newlines
     EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<name>Alex</name>\n");
     EXPECT_TRUE(remove_file(path));

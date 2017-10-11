@@ -52,14 +52,13 @@ TEST(json, json_file_writer)
     std::string str;
     json_file_writer writer(path);
     test_json_writer(writer);
-
+    std::ostringstream sstream;
     {
-        std::ostringstream sstream;
         ifstream istream(path);
         sstream << istream.rdbuf();
         // force POSIX-like newlines
-        EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}");
     }
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}");
     EXPECT_TRUE(remove_file(path));
 }
 

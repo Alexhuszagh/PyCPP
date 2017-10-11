@@ -354,7 +354,7 @@ xml_file_reader::xml_file_reader(const std::string &name)
 
 void xml_file_reader::open(const std::string &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::in | std::ios_base::binary);
     xml_stream_reader::open(file_);
 }
 
@@ -370,7 +370,7 @@ xml_file_reader::xml_file_reader(const std::wstring &name)
 
 void xml_file_reader::open(const std::wstring &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::in | std::ios_base::binary);
     xml_stream_reader::open(file_);
 }
 
@@ -383,7 +383,7 @@ xml_file_reader::xml_file_reader(const std::u16string &name)
 
 void xml_file_reader::open(const std::u16string &name)
 {
-    file_.open(name, std::ios_base::binary);
+    file_.open(name, std::ios_base::in | std::ios_base::binary);
     xml_stream_reader::open(file_);
 }
 
@@ -402,7 +402,7 @@ xml_string_reader::xml_string_reader(const std::string &str)
 
 void xml_string_reader::open(const std::string &str)
 {
-    sstream_ = std::istringstream(str, std::ios_base::binary);
+    sstream_ = std::istringstream(str, std::ios_base::in | std::ios_base::binary);
     xml_stream_reader::open(sstream_);
 }
 

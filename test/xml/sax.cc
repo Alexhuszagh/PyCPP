@@ -87,8 +87,10 @@ TEST(xml, xml_file_reader)
         ofstream ostream(path);
         ostream << str << std::endl;
     }
-    xml_file_reader reader;
-    test_xml_reader(reader, path);
+    {
+        xml_file_reader reader;
+        test_xml_reader(reader, path);
+    }
     EXPECT_TRUE(remove_file(path));
 }
 
