@@ -71,7 +71,7 @@ TEST(xml, xml_stream_reader)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string str("<?xml version=\"1.0\" encoding=\"UTF-8\"?><note><to email=\"tove@tove.com\">Tove</to><from email=\"jani@jani.com\">Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>");
-    std::stringstream sstream(str);
+    std::istringstream sstream(str);
     xml_stream_reader reader;
     test_xml_reader(reader, sstream);
 }

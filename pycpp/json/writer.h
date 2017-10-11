@@ -34,6 +34,7 @@ struct json_writer
     virtual void boolean(bool);
     virtual void number(double);
     virtual void string(const string_view&);
+    virtual void flush() const;
 };
 
 
@@ -60,6 +61,7 @@ public:
     virtual void boolean(bool) override;
     virtual void number(double) override;
     virtual void string(const string_view&) override;
+    virtual void flush() const override;
 
 private:
     char indent_character_ = ' ';
@@ -85,9 +87,10 @@ public:
     json_file_writer(const std::u16string &name);
     void open(const std::u16string &name);
 #endif
+    virtual void flush() const override;
 
 private:
-    ofstream file_;
+    mutable ofstream file_;
 };
 
 /**

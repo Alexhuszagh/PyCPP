@@ -65,6 +65,10 @@ void xml_writer::write_attribute_ns(const string_view&, const string_view&, cons
 {}
 
 
+void xml_writer::flush() const
+{}
+
+
 xml_stream_writer::xml_stream_writer(char c, int width)
 {
     set_indent(c, width);
@@ -176,6 +180,12 @@ void xml_stream_writer::write_attribute_ns(const string_view& uri, const string_
 }
 
 
+void xml_stream_writer::flush() const
+{
+    xmlTextWriterFlush((xmlTextWriterPtr) writer_);
+}
+
+
 xml_file_writer::xml_file_writer()
 {}
 
@@ -223,6 +233,13 @@ void xml_file_writer::open(const std::u16string &name)
 #endif
 
 
+void xml_file_writer::flush() const
+{
+    xml_stream_writer::flush();
+    file_.flush();
+}
+
+
 xml_string_writer::xml_string_writer()
 {
     xml_stream_writer::open(sstream_);
@@ -231,6 +248,7 @@ xml_string_writer::xml_string_writer()
 
 std::string xml_string_writer::str() const
 {
+    flush();
     return sstream_.str();
 }
 

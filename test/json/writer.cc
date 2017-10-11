@@ -16,8 +16,8 @@
 // -------
 
 
-template <typename SaxWriter>
-static void test_json_writer(SaxWriter& writer)
+template <typename Writer>
+static void test_json_writer(Writer& writer)
 {
     writer.start_object();
     writer.key("k1");
@@ -25,6 +25,7 @@ static void test_json_writer(SaxWriter& writer)
     writer.key("k2");
     writer.number(5);
     writer.end_object();
+    writer.flush();
 }
 
 // TESTS
@@ -35,7 +36,7 @@ TEST(json, json_stream_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    std::stringstream sstream;
+    std::ostringstream sstream;
     json_stream_writer writer(sstream);
     test_json_writer(writer);
     // force POSIX-like newlines
@@ -53,7 +54,7 @@ TEST(json, json_file_writer)
     test_json_writer(writer);
 
     {
-        std::stringstream sstream;
+        std::ostringstream sstream;
         ifstream istream(path);
         sstream << istream.rdbuf();
         // force POSIX-like newlines

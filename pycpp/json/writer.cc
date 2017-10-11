@@ -55,6 +55,10 @@ void json_writer::string(const string_view&)
 {}
 
 
+void json_writer::flush() const
+{}
+
+
 json_stream_writer::json_stream_writer(char c, int width)
 {
     set_indent(c, width);
@@ -175,6 +179,10 @@ void json_stream_writer::string(const string_view& value)
 }
 
 
+void json_stream_writer::flush() const      // null-op
+{}
+
+
 json_file_writer::json_file_writer()
 {}
 
@@ -222,6 +230,13 @@ void json_file_writer::open(const std::u16string &name)
 #endif
 
 
+void json_file_writer::flush() const
+{
+    json_stream_writer::flush();
+    file_.flush();
+}
+
+
 json_string_writer::json_string_writer()
 {
     json_stream_writer::open(sstream_);
@@ -230,6 +245,7 @@ json_string_writer::json_string_writer()
 
 std::string json_string_writer::str() const
 {
+    flush();
     return sstream_.str();
 }
 

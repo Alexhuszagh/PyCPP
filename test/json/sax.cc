@@ -50,7 +50,7 @@ TEST(json, json_stream_reader)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
-    std::stringstream sstream(str);
+    std::istringstream sstream(str);
     json_stream_reader reader;
     test_json_reader(reader, sstream);
 }

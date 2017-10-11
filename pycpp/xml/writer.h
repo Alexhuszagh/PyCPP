@@ -33,6 +33,7 @@ struct xml_writer
     virtual void start_element_ns(const string_view&, const string_view&, const string_view&);
     virtual void end_element_ns();
     virtual void write_attribute_ns(const string_view&, const string_view&, const string_view&, const string_view&);
+    virtual void flush() const;
 };
 
 
@@ -57,6 +58,7 @@ public:
     virtual void start_element_ns(const string_view&, const string_view&, const string_view&) override;
     virtual void end_element_ns() override;
     virtual void write_attribute_ns(const string_view&, const string_view&, const string_view&, const string_view&) override;
+    virtual void flush() const override;
 
 private:
     char indent_character_ = ' ';
@@ -82,9 +84,10 @@ public:
     xml_file_writer(const std::u16string &name);
     void open(const std::u16string &name);
 #endif
+    virtual void flush() const override;
 
 private:
-    ofstream file_;
+    mutable ofstream file_;
 };
 
 
