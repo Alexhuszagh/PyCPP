@@ -94,30 +94,30 @@ public:
     const_reverse_iterator crend() const noexcept;
 
     // ELEMENT ACCESS
-//    mapped_type& operator[](const key_type& k);
-//    mapped_type& operator[](key_type&& k);
-//    mapped_type& at(const key_type& k);
-//    const mapped_type& at(const key_type& k) const;
+    mapped_type& operator[](const key_type& k);
+    mapped_type& operator[](key_type&& k);
+    mapped_type& at(const key_type& k);
+    const mapped_type& at(const key_type& k) const;
 
     // OPERATIONS
-//    iterator find(const key_type& k);
-//    const_iterator find(const key_type& k) const;
-//    size_type count(const key_type& k) const;
-//    iterator lower_bound(const key_type& k);
-//    const_iterator lower_bound(const key_type& k) const;
-//    iterator upper_bound(const key_type& k);
-//    const_iterator upper_bound(const key_type& k) const;
-//    std::pair<iterator, iterator> equal_range(const key_type& k);
-//    std::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
+    iterator find(const key_type& k);
+    const_iterator find(const key_type& k) const;
+    size_type count(const key_type& k) const;
+    iterator lower_bound(const key_type& k);
+    const_iterator lower_bound(const key_type& k) const;
+    iterator upper_bound(const key_type& k);
+    const_iterator upper_bound(const key_type& k) const;
+    std::pair<iterator, iterator> equal_range(const key_type& k);
+    std::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
 
     // MODIFIERS
     // TODO:
 //    void swap(self_t& rhs);
 
     // OBSERVERS
-//    allocator_type get_allocator() const noexcept;
-//    key_compare key_comp() const;
-//    value_compare value_comp() const;
+    allocator_type get_allocator() const noexcept;
+    key_compare key_comp() const;
+    value_compare value_comp() const;
 
 private:
     base_t map_;
@@ -193,39 +193,39 @@ public:
     const_local_iterator cend(size_type n) const noexcept;
 
     // ELEMENT ACCESS
-//    mapped_type& operator[](const key_type& k);
-//    mapped_type& operator[](key_type&& k);
-//    mapped_type& at(const key_type& k);
-//    const mapped_type& at(const key_type& k) const;
+    mapped_type& operator[](const key_type& k);
+    mapped_type& operator[](key_type&& k);
+    mapped_type& at(const key_type& k);
+    const mapped_type& at(const key_type& k) const;
 
     // OPERATIONS
-//    iterator find(const key_type& k);
-//    const_iterator find(const key_type& k) const;
-//    size_type count(const key_type& k) const;
-//    std::pair<iterator, iterator> equal_range(const key_type& k);
-//    std::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
+    iterator find(const key_type& k);
+    const_iterator find(const key_type& k) const;
+    size_type count(const key_type& k) const;
+    std::pair<iterator, iterator> equal_range(const key_type& k);
+    std::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
 
     // MODIFIERS
     // TODO:
 //    void swap(self_t& rhs);
 
     // BUCKETS
-//    size_type bucket_count() const noexcept;
-//    size_type max_bucket_count() const noexcept;
-//    size_type bucket_size(size_type n) const;
-//    size_type bucket(const key_type& k) const;
+    size_type bucket_count() const noexcept;
+    size_type max_bucket_count() const noexcept;
+    size_type bucket_size(size_type n) const;
+    size_type bucket(const key_type& k) const;
 
     // HASH POLICY
-//    float load_factor() const noexcept;
-//    float max_load_factor() const noexcept;
-//    void max_load_factor(float z);
-//    void rehash(size_type n);
-//    void reserve(size_type n);
+    float load_factor() const noexcept;
+    float max_load_factor() const noexcept;
+    void max_load_factor(float z);
+    void rehash(size_type n);
+    void reserve(size_type n);
 
     // OBSERVERS
-//    allocator_type get_allocator() const noexcept;
-//    hasher hash_function() const;
-//    key_equal key_eq() const;
+    allocator_type get_allocator() const noexcept;
+    hasher hash_function() const;
+    key_equal key_eq() const;
 
 private:
     base_t map_;
@@ -409,6 +409,118 @@ auto default_map<K, T, C, A, M>::crend() const noexcept -> const_reverse_iterato
     return map_.crend();
 }
 
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::operator[](const key_type& k) -> mapped_type&
+{
+    return map_[k];
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::operator[](key_type&& k) -> mapped_type&
+{
+    return map_[std::forward<key_type>(k)];
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::at(const key_type& k) -> mapped_type&
+{
+    return map_.at(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::at(const key_type& k) const -> const mapped_type&
+{
+    return map_.at(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::find(const key_type& k) -> iterator
+{
+    return map_.find(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::find(const key_type& k) const -> const_iterator
+{
+    return map_.find(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::count(const key_type& k) const -> size_type
+{
+    return map_.count(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::lower_bound(const key_type& k) -> iterator
+{
+    return map_.lower_bound(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::lower_bound(const key_type& k) const -> const_iterator
+{
+    return map_.lower_bound(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::upper_bound(const key_type& k) -> iterator
+{
+    return map_.upper_bound(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::upper_bound(const key_type& k) const -> const_iterator
+{
+    return map_.upper_bound(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::equal_range(const key_type& k) -> std::pair<iterator, iterator>
+{
+    return map_.equal_range(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::equal_range(const key_type& k) const -> std::pair<const_iterator, const_iterator>
+{
+    return map_.equal_range(k);
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::get_allocator() const noexcept -> allocator_type
+{
+    return map_.get_allocator();
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::key_comp() const -> key_compare
+{
+    return map_.key_comp();
+}
+
+
+template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> typename M>
+auto default_map<K, T, C, A, M>::value_comp() const -> value_compare
+{
+    return map_.value_comp();
+}
+
 // DEFAULT UNORDERED MAP
 
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
@@ -573,5 +685,151 @@ auto default_unordered_map<K, T, H, P, A, M>::cend(size_type n) const noexcept -
     return map_.cend(n);
 }
 
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::operator[](const key_type& k) -> mapped_type&
+{
+    return map_[k];
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::operator[](key_type&& k) -> mapped_type&
+{
+    return map_[std::forward<key_type>(k)];
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::at(const key_type& k) -> mapped_type&
+{
+    return map_.at(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::at(const key_type& k) const -> const mapped_type&
+{
+    return map_.at(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::find(const key_type& k) -> iterator
+{
+    return map_.find(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::find(const key_type& k) const -> const_iterator
+{
+    return map_.find(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::count(const key_type& k) const -> size_type
+{
+    return map_.count(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::equal_range(const key_type& k) -> std::pair<iterator, iterator>
+{
+    return map_.equal_range(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::equal_range(const key_type& k) const -> std::pair<const_iterator, const_iterator>
+{
+    return map_.equal_range(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::bucket_count() const noexcept -> size_type
+{
+    return map_.bucket_count();
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::max_bucket_count() const noexcept -> size_type
+{
+    return map_.max_bucket_count();
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::bucket_size(size_type n) const -> size_type
+{
+    return map_.bucket_size(n);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::bucket(const key_type& k) const -> size_type
+{
+    return map_.bucket(k);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::load_factor() const noexcept -> float
+{
+    return map_.load_factor();
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::max_load_factor() const noexcept -> float
+{
+    return map_.max_load_factor();
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::max_load_factor(float z) -> void
+{
+    return map_.max_load_factor(z);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::rehash(size_type n) -> void
+{
+    return map_.rehash(n);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::reserve(size_type n) -> void
+{
+    return map_.reserve(n);
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::get_allocator() const noexcept -> allocator_type
+{
+    return map_.get_allocator();
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::hash_function() const -> hasher
+{
+    return map_.hash_function();
+}
+
+
+template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> typename M>
+auto default_unordered_map<K, T, H, P, A, M>::key_eq() const -> key_equal
+{
+    return map_.key_eq();
+}
 
 PYCPP_END_NAMESPACE
