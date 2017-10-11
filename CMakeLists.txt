@@ -17,9 +17,11 @@ option(BUILD_CSV "Build CSV library" ON)
 option(BUILD_FILESYSTEM "Build filesystem library" ON)
 option(BUILD_HASHLIB "Build hash library" ON)
 option(BUILD_JSON "Build JSON library" ON)
+option(BUILD_KEYVALUE "Build key-value database library" ON)
 option(BUILD_LATTICE "Build lattice (networking) library" ON)
 option(BUILD_MATH "Build math library" ON)
 option(BUILD_RE "Build regular expression library" ON)
+option(BUILD_SQLITE "Build SQLite database library" ON)
 option(BUILD_STREAM "Build stream library" ON)
 option(BUILD_XML "Build XML library" ON)
 
@@ -32,9 +34,11 @@ option(WITH_CSV "Build (only) CSV library" OFF)
 option(WITH_FILESYSTEM "Build (only) filesystem library" OFF)
 option(WITH_HASHLIB "Build (only) hash library" OFF)
 option(WITH_JSON "Build (only) JSON library" OFF)
+option(WITH_KEYVALUE "Build (only) key-value database library" OFF)
 option(WITH_LATTICE "Build (only) lattice library" OFF)
 option(WITH_MATH "Build (only) math library" OFF)
 option(WITH_RE "Build (only) regular expression library" OFF)
+option(WITH_SQLITE "Build (only) SQLite database library" OFF)
 option(WITH_STREAM "Build (only) stream library" OFF)
 option(WITH_XML "Build (only) XML library" OFF)
 
@@ -44,7 +48,7 @@ option(BUILD_TESTS "Build pycpp library tests" OFF)
 SET(CXX_STANDARD "11" CACHE STRING "Minimum C++ standard to support.")
 SET(PYCPP_NAMESPACE "" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
 
-if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_LATTICE OR WITH_MATH OR WITH_RE OR WITH_STREAM OR WITH_XML)
+if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
     set(BUILD_CIPHER ${WITH_CIPHER})
     set(BUILD_COLLECTIONS ${WITH_COLLECTIONS})
     set(BUILD_COMPRESSION ${WITH_COMPRESSION})
@@ -52,9 +56,11 @@ if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV 
     set(BUILD_FILESYSTEM ${WITH_FILESYSTEM})
     set(BUILD_HASHLIB ${WITH_HASHLIB})
     set(BUILD_JSON ${WITH_JSON})
+    set(BUILD_KEYVALUE ${WITH_KEYVALUE})
     set(BUILD_LATTICE ${WITH_LATTICE})
     set(BUILD_MATH ${WITH_MATH})
     set(BUILD_RE ${WITH_RE})
+    set(BUILD_SQLITE ${WITH_SQLITE})
     set(BUILD_STREAM ${WITH_STREAM})
     set(BUILD_XML ${WITH_XML})
 endif()
@@ -91,6 +97,10 @@ if (BUILD_JSON)
     list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_JSON=1")
 endif()
 
+if (BUILD_KEYVALUE)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_KEYVALUE=1")
+endif()
+
 if (BUILD_LATTICE)
     list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_LATTICE=1")
 endif()
@@ -101,6 +111,10 @@ endif()
 
 if (BUILD_RE)
     list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_RE=1")
+endif()
+
+if (BUILD_SQLITE)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DBUILD_SQLITE=1")
 endif()
 
 if (BUILD_STREAM)
@@ -679,6 +693,12 @@ if (BUILD_JSON)
     )
 endif()
 
+if(BUILD_KEYVALUE)
+    list(APPEND TEST_FILES
+        test/cache/kv.cc
+    )
+endif()
+
 if(BUILD_LATTICE)
     list(APPEND TEST_FILES
         test/lattice/auth.cc
@@ -707,6 +727,12 @@ if(BUILD_RE)
         test/re/match.cc
         test/re/re.cc
         test/re/regex.cc
+    )
+endif()
+
+if(BUILD_SQLITE)
+    list(APPEND TEST_FILES
+        test/cache/sqlite.cc
     )
 endif()
 
