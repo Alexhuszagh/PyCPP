@@ -143,10 +143,13 @@ fstream::fstream(const char* name, std::ios_base::openmode mode)
 
 void fstream::open(const char* name, std::ios_base::openmode mode)
 {
-    // TODO: this should use the wide API....
+#ifdef PYCPP_HAVE_WFOPEN
+    open(codec_utf8_utf16(name), mode);
+#else
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
+#endif
 }
 
 
@@ -288,10 +291,13 @@ ifstream::ifstream(const char* name, std::ios_base::openmode mode)
 
 void ifstream::open(const char* name, std::ios_base::openmode mode)
 {
-    // TODO: this should use the wide API....
+#ifdef PYCPP_HAVE_WFOPEN
+    open(codec_utf8_utf16(name), mode);
+#else
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
+#endif
 }
 
 
@@ -429,10 +435,13 @@ ofstream::ofstream(const char* name, std::ios_base::openmode mode)
 
 void ofstream::open(const char* name, std::ios_base::openmode mode)
 {
-    // TODO: this should use the wide API....
+#ifdef PYCPP_HAVE_WFOPEN
+    open(codec_utf8_utf16(name), mode);
+#else
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
+#endif
 }
 
 
@@ -568,8 +577,7 @@ fstream::fstream(const char* name, std::ios_base::openmode mode):
 
 void fstream::open(const char* name, std::ios_base::openmode mode)
 {
-    // TODO: this should use the wide API....
-    std::fstream::open(name, mode);
+    open(codec_utf8_utf16(name), mode);
 }
 
 
@@ -661,8 +669,7 @@ ifstream::ifstream(const char* name, std::ios_base::openmode mode):
 
 void ifstream::open(const char* name, std::ios_base::openmode mode)
 {
-    // TODO: this should use the wide API....
-    std::ifstream::open(name, mode);
+    open(codec_utf8_utf16(name), mode);
 }
 
 
@@ -755,8 +762,7 @@ ofstream::ofstream(const char* name, std::ios_base::openmode mode):
 
 void ofstream::open(const char* name, std::ios_base::openmode mode)
 {
-    // TODO: this should use the wide API....
-    std::ofstream::open(name, mode);
+    open(codec_utf8_utf16(name), mode);
 }
 
 

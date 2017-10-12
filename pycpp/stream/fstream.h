@@ -32,9 +32,11 @@ PYCPP_BEGIN_NAMESPACE
 #if defined(HAVE_GCC)           // GCC
 
 /**
- *  \brief Stream supporting narrow and wide APIs on Windows.
+ *  \brief Stream supporting both UTF-8 and UTF-16 paths on Windows.
  *
- *  fstream based off a GNU stdio_filebuf.
+ *  fstream based off a GNU stdio_filebuf. char strings assume
+ *  UTF-8 encoding, while wchar_t/char16_t strings assume
+ *  the native UTF-16 encoding.
  */
 class fstream: public std::iostream
 {
@@ -76,9 +78,11 @@ private:
 
 
 /**
- *  \brief Stream supporting narrow and wide APIs on Windows.
+ *  \brief Stream supporting both UTF-8 and UTF-16 paths on Windows.
  *
- *  ifstream based off a GNU stdio_filebuf.
+ *  ifstream based off a GNU stdio_filebuf. char strings assume
+ *  UTF-8 encoding, while wchar_t/char16_t strings assume
+ *  the native UTF-16 encoding.
  */
 class ifstream: public std::istream
 {
@@ -119,9 +123,11 @@ private:
 
 
 /**
- *  \brief Stream supporting narrow and wide APIs on Windows.
+ *  \brief Stream supporting both UTF-8 and UTF-16 paths on Windows.
  *
- *  ofstream based off a GNU stdio_filebuf.
+ *  ofstream based off a GNU stdio_filebuf. char strings assume
+ *  UTF-8 encoding, while wchar_t/char16_t strings assume
+ *  the native UTF-16 encoding.
  */
 class ofstream: public std::ostream
 {
@@ -163,7 +169,10 @@ private:
 #elif defined(HAVE_MSVC)        // MSVC
 
 /**
- *  \brief Stream supporting narrow and wide APIs on Windows.
+ *  \brief Stream supporting both UTF-8 and UTF-16 paths on Windows.
+ *
+ *  char strings assume UTF-8 encoding, while wchar_t/char16_t strings
+ *  assume the native UTF-16 encoding.
  */
 class fstream: public std::fstream
 {
@@ -194,7 +203,10 @@ public:
 
 
 /**
- *  \brief Stream supporting narrow and wide APIs on Windows.
+ *  \brief Stream supporting both UTF-8 and UTF-16 paths on Windows.
+ *
+ *  char strings assume UTF-8 encoding, while wchar_t/char16_t strings
+ *  assume the native UTF-16 encoding.
  */
 class ifstream: public std::ifstream
 {
@@ -225,7 +237,10 @@ public:
 
 
 /**
- *  \brief Stream supporting narrow and wide APIs on Windows.
+ *  \brief Stream supporting both UTF-8 and UTF-16 paths on Windows.
+ *
+ *  char strings assume UTF-8 encoding, while wchar_t/char16_t strings
+ *  assume the native UTF-16 encoding.
  */
 class ofstream: public std::ofstream
 {
