@@ -2,9 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Key-value database cache.
+ *  \brief Helpers to wrap the key-value backend.
  */
 
 #pragma once
-
-#include <pycpp/cache/kv_backend.h>

@@ -2,9 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Key-value database cache.
+ *  \brief Sequential file-backed stream definitions.
  */
 
 #pragma once
-
-#include <pycpp/cache/kv_backend.h>

@@ -514,6 +514,12 @@ if(BUILD_JSON)
     )
 endif()
 
+if(BUILD_KEYVALUE)
+    list(APPEND SOURCE_FILES
+        pycpp/cache/kv_backend.cc
+    )
+endif()
+
 if(BUILD_LATTICE)
     list(APPEND SOURCE_FILES
         pycpp/lattice/async.cc
@@ -560,7 +566,12 @@ if(BUILD_STREAM)
         pycpp/stream/fstream.cc
     )
     if(BUILD_FILESYSTEM)
-        list(APPEND SOURCE_FILES pycpp/stream/fd.cc)
+        list(APPEND SOURCE_FILES
+            pycpp/stream/fd.cc
+            pycpp/stream/mmap.cc
+            pycpp/stream/random_access.cc
+            pycpp/stream/sequential.cc
+        )
     endif()
 endif()
 
