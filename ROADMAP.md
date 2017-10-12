@@ -3,6 +3,8 @@
 **Mid-Term**
 
 - Need an API around a key/value store.
+- Need sequential, memory-mapped, random-access files.
+    - Use fd_fstream APIs to wrap them.
 
 - Update AutoCOM so it is using the modern library
     - Need install targets

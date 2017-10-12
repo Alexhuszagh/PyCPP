@@ -143,6 +143,7 @@ fstream::fstream(const char* name, std::ios_base::openmode mode)
 
 void fstream::open(const char* name, std::ios_base::openmode mode)
 {
+    // TODO: this should use the wide API....
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -287,6 +288,7 @@ ifstream::ifstream(const char* name, std::ios_base::openmode mode)
 
 void ifstream::open(const char* name, std::ios_base::openmode mode)
 {
+    // TODO: this should use the wide API....
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -427,6 +429,7 @@ ofstream::ofstream(const char* name, std::ios_base::openmode mode)
 
 void ofstream::open(const char* name, std::ios_base::openmode mode)
 {
+    // TODO: this should use the wide API....
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -565,6 +568,7 @@ fstream::fstream(const char* name, std::ios_base::openmode mode):
 
 void fstream::open(const char* name, std::ios_base::openmode mode)
 {
+    // TODO: this should use the wide API....
     std::fstream::open(name, mode);
 }
 
@@ -576,7 +580,7 @@ fstream::fstream(const std::string& name, std::ios_base::openmode mode):
 
 void fstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    std::fstream::open(name, mode);
+    open(name.data(), mode);
 }
 
 #ifdef PYCPP_HAVE_WFOPEN
@@ -599,7 +603,7 @@ fstream::fstream(const std::wstring& name, std::ios_base::openmode mode):
 
 void fstream::open(const std::wstring& name, std::ios_base::openmode mode)
 {
-    std::fstream::open(name, mode);
+    open(name.data(), mode);
 }
 
 
@@ -657,6 +661,7 @@ ifstream::ifstream(const char* name, std::ios_base::openmode mode):
 
 void ifstream::open(const char* name, std::ios_base::openmode mode)
 {
+    // TODO: this should use the wide API....
     std::ifstream::open(name, mode);
 }
 
@@ -668,7 +673,7 @@ ifstream::ifstream(const std::string& name, std::ios_base::openmode mode):
 
 void ifstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    std::ifstream::open(name, mode);
+    open(name.data(), mode);
 }
 
 #ifdef PYCPP_HAVE_WFOPEN
@@ -691,7 +696,7 @@ ifstream::ifstream(const std::wstring& name, std::ios_base::openmode mode):
 
 void ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
 {
-    std::ifstream::open(name, mode);
+    open(name.data(), mode);
 }
 
 
@@ -750,6 +755,7 @@ ofstream::ofstream(const char* name, std::ios_base::openmode mode):
 
 void ofstream::open(const char* name, std::ios_base::openmode mode)
 {
+    // TODO: this should use the wide API....
     std::ofstream::open(name, mode);
 }
 
@@ -761,7 +767,7 @@ ofstream::ofstream(const std::string& name, std::ios_base::openmode mode):
 
 void ofstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    std::ofstream::open(name, mode);
+    open(name.data(), mode);
 }
 
 #ifdef PYCPP_HAVE_WFOPEN
@@ -778,13 +784,12 @@ void ofstream::open(const wchar_t* name, std::ios_base::openmode mode)
 
 ofstream::ofstream(const std::wstring& name, std::ios_base::openmode mode):
     std::ofstream(name, mode)
-{
-}
+{}
 
 
 void ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
 {
-    std::ofstream::open(name, mode);
+    open(name.data(), mode);
 }
 
 
