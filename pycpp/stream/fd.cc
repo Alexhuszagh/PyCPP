@@ -35,7 +35,8 @@ fd_streambuf::fd_streambuf(std::ios_base::openmode mode, fd_t fd):
 
 fd_streambuf::~fd_streambuf()
 {
-    close();
+    delete[] in_first;
+    delete[] out_first;
 }
 
 
@@ -55,13 +56,6 @@ fd_streambuf& fd_streambuf::operator=(fd_streambuf&& other)
 void fd_streambuf::close()
 {
     sync();
-
-    delete[] in_first;
-    delete[] out_first;
-    in_first = nullptr;
-    in_last = nullptr;
-    out_first = nullptr;
-    out_last = nullptr;
 }
 
 
@@ -221,10 +215,11 @@ fd_stream::fd_stream(fd_t fd, bool close):
 {}
 
 
-void fd_stream::open(fd_t fd, bool close)
+void fd_stream::open(fd_t fd, bool c)
 {
+    close();
     buffer.set_fd(fd);
-    close_ = close;
+    close_ = c;
 }
 
 
@@ -306,10 +301,11 @@ fd_istream::fd_istream(fd_t fd, bool close):
 {}
 
 
-void fd_istream::open(fd_t fd, bool close)
+void fd_istream::open(fd_t fd, bool c)
 {
+    close();
     buffer.set_fd(fd);
-    close_ = close;
+    close_ = c;
 }
 
 
@@ -395,10 +391,11 @@ fd_ostream::fd_ostream(fd_t fd, bool close):
 {}
 
 
-void fd_ostream::open(fd_t fd, bool close)
+void fd_ostream::open(fd_t fd, bool c)
 {
+    close();
     buffer.set_fd(fd);
-    close_ = close;
+    close_ = c;
 }
 
 

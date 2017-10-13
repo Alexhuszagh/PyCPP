@@ -753,7 +753,12 @@ if (BUILD_STREAM)
         test/stream/fstream.cc
     )
     if(BUILD_FILESYSTEM)
-        list(APPEND TEST_FILES test/stream/fd.cc)
+        list(APPEND TEST_FILES
+            test/stream/fd.cc
+            test/stream/mmap.cc
+            test/stream/random_access.cc
+            test/stream/sequential.cc
+        )
     endif()
 endif()
 

@@ -6,3 +6,24 @@
  */
 
 #pragma once
+
+#include <pycpp/stream/fd.h>
+
+PYCPP_BEGIN_NAMESPACE
+
+// OBJECTS
+// -------
+
+
+/**
+ *  \brief Stream wrapping a random-access I/O file.
+ */
+class random_access_fstream: public std::iostream
+{
+public:
+
+private:
+    fd_streambuf buffer;
+};
+
+PYCPP_END_NAMESPACE

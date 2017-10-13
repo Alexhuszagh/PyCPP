@@ -11,6 +11,8 @@
 #include <pycpp/filesystem/fd.h>
 #include <iostream>
 
+PYCPP_BEGIN_NAMESPACE
+
 // OBJECTS
 // -------
 
@@ -57,6 +59,7 @@ protected:
     virtual pos_type seekpos(pos_type pos, std::ios_base::openmode openmode = std::ios_base::in | std::ios_base::out);
 
 private:
+    void initialize_buffers();
     void set_readp();
     void set_writep();
 
