@@ -5,6 +5,15 @@
 - Need an API around a key/value store.
 - Need sequential, memory-mapped, random-access files.
     - Use fd_fstream APIs to wrap them.
+    - Implementation
+        - Memory-mapped
+    - Unittests
+        - sequential_fstream
+        - sequential_ifstream
+        - sequential_ofstream
+        - random_access_fstream
+        - random_access_ifstream
+        - random_access_ofstream
 
 - Update AutoCOM so it is using the modern library
     - Need install targets

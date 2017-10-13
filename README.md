@@ -85,6 +85,7 @@ Supported features include:
 
 - [Wide API streams](/pycpp/stream/fstream.h) for Windows.
 - [Filtering streambufs](/pycpp/stream/filter.h).
+- [Sequential](/pycpp/stream/sequential.h), [random-access](/pycpp/stream/random_access.h) and [memory-mapped](/pycpp/stream/mmap.h) file streams.
 
 **_Random_**
 

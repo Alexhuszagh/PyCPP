@@ -1111,29 +1111,25 @@ bool makedirs(const backup_path_t& path, int mode)
 
 fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
-    fd_t fd = fd_open_impl(path.data(), mode, permission, access, CreateFileA);
-    if (fd == INVALID_HANDLE_VALUE) {
-        set_errno_win32();
-    }
-    return fd;
+    return fd_open(backup_path_to_path(path), mode, permission, access);
 }
 
 
 int fd_chmod(const backup_path_t& path, mode_t permissions)
 {
-    return fd_chmod_impl(path, permissions);
+    return fd_chmod(backup_path_to_path(path), permissions);
 }
 
 
 int fd_allocate(const backup_path_t& path, std::streamsize size)
 {
-    return fd_allocate_impl(path, size);
+    return fd_allocate(backup_path_to_path(path), size);
 }
 
 
 int fd_truncate(const backup_path_t& path, std::streamsize size)
 {
-    return fd_truncate_impl(path, size);
+    return fd_truncate(backup_path_to_path(path), size);
 }
 
 PYCPP_END_NAMESPACE
