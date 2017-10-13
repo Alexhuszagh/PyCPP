@@ -46,7 +46,7 @@ static size_t file_length(fd_t fd)
     if (!::GetFileSizeEx(fd, &bytes)) {
         throw filesystem_error(filesystem_unexpected_error);
     }
-    return bytes.QuadPart;
+    return static_cast<size_t>(bytes.QuadPart);
 }
 
 #else                                   // UNKNOWN
