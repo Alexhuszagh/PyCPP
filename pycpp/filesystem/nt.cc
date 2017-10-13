@@ -538,8 +538,23 @@ static DWORD convert_create_mode(std::ios_base::openmode mode)
 }
 
 
+static DWORD convert_acess_pattern(io_access_pattern pattern)
+{
+    switch (pattern) {
+        case access_normal:
+            return 0;
+        case access_sequential:
+            return FILE_FLAG_SEQUENTIAL_SCAN;
+        case access_random:
+            return FILE_FLAG_RANDOM_ACCESS;
+        default:
+            throw std::invalid_argument("Unrecognized I/O access pattern.");
+    }
+}
+
+
 template <typename Pointer, typename Function>
-static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode openmode, mode_t, Function function)
+static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode openmode, mode_t, io_access_pattern pattern, Function function)
 {
     // ignore permissions since Windows uses a different
     // file-system permission model
@@ -548,7 +563,7 @@ static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode openmode
     DWORD share = 0;
     LPSECURITY_ATTRIBUTES security = nullptr;
     DWORD create = convert_create_mode(openmode);
-    DWORD flags = 0;
+    DWORD flags = convert_acess_pattern(pattern);
     HANDLE file = nullptr;
 
     return function(path, access, share, security, create, flags, file);
@@ -797,10 +812,10 @@ bool makedirs(const path_t& path, int mode)
 // FILE UTILS
 
 
-fd_t fd_open(const path_t& path, std::ios_base::openmode mode, mode_t permission)
+fd_t fd_open(const path_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
     const wchar_t* p = (const wchar_t*) path.data();
-    fd_t fd = fd_open_impl(p, mode, permission, CreateFileW);
+    fd_t fd = fd_open_impl(p, mode, permission, access, CreateFileW);
     if (fd == INVALID_HANDLE_VALUE) {
         set_errno_win32();
     }
@@ -1094,9 +1109,13 @@ bool makedirs(const backup_path_t& path, int mode)
 
 // FILE UTILS
 
-fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t permission)
+fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
-    return fd_open_impl(path.data(), mode, permission, CreateFileA);
+    fd_t fd = fd_open_impl(path.data(), mode, permission, access, CreateFileA);
+    if (fd == INVALID_HANDLE_VALUE) {
+        set_errno_win32();
+    }
+    return fd;
 }
 
 

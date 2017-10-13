@@ -455,13 +455,14 @@ static int fd_truncate_impl(const Path& path, std::streamsize size)
     return status;
 }
 
+// POSIX FALLOCATE
 
-#if defined(OS_MACOS)                  // MACOS
+#if defined(F_PREALLOCATE)                  // MACOS
 
 /**
- *  \brief `posix_fallocate` implementation for macOS, which is missing it.
+ *  \brief `posix_fallocate`-like implementation for macOS, which is missing it.
  */
-static int posix_fallocate(int fd, off_t offset, off_t len)
+static int fallocate_impl(int fd, off_t offset, off_t len)
 {
     fstore_t store = {F_ALLOCATECONTIG, F_PEOFPOSMODE, offset, len, 0};
     int status = fcntl(fd, F_PREALLOCATE, &store);
@@ -480,7 +481,97 @@ static int posix_fallocate(int fd, off_t offset, off_t len)
     return status;
 }
 
-#endif                                  // MACOS
+#elif defined(F_ALLOCSP64)                  // F_ALLOCSP64
+
+static int fallocate_impl(int fd, off_t offset, off_t len)
+{
+    // use F_ALLOCSP64 preferably, which allocates space
+    // for the file if the OS supports it.
+    flock64 fl;
+    fl.l_whence = SEEK_SET;
+    fl.l_start = offset;
+    fl.l_len = len;
+
+    return fcntl(fd, F_ALLOCSP64, &fl);
+}
+
+#elif defined(HAVE_POSIX_FALLOCATE)         // POSIX_FALLOCATE
+
+static int fallocate_impl(int fd, off_t offset, off_t len)
+{
+    // `posix_fallocate` must allocate the space, even if the OS
+    // does not support the behavior, leading the OS to write
+    // 0s to all bytes in the file. Use only if absolutely
+    // necessary.
+    return posix_fallocate(fd, offset, len);
+}
+
+#else                                       // OTHER POSIX
+
+static int fallocate_impl(int fd, off_t offset, off_t len)
+{
+    errno = EINVAL;
+    return -1;
+}
+
+#endif                                      // MACOS
+
+// POSIX FADVISE
+
+#if defined(F_RDAHEAD)                      // MACOS
+
+static int fadvise_impl(int fd, off_t offset, off_t len, io_access_pattern pattern)
+{
+    if (pattern == access_normal) {
+        // no advise, skip
+        return 0;
+    }
+
+    int arg;
+    switch (pattern) {
+        case access_sequential:
+            arg = 1;                // enable read-ahead
+            break;
+        case access_random:
+            arg = 0;                // disable read-ahead
+            break;
+        default:
+            throw std::invalid_argument("Unrecognized I/O access pattern.");
+    }
+
+    return fcntl(fd, F_RDAHEAD, arg);
+}
+
+#elif defined(HAVE_POSIX_FADVISE)           // POSIX_FADVISE
+
+static int fadvise_impl(int fd, off_t offset, off_t len, io_access_pattern pattern)
+{
+    int advice;
+    switch (pattern) {
+        case access_normal:
+            advice = POSIX_FADV_NORMAL;
+            break;
+        case access_sequential:
+            advice = POSIX_FADV_SEQUENTIAL;
+            break;
+        case access_random:
+            advice = POSIX_FADV_RANDOM;
+            break;
+        default:
+            throw std::invalid_argument("Unrecognized I/O access pattern.");
+    }
+    return posix_fadvise(fd, offset, len, advice);
+}
+
+#else                                       // OTHER POSIX
+
+static int fadvise_impl(int fd, off_t offset, off_t len, io_access_pattern pattern)
+{
+    errno = EINVAL;
+    return -1;
+}
+
+#endif                                      // MACOS
 
 // CONSTANTS
 // ---------
@@ -697,9 +788,18 @@ bool makedirs(const path_t& path, int mode)
 // FILE UTILS
 
 
-fd_t fd_open(const path_t& path, std::ios_base::openmode openmode, mode_t permission)
+fd_t fd_open(const path_t& path, std::ios_base::openmode openmode, mode_t permission, io_access_pattern access)
 {
-    return ::open(path.data(), convert_openmode(openmode), permission);
+    fd_t fd = ::open(path.data(), convert_openmode(openmode), permission);
+    if (fd != INVALID_FD_VALUE) {
+        if (fadvise_impl(fd, 0, 0, access) != 0) {
+            // posix_fadvise not successful, close and return invalid handle
+            fd_close(fd);
+            fd = INVALID_FD_VALUE;
+        }
+    }
+
+    return fd;
 }
 
 
@@ -756,7 +856,7 @@ int fd_chmod(const path_t& path, mode_t permissions)
 
 int fd_allocate(fd_t fd, std::streamsize size)
 {
-    return posix_fallocate(fd, 0, size);
+    return fallocate_impl(fd, 0, size);
 }
 
 

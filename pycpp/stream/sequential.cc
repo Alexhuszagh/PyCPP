@@ -6,6 +6,12 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// HELPERS
+// -------
+
+static void fadvise_sequential()
+{}
+
 // OBJECTS
 // -------
 

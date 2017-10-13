@@ -22,6 +22,7 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/filesystem/access.h>
 #include <pycpp/filesystem/fd.h>
 #include <pycpp/filesystem/home.h>
 #include <pycpp/filesystem/iterator.h>
@@ -382,7 +383,7 @@ bool remove_path(const path_t& path, bool recursive = true);
 /**
  *  \brief Open descriptor to file, as if by POSIX `open()`.
  */
-fd_t fd_open(const path_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP);
+fd_t fd_open(const path_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP, io_access_pattern access = access_normal);
 
 /**
  *  \brief Read from descriptor, as if by POSIX `read()`.
@@ -511,7 +512,7 @@ bool remove_path(const backup_path_t& path, bool recursive = true);
 
 // FILE UTILS
 
-fd_t fd_open(const backup_path_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP);
+fd_t fd_open(const backup_path_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP, io_access_pattern access = access_normal);
 int fd_chmod(const backup_path_t& path, mode_t permissions);
 int fd_allocate(const backup_path_t& path, std::streamsize size);
 int fd_truncate(const backup_path_t& path, std::streamsize size);
