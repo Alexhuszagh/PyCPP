@@ -9,18 +9,13 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/windows/wfopen.h>
 #include <fstream>
 
 #if defined(HAVE_GCC)
 #   include <pycpp/preprocessor/os.h>
 #   include <ext/stdio_filebuf.h>
-#   include <stdio.h>
 #   include <iostream>
-#   if defined(_wfopen)
-#       define PYCPP_HAVE_WFOPEN 1
-#   endif
-#elif defined(HAVE_MSVC)
-#   define PYCPP_HAVE_WFOPEN 1
 #endif
 
 PYCPP_BEGIN_NAMESPACE

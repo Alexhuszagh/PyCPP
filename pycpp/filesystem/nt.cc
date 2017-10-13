@@ -22,6 +22,7 @@
 #include <pycpp/string/casemap.h>
 #include <pycpp/windows/error.h>
 #include <pycpp/windows/winapi.h>
+#include <pycpp/windows/wfopen.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <io.h>
