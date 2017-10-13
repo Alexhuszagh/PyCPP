@@ -94,7 +94,7 @@ bool is_wine()
 {
 #if defined(OS_WINDOWS)                 // WINDOWS
 
-    HMODULE hntdll = GetModuleHandle("ntdll.dll");
+    HMODULE hntdll = GetModuleHandleA("ntdll.dll");
     if (!hntdll) {
         return false;
     }

@@ -1082,7 +1082,7 @@ bool remove_dir(const backup_path_t& path, bool recursive)
 
 bool mkdir(const backup_path_t& path, int mode)
 {
-    if (CreateDirectory(path.data(), nullptr)) {
+    if (CreateDirectoryA(path.data(), nullptr)) {
         int mask = 0;
         if (mode & S_IRUSR) {
             mask |= _S_IREAD;
