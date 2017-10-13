@@ -45,9 +45,11 @@ public:
     fd_streambuf(fd_streambuf&&);
     fd_streambuf& operator=(fd_streambuf&&);
     void close();
+    bool is_open() const;
     void swap(fd_streambuf&);
 
-    void set_fd(fd_t fd);
+    fd_t fd() const;
+    void fd(fd_t fd);
 
 protected:
     // MEMBER FUNCTIONS
@@ -63,12 +65,8 @@ private:
     void set_readp();
     void set_writep();
 
-    friend class fd_stream;
-    friend class fd_istream;
-    friend class fd_ostream;
-
     std::ios_base::openmode mode;
-    fd_t fd = INVALID_FD_VALUE;
+    fd_t fd_ = INVALID_FD_VALUE;
     char_type* in_first = nullptr;
     char_type* in_last = nullptr;
     char_type* out_first = nullptr;

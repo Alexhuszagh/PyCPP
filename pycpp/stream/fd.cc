@@ -18,7 +18,7 @@ PYCPP_BEGIN_NAMESPACE
 
 fd_streambuf::fd_streambuf(std::ios_base::openmode mode, fd_t fd):
     mode(mode),
-    fd(fd)
+    fd_(fd)
 {
     if (mode & std::ios_base::in) {
         in_first = new char_type[buffer_size];
@@ -59,9 +59,15 @@ void fd_streambuf::close()
 }
 
 
+bool fd_streambuf::is_open() const
+{
+    return fd_ != INVALID_FD_VALUE;
+}
+
+
 void fd_streambuf::swap(fd_streambuf& other)
 {
-    std::swap(fd, other.fd);
+    std::swap(fd_, other.fd_);
     std::swap(in_first, other.in_first);
     std::swap(in_last, other.in_last);
     std::swap(out_first, other.out_first);
@@ -84,8 +90,8 @@ auto fd_streambuf::underflow() -> int_type
     set_readp();
 
     std::streamsize read;
-    if (fd != INVALID_FD_VALUE) {
-        read = fd_read(fd, in_first, buffer_size);
+    if (fd_ != INVALID_FD_VALUE) {
+        read = fd_read(fd_, in_first, buffer_size);
         if (read == 0 || read == -1) {
             // 0 indicates EOF, -1 indicates error.
             return traits_type::eof();
@@ -107,10 +113,10 @@ auto fd_streambuf::overflow(int_type c) -> int_type
     set_writep();
 
     std::streamsize distance, wrote;
-    if (fd != INVALID_FD_VALUE) {
+    if (fd_ != INVALID_FD_VALUE) {
         distance = std::distance(out_first, out_last);
         if (distance == buffer_size) {
-            wrote = fd_write(fd, out_first, distance);
+            wrote = fd_write(fd_, out_first, distance);
             out_last = out_first;
         }
 
@@ -128,10 +134,10 @@ int fd_streambuf::sync()
 
     // flush buffer on output
     std::streamsize distance, wrote;
-    if (fd != INVALID_FD_VALUE && mode & std::ios_base::out) {
+    if (fd_ != INVALID_FD_VALUE && mode & std::ios_base::out) {
         distance = std::distance(out_first, out_last);
         if (distance > 0) {
-            wrote = fd_write(fd, out_first, distance);
+            wrote = fd_write(fd_, out_first, distance);
             out_last = out_first;
         }
     }
@@ -145,20 +151,26 @@ int fd_streambuf::sync()
 
 auto fd_streambuf::seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode) -> pos_type
 {
-    return fd_seek(fd, off, way);
+    return fd_seek(fd_, off, way);
 }
 
 
 auto fd_streambuf::seekpos(pos_type pos, std::ios_base::openmode) -> pos_type
 {
-    return fd_seek(fd, pos);
+    return fd_seek(fd_, pos);
 }
 
 
-void fd_streambuf::set_fd(fd_t fd)
+fd_t fd_streambuf::fd() const
+{
+    return fd_;
+}
+
+
+void fd_streambuf::fd(fd_t fd)
 {
     close();
-    this->fd = fd;
+    fd_ = fd;
 }
 
 
@@ -218,7 +230,7 @@ fd_stream::fd_stream(fd_t fd, bool close):
 void fd_stream::open(fd_t fd, bool c)
 {
     close();
-    buffer.set_fd(fd);
+    buffer.fd(fd);
     close_ = c;
 }
 
@@ -237,7 +249,7 @@ void fd_stream::rdbuf(fd_streambuf* buffer)
 
 bool fd_stream::is_open() const
 {
-    return buffer.fd != INVALID_FD_VALUE;
+    return buffer.is_open();
 }
 
 
@@ -245,8 +257,8 @@ void fd_stream::close()
 {
     if (close_) {
         buffer.close();
-        fd_close(buffer.fd);
-        buffer.fd = INVALID_FD_VALUE;
+        fd_close(buffer.fd());
+        buffer.fd(INVALID_FD_VALUE);
         close_ = false;
     }
 }
@@ -304,7 +316,7 @@ fd_istream::fd_istream(fd_t fd, bool close):
 void fd_istream::open(fd_t fd, bool c)
 {
     close();
-    buffer.set_fd(fd);
+    buffer.fd(fd);
     close_ = c;
 }
 
@@ -324,7 +336,7 @@ void fd_istream::rdbuf(fd_streambuf* buffer)
 
 bool fd_istream::is_open() const
 {
-    return buffer.fd != INVALID_FD_VALUE;
+    return buffer.is_open();
 }
 
 
@@ -332,8 +344,8 @@ void fd_istream::close()
 {
     if (close_) {
         buffer.close();
-        fd_close(buffer.fd);
-        buffer.fd = INVALID_FD_VALUE;
+        fd_close(buffer.fd());
+        buffer.fd(INVALID_FD_VALUE);
         close_ = false;
     }
 }
@@ -394,7 +406,7 @@ fd_ostream::fd_ostream(fd_t fd, bool close):
 void fd_ostream::open(fd_t fd, bool c)
 {
     close();
-    buffer.set_fd(fd);
+    buffer.fd(fd);
     close_ = c;
 }
 
@@ -414,7 +426,7 @@ void fd_ostream::rdbuf(fd_streambuf* buffer)
 
 bool fd_ostream::is_open() const
 {
-    return buffer.fd != INVALID_FD_VALUE;
+    return buffer.is_open();
 }
 
 
@@ -422,8 +434,8 @@ void fd_ostream::close()
 {
     if (close_) {
         buffer.close();
-        fd_close(buffer.fd);
-        buffer.fd = INVALID_FD_VALUE;
+        fd_close(buffer.fd());
+        buffer.fd(INVALID_FD_VALUE);
         close_ = false;
     }
 }
