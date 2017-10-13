@@ -557,6 +557,7 @@ static DWORD convert_acess_pattern(io_access_pattern pattern)
 template <typename Pointer, typename Function>
 static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode openmode, mode_t, io_access_pattern pattern, Function function)
 {
+    std::cout << "fd_open_impl() " << (int) pattern << std::endl;
     // ignore permissions since Windows uses a different
     // file-system permission model
     // Effectively, ignore it.
@@ -1113,8 +1114,10 @@ bool makedirs(const backup_path_t& path, int mode)
 fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
 #if defined(PYCPP_HAVE_WFOPEN)
+    std::cout << "fd_open() PYCPP_HAVE_WFOPEN" << std::endl;
     return fd_open(backup_path_to_path(path), mode, permission, access);
 #else
+    std::cout << "fd_open() w/o PYCPP_HAVE_WFOPEN" << std::endl;
     return fd_open_impl(path.data(), mode, permission, access, CreateFileA);
 #endif
 }
