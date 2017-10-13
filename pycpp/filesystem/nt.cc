@@ -542,13 +542,10 @@ static DWORD convert_acess_pattern(io_access_pattern pattern)
 {
     switch (pattern) {
         case access_normal:
-            std::cout << "access_normal" << std::endl;
             return 0;
         case access_sequential:
-            std::cout << "access_sequential" << std::endl;
             return FILE_FLAG_SEQUENTIAL_SCAN;
         case access_random:
-            std::cout << "access_random" << std::endl;
             return FILE_FLAG_RANDOM_ACCESS;
         default:
             throw std::invalid_argument("Unrecognized I/O access pattern.");
@@ -566,7 +563,6 @@ static HANDLE fd_open_impl(const Pointer &path, std::ios_base::openmode openmode
     DWORD share = 0;
     LPSECURITY_ATTRIBUTES security = nullptr;
     DWORD create = convert_create_mode(openmode);
-    // TODO: I believe this is failing.... Shit....
     DWORD flags = convert_acess_pattern(pattern);
     HANDLE file = nullptr;
 
@@ -1115,25 +1111,41 @@ bool makedirs(const backup_path_t& path, int mode)
 
 fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
+#if defined(PYCPP_HAVE_WFOPEN)
     return fd_open(backup_path_to_path(path), mode, permission, access);
+#else
+    return fd_open_impl(path.data(), mode, permission, access, CreateFileA);
+#endif
 }
 
 
 int fd_chmod(const backup_path_t& path, mode_t permissions)
 {
+#if defined(PYCPP_HAVE_WFOPEN)
     return fd_chmod(backup_path_to_path(path), permissions);
+#else
+    return fd_chmod_impl(path, permissions);
+#endif
 }
 
 
 int fd_allocate(const backup_path_t& path, std::streamsize size)
 {
+#if defined(PYCPP_HAVE_WFOPEN)
     return fd_allocate(backup_path_to_path(path), size);
+#else
+    return fd_allocate_impl(path, size);
+#endif
 }
 
 
 int fd_truncate(const backup_path_t& path, std::streamsize size)
 {
+#if defined(PYCPP_HAVE_WFOPEN)
     return fd_truncate(backup_path_to_path(path), size);
+#else
+    return fd_truncate_impl(path, size);
+#endif
 }
 
 PYCPP_END_NAMESPACE

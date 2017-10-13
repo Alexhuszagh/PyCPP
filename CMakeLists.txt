@@ -155,6 +155,10 @@ if(BUILD_STATIC)
     endif()
 endif()
 
+if(WIN32)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "UNICODE _UNICODE")
+endif()
+
 # INCLUDES
 # --------
 
