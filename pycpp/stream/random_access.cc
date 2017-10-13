@@ -9,6 +9,7 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
+// RANDOM ACCESS FSTREAM
 
 random_access_fstream::random_access_fstream():
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
@@ -107,7 +108,7 @@ void random_access_fstream::swap(random_access_fstream &other)
     other.rdbuf(&other.buffer);
 }
 
-// random_access IFSTREAM
+// RANDOM ACCESS IFSTREAM
 
 
 random_access_ifstream::random_access_ifstream():
@@ -207,7 +208,7 @@ void random_access_ifstream::swap(random_access_ifstream &other)
     other.rdbuf(&other.buffer);
 }
 
-// random_access OFSTREAM
+// RANDOM ACCESS OFSTREAM
 
 random_access_ofstream::random_access_ofstream():
     buffer(std::ios_base::out, INVALID_FD_VALUE),
