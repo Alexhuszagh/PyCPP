@@ -572,7 +572,7 @@ void ifstream::open(const std::string& name, std::ios_base::openmode mode)
 #ifdef PYCPP_HAVE_WFOPEN
     open(codec_utf8_utf16(name), mode);
 #else
-    std::fstream::open(name, mode);
+    std::ifstream::open(name, mode);
 #endif
 }
 
@@ -599,7 +599,7 @@ ifstream::ifstream(const std::u16string& name, std::ios_base::openmode mode)
 
 void ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    std::fstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
+    std::ifstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
 
 #endif                          // PYCPP_HAVE_WFOPEN
@@ -639,7 +639,7 @@ void ofstream::open(const std::string& name, std::ios_base::openmode mode)
 #ifdef PYCPP_HAVE_WFOPEN
     open(codec_utf8_utf16(name), mode);
 #else
-    std::fstream::open(name, mode);
+    std::ofstream::open(name, mode);
 #endif
 }
 
@@ -666,7 +666,7 @@ ofstream::ofstream(const std::u16string& name, std::ios_base::openmode mode)
 
 void ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    std::fstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
+    std::ofstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
 
 #endif                              // PYCPP_HAVE_WFOPEN
