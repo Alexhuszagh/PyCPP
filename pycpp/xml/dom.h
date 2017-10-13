@@ -45,18 +45,18 @@ struct xml_document_t: xml_node_t
     void loads(const std::string&);
     void load(std::istream&);
     void load(const std::string&);
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     void load(const std::wstring&);
     void load(const std::u16string&);
-#endif
+#endif                                          // WINDOWS
 
     std::string dumps(char = ' ', int = 4);
     void dump(std::ostream&, char = ' ', int = 4);
     void dump(const std::string&, char = ' ', int = 4);
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     void dump(const std::wstring&, char = ' ', int = 4);
     void dump(const std::u16string&, char = ' ', int = 4);
-#endif
+#endif                                          // WINDOWS
 };
 
 PYCPP_END_NAMESPACE

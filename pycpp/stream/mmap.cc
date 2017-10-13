@@ -252,7 +252,7 @@ void mmap_fstream::open(const std::string& name, std::ios_base::openmode mode)
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 mmap_fstream::mmap_fstream(const std::wstring& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
@@ -281,7 +281,7 @@ void mmap_fstream::open(const std::u16string& name, std::ios_base::openmode mode
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#endif                              // PYCPP_HAVE_WFOPEN
+#endif                                          // WINDOWS
 
 bool mmap_fstream::is_open() const
 {
@@ -441,7 +441,7 @@ void mmap_ifstream::open(const std::string& name, std::ios_base::openmode mode)
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 mmap_ifstream::mmap_ifstream(const std::wstring& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in, INVALID_FD_VALUE),
@@ -470,7 +470,7 @@ void mmap_ifstream::open(const std::u16string& name, std::ios_base::openmode mod
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#endif                              // PYCPP_HAVE_WFOPEN
+#endif                                          // WINDOWS
 
 bool mmap_ifstream::is_open() const
 {
@@ -621,7 +621,7 @@ void mmap_ofstream::open(const std::string& name, std::ios_base::openmode mode)
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 mmap_ofstream::mmap_ofstream(const std::wstring& name, std::ios_base::openmode mode):
     buffer(std::ios_base::out, INVALID_FD_VALUE),
@@ -650,7 +650,7 @@ void mmap_ofstream::open(const std::u16string& name, std::ios_base::openmode mod
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#endif                              // PYCPP_HAVE_WFOPEN
+#endif                                          // WINDOWS
 
 bool mmap_ofstream::is_open() const
 {

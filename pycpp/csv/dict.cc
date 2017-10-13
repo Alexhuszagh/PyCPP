@@ -105,7 +105,7 @@ void csv_dict_file_reader::open(const std::string &name, size_t skip, csvpunct_i
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
 csv_dict_file_reader::csv_dict_file_reader(const std::wstring &name, size_t skip, csvpunct_impl* punct)
@@ -134,7 +134,7 @@ void csv_dict_file_reader::open(const std::u16string &name, size_t skip, csvpunc
     csv_dict_stream_reader::open(file_, skip, punct);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 
 csv_dict_string_reader::csv_dict_string_reader(csvpunct_impl* punct):
@@ -226,7 +226,7 @@ void csv_dict_file_writer::open(const std::string &name, const csv_row& header, 
     csv_dict_stream_writer::open(file_, header, quoting, punct);
 }
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 csv_dict_file_writer::csv_dict_file_writer(const std::wstring &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
@@ -253,7 +253,7 @@ void csv_dict_file_writer::open(const std::u16string &name, const csv_row& heade
     csv_dict_stream_writer::open(file_, header, quoting, punct);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 csv_dict_string_writer::csv_dict_string_writer(csv_quoting quoting, csvpunct_impl* punct):
     csv_dict_stream_writer(quoting, punct),

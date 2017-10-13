@@ -73,12 +73,12 @@ public:
     csv_dict_file_reader(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     csv_dict_file_reader(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
     csv_dict_file_reader(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
-#endif
+#endif                                          // WINDOWS
 
 private:
     ifstream file_;
@@ -144,12 +144,12 @@ public:
     csv_dict_file_writer(const std::string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void open(const std::string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     csv_dict_file_writer(const std::wstring&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void open(const std::wstring&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     csv_dict_file_writer(const std::u16string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void open(const std::u16string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-#endif
+#endif                                          // WINDOWS
 
 private:
     ofstream file_;

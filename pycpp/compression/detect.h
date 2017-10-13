@@ -43,7 +43,7 @@ enum compression_format
 /**
  *  \brief Provides path expansion for Windows.
  */
-#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 #   define DETECT_PATH                                      \
         static bool path(const std::wstring& path);         \
         static bool path(const std::u16string& path);       \

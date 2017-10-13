@@ -41,7 +41,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Provides wide-path overloads for Windows.
  */
-#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 
 #   define WIDE_PATH_IFSTREAM(name)                                                                             \
                                                                                                                 \
@@ -444,18 +444,18 @@ static void delete_decompressor(compression_format format, void* ctx)
 // OBJECTS
 // -------
 
-#if defined(HAVE_BZIP2)
+#if defined(HAVE_BZIP2)                     // HAVE_BZIP2
     COMPRESSED_STREAM_DEFINITION(bz2);
-#endif
+#endif                                      // HAVE_BZIP2
 
-#if defined(HAVE_ZLIB)
+#if defined(HAVE_ZLIB)                      // HAVE_ZLIB
     COMPRESSED_STREAM_DEFINITION(zlib);
     COMPRESSED_STREAM_DEFINITION(gzip);
-#endif
+#endif                                      // HAVE_ZLIB
 
-#if defined(HAVE_LZMA)
+#if defined(HAVE_LZMA)                      // HAVE_LZMA
     COMPRESSED_STREAM_DEFINITION(lzma);
-#endif
+#endif                                      // HAVE_LZMA
 
 
 decompressing_istream::decompressing_istream()
@@ -541,7 +541,7 @@ void decompressing_ifstream::open(const std::string &name, std::ios_base::openmo
     new_decompressor(*this, name, format, ctx);
 }
 
-#ifdef PYCPP_HAVE_WFOPEN
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 
 decompressing_ifstream::decompressing_ifstream(const std::wstring &name, std::ios_base::openmode mode)
 {
@@ -567,7 +567,7 @@ void decompressing_ifstream::open(const std::u16string &name, std::ios_base::ope
     new_decompressor(*this, name, format, ctx);
 }
 
-#endif
+#endif                                      // WINDOWS
 
 // CLEANUP
 // -------

@@ -70,12 +70,12 @@ public:
     csv_file_writer(const std::string &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void open(const std::string &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     csv_file_writer(const std::wstring &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void open(const std::wstring &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     csv_file_writer(const std::u16string &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void open(const std::u16string &name, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-#endif
+#endif                                          // WINDOWS
 
 private:
     ofstream file_;

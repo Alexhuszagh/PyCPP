@@ -172,12 +172,12 @@ public:
     filter_ifstream(const std::string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
     void open(const std::string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     filter_ifstream(const std::wstring&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
     void open(const std::wstring&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
     filter_ifstream(const std::u16string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
     void open(const std::u16string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
-#endif
+#endif                                          // WINDOWS
 
     bool is_open() const;
     void close();
@@ -206,12 +206,12 @@ public:
     filter_ofstream(const std::string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
     void open(const std::string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     filter_ofstream(const std::wstring&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
     void open(const std::wstring&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
     filter_ofstream(const std::u16string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
     void open(const std::u16string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
-#endif
+#endif                                          // WINDOWS
 
     bool is_open() const;
     void close();

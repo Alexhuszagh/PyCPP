@@ -116,7 +116,7 @@ void xml_document_t::load(const std::string& path)
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 void xml_document_t::load(const std::wstring& path)
 {
@@ -131,7 +131,7 @@ void xml_document_t::load(const std::u16string& path)
     load(stream);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 
 std::string xml_document_t::dumps(char c, int width)
@@ -156,7 +156,7 @@ void xml_document_t::dump(const std::string& path, char c, int width)
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 void xml_document_t::dump(const std::wstring& path, char c, int width)
 {
@@ -171,6 +171,6 @@ void xml_document_t::dump(const std::u16string& path, char c, int width)
     dump(stream, c, width);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 PYCPP_END_NAMESPACE

@@ -35,12 +35,12 @@ public:
     sequential_fstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     sequential_fstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     sequential_fstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-#endif
+#endif                                          // WINDOWS
 
     // DATA
     bool is_open() const;
@@ -68,12 +68,12 @@ public:
     sequential_ifstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     sequential_ifstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
     sequential_ifstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
-#endif
+#endif                                          // WINDOWS
 
     // DATA
     bool is_open() const;
@@ -101,12 +101,12 @@ public:
     sequential_ofstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     sequential_ofstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
     sequential_ofstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
-#endif
+#endif                                          // WINDOWS
 
     // DATA
     bool is_open() const;

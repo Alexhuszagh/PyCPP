@@ -51,7 +51,7 @@ void random_access_fstream::open(const std::string& name, std::ios_base::openmod
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 random_access_fstream::random_access_fstream(const std::wstring& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
@@ -80,7 +80,7 @@ void random_access_fstream::open(const std::u16string& name, std::ios_base::open
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#endif                              // PYCPP_HAVE_WFOPEN
+#endif                                          // WINDOWS
 
 bool random_access_fstream::is_open() const
 {
@@ -151,7 +151,7 @@ void random_access_ifstream::open(const std::string& name, std::ios_base::openmo
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 random_access_ifstream::random_access_ifstream(const std::wstring& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in, INVALID_FD_VALUE),
@@ -180,7 +180,7 @@ void random_access_ifstream::open(const std::u16string& name, std::ios_base::ope
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#endif                              // PYCPP_HAVE_WFOPEN
+#endif                                          // WINDOWS
 
 bool random_access_ifstream::is_open() const
 {
@@ -250,7 +250,7 @@ void random_access_ofstream::open(const std::string& name, std::ios_base::openmo
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 random_access_ofstream::random_access_ofstream(const std::wstring& name, std::ios_base::openmode mode):
     buffer(std::ios_base::out, INVALID_FD_VALUE),
@@ -279,7 +279,7 @@ void random_access_ofstream::open(const std::u16string& name, std::ios_base::ope
     buffer.fd(fd_open(name, mode, access_random));
 }
 
-#endif                              // PYCPP_HAVE_WFOPEN
+#endif                                          // WINDOWS
 
 bool random_access_ofstream::is_open() const
 {

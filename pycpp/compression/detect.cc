@@ -43,7 +43,7 @@ static bool detect_path(const std::string& path, const magic_bytes& magic)
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 
 static bool detect_path(const std::wstring& path, const magic_bytes& magic)
 {
@@ -93,7 +93,7 @@ bool is_bz2::path(const std::string& path)
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 
 bool is_bz2::path(const std::wstring& path)
 {
@@ -145,7 +145,7 @@ bool is_zlib::path(const std::string& path)
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 
 bool is_zlib::path(const std::wstring& path)
 {
@@ -189,7 +189,7 @@ bool is_gzip::path(const std::string& path)
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 
 bool is_gzip::path(const std::wstring& path)
 {
@@ -233,7 +233,7 @@ bool is_lzma::path(const std::string& path)
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 
 bool is_lzma::path(const std::wstring& path)
 {
@@ -289,7 +289,7 @@ bool is_blosc::path(const std::string& path)
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 
 bool is_blosc::path(const std::wstring& path)
 {

@@ -202,7 +202,7 @@ void xml_file_writer::open(const std::string &name)
     xml_stream_writer::open(file_);
 }
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
 xml_file_writer::xml_file_writer(const std::wstring &name)
@@ -230,7 +230,7 @@ void xml_file_writer::open(const std::u16string &name)
     xml_stream_writer::open(file_);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 
 void xml_file_writer::flush() const

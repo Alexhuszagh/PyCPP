@@ -11,7 +11,7 @@
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <gtest/gtest.h>
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)
 #   include <io.h>
 #endif
 
@@ -22,7 +22,7 @@ PYCPP_USING_NAMESPACE
 
 static const std::string UTF8_ENGLISH = {69, 110, 103, 108, 105, 115, 104};
 static const std::string UTF8_KOREAN = {-19, -107, -100, -22, -75, -83, -20, -106, -76};
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)
 #if BYTE_ORDER == LITTLE_ENDIAN
 static const std::wstring UTF16_ENGLISH = {69, 110, 103, 108, 105, 115, 104};
 static const std::wstring UTF16_KOREAN = {54620, 44397, 50612};
@@ -69,7 +69,7 @@ TEST(fstream, fstream)
         return std::remove(path.data()) == 0;
     });
 
-#if defined(PYCPP_HAVE_WFOPEN)         // WINDOWS
+#if defined(HAVE_WFOPEN)         // WINDOWS
     tester()(UTF16_ENGLISH, [](const std::wstring& path) {
         return _wunlink(path.data()) == 0;
     });
@@ -92,7 +92,7 @@ TEST(fstream, iofstream)
         return std::remove(path.data()) == 0;
     });
 
-#if defined(PYCPP_HAVE_WFOPEN)         // WINDOWS
+#if defined(HAVE_WFOPEN)         // WINDOWS
     tester()(UTF16_ENGLISH, [](const std::wstring& path) {
         return _wunlink(path.data()) == 0;
     });

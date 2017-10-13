@@ -70,12 +70,13 @@ public:
     csv_file_reader(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     csv_file_reader(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
     csv_file_reader(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
-#endif
+#endif                                          // WINDOWS
 
 private:
     ifstream file_;

@@ -22,7 +22,6 @@
 #include <pycpp/string/casemap.h>
 #include <pycpp/windows/error.h>
 #include <pycpp/windows/winapi.h>
-#include <pycpp/windows/wfopen.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <io.h>
@@ -1113,11 +1112,11 @@ bool makedirs(const backup_path_t& path, int mode)
 
 fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
-#if defined(PYCPP_HAVE_WFOPEN)
-    std::cout << "fd_open() PYCPP_HAVE_WFOPEN" << std::endl;
+#if defined(HAVE_WFOPEN)
+    std::cout << "fd_open() HAVE_WFOPEN" << std::endl;
     return fd_open(backup_path_to_path(path), mode, permission, access);
 #else
-    std::cout << "fd_open() w/o PYCPP_HAVE_WFOPEN" << std::endl;
+    std::cout << "fd_open() w/o HAVE_WFOPEN" << std::endl;
     return fd_open_impl(path.data(), mode, permission, access, CreateFileA);
 #endif
 }
@@ -1125,7 +1124,7 @@ fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t per
 
 int fd_chmod(const backup_path_t& path, mode_t permissions)
 {
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)
     return fd_chmod(backup_path_to_path(path), permissions);
 #else
     return fd_chmod_impl(path, permissions);
@@ -1135,7 +1134,7 @@ int fd_chmod(const backup_path_t& path, mode_t permissions)
 
 int fd_allocate(const backup_path_t& path, std::streamsize size)
 {
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)
     return fd_allocate(backup_path_to_path(path), size);
 #else
     return fd_allocate_impl(path, size);
@@ -1145,7 +1144,7 @@ int fd_allocate(const backup_path_t& path, std::streamsize size)
 
 int fd_truncate(const backup_path_t& path, std::streamsize size)
 {
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)
     return fd_truncate(backup_path_to_path(path), size);
 #else
     return fd_truncate_impl(path, size);

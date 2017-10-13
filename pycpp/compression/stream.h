@@ -23,7 +23,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Provides wide-path overloads for Windows.
  */
-#if defined(PYCPP_HAVE_WFOPEN)              // WINDOWS
+#if defined(HAVE_WFOPEN)                    // WINDOWS
 
 #   define WIDE_PATH_IFSTREAM(name)                                                                             \
         name##_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);                 \
@@ -209,12 +209,12 @@ public:
 
     decompressing_ifstream(const std::string &name, std::ios_base::openmode = std::ios_base::in);
     void open(const std::string &name, std::ios_base::openmode = std::ios_base::in);
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                    // WINDOWS
     decompressing_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
     void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
     decompressing_ifstream(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);
     void open(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);
-#endif
+#endif                                      // WINDOWS
 
 private:
     compression_format format = compression_none;

@@ -199,7 +199,7 @@ void json_file_writer::open(const std::string &name)
     json_stream_writer::open(file_);
 }
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
 json_file_writer::json_file_writer(const std::wstring &name)
@@ -227,7 +227,7 @@ void json_file_writer::open(const std::u16string &name)
     json_stream_writer::open(file_);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 
 void json_file_writer::flush() const

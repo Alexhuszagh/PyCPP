@@ -232,6 +232,11 @@ if(HAVE_SYS_MMAN_H)
     endif()
 endif()
 
+CHECK_FUNCTION_EXISTS(_wfopen HAVE_WFOPEN)
+if(HAVE_WFOPEN)
+    list(APPEND PYCPP_COMPILE_DEFINITIONS "-DHAVE_WFOPEN=1")
+endif()
+
 # EXTERNAL
 # --------
 

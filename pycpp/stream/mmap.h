@@ -35,12 +35,12 @@ public:
     mmap_fstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     mmap_fstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     mmap_fstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-#endif
+#endif                                          // WINDOWS
 
     // MAPPING
     void map(size_t offset = 0);
@@ -88,12 +88,12 @@ public:
     mmap_ifstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     mmap_ifstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
     mmap_ifstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
-#endif
+#endif                                          // WINDOWS
 
     // MAPPING
     void map(size_t offset = 0);
@@ -140,12 +140,12 @@ public:
     mmap_ofstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     mmap_ofstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
     mmap_ofstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
-#endif
+#endif                                          // WINDOWS
 
     // MAPPING
     void map(size_t offset = 0);

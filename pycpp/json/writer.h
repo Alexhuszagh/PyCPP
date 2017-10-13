@@ -81,12 +81,12 @@ public:
     json_file_writer(const std::string &name);
     void open(const std::string &name);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     json_file_writer(const std::wstring &name);
     void open(const std::wstring &name);
     json_file_writer(const std::u16string &name);
     void open(const std::u16string &name);
-#endif
+#endif                                          // WINDOWS
     virtual void flush() const override;
 
 private:

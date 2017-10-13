@@ -225,7 +225,7 @@ void json_file_reader::open(const std::string &name)
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
 json_file_reader::json_file_reader(const std::wstring &name)
@@ -253,7 +253,7 @@ void json_file_reader::open(const std::u16string &name)
     json_stream_reader::open(file_);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 
 json_string_reader::json_string_reader()

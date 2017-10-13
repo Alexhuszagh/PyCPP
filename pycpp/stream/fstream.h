@@ -9,7 +9,6 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
-#include <pycpp/windows/wfopen.h>
 #include <fstream>
 
 #if defined(HAVE_GCC)
@@ -46,12 +45,12 @@ public:
     fstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     fstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     fstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-#endif
+#endif                                          // WINDOWS
 
     // DATA
     bool is_open() const;
@@ -86,12 +85,12 @@ public:
     ifstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     ifstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
     ifstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
-#endif
+#endif                                          // WINDOWS
 
     bool is_open() const;
     void close();
@@ -125,12 +124,12 @@ public:
     ofstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     ofstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
     ofstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
-#endif
+#endif                                          // WINDOWS
 
     bool is_open() const;
     void close();
@@ -164,12 +163,12 @@ public:
     fstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     fstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     fstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-#endif
+#endif                                          // WINDOWS
 };
 
 
@@ -192,12 +191,12 @@ public:
     ifstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     ifstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
     ifstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
-#endif
+#endif                                          // WINDOWS
 };
 
 
@@ -220,12 +219,12 @@ public:
     ofstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
     ofstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
     ofstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
     void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
-#endif
+#endif                                          // WINDOWS
 };
 
 #else                           // NON-GCC/MSVC COMPILER

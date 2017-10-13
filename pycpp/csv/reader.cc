@@ -153,7 +153,7 @@ void csv_file_reader::open(const std::string &name, size_t skip, csvpunct_impl* 
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
 csv_file_reader::csv_file_reader(const std::wstring &name, size_t skip, csvpunct_impl* punct)
@@ -181,7 +181,7 @@ void csv_file_reader::open(const std::u16string &name, size_t skip, csvpunct_imp
     csv_stream_reader::open(file_, skip, punct);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 
 csv_string_reader::csv_string_reader(csvpunct_impl* punct):

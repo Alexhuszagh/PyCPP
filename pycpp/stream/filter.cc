@@ -415,7 +415,7 @@ void filter_ifstream::open(const std::string &name, std::ios_base::openmode mode
     rdbuf()->set_callback(c);
 }
 
-#ifdef PYCPP_HAVE_WFOPEN
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 filter_ifstream::filter_ifstream(const std::wstring &name, std::ios_base::openmode mode, filter_callback c):
     filter_istream(file, c)
@@ -442,7 +442,7 @@ void filter_ifstream::open(const std::u16string &name, std::ios_base::openmode m
     rdbuf()->set_callback(c);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 
 bool filter_ifstream::is_open() const
@@ -503,7 +503,7 @@ void filter_ofstream::open(const std::string &name, std::ios_base::openmode mode
     rdbuf()->set_callback(c);
 }
 
-#ifdef PYCPP_HAVE_WFOPEN
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 filter_ofstream::filter_ofstream(const std::wstring &name, std::ios_base::openmode mode, filter_callback c):
     filter_ostream(file, c)
@@ -530,7 +530,7 @@ void filter_ofstream::open(const std::u16string &name, std::ios_base::openmode m
     rdbuf()->set_callback(c);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 
 bool filter_ofstream::is_open() const

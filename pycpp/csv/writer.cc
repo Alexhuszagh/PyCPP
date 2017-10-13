@@ -154,7 +154,7 @@ void csv_file_writer::open(const std::string &name, csv_quoting quoting, csvpunc
 }
 
 
-#if defined(PYCPP_HAVE_WFOPEN)
+#if defined(HAVE_WFOPEN)                        // WINDOWS
 
 csv_file_writer::csv_file_writer(const std::wstring &name, csv_quoting quoting, csvpunct_impl* punct):
     csv_stream_writer(quoting)
@@ -183,7 +183,7 @@ void csv_file_writer::open(const std::u16string &name, csv_quoting quoting, csvp
     csv_stream_writer::open(file_, quoting, punct);
 }
 
-#endif
+#endif                                          // WINDOWS
 
 csv_string_writer::csv_string_writer(csv_quoting quoting, csvpunct_impl* punct):
     sstream_(std::ios_base::out | std::ios_base::binary)
