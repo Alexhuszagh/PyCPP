@@ -24,10 +24,10 @@ sequential_fstream::~sequential_fstream()
 
 
 sequential_fstream::sequential_fstream(sequential_fstream &&other):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::move(other.buffer)),
     std::iostream(&buffer)
 {
-    swap(other);
+    std::ios::rdbuf(&buffer);
 }
 
 
@@ -48,7 +48,10 @@ sequential_fstream::sequential_fstream(const std::string& name, std::ios_base::o
 
 void sequential_fstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_sequential));
+    close();
+// TODO: restore....
+    //    buffer.fd(fd_open(name, mode, access_sequential));
+    buffer.fd(fd_open(name, mode));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -77,7 +80,10 @@ sequential_fstream::sequential_fstream(const std::u16string& name, std::ios_base
 
 void sequential_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_sequential));
+    close();
+// TODO: restore....
+    //    buffer.fd(fd_open(name, mode, access_sequential));
+    buffer.fd(fd_open(name, mode));
 }
 
 #endif                                          // WINDOWS
@@ -124,10 +130,10 @@ sequential_ifstream::~sequential_ifstream()
 
 
 sequential_ifstream::sequential_ifstream(sequential_ifstream &&other):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::move(other.buffer)),
     std::istream(&buffer)
 {
-    swap(other);
+    std::ios::rdbuf(&buffer);
 }
 
 
@@ -148,6 +154,7 @@ sequential_ifstream::sequential_ifstream(const std::string& name, std::ios_base:
 
 void sequential_ifstream::open(const std::string& name, std::ios_base::openmode mode)
 {
+    close();
     buffer.fd(fd_open(name, mode, access_sequential));
 }
 
@@ -177,7 +184,10 @@ sequential_ifstream::sequential_ifstream(const std::u16string& name, std::ios_ba
 
 void sequential_ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_sequential));
+    close();
+// TODO: restore....
+    //    buffer.fd(fd_open(name, mode, access_sequential));
+    buffer.fd(fd_open(name, mode));
 }
 
 #endif                                          // WINDOWS
@@ -223,10 +233,10 @@ sequential_ofstream::~sequential_ofstream()
 
 
 sequential_ofstream::sequential_ofstream(sequential_ofstream &&other):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::move(other.buffer)),
     std::ostream(&buffer)
 {
-    swap(other);
+    std::ios::rdbuf(&buffer);
 }
 
 
@@ -247,7 +257,10 @@ sequential_ofstream::sequential_ofstream(const std::string& name, std::ios_base:
 
 void sequential_ofstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_sequential));
+    close();
+// TODO: restore....
+    //    buffer.fd(fd_open(name, mode, access_sequential));
+    buffer.fd(fd_open(name, mode));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -276,7 +289,10 @@ sequential_ofstream::sequential_ofstream(const std::u16string& name, std::ios_ba
 
 void sequential_ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_sequential));
+    close();
+// TODO: restore....
+    //    buffer.fd(fd_open(name, mode, access_sequential));
+    buffer.fd(fd_open(name, mode));
 }
 
 #endif                                          // WINDOWS

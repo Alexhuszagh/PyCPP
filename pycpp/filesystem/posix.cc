@@ -790,8 +790,6 @@ bool makedirs(const path_t& path, int mode)
 
 fd_t fd_open(const path_t& path, std::ios_base::openmode openmode, mode_t permission, io_access_pattern access)
 {
-    std::cout << "fd_open() POSIX" << std::endl;
-
     fd_t fd = ::open(path.data(), convert_openmode(openmode), permission);
     if (fd != INVALID_FD_VALUE) {
         if (fadvise_impl(fd, 0, 0, access) != 0) {
