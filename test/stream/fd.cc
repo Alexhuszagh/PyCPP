@@ -37,18 +37,18 @@ static const std::u16string UTF16_KOREAN = {23765,  28077, -19259};
 template <typename IStream, typename OStream>
 struct test_stream
 {
-    template <typename String, typename RemoveFile>
-    void operator()(const String &path, RemoveFile remove_file, size_t seekg = 0)
+    template <typename String>
+    void operator()(const String &path, size_t seekg = 0, mode_t permissions = S_IWR_USR_GRP, io_access_pattern access = access_normal)
     {
         fd_t fd;
         std::string expected = "Single line";
 
-        fd = fd_open(path, std::ios_base::out);
+        fd = fd_open(path, std::ios_base::out, permissions, access);
         OStream ostream(fd, true);
         ostream << expected << std::endl;
         ostream.close();
 
-        fd = fd_open(path, std::ios_base::in);
+        fd = fd_open(path, std::ios_base::in, permissions, access);
         IStream istream(fd, true);
         istream.seekg(seekg);
         std::string result;
@@ -96,20 +96,15 @@ TEST(fd_stream, fd_stream)
 {
     typedef test_stream<fd_stream, fd_stream> tester;
 
-    tester()(UTF8_ENGLISH, [](const std::string& path) {
-        return std::remove(path.data()) == 0;
-    });
+    tester()(UTF8_ENGLISH);
+    tester()(UTF8_ENGLISH, 0, S_IWR_USR_GRP, access_normal);
+    tester()(UTF8_ENGLISH, 0, S_IWR_USR_GRP, access_sequential);
+    tester()(UTF8_ENGLISH, 0, S_IWR_USR_GRP, access_random);
 #if defined(HAVE_WFOPEN)         // WINDOWS
-    tester()(UTF16_ENGLISH, [](const std::u16string& path) {
-        return _wunlink(reinterpret_cast<const wchar_t*>(path.data())) == 0;
-    });
-    tester()(UTF16_KOREAN, [](const std::u16string& path) {
-        return _wunlink(reinterpret_cast<const wchar_t*>(path.data())) == 0;
-    });
+    tester()(UTF16_ENGLISH);
+    tester()(UTF16_KOREAN);
 #else                           // POSIX
-    tester()(UTF8_KOREAN, [](const std::string& path) {
-        return std::remove(path.data()) == 0;
-    });
+    tester()(UTF8_KOREAN);
 #endif
 }
 
@@ -118,21 +113,15 @@ TEST(fd_stream, iostream)
 {
     typedef test_stream<fd_istream, fd_ostream> tester;
 
-    tester()(UTF8_ENGLISH, [](const std::string& path) {
-        return std::remove(path.data()) == 0;
-    });
-
+    tester()(UTF8_ENGLISH);
+    tester()(UTF8_ENGLISH, 0, S_IWR_USR_GRP, access_normal);
+    tester()(UTF8_ENGLISH, 0, S_IWR_USR_GRP, access_sequential);
+    tester()(UTF8_ENGLISH, 0, S_IWR_USR_GRP, access_random);
 #if defined(HAVE_WFOPEN)         // WINDOWS
-    tester()(UTF16_ENGLISH, [](const std::u16string& path) {
-        return _wunlink(reinterpret_cast<const wchar_t*>(path.data())) == 0;
-    });
-    tester()(UTF16_KOREAN, [](const std::u16string& path) {
-        return _wunlink(reinterpret_cast<const wchar_t*>(path.data())) == 0;
-    });
+    tester()(UTF16_ENGLISH);
+    tester()(UTF16_KOREAN);
 #else                           // POSIX
-    tester()(UTF8_KOREAN, [](const std::string& path) {
-        return std::remove(path.data()) == 0;
-    });
+    tester()(UTF8_KOREAN);
 #endif
 }
 
@@ -141,7 +130,8 @@ TEST(fd_stream, seek)
 {
     typedef test_stream<fd_istream, fd_ostream> tester;
 
-    tester()(UTF8_ENGLISH, [](const std::string& path) {
-        return std::remove(path.data()) == 0;
-    }, 4);
+    tester()(UTF8_ENGLISH, 4);
+    tester()(UTF8_ENGLISH, 4, S_IWR_USR_GRP, access_normal);
+    tester()(UTF8_ENGLISH, 4, S_IWR_USR_GRP, access_sequential);
+    tester()(UTF8_ENGLISH, 4, S_IWR_USR_GRP, access_random);
 }

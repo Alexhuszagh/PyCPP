@@ -5,7 +5,8 @@
  *  \brief Random-access file I/O unittests.
  */
 
- #include <pycpp/stream/random_access.h>
+#include <pycpp/filesystem.h>
+#include <pycpp/stream/random_access.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <gtest/gtest.h>
@@ -33,8 +34,8 @@ static const std::wstring UTF16_KOREAN = {23765,  28077, -19259};
 template <typename IStream, typename OStream>
 struct test_stream
 {
-    template <typename String, typename RemoveFile>
-    void operator()(const String &path, RemoveFile remove_file)
+    template <typename String>
+    void operator()(const String &path)
     {
         std::string expected = "Single line";
 
@@ -80,26 +81,20 @@ struct test_stream
 //}
 
 
-//TEST(random_access_fstream, random_access_iofstream)
-//{
-//    typedef test_stream<random_access_ifstream, random_access_ofstream> tester;
-//
-//    tester()(UTF8_ENGLISH, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//
-//#if defined(HAVE_WFOPEN)         // WINDOWS
-//    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//    tester()(UTF16_KOREAN, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//#else                           // POSIX
-//    tester()(UTF8_KOREAN, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//#endif
-//}
+TEST(random_access_fstream, random_access_iofstream)
+{
+    typedef test_stream<random_access_ifstream, random_access_ofstream> tester;
+
+    tester()(UTF8_ENGLISH);
+    tester()(UTF8_ENGLISH);
+    tester()(UTF8_ENGLISH);
+    tester()(UTF8_ENGLISH);
+#if defined(HAVE_WFOPEN)         // WINDOWS
+    tester()(UTF16_ENGLISH);
+    tester()(UTF16_KOREAN);
+#else                           // POSIX
+    tester()(UTF8_KOREAN);
+#endif
+}
 
 #include <warnings/pop.h>

@@ -19,6 +19,33 @@ PYCPP_USING_NAMESPACE
 #   define DIRECTORY_SIZE 8
 #endif
 
+// HELPERS
+// -------
+
+
+static void test_fd(fd_t fd)
+{
+    size_t size = 11;
+    std::string in("Single Line");
+    std::vector<char> out(size);
+
+    EXPECT_NE(fd, INVALID_FD_VALUE);
+
+    // fd_write
+    EXPECT_EQ((size_t) fd_write(fd, in.data(), in.size()), size);
+    EXPECT_EQ((size_t) fd_tell(fd), size);
+
+    // fd_seek
+    EXPECT_EQ((size_t) fd_seek(fd, 0, std::ios_base::beg), 0);
+
+    // fd_read
+    EXPECT_EQ((size_t) fd_read(fd, out.data(), out.size()), size);
+    EXPECT_EQ(in, std::string(out.data(), out.size()));
+
+    // fd_close
+    EXPECT_EQ(fd_close(fd), 0);
+}
+
 // TESTS
 // -----
 
@@ -423,26 +450,35 @@ TEST(path, gettempnam)
 TEST(fd, fd_utils)
 {
     std::string path("sample_path");
-    size_t size = 11;
-    std::string in("Single Line");
-    std::vector<char> out(size);
-
-    // fd_open
-    fd_t fd = fd_open(path, std::ios_base::in | std::ios_base::out, S_IWR_USR_GRP_OTH);
-    EXPECT_NE(fd, INVALID_FD_VALUE);
-
-    // fd_write
-    EXPECT_EQ((size_t) fd_write(fd, in.data(), in.size()), size);
-    EXPECT_EQ((size_t) fd_tell(fd), size);
-
-    // fd_seek
-    EXPECT_EQ((size_t) fd_seek(fd, 0, std::ios_base::beg), 0);
-
-    // fd_read
-    EXPECT_EQ((size_t) fd_read(fd, out.data(), out.size()), size);
-    EXPECT_EQ(in, std::string(out.data(), out.size()));
-
-    // fd_close
-    EXPECT_EQ(fd_close(fd), 0);
-    EXPECT_TRUE(remove_file(path));
+    std::ios_base::openmode iomode = std::ios_base::in | std::ios_base::out;
+    {
+        // generic
+        fd_t fd = fd_open(path, iomode);
+        test_fd(fd);
+        EXPECT_TRUE(remove_file(path));
+    }
+    {
+        // permissions
+        fd_t fd = fd_open(path, iomode, S_IWR_USR_GRP);
+        test_fd(fd);
+        EXPECT_TRUE(remove_file(path));
+    }
+    {
+        // normal
+        fd_t fd = fd_open(path, iomode, S_IWR_USR_GRP, access_normal);
+        test_fd(fd);
+        EXPECT_TRUE(remove_file(path));
+    }
+    {
+        // sequential
+        fd_t fd = fd_open(path, iomode, S_IWR_USR_GRP, access_sequential);
+        test_fd(fd);
+        EXPECT_TRUE(remove_file(path));
+    }
+    {
+        // random-access
+        fd_t fd = fd_open(path, iomode, S_IWR_USR_GRP, access_random);
+        test_fd(fd);
+        EXPECT_TRUE(remove_file(path));
+    }
 }
