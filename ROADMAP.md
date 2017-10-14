@@ -5,9 +5,6 @@
 - Need an API around a key/value store.
 - Need sequential, memory-mapped, random-access files.
     - Unittests
-        - sequential_fstream
-        - sequential_ifstream
-        - sequential_ofstream
         - random_access_fstream
         - random_access_ifstream
         - random_access_ofstream

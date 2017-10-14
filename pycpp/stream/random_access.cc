@@ -24,10 +24,10 @@ random_access_fstream::~random_access_fstream()
 
 
 random_access_fstream::random_access_fstream(random_access_fstream &&other):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::move(other.buffer)),
     std::iostream(&buffer)
 {
-    swap(other);
+    std::ios::rdbuf(&buffer);
 }
 
 
@@ -48,7 +48,8 @@ random_access_fstream::random_access_fstream(const std::string& name, std::ios_b
 
 void random_access_fstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -77,7 +78,8 @@ random_access_fstream::random_access_fstream(const std::u16string& name, std::io
 
 void random_access_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #endif                                          // WINDOWS
@@ -124,10 +126,10 @@ random_access_ifstream::~random_access_ifstream()
 
 
 random_access_ifstream::random_access_ifstream(random_access_ifstream &&other):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::move(other.buffer)),
     std::istream(&buffer)
 {
-    swap(other);
+    std::ios::rdbuf(&buffer);
 }
 
 
@@ -148,7 +150,8 @@ random_access_ifstream::random_access_ifstream(const std::string& name, std::ios
 
 void random_access_ifstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -177,7 +180,8 @@ random_access_ifstream::random_access_ifstream(const std::u16string& name, std::
 
 void random_access_ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #endif                                          // WINDOWS
@@ -223,10 +227,10 @@ random_access_ofstream::~random_access_ofstream()
 
 
 random_access_ofstream::random_access_ofstream(random_access_ofstream &&other):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::move(other.buffer)),
     std::ostream(&buffer)
 {
-    swap(other);
+    std::ios::rdbuf(&buffer);
 }
 
 
@@ -247,7 +251,8 @@ random_access_ofstream::random_access_ofstream(const std::string& name, std::ios
 
 void random_access_ofstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -276,7 +281,7 @@ random_access_ofstream::random_access_ofstream(const std::u16string& name, std::
 
 void random_access_ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #endif                                          // WINDOWS

@@ -225,10 +225,10 @@ mmap_fstream::~mmap_fstream()
 
 
 mmap_fstream::mmap_fstream(mmap_fstream &&other):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::move(other.buffer)),
     std::iostream(&buffer)
 {
-    swap(other);
+    std::ios::rdbuf(&buffer);
 }
 
 
@@ -249,7 +249,8 @@ mmap_fstream::mmap_fstream(const std::string& name, std::ios_base::openmode mode
 
 void mmap_fstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -278,7 +279,8 @@ mmap_fstream::mmap_fstream(const std::u16string& name, std::ios_base::openmode m
 
 void mmap_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #endif                                          // WINDOWS
@@ -414,10 +416,10 @@ mmap_ifstream::~mmap_ifstream()
 
 
 mmap_ifstream::mmap_ifstream(mmap_ifstream &&other):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::move(other.buffer)),
     std::istream(&buffer)
 {
-    swap(other);
+    std::ios::rdbuf(&buffer);
 }
 
 
@@ -438,7 +440,8 @@ mmap_ifstream::mmap_ifstream(const std::string& name, std::ios_base::openmode mo
 
 void mmap_ifstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -467,7 +470,8 @@ mmap_ifstream::mmap_ifstream(const std::u16string& name, std::ios_base::openmode
 
 void mmap_ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #endif                                          // WINDOWS
@@ -594,10 +598,10 @@ mmap_ofstream::~mmap_ofstream()
 
 
 mmap_ofstream::mmap_ofstream(mmap_ofstream &&other):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::move(other.buffer)),
     std::ostream(&buffer)
 {
-    swap(other);
+    std::ios::rdbuf(&buffer);
 }
 
 
@@ -618,7 +622,8 @@ mmap_ofstream::mmap_ofstream(const std::string& name, std::ios_base::openmode mo
 
 void mmap_ofstream::open(const std::string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -647,7 +652,8 @@ mmap_ofstream::mmap_ofstream(const std::u16string& name, std::ios_base::openmode
 
 void mmap_ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    buffer.fd(fd_open(name, mode, access_random));
+    close();
+    buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #endif                                          // WINDOWS

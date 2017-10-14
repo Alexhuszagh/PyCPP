@@ -59,24 +59,25 @@ struct test_stream
 
 TEST(sequential_fstream, sequential_fstream)
 {
-    typedef test_stream<sequential_fstream, sequential_fstream> tester;
+    // TODO: fix
+    typedef test_stream<sequential_ifstream, sequential_fstream> tester;
 
-//    tester()(UTF8_ENGLISH, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//
-//#if defined(HAVE_WFOPEN)         // WINDOWS
-//    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//    tester()(UTF16_KOREAN, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//#else                           // POSIX
-//    tester()(UTF8_KOREAN, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//#endif
+    tester()(UTF8_ENGLISH, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+
+#if defined(HAVE_WFOPEN)         // WINDOWS
+    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+    tester()(UTF16_KOREAN, [](const std::wstring& path) {
+        return _wunlink(path.data()) == 0;
+    });
+#else                           // POSIX
+    tester()(UTF8_KOREAN, [](const std::string& path) {
+        return std::remove(path.data()) == 0;
+    });
+#endif
 }
 
 
