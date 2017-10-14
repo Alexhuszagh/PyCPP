@@ -87,10 +87,9 @@ auto fd_streambuf::underflow() -> int_type
         return traits_type::eof();
     }
 
-    set_readp();
-
     std::streamsize read;
     if (fd_ != INVALID_FD_VALUE) {
+        set_readp();
         read = fd_read(fd_, in_first, buffer_size);
         if (read == 0 || read == -1) {
             // 0 indicates EOF, -1 indicates error.
@@ -110,10 +109,9 @@ auto fd_streambuf::overflow(int_type c) -> int_type
         return traits_type::eof();
     }
 
-    set_writep();
-
     std::streamsize distance, wrote;
     if (fd_ != INVALID_FD_VALUE) {
+        set_writep();
         distance = std::distance(out_first, out_last);
         if (distance == buffer_size) {
             wrote = fd_write(fd_, out_first, distance);

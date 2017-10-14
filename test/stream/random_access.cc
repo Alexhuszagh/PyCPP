@@ -58,27 +58,18 @@ struct test_stream
 // -----
 
 
-//TEST(random_access_fstream, random_access_fstream)
-//{
-//    typedef test_stream<random_access_fstream, random_access_fstream> tester;
-//
-//    tester()(UTF8_ENGLISH, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//
-//#if defined(HAVE_WFOPEN)         // WINDOWS
-//    tester()(UTF16_ENGLISH, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//    tester()(UTF16_KOREAN, [](const std::wstring& path) {
-//        return _wunlink(path.data()) == 0;
-//    });
-//#else                           // POSIX
-//    tester()(UTF8_KOREAN, [](const std::string& path) {
-//        return std::remove(path.data()) == 0;
-//    });
-//#endif
-//}
+TEST(random_access_fstream, random_access_fstream)
+{
+    typedef test_stream<random_access_fstream, random_access_fstream> tester;
+
+    tester()(UTF8_ENGLISH);
+#if defined(HAVE_WFOPEN)         // WINDOWS
+    tester()(UTF16_ENGLISH);
+    tester()(UTF16_KOREAN);
+#else                           // POSIX
+    tester()(UTF8_KOREAN);
+#endif
+}
 
 
 TEST(random_access_fstream, random_access_iofstream)

@@ -49,6 +49,7 @@ struct test_stream
         istream.close();
 
         EXPECT_EQ(result, expected);
+        EXPECT_EQ(result[0], expected[0]);
         EXPECT_TRUE(remove_file(path));
     }
 };
@@ -60,8 +61,7 @@ struct test_stream
 
 TEST(sequential_fstream, sequential_fstream)
 {
-    // TODO: fix
-    typedef test_stream<sequential_ifstream, sequential_fstream> tester;
+    typedef test_stream<sequential_fstream, sequential_fstream> tester;
 
     tester()(UTF8_ENGLISH);
 #if defined(HAVE_WFOPEN)         // WINDOWS

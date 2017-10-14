@@ -1,16 +1,18 @@
 # Roadmap
 
-**Mid-Term**
+**Short-Term**
 
-- Need an API around a key/value store.
 - Need sequential, memory-mapped, random-access files.
     - Unittests
-        - random_access_fstream
-        - random_access_ifstream
-        - random_access_ofstream
         - mmap_fstream
         - mmap_ifstream
         - mmap_ofstream
+
+- Need to implement sgetc and sgetn for streams for performance reasons.
+
+**Mid-Term**
+
+- Need an API around a key/value store.
 
 - Update AutoCOM so it is using the modern library
     - Need install targets

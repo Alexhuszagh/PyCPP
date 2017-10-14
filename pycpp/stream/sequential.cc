@@ -49,11 +49,6 @@ sequential_fstream::sequential_fstream(const std::string& name, std::ios_base::o
 void sequential_fstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
-//    fd_t fd = fd_open(name, mode, S_IWR_USR_GRP, access_sequential);
-//    char x[10];
-//    fd_read(fd, x, 10);
-//    std::cout << std::string(x, 10) << std::endl;
-// TODO: the istream part is not working...
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
@@ -84,10 +79,6 @@ sequential_fstream::sequential_fstream(const std::u16string& name, std::ios_base
 void sequential_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
     close();
-//    fd_t fd = fd_open(name, mode, S_IWR_USR_GRP, access_sequential);
-//    char x[10];
-//    fd_read(fd, x, 10);
-//    std::cout << std::string(x, 10) << std::endl;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
