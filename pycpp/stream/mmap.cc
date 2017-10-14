@@ -17,14 +17,15 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-// mmap
-// MAP_SHARED
-// PROT_READ
-// PROT_WRITE
-// munmap
-
 // HELPERS
 // -------
+
+
+// TODO: need to prepared to handle:
+//  Posix:
+//      SIGSEGV/SIGBUS
+//  Windows:
+//      EXECUTE_IN_PAGE_ERROR
 
 
 #if defined(OS_POSIX)                   // POSIX
@@ -122,7 +123,7 @@ static uint32_t higher_byte_size(size_t bytes)
 static DWORD get_system_granularity()
 {
     SYSTEM_INFO info;
-    GetSystemInfo(&info);
+    ::GetSystemInfo(&info);
     return info.dwAllocationGranularity;
 }
 
@@ -146,13 +147,13 @@ static HANDLE create_memory_mapping(fd_t fd, std::ios_base::openmode mode, size_
     DWORD low = lower_byte_size(map_size);
     DWORD high = higher_byte_size(map_size);
 
-    return CreateFileMapping(fd, nullptr, convert_prot(mode), high, low, NULL);
+    return ::CreateFileMapping(fd, nullptr, convert_prot(mode), high, low, NULL);
 }
 
 
 static void close_memory_mapping(fd_t fd)
 {
-    CloseHandle(fd);
+    ::CloseHandle(fd);
 }
 
 #endif

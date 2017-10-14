@@ -20,11 +20,11 @@ static const std::string UTF8_ENGLISH = {69, 110, 103, 108, 105, 115, 104};
 static const std::string UTF8_KOREAN = {-19, -107, -100, -22, -75, -83, -20, -106, -76};
 #if defined(HAVE_WFOPEN)
 #if BYTE_ORDER == LITTLE_ENDIAN
-static const std::wstring UTF16_ENGLISH = {69, 110, 103, 108, 105, 115, 104};
-static const std::wstring UTF16_KOREAN = {54620, 44397, 50612};
+static const std::u16string UTF16_ENGLISH = {69, 110, 103, 108, 105, 115, 104};
+static const std::u16string UTF16_KOREAN = {54620, 44397, 50612};
 #else
-static const std::wstring UTF16_ENGLISH = {23765, 28077, -19259};
-static const std::wstring UTF16_KOREAN = {23765,  28077, -19259};
+static const std::u16string UTF16_ENGLISH = {23765, 28077, -19259};
+static const std::u16string UTF16_KOREAN = {23765,  28077, -19259};
 #endif
 #endif
 
