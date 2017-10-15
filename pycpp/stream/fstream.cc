@@ -89,6 +89,7 @@ std::string c_ios_mode(const String& path, std::ios_base::openmode mode)
 FILE * get_c_file(const std::string& narrow, std::ios_base::openmode mode)
 {
     auto str = c_ios_mode(narrow, mode);
+    std::cout << str << std::endl;
     if (str.size()) {
         return fopen(narrow.data(), str.data());
     }
@@ -105,6 +106,7 @@ FILE * get_c_file(const std::string& narrow, std::ios_base::openmode mode)
 FILE * get_c_file(const std::u16string& wide, const std::ios_base::openmode mode)
 {
     auto str = c_ios_mode(wide, mode);
+    std::cout << str << std::endl;
     if (str.size()) {
         auto data = reinterpret_cast<const wchar_t*>(codec_utf8_utf16(str).data());
         return _wfopen(reinterpret_cast<const wchar_t*>(wide.data()), data);
