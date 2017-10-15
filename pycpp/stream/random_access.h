@@ -17,6 +17,11 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// VARIABLES
+// ---------
+
+extern size_t RANDOM_ACCESS_BUFFER_SIZE;
+
 // OBJECTS
 // -------
 

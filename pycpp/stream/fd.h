@@ -13,9 +13,13 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// VARIABLES
+// ---------
+
+extern size_t DEFAULT_BUFFER_SIZE;
+
 // OBJECTS
 // -------
-
 
 /**
  *  \brief Filtering streambuffer that wraps a file descriptor.
@@ -31,13 +35,10 @@ public:
     using typename std::streambuf::off_type;
     using typename std::streambuf::pos_type;
 
-    // MEMBER VARIABLES
-    // ----------------
-    static constexpr size_t buffer_size = 4096;
-
     // MEMBER FUNCTIONS
     // ----------------
     fd_streambuf(std::ios_base::openmode, fd_t fd);
+    fd_streambuf(std::ios_base::openmode, fd_t fd, size_t buffer_size);
     virtual ~fd_streambuf();
 
     fd_streambuf(const fd_streambuf&) = delete;
@@ -66,6 +67,7 @@ private:
     void set_writep();
 
     std::ios_base::openmode mode;
+    size_t buffer_size;
     fd_t fd_ = INVALID_FD_VALUE;
     char_type* in_first = nullptr;
     char_type* in_last = nullptr;

@@ -6,13 +6,18 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// VARIABLES
+// ---------
+
+size_t RANDOM_ACCESS_BUFFER_SIZE = 512;
+
 // OBJECTS
 // -------
 
 // RANDOM ACCESS FSTREAM
 
 random_access_fstream::random_access_fstream():
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::iostream(&buffer)
 {}
 
@@ -39,7 +44,7 @@ random_access_fstream & random_access_fstream::operator=(random_access_fstream &
 
 
 random_access_fstream::random_access_fstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::iostream(&buffer)
 {
     open(name, mode);
@@ -55,7 +60,7 @@ void random_access_fstream::open(const std::string& name, std::ios_base::openmod
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 random_access_fstream::random_access_fstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::iostream(&buffer)
 {
     open(name, mode);
@@ -69,7 +74,7 @@ void random_access_fstream::open(const std::wstring& name, std::ios_base::openmo
 
 
 random_access_fstream::random_access_fstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::iostream(&buffer)
 {
     open(name, mode);
@@ -114,7 +119,7 @@ void random_access_fstream::swap(random_access_fstream &other)
 
 
 random_access_ifstream::random_access_ifstream():
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::istream(&buffer)
 {}
 
@@ -141,7 +146,7 @@ random_access_ifstream & random_access_ifstream::operator=(random_access_ifstrea
 
 
 random_access_ifstream::random_access_ifstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::istream(&buffer)
 {
     open(name, mode);
@@ -157,7 +162,7 @@ void random_access_ifstream::open(const std::string& name, std::ios_base::openmo
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 random_access_ifstream::random_access_ifstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::istream(&buffer)
 {
     open(name, mode);
@@ -171,7 +176,7 @@ void random_access_ifstream::open(const std::wstring& name, std::ios_base::openm
 
 
 random_access_ifstream::random_access_ifstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::istream(&buffer)
 {
     open(name, mode);
@@ -215,7 +220,7 @@ void random_access_ifstream::swap(random_access_ifstream &other)
 // RANDOM ACCESS OFSTREAM
 
 random_access_ofstream::random_access_ofstream():
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::ostream(&buffer)
 {}
 
@@ -242,7 +247,7 @@ random_access_ofstream & random_access_ofstream::operator=(random_access_ofstrea
 
 
 random_access_ofstream::random_access_ofstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::ostream(&buffer)
 {
     open(name, mode);
@@ -258,7 +263,7 @@ void random_access_ofstream::open(const std::string& name, std::ios_base::openmo
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 random_access_ofstream::random_access_ofstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::ostream(&buffer)
 {
     open(name, mode);
@@ -272,7 +277,7 @@ void random_access_ofstream::open(const std::wstring& name, std::ios_base::openm
 
 
 random_access_ofstream::random_access_ofstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::ostream(&buffer)
 {
     open(name, mode);

@@ -21,13 +21,6 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-// TODO: need to prepared to handle:
-//  Posix:
-//      SIGSEGV/SIGBUS
-//  Windows:
-//      EXECUTE_IN_PAGE_ERROR
-
-
 #if defined(OS_POSIX)                   // POSIX
 
 static size_t file_length(fd_t fd)
@@ -167,7 +160,11 @@ static void* open_memory_view(fd_t fd, std::ios_base::openmode mode, size_t offs
     }
 
 #if defined(HAVE_MMAP)
-    return ::mmap(nullptr, length, convert_prot(mode), MAP_SHARED, fd, offset);
+    void* addr = ::mmap(nullptr, length, convert_prot(mode), MAP_SHARED, fd, offset);
+    if (addr == MAP_FAILED) {
+        return nullptr;
+    }
+    return addr;
 #elif defined(OS_WINDOWS)
     static DWORD granularity = get_system_granularity();
     DWORD access = convert_access(mode);

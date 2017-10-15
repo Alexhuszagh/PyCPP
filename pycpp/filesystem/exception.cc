@@ -53,6 +53,8 @@ const char* filesystem_error::what() const throw ()
             return "Resulting value cannot be represented by off_t.";
         case filesystem_invalid_seek:
             return "Illegal seek on a non-seekable resource.";
+        case filesystem_page_fault:
+            return "Page fault on accessing memory-mapped file.";
         case filesystem_unexpected_error:
         default:
             return "Unexpected error in stat.";

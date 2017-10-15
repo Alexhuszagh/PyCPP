@@ -15,6 +15,11 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// VARIABLES
+// ---------
+
+extern size_t SEQUENTIAL_BUFFER_SIZE;
+
 // OBJECTS
 // -------
 

@@ -10,6 +10,11 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// VARIABLES
+// ---------
+
+size_t DEFAULT_BUFFER_SIZE = 4096;
+
 // OBJECTS
 // -------
 
@@ -18,18 +23,19 @@ PYCPP_BEGIN_NAMESPACE
 
 fd_streambuf::fd_streambuf(std::ios_base::openmode mode, fd_t fd):
     mode(mode),
-    fd_(fd)
+    fd_(fd),
+    buffer_size(DEFAULT_BUFFER_SIZE)
 {
-    if (mode & std::ios_base::in) {
-        in_first = new char_type[buffer_size];
-    }
-    if (mode & std::ios_base::out) {
-        out_first = new char_type[buffer_size];
-        out_last = out_first;
-    }
+    initialize_buffers();
+}
 
-    setg(0, 0, 0);
-    setp(0, 0);
+
+fd_streambuf::fd_streambuf(std::ios_base::openmode mode, fd_t fd, size_t buffer_size):
+    mode(mode),
+    fd_(fd),
+    buffer_size(buffer_size)
+{
+    initialize_buffers();
 }
 
 
@@ -169,6 +175,21 @@ void fd_streambuf::fd(fd_t fd)
 {
     close();
     fd_ = fd;
+}
+
+
+void fd_streambuf::initialize_buffers()
+{
+    if (mode & std::ios_base::in) {
+        in_first = new char_type[buffer_size];
+    }
+    if (mode & std::ios_base::out) {
+        out_first = new char_type[buffer_size];
+        out_last = out_first;
+    }
+
+    setg(0, 0, 0);
+    setp(0, 0);
 }
 
 

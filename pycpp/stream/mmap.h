@@ -7,6 +7,19 @@
  *  All the stream offsets must be non-negative, and
  *  therefore `size_t` is used rather than `streamoff`
  *  or `streampos`, which may represent negative values.
+ *
+ *  There is no error handling from accessing invalid memory
+ *  (SIGBUS/SIGSEGV on POSIX, and EXECUTE_IN_PAGE_ERROR
+ *  on Windows). A custom error handler must be used.
+ *  These errors may occur even if memory was properly
+ *  mapped to an existing file, if the file shrunk
+ *  or the device containing the file was disconnected
+ *  from the host operating system: you must handle these
+ *  errors. However, there is no portable, easy way to do
+ *  so, and therefore it should be used for data known
+ *  to be internal to the application, or using platform-
+ *  specific error handlers (setjmp/longjmp on POSIX,
+ *  __try/__except on MSVC).
  */
 
 #pragma once

@@ -35,6 +35,7 @@ enum filesystem_code
     filesystem_seek_offset_beyond_file,
     filesystem_seek_offset_overflow,
     filesystem_invalid_seek,
+    filesystem_page_fault,
     filesystem_unexpected_error,
 };
 

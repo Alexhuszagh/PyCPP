@@ -6,13 +6,18 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// VARIABLES
+// ---------
+
+size_t SEQUENTIAL_BUFFER_SIZE = 8192;
+
 // OBJECTS
 // -------
 
 // SEQUENTIAL FSTREAM
 
 sequential_fstream::sequential_fstream():
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::iostream(&buffer)
 {}
 
@@ -39,7 +44,7 @@ sequential_fstream & sequential_fstream::operator=(sequential_fstream &&other)
 
 
 sequential_fstream::sequential_fstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::iostream(&buffer)
 {
     open(name, mode);
@@ -55,7 +60,7 @@ void sequential_fstream::open(const std::string& name, std::ios_base::openmode m
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 sequential_fstream::sequential_fstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::iostream(&buffer)
 {
     open(name, mode);
@@ -69,7 +74,7 @@ void sequential_fstream::open(const std::wstring& name, std::ios_base::openmode 
 
 
 sequential_fstream::sequential_fstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::iostream(&buffer)
 {
     open(name, mode);
@@ -115,7 +120,7 @@ void sequential_fstream::swap(sequential_fstream &other)
 
 
 sequential_ifstream::sequential_ifstream():
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::istream(&buffer)
 {}
 
@@ -142,7 +147,7 @@ sequential_ifstream & sequential_ifstream::operator=(sequential_ifstream &&other
 
 
 sequential_ifstream::sequential_ifstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::istream(&buffer)
 {
     open(name, mode);
@@ -158,7 +163,7 @@ void sequential_ifstream::open(const std::string& name, std::ios_base::openmode 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 sequential_ifstream::sequential_ifstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::istream(&buffer)
 {
     open(name, mode);
@@ -172,7 +177,7 @@ void sequential_ifstream::open(const std::wstring& name, std::ios_base::openmode
 
 
 sequential_ifstream::sequential_ifstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
+    buffer(std::ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::istream(&buffer)
 {
     open(name, mode);
@@ -217,7 +222,7 @@ void sequential_ifstream::swap(sequential_ifstream &other)
 // SEQUENTIAL OFSTREAM
 
 sequential_ofstream::sequential_ofstream():
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::ostream(&buffer)
 {}
 
@@ -244,7 +249,7 @@ sequential_ofstream & sequential_ofstream::operator=(sequential_ofstream &&other
 
 
 sequential_ofstream::sequential_ofstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::ostream(&buffer)
 {
     open(name, mode);
@@ -260,7 +265,7 @@ void sequential_ofstream::open(const std::string& name, std::ios_base::openmode 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 sequential_ofstream::sequential_ofstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::ostream(&buffer)
 {
     open(name, mode);
@@ -274,7 +279,7 @@ void sequential_ofstream::open(const std::wstring& name, std::ios_base::openmode
 
 
 sequential_ofstream::sequential_ofstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    buffer(std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     std::ostream(&buffer)
 {
     open(name, mode);
