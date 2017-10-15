@@ -7,6 +7,7 @@
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/stream/mmap.h>
 #include <cassert>
+#include <cstring>      // TODO: remove
 
 #if defined(HAVE_MMAP)
 #   include <sys/mman.h>
@@ -165,6 +166,7 @@ static void* open_memory_view(fd_t fd, std::ios_base::openmode mode, size_t offs
         return nullptr;
     }
     return addr;
+
 #elif defined(OS_WINDOWS)
     static DWORD granularity = get_system_granularity();
     DWORD access = convert_access(mode);
@@ -248,6 +250,7 @@ mmap_fstream::mmap_fstream(const std::string& name, std::ios_base::openmode mode
 void mmap_fstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in | std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -278,6 +281,7 @@ mmap_fstream::mmap_fstream(const std::u16string& name, std::ios_base::openmode m
 void mmap_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in | std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -342,6 +346,12 @@ char* mmap_fstream::data() const
 }
 
 
+size_t mmap_fstream::size() const
+{
+    return length();
+}
+
+
 size_t mmap_fstream::length() const
 {
     return length_;
@@ -356,7 +366,18 @@ void mmap_fstream::map(size_t o)
 
 void mmap_fstream::map(size_t o, size_t l)
 {
+    // cleanup existing memory
     unmap();
+
+    // allocate if space is required
+    size_t fd_length = file_length(buffer.fd());
+    if (l > fd_length) {
+        if (fd_allocate(buffer.fd(), l) < 0) {
+            return;
+        }
+    }
+
+    // map memory
     std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out;
 #if defined(OS_WINDOWS)
     map_fd = create_memory_mapping(map_fd, mode, o, l);
@@ -439,6 +460,7 @@ mmap_ifstream::mmap_ifstream(const std::string& name, std::ios_base::openmode mo
 void mmap_ifstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -469,6 +491,7 @@ mmap_ifstream::mmap_ifstream(const std::u16string& name, std::ios_base::openmode
 void mmap_ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -525,6 +548,12 @@ const char* mmap_ifstream::data() const
 }
 
 
+size_t mmap_ifstream::size() const
+{
+    return length();
+}
+
+
 size_t mmap_ifstream::length() const
 {
     return length_;
@@ -539,7 +568,11 @@ void mmap_ifstream::map(size_t o)
 
 void mmap_ifstream::map(size_t o, size_t l)
 {
+    // cleanup
     unmap();
+
+    // Note: read-only, cannot map beyond file.
+    // map memory
     std::ios_base::openmode mode = std::ios_base::in;
 #if defined(OS_WINDOWS)
     map_fd = create_memory_mapping(map_fd, mode, o, l);
@@ -584,7 +617,9 @@ void mmap_ifstream::flush(bool async)
 // MMAP OFSTREAM
 
 mmap_ofstream::mmap_ofstream():
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    // Linux and Windows require read/write access for mmap
+    // Lie about the underlying fd and just provide write methods
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
     std::ostream(&buffer)
 {}
 
@@ -611,7 +646,9 @@ mmap_ofstream & mmap_ofstream::operator=(mmap_ofstream &&other)
 
 
 mmap_ofstream::mmap_ofstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    // Linux and Windows require read/write access for mmap
+    // Lie about the underlying fd and just provide write methods
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
     std::ostream(&buffer)
 {
     open(name, mode);
@@ -621,13 +658,16 @@ mmap_ofstream::mmap_ofstream(const std::string& name, std::ios_base::openmode mo
 void mmap_ofstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in | std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 mmap_ofstream::mmap_ofstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    // Linux and Windows require read/write access for mmap
+    // Lie about the underlying fd and just provide write methods
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
     std::ostream(&buffer)
 {
     open(name, mode);
@@ -641,7 +681,9 @@ void mmap_ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
 
 
 mmap_ofstream::mmap_ofstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
+    // Linux and Windows require read/write access for mmap
+    // Lie about the underlying fd and just provide write methods
+    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
     std::ostream(&buffer)
 {
     open(name, mode);
@@ -651,6 +693,7 @@ mmap_ofstream::mmap_ofstream(const std::u16string& name, std::ios_base::openmode
 void mmap_ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in | std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -707,6 +750,12 @@ char* mmap_ofstream::data() const
 }
 
 
+size_t mmap_ofstream::size() const
+{
+    return length();
+}
+
+
 size_t mmap_ofstream::length() const
 {
     return length_;
@@ -721,8 +770,21 @@ void mmap_ofstream::map(size_t o)
 
 void mmap_ofstream::map(size_t o, size_t l)
 {
+    // cleanup
     unmap();
-    std::ios_base::openmode mode = std::ios_base::out;
+
+    // allocate if space is required
+    size_t fd_length = file_length(buffer.fd());
+    if (l > fd_length) {
+        if (fd_allocate(buffer.fd(), l) < 0) {
+            return;
+        }
+    }
+
+    // map memory
+    // Linux and Windows require read/write access for mmap
+    // Lie about the underlying fd and just provide write methods
+    std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out;
 #if defined(OS_WINDOWS)
     map_fd = create_memory_mapping(map_fd, mode, o, l);
     if (map_fd != INVALID_FD_VALUE) {

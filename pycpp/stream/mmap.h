@@ -20,6 +20,16 @@
  *  to be internal to the application, or using platform-
  *  specific error handlers (setjmp/longjmp on POSIX,
  *  __try/__except on MSVC).
+ *
+ *  If the mapped region of the file extends past the EOF, and
+ *  the file is open for writing, the file is extended
+ *  to the new logical end, without writing trailing null
+ *  bytes if possible.
+ *
+ *  Due to the underlying OS implementation, all write-only
+ *  files (`mmap_ofstream`) are implemented using a read/write
+ *  file-descriptor, but contain write-only methods at the
+ *  stream level.
  */
 
 #pragma once
@@ -73,6 +83,7 @@ public:
     char& operator[](size_t index);
     const char& operator[](size_t index) const;
     char* data() const;
+    size_t size() const;
     size_t length() const;
 
 private:
@@ -125,6 +136,7 @@ public:
     // DATA
     const char& operator[](size_t index) const;
     const char* data() const;
+    size_t size() const;
     size_t length() const;
 
 private:
@@ -177,6 +189,7 @@ public:
     // DATA
     char& operator[](size_t index);
     char* data() const;
+    size_t size() const;
     size_t length() const;
 
 private:

@@ -54,6 +54,7 @@ random_access_fstream::random_access_fstream(const std::string& name, std::ios_b
 void random_access_fstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in | std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -84,6 +85,7 @@ random_access_fstream::random_access_fstream(const std::u16string& name, std::io
 void random_access_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in | std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -156,6 +158,7 @@ random_access_ifstream::random_access_ifstream(const std::string& name, std::ios
 void random_access_ifstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -186,6 +189,7 @@ random_access_ifstream::random_access_ifstream(const std::u16string& name, std::
 void random_access_ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -257,6 +261,7 @@ random_access_ofstream::random_access_ofstream(const std::string& name, std::ios
 void random_access_ofstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -286,6 +291,8 @@ random_access_ofstream::random_access_ofstream(const std::u16string& name, std::
 
 void random_access_ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
+    close();
+    mode |= std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 

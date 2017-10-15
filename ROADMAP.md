@@ -2,12 +2,6 @@
 
 **Short-Term**
 
-- Need sequential, memory-mapped, random-access files.
-    - Unittests
-        - mmap_fstream
-        - mmap_ifstream
-        - mmap_ofstream
-
 - Need to implement sgetc and sgetn for streams for performance reasons.
 
 **Mid-Term**

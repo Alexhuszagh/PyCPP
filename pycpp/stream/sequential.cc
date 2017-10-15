@@ -54,6 +54,7 @@ sequential_fstream::sequential_fstream(const std::string& name, std::ios_base::o
 void sequential_fstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in | std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
@@ -84,6 +85,7 @@ sequential_fstream::sequential_fstream(const std::u16string& name, std::ios_base
 void sequential_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in | std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
@@ -157,6 +159,7 @@ sequential_ifstream::sequential_ifstream(const std::string& name, std::ios_base:
 void sequential_ifstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
@@ -187,6 +190,7 @@ sequential_ifstream::sequential_ifstream(const std::u16string& name, std::ios_ba
 void sequential_ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
@@ -259,6 +263,7 @@ sequential_ofstream::sequential_ofstream(const std::string& name, std::ios_base:
 void sequential_ofstream::open(const std::string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
@@ -289,6 +294,7 @@ sequential_ofstream::sequential_ofstream(const std::u16string& name, std::ios_ba
 void sequential_ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
     close();
+    mode |= std::ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 

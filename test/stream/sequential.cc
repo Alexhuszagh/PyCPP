@@ -49,7 +49,6 @@ struct test_stream
         istream.close();
 
         EXPECT_EQ(result, expected);
-        EXPECT_EQ(result[0], expected[0]);
         EXPECT_TRUE(remove_file(path));
     }
 };
