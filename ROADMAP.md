@@ -2,8 +2,6 @@
 
 **Short-Term**
 
-- Need to implement sgetc and sgetn for streams for performance reasons.
-
 **Mid-Term**
 
 - Need an API around a key/value store.
