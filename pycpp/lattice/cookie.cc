@@ -13,7 +13,8 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-/** \brief Special case of type 1 cookies, with leading and trailing quotes.
+/**
+ *  \brief Special case of type 1 cookies, with leading and trailing quotes.
  */
 bool encode_version_one_cookie(const std::string &cookie)
 {

@@ -16,7 +16,8 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-/** \brief Calculate trapezoidal integral of equally-spaced values over range.
+/**
+ *  \brief Calculate trapezoidal integral of equally-spaced values over range.
  *
  *  \param first            Iterator at beginning of range
  *  \param last             Iterator past end of range
@@ -38,7 +39,8 @@ double trapz(Iter first, Iter last, double dx = 1)
 }
 
 
-/** \brief Calculate trapezoidal integral of values over range.
+/**
+ *  \brief Calculate trapezoidal integral of values over range.
  *
  *  \param y_first          Iterator at beginning of range for values
  *  \param y_last           Iterator past end of range for values
@@ -69,7 +71,8 @@ double trapz(YIter y_first,
 }
 
 
-/** \brief Calculate trapezoidal integral of equally spaced values over range.
+/**
+ *  \brief Calculate trapezoidal integral of equally spaced values over range.
  *
  *  \param first            Iterator at beginning of range for values
  *  \param last             Iterator past end of range for values
@@ -98,7 +101,8 @@ double trapz(Iter first,
 
 
 
-/** \brief Calculate trapezoidal integral of values over range.
+/**
+ *  \brief Calculate trapezoidal integral of values over range.
  *
  *  \param y_first          Iterator at beginning of range for values
  *  \param y_last           Iterator past end of range for values

@@ -529,7 +529,8 @@ UInt count_each_combination(UInt d1, UInt d2)
 }
 
 
-/** \brief Sample all permutations.
+/**
+ *  \brief Sample all permutations.
  *
  *  For each of the permutation algorithms, use for_each_combination (or
  *  combine_discontinuous) to handle the "r out of N" part of the algorithm.
@@ -964,7 +965,8 @@ std::uintmax_t count_each_reversible_permutation(BidirIter first, BidirIter mid,
 }
 
 
-/** \brief Adapt functor to permute over [first+1, last)
+/**
+ *  \brief Adapt functor to permute over [first+1, last)
  *
  *   A reversible circular permutation of N items is done by holding the first
  *   item and reverse-permuting [first+1, last).

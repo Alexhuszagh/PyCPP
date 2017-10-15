@@ -66,25 +66,30 @@ private:
 // FUNCTIONS
 // ---------
 
-/** \brief GZIP-compress data. Returns number of bytes converted.
+/**
+ *  \brief GZIP-compress data. Returns number of bytes converted.
  */
 void gzip_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
-/** \brief GZIP-compress data.
+/**
+ *  \brief GZIP-compress data.
  */
 std::string gzip_compress(const std::string &str);
 
-/** \brief GZIP-decompress data.
+/**
+ *  \brief GZIP-decompress data.
  */
 std::string gzip_decompress(const std::string &str);
 
-/** \brief GZIP-decompress data. Returns number of bytes converted.
+/**
+ *  \brief GZIP-decompress data. Returns number of bytes converted.
  *
  *  \param bound            Known size of decompressed buffer.
  */
 void gzip_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound);
 
-/** \brief GZIP-decompress data.
+/**
+ *  \brief GZIP-decompress data.
  *
  *  \param bound            Known size of decompressed buffer.
  */

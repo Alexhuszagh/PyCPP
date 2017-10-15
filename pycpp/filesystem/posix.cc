@@ -45,7 +45,8 @@ static typename Path::const_iterator stem_impl(const Path& path)
 
 // RUNTIME
 
-/** \brief Join POSIX-compliant paths to create path to full file.
+/**
+ *  \brief Join POSIX-compliant paths to create path to full file.
  */
 template <typename List, typename ToPath>
 static typename List::value_type join_impl(const List &paths, ToPath topath)

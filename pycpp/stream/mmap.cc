@@ -7,7 +7,6 @@
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/stream/mmap.h>
 #include <cassert>
-#include <cstring>      // TODO: remove
 
 #if defined(HAVE_MMAP)
 #   include <sys/mman.h>
@@ -189,7 +188,9 @@ static int memory_sync(void *addr, size_t length, bool async)
     int flags = async ? MS_ASYNC : MS_SYNC;
     return ::msync(addr, length, flags);
 #elif defined(OS_WINDOWS)
-    return ::FlushViewOfFile(addr, length) != 0;
+    std::cout << "FlushViewOfFile: " << ::FlushViewOfFile(addr, length) << std::endl;
+    return 0;
+    //return ::FlushViewOfFile(addr, length) != 0;
 #else
 #   error "System does not define mmap() or a suitable alternative.";
 #endif
@@ -412,11 +413,11 @@ void mmap_fstream::flush(bool async)
 {
     assert(data_ && "Memory address cannot be null.");
     memory_sync(data_, length_, async);
-#if defined(OS_WINDOWS)
-    if (!async) {
-        FlushFileBuffers(map_fd);
-    }
-#endif
+//#if defined(OS_WINDOWS)
+//    if (!async) {
+//        ::FlushFileBuffers(map_fd);
+//    }
+//#endif
 }
 
 // MMAP IFSTREAM
@@ -607,11 +608,11 @@ void mmap_ifstream::flush(bool async)
 {
     assert(data_ && "Memory address cannot be null.");
     memory_sync(data_, length_, async);
-#if defined(OS_WINDOWS)
-    if (!async) {
-        FlushFileBuffers(map_fd);
-    }
-#endif
+//#if defined(OS_WINDOWS)
+//    if (!async) {
+//        ::FlushFileBuffers(map_fd);
+//    }
+//#endif
 }
 
 // MMAP OFSTREAM
@@ -818,11 +819,11 @@ void mmap_ofstream::flush(bool async)
 {
     assert(data_ && "Memory address cannot be null.");
     memory_sync(data_, length_, async);
-#if defined(OS_WINDOWS)
-    if (!async) {
-        FlushFileBuffers(map_fd);
-    }
-#endif
+//#if defined(OS_WINDOWS)
+//    if (!async) {
+//        ::FlushFileBuffers(map_fd);
+//    }
+//#endif
 }
 
 PYCPP_END_NAMESPACE

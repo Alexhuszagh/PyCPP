@@ -214,7 +214,8 @@ struct list_map_product
 };
 
 
-/** \brief Product wrapper for list of maps.
+/**
+ *  \brief Product wrapper for list of maps.
  */
 template <typename T, typename F>
 void list_map(const T& t, F &f)

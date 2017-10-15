@@ -22,7 +22,8 @@ extern std::mutex LATTICE_MUTEX;
 // FUNCTIONS
 // ---------
 
-/** \brief Warn user about user encryption methods without SSL/TLS support.
+/**
+ *  \brief Warn user about user encryption methods without SSL/TLS support.
  */
 void encryption_warning();
 

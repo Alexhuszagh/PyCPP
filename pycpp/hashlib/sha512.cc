@@ -58,7 +58,8 @@ static const uint64_t ENCODE[80] = {
 // OBJECTS
 // -------
 
-/** \brief Sha512 context.
+/**
+ *  \brief Sha512 context.
  */
 struct sha2_512_context
 {

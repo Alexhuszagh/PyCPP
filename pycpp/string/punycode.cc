@@ -137,7 +137,8 @@ size_t encode_character(uint32_t bias, uint32_t delta, Iter8 &first, Iter8 last)
 }
 
 
-/** \brief Encode UTF32 array to Punycode.
+/**
+ *  \brief Encode UTF32 array to Punycode.
  */
 template <typename Iter32, typename Iter8>
 void encode_impl(Iter32 &src_first, Iter32 src_last,
@@ -210,7 +211,8 @@ void encode_impl(Iter32 &src_first, Iter32 src_last,
 }
 
 
-/** \brief Encode Punycode array to UTF32.
+/**
+ *  \brief Encode Punycode array to UTF32.
  */
 template <typename Iter8, typename Iter32>
 void decode_impl(Iter8 &src, size_t srclen,

@@ -67,7 +67,8 @@ extern mode_t S_IWRX_USR_GRP_OTH;
  */
 path_t getcwd();
 
-/** \brief Join POSIX-compliant paths to create path to full file.
+/**
+ *  \brief Join POSIX-compliant paths to create path to full file.
  *
  *  \warning Any intermediate elements from starting from the root
  *  will reset the current root.

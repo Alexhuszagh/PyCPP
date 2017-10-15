@@ -15,7 +15,8 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-/** \brief Calculate variance of range with pre-calculated mean.
+/**
+ *  \brief Calculate variance of range with pre-calculated mean.
  *
  *  \param mean             Mean for calculation
  *  \param first            Iterator at beginning of range
@@ -39,7 +40,8 @@ double variance(double mean,
 }
 
 
-/** \brief Calculate standard deviation of range with pre-calculated mean.
+/**
+ *  \brief Calculate standard deviation of range with pre-calculated mean.
  *
  *  \param mean             Mean for calculation
  *  \param first            Iterator at beginning of range
@@ -57,7 +59,8 @@ double stdev(double mean,
 }
 
 
-/** \brief Calculate variance of range.
+/**
+ *  \brief Calculate variance of range.
  *
  *  \param first            Iterator at beginning of range
  *  \param last             Iterator past end of range
@@ -73,7 +76,8 @@ double variance(Iter first,
 }
 
 
-/** \brief Calculate standard deviation of range.
+/**
+ *  \brief Calculate standard deviation of range.
  *
  *  \param first            Iterator at beginning of range
  *  \param last             Iterator past end of range
@@ -89,7 +93,8 @@ double stdev(Iter first,
 }
 
 
-/** \brief Calculate variance of range with custom summer and pre-calculated mean.
+/**
+ *  \brief Calculate variance of range with custom summer and pre-calculated mean.
  *
  *  \param mean             Mean for calculation
  *  \param first            Iterator at beginning of range
@@ -118,7 +123,8 @@ double variance(double mean,
 }
 
 
-/** \brief Calculate standard deviation of range with custom summer and pre-calculated mean.
+/**
+ *  \brief Calculate standard deviation of range with custom summer and pre-calculated mean.
  *
  *  \param mean             Mean for calculation
  *  \param first            Iterator at beginning of range
@@ -141,7 +147,8 @@ double stdev(double mean,
 }
 
 
-/** \brief Calculate variance of range with custom summer.
+/**
+ *  \brief Calculate variance of range with custom summer.
  *
  *  \param first            Iterator at beginning of range
  *  \param last             Iterator past end of range
@@ -162,7 +169,8 @@ double variance(Iter first,
 }
 
 
-/** \brief Calculate standard deviation of range with custom summer.
+/**
+ *  \brief Calculate standard deviation of range with custom summer.
  *
  *  \param first            Iterator at beginning of range
  *  \param last             Iterator past end of range
@@ -183,7 +191,8 @@ double stdev(Iter first,
 }
 
 
-/** \brief Calculate variance of range with a pre-calculated mean.
+/**
+ *  \brief Calculate variance of range with a pre-calculated mean.
  *
  *  \param mean             Mean for calculation
  *  \param value_first      Iterator at beginning of values
@@ -219,7 +228,8 @@ double variance(double mean,
 }
 
 
-/** \brief Calculate standard deviation of range with a pre-calculated mean.
+/**
+ *  \brief Calculate standard deviation of range with a pre-calculated mean.
  *
  *  \param mean             Mean for calculation
  *  \param value_first      Iterator at beginning of values
@@ -244,7 +254,8 @@ double stdev(double mean,
 }
 
 
-/** \brief Calculate variance of range.
+/**
+ *  \brief Calculate variance of range.
  *
  *  \param value_first      Iterator at beginning of values
  *  \param value_last       Iterator past end of values
@@ -268,7 +279,8 @@ double variance(ValueIter value_first,
 }
 
 
-/** \brief Calculate standard deviation of range.
+/**
+ *  \brief Calculate standard deviation of range.
  *
  *  \param value_first      Iterator at beginning of values
  *  \param value_last       Iterator past end of values
@@ -291,7 +303,8 @@ double stdev(ValueIter value_first,
 }
 
 
-/** \brief Calculate variance of range with custom predicates and pre-calculated mean.
+/**
+ *  \brief Calculate variance of range with custom predicates and pre-calculated mean.
  *
  *  \param mean             Mean for calculation
  *  \param value_first      Iterator at beginning of values
@@ -333,7 +346,8 @@ double variance(double mean,
 }
 
 
-/** \brief Calculate standard deviation of range with custom predicates and pre-calculated mean.
+/**
+ *  \brief Calculate standard deviation of range with custom predicates and pre-calculated mean.
  *
  *  \param mean             Mean for calculation
  *  \param value_first      Iterator at beginning of values
@@ -364,7 +378,8 @@ double stdev(double mean,
 }
 
 
-/** \brief Calculate variance of range with custom predicates.
+/**
+ *  \brief Calculate variance of range with custom predicates.
  *
  *  \param value_first      Iterator at beginning of values
  *  \param value_last       Iterator past end of values
@@ -394,7 +409,8 @@ double variance(ValueIter value_first,
 }
 
 
-/** \brief Calculate standard deviation of range with custom predicates.
+/**
+ *  \brief Calculate standard deviation of range with custom predicates.
  *
  *  \param value_first      Iterator at beginning of values
  *  \param value_last       Iterator past end of values

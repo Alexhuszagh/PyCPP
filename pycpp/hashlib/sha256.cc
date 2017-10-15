@@ -25,7 +25,8 @@ static constexpr uint32_t ENCODE[] = {0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba
 // OBJECTS
 // -------
 
-/** \brief SHA256 context.
+/**
+ *  \brief SHA256 context.
  */
 struct sha2_256_context
 {

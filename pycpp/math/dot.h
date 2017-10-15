@@ -14,7 +14,8 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-/** \brief Calculate dot product over range.
+/**
+ *  \brief Calculate dot product over range.
  *
  *  \param y_first          Iterator at beginning of range for values
  *  \param y_last           Iterator past end of range for values
@@ -39,7 +40,8 @@ double dot(XIter x_first,
 }
 
 
-/** \brief Calculate dot product over range.
+/**
+ *  \brief Calculate dot product over range.
  *
  *  \param y_first          Iterator at beginning of range for values
  *  \param y_last           Iterator past end of range for values

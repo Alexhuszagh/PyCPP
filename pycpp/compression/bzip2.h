@@ -66,25 +66,30 @@ private:
 // FUNCTIONS
 // ---------
 
-/** \brief BZIP2-compress data.
+/**
+ *  \brief BZIP2-compress data.
  */
 void bz2_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
-/** \brief BZIP2-compress data.
+/**
+ *  \brief BZIP2-compress data.
  */
 std::string bz2_compress(const std::string &str);
 
-/** \brief BZIP2-decompress data.
+/**
+ *  \brief BZIP2-decompress data.
  */
 std::string bz2_decompress(const std::string &str);
 
-/** \brief BZIP2-decompress data.
+/**
+ *  \brief BZIP2-decompress data.
  *
  *  \param bound            Known size of decompressed buffer.
  */
 void bz2_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound);
 
-/** \brief BZIP2-decompress data.
+/**
+ *  \brief BZIP2-decompress data.
  *
  *  \param bound            Known size of decompressed buffer.
  */

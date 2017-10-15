@@ -15,27 +15,33 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-/** \brief Convert UTF-8 string to UTF-16.
+/**
+ *  \brief Convert UTF-8 string to UTF-16.
  */
 std::u16string codec_utf8_utf16(const std::string& str);
 
-/** \brief Convert UTF-8 string to UTF-32.
+/**
+ *  \brief Convert UTF-8 string to UTF-32.
  */
 std::u32string codec_utf8_utf32(const std::string& str);
 
-/** \brief Convert UTF-16 string to UTF-8.
+/**
+ *  \brief Convert UTF-16 string to UTF-8.
  */
 std::string codec_utf16_utf8(const std::u16string& str);
 
-/** \brief Convert UTF-16 string to UTF-32.
+/**
+ *  \brief Convert UTF-16 string to UTF-32.
  */
 std::u32string codec_utf16_utf32(const std::u16string& str);
 
-/** \brief Convert UTF-32 string to UTF-8.
+/**
+ *  \brief Convert UTF-32 string to UTF-8.
  */
 std::string codec_utf32_utf8(const std::u32string& str);
 
-/** \brief Convert UTF-32 string to UTF-16.
+/**
+ *  \brief Convert UTF-32 string to UTF-16.
  */
 std::u16string codec_utf32_utf16(const std::u32string& str);
 

@@ -19,7 +19,8 @@ PYCPP_BEGIN_NAMESPACE
 // -----------
 
 
-/** \brief STL vector wrapper.
+/**
+ *  \brief STL vector wrapper.
  *
  *  Binds a pointer and the vector length, accepting either a C++
  *  vector, a null-terminated vector, a character array and length,

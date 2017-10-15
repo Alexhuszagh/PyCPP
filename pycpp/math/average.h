@@ -17,7 +17,8 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-/** \brief Calculate average of range.
+/**
+ *  \brief Calculate average of range.
  *
  *  \param first            Iterator at beginning of range
  *  \param last             Iterator past end of range
@@ -38,7 +39,8 @@ double average(Iter first, Iter last)
 }
 
 
-/** \brief Calculate average of range with custom summer.
+/**
+ *  \brief Calculate average of range with custom summer.
  *
  *  \param first            Iterator at beginning of range
  *  \param last             Iterator past end of range
@@ -65,7 +67,8 @@ double average(Iter first,
 }
 
 
-/** \brief Calculate weighted average of range.
+/**
+ *  \brief Calculate weighted average of range.
  *
  *  \param value_first      Iterator at beginning of values
  *  \param value_last       Iterator past end of values
@@ -98,7 +101,8 @@ double average(ValueIter value_first,
 }
 
 
-/** \brief Calculate weighted average of range with custom predicates.
+/**
+ *  \brief Calculate weighted average of range with custom predicates.
  *
  *  \param value_first      Iterator at beginning of values
  *  \param value_last       Iterator past end of values

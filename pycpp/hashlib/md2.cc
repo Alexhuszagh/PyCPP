@@ -21,7 +21,8 @@ static constexpr uint8_t ENCODE[] = {41,46,67,201,162,216,124,1,61,54,84,161,236
 // OBJECTS
 // -------
 
-/** \brief MD2 context.
+/**
+ *  \brief MD2 context.
  */
 struct md2_context
 {

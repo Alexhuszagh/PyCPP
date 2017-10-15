@@ -22,7 +22,8 @@ static constexpr size_t MD4_HASH_SIZE = 16;
 // OBJECTS
 // -------
 
-/** \brief MD4 context.
+/**
+ *  \brief MD4 context.
  */
 struct md4_context
 {

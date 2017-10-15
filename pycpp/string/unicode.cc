@@ -191,7 +191,8 @@ static bool is_valid_byte(uint8_t byte, bool is_continuation, bool strict)
 }
 
 
-/** \brief Convert UTF-32 character to UTF-16.
+/**
+ *  \brief Convert UTF-32 character to UTF-16.
  *
  *  Returns the number of characters converted.
  */
@@ -230,7 +231,8 @@ size_t utf32_to_utf16(uint32_t c, Iter16& first, Iter16& last, bool strict)
 }
 
 
-/** \brief Convert UTF-32 character to UTF-8.
+/**
+ *  \brief Convert UTF-32 character to UTF-8.
  *
  *  Returns the number of characters converted.
  */

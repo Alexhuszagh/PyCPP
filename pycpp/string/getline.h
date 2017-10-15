@@ -15,7 +15,8 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-/** \brief Getline implementation for files from all platforms.
+/**
+ *  \brief Getline implementation for files from all platforms.
  *
  *  Getline implementation which stops at "\r", "\n", or both.
  */

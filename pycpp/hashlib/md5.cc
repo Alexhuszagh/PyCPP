@@ -22,7 +22,8 @@ static constexpr size_t MD5_HASH_SIZE = 16;
 // OBJECTS
 // -------
 
-/** \brief MD5 context.
+/**
+ *  \brief MD5 context.
  */
 struct md5_context
 {
@@ -197,7 +198,8 @@ static const void* body(md5_context* ctx, const void* data, uint32_t size)
 }
 
 
-/** \brief Initialize MD5 context.
+/**
+ *  \brief Initialize MD5 context.
  */
 void md5_init(md5_context* ctx)
 {
@@ -211,7 +213,8 @@ void md5_init(md5_context* ctx)
 }
 
 
-/** \brief Update hash with data.
+/**
+ *  \brief Update hash with data.
  */
 static void md5_update(void* ptr, const void* data, size_t size)
 {
@@ -257,7 +260,8 @@ static void md5_update(void* ptr, const void* data, size_t size)
     (dst)[3] = (uint8_t)((src) >> 24);
 
 
-/** \brief Add padding and return the message digest.
+/**
+ *  \brief Add padding and return the message digest.
  */
 static void md5_final(void* ptr, void* buf)
 {

@@ -66,25 +66,30 @@ private:
 // FUNCTIONS
 // ---------
 
-/** \brief LZMA2-compress data.
+/**
+ *  \brief LZMA2-compress data.
  */
 void lzma_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 
-/** \brief LZMA2-compress data.
+/**
+ *  \brief LZMA2-compress data.
  */
 std::string lzma_compress(const std::string &str);
 
-/** \brief LZMA2-decompress data.
+/**
+ *  \brief LZMA2-decompress data.
  */
 std::string lzma_decompress(const std::string &str);
 
-/** \brief LZMA2-decompress data.
+/**
+ *  \brief LZMA2-decompress data.
  *
  *  \param bound            Known size of decompressed buffer.
  */
 void lzma_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound);
 
-/** \brief LZMA2-decompress data.
+/**
+ *  \brief LZMA2-decompress data.
  *
  *  \param bound            Known size of decompressed buffer.
  */

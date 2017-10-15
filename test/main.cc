@@ -12,7 +12,8 @@
 // -----
 
 
-/** \brief Execute test suite.
+/**
+ *  \brief Execute test suite.
  */
 int main(int argc, char *argv[])
 {

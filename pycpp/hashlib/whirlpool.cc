@@ -558,7 +558,8 @@ static const uint64_t WHIRLPOOL_SBOX[8][256] = {
 // OBJECTS
 // -------
 
-/** \brief Whirlpool context.
+/**
+ *  \brief Whirlpool context.
  */
 struct whirlpool_context
 {

@@ -29,7 +29,8 @@ union Char64Union
 // OBJECTS
 // -------
 
-/** \brief SHA1 context.
+/**
+ *  \brief SHA1 context.
  */
 struct sha1_context
 {

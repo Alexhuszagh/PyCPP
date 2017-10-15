@@ -17,14 +17,16 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 
-/** \brief URL-encode string.
+/**
+ *  \brief URL-encode string.
  *
  *  \param string       String to encode
  *  \return             URL-encoded string
  */
 std::string url_encode(const std::string &string);
 
-/** \brief URL-decode string.
+/**
+ *  \brief URL-decode string.
  *
  *  \param string       String to encode
  *  \return             URL-decoded string
