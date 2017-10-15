@@ -135,10 +135,10 @@ static DWORD convert_access(std::ios_base::openmode mode)
 
 static HANDLE create_memory_mapping(fd_t fd, std::ios_base::openmode mode, size_t offset, size_t length)
 {
-    static DWORD granularity = get_system_granularity();
     size_t map_size = offset + length;
     DWORD low = lower_byte_size(map_size);
     DWORD high = higher_byte_size(map_size);
+    std::cout << low << " " << high << " CreateFileMapping" << std::endl;
 
     return ::CreateFileMapping(fd, nullptr, convert_prot(mode), high, low, NULL);
 }
@@ -154,6 +154,11 @@ static void close_memory_mapping(fd_t fd)
 
 static void* open_memory_view(fd_t fd, std::ios_base::openmode mode, size_t offset, size_t length)
 {
+    // TODO: I think on Windows I'm writing the wrong region.
+    // Check the Boost implementation and Windows example extensively
+    //      https://github.com/boostorg/interprocess/blob/4f8459e868617f88ff105633a9aa82221d5e9bb1/include/boost/interprocess/mapped_region.hpp
+    //      https://msdn.microsoft.com/en-us/library/windows/desktop/aa366548(v=vs.85).aspx
+
     if (length == 0) {
         // cannot map an empty region
         return nullptr;
@@ -173,6 +178,12 @@ static void* open_memory_view(fd_t fd, std::ios_base::openmode mode, size_t offs
     DWORD view_size = (offset % granularity) + length;
     DWORD low = lower_byte_size(start);
     DWORD high = higher_byte_size(start);
+    // TODO: the actual data doesn't start at the view..... There's also a delta...
+    size_t delta = offset - start;
+    std::cout << "granularity is: " << granularity << std::endl;
+    std::cout << "view_size is: " << view_size << std::endl;
+    std::cout << "delta is: " << delta << std::endl;
+
     return ::MapViewOfFile(fd, access, high, low, view_size);
 #else
 #   error "System does not define mmap() or a suitable alternative.";
@@ -188,9 +199,7 @@ static int memory_sync(void *addr, size_t length, bool async)
     int flags = async ? MS_ASYNC : MS_SYNC;
     return ::msync(addr, length, flags);
 #elif defined(OS_WINDOWS)
-    std::cout << "FlushViewOfFile: " << ::FlushViewOfFile(addr, length) << std::endl;
-    return 0;
-    //return ::FlushViewOfFile(addr, length) != 0;
+    return ::FlushViewOfFile(addr, length) == 0;
 #else
 #   error "System does not define mmap() or a suitable alternative.";
 #endif
@@ -202,7 +211,7 @@ static int close_memory_view(void *addr, size_t length)
 #if defined(HAVE_MMAP)
     return ::munmap(addr, length);
 #elif defined(OS_WINDOWS)
-    return ::UnmapViewOfFile(addr) != 0;
+    return ::UnmapViewOfFile(addr) == 0;
 #else
 #   error "System does not define mmap() or a suitable alternative.";
 #endif
@@ -412,12 +421,14 @@ void mmap_fstream::unmap()
 void mmap_fstream::flush(bool async)
 {
     assert(data_ && "Memory address cannot be null.");
-    memory_sync(data_, length_, async);
-//#if defined(OS_WINDOWS)
-//    if (!async) {
-//        ::FlushFileBuffers(map_fd);
-//    }
-//#endif
+    std::cout << length_ << std::endl;
+    std::cout << "memory_sync() " << memory_sync(data_, length_, async) << std::endl;
+#if defined(OS_WINDOWS)
+    if (!async) {
+        std::cout << "FlushFileBuffers() " << ::FlushFileBuffers(buffer.fd()) << std::endl;
+        std::cout << "GetLastError() " << GetLastError() << std::endl;
+    }
+#endif
 }
 
 // MMAP IFSTREAM
@@ -607,12 +618,14 @@ void mmap_ifstream::unmap()
 void mmap_ifstream::flush(bool async)
 {
     assert(data_ && "Memory address cannot be null.");
-    memory_sync(data_, length_, async);
-//#if defined(OS_WINDOWS)
-//    if (!async) {
-//        ::FlushFileBuffers(map_fd);
-//    }
-//#endif
+    std::cout << length_ << std::endl;
+    std::cout << "memory_sync() " << memory_sync(data_, length_, async) << std::endl;
+#if defined(OS_WINDOWS)
+    if (!async) {
+        std::cout << "FlushFileBuffers() " << ::FlushFileBuffers(buffer.fd()) << std::endl;
+        std::cout << "GetLastError() " << GetLastError() << std::endl;
+    }
+#endif
 }
 
 // MMAP OFSTREAM
@@ -818,12 +831,14 @@ void mmap_ofstream::unmap()
 void mmap_ofstream::flush(bool async)
 {
     assert(data_ && "Memory address cannot be null.");
-    memory_sync(data_, length_, async);
-//#if defined(OS_WINDOWS)
-//    if (!async) {
-//        ::FlushFileBuffers(map_fd);
-//    }
-//#endif
+    std::cout << length_ << std::endl;
+    std::cout << "memory_sync() " << memory_sync(data_, length_, async) << std::endl;
+#if defined(OS_WINDOWS)
+    if (!async) {
+        std::cout << "FlushFileBuffers() " << ::FlushFileBuffers(buffer.fd()) << std::endl;
+        std::cout << "GetLastError() " << GetLastError() << std::endl;
+    }
+#endif
 }
 
 PYCPP_END_NAMESPACE

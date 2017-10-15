@@ -580,13 +580,11 @@ if(BUILD_RE)
 endif()
 
 if(BUILD_STREAM)
-    list(APPEND SOURCE_FILES
-        pycpp/stream/filter.cc
-        pycpp/stream/fstream.cc
-    )
+    list(APPEND SOURCE_FILES pycpp/stream/filter.cc)
     if(BUILD_FILESYSTEM)
         list(APPEND SOURCE_FILES
             pycpp/stream/fd.cc
+            pycpp/stream/fstream.cc
             pycpp/stream/mmap.cc
             pycpp/stream/random_access.cc
             pycpp/stream/sequential.cc
@@ -767,13 +765,11 @@ if(BUILD_SQLITE)
 endif()
 
 if (BUILD_STREAM)
-    list(APPEND TEST_FILES
-        test/stream/filter.cc
-        test/stream/fstream.cc
-    )
+    list(APPEND TEST_FILES test/stream/filter.cc)
     if(BUILD_FILESYSTEM)
         list(APPEND TEST_FILES
             test/stream/fd.cc
+            test/stream/fstream.cc
             test/stream/mmap.cc
             test/stream/random_access.cc
             test/stream/sequential.cc
