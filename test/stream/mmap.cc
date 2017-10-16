@@ -14,7 +14,7 @@
 #   include <io.h>
 #endif
 
-#if defined(HAVE_MMAP) or defined(OS_WINDOWS)           // MMAP
+#if defined(HAVE_MMAP) || defined(OS_WINDOWS)           // MMAP
 
 PYCPP_USING_NAMESPACE
 
