@@ -16,7 +16,6 @@
  *  2. https://github.com/llvm-mirror/libcxx/blob/master/include/fstream#L132
  */
 
-#include <pycpp/filesystem.h>
 #include <pycpp/stream/fstream.h>
 #include <pycpp/string/codec.h>
 
@@ -35,8 +34,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Convert C++ mode to C mode.
  */
-template <typename String>
-std::string c_ios_mode(const String& path, std::ios_base::openmode mode)
+std::string c_ios_mode(std::ios_base::openmode mode)
 {
     using sios = std::ios_base;
 
@@ -56,7 +54,7 @@ std::string c_ios_mode(const String& path, std::ios_base::openmode mode)
         case sios::in:
             return "r";
         case sios::in | sios::out:
-            return exists(path) ? "r+" : "w+";
+            return "r+";
         case sios::in | sios::out | sios::trunc:
             return "w+";
         case sios::in | sios::out | sios::app:
@@ -71,7 +69,7 @@ std::string c_ios_mode(const String& path, std::ios_base::openmode mode)
         case sios::in | sios::binary:
             return "rb";
         case sios::in | sios::out | sios::binary:
-            return exists(path) ?  "r+b" : "w+b";
+            return "r+b";
         case sios::in | sios::out | sios::trunc | sios::binary:
             return "w+b";
         case sios::in | sios::out | sios::app | sios::binary:
@@ -88,8 +86,7 @@ std::string c_ios_mode(const String& path, std::ios_base::openmode mode)
  */
 FILE * get_c_file(const std::string& narrow, std::ios_base::openmode mode)
 {
-    auto str = c_ios_mode(narrow, mode);
-    std::cout << str << std::endl;
+    auto str = c_ios_mode(mode);
     if (str.size()) {
         return fopen(narrow.data(), str.data());
     }
@@ -105,8 +102,7 @@ FILE * get_c_file(const std::string& narrow, std::ios_base::openmode mode)
  */
 FILE * get_c_file(const std::u16string& wide, const std::ios_base::openmode mode)
 {
-    auto str = c_ios_mode(wide, mode);
-    std::cout << str << std::endl;
+    auto str = c_ios_mode(mode);
     if (str.size()) {
         auto data = reinterpret_cast<const wchar_t*>(codec_utf8_utf16(str).data());
         return _wfopen(reinterpret_cast<const wchar_t*>(wide.data()), data);
@@ -165,7 +161,6 @@ void fstream::open(const std::string& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
 #else
-    mode |= std::ios_base::in | std::ios_base::out;
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -182,7 +177,6 @@ fstream::fstream(const std::wstring& name, std::ios_base::openmode mode)
 
 void fstream::open(const std::wstring& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::in | std::ios_base::out;
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -197,7 +191,6 @@ fstream::fstream(const std::u16string& name, std::ios_base::openmode mode)
 
 void fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::in | std::ios_base::out;
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -284,7 +277,6 @@ void ifstream::open(const std::string& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
 #else
-    mode |= std::ios_base::in;
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -302,7 +294,6 @@ ifstream::ifstream(const std::wstring& name, std::ios_base::openmode mode)
 
 void ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::in;
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -317,7 +308,6 @@ ifstream::ifstream(const std::u16string& name, std::ios_base::openmode mode)
 
 void ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::in;
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -401,7 +391,6 @@ void ofstream::open(const std::string& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
 #else
-    mode |= std::ios_base::out;
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -419,7 +408,6 @@ ofstream::ofstream(const std::wstring& name, std::ios_base::openmode mode)
 
 void ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::out;
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -434,7 +422,6 @@ ofstream::ofstream(const std::u16string& name, std::ios_base::openmode mode)
 
 void ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::out;
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
@@ -519,7 +506,6 @@ void fstream::open(const std::string& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
 #else
-    mode |= std::ios_base::in | std::ios_base::out;
     std::fstream::open(name, mode);
 #endif
 }
@@ -535,7 +521,6 @@ fstream::fstream(const std::wstring& name, std::ios_base::openmode mode)
 
 void fstream::open(const std::wstring& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::in | std::ios_base::out;
     std::fstream::open(name, mode);
 }
 
@@ -548,7 +533,6 @@ fstream::fstream(const std::u16string& name, std::ios_base::openmode mode)
 
 void fstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::in | std::ios_base::out;
     std::fstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
 
@@ -588,7 +572,6 @@ void ifstream::open(const std::string& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
 #else
-    mode |= std::ios_base::in;
     std::ifstream::open(name, mode);
 #endif
 }
@@ -604,7 +587,6 @@ ifstream::ifstream(const std::wstring& name, std::ios_base::openmode mode)
 
 void ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::in;
     std::ifstream::open(name, mode);
 }
 
@@ -617,7 +599,6 @@ ifstream::ifstream(const std::u16string& name, std::ios_base::openmode mode)
 
 void ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::in;
     std::ifstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
 
@@ -658,7 +639,6 @@ void ofstream::open(const std::string& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
 #else
-    mode |= std::ios_base::out;
     std::ofstream::open(name, mode);
 #endif
 }
@@ -674,7 +654,6 @@ ofstream::ofstream(const std::wstring& name, std::ios_base::openmode mode)
 
 void ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::out;
     std::ofstream::open(name, mode);
 }
 
@@ -687,7 +666,6 @@ ofstream::ofstream(const std::u16string& name, std::ios_base::openmode mode)
 
 void ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
 {
-    mode |= std::ios_base::out;
     std::ofstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
 

@@ -43,11 +43,11 @@ struct test_stream
     {
         std::string expected = "Single line";
 
-        OStream ostream(path);
+        OStream ostream(path, std::ios_base::out);
         ostream << expected << std::endl;
         ostream.close();
 
-        IStream istream(path);
+        IStream istream(path, std::ios_base::in);
         std::string result;
         std::getline(istream, result);
         istream.close();
