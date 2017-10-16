@@ -45,7 +45,7 @@
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/stream/fd.h>
 
-#if defined(HAVE_MMAP) or defined(OS_WINDOWS)           // MMAP
+#if defined(HAVE_MMAP) || defined(OS_WINDOWS)           // MMAP
 
 PYCPP_BEGIN_NAMESPACE
 
