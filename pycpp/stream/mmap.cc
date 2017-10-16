@@ -7,7 +7,7 @@
 #include <pycpp/stream/mmap.h>
 #include <cassert>
 
-#if defined(HAVE_MMAP) or defined(OS_WINDOWS)           // MMAP
+#if defined(HAVE_MMAP) || defined(OS_WINDOWS)           // MMAP
 
 #if defined(HAVE_MMAP)
 #   include <sys/mman.h>
