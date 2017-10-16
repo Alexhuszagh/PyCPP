@@ -14,7 +14,9 @@
 #   include <io.h>
 #endif
 
- PYCPP_USING_NAMESPACE
+#if defined(HAVE_MMAP) or defined(OS_WINDOWS)           // MMAP
+
+PYCPP_USING_NAMESPACE
 
 static const std::string UTF8_ENGLISH = {69, 110, 103, 108, 105, 115, 104};
 static const std::string UTF8_KOREAN = {-19, -107, -100, -22, -75, -83, -20, -106, -76};
@@ -45,21 +47,18 @@ struct test_stream
         for (size_t i = 0; i < expected.size(); ++i) {
             ostream[i] = expected[i];
         }
-        std::cout << std::string(ostream.data(), ostream.size()) << std::endl;
         ostream.flush(false);
         ostream.unmap();
         ostream.close();
-// TODO: restore
-//
-//        IStream istream(path, std::ios_base::in);
-//        istream.map(0);
-//        EXPECT_TRUE(istream.has_mapping());
-//        std::string result;
-//        std::getline(istream, result);
-//        istream.close();
 
-//        EXPECT_EQ(result, expected);
-//        EXPECT_TRUE(remove_file(path));
+        IStream istream(path, std::ios_base::in);
+        istream.map(0);
+        EXPECT_TRUE(istream.has_mapping());
+        std::string actual(istream.data(), istream.size());
+        istream.close();
+
+        EXPECT_EQ(actual, expected);
+        EXPECT_TRUE(remove_file(path));
     }
 };
 
@@ -72,14 +71,13 @@ TEST(mmap_fstream, mmap_fstream)
 {
     typedef test_stream<mmap_fstream, mmap_fstream> tester;
 
-// TODO: restore
-//    tester()(UTF8_ENGLISH);
-//#if defined(HAVE_WFOPEN)         // WINDOWS
-//    tester()(UTF16_ENGLISH);
-//    tester()(UTF16_KOREAN);
-//#else                           // POSIX
-//    tester()(UTF8_KOREAN);
-//#endif
+    tester()(UTF8_ENGLISH);
+#if defined(HAVE_WFOPEN)         // WINDOWS
+    tester()(UTF16_ENGLISH);
+    tester()(UTF16_KOREAN);
+#else                           // POSIX
+    tester()(UTF8_KOREAN);
+#endif
 }
 
 
@@ -87,14 +85,15 @@ TEST(mmap_fstream, mmap_iofstream)
 {
     typedef test_stream<mmap_ifstream, mmap_ofstream> tester;
 
-// TODO: restore
-//    tester()(UTF8_ENGLISH);
-//#if defined(HAVE_WFOPEN)         // WINDOWS
-//    tester()(UTF16_ENGLISH);
-//    tester()(UTF16_KOREAN);
-//#else                           // POSIX
-//    tester()(UTF8_KOREAN);
-//#endif
+    tester()(UTF8_ENGLISH);
+#if defined(HAVE_WFOPEN)         // WINDOWS
+    tester()(UTF16_ENGLISH);
+    tester()(UTF16_KOREAN);
+#else                           // POSIX
+    tester()(UTF8_KOREAN);
+#endif
 }
+
+#endif                                                  // MMAP
 
 #include <warnings/pop.h>

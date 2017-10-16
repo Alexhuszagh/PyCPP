@@ -459,6 +459,7 @@ set(SOURCE_FILES
     pycpp/string/unicode.cc
     pycpp/string/url.cc
     pycpp/windows/error.cc
+    pycpp/windows/mman.cc
 )
 
 if(BUILD_CIPHER)

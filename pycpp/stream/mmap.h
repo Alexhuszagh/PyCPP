@@ -34,7 +34,10 @@
 
 #pragma once
 
+#include <pycpp/preprocessor/os.h>
 #include <pycpp/stream/fd.h>
+
+#if defined(HAVE_MMAP) or defined(OS_WINDOWS)           // MMAP
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -88,9 +91,6 @@ public:
 
 private:
     fd_streambuf buffer;
-#if defined(OS_WINDOWS)
-    fd_t map_fd = INVALID_FD_VALUE;
-#endif
     char* data_ = nullptr;
     size_t length_ = 0;
 };
@@ -141,9 +141,6 @@ public:
 
 private:
     fd_streambuf buffer;
-#if defined(OS_WINDOWS)
-    fd_t map_fd = INVALID_FD_VALUE;
-#endif
     char* data_ = nullptr;
     size_t length_ = 0;
 };
@@ -194,11 +191,10 @@ public:
 
 private:
     fd_streambuf buffer;
-#if defined(OS_WINDOWS)
-    fd_t map_fd = INVALID_FD_VALUE;
-#endif
     char* data_ = nullptr;
     size_t length_ = 0;
 };
 
 PYCPP_END_NAMESPACE
+
+#endif                                                  // MMAP
