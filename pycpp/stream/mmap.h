@@ -8,6 +8,19 @@
  *  therefore `size_t` is used rather than `streamoff`
  *  or `streampos`, which may represent negative values.
  *
+ *  The stream API (using stream.read(), stream.seek(), etc.)
+ *  uses minimal buffered I/O, identical to
+ *  `random_access_fstream`. The `map()` and `unmap()` methods
+ *  allow mapping the underlying file to virtual memory, within
+ *  the desired offsets, and this raw memory can be written to
+ *  or read from using the `data()` method, and the size accessed
+ *  via `size()` or `length()`.
+ *
+ *  If the mapped region of the file extends past the EOF, and
+ *  the file is open for writing, the file is extended
+ *  to the new logical end, without writing trailing null
+ *  bytes if possible, as if by `posix_fallocate()`.
+ *
  *  There is no error handling from accessing invalid memory
  *  (SIGBUS/SIGSEGV on POSIX, and EXECUTE_IN_PAGE_ERROR
  *  on Windows). A custom error handler must be used.
@@ -20,11 +33,6 @@
  *  to be internal to the application, or using platform-
  *  specific error handlers (setjmp/longjmp on POSIX,
  *  __try/__except on MSVC).
- *
- *  If the mapped region of the file extends past the EOF, and
- *  the file is open for writing, the file is extended
- *  to the new logical end, without writing trailing null
- *  bytes if possible.
  *
  *  Due to the underlying OS implementation, all write-only
  *  files (`mmap_ofstream`) are implemented using a read/write
