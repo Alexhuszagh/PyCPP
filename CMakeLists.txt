@@ -325,9 +325,9 @@ endif()
 # -------
 
 set(PYCPP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}")
-set(WARNINGS_INCLUDE_DIRS third_party/warnings/src)
-set(MULTI_INDEX_INCLUDE_DIRS third_party/multi_index/include)
-set(BRIGAND_INCLUDE_DIRS third_party/multi_index/third_party/brigand/include)
+set(WARNINGS_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/warnings/src")
+set(MULTI_INDEX_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/multi_index/include")
+set(BRIGAND_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/multi_index/third_party/brigand/include")
 
 list(APPEND PYCPP_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}
