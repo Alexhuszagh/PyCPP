@@ -342,7 +342,7 @@ if(BUILD_COMPRESSION)
     # ZLIB
     add_external_project(zlib_external third_party/zlib)
     add_external_target(z third_party/zlib third_party/zlib STATIC zlib_external)
-    list(APPEND Z_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE}/third_party/zlib" "${CMAKE_CURRENT_BINARY_DIR}/third_party/zlib")
+    list(APPEND Z_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/zlib" "${CMAKE_CURRENT_BINARY_DIR}/third_party/zlib")
     list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_ZLIB=1)
     list(APPEND PYCPP_DEPENDENCIES z)
     list(APPEND PYCPP_LIBRARIES z)
