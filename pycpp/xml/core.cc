@@ -68,6 +68,9 @@ struct xml_node_impl_t
 // OBJECTS
 // -------
 
+xml_node_iterator_t::xml_node_iterator_t()
+{}
+
 
 xml_node_iterator_t::xml_node_iterator_t(const self& other):
     ptr_((void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) other.ptr_))
@@ -173,10 +176,6 @@ void xml_node_iterator_t::swap(self& other)
 {
     std::swap(ptr_, other.ptr_);
 }
-
-
-xml_node_iterator_t::xml_node_iterator_t()
-{}
 
 
 xml_node_iterator_t::~xml_node_iterator_t()

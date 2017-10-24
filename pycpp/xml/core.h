@@ -53,6 +53,7 @@ public:
     typedef const value_type* const_pointer;
 
     // CONSTRUCTORS
+    xml_node_iterator_t();
     xml_node_iterator_t(const self&);
     self & operator=(const self&);
     xml_node_iterator_t(self&&);
@@ -81,8 +82,6 @@ public:
 private:
     friend struct xml_node_t;
     friend struct xml_node_list_t;
-
-    xml_node_iterator_t();
 
     void *ptr_ = nullptr;
 };
