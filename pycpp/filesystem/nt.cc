@@ -289,9 +289,10 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
         throw filesystem_error(filesystem_no_such_directory);
     }
 
+    DWORD flags = MOVEFILE_COPY_ALLOWED;
     if (exists(dst)) {
         if (replace) {
-            remove_file(dst);
+            flags |= MOVEFILE_REPLACE_EXISTING;
         } else {
             throw filesystem_error(filesystem_destination_exists);
         }
@@ -299,7 +300,7 @@ static bool move_file_impl(const Path& src, const Path& dst, bool replace, MoveF
 
     // Windows MoveFileW can handle different filesystems
     // don't worry about st_dev.
-    return move(src, dst);
+    return move(src, dst, flags);
 }
 
 
@@ -718,10 +719,10 @@ bool move_link(const path_t& src, const path_t& dst, bool replace)
 
 bool move_file(const path_t& src, const path_t& dst, bool replace)
 {
-    return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+    return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst, DWORD f) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
-        return MoveFileW(s, d);
+        return MoveFileExW(s, d, f);
     });
 }
 
@@ -1026,8 +1027,8 @@ bool move_link(const backup_path_t& src, const backup_path_t& dst, bool replace)
 
 bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
 {
-    return move_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst) {
-        return MoveFileA(src.data(), dst.data());
+    return move_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst, DWORD f) {
+        return MoveFileExA(src.data(), dst.data(), f);
     });
 }
 
