@@ -322,7 +322,8 @@ static int stat_impl(const Path& path, stat_t* buffer, bool use_lstat)
 {
     HANDLE handle = get_handle(path, use_lstat);
     if (handle == INVALID_HANDLE_VALUE) {
-        if (use_lstat && GetLastError() == ERROR_SYMLINK_NOT_SUPPORTED) {
+        DWORD error = GetLastError();
+        if (use_lstat && (error == ERROR_SYMLINK_NOT_SUPPORTED || error == ERROR_NOT_A_REPARSE_POINT)) {
             return stat_impl(path, buffer, false);
         }
         return get_error_code();
