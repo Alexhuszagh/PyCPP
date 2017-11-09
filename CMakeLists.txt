@@ -6,6 +6,11 @@ cmake_minimum_required(VERSION 2.8)
 project(pycpp CXX)
 enable_testing()
 
+if(MSVC AND BUILD_SHARED_LIBS)
+    cmake_minimum_required(VERSION 3.4)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
 # FLAGS
 # -----
 
@@ -147,6 +152,7 @@ configure_file(
 # --------
 
 include(ExternalProject)
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 #
 #   Add external project.
@@ -280,12 +286,22 @@ if(BUILD_COMPRESSION)
     endif()
 
     # XZ
-    add_external_project(xz_external third_party/xz)
-    add_external_target(lzma third_party/xz/src/liblzma/api third_party/xz/src/liblzma/ STATIC xz_external)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_LZMA=1 LZMA_API_STATIC=1)
-    list(APPEND PYCPP_DEPENDENCIES lzma)
-    list(APPEND PYCPP_LIBRARIES lzma)
-    list(APPEND PYCPP_INCLUDE_DIRS ${lzma_INCLUDE_DIR})
+    if(USE_SYSTEM_LZMA)
+        find_package(LZMA "5.0")
+    else()
+        add_external_project(xz_external third_party/xz)
+        add_external_target(lzma third_party/xz/src/liblzma/api third_party/xz/src/liblzma/ STATIC xz_external)
+        list(APPEND PYCPP_DEPENDENCIES lzma)
+        set(LZMA_INCLUDE_DIRS ${lzma_INCLUDE_DIR})
+        set(LZMA_LIBRARIES lzma)
+        set(LZMA_FOUND 1)
+    endif()
+
+    if(LZMA_FOUND)
+        list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_LZMA=1 LZMA_API_STATIC=1)
+        list(APPEND PYCPP_LIBRARIES ${LZMA_LIBRARIES})
+        list(APPEND PYCPP_INCLUDE_DIRS ${LZMA_INCLUDE_DIRS})
+    endif()
 
     # BLOSC
     list(APPEND BLOSC_FLAGS
@@ -306,12 +322,22 @@ if(BUILD_COMPRESSION)
         list(APPEND BLOSC_FLAGS "-DCMAKE_CXX_FLAGS=-wd4101 -wd4146 -wd4244 -wd4530 -wd4577 -wd4996")
     endif()
 
-    add_external_project(blosc_external third_party/c-blosc ${BLOSC_FLAGS})
-    add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_BLOSC=1)
-    list(APPEND PYCPP_DEPENDENCIES blosc)
-    list(APPEND PYCPP_LIBRARIES blosc)
-    list(APPEND PYCPP_INCLUDE_DIRS ${blosc_INCLUDE_DIR})
+    if(USE_SYSTEM_BLOSC)
+        find_package(BLOSC "1.0")
+    else()
+        add_external_project(blosc_external third_party/c-blosc ${BLOSC_FLAGS})
+        add_external_target(blosc third_party/c-blosc/blosc third_party/c-blosc/blosc STATIC blosc_external)
+        list(APPEND PYCPP_DEPENDENCIES blosc)
+        set(BLOSC_INCLUDE_DIRS ${blosc_INCLUDE_DIR})
+        set(BLOSC_LIBRARIES blosc)
+        set(BLOSC_FOUND 1)
+    endif()
+
+    if(BLOSC_FOUND)
+        list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_BLOSC=1)
+        list(APPEND PYCPP_LIBRARIES ${BLOSC_LIBRARIES})
+        list(APPEND PYCPP_INCLUDE_DIRS ${BLOSC_INCLUDE_DIRS})
+    endif()
 endif()
 
 if(BUILD_JSON)
@@ -347,20 +373,40 @@ if(BUILD_MATH)
 endif()
 
 if(BUILD_RE)
-    add_external_project(re2_external third_party/re2)
-    add_external_target(re2 third_party/re2 third_party/re2 STATIC re2_external)
-    list(APPEND PYCPP_DEPENDENCIES re2)
-    list(APPEND PYCPP_LIBRARIES re2)
-    list(APPEND PYCPP_INCLUDE_DIRS ${re2_INCLUDE_DIR})
+    if(USE_SYSTEM_RE2)
+        find_package(RE2)
+    else()
+        add_external_project(re2_external third_party/re2)
+        add_external_target(re2 third_party/re2 third_party/re2 STATIC re2_external)
+        list(APPEND PYCPP_DEPENDENCIES re2)
+        set(RE2_INCLUDE_DIRS ${re2_INCLUDE_DIR})
+        set(RE2_LIBRARIES re2)
+        set(RE2_FOUND 1)
+    endif()
+
+    if(RE2_FOUND)
+        list(APPEND PYCPP_LIBRARIES ${RE2_LIBRARIES})
+        list(APPEND PYCPP_INCLUDE_DIRS ${RE2_INCLUDE_DIRS})
+    endif()
 endif()
 
 if(BUILD_XML)
-    add_external_project(xml2_external third_party/libxml2)
-    add_external_target(xml2 third_party/libxml2/include third_party/libxml2 STATIC xml2_external)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS LIBXML_STATIC=1)
-    list(APPEND PYCPP_DEPENDENCIES xml2)
-    list(APPEND PYCPP_LIBRARIES xml2)
-    list(APPEND PYCPP_INCLUDE_DIRS ${xml2_INCLUDE_DIR})
+    if(USE_SYSTEM_LIBXML2)
+        find_package(LIBXML2)
+    else()
+        add_external_project(xml2_external third_party/libxml2)
+        add_external_target(xml2 third_party/libxml2/include third_party/libxml2 STATIC xml2_external)
+        list(APPEND PYCPP_DEPENDENCIES xml2)
+        set(LIBXML2_INCLUDE_DIRS ${xml2_INCLUDE_DIR})
+        set(LIBXML2_LIBRARIES xml2)
+        set(LIBXML2_FOUND 1)
+    endif()
+
+    if(LIBXML2_FOUND)
+        list(APPEND PYCPP_COMPILE_DEFINITIONS LIBXML_STATIC=1)
+        list(APPEND PYCPP_LIBRARIES ${LIBXML2_LIBRARIES})
+        list(APPEND PYCPP_INCLUDE_DIRS ${LIBXML2_INCLUDE_DIRS})
+    endif()
 endif()
 
 set(HEADER_FILES

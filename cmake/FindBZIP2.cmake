@@ -36,8 +36,15 @@ if(BZIP2_ROOT)
 endif()
 
 if(WIN32)
+    list(APPEND ZLIB_SEARCH_PATHS
+        "[HKEY_LOCAL_MACHINE\\SOFTWARE\\GnuWin32\\Bzip2;InstallPath]"
+    )
+endif()
+
+if(WIN32)
     list(APPEND BZIP2_SEARCH_PATHS
-#        "$ENV{PROGRAMFILES}/bzip2"
+        "$ENV{PROGRAMFILES}/bz2"
+        "$ENV{PROGRAMFILES}/bzip2"
     )
 endif()
 
@@ -90,7 +97,7 @@ FindStaticLibs(BZIP2)
 # -------
 
 if(BZIP2_FOUND)
-    file(STRINGS "${BZIP2_INCLUDE_DIRS}/zlib.h" BZIP2_VERSION_CONTENTS REGEX "Version [0-9]+\\.[0-9]+(\\.[0-9]+)?")
+    file(STRINGS "${BZIP2_INCLUDE_DIRS}/bzlib.h" BZIP2_VERSION_CONTENTS REGEX "libbzip2 version [0-9]+\\.[0-9]+\\.[0-9]+")
     string(REGEX REPLACE ".*bzip2/libbzip2 version ([0-9]+)\\.[0-9]+\\.[0-9]+.*" "\\1" BZIP2_VERSION_MAJOR "${BZIP2_VERSION_CONTENTS}")
     string(REGEX REPLACE ".*bzip2/libbzip2 version [0-9]+\\.([0-9]+)\\.[0-9]+.*" "\\1" BZIP2_VERSION_MINOR "${BZIP2_VERSION_CONTENTS}")
     string(REGEX REPLACE ".*bzip2/libbzip2 version [0-9]+\\.[0-9]+\\.([0-9]+).*" "\\1" BZIP2_VERSION_PATCH "${BZIP2_VERSION_CONTENTS}")
