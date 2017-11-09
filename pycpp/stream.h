@@ -7,6 +7,11 @@
 
 #pragma once
 
-#include <stream/fd.h>
 #include <stream/filter.h>
-#include <stream/fstream.h>
+#if BUILD_FILESYSTEMM
+#   include <stream/fd.h>
+#   include <stream/fstream.h>
+#   include <stream/mmap.h>
+#   include <stream/random_access.h>
+#   include <stream/sequential.h>
+#endif  // BUILD_FILESYSTEM

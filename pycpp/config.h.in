@@ -1,0 +1,73 @@
+//  :copyright: (c) 2017 Alex Huszagh.
+//  :license: MIT, see licenses/mit.md for more details.
+/**
+ *  \addtogroup PyCPP
+ *  \brief Configurations for PyCPP.
+ */
+
+#pragma once
+
+#include <warnings/push.h>
+#include <warnings/not-enough-parameters-for-macro.h>
+
+// MACROS
+// ------
+
+#define PYCPP_NAMESPACE ${PYCPP_NAMESPACE}
+
+// FEATURES
+// --------
+
+#cmakedefine01 BUILD_CACHE
+#cmakedefine01 BUILD_CIPHER
+#cmakedefine01 BUILD_COLLECTIONS
+#cmakedefine01 BUILD_COMPRESSION
+#cmakedefine01 BUILD_CSV
+#cmakedefine01 BUILD_FILESYSTEM
+#cmakedefine01 BUILD_HASHLIB
+#cmakedefine01 BUILD_COMPRESSION
+#cmakedefine01 BUILD_JSON
+#cmakedefine01 BUILD_KEYVALUE
+#cmakedefine01 BUILD_LATTICE
+#cmakedefine01 BUILD_MATH
+#cmakedefine01 BUILD_RE
+#cmakedefine01 BUILD_SQLITE
+#cmakedefine01 BUILD_STREAM
+#cmakedefine01 BUILD_XML
+
+// SYSTEM
+// ------
+
+#cmakedefine HAVE_SYS_MMAN_H
+#cmakedefine HAVE_EXPLICIT_BZERO
+#cmakedefine HAVE_MEMSET_S
+#cmakedefine HAVE_MEMCPY_S
+#cmakedefine HAVE_MEMMOVE_S
+#cmakedefine HAVE_POSIX_MEMALIGN
+#cmakedefine HAVE_POSIX_FALLOCATE
+#cmakedefine HAVE_POSIX_FADVISE
+#cmakedefine HAVE_MADVISE
+#cmakedefine HAVE_MLOCK
+#cmakedefine HAVE_MMAP
+#cmakedefine HAVE_MPROTECT
+#cmakedefine HAVE_WFOPEN
+
+// NAMESPACE
+// ---------
+
+#define PYCPP_DO_EXPAND(VAL)  VAL ## 1
+#define PYCPP_EXPAND(VAL)     PYCPP_DO_EXPAND(VAL)
+
+#if PYCPP_EXPAND(PYCPP_NAMESPACE) == 1      // NO NAMESPACE
+#   define PYCPP_BEGIN_NAMESPACE
+#   define PYCPP_END_NAMESPACE
+#   define PYCPP_USING_NAMESPACE
+#   undef PYCPP_HAVE_NAMESPACE
+#else                                       // HAVE NAMESPACE
+#   define PYCPP_BEGIN_NAMESPACE namespace PYCPP_NAMESPACE {
+#   define PYCPP_END_NAMESPACE }
+#   define PYCPP_USING_NAMESPACE using namespace PYCPP_NAMESPACE;
+#   define PYCPP_HAVE_NAMESPACE
+#endif                                      // NO NAMESPACE
+
+#include <warnings/pop.h>

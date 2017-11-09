@@ -714,13 +714,13 @@ bool directory_entry::exists() const
 }
 
 
-void directory_entry::swap(self& rhs)
+void directory_entry::swap(self_t& rhs)
 {
     std::swap(ptr_, rhs.ptr_);
 }
 
 
-bool directory_entry::operator==(const self& rhs) const
+bool directory_entry::operator==(const self_t& rhs) const
 {
     if (ptr_ && rhs.ptr_) {
         return *ptr_ == *rhs.ptr_;
@@ -729,7 +729,7 @@ bool directory_entry::operator==(const self& rhs) const
 }
 
 
-bool directory_entry::operator!=(const self& rhs) const
+bool directory_entry::operator!=(const self_t& rhs) const
 {
     return !operator==(rhs);
 }
@@ -739,7 +739,7 @@ directory_iterator::~directory_iterator()
 {}
 
 
-auto directory_iterator::operator++() -> self&
+auto directory_iterator::operator++() -> self_t&
 {
     entry_.ptr_->operator++();
     if (!*entry_.ptr_) {
@@ -749,9 +749,9 @@ auto directory_iterator::operator++() -> self&
 }
 
 
-auto directory_iterator::operator++(int) -> self
+auto directory_iterator::operator++(int) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     operator++();
     return copy;
 }
@@ -781,19 +781,19 @@ auto directory_iterator::operator*() const -> const_reference
 }
 
 
-void directory_iterator::swap(self& rhs)
+void directory_iterator::swap(self_t& rhs)
 {
     std::swap(entry_, rhs.entry_);
 }
 
 
-bool directory_iterator::operator==(const self& rhs) const
+bool directory_iterator::operator==(const self_t& rhs) const
 {
     return entry_ == rhs.entry_;
 }
 
 
-bool directory_iterator::operator!=(const self& rhs) const
+bool directory_iterator::operator!=(const self_t& rhs) const
 {
     return !operator==(rhs);
 }
@@ -874,13 +874,13 @@ bool recursive_directory_entry::exists() const
 }
 
 
-void recursive_directory_entry::swap(self& rhs)
+void recursive_directory_entry::swap(self_t& rhs)
 {
     std::swap(ptr_, rhs.ptr_);
 }
 
 
-bool recursive_directory_entry::operator==(const self& rhs) const
+bool recursive_directory_entry::operator==(const self_t& rhs) const
 {
     if (ptr_ && rhs.ptr_) {
         return *ptr_ == *rhs.ptr_;
@@ -889,7 +889,7 @@ bool recursive_directory_entry::operator==(const self& rhs) const
 }
 
 
-bool recursive_directory_entry::operator!=(const self& rhs) const
+bool recursive_directory_entry::operator!=(const self_t& rhs) const
 {
     return !operator==(rhs);
 }
@@ -899,7 +899,7 @@ recursive_directory_iterator::~recursive_directory_iterator()
 {}
 
 
-auto recursive_directory_iterator::operator++() -> self&
+auto recursive_directory_iterator::operator++() -> self_t&
 {
     entry_.ptr_->operator++();
     if (!*entry_.ptr_) {
@@ -909,9 +909,9 @@ auto recursive_directory_iterator::operator++() -> self&
 }
 
 
-auto recursive_directory_iterator::operator++(int) -> self
+auto recursive_directory_iterator::operator++(int) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     operator++();
     return copy;
 }
@@ -941,19 +941,19 @@ auto recursive_directory_iterator::operator*() const -> const_reference
 }
 
 
-void recursive_directory_iterator::swap(self& rhs)
+void recursive_directory_iterator::swap(self_t& rhs)
 {
     std::swap(entry_, rhs.entry_);
 }
 
 
-bool recursive_directory_iterator::operator==(const self& rhs) const
+bool recursive_directory_iterator::operator==(const self_t& rhs) const
 {
     return entry_ == rhs.entry_;
 }
 
 
-bool recursive_directory_iterator::operator!=(const self& rhs) const
+bool recursive_directory_iterator::operator!=(const self_t& rhs) const
 {
     return !operator==(rhs);
 }

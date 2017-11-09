@@ -6,6 +6,15 @@ cmake_minimum_required(VERSION 2.8)
 project(pycpp CXX)
 enable_testing()
 
+# TODO: each dependent library should have an option to use the system variant...
+# ZLib
+# bzip2
+# xz
+# blosc
+# libxml2
+# leveldb
+# re2
+
 # FLAGS
 # -----
 
@@ -43,7 +52,6 @@ option(WITH_STREAM "Build (only) stream library" OFF)
 option(WITH_XML "Build (only) XML library" OFF)
 
 # OPTIONS
-option(BUILD_STATIC "Build static library" ON)
 option(BUILD_TESTS "Build pycpp library tests" OFF)
 SET(CXX_STANDARD "11" CACHE STRING "Minimum C++ standard to support.")
 SET(PYCPP_NAMESPACE "" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
@@ -65,65 +73,7 @@ if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV 
     set(BUILD_XML ${WITH_XML})
 endif()
 
-if (BUILD_CIPHER)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_CIPHER=1)
-endif()
-
-if (BUILD_COLLECTIONS)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_COLLECTIONS=1)
-endif()
-
-if (BUILD_COMPRESSION)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_COMPRESSION=1)
-endif()
-
-if (BUILD_CSV)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_CSV=1)
-endif()
-
-if (BUILD_FILESYSTEM)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_FILESYSTEM=1)
-endif()
-
-if (BUILD_HASHLIB)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_HASHLIB=1)
-endif()
-
-if (BUILD_COMPRESSION)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_COMPRESSION=1)
-endif()
-
-if (BUILD_JSON)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_JSON=1)
-endif()
-
-if (BUILD_KEYVALUE)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_KEYVALUE=1)
-endif()
-
-if (BUILD_LATTICE)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_LATTICE=1)
-endif()
-
-if (BUILD_MATH)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_MATH=1)
-endif()
-
-if (BUILD_RE)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_RE=1)
-endif()
-
-if (BUILD_SQLITE)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_SQLITE=1)
-endif()
-
-if (BUILD_STREAM)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_STREAM=1)
-endif()
-
-if (BUILD_XML)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS BUILD_XML=1)
-endif()
+set(BUILD_CACHE ${BUILD_KEYVALUE})
 
 if (BUILD_MATH OR MSVC)
     if (CXX_STANDARD LESS "14")
@@ -146,7 +96,7 @@ elseif(MSVC)
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
 endif()
 
-if(BUILD_STATIC)
+if(NOT BUILD_SHARED_LIBS)
     if(MINGW OR MSYS OR CYGWIN)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static")
     elseif(UNIX)
@@ -166,9 +116,6 @@ include(CheckIncludeFile)
 enable_language(C)
 
 CHECK_INCLUDE_FILE(sys/mman.h HAVE_SYS_MMAN_H)
-if(HAVE_SYS_MMAN_H)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_SYS_MMAN_H=1)
-endif()
 
 # FUNCTIONS
 # ---------
@@ -176,66 +123,25 @@ endif()
 include(CheckFunctionExists)
 
 CHECK_FUNCTION_EXISTS(explicit_bzero HAVE_EXPLICIT_BZERO)
-if(HAVE_EXPLICIT_BZERO)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_EXPLICIT_BZERO=1)
-endif()
-
 CHECK_FUNCTION_EXISTS(memset_s HAVE_MEMSET_S)
-if(HAVE_MEMSET_S)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_MEMSET_S=1)
-endif()
-
 CHECK_FUNCTION_EXISTS(memcpy_s HAVE_MEMCPY_S)
-if(HAVE_MEMCPY_S)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_MEMCPY_S=1)
-endif()
-
 CHECK_FUNCTION_EXISTS(memmove_s HAVE_MEMMOVE_S)
-if(HAVE_MEMMOVE_S)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_MEMMOVE_S=1)
-endif()
-
 CHECK_FUNCTION_EXISTS(posix_memalign HAVE_POSIX_MEMALIGN)
-if(HAVE_POSIX_MEMALIGN)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_POSIX_MEMALIGN=1)
-endif()
-
 CHECK_FUNCTION_EXISTS(posix_fallocate HAVE_POSIX_FALLOCATE)
-if(HAVE_POSIX_FALLOCATE)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_POSIX_FALLOCATE=1)
-endif()
-
 CHECK_FUNCTION_EXISTS(posix_fadvise HAVE_POSIX_FADVISE)
-if(HAVE_POSIX_FADVISE)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_POSIX_FADVISE=1)
-endif()
-
 CHECK_FUNCTION_EXISTS(madvise HAVE_MADVISE)
-if(HAVE_MADVISE)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_MADVISE=1)
-endif()
-
 CHECK_FUNCTION_EXISTS(mlock HAVE_MLOCK)
-if(HAVE_MLOCK)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_MLOCK=1)
-endif()
-
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
-if(HAVE_MMAP)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_MMAP=1)
-endif()
-
-if(HAVE_SYS_MMAN_H)
-    CHECK_FUNCTION_EXISTS(mprotect HAVE_MPROTECT)
-    if(HAVE_MPROTECT)
-        list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_MPROTECT=1)
-    endif()
-endif()
-
+CHECK_FUNCTION_EXISTS(mmap HAVE_MPROTECT)
 CHECK_FUNCTION_EXISTS(_wfopen HAVE_WFOPEN)
-if(HAVE_WFOPEN)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_WFOPEN=1)
-endif()
+
+# CONFIGURATION
+# -------------
+
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/config.h.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/include/pycpp/config.h"
+)
 
 # EXTERNAL
 # --------
@@ -324,7 +230,7 @@ endif()
 # LIBRARY
 # -------
 
-set(PYCPP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}")
+set(PYCPP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/include")
 set(WARNINGS_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/warnings/src")
 set(MULTI_INDEX_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/multi_index/include")
 set(BRIGAND_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/multi_index/third_party/brigand/include")
@@ -335,8 +241,6 @@ list(APPEND PYCPP_INCLUDE_DIRS
     ${MULTI_INDEX_INCLUDE_DIRS}
     ${BRIGAND_INCLUDE_DIRS}
 )
-
-list(APPEND PYCPP_COMPILE_DEFINITIONS PYCPP_NAMESPACE=${PYCPP_NAMESPACE})
 
 if(BUILD_COMPRESSION)
     # ZLIB
@@ -440,6 +344,78 @@ if(BUILD_XML)
     list(APPEND PYCPP_INCLUDE_DIRS ${xml2_INCLUDE_DIR})
 endif()
 
+set(HEADER_FILES
+    pycpp/iterator.h
+    pycpp/iterator/category.h
+    pycpp/iterator/input_iterator_facade.h
+    pycpp/iterator/range.h
+    pycpp/iterator/transform.h
+    pycpp/itertools.h
+    pycpp/itertools/product.h
+    pycpp/itertools/sampling.h
+    pycpp/misc/enum.h
+    pycpp/misc/ordering.h
+    pycpp/misc/pimpl.h
+    pycpp/misc/xrange.h
+    pycpp/multi_index/composite_key.h
+    pycpp/multi_index/container.h
+    pycpp/multi_index/global_fun.h
+    pycpp/multi_index/hashed_index_fwd.h
+    pycpp/multi_index/hashed_index.h
+    pycpp/multi_index/identity.h
+    pycpp/multi_index/indexed_by.h
+    pycpp/multi_index/mem_fun.h
+    pycpp/multi_index/member.h
+    pycpp/multi_index/ordered_index_fwd.h
+    pycpp/multi_index/ordered_index.h
+    pycpp/multi_index/random_access_index_fwd.h
+    pycpp/multi_index/random_access_index.h
+    pycpp/multi_index/ranked_index_fwd.h
+    pycpp/multi_index/ranked_index.h
+    pycpp/multi_index/sequenced_index_fwd.h
+    pycpp/multi_index/sequenced_index.h
+    pycpp/multi_index/tag.h
+    pycpp/preprocessor.h
+    pycpp/preprocessor/architecture.h
+    pycpp/preprocessor/byteorder.h
+    pycpp/preprocessor/compiler.h
+    pycpp/preprocessor/errno.h
+    pycpp/preprocessor/os.h
+    pycpp/preprocessor/parallel.h
+    pycpp/preprocessor/processor.h
+    pycpp/preprocessor/sysstat.h
+    pycpp/preprocessor/tls.h
+    pycpp/random.h
+    pycpp/reference/core.h
+    pycpp/reference/deque.h
+    pycpp/reference/vector.h
+    pycpp/runtime/os.h
+    pycpp/safe.h
+    pycpp/safe/stdlib.h
+    pycpp/secure.h
+    pycpp/secure/allocator.h
+    pycpp/secure/char_traits.h
+    pycpp/secure/stdlib.h
+    pycpp/secure/string.h
+    pycpp/string/base16.h
+    pycpp/string/base32.h
+    pycpp/string/base64.h
+    pycpp/string/casemap.h
+    pycpp/string/codec.h
+    pycpp/string/getline.h
+    pycpp/string/hex.h
+    pycpp/string/punycode.h
+    pycpp/string/string.h
+    pycpp/string/unicode.h
+    pycpp/string/url.h
+    pycpp/string/whitespace.h
+    pycpp/view/string.h
+    pycpp/view/vector.h
+    pycpp/windows/error.h
+    pycpp/windows/mman.h
+    pycpp/windows/winapi.h
+)
+
 set(SOURCE_FILES
     pycpp/preprocessor/byteorder.cc
     pycpp/random/pseudorandom.cc
@@ -462,13 +438,46 @@ set(SOURCE_FILES
     pycpp/windows/mman.cc
 )
 
+if(BUILD_CACHE)
+    list(APPEND HEADER_FILES
+        pycpp/cache/lru.h
+    )
+    if(BUILD_KEYVALUE)
+        list(APPEND HEADER_FILES
+            pycpp/cache/kv_backend.h
+            pycpp/cache/kv.h
+        )
+        list(APPEND SOURCE_FILES
+            pycpp/cache/kv_backend.cc
+        )
+    endif()
+    if(BUILD_SQLITE)
+        list(APPEND HEADER_FILES
+            pycpp/cache/sqlite.h
+        )
+    endif()
+endif()
+
 if(BUILD_CIPHER)
+    list(APPEND HEADER_FILES
+        pycpp/cipher.h
+        pycpp/cipher/aes.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/cipher/aes.cc
     )
 endif()
 
 if(BUILD_COLLECTIONS)
+    list(APPEND HEADER_FILES
+        pycpp/collections.h
+        pycpp/collections/any.h
+        pycpp/collections/defaultdict.h
+        pycpp/collections/optional.h
+        pycpp/collections/ordereddict.h
+        pycpp/collections/utility.h
+        pycpp/collections/variant.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/collections/any.cc
         pycpp/collections/variant.cc
@@ -476,6 +485,17 @@ if(BUILD_COLLECTIONS)
 endif()
 
 if(BUILD_COMPRESSION)
+    list(APPEND HEADER_FILES
+        pycpp/compression.h
+        pycpp/compression/blosc.h
+        pycpp/compression/bzip2.h
+        pycpp/compression/core.h
+        pycpp/compression/detect.h
+        pycpp/compression/exception.h
+        pycpp/compression/gzip.h
+        pycpp/compression/lzma.h
+        pycpp/compression/zlib.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/compression/blosc.cc
         pycpp/compression/bzip2.cc
@@ -483,11 +503,27 @@ if(BUILD_COMPRESSION)
         pycpp/compression/exception.cc
         pycpp/compression/gzip.cc
         pycpp/compression/lzma.cc
-        pycpp/compression/stream.cc
+        pycpp/compression/zlib.cc
     )
+
+    if(BUILD_STEAM)
+        list(APPEND HEADER_FILES
+            pycpp/compression/stream.h
+        )
+        list(APPEND SOURCE_FILES
+            pycpp/compression/stream.cc
+        )
+    endif()
 endif()
 
 if (BUILD_CSV)
+    list(APPEND HEADER_FILES
+        pycpp/csv.h
+        pycpp/csv/dict.h
+        pycpp/csv/punct.h
+        pycpp/csv/reader.h
+        pycpp/csv/writer.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/csv/dict.cc
         pycpp/csv/punct.cc
@@ -497,6 +533,17 @@ if (BUILD_CSV)
 endif()
 
 if (BUILD_FILESYSTEM)
+    list(APPEND HEADER_FILES
+        pycpp/filesystem.h
+        pycpp/filesystem/access.h
+        pycpp/filesystem/exception.h
+        pycpp/filesystem/fd.h
+        pycpp/filesystem/home.h
+        pycpp/filesystem/iterator.h
+        pycpp/filesystem/path.h
+        pycpp/filesystem/stat.h
+        pycpp/filesystem/tmp.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/filesystem/exception.cc
         pycpp/filesystem/filesystem.cc
@@ -512,6 +559,9 @@ if (BUILD_FILESYSTEM)
 endif()
 
 if (BUILD_HASHLIB)
+    list(APPEND HEADER_FILES
+        pycpp/hashlib.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/hashlib/hash.cc
         pycpp/hashlib/md2.cc
@@ -526,6 +576,13 @@ if (BUILD_HASHLIB)
 endif()
 
 if(BUILD_JSON)
+    list(APPEND HEADER_FILES
+        pycpp/json.h
+        pycpp/json/core.h
+        pycpp/json/dom.h
+        pycpp/json/sax.h
+        pycpp/json/writer.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/json/core.cc
         pycpp/json/dom.cc
@@ -534,13 +591,33 @@ if(BUILD_JSON)
     )
 endif()
 
-if(BUILD_KEYVALUE)
-    list(APPEND SOURCE_FILES
-        pycpp/cache/kv_backend.cc
-    )
-endif()
-
 if(BUILD_LATTICE)
+    list(APPEND HEADER_FILES
+        pycpp/lattice.h
+        pycpp/lattice/adaptor.h
+        pycpp/lattice/adaptor/nossl.h
+        pycpp/lattice/adaptor/openssl.h
+        pycpp/lattice/async.h
+        pycpp/lattice/auth.h
+        pycpp/lattice/connection.h
+        pycpp/lattice/cookie.h
+        pycpp/lattice/crypto.h
+        pycpp/lattice/digest.h
+        pycpp/lattice/dns.h
+        pycpp/lattice/header.h
+        pycpp/lattice/method.h
+        pycpp/lattice/multipart.h
+        pycpp/lattice/parameter.h
+        pycpp/lattice/proxy.h
+        pycpp/lattice/redirect.h
+        pycpp/lattice/request.h
+        pycpp/lattice/response.h
+        pycpp/lattice/ssl.h
+        pycpp/lattice/timeout.h
+        pycpp/lattice/transfer.h
+        pycpp/lattice/url.h
+        pycpp/lattice/util.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/lattice/async.cc
         pycpp/lattice/auth.cc
@@ -561,28 +638,59 @@ if(BUILD_LATTICE)
     )
 
     if(UNIX)
+        list(APPEND HEADER_FILES pycpp/lattice/adaptor/posix.h)
         list(APPEND SOURCE_FILES pycpp/lattice/adaptor/posix.cc)
     elseif(WIN32)
+        list(APPEND HEADER_FILES pycpp/lattice/adaptor/windows.h)
         list(APPEND SOURCE_FILES pycpp/lattice/adaptor/windows.cc)
     endif()
 endif()
 
 if(BUILD_MATH)
+    list(APPEND HEADER_FILES
+        pycpp/math.h
+        pycpp/math/array.h
+        pycpp/math/average.h
+        pycpp/math/binomial.h
+        pycpp/math/distribution.h
+        pycpp/math/dot.h
+        pycpp/math/factorial.h
+        pycpp/math/std.h
+        pycpp/math/trapz.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/math/distribution.cc
     )
 endif()
 
 if(BUILD_RE)
+    list(APPEND HEADER_FILES
+        pycpp/re.h
+        pycpp/re/match.h
+        pycpp/re/re.h
+        pycpp/re/regex.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/re/match.cc
         pycpp/re/re.cc
+        # Don't include regex.cc, it's included by re.cc
     )
 endif()
 
 if(BUILD_STREAM)
+    list(APPEND HEADER_FILES
+        pycpp/stream.h
+        pycpp/stream/filter.h
+    )
     list(APPEND SOURCE_FILES pycpp/stream/filter.cc)
     if(BUILD_FILESYSTEM)
+        list(APPEND HEADER_FILES
+            pycpp/stream/fd.h
+            pycpp/stream/fstream.h
+            pycpp/stream/mmap.h
+            pycpp/stream/random_access.h
+            pycpp/stream/sequential.h
+        )
         list(APPEND SOURCE_FILES
             pycpp/stream/fd.cc
             pycpp/stream/fstream.cc
@@ -594,6 +702,14 @@ if(BUILD_STREAM)
 endif()
 
 if(BUILD_XML)
+    list(APPEND HEADER_FILES
+        pycpp/xml.h
+        pycpp/xml/core.h
+        pycpp/xml/dom.h
+        pycpp/xml/sax.h
+        pycpp/xml/text.h
+        pycpp/xml/writer.h
+    )
     list(APPEND SOURCE_FILES
         pycpp/xml/core.cc
         pycpp/xml/dom.cc
@@ -603,11 +719,11 @@ if(BUILD_XML)
     )
 endif()
 
-if(BUILD_STATIC)
-    add_library(pycpp STATIC ${SOURCE_FILES})
-else()
-    add_library(pycpp SHARED ${SOURCE_FILES})
-endif()
+add_library(pycpp "")
+target_sources(${PROJECT_NAME}
+    PRIVATE ${SOURCE_FILES}
+    PUBLIC ${HEADER_FILES}
+)
 
 # INTERFACE
 # ---------
@@ -714,6 +830,14 @@ set(TEST_FILES
     test/random.cc
 )
 
+if (BUILD_CACHE)
+    if(BUILD_KEYVALUE)
+        list(APPEND TEST_FILES
+            test/cache/kv.cc
+        )
+    endif()
+endif()
+
 if (BUILD_CIPHER)
     list(APPEND TEST_FILES test/cipher.cc)
 endif()
@@ -759,12 +883,6 @@ if (BUILD_JSON)
         test/json/dom.cc
         test/json/sax.cc
         test/json/writer.cc
-    )
-endif()
-
-if(BUILD_KEYVALUE)
-    list(APPEND TEST_FILES
-        test/cache/kv.cc
     )
 endif()
 
@@ -860,3 +978,31 @@ if(BUILD_TESTS)
 
     add_dependencies(pycpp_tests ${PYCPP_DEPENDENCIES} gtest gtest_main)
 endif()
+
+# INSTALL
+# -------
+
+if(MSVC)
+    if(CMAKE_CL_64)
+        set(MSVC_FOLDER_PREFIX x64)
+    else()
+        set(MSVC_FOLDER_PREFIX Win32)
+    endif()
+
+    install(TARGETS pycpp
+        LIBRARY DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
+        ARCHIVE DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
+        RUNTIME DESTINATION "bin/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
+    )
+else()
+    install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION bin
+    )
+endif()
+
+install(DIRECTORY PYCPP_NAMESPACE
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.h"
+)

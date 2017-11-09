@@ -2,14 +2,11 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Helpers to wrap the key-value backend.
+ *  \brief Database cache objects.
  */
 
 #pragma once
 
-#include <pycpp/config.h>
-
-PYCPP_BEGIN_NAMESPACE
-
-
-PYCPP_END_NAMESPACE
+#if BUILD_KEYVALUE
+#   include <pycpp/cache/kv.h>
+#endif

@@ -46,7 +46,7 @@ struct directory_entry
 public:
     // MEMBER TYPES
     // ------------
-    typedef directory_entry self;
+    typedef directory_entry self_t;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -64,11 +64,11 @@ public:
     bool exists() const;
 
     // OTHER
-    void swap(self&);
+    void swap(self_t&);
 
     // RELATIONAL
-    bool operator==(const self&) const;
-    bool operator!=(const self&) const;
+    bool operator==(const self_t&) const;
+    bool operator!=(const self_t&) const;
 
 private:
     friend struct directory_data;
@@ -89,9 +89,9 @@ struct directory_iterator: std::iterator<std::input_iterator_tag, directory_entr
 public:
     // MEMBER TYPES
     // ------------
-    typedef std::iterator<std::input_iterator_tag, directory_entry> base;
-    typedef directory_iterator self;
-    using typename base::value_type;
+    typedef std::iterator<std::input_iterator_tag, directory_entry> base_t;
+    typedef directory_iterator self_t;
+    using typename base_t::value_type;
     typedef value_type& reference;
     typedef const value_type& const_reference;
     typedef value_type* pointer;
@@ -100,10 +100,10 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     directory_iterator() = default;
-    directory_iterator(const self&) = default;
-    self& operator=(const self&) = default;
-    directory_iterator(self&&) = default;
-    self& operator=(self&&) = default;
+    directory_iterator(const self_t&) = default;
+    self_t& operator=(const self_t&) = default;
+    directory_iterator(self_t&&) = default;
+    self_t& operator=(self_t&&) = default;
     ~directory_iterator();
 
     directory_iterator(const path_t& path);
@@ -112,19 +112,19 @@ public:
 #endif
 
     // OPERATORS
-    self& operator++();
-    self operator++(int);
+    self_t& operator++();
+    self_t operator++(int);
     pointer operator->();
     const_pointer operator->() const;
     reference operator*();
     const_reference operator*() const;
 
     // OTHER
-    void swap(self&);
+    void swap(self_t&);
 
     // RELATIONAL
-    bool operator==(const self&) const;
-    bool operator!=(const self&) const;
+    bool operator==(const self_t&) const;
+    bool operator!=(const self_t&) const;
 
 private:
     directory_entry entry_;
@@ -139,7 +139,7 @@ struct recursive_directory_entry
 public:
     // MEMBER TYPES
     // ------------
-    typedef recursive_directory_entry self;
+    typedef recursive_directory_entry self_t;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -157,11 +157,11 @@ public:
     bool exists() const;
 
     // OTHER
-    void swap(self&);
+    void swap(self_t&);
 
     // RELATIONAL
-    bool operator==(const self&) const;
-    bool operator!=(const self&) const;
+    bool operator==(const self_t&) const;
+    bool operator!=(const self_t&) const;
 
 private:
     friend struct recursive_directory_data;
@@ -184,9 +184,9 @@ struct recursive_directory_iterator: std::iterator<std::input_iterator_tag, recu
 public:
     // MEMBER TYPES
     // ------------
-    typedef std::iterator<std::input_iterator_tag, recursive_directory_entry> base;
-    typedef recursive_directory_iterator self;
-    using typename base::value_type;
+    typedef std::iterator<std::input_iterator_tag, recursive_directory_entry> base_t;
+    typedef recursive_directory_iterator self_t;
+    using typename base_t::value_type;
     typedef value_type& reference;
     typedef const value_type& const_reference;
     typedef value_type* pointer;
@@ -195,10 +195,10 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     recursive_directory_iterator() = default;
-    recursive_directory_iterator(const self&) = default;
-    self& operator=(const self&) = default;
-    recursive_directory_iterator(self&&) = default;
-    self& operator=(self&&) = default;
+    recursive_directory_iterator(const self_t&) = default;
+    self_t& operator=(const self_t&) = default;
+    recursive_directory_iterator(self_t&&) = default;
+    self_t& operator=(self_t&&) = default;
     ~recursive_directory_iterator();
 
     recursive_directory_iterator(const path_t& path);
@@ -207,19 +207,19 @@ public:
 #endif
 
     // OPERATORS
-    self& operator++();
-    self operator++(int);
+    self_t& operator++();
+    self_t operator++(int);
     pointer operator->();
     const_pointer operator->() const;
     reference operator*();
     const_reference operator*() const;
 
     // OTHER
-    void swap(self&);
+    void swap(self_t&);
 
     // RELATIONAL
-    bool operator==(const self&) const;
-    bool operator!=(const self&) const;
+    bool operator==(const self_t&) const;
+    bool operator!=(const self_t&) const;
 
 private:
     recursive_directory_entry entry_;
