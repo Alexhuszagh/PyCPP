@@ -1,5 +1,5 @@
 #  :copyright: (c) 2017 Alex Huszagh.
-#  :license: FreeBSD, see LICENSE.txt for more details.
+#  :license: MIT, see licenses/mit.md for more details.
 
 # FindBZIP2
 # ---------

@@ -364,382 +364,383 @@ if(BUILD_XML)
 endif()
 
 set(HEADER_FILES
-    pycpp/iterator.h
-    pycpp/iterator/category.h
-    pycpp/iterator/input_iterator_facade.h
-    pycpp/iterator/range.h
-    pycpp/iterator/transform.h
-    pycpp/itertools.h
-    pycpp/itertools/product.h
-    pycpp/itertools/sampling.h
-    pycpp/misc/enum.h
-    pycpp/misc/ordering.h
-    pycpp/misc/pimpl.h
-    pycpp/misc/xrange.h
-    pycpp/multi_index/composite_key.h
-    pycpp/multi_index/container.h
-    pycpp/multi_index/global_fun.h
-    pycpp/multi_index/hashed_index_fwd.h
-    pycpp/multi_index/hashed_index.h
-    pycpp/multi_index/identity.h
-    pycpp/multi_index/indexed_by.h
-    pycpp/multi_index/mem_fun.h
-    pycpp/multi_index/member.h
-    pycpp/multi_index/ordered_index_fwd.h
-    pycpp/multi_index/ordered_index.h
-    pycpp/multi_index/random_access_index_fwd.h
-    pycpp/multi_index/random_access_index.h
-    pycpp/multi_index/ranked_index_fwd.h
-    pycpp/multi_index/ranked_index.h
-    pycpp/multi_index/sequenced_index_fwd.h
-    pycpp/multi_index/sequenced_index.h
-    pycpp/multi_index/tag.h
-    pycpp/preprocessor.h
-    pycpp/preprocessor/architecture.h
-    pycpp/preprocessor/byteorder.h
-    pycpp/preprocessor/compiler.h
-    pycpp/preprocessor/errno.h
-    pycpp/preprocessor/os.h
-    pycpp/preprocessor/parallel.h
-    pycpp/preprocessor/processor.h
-    pycpp/preprocessor/sysstat.h
-    pycpp/preprocessor/tls.h
-    pycpp/random.h
-    pycpp/reference/core.h
-    pycpp/reference/deque.h
-    pycpp/reference/vector.h
-    pycpp/runtime/os.h
-    pycpp/safe.h
-    pycpp/safe/stdlib.h
-    pycpp/secure.h
-    pycpp/secure/allocator.h
-    pycpp/secure/char_traits.h
-    pycpp/secure/stdlib.h
-    pycpp/secure/string.h
-    pycpp/string/base16.h
-    pycpp/string/base32.h
-    pycpp/string/base64.h
-    pycpp/string/casemap.h
-    pycpp/string/codec.h
-    pycpp/string/getline.h
-    pycpp/string/hex.h
-    pycpp/string/punycode.h
-    pycpp/string/string.h
-    pycpp/string/unicode.h
-    pycpp/string/url.h
-    pycpp/string/whitespace.h
-    pycpp/view/string.h
-    pycpp/view/vector.h
-    pycpp/windows/error.h
-    pycpp/windows/mman.h
-    pycpp/windows/winapi.h
+    "${CMAKE_CURRENT_BINARY_DIR}/include/pycpp/config.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/category.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/input_iterator_facade.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/range.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/transform.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/itertools.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/itertools/product.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/itertools/sampling.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/enum.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/ordering.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/pimpl.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/xrange.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/composite_key.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/container.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/global_fun.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/hashed_index_fwd.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/hashed_index.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/identity.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/indexed_by.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/mem_fun.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/member.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/ordered_index_fwd.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/ordered_index.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/random_access_index_fwd.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/random_access_index.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/ranked_index_fwd.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/ranked_index.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/sequenced_index_fwd.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/sequenced_index.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/tag.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/architecture.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/byteorder.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/compiler.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/errno.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/os.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/parallel.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/processor.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/sysstat.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/tls.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/random.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/reference/core.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/reference/deque.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/reference/vector.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/runtime/os.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/safe.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/safe/stdlib.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/allocator.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/char_traits.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/stdlib.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/string.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base16.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base32.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base64.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/casemap.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/codec.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/getline.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/hex.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/punycode.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/string.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/unicode.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/url.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/whitespace.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/view/string.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/view/vector.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/error.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/mman.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/winapi.h"
 )
 
 set(SOURCE_FILES
-    pycpp/preprocessor/byteorder.cc
-    pycpp/random/pseudorandom.cc
-    pycpp/random/sysrandom.cc
-    pycpp/runtime/os.cc
-    pycpp/safe/stdlib.cc
-    pycpp/secure/stdlib.cc
-    pycpp/string/base16.cc
-    pycpp/string/base32.cc
-    pycpp/string/base64.cc
-    pycpp/string/casemap.cc
-    pycpp/string/codec.cc
-    pycpp/string/getline.cc
-    pycpp/string/hex.cc
-    pycpp/string/punycode.cc
-    pycpp/string/string.cc
-    pycpp/string/unicode.cc
-    pycpp/string/url.cc
-    pycpp/windows/error.cc
-    pycpp/windows/mman.cc
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/byteorder.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/random/pseudorandom.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/random/sysrandom.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/runtime/os.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/safe/stdlib.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/stdlib.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base16.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base32.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base64.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/casemap.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/codec.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/getline.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/hex.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/punycode.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/string.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/unicode.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/url.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/error.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/mman.cc"
 )
 
 if(BUILD_CACHE)
     list(APPEND HEADER_FILES
-        pycpp/cache/lru.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/lru.h"
     )
     if(BUILD_KEYVALUE)
         list(APPEND HEADER_FILES
-            pycpp/cache/kv_backend.h
-            pycpp/cache/kv.h
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/kv_backend.h"
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/kv.h"
         )
         list(APPEND SOURCE_FILES
-            pycpp/cache/kv_backend.cc
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/kv_backend.cc"
         )
     endif()
     if(BUILD_SQLITE)
         list(APPEND HEADER_FILES
-            pycpp/cache/sqlite.h
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/sqlite.h"
         )
     endif()
 endif()
 
 if(BUILD_CIPHER)
     list(APPEND HEADER_FILES
-        pycpp/cipher.h
-        pycpp/cipher/aes.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cipher.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cipher/aes.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/cipher/aes.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cipher/aes.cc"
     )
 endif()
 
 if(BUILD_COLLECTIONS)
     list(APPEND HEADER_FILES
-        pycpp/collections.h
-        pycpp/collections/any.h
-        pycpp/collections/defaultdict.h
-        pycpp/collections/optional.h
-        pycpp/collections/ordereddict.h
-        pycpp/collections/utility.h
-        pycpp/collections/variant.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/any.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/defaultdict.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/optional.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordereddict.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/utility.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/variant.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/collections/any.cc
-        pycpp/collections/variant.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/any.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/variant.cc"
     )
 endif()
 
 if(BUILD_COMPRESSION)
     list(APPEND HEADER_FILES
-        pycpp/compression.h
-        pycpp/compression/blosc.h
-        pycpp/compression/bzip2.h
-        pycpp/compression/core.h
-        pycpp/compression/detect.h
-        pycpp/compression/exception.h
-        pycpp/compression/gzip.h
-        pycpp/compression/lzma.h
-        pycpp/compression/zlib.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/blosc.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/bzip2.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/core.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/detect.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/exception.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/gzip.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/lzma.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/zlib.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/compression/blosc.cc
-        pycpp/compression/bzip2.cc
-        pycpp/compression/detect.cc
-        pycpp/compression/exception.cc
-        pycpp/compression/gzip.cc
-        pycpp/compression/lzma.cc
-        pycpp/compression/zlib.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/blosc.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/bzip2.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/detect.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/exception.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/gzip.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/lzma.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/zlib.cc"
     )
 
-    if(BUILD_STEAM)
+    if(BUILD_STREAM)
         list(APPEND HEADER_FILES
-            pycpp/compression/stream.h
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.h"
         )
         list(APPEND SOURCE_FILES
-            pycpp/compression/stream.cc
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.cc"
         )
     endif()
 endif()
 
 if (BUILD_CSV)
     list(APPEND HEADER_FILES
-        pycpp/csv.h
-        pycpp/csv/dict.h
-        pycpp/csv/punct.h
-        pycpp/csv/reader.h
-        pycpp/csv/writer.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/dict.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/punct.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/reader.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/writer.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/csv/dict.cc
-        pycpp/csv/punct.cc
-        pycpp/csv/reader.cc
-        pycpp/csv/writer.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/dict.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/punct.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/reader.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/writer.cc"
     )
 endif()
 
 if (BUILD_FILESYSTEM)
     list(APPEND HEADER_FILES
-        pycpp/filesystem.h
-        pycpp/filesystem/access.h
-        pycpp/filesystem/exception.h
-        pycpp/filesystem/fd.h
-        pycpp/filesystem/home.h
-        pycpp/filesystem/iterator.h
-        pycpp/filesystem/path.h
-        pycpp/filesystem/stat.h
-        pycpp/filesystem/tmp.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/access.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/exception.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/fd.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/home.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/iterator.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/path.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/stat.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/tmp.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/filesystem/exception.cc
-        pycpp/filesystem/filesystem.cc
-        pycpp/filesystem/home.cc
-        pycpp/filesystem/iterator.cc
-        pycpp/filesystem/mac.cc
-        pycpp/filesystem/nt.cc
-        pycpp/filesystem/path.cc
-        pycpp/filesystem/posix.cc
-        pycpp/filesystem/stat.cc
-        pycpp/filesystem/tmp.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/exception.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/filesystem.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/home.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/iterator.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/mac.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/nt.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/path.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/posix.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/stat.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/filesystem/tmp.cc"
     )
 endif()
 
 if (BUILD_HASHLIB)
     list(APPEND HEADER_FILES
-        pycpp/hashlib.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/hashlib/hash.cc
-        pycpp/hashlib/md2.cc
-        pycpp/hashlib/md4.cc
-        pycpp/hashlib/md5.cc
-        pycpp/hashlib/sha1.cc
-        pycpp/hashlib/sha3.cc
-        pycpp/hashlib/sha256.cc
-        pycpp/hashlib/sha512.cc
-        pycpp/hashlib/whirlpool.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/hash.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/md2.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/md4.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/md5.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/sha1.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/sha3.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/sha256.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/sha512.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/whirlpool.cc"
     )
 endif()
 
 if(BUILD_JSON)
     list(APPEND HEADER_FILES
-        pycpp/json.h
-        pycpp/json/core.h
-        pycpp/json/dom.h
-        pycpp/json/sax.h
-        pycpp/json/writer.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/core.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/dom.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/sax.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/writer.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/json/core.cc
-        pycpp/json/dom.cc
-        pycpp/json/sax.cc
-        pycpp/json/writer.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/core.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/dom.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/sax.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/writer.cc"
     )
 endif()
 
 if(BUILD_LATTICE)
     list(APPEND HEADER_FILES
-        pycpp/lattice.h
-        pycpp/lattice/adaptor.h
-        pycpp/lattice/adaptor/nossl.h
-        pycpp/lattice/adaptor/openssl.h
-        pycpp/lattice/async.h
-        pycpp/lattice/auth.h
-        pycpp/lattice/connection.h
-        pycpp/lattice/cookie.h
-        pycpp/lattice/crypto.h
-        pycpp/lattice/digest.h
-        pycpp/lattice/dns.h
-        pycpp/lattice/header.h
-        pycpp/lattice/method.h
-        pycpp/lattice/multipart.h
-        pycpp/lattice/parameter.h
-        pycpp/lattice/proxy.h
-        pycpp/lattice/redirect.h
-        pycpp/lattice/request.h
-        pycpp/lattice/response.h
-        pycpp/lattice/ssl.h
-        pycpp/lattice/timeout.h
-        pycpp/lattice/transfer.h
-        pycpp/lattice/url.h
-        pycpp/lattice/util.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/adaptor.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/adaptor/nossl.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/adaptor/openssl.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/async.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/auth.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/connection.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/cookie.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/crypto.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/digest.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/dns.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/header.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/method.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/multipart.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/parameter.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/proxy.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/redirect.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/request.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/response.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/ssl.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/timeout.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/transfer.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/url.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/util.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/lattice/async.cc
-        pycpp/lattice/auth.cc
-        pycpp/lattice/cookie.cc
-        pycpp/lattice/digest.cc
-        pycpp/lattice/dns.cc
-        pycpp/lattice/header.cc
-        pycpp/lattice/multipart.cc
-        pycpp/lattice/parameter.cc
-        pycpp/lattice/proxy.cc
-        pycpp/lattice/redirect.cc
-        pycpp/lattice/request.cc
-        pycpp/lattice/response.cc
-        pycpp/lattice/ssl.cc
-        pycpp/lattice/timeout.cc
-        pycpp/lattice/url.cc
-        pycpp/lattice/util.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/async.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/auth.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/cookie.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/digest.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/dns.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/header.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/multipart.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/parameter.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/proxy.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/redirect.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/request.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/response.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/ssl.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/timeout.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/url.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/util.cc"
     )
 
     if(UNIX)
-        list(APPEND HEADER_FILES pycpp/lattice/adaptor/posix.h)
-        list(APPEND SOURCE_FILES pycpp/lattice/adaptor/posix.cc)
+        list(APPEND HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/adaptor/posix.h")
+        list(APPEND SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/adaptor/posix.cc")
     elseif(WIN32)
-        list(APPEND HEADER_FILES pycpp/lattice/adaptor/windows.h)
-        list(APPEND SOURCE_FILES pycpp/lattice/adaptor/windows.cc)
+        list(APPEND HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/adaptor/windows.h")
+        list(APPEND SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lattice/adaptor/windows.cc")
     endif()
 endif()
 
 if(BUILD_MATH)
     list(APPEND HEADER_FILES
-        pycpp/math.h
-        pycpp/math/array.h
-        pycpp/math/average.h
-        pycpp/math/binomial.h
-        pycpp/math/distribution.h
-        pycpp/math/dot.h
-        pycpp/math/factorial.h
-        pycpp/math/std.h
-        pycpp/math/trapz.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math/array.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math/average.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math/binomial.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math/distribution.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math/dot.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math/factorial.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math/std.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math/trapz.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/math/distribution.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/math/distribution.cc"
     )
 endif()
 
 if(BUILD_RE)
     list(APPEND HEADER_FILES
-        pycpp/re.h
-        pycpp/re/match.h
-        pycpp/re/re.h
-        pycpp/re/regex.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re/match.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re/re.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re/regex.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/re/match.cc
-        pycpp/re/re.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re/match.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re/re.cc"
         # Don't include regex.cc, it's included by re.cc
     )
 endif()
 
 if(BUILD_STREAM)
     list(APPEND HEADER_FILES
-        pycpp/stream.h
-        pycpp/stream/filter.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/filter.h"
     )
-    list(APPEND SOURCE_FILES pycpp/stream/filter.cc)
+    list(APPEND SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/filter.cc")
     if(BUILD_FILESYSTEM)
         list(APPEND HEADER_FILES
-            pycpp/stream/fd.h
-            pycpp/stream/fstream.h
-            pycpp/stream/mmap.h
-            pycpp/stream/random_access.h
-            pycpp/stream/sequential.h
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/fd.h"
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/fstream.h"
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/mmap.h"
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/random_access.h"
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/sequential.h"
         )
         list(APPEND SOURCE_FILES
-            pycpp/stream/fd.cc
-            pycpp/stream/fstream.cc
-            pycpp/stream/mmap.cc
-            pycpp/stream/random_access.cc
-            pycpp/stream/sequential.cc
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/fd.cc"
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/fstream.cc"
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/mmap.cc"
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/random_access.cc"
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/sequential.cc"
         )
     endif()
 endif()
 
 if(BUILD_XML)
     list(APPEND HEADER_FILES
-        pycpp/xml.h
-        pycpp/xml/core.h
-        pycpp/xml/dom.h
-        pycpp/xml/sax.h
-        pycpp/xml/text.h
-        pycpp/xml/writer.h
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.h"
     )
     list(APPEND SOURCE_FILES
-        pycpp/xml/core.cc
-        pycpp/xml/dom.cc
-        pycpp/xml/sax.cc
-        pycpp/xml/text.cc
-        pycpp/xml/writer.cc
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.cc"
     )
 endif()
 
 add_library(pycpp "")
-target_sources(${PROJECT_NAME}
+target_sources(pycpp
     PRIVATE ${SOURCE_FILES}
     PUBLIC ${HEADER_FILES}
 )
