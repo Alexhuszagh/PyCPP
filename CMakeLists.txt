@@ -6,15 +6,6 @@ cmake_minimum_required(VERSION 2.8)
 project(pycpp CXX)
 enable_testing()
 
-# TODO: each dependent library should have an option to use the system variant...
-# ZLib
-# bzip2
-# xz
-# blosc
-# libxml2
-# leveldb
-# re2
-
 # FLAGS
 # -----
 
@@ -33,6 +24,15 @@ option(BUILD_RE "Build regular expression library" ON)
 option(BUILD_SQLITE "Build SQLite database library" ON)
 option(BUILD_STREAM "Build stream library" ON)
 option(BUILD_XML "Build XML library" ON)
+
+# DEPENDENCIES
+option(USE_SYSTEM_BLOSC "Use system BLOSC installation" OFF)
+option(USE_SYSTEM_BZIP2 "Use system BZIP2 installation" OFF)
+option(USE_SYSTEM_LEVELDB "Use system LEVELDB installation" OFF)
+option(USE_SYSTEM_LIBXML2 "Use system LIBXML2 installation" OFF)
+option(USE_SYSTEM_LZMA "Use system LZMA2/XZZ installation" OFF)
+option(USE_SYSTEM_RE2 "Use system RE2 installation" OFF)
+option(USE_SYSTEM_ZLIB "Use system ZLIB installation" OFF)
 
 # WITH MODULE
 option(WITH_CORE "Build (only) core library" OFF)
@@ -226,7 +226,6 @@ elseif(MINGW OR MSYS OR CYGWIN)
     list(APPEND PYCPP_LIBRARIES -lws2_32 -lcrypt32 -lkernel32)
 endif()
 
-
 # LIBRARY
 # -------
 
@@ -244,21 +243,41 @@ list(APPEND PYCPP_INCLUDE_DIRS
 
 if(BUILD_COMPRESSION)
     # ZLIB
-    add_external_project(zlib_external third_party/zlib)
-    add_external_target(z third_party/zlib third_party/zlib STATIC zlib_external)
-    list(APPEND Z_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/zlib" "${CMAKE_CURRENT_BINARY_DIR}/third_party/zlib")
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_ZLIB=1)
-    list(APPEND PYCPP_DEPENDENCIES z)
-    list(APPEND PYCPP_LIBRARIES z)
-    list(APPEND PYCPP_INCLUDE_DIRS ${Z_INCLUDE_DIR})
+    if(USE_SYSTEM_ZLIB)
+        find_package(ZLIB "1.0")
+    else()
+        add_external_project(zlib_external third_party/zlib)
+        add_external_target(z third_party/zlib third_party/zlib STATIC zlib_external)
+        list(APPEND PYCPP_DEPENDENCIES z)
+        set(Z_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/zlib" "${CMAKE_CURRENT_BINARY_DIR}/third_party/zlib")
+        set(ZLIB_INCLUDE_DIRS ${Z_INCLUDE_DIR})
+        set(ZLIB_LIBRARIES z)
+        set(ZLIB_FOUND 1)
+    endif()
+
+    if(ZLIB_FOUND)
+        list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_ZLIB=1)
+        list(APPEND PYCPP_LIBRARIES ${ZLIB_LIBRARIES})
+        list(APPEND PYCPP_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
+    endif()
 
     # BZIP2
-    add_external_project(bzip2_external third_party/bzip2)
-    add_external_target(bz2 third_party/bzip2 third_party/bzip2 STATIC bzip2_external)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_BZIP2=1)
-    list(APPEND PYCPP_DEPENDENCIES bz2)
-    list(APPEND PYCPP_LIBRARIES bz2)
-    list(APPEND PYCPP_INCLUDE_DIRS ${bz2_INCLUDE_DIR})
+    if(USE_SYSTEM_BZIP2)
+        find_package(BZIP2 "1.0")
+    else()
+        add_external_project(bzip2_external third_party/bzip2)
+        add_external_target(bz2 third_party/bzip2 third_party/bzip2 STATIC bzip2_external)
+        list(APPEND PYCPP_DEPENDENCIES bz2)
+        set(BZIP2_INCLUDE_DIRS ${bz2_INCLUDE_DIR})
+        set(BZIP2_LIBRARIES bz2)
+        set(BZIP2_FOUND 1)
+    endif()
+
+    if(BZIP2_FOUND)
+        list(APPEND PYCPP_COMPILE_DEFINITIONS HAVE_BZIP2=1)
+        list(APPEND PYCPP_LIBRARIES ${BZIP2_LIBRARIES})
+        list(APPEND PYCPP_INCLUDE_DIRS ${BZIP2_INCLUDE_DIRS})
+    endif()
 
     # XZ
     add_external_project(xz_external third_party/xz)
