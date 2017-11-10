@@ -247,6 +247,32 @@ list(APPEND PYCPP_INCLUDE_DIRS
     ${BRIGAND_INCLUDE_DIRS}
 )
 
+if(BUILD_CACHE)
+    if(BUILD_KEYVALUE)
+        if(USE_SYSTEM_LEVELDB)
+            find_package(LEVELDB "1.0")
+        else()
+            find_package(LEVELDB "1.0")     # TODO: remove
+# TODO: restore
+#            add_external_project(zlib_external third_party/zlib)
+#            add_external_target(z third_party/zlib third_party/zlib STATIC zlib_external)
+#            list(APPEND PYCPP_DEPENDENCIES z)
+#            set(Z_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/zlib" "${CMAKE_CURRENT_BINARY_DIR}/third_party/zlib")
+#            set(LEVELDB_INCLUDE_DIRS ${Z_INCLUDE_DIR})
+#            set(LEVELDB_LIBRARIES z)
+#            set(LEVELDB_FOUND 1)
+        endif()
+
+        if(LEVELDB_FOUND)
+            list(APPEND PYCPP_LIBRARIES ${LEVELDB_LIBRARIES})
+            list(APPEND PYCPP_INCLUDE_DIRS ${LEVELDB_INCLUDE_DIRS})
+        else()
+            message(WARNING "Cannot find back-end for key-value database. Disabling...")
+            set(BUILD_KEYVALUE OFF)
+        endif()
+    endif()
+endif()
+
 if(BUILD_COMPRESSION)
     # ZLIB
     if(USE_SYSTEM_ZLIB)
@@ -419,6 +445,16 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/itertools.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/itertools/product.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/itertools/sampling.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atof.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atoi.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/bool.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/char.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/enum.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/float.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/ftoa.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/int.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/itoa.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/null.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/enum.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/ordering.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/pimpl.h"
@@ -483,6 +519,16 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atof.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atoi.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/bool.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/char.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/enum.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/float.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/ftoa.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/int.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/itoa.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/null.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/byteorder.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/random/pseudorandom.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/random/sysrandom.cc"
@@ -823,6 +869,16 @@ set(TEST_FILES
     test/main.cc
     test/cache/lri.cc
     test/cache/lru.cc
+#    test/lexical/atof.cc
+    test/lexical/atoi.cc
+#    test/lexical/bool.cc
+#    test/lexical/char.cc
+#    test/lexical/enum.cc
+#    test/lexical/float.cc
+#    test/lexical/ftoa.cc
+#    test/lexical/int.cc
+#    test/lexical/itoa.cc
+#    test/lexical/null.cc
     test/misc/enum.cc
     test/misc/ordering.cc
     test/misc/pimpl.cc

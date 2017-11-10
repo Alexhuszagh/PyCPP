@@ -8,36 +8,24 @@
 #pragma once
 
 #include <pycpp/cache/kv_backend.h>
+#include <pycpp/string/view.h>
 #include <cstddef>
 
 PYCPP_BEGIN_NAMESPACE
 
+// TODO: use the C api for the comparator...
+// static void CmpDestroy(void* arg);
+// static int CmpCompare(void* arg, const char* a, size_t alen, const char* b, size_t blen);
+// static const char* CmpName(void* arg)
+// leveldb_comparator_t* cmp;
+// cmp = leveldb_comparator_create(NULL, CmpDestroy, CmpCompare, CmpName);
+// leveldb_comparator_destroy(cmp);
+
+// TODO: I need lexi here....
+// I need lexical cast conversions...
+
 // DECLARATION
 // -----------
-
-/**
- *  \brief Flags for key-value database options.
- *
- *  Options:
- *      kv_none:                Use default parameters.
- *      kv_reuse_logs:          Re-use logs to speed up database open times.
- *      kv_zlib_compression:    Use ZLIB compression to encode values.
- *      kv_bzip2_compression:   Use BZIP2 compression to encode values.
- *      kv_xz_compression:      Use LZMA2 compression to encode values.
- *      kv_blosc_compression:   Use BLOSC compression to encode values.
- */
-enum kv_options
-{
-    kv_none               = 0x0000,
-    kv_reuse_logs         = 0x0001,
-#if BUILD_COMPRESSION
-    kv_zlib_compression   = 0x0010,
-    kv_bzip2_compression  = 0x0020,
-    kv_lzma_compression   = 0x0030,
-    kv_blosc_compression  = 0x0040,
-#endif  // BUILD_COMPRESSION
-};
-
 
 /**
  *  \brief STL-like wrapper around a key-value database iterator.
@@ -57,13 +45,28 @@ public:
     using const_pointer = const value_type*;
 
 // TODO: need everything
+
+private:
+    void* iterator_;
 };
 
+
+// TODO: there's an issue
+// kv_cache **only** takes string arguments
+// Most classes store pointers to elements.
+// We need to ensure there's a to_string, and from_string method
+// for each class, or some shit...
+// Which is quite a lot of work considering it won't work
+// with STL containers out-of-the-box.
 
 /**
  *  \brief Map-like wrapper around a key-value database store.
  */
-template <typename Key, typename T>
+template <
+    typename Key,
+    typename T,
+    typename Compare = std::less<Key>
+>
 struct kv_cache
 {
 public:
@@ -85,13 +88,34 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    kv_cache(kv_options = kv_none);
+    // TODO: need to use the comparator...
+    kv_cache(const path_t&, kv_options = kv_none);
+    ~kv_cache();
 
 // TODO: need everything
+private:
+    void* db_;
+    kv_options options_;
 };
 
 
 // IMPLEMENTATION
 // --------------
+
+
+template <typename K, typename T, typename C>
+kv_cache<K, T, C>::kv_cache(const path_t& path, kv_options options):
+    options_(options)
+{
+    kv_open(db_, path, options);
+}
+
+
+template <typename K, typename T, typename C>
+kv_cache<K, T, C>::~kv_cache()
+{
+    kv_close(db_);
+}
+
 
 PYCPP_END_NAMESPACE
