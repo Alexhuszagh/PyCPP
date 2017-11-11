@@ -21,6 +21,7 @@ static constexpr int MAX_INTEGER_SIZE = std::numeric_limits<unsigned long long>:
 // DECLARATIONS
 // ------------
 
+#if 0
 /**
  *  \brief Generic formatter for integer values.
  */
@@ -57,7 +58,6 @@ private:
 };
 
 
-#if 0
 /**
  *  \brief Generic extractor for integer values.
  */

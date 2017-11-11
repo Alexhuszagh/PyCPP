@@ -10,9 +10,7 @@
 
 - Need unittests for conversions
     - atof
-    - atoi
     - ftoa
-    - itoa
     - bool
     - int
     - null

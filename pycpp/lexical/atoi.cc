@@ -31,7 +31,7 @@ inline bool is_valid_alnum(char c, char upper)
 // GENERIC
 
 template <typename Int>
-static Int itoa_num(const char* first, const char*& last, uint8_t base)
+static Int atoi_num(const char* first, const char*& last, uint8_t base)
 {
     // Generic itao for bases of <= 10, where only
     // numerical characters are used.
@@ -49,7 +49,7 @@ static Int itoa_num(const char* first, const char*& last, uint8_t base)
 
 
 template <typename Int>
-static Int itoa_alnum(const char* first, const char*& last, uint8_t base)
+static Int atoi_alnum(const char* first, const char*& last, uint8_t base)
 {
     // Generic itao for bases of > 10, where
     // alphabetical characters are also used.
@@ -59,7 +59,12 @@ static Int itoa_alnum(const char* first, const char*& last, uint8_t base)
 
     while (first < last && is_valid_alnum(first[0], upper)) {
         value *= base;
-        value += *first++ - '0';
+        char c = *first++;
+        if (c <= '9') {
+            value += c - '0';
+        } else {
+            value += c - 'A' + 10;
+        }
     }
     last = first;
     return value;
@@ -67,27 +72,27 @@ static Int itoa_alnum(const char* first, const char*& last, uint8_t base)
 
 
 template <typename Int>
-static Int itoa_impl(const char* first, const char*& last, uint8_t base)
+static Int atoi__impl(const char* first, const char*& last, uint8_t base)
 {
     if (base < 2 || base > 36) {
         throw std::invalid_argument("Numerical base must be from 2-36");
     } else if (base <= 10) {
-        return itoa_num<Int>(first, last, base);
+        return atoi_num<Int>(first, last, base);
     } else {
-        return itoa_alnum<Int>(first, last, base);
+        return atoi_alnum<Int>(first, last, base);
     }
 }
 
 
 template <typename Int>
-static Int itoa(const char* first, const char*& last, uint8_t base)
+static Int atoi_(const char* first, const char*& last, uint8_t base)
 {
     if (first == last) {
         return Int(0);
     } else if (first[0] == '-') {
-        return -itoa_impl<Int>(first+1, last, base);
+        return -atoi__impl<Int>(first+1, last, base);
     } else {
-        return itoa_impl<Int>(first, last, base);
+        return atoi__impl<Int>(first, last, base);
     }
 }
 
@@ -95,115 +100,115 @@ static Int itoa(const char* first, const char*& last, uint8_t base)
 // FUNCTIONS
 // ---------
 
-uint8_t u8toa(const char* first, const char*& last, uint8_t base)
+uint8_t atou8(const char* first, const char*& last, uint8_t base)
 {
-    return itoa<uint8_t>(first, last, base);
+    return atoi_<uint8_t>(first, last, base);
 }
 
 
-uint8_t u8toa(const string_view& string, uint8_t base)
+uint8_t atou8(const string_view& string, uint8_t base)
 {
     const char* first = string.begin();
     const char* last = string.end();
-    return u8toa(first, last, base);
+    return atou8(first, last, base);
 }
 
 
-int8_t i8toa(const char* first, const char*& last, uint8_t base)
+int8_t atoi8(const char* first, const char*& last, uint8_t base)
 {
-    return itoa<int8_t>(first, last, base);
+    return atoi_<int8_t>(first, last, base);
 }
 
 
-int8_t i8toa(const string_view& string, uint8_t base)
-{
-    const char* first = string.begin();
-    const char* last = string.end();
-    return i8toa(first, last, base);
-}
-
-
-uint16_t u16toa(const char* first, const char*& last, uint8_t base)
-{
-    return itoa<uint16_t>(first, last, base);
-}
-
-
-uint16_t u16toa(const string_view& string, uint8_t base)
+int8_t atoi8(const string_view& string, uint8_t base)
 {
     const char* first = string.begin();
     const char* last = string.end();
-    return u16toa(first, last, base);
+    return atoi8(first, last, base);
 }
 
 
-int16_t i16toa(const char* first, const char*& last, uint8_t base)
+uint16_t atou16(const char* first, const char*& last, uint8_t base)
 {
-    return itoa<int16_t>(first, last, base);
+    return atoi_<uint16_t>(first, last, base);
 }
 
 
-int16_t i16toa(const string_view& string, uint8_t base)
-{
-    const char* first = string.begin();
-    const char* last = string.end();
-    return i16toa(first, last, base);
-}
-
-
-uint32_t u32toa(const char* first, const char*& last, uint8_t base)
-{
-    return itoa<uint32_t>(first, last, base);
-}
-
-
-uint32_t u32toa(const string_view& string, uint8_t base)
+uint16_t atou16(const string_view& string, uint8_t base)
 {
     const char* first = string.begin();
     const char* last = string.end();
-    return u32toa(first, last, base);
+    return atou16(first, last, base);
 }
 
 
-int32_t i32toa(const char* first, const char*& last, uint8_t base)
+int16_t atoi16(const char* first, const char*& last, uint8_t base)
 {
-    return itoa<int32_t>(first, last, base);
+    return atoi_<int16_t>(first, last, base);
 }
 
 
-int32_t i32toa(const string_view& string, uint8_t base)
-{
-    const char* first = string.begin();
-    const char* last = string.end();
-    return i32toa(first, last, base);
-}
-
-
-uint64_t u64toa(const char* first, const char*& last, uint8_t base)
-{
-    return itoa<uint64_t>(first, last, base);
-}
-
-
-uint64_t u64toa(const string_view& string, uint8_t base)
+int16_t atoi16(const string_view& string, uint8_t base)
 {
     const char* first = string.begin();
     const char* last = string.end();
-    return u64toa(first, last, base);
+    return atoi16(first, last, base);
 }
 
 
-int64_t i64toa(const char* first, const char*& last, uint8_t base)
+uint32_t atou32(const char* first, const char*& last, uint8_t base)
 {
-    return itoa<int64_t>(first, last, base);
+    return atoi_<uint32_t>(first, last, base);
 }
 
 
-int64_t i64toa(const string_view& string, uint8_t base)
+uint32_t atou32(const string_view& string, uint8_t base)
 {
     const char* first = string.begin();
     const char* last = string.end();
-    return i64toa(first, last, base);
+    return atou32(first, last, base);
+}
+
+
+int32_t atoi32(const char* first, const char*& last, uint8_t base)
+{
+    return atoi_<int32_t>(first, last, base);
+}
+
+
+int32_t atoi32(const string_view& string, uint8_t base)
+{
+    const char* first = string.begin();
+    const char* last = string.end();
+    return atoi32(first, last, base);
+}
+
+
+uint64_t atou64(const char* first, const char*& last, uint8_t base)
+{
+    return atoi_<uint64_t>(first, last, base);
+}
+
+
+uint64_t atou64(const string_view& string, uint8_t base)
+{
+    const char* first = string.begin();
+    const char* last = string.end();
+    return atou64(first, last, base);
+}
+
+
+int64_t atoi64(const char* first, const char*& last, uint8_t base)
+{
+    return atoi_<int64_t>(first, last, base);
+}
+
+
+int64_t atoi64(const string_view& string, uint8_t base)
+{
+    const char* first = string.begin();
+    const char* last = string.end();
+    return atoi64(first, last, base);
 }
 
 

@@ -57,6 +57,7 @@ option(WITH_STREAM "Build (only) stream library" OFF)
 option(WITH_XML "Build (only) XML library" OFF)
 
 # OPTIONS
+option(BUILD_BENCHMARKS "Build pycpp library benchmarks" OFF)
 option(BUILD_TESTS "Build pycpp library tests" OFF)
 SET(CXX_STANDARD "11" CACHE STRING "Minimum C++ standard to support.")
 SET(PYCPP_NAMESPACE "" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
@@ -877,7 +878,7 @@ set(TEST_FILES
 #    test/lexical/float.cc
 #    test/lexical/ftoa.cc
 #    test/lexical/int.cc
-#    test/lexical/itoa.cc
+    test/lexical/itoa.cc
 #    test/lexical/null.cc
     test/misc/enum.cc
     test/misc/ordering.cc
@@ -1099,6 +1100,37 @@ if(BUILD_TESTS)
     )
 
     add_dependencies(pycpp_tests ${PYCPP_DEPENDENCIES} gtest gtest_main)
+endif()
+
+# BENCHMARKS
+# ----------
+
+set(BENCHMARK_FILES
+    bench/lexical.cc
+)
+
+if(BUILD_BENCHMARKS)
+    if (NOT TARGET benchmark)
+        add_external_project(benchmark_external third_party/benchmark)
+        add_external_target(benchmark third_party/benchmark/include third_party/benchmark/src STATIC benchmark_external)
+        include_directories(${benchmark_INCLUDE_DIR})
+    endif()
+
+    set(BENCHMARK_LIBRARIES benchmark ${CMAKE_THREAD_LIBS_INIT})
+    if(MSVC)
+        list(APPEND BENCHMARK_LIBRARIES shlwapi.lib)
+    elseif(WIN32)
+        list(APPEND BENCHMARK_LIBRARIES -lshlwapi)
+    endif()
+
+    foreach(bench ${BENCHMARK_FILES})
+        get_filename_component(basename ${bench} NAME_WE)
+        add_executable("${basename}_bench" ${bench})
+        target_link_libraries("${basename}_bench"
+            ${BENCHMARK_LIBRARIES}
+            ${PYCPP_LIBRARIES}
+        )
+    endforeach()
 endif()
 
 # INSTALL

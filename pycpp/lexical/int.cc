@@ -10,6 +10,7 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
+#if 0
 lexical_int_formatter::lexical_int_formatter(short value)
 {
     last_ = i32toa(value, buffer_);
@@ -126,7 +127,6 @@ lexical_int_formatter::operator string_view() const
 }
 
 
-#if 0
 lexical_int_extractor::lexical_int_extractor(const string_view& string)
 {
     // TODO: optimize this.

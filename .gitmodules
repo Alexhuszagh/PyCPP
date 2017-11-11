@@ -31,3 +31,6 @@
 [submodule "third_party/libdynd"]
 	path = third_party/libdynd
 	url = https://github.com/Alexhuszagh/libdynd
+[submodule "third_party/benchmark"]
+	path = third_party/benchmark
+	url = https://github.com/Alexhuszagh/benchmark
