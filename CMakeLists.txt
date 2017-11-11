@@ -870,7 +870,7 @@ set(TEST_FILES
     test/main.cc
     test/cache/lri.cc
     test/cache/lru.cc
-#    test/lexical/atof.cc
+    test/lexical/atof.cc
     test/lexical/atoi.cc
 #    test/lexical/bool.cc
 #    test/lexical/char.cc

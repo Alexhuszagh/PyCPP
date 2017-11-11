@@ -3,10 +3,9 @@
 - Need to finish porting Lexi to PyCpp
     - atof
     - ftoa
+        - Use https://github.com/jwiegley/gdtoa
     - float
     - char
-
-- Redo itoa to include bases
 
 - Need unittests for conversions
     - atof

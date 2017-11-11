@@ -2,15 +2,11 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lexical/atoi.h>
+#include <pycpp/lexical/table.h>
 #include <limits>
 #include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
-
-// CONSTANTS
-// ---------
-
-static constexpr char NUMBERS_BASEN[36] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
 
 // HELPERS
 // -------
@@ -37,7 +33,7 @@ static Int atoi_num(const char* first, const char*& last, uint8_t base)
     // numerical characters are used.
 
     Int value = 0;
-    char upper = NUMBERS_BASEN[base];
+    char upper = BASEN[base];
 
     while (first < last && is_valid_num(first[0], upper)) {
         value *= base;
@@ -55,7 +51,7 @@ static Int atoi_alnum(const char* first, const char*& last, uint8_t base)
     // alphabetical characters are also used.
 
     Int value = 0;
-    char upper = NUMBERS_BASEN[base];
+    char upper = BASEN[base];
 
     while (first < last && is_valid_alnum(first[0], upper)) {
         value *= base;
@@ -72,7 +68,7 @@ static Int atoi_alnum(const char* first, const char*& last, uint8_t base)
 
 
 template <typename Int>
-static Int atoi__impl(const char* first, const char*& last, uint8_t base)
+static Int atoi_impl(const char* first, const char*& last, uint8_t base)
 {
     if (base < 2 || base > 36) {
         throw std::invalid_argument("Numerical base must be from 2-36");
@@ -85,14 +81,14 @@ static Int atoi__impl(const char* first, const char*& last, uint8_t base)
 
 
 template <typename Int>
-static Int atoi_(const char* first, const char*& last, uint8_t base)
+Int atoi_(const char* first, const char*& last, uint8_t base)
 {
     if (first == last) {
         return Int(0);
     } else if (first[0] == '-') {
-        return -atoi__impl<Int>(first+1, last, base);
+        return -atoi_impl<Int>(first+1, last, base);
     } else {
-        return atoi__impl<Int>(first, last, base);
+        return atoi_impl<Int>(first, last, base);
     }
 }
 

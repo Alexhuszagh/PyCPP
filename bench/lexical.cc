@@ -82,6 +82,26 @@ static void atoi64(benchmark::State& state)
 }
 
 
+static void atoi64_base2(benchmark::State& state)
+{
+    for (auto _ : state) {
+        for (auto s: STRINGS) {
+            benchmark::DoNotOptimize(atoi64(s, 2));
+        }
+    }
+}
+
+
+static void atoi64_base16(benchmark::State& state)
+{
+    for (auto _ : state) {
+        for (auto s: STRINGS) {
+            benchmark::DoNotOptimize(atoi64(s, 16));
+        }
+    }
+}
+
+
 static void std_to_string(benchmark::State& state)
 {
     for (auto _ : state) {
@@ -101,13 +121,35 @@ static void i64toa(benchmark::State& state)
     }
 }
 
-// TODO: need benchmarks for other integer-to-string versions
+
+static void i64toa_base2(benchmark::State& state)
+{
+    for (auto _ : state) {
+        for (auto n: NUMBERS) {
+            benchmark::DoNotOptimize(u64toa(n, 2));
+        }
+    }
+}
+
+
+static void i64toa_base16(benchmark::State& state)
+{
+    for (auto _ : state) {
+        for (auto n: NUMBERS) {
+            benchmark::DoNotOptimize(u64toa(n, 16));
+        }
+    }
+}
 
 // REGISTER
 // --------
 
 BENCHMARK(std_strtoll);
 BENCHMARK(atoi64);
+BENCHMARK(atoi64_base2);
+BENCHMARK(atoi64_base16);
 BENCHMARK(std_to_string);
 BENCHMARK(i64toa);
+BENCHMARK(i64toa_base2);
+BENCHMARK(i64toa_base16);
 BENCHMARK_MAIN();
