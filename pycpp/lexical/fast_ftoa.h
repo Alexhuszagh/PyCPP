@@ -13,6 +13,18 @@
 PYCPP_BEGIN_NAMESPACE
 
 // TODO: change the kConstant syntax to CONSTANT
+// CONSTANTS
+// ---------
+
+/**
+ *  FastDtoa will produce at most kFastDtoaMaximalLength digits. This does not
+ *  include the terminating '\0' character.
+ */
+static const int kFastDtoaMaximalLength = 17;
+static const int kFastDtoaMaximalSingleLength = 9;
+
+// ENUMS
+// -----
 
 enum fast_dtoa_mode {
     /**
@@ -32,12 +44,8 @@ enum fast_dtoa_mode {
     fast_dtoa_precision
 };
 
-/**
- *  FastDtoa will produce at most kFastDtoaMaximalLength digits. This does not
- *  include the terminating '\0' character.
- */
-static const int kFastDtoaMaximalLength = 17;
-static const int kFastDtoaMaximalSingleLength = 9;
+// FUNCTIONS
+// ---------
 
 /**
  *  Provides a decimal representation of v.

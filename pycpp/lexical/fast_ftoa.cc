@@ -399,4 +399,117 @@ static bool digit_gen(diyfp_t low, diyfp_t w, diyfp_t high, char* buffer,
     }
 }
 
+
+/**
+ *  Generates (at most) requested_digits digits of input number w.
+ *  w is a floating-point number (DiyFp), consisting of a significand and an
+ *  exponent. Its exponent is bounded by kMinimalTargetExponent and
+ *  kMaximalTargetExponent.
+ *        Hence -60 <= w.e() <= -32.
+ *
+ *  Returns false if it fails, in which case the generated digits in the buffer
+ *  should not be used.
+ *  Preconditions:
+ *   * w is correct up to 1 ulp (unit in the last place). That
+ *     is, its error must be strictly less than a unit of its last digit.
+ *   * kMinimalTargetExponent <= w.e() <= kMaximalTargetExponent
+ *
+ *  Postconditions: returns false if procedure fails.
+ *    otherwise:
+ *      * buffer is not null-terminated, but length contains the number of
+ *        digits.
+ *      * the representation in buffer is the most precise representation of
+ *        requested_digits digits.
+ *      * buffer contains at most requested_digits digits of w. If there are less
+ *        than requested_digits digits then some trailing '0's have been removed.
+ *      * kappa is such that
+ *             w = buffer * 10^kappa + eps with |eps| < 10^kappa / 2.
+ *
+ *  Remark: This procedure takes into account the imprecision of its input
+ *    numbers. If the precision is not enough to guarantee all the postconditions
+ *    then false is returned. This usually happens rarely, but the failure-rate
+ *    increases with higher requested_digits.
+ */
+static bool digit_gen_counted(diyfp_t w, int requested_digits, char* buffer,
+                              int* length, int* kappa)
+{
+    assert(kMinimalTargetExponent <= w.e() && w.e() <= kMaximalTargetExponent);
+    assert(kMinimalTargetExponent >= -60);
+    assert(kMaximalTargetExponent <= -32);
+    // w is assumed to have an error less than 1 unit. Whenever w is scaled we
+    // also scale its error.
+    uint64_t w_error = 1;
+    // We cut the input number into two parts: the integral digits and the
+    // fractional digits. We don't emit any decimal separator, but adapt kappa
+    // instead. Example: instead of writing "1.2" we put "12" into the buffer and
+    // increase kappa by 1.
+    diyfp_t one = diyfp_t(static_cast<uint64_t>(1) << -w.e(), w.e());
+    // Division by one is a shift.
+    uint32_t integrals = static_cast<uint32_t>(w.f() >> -one.e());
+    // Modulo by one is an and.
+    uint64_t fractionals = w.f() & (one.f() - 1);
+    uint32_t divisor;
+    int divisor_exponent_plus_one;
+    biggest_power_of_ten(integrals, diyfp_t::kSignificandSize - (-one.e()),
+                        &divisor, &divisor_exponent_plus_one);
+    *kappa = divisor_exponent_plus_one;
+    *length = 0;
+
+    /**
+     *  Loop invariant: buffer = w / 10^kappa  (integer division)
+     *  The invariant holds for the first iteration: kappa has been initialized
+     *  with the divisor exponent + 1. And the divisor is the biggest power of ten
+     *  that is smaller than 'integrals'.
+     */
+    while (*kappa > 0) {
+        int digit = integrals / divisor;
+        assert(digit <= 9);
+        buffer[*length] = static_cast<char>('0' + digit);
+        (*length)++;
+        requested_digits--;
+        integrals %= divisor;
+        (*kappa)--;
+        // Note that kappa now equals the exponent of the divisor and that the
+        // invariant thus holds again.
+        if (requested_digits == 0) break;
+        divisor /= 10;
+    }
+
+    if (requested_digits == 0) {
+        uint64_t rest = (static_cast<uint64_t>(integrals) << -one.e()) + fractionals;
+        return round_weed_counted(buffer, *length, rest,
+                                  static_cast<uint64_t>(divisor) << -one.e(),
+                                  w_error, kappa);
+    }
+
+    /**
+     *  The integrals have been generated. We are at the point of the decimal
+     *  separator. In the following loop we simply multiply the remaining digits by
+     *  10 and divide by one. We just need to pay attention to multiply associated
+     *  data (the 'unit'), too.
+     *  Note that the multiplication by 10 does not overflow, because w.e >= -60
+     *  and thus one.e >= -60.
+     */
+    assert(one.e() >= -60);
+    assert(fractionals < one.f());
+    assert(0xFFFFFFFFFFFFFFFFULL / 10 >= one.f());
+    while (requested_digits > 0 && fractionals > w_error) {
+        fractionals *= 10;
+        w_error *= 10;
+        // Integer division by one.
+        int digit = static_cast<int>(fractionals >> -one.e());
+        assert(digit <= 9);
+        buffer[*length] = static_cast<char>('0' + digit);
+        (*length)++;
+        requested_digits--;
+        fractionals &= one.f() - 1;  // Modulo by one.
+        (*kappa)--;
+    }
+    if (requested_digits != 0) {
+        return false;
+    }
+    return round_weed_counted(buffer, *length, fractionals, one.f(), w_error, kappa);
+}
+
+
 PYCPP_END_NAMESPACE
