@@ -17,6 +17,9 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
+// TODO: use https://github.com/google/double-conversion/tree/master/double-conversion
+// This is a great back-end
+
 /**
  *  \brief Convert unsigned 8-bit value to string.
  */

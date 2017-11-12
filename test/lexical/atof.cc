@@ -2,7 +2,9 @@
 //  :license: MIT, see LICENSE.md for more details.
 
 #include <pycpp/lexical/atof.h>
+#include <pycpp/lexical/format.h>
 #include <gtest/gtest.h>
+#include <cmath>
 
 PYCPP_USING_NAMESPACE
 
@@ -26,6 +28,12 @@ TEST(atof32, base10)
     EXPECT_FLOAT_EQ(atof32("123456789.123", 10), 123456789.123);
     EXPECT_FLOAT_EQ(atof32("123456789.1234", 10), 123456789.1234);
     EXPECT_FLOAT_EQ(atof32("123456789.12345", 10), 123456789.12345);
+    EXPECT_FLOAT_EQ(atof32("1.2345678912345e8", 10), 123456789.12345);
+    EXPECT_FLOAT_EQ(atof32("1.2345e+8", 10), 123450000);
+    EXPECT_FLOAT_EQ(atof32("1.2345e-8", 10), 0.000000012345);
+    EXPECT_TRUE(std::isnan(atof32(NAN_STRING, 10)));
+    EXPECT_TRUE(std::isinf(atof32(INFINITY_STRING, 10)));
+    EXPECT_TRUE(std::isinf(atof32("-" + INFINITY_STRING, 10)));
 }
 
 
@@ -46,6 +54,10 @@ TEST(atof64, base10)
     EXPECT_DOUBLE_EQ(atof64("123456789.123", 10), 123456789.123);
     EXPECT_DOUBLE_EQ(atof64("123456789.1234", 10), 123456789.1234);
     EXPECT_DOUBLE_EQ(atof64("123456789.12345", 10), 123456789.12345);
-
-    exit(0);
+    EXPECT_DOUBLE_EQ(atof64("1.2345678912345e8", 10), 123456789.12345);
+    EXPECT_DOUBLE_EQ(atof64("1.2345e+8", 10), 123450000);
+    EXPECT_DOUBLE_EQ(atof64("1.2345e-8", 10), 0.000000012345);
+    EXPECT_TRUE(std::isnan(atof64(NAN_STRING, 10)));
+    EXPECT_TRUE(std::isinf(atof64(INFINITY_STRING, 10)));
+    EXPECT_TRUE(std::isinf(atof64("-" + INFINITY_STRING, 10)));
 }

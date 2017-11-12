@@ -20,7 +20,6 @@ PYCPP_BEGIN_NAMESPACE
  */
 struct lexical_null_formatter
 {
-public:
     lexical_null_formatter();
     lexical_null_formatter(std::nullptr_t nullp);
 
@@ -36,9 +35,6 @@ public:
 
     // CONVERSIONS
     operator string_view() const;
-
-private:
-    char buffer_[5];
 };
 
 /**

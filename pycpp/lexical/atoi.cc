@@ -85,6 +85,8 @@ Int atoi_(const char* first, const char*& last, uint8_t base)
 {
     if (first == last) {
         return Int(0);
+    } else if (first[0] == '+') {
+        return atoi_impl<Int>(first+1, last, base);
     } else if (first[0] == '-') {
         return -atoi_impl<Int>(first+1, last, base);
     } else {

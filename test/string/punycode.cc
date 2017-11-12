@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see LICENSE.md for more details.
 //  :copyright: (c) 2013-2017 Kim Davies.
-//  :license: CC By 4.0, see licenses/bsd-3.md for more details.
+//  :license: CC By 4.0, see licenses/cc-by-4.0.md for more details.
 /*
  *  \addtogroup Tests
  *  \brief Punycode encoding and decoding unittests.

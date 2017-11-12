@@ -5,7 +5,7 @@
  *  \brief Fast lexical string-to-float conversion routines.
  *
  *  TODO: change values based on benchmark values
- *  These routines are naive, yet 30-50% faster than the STL versions,
+ *  These routines are naive, yet 15% faster than the STL versions,
  *  thread-safe, and locale-independent, and should be generally
  *  preferred to `std::stod` or `atof`. See out `bench/lexical.cc` for
  *  benchmarks comparing PyCPP to the STL versions.

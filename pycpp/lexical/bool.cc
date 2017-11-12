@@ -2,42 +2,30 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lexical/bool.h>
+#include <pycpp/lexical/format.h>
 #include <cstring>
 #include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
-
-// CONSTANTS
-// ---------
-
-static const char TRUE_STRING[] = "true";
-static const char FALSE_STRING[] = "false";
 
 // OBJECTS
 // -------
 
 lexical_bool_formatter::lexical_bool_formatter()
 {
-    strncpy(buffer_, FALSE_STRING, sizeof(FALSE_STRING));
-    size_ = 5;
+    string_ = &FALSE_STRING;
 }
 
 
 lexical_bool_formatter::lexical_bool_formatter(bool value)
 {
-    if (value) {
-        strncpy(buffer_, TRUE_STRING, sizeof(TRUE_STRING));
-        size_ = 4;
-    } else {
-        strncpy(buffer_, FALSE_STRING, sizeof(FALSE_STRING));
-        size_ = 5;
-    }
+    string_ = value ? &TRUE_STRING : &FALSE_STRING;
 }
 
 
 size_t lexical_bool_formatter::size() const
 {
-    return size_;
+    return string_->size();
 }
 
 
@@ -55,7 +43,7 @@ const char* lexical_bool_formatter::data() const
 
 const char* lexical_bool_formatter::c_str() const
 {
-    return buffer_;
+    return string_->c_str();
 }
 
 

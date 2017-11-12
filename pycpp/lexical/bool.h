@@ -37,8 +37,7 @@ public:
     operator string_view() const;
 
 private:
-    char buffer_[6];
-    size_t size_;
+    std::string* string_;
 };
 
 

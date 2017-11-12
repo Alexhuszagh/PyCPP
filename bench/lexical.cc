@@ -2,7 +2,9 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <benchmark/benchmark.h>
+#include <pycpp/lexical/atof.h>
 #include <pycpp/lexical/atoi.h>
+#include <pycpp/lexical/ftoa.h>
 #include <pycpp/lexical/itoa.h>
 #include <string>
 #include <vector>
@@ -12,7 +14,30 @@ PYCPP_USING_NAMESPACE
 // BENCHMARKS
 // ----------
 
-std::vector<std::string> STRINGS = {
+std::vector<std::string> FLOAT_STRINGS = {
+    "0",
+    "1",
+    "1.2",
+    "1.23",
+    "1.234",
+    "1.2345",
+    "1.23456",
+    "1.234567",
+    "1.2345678",
+    "1.23456789",
+    "1.234567890",
+    "1.2345678901",
+    "1.23456789012",
+    "1.234567890123",
+    "1.2345678901234",
+    "1.23456789012345",
+    "1.234567890123456",
+    "1.2345678901234567",
+    "1.23456789012345678",
+    "1.234567890123456789",
+};
+
+std::vector<std::string> INTEGER_STRINGS = {
     "0",
     "1",
     "12",
@@ -37,7 +62,7 @@ std::vector<std::string> STRINGS = {
 };
 
 
-std::vector<uint64_t> NUMBERS = {
+std::vector<uint64_t> INTEGERS = {
     0ULL,
     1ULL,
     12ULL,
@@ -62,10 +87,34 @@ std::vector<uint64_t> NUMBERS = {
 };
 
 
+std::vector<double> FLOATS = {
+    0.0,
+    1.0,
+    1.2,
+    1.23,
+    1.234,
+    1.2345,
+    1.23456,
+    1.234567,
+    1.2345678,
+    1.23456789,
+    1.234567890,
+    1.2345678901,
+    1.23456789012,
+    1.234567890123,
+    1.2345678901234,
+    1.23456789012345,
+    1.234567890123456,
+    1.2345678901234567,
+    1.23456789012345678,
+    1.234567890123456789,
+};
+
+
 static void std_strtoll(benchmark::State& state)
 {
     for (auto _ : state) {
-        for (auto s: STRINGS) {
+        for (auto s: INTEGER_STRINGS) {
             benchmark::DoNotOptimize(std::strtoll(s.data(), nullptr, 10));
         }
     }
@@ -75,28 +124,8 @@ static void std_strtoll(benchmark::State& state)
 static void atoi64(benchmark::State& state)
 {
     for (auto _ : state) {
-        for (auto s: STRINGS) {
+        for (auto s: INTEGER_STRINGS) {
             benchmark::DoNotOptimize(atoi64(s, 10));
-        }
-    }
-}
-
-
-static void atoi64_base2(benchmark::State& state)
-{
-    for (auto _ : state) {
-        for (auto s: STRINGS) {
-            benchmark::DoNotOptimize(atoi64(s, 2));
-        }
-    }
-}
-
-
-static void atoi64_base16(benchmark::State& state)
-{
-    for (auto _ : state) {
-        for (auto s: STRINGS) {
-            benchmark::DoNotOptimize(atoi64(s, 16));
         }
     }
 }
@@ -105,7 +134,7 @@ static void atoi64_base16(benchmark::State& state)
 static void std_to_string(benchmark::State& state)
 {
     for (auto _ : state) {
-        for (auto n: NUMBERS) {
+        for (auto n: INTEGERS) {
             benchmark::DoNotOptimize(std::to_string(n));
         }
     }
@@ -115,7 +144,7 @@ static void std_to_string(benchmark::State& state)
 static void i64toa(benchmark::State& state)
 {
     for (auto _ : state) {
-        for (auto n: NUMBERS) {
+        for (auto n: INTEGERS) {
             benchmark::DoNotOptimize(u64toa(n, 10));
         }
     }
@@ -125,7 +154,7 @@ static void i64toa(benchmark::State& state)
 static void i64toa_base2(benchmark::State& state)
 {
     for (auto _ : state) {
-        for (auto n: NUMBERS) {
+        for (auto n: INTEGERS) {
             benchmark::DoNotOptimize(u64toa(n, 2));
         }
     }
@@ -135,8 +164,28 @@ static void i64toa_base2(benchmark::State& state)
 static void i64toa_base16(benchmark::State& state)
 {
     for (auto _ : state) {
-        for (auto n: NUMBERS) {
+        for (auto n: INTEGERS) {
             benchmark::DoNotOptimize(u64toa(n, 16));
+        }
+    }
+}
+
+
+static void std_strtod(benchmark::State& state)
+{
+    for (auto _ : state) {
+        for (auto s: FLOAT_STRINGS) {
+            benchmark::DoNotOptimize(std::strtod(s.data(), nullptr));
+        }
+    }
+}
+
+
+static void atof64(benchmark::State& state)
+{
+    for (auto _ : state) {
+        for (auto s: FLOAT_STRINGS) {
+            benchmark::DoNotOptimize(atof64(s, 10));
         }
     }
 }
@@ -146,10 +195,12 @@ static void i64toa_base16(benchmark::State& state)
 
 BENCHMARK(std_strtoll);
 BENCHMARK(atoi64);
-BENCHMARK(atoi64_base2);
-BENCHMARK(atoi64_base16);
 BENCHMARK(std_to_string);
 BENCHMARK(i64toa);
 BENCHMARK(i64toa_base2);
 BENCHMARK(i64toa_base16);
+BENCHMARK(std_strtod);
+BENCHMARK(atof64);
+// TODO: std_to_string_double
+// TODO: ftoa
 BENCHMARK_MAIN();

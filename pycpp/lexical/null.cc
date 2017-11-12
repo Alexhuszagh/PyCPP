@@ -1,36 +1,27 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/lexical/format.h>
 #include <pycpp/lexical/null.h>
 #include <cstring>
 #include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 
-// CONSTANTS
-// ---------
-
-static const char NULL_STRING[] = "null";
-
 // OBJECTS
 // -------
 
 
 lexical_null_formatter::lexical_null_formatter()
-{
-    strncpy(buffer_, NULL_STRING, sizeof(NULL_STRING));
-}
+{}
 
 
 lexical_null_formatter::lexical_null_formatter(const std::nullptr_t nullp)
-{
-    strncpy(buffer_, NULL_STRING, sizeof(NULL_STRING));
-}
-
+{}
 
 size_t lexical_null_formatter::size() const
 {
-    return 4;
+    return NULL_STRING.size();
 }
 
 
@@ -48,7 +39,7 @@ const char* lexical_null_formatter::data() const
 
 const char* lexical_null_formatter::c_str() const
 {
-    return buffer_;
+    return NULL_STRING.c_str();
 }
 
 
