@@ -33,11 +33,13 @@ extern std::string FALSE_STRING;
 
 /**
  *  \brief Representation of IEEE754 NaN.
+ *  This must be <= 23 characters, or else may cause buffer overflow.
  */
 extern std::string NAN_STRING;
 
 /**
  *  \brief Representation of IEEE754 INF (-INF prepends a minus sign).
+ *  This must be <= 23 characters, or else may cause buffer overflow.
  */
 extern std::string INFINITY_STRING;
 

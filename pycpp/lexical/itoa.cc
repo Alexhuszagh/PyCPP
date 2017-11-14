@@ -94,7 +94,7 @@ void itoa_(Int value, char* first, char*& last, uint8_t base)
 {
     // disable this check in release builds, since it's a logic
     // error and extraordinarily expensive
-    assert(last - first <= digits(value, base) && "Need a larger buffer.");
+    assert(last - first >= digits(value, base) && "Need a larger buffer.");
 
     // handle negative numbers, use an unsigned type to avoid overflow
     char* tmp = last - 1;
