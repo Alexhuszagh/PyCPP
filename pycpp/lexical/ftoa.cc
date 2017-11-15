@@ -1,6 +1,11 @@
 //  :copyright: (c) 2013 Andreas Samoljuk
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
+/**
+ *  The optimized routines are from Andrea Samoljuk's `fpconv` library,
+ *  which is available here:
+ *      `https://github.com/night-shift/fpconv`
+ */
 
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/ftoa.h>
@@ -431,10 +436,28 @@ int fpconv_dtoa(double d, char* dest)
 }
 
 
+static void ftoa_base2(double value, char* first, char*& last)
+{
+    // TODO: implement...
+    // TODO: Calculate the exponent range desired.
+    //
+}
+
+
 static void ftoa_base10(double value, char* first, char*& last)
 {
     int len = fpconv_dtoa(value, first);
     last = first + len;
+}
+
+
+static void ftoa_basen(double value, char* first, char*& last)
+{
+    // TODO: may change signatures
+    // Workflow
+    // 1.   Check for special values (-inf, inf, NaN)
+    // 2.   Write the mantissa without the 1 or decimal.
+    // 3.   Wait... Do I write the mantissa, since it's base2, not 10....
 }
 
 
@@ -454,6 +477,7 @@ static void ftoa_impl(double value, char* first, char*& last, uint8_t base)
     // use optimized functions if possible
     switch (base) {
         // TODO: need other cases...
+        case 2:         ftoa_base2(value, first, tmp); break;
         case 10:        ftoa_base10(value, first, tmp); break;
         default:        break;
     }

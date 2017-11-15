@@ -34,6 +34,3 @@
 [submodule "third_party/benchmark"]
 	path = third_party/benchmark
 	url = https://github.com/Alexhuszagh/benchmark
-[submodule "third_party/double-conversion"]
-	path = third_party/double-conversion
-	url = https://github.com/Alexhuszagh/double-conversion
