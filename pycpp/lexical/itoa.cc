@@ -73,7 +73,6 @@ static void itoa_optimized(Int value, char* first, char*& last, const char* tabl
     while (value >= base2) {
         rem = 2 * (value % base2);
         value /= base2;
-        // TODO: here... Shit lols...
         *p++ = table[rem+1];
         *p++ = table[rem];
     }
@@ -94,6 +93,7 @@ void itoa_(Int value, char* first, char*& last, uint8_t base)
 {
     // disable this check in release builds, since it's a logic
     // error and extraordinarily expensive
+    assert(first <= last);
     assert(last - first >= digits(value, base) && "Need a larger buffer.");
 
     // handle negative numbers, use an unsigned type to avoid overflow

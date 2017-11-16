@@ -1,3 +1,4 @@
+//  :copyright: (c) 2011 V8 Project Authors
 //  :copyright: (c) 2013 Andreas Samoljuk
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
@@ -9,6 +10,7 @@
 
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/ftoa.h>
+#include <pycpp/lexical/table.h>
 #include <cassert>
 #include <cstdint>
 #include <cstring>
@@ -43,7 +45,8 @@ struct fp_t
 // CONSTANTS
 // ---------
 
-static uint64_t tens[] = {
+static constexpr size_t BUFFER_SIZE = 60;
+static constexpr uint64_t TENS[] = {
     10000000000000000000U, 1000000000000000000U, 100000000000000000U,
     10000000000000000U, 1000000000000000U, 100000000000000U,
     10000000000000U, 1000000000000U, 100000000000U,
@@ -53,7 +56,7 @@ static uint64_t tens[] = {
     10U, 1U
 };
 
-static fp_t powers_ten[] = {
+static constexpr fp_t POWERS_TEN[] = {
     { 18054884314459144840U, -1220 }, { 13451937075301367670U, -1193 },
     { 10022474136428063862U, -1166 }, { 14934650266808366570U, -1140 },
     { 11127181549972568877U, -1113 }, { 16580792590934885855U, -1087 },
@@ -103,6 +106,8 @@ static fp_t powers_ten[] = {
 // HELPERS
 // -------
 
+// GRISU
+
 static fp_t find_cachedpow10(int exp, int* k)
 {
     const double one_log_ten = 0.30102999566398114;
@@ -111,7 +116,7 @@ static fp_t find_cachedpow10(int exp, int* k)
     int idx = (approx - firstpower) / steppowers;
 
     while(true) {
-        int current = exp + powers_ten[idx].exp + 64;
+        int current = exp + POWERS_TEN[idx].exp + 64;
 
         if(current < expmin) {
             idx++;
@@ -125,7 +130,7 @@ static fp_t find_cachedpow10(int exp, int* k)
 
         *k = (firstpower + idx * steppowers);
 
-        return powers_ten[idx];
+        return POWERS_TEN[idx];
     }
 }
 
@@ -248,7 +253,7 @@ static int generate_digits(fp_t* fp, fp_t* upper, fp_t* lower, char* digits, int
     int idx = 0, kappa = 10;
     uint64_t* divp;
     /* 1000000000 */
-    for(divp = tens + 10; kappa > 0; divp++) {
+    for(divp = TENS + 10; kappa > 0; divp++) {
 
         uint64_t div = *divp;
         unsigned digit = part1 / div;
@@ -270,7 +275,7 @@ static int generate_digits(fp_t* fp, fp_t* upper, fp_t* lower, char* digits, int
     }
 
     /* 10 */
-    uint64_t* unit = tens + 18;
+    uint64_t* unit = TENS + 18;
 
     while(true) {
         part2 *= 10;
@@ -429,19 +434,137 @@ int fpconv_dtoa(double d, char* dest)
 
     int K = 0;
     int ndigits = grisu2(d, digits, &K);
-
     str_len += emit_digits(digits, ndigits, dest + str_len, K);
 
     return str_len;
 }
 
 
-static void ftoa_base2(double value, char* first, char*& last)
+// RADIX
+
+
+static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
 {
-    // TODO: implement...
-    // TODO: Calculate the exponent range desired.
-    //
+    assert(radix >= 2 && radix <= 36);
+
+    // check for special cases
+    int length = filter_special(d, first);
+    if(length) {
+        last = first + length;
+        return;
+    }
+
+    // assert no special cases remain
+    assert(std::isfinite(d));
+    assert(d != 0.0);
+
+    /**
+     *  Store the first digit and up to `BUFFER_SIZE - 14` digits
+     *  that occur from left-to-right in the decimal representation.
+     *  For example, for the number 123.45, store the first digit `1`
+     *  and `2345` as the remaining values. Then, decide on-the-fly
+     *  if we need scientific or regular formatting.
+     *
+     *    BUFFER_SIZE
+     *  - 1      # first nummber
+     *  - 1      # period
+     *  - 1      # +/- sign
+     *  - 2      # e and +/- sign
+     *  - 9      # max exp is 308, in base2 is 9
+     *  = 14 characters of formatting required
+     */
+    static constexpr size_t max_nonfraction_length = 14;
+    static constexpr size_t max_fractionn_length = BUFFER_SIZE - max_nonfraction_length;
+
+    /**
+     *  Temporary buffer for the result. We start with the decimal point in the
+     *  middle and write to the left for the integer part and to the right for the
+     *  fractional part. 1024 characters for the exponent and 52 for the mantissa
+     *  either way, with additional space for sign, decimal point and string
+     *  termination should be sufficient.
+     */
+    static constexpr size_t buffer_size = 2200;
+    char buffer[buffer_size];
+    size_t integer_cursor = buffer_size / 2;
+    size_t fraction_cursor = integer_cursor;
+
+    // Split the value into an integer part and a fractional part.
+    double integer = std::floor(value);
+    double fraction = value - integer;
+
+    // We only compute fractional digits up to the input double's precision.
+//    double delta = 0.5 * (Double(value).NextDouble() - value);
+//  delta = std::max(Double(0.0).NextDouble(), delta);
 }
+
+// TODO: use this for the Radix C-string
+//char* DoubleToRadixCString(double value, int radix) {
+//
+
+
+//  DCHECK_GT(delta, 0.0);
+//  if (fraction > delta) {
+//    // Insert decimal point.
+//    buffer[fraction_cursor++] = '.';
+//    do {
+//      // Shift up by one digit.
+//      fraction *= radix;
+//      delta *= radix;
+//      // Write digit.
+//      int digit = static_cast<int>(fraction);
+//      buffer[fraction_cursor++] = BASEN[digit];
+//      // Calculate remainder.
+//      fraction -= digit;
+//      // Round to even.
+//      if (fraction > 0.5 || (fraction == 0.5 && (digit & 1))) {
+//        if (fraction + delta > 1) {
+//          // We need to back trace already written digits in case of carry-over.
+//          while (true) {
+//            fraction_cursor--;
+//            if (fraction_cursor == kBufferSize / 2) {
+//              CHECK_EQ('.', buffer[fraction_cursor]);
+//              // Carry over to the integer part.
+//              integer += 1;
+//              break;
+//            }
+//            char c = buffer[fraction_cursor];
+//            // Reconstruct digit.
+//            int digit = c > '9' ? (c - 'a' + 10) : (c - '0');
+//            if (digit + 1 < radix) {
+//              buffer[fraction_cursor++] = BASEN[digit + 1];
+//              break;
+//            }
+//          }
+//          break;
+//        }
+//      }
+//    } while (fraction > delta);
+//  }
+//
+//  // Compute integer digits. Fill unrepresented digits with zero.
+//  while (Double(integer / radix).Exponent() > 0) {
+//    integer /= radix;
+//    buffer[--integer_cursor] = '0';
+//  }
+//  do {
+//    double remainder = Modulo(integer, radix);
+//    buffer[--integer_cursor] = BASEN[static_cast<int>(remainder)];
+//    integer = (integer - remainder) / radix;
+//  } while (integer > 0);
+//
+//  // Add sign and terminate string.
+//  if (negative) buffer[--integer_cursor] = '-';
+//  buffer[fraction_cursor++] = '\0';
+//  DCHECK_LT(fraction_cursor, kBufferSize);
+//  DCHECK_LE(0, integer_cursor);
+//  // Allocate new string as return value.
+//  char* result = NewArray<char>(fraction_cursor - integer_cursor);
+//  memcpy(result, buffer + integer_cursor, fraction_cursor - integer_cursor);
+//  return result;
+//}
+
+
+// BASEN
 
 
 static void ftoa_base10(double value, char* first, char*& last)
@@ -451,7 +574,7 @@ static void ftoa_base10(double value, char* first, char*& last)
 }
 
 
-static void ftoa_basen(double value, char* first, char*& last)
+static void ftoa_basen(double value, char* first, char*& last, uint8_t base)
 {
     // TODO: may change signatures
     // Workflow
@@ -464,7 +587,7 @@ static void ftoa_basen(double value, char* first, char*& last)
 static void ftoa_impl(double value, char* first, char*& last, uint8_t base)
 {
     // disable this check in release builds, since it's a logic error
-    assert(last - first >= 25 && "Need a larger buffer.");
+    assert(last - first >= BUFFER_SIZE && "Need a larger buffer.");
 
     // handle negative numbers
     char* tmp = last - 1;
@@ -476,15 +599,43 @@ static void ftoa_impl(double value, char* first, char*& last, uint8_t base)
 
     // use optimized functions if possible
     switch (base) {
-        // TODO: need other cases...
-        case 2:         ftoa_base2(value, first, tmp); break;
-        case 10:        ftoa_base10(value, first, tmp); break;
-        default:        break;
+        case 10:        ftoa_base10(value, first, tmp);         break;
+        default:        ftoa_basen(value, first, tmp, base);    break;
     }
 
     // add a trailing null character
     *tmp = '\0';
     last = tmp;
+}
+
+
+void ftoa_(double value, char* first, char*& last, uint8_t base)
+{
+    // sanity checks
+    assert(first <= last);
+
+    // check to use a temporary buffer
+    size_t distance = std::distance(first, last);
+    if (distance == 0) {
+        // cannot write null terminator
+        return;
+    } if (distance < BUFFER_SIZE) {
+        // use a temporary buffer and write number to buffer
+        char buffer[BUFFER_SIZE];
+        char* first_ = buffer;
+        char* last_ = first_ + BUFFER_SIZE;
+        ftoa_impl(value, first_, last_, base);
+
+        // copy as many bytes as possible except the trailing null byte
+        // then, write null-byte so the string is always terminated
+        size_t length = std::min<size_t>(std::distance(first_, last_), distance) - 1;
+        memcpy(first, first_, length);
+        last = first + length;
+        *last = '\0';
+    } else {
+        // current buffer has sufficient capacity, use it
+        ftoa_impl(value, first, last, base);
+    }
 }
 
 // FUNCTIONS
@@ -493,35 +644,13 @@ static void ftoa_impl(double value, char* first, char*& last, uint8_t base)
 
 void f32toa(float value, char* first, char*& last, uint8_t base)
 {
-    size_t distance = std::distance(first, last);
-    if (distance < 25) {
-        // use a temporary buffer and memcpy it over
-        char buffer[25];
-        char* first_ = buffer;
-        char* last_ = first_ + 25;
-        ftoa_impl(value, first_, last_, base);
-        // TODO: need to copy to new buffer with null terminator
-    } else {
-        // current buffer has sufficient capacity, use it
-        ftoa_impl(value, first, last, base);
-    }
+    ftoa_(value, first, last, base);
 }
 
 
 void f64toa(double value, char* first, char*& last, uint8_t base)
 {
-    size_t distance = std::distance(first, last);
-    if (distance < 25) {
-        // use a temporary buffer and memcpy it over
-        char buffer[25];
-        char* first_ = buffer;
-        char* last_ = first_ + 25;
-        ftoa_impl(value, first_, last_, base);
-        // TODO: need to copy to new buffer with null terminator
-    } else {
-        // current buffer has sufficient capacity, use it
-        ftoa_impl(value, first, last, base);
-    }
+    ftoa_(value, first, last, base);
 }
 
 
