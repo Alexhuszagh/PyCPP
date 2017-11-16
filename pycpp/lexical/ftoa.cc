@@ -11,9 +11,12 @@
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/ftoa.h>
 #include <pycpp/lexical/table.h>
+#include <pycpp/preprocessor/os.h>
 #include <cassert>
+#include <cmath>
 #include <cstdint>
 #include <cstring>
+#include <iostream>         // TODO: remove
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -42,10 +45,30 @@ struct fp_t
     int exp;
 };
 
+union dbits_t
+{
+    double d;
+    uint64_t i;
+};
+
 // CONSTANTS
 // ---------
 
+// IEEE754 CONSTANTS
+static constexpr uint64_t EXPONENT_MASK = 0x7FF0000000000000ULL;
+static constexpr uint64_t HIDDEN_BIT = 0x0010000000000000ULL;
+static constexpr uint64_t SIGN_MASK = 0x800000000000000ULL;
+static constexpr uint64_t SIGNIFICAND_MASK = 0x000FFFFFFFFFFFFFULL;
+static constexpr uint64_t U64_INFINITY = 0x7FF0000000000000ULL;
+static constexpr int PHYSICAL_SIGNIFICAND_SIZE = 52;
+static constexpr int SIGNIFICAND_SIZE = 53;
+static constexpr int EXPONENT_BIAS = 0x3FF + PHYSICAL_SIGNIFICAND_SIZE;
+static constexpr int DENORMAL_EXPONENT = -EXPONENT_BIAS + 1;
+
+// BUFFER PARAMETERS
 static constexpr size_t BUFFER_SIZE = 60;
+
+// LOOKUPS
 static constexpr uint64_t TENS[] = {
     10000000000000000000U, 1000000000000000000U, 100000000000000000U,
     10000000000000000U, 1000000000000000U, 100000000000000U,
@@ -106,7 +129,7 @@ static constexpr fp_t POWERS_TEN[] = {
 // HELPERS
 // -------
 
-// GRISU
+// FPCONV GRISU
 
 static fp_t find_cachedpow10(int exp, int* k)
 {
@@ -137,12 +160,16 @@ static fp_t find_cachedpow10(int exp, int* k)
 
 static inline uint64_t get_dbits(double d)
 {
-    union {
-        double dbl;
-        uint64_t i;
-    } dbl_bits = { d };
-
+    dbits_t dbl_bits = { d };
     return dbl_bits.i;
+}
+
+
+static inline double get_u64bits(uint64_t u64)
+{
+    dbits_t dbl_bits;
+    dbl_bits.i = u64;
+    return dbl_bits.d;
 }
 
 
@@ -251,7 +278,7 @@ static int generate_digits(fp_t* fp, fp_t* upper, fp_t* lower, char* digits, int
     uint64_t part2 = upper->frac & (one.frac - 1);
 
     int idx = 0, kappa = 10;
-    uint64_t* divp;
+    const uint64_t* divp;
     /* 1000000000 */
     for(divp = TENS + 10; kappa > 0; divp++) {
 
@@ -275,7 +302,7 @@ static int generate_digits(fp_t* fp, fp_t* upper, fp_t* lower, char* digits, int
     }
 
     /* 10 */
-    uint64_t* unit = TENS + 18;
+    const uint64_t* unit = TENS + 18;
 
     while(true) {
         part2 *= 10;
@@ -440,16 +467,127 @@ int fpconv_dtoa(double d, char* dest)
 }
 
 
-// RADIX
+// V8 RADIX
+
+
+/**
+ *  \brief Returns true if the double is a denormal.
+ */
+bool v8_is_denormal(double d)
+{
+    uint64_t d64 = get_dbits(d);
+    return (d64 & EXPONENT_MASK) == 0;
+}
+
+/**
+ *  We consider denormals not to be special.
+ *  Hence only Infinity and NaN are special.
+ */
+bool v8_is_special(double d)
+{
+    uint64_t d64 = get_dbits(d);
+    return (d64 & EXPONENT_MASK) == EXPONENT_MASK;
+}
+
+
+bool v8_is_nan(double d)
+{
+    uint64_t d64 = get_dbits(d);
+    return ((d64 & EXPONENT_MASK) == EXPONENT_MASK) && ((d64 & SIGNIFICAND_MASK) != 0);
+}
+
+
+bool v8_is_infinite(double d)
+{
+    uint64_t d64 = get_dbits(d);
+    return ((d64 & EXPONENT_MASK) == EXPONENT_MASK) && ((d64 & SIGNIFICAND_MASK) == 0);
+}
+
+
+static int v8_sign(double d)
+{
+    uint64_t d64 = get_dbits(d);
+    return (d64 & SIGN_MASK) == 0 ? 1 : -1;
+}
+
+
+int v8_exponent(double d)
+{
+    if (v8_is_denormal(d)) {
+        return DENORMAL_EXPONENT;
+    }
+
+    uint64_t d64 = get_dbits(d);
+    int biased_e = static_cast<int>((d64 & EXPONENT_MASK) >> PHYSICAL_SIGNIFICAND_SIZE);
+    return biased_e - EXPONENT_BIAS;
+}
+
+
+static uint64_t v8_significand(double d)
+{
+    uint64_t d64 = get_dbits(d);
+    uint64_t s = d64 & SIGNIFICAND_MASK;
+    if (!v8_is_denormal(d)) {
+      return s + HIDDEN_BIT;
+    } else {
+      return s;
+    }
+}
+
+
+/**
+ *  \brief Returns the next greater double. Returns +infinity on input +infinity.
+ */
+static double v8_next_double(double d)
+{
+    uint64_t d64 = get_dbits(d);
+    if (d64 == U64_INFINITY) {
+        return get_u64bits(U64_INFINITY);
+    }
+    if (v8_sign(d) < 0 && v8_significand(d) == 0) {
+      // -0.0
+      return 0.0;
+    }
+    if (v8_sign(d) < 0) {
+      return get_u64bits(d64 - 1);
+    } else {
+      return get_u64bits(d64 + 1);
+    }
+}
+
+
+static double v8_modulo(double x, double y)
+{
+#if defined(OS_WINDOWS)
+    // Workaround MS fmod bugs. ECMA-262 says:
+    // dividend is finite and divisor is an infinity => result equals dividend
+    // dividend is a zero and divisor is nonzero finite => result equals dividend
+    if (!(std::isfinite(x) && (!std::isfinite(y) && !std::isnan(y))) &&
+        !(x == 0 && (y != 0 && std::isfinite(y)))) {
+        x = fmod(x, y);
+    }
+    return x;
+#elif defined(OS_AIX)
+    // AIX raises an underflow exception for (Number.MIN_VALUE % Number.MAX_VALUE)
+    feclearexcept(FE_ALL_EXCEPT);
+    double result = std::fmod(x, y);
+    int exception = fetestexcept(FE_UNDERFLOW);
+    return (exception ? x : result);
+#else
+    return std::fmod(x, y);
+#endif
+}
 
 
 static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
 {
+    std::cout << "ftoa_naive" << std::endl;
     assert(radix >= 2 && radix <= 36);
 
     // check for special cases
     int length = filter_special(d, first);
-    if(length) {
+    if (length) {
+        std::cout << "filter_special" << std::endl;
         last = first + length;
         return;
     }
@@ -459,7 +597,7 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
     assert(d != 0.0);
 
     /**
-     *  Store the first digit and up to `BUFFER_SIZE - 14` digits
+     *  Store the first digit and up to `BUFFER_SIZE - 15` digits
      *  that occur from left-to-right in the decimal representation.
      *  For example, for the number 123.45, store the first digit `1`
      *  and `2345` as the remaining values. Then, decide on-the-fly
@@ -471,10 +609,11 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
      *  - 1      # +/- sign
      *  - 2      # e and +/- sign
      *  - 9      # max exp is 308, in base2 is 9
-     *  = 14 characters of formatting required
+     *  - 1      # null terminator
+     *  = 15 characters of formatting required
      */
-    static constexpr size_t max_nonfraction_length = 14;
-    static constexpr size_t max_fractionn_length = BUFFER_SIZE - max_nonfraction_length;
+    static constexpr size_t max_nondigit_length = 15;
+    static constexpr size_t max_digit_length = BUFFER_SIZE - max_nondigit_length;
 
     /**
      *  Temporary buffer for the result. We start with the decimal point in the
@@ -485,77 +624,91 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
      */
     static constexpr size_t buffer_size = 2200;
     char buffer[buffer_size];
-    size_t integer_cursor = buffer_size / 2;
-    size_t fraction_cursor = integer_cursor;
+    size_t initial_position = buffer_size / 2;
+    size_t integer_cursor = initial_position;
+    size_t fraction_cursor = initial_position;
 
     // Split the value into an integer part and a fractional part.
-    double integer = std::floor(value);
-    double fraction = value - integer;
+    double integer = std::floor(d);
+    double fraction = d - integer;
 
     // We only compute fractional digits up to the input double's precision.
-//    double delta = 0.5 * (Double(value).NextDouble() - value);
-//  delta = std::max(Double(0.0).NextDouble(), delta);
+    double delta = 0.5 * (v8_next_double(d) - d);
+    delta = std::max(v8_next_double(0.0), delta);
+    assert(delta > 0.0);
+
+    if (fraction > delta) {
+        do {
+            // Shift up by one digit.
+            fraction *= base;
+            delta *= base;
+            // Write digit.
+            int digit = static_cast<int>(fraction);
+            buffer[fraction_cursor++] = BASEN[digit];
+            // Calculate remainder.
+            fraction -= digit;
+            // Round to even.
+            if (fraction > 0.5 || (fraction == 0.5 && (digit & 1))) {
+                if (fraction + delta > 1) {
+                    // We need to back trace already written digits in case of carry-over.
+                    while (true) {
+                        fraction_cursor--;
+                        if (fraction_cursor == buffer_size / 2) {
+                            // Carry over to the integer part.
+                            integer += 1;
+                            break;
+                        }
+                        char c = buffer[fraction_cursor];
+                        // Reconstruct digit.
+                        int digit = c > '9' ? (c - 'A' + 10) : (c - '0');
+                        if (digit + 1 < base) {
+                            buffer[fraction_cursor++] = BASEN[digit + 1];
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        } while (fraction > delta);
+    }
+
+    // Compute integer digits. Fill unrepresented digits with zero.
+    while (v8_exponent(integer / base) > 0) {
+        integer /= base;
+        buffer[--integer_cursor] = '0';
+    }
+
+    do {
+        double remainder = v8_modulo(integer, base);
+        buffer[--integer_cursor] = BASEN[static_cast<int>(remainder)];
+        integer = (integer - remainder) / base;
+    } while (integer > 0);
+
+    // recreate representation from current digits
+    if (d <= 1e-5) {
+        // write scientific notation with negative exponent
+    } else if (d >= 1e11) {
+        // write scientific notation with positive exponent
+    } else {
+        std::cout << "Writing integer fraction portion..." << std::endl;
+        // write using integer.fraction notation
+        size_t integer_length = initial_position - integer_cursor;
+        size_t fraction_length = std::min(fraction_cursor - initial_position, max_digit_length - integer_length);
+        memcpy(first, buffer + integer_cursor, integer_length);
+        first[integer_cursor+integer_length+1] = '.';
+        memcpy(first + integer_length, buffer + initial_position, fraction_length);
+        last = first + integer_length + fraction_length + 1;
+    }
 }
 
 // TODO: use this for the Radix C-string
-//char* DoubleToRadixCString(double value, int radix) {
-//
+//char* DoubleToRadixCString(double value, int base) {
 
 
-//  DCHECK_GT(delta, 0.0);
-//  if (fraction > delta) {
-//    // Insert decimal point.
-//    buffer[fraction_cursor++] = '.';
-//    do {
-//      // Shift up by one digit.
-//      fraction *= radix;
-//      delta *= radix;
-//      // Write digit.
-//      int digit = static_cast<int>(fraction);
-//      buffer[fraction_cursor++] = BASEN[digit];
-//      // Calculate remainder.
-//      fraction -= digit;
-//      // Round to even.
-//      if (fraction > 0.5 || (fraction == 0.5 && (digit & 1))) {
-//        if (fraction + delta > 1) {
-//          // We need to back trace already written digits in case of carry-over.
-//          while (true) {
-//            fraction_cursor--;
-//            if (fraction_cursor == kBufferSize / 2) {
-//              CHECK_EQ('.', buffer[fraction_cursor]);
-//              // Carry over to the integer part.
-//              integer += 1;
-//              break;
-//            }
-//            char c = buffer[fraction_cursor];
-//            // Reconstruct digit.
-//            int digit = c > '9' ? (c - 'a' + 10) : (c - '0');
-//            if (digit + 1 < radix) {
-//              buffer[fraction_cursor++] = BASEN[digit + 1];
-//              break;
-//            }
-//          }
-//          break;
-//        }
-//      }
-//    } while (fraction > delta);
-//  }
-//
-//  // Compute integer digits. Fill unrepresented digits with zero.
-//  while (Double(integer / radix).Exponent() > 0) {
-//    integer /= radix;
-//    buffer[--integer_cursor] = '0';
-//  }
-//  do {
-//    double remainder = Modulo(integer, radix);
-//    buffer[--integer_cursor] = BASEN[static_cast<int>(remainder)];
-//    integer = (integer - remainder) / radix;
-//  } while (integer > 0);
 //
 //  // Add sign and terminate string.
-//  if (negative) buffer[--integer_cursor] = '-';
 //  buffer[fraction_cursor++] = '\0';
-//  DCHECK_LT(fraction_cursor, kBufferSize);
+//  DCHECK_LT(fraction_cursor, buffer_size);
 //  DCHECK_LE(0, integer_cursor);
 //  // Allocate new string as return value.
 //  char* result = NewArray<char>(fraction_cursor - integer_cursor);
@@ -576,11 +729,7 @@ static void ftoa_base10(double value, char* first, char*& last)
 
 static void ftoa_basen(double value, char* first, char*& last, uint8_t base)
 {
-    // TODO: may change signatures
-    // Workflow
-    // 1.   Check for special values (-inf, inf, NaN)
-    // 2.   Write the mantissa without the 1 or decimal.
-    // 3.   Wait... Do I write the mantissa, since it's base2, not 10....
+    ftoa_naive(value, first, last, base);
 }
 
 
@@ -648,9 +797,27 @@ void f32toa(float value, char* first, char*& last, uint8_t base)
 }
 
 
+std::string f32toa(float value, uint8_t base)
+{
+    char buffer[BUFFER_SIZE];
+    char* last = buffer + BUFFER_SIZE;
+    f32toa(value, buffer, last, base);
+    return std::string(buffer, last);
+}
+
+
 void f64toa(double value, char* first, char*& last, uint8_t base)
 {
     ftoa_(value, first, last, base);
+}
+
+
+std::string f64toa(double value, uint8_t base)
+{
+    char buffer[BUFFER_SIZE];
+    char* last = buffer + BUFFER_SIZE;
+    f64toa(value, buffer, last, base);
+    return std::string(buffer, last);
 }
 
 

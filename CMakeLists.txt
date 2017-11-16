@@ -877,7 +877,7 @@ set(TEST_FILES
 #    test/lexical/char.cc
 #    test/lexical/enum.cc
 #    test/lexical/float.cc
-#    test/lexical/ftoa.cc
+    test/lexical/ftoa.cc
 #    test/lexical/int.cc
     test/lexical/itoa.cc
 #    test/lexical/null.cc
