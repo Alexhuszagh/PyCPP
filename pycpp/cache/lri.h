@@ -2,76 +2,20 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Least-recently used cache.
+ *  \brief Least-recently inserted cache.
  *
- *  The underlying implmentation is quite simple: a doubly
- *  linked-list stores the underlying key-value pairs, up
- *  to `cache_size` items. The hashmap provides a memo, storing
- *  a `{const key&: iterator}` pair. This prevents efficient
- *  item lookup without key duplication.
- *
- *  This class is currently insufficiently optimized, as it
- *  contains a superfluous `size_t` for the double-linked list,
- *  causing increased memory and increase constant overhead to
- *  each insertion and deletion. A singly-linked list is
- *  insufficient, since the list must be able to push items
- *  on the front and pop them off the back.
+ *  Low-overhead FIFO-like cache. Remembers the last N elements
+ *  inserted into the queue. The queue does not update when
+ *  the value is updated for a given key-value. The underlying
+ *  implmentation is similar to the LRU cache, and suffers
+ *  the same optimization issues.
  */
 
 #pragma once
 
-#include <pycpp/reference/core.h>
-#include <functional>
-#include <list>
-#include <unordered_map>
+#include <pycpp/cache/lru.h>
 
 PYCPP_BEGIN_NAMESPACE
-
-namespace lru_detail
-{
-// DECLARATION
-// -----------
-
-template <typename it>
-using iterator_value_type = typename std::iterator_traits<it>::value_type;
-
-template <typename it>
-using iterator_transform = typename iterator_value_type<it>::second_type&;
-
-template <typename it>
-using cache_transform = std::function<iterator_transform<it>(iterator_value_type<it>&)>;
-
-template <typename it>
-using iterator = transform_iterator<it, cache_transform<it>>;
-
-template <typename it>
-using iterator_const_transform = const typename iterator_value_type<it>::second_type&;
-
-template <typename it>
-using cache_const_transform = std::function<iterator_const_transform<it>(const iterator_value_type<it>&)>;
-
-template <typename it>
-using const_iterator = transform_iterator<it, cache_const_transform<it>>;
-
-template <typename lru>
-using list = std::list<typename lru::value_type, typename lru::allocator_type>;
-
-template <typename lru>
-using list_iterator = typename list<lru>::iterator;
-
-template <typename lru>
-using cref_key = std::reference_wrapper<const typename lru::key_type>;
-
-template <typename lru>
-using map = std::unordered_map<
-    cref_key<lru>,
-    list_iterator<lru>,
-    typename lru::hasher,
-    typename lru::key_equal,
-    typename lru::allocator_type::template rebind<std::pair<const cref_key<lru>, list_iterator<lru>>>::other
->;
-
-}   /* lru_detail */
 
 // MACROS
 // ------
@@ -79,7 +23,7 @@ using map = std::unordered_map<
 /**
  *  \brief Macro wrapper to automate iterator construction.
  */
-#define LRU_ITERATOR(it)                                                \
+#define LRI_ITERATOR(it)                                                \
     iterator(it, [](value_type& p) -> mapped_type&                      \
     {                                                                   \
         return p.second;                                                \
@@ -88,7 +32,7 @@ using map = std::unordered_map<
 /**
  *  \brief Macro wrapper to automate const_iterator construction.
  */
-#define LRU_CONST_ITERATOR(it)                                          \
+#define LRI_CONST_ITERATOR(it)                                          \
     const_iterator(it, [](const value_type& p) -> const mapped_type&    \
     {                                                                   \
         return p.second;                                                \
@@ -98,7 +42,7 @@ using map = std::unordered_map<
 // -----------
 
 /**
- *  \brief O(1) LRU cache implemented via a hashtable and linked list.
+ *  \brief O(1) LRI cache implemented via a hashtable and FIFO queue.
  */
 template <
     typename Key,
@@ -107,12 +51,12 @@ template <
     typename Pred = std::equal_to<Key>,
     typename Alloc = std::allocator<std::pair<const Key, Value>>
 >
-struct lru_cache
+struct lri_cache
 {
 public:
     // MEMBER TYPES
     // ------------
-    using self = lru_cache<Key, Value, Hash, Pred, Alloc>;
+    using self = lri_cache<Key, Value, Hash, Pred, Alloc>;
     using key_type = Key;
     using mapped_type = Value;
     using value_type = std::pair<const key_type, mapped_type>;
@@ -130,10 +74,10 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    lru_cache(int cache_size = 128);
-    lru_cache(const self&);
+    lri_cache(int cache_size = 128);
+    lri_cache(const self&);
     self& operator=(const self&);
-    lru_cache(self&&);
+    lri_cache(self&&);
     self& operator=(self&&);
 
     // CAPACITY
@@ -141,6 +85,9 @@ public:
     size_type cache_size() const;
     size_type max_size() const;
     bool empty() const noexcept;
+
+    // TODO: need to provide iteration based on the queue...
+    // Transform the key-based iteration to return
 
     // ITERATORS
     iterator begin();
@@ -213,14 +160,15 @@ protected:
 // IMPLEMENTATION
 // --------------
 
+
 template <typename K, typename V, typename H, typename P, typename A>
-lru_cache<K, V, H, P, A>::lru_cache(int cache_size):
+lri_cache<K, V, H, P, A>::lri_cache(int cache_size):
     cache_size_(cache_size)
 {}
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-lru_cache<K, V, H, P, A>::lru_cache(const self& rhs):
+lri_cache<K, V, H, P, A>::lri_cache(const self& rhs):
     cache_size_(rhs.cache_size_),
     list_(rhs.list_)
 {
@@ -231,7 +179,7 @@ lru_cache<K, V, H, P, A>::lru_cache(const self& rhs):
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::operator=(const self& rhs) -> self&
+auto lri_cache<K, V, H, P, A>::operator=(const self& rhs) -> self&
 {
     clear();
 
@@ -246,14 +194,14 @@ auto lru_cache<K, V, H, P, A>::operator=(const self& rhs) -> self&
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-lru_cache<K, V, H, P, A>::lru_cache(self&& rhs)
+lri_cache<K, V, H, P, A>::lri_cache(self&& rhs)
 {
     swap(rhs);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::operator=(self&& rhs) -> self&
+auto lri_cache<K, V, H, P, A>::operator=(self&& rhs) -> self&
 {
     swap(rhs);
     return *this;
@@ -261,249 +209,249 @@ auto lru_cache<K, V, H, P, A>::operator=(self&& rhs) -> self&
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::cache_size() const -> size_type
+auto lri_cache<K, V, H, P, A>::cache_size() const -> size_type
 {
     return cache_size_;
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::size() const -> size_type
+auto lri_cache<K, V, H, P, A>::size() const -> size_type
 {
     return map_.size();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::max_size() const -> size_type
+auto lri_cache<K, V, H, P, A>::max_size() const -> size_type
 {
     return map_.max_size();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-bool lru_cache<K, V, H, P, A>::empty() const noexcept
+bool lri_cache<K, V, H, P, A>::empty() const noexcept
 {
     return map_.empty();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::begin() -> iterator
+auto lri_cache<K, V, H, P, A>::begin() -> iterator
 {
-    return LRU_ITERATOR(list_.begin());
+    return LRI_ITERATOR(list_.begin());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::begin() const -> const_iterator
+auto lri_cache<K, V, H, P, A>::begin() const -> const_iterator
 {
-    return LRU_CONST_ITERATOR(list_.begin());
+    return LRI_CONST_ITERATOR(list_.begin());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::cbegin() const -> const_iterator
+auto lri_cache<K, V, H, P, A>::cbegin() const -> const_iterator
 {
-    return LRU_CONST_ITERATOR(list_.begin());
+    return LRI_CONST_ITERATOR(list_.begin());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::end() -> iterator
+auto lri_cache<K, V, H, P, A>::end() -> iterator
 {
-    return LRU_ITERATOR(list_.end());
+    return LRI_ITERATOR(list_.end());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::end() const -> const_iterator
+auto lri_cache<K, V, H, P, A>::end() const -> const_iterator
 {
-    return LRU_CONST_ITERATOR(list_.end());
+    return LRI_CONST_ITERATOR(list_.end());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::cend() const -> const_iterator
+auto lri_cache<K, V, H, P, A>::cend() const -> const_iterator
 {
-    return LRU_CONST_ITERATOR(list_.end());
+    return LRI_CONST_ITERATOR(list_.end());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::operator[](const key_type& key) -> mapped_type&
+auto lri_cache<K, V, H, P, A>::operator[](const key_type& key) -> mapped_type&
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
         return *put(key, mapped_type());
     }
 
-    return *get(LRU_ITERATOR(it->second));
+    return *get(LRI_ITERATOR(it->second));
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::operator[](key_type&& key) -> mapped_type&
+auto lri_cache<K, V, H, P, A>::operator[](key_type&& key) -> mapped_type&
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
         return *put(std::forward<key_type>(key), mapped_type());
     }
 
-    return *get(LRU_ITERATOR(it->second));
+    return *get(LRI_ITERATOR(it->second));
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::at(const key_type& key) -> mapped_type&
+auto lri_cache<K, V, H, P, A>::at(const key_type& key) -> mapped_type&
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        throw std::out_of_range("lru_cache::at():: Key not found.");
+        throw std::out_of_range("lri_cache::at():: Key not found.");
     }
 
-    return *get(LRU_ITERATOR(it->second));
+    return *get(LRI_ITERATOR(it->second));
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::at(const key_type& key) const -> const mapped_type&
+auto lri_cache<K, V, H, P, A>::at(const key_type& key) const -> const mapped_type&
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        throw std::out_of_range("lru_cache::at():: Key not found.");
+        throw std::out_of_range("lri_cache::at():: Key not found.");
     }
 
-    return *get(LRU_CONST_ITERATOR(it->second));
+    return *get(LRI_CONST_ITERATOR(it->second));
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::find(const key_type& key) -> iterator
+auto lri_cache<K, V, H, P, A>::find(const key_type& key) -> iterator
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
         return end();
     }
 
-    return get(LRU_ITERATOR(it->second));
+    return get(LRI_ITERATOR(it->second));
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::find(const key_type& key) const -> const_iterator
+auto lri_cache<K, V, H, P, A>::find(const key_type& key) const -> const_iterator
 {
     auto it = map_.find(key);
     if (it == map_.cend()) {
         return cend();
     }
 
-    return get(LRU_CONST_ITERATOR(it->second));
+    return get(LRI_CONST_ITERATOR(it->second));
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::count(const key_type& key) const -> size_type
+auto lri_cache<K, V, H, P, A>::count(const key_type& key) const -> size_type
 {
     return map_.count(key);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::equal_range(const key_type& key) -> std::pair<iterator, iterator>
+auto lri_cache<K, V, H, P, A>::equal_range(const key_type& key) -> std::pair<iterator, iterator>
 {
     auto pair = map_.equal_range(key);
     if (pair.first == map_.end()) {
         return std::make_pair(end(), end());
     } else if (pair.second == map_.end()) {
-        return std::make_pair(get(LRU_ITERATOR(pair.first->second)), end());
+        return std::make_pair(get(LRI_ITERATOR(pair.first->second)), end());
     } else {
-        return std::make_pair(get(LRU_ITERATOR(pair.first->second)), get(LRU_ITERATOR(pair.second->second)));
+        return std::make_pair(get(LRI_ITERATOR(pair.first->second)), get(LRI_ITERATOR(pair.second->second)));
     }
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::equal_range(const key_type& key) const -> std::pair<const_iterator, const_iterator>
+auto lri_cache<K, V, H, P, A>::equal_range(const key_type& key) const -> std::pair<const_iterator, const_iterator>
 {
     auto pair = map_.equal_range(key);
     if (pair.first == map_.cend()) {
         return std::make_pair(cend(), cend());
     } else if (pair.second == map_.cend()) {
-        return std::make_pair(get(LRU_CONST_ITERATOR(pair.first->second)), cend());
+        return std::make_pair(get(LRI_CONST_ITERATOR(pair.first->second)), cend());
     } else {
-        return std::make_pair(get(LRU_CONST_ITERATOR(pair.first->second)), get(LRU_CONST_ITERATOR(pair.second->second)));
+        return std::make_pair(get(LRI_CONST_ITERATOR(pair.first->second)), get(LRI_CONST_ITERATOR(pair.second->second)));
     }
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::insert(const key_type& key, const mapped_type& value) -> std::pair<iterator, bool>
+auto lri_cache<K, V, H, P, A>::insert(const key_type& key, const mapped_type& value) -> std::pair<iterator, bool>
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
         return std::make_pair(put(key, value), true);
     }
 
-    return std::make_pair(LRU_ITERATOR(it->second), false);
+    return std::make_pair(LRI_ITERATOR(it->second), false);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::insert(const key_type& key, mapped_type&& value) -> std::pair<iterator, bool>
+auto lri_cache<K, V, H, P, A>::insert(const key_type& key, mapped_type&& value) -> std::pair<iterator, bool>
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
         return std::make_pair(put(key, std::forward<mapped_type>(value)), true);
     }
 
-    return std::make_pair(LRU_ITERATOR(it->second), false);
+    return std::make_pair(LRI_ITERATOR(it->second), false);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::insert(key_type&& key, mapped_type&& value) -> std::pair<iterator, bool>
+auto lri_cache<K, V, H, P, A>::insert(key_type&& key, mapped_type&& value) -> std::pair<iterator, bool>
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
         return std::make_pair(put(std::forward<key_type>(key), std::forward<mapped_type>(value)), true);
     }
 
-    return std::make_pair(LRU_ITERATOR(it->second), false);
+    return std::make_pair(LRI_ITERATOR(it->second), false);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::erase(const_iterator pos) -> iterator
+auto lri_cache<K, V, H, P, A>::erase(const_iterator pos) -> iterator
 {
     return pop(pos);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::erase(const key_type& key) -> size_type
+auto lri_cache<K, V, H, P, A>::erase(const key_type& key) -> size_type
 {
     auto it = map_.find(key);
     if (it == map_.cend()) {
         return 0;
     }
-    erase(LRU_CONST_ITERATOR(it->second));
+    erase(LRI_CONST_ITERATOR(it->second));
     return 1;
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::erase(const_iterator first, const_iterator last) -> iterator
+auto lri_cache<K, V, H, P, A>::erase(const_iterator first, const_iterator last) -> iterator
 {
     for (; first != last; ) {
-        first = LRU_CONST_ITERATOR(erase(first).base());
+        first = LRI_CONST_ITERATOR(erase(first).base());
     }
-    return LRU_ITERATOR(last.base());
+    return LRI_ITERATOR(last.base());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-void lru_cache<K, V, H, P, A>::clear()
+void lri_cache<K, V, H, P, A>::clear()
 {
     map_.clear();
     list_.clear();
@@ -511,7 +459,7 @@ void lru_cache<K, V, H, P, A>::clear()
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-void lru_cache<K, V, H, P, A>::swap(self& rhs)
+void lri_cache<K, V, H, P, A>::swap(self& rhs)
 {
     std::swap(list_, rhs.list_);
     std::swap(map_, rhs.map_);
@@ -520,161 +468,161 @@ void lru_cache<K, V, H, P, A>::swap(self& rhs)
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::bucket_count() const noexcept -> size_type
+auto lri_cache<K, V, H, P, A>::bucket_count() const noexcept -> size_type
 {
     return map_.bucket_count();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::max_bucket_count() const noexcept -> size_type
+auto lri_cache<K, V, H, P, A>::max_bucket_count() const noexcept -> size_type
 {
     return map_.max_bucket_count();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::bucket_size(size_type n) const -> size_type
+auto lri_cache<K, V, H, P, A>::bucket_size(size_type n) const -> size_type
 {
     return map_.bucket_size(n);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::bucket(const key_type& key) const -> size_type
+auto lri_cache<K, V, H, P, A>::bucket(const key_type& key) const -> size_type
 {
     return map_.bucket(key);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-float lru_cache<K, V, H, P, A>::load_factor() const noexcept
+float lri_cache<K, V, H, P, A>::load_factor() const noexcept
 {
     return map_.load_factor();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-float lru_cache<K, V, H, P, A>::max_load_factor() const noexcept
+float lri_cache<K, V, H, P, A>::max_load_factor() const noexcept
 {
     return map_.max_load_factor();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-void lru_cache<K, V, H, P, A>::max_load_factor(float n)
+void lri_cache<K, V, H, P, A>::max_load_factor(float n)
 {
     map_.max_load_factor(n);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-void lru_cache<K, V, H, P, A>::rehash(size_type n)
+void lri_cache<K, V, H, P, A>::rehash(size_type n)
 {
     map_.rehash(n);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-void lru_cache<K, V, H, P, A>::reserve(size_type n)
+void lri_cache<K, V, H, P, A>::reserve(size_type n)
 {
     map_.reserve(n);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::hash_function() const -> hasher
+auto lri_cache<K, V, H, P, A>::hash_function() const -> hasher
 {
     return hasher();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::key_eq() const -> key_equal
+auto lri_cache<K, V, H, P, A>::key_eq() const -> key_equal
 {
     return key_equal();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::get_allocator() const -> allocator_type
+auto lri_cache<K, V, H, P, A>::get_allocator() const -> allocator_type
 {
     return allocator_type();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-void lru_cache<K, V, H, P, A>::clean()
+void lri_cache<K, V, H, P, A>::clean()
 {
     while(map_.size() > cache_size()) {
-        pop(LRU_CONST_ITERATOR(--list_.end()));
+        pop(LRI_CONST_ITERATOR(--list_.end()));
     }
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::pop(const_iterator it) -> iterator
+auto lri_cache<K, V, H, P, A>::pop(const_iterator it) -> iterator
 {
     map_.erase(it.base()->first);
-    return LRU_ITERATOR(list_.erase(it.base()));
+    return LRI_ITERATOR(list_.erase(it.base()));
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::put(const key_type& key, const mapped_type& value) -> iterator
+auto lri_cache<K, V, H, P, A>::put(const key_type& key, const mapped_type& value) -> iterator
 {
     list_.push_front(std::make_pair(key, value));
     auto it = list_.begin();
     map_.emplace(std::make_pair(std::cref(it->first), it));
     clean();
 
-    return LRU_ITERATOR(it);
+    return LRI_ITERATOR(it);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::put(const key_type& key, mapped_type&& value) -> iterator
+auto lri_cache<K, V, H, P, A>::put(const key_type& key, mapped_type&& value) -> iterator
 {
     list_.push_front(std::make_pair(key, std::forward<mapped_type>(value)));
     auto it = list_.begin();
     map_.emplace(std::make_pair(std::cref(it->first), it));
     clean();
 
-    return LRU_ITERATOR(it);
+    return LRI_ITERATOR(it);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::put(key_type&& key, mapped_type&& value) -> iterator
+auto lri_cache<K, V, H, P, A>::put(key_type&& key, mapped_type&& value) -> iterator
 {
     list_.push_front(std::make_pair(std::forward<key_type>(key), std::forward<mapped_type>(value)));
     auto it = list_.begin();
     map_.emplace(std::make_pair(std::cref(it->first), it));
     clean();
 
-    return LRU_ITERATOR(it);
+    return LRI_ITERATOR(it);
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::get(iterator it) -> iterator
+auto lri_cache<K, V, H, P, A>::get(iterator it) -> iterator
 {
-    list_.splice(list_.begin(), list_, it.base());
+    // identity-op, don't re-memoize the item
     return it;
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A>
-auto lru_cache<K, V, H, P, A>::get(const_iterator it) const -> const_iterator
+auto lri_cache<K, V, H, P, A>::get(const_iterator it) const -> const_iterator
 {
-    list_.splice(list_.begin(), list_, it.base());
+    // identity-op, don't re-memoize the item
     return it;
 }
 
 // CLEANUP
 // -------
 
-#undef LRU_ITERATOR
-#undef LRU_CONST_ITERATOR
+#undef LRI_ITERATOR
+#undef LRI_CONST_ITERATOR
 
 PYCPP_END_NAMESPACE

@@ -2,10 +2,10 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief LRU cache unittests.
+ *  \brief LRI cache unittests.
  */
 
-#include <pycpp/cache/lru.h>
+#include <pycpp/cache/lri.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -13,10 +13,11 @@ PYCPP_USING_NAMESPACE
 // TESTS
 // -----
 
+// TODO: restore all the hidden methods
 
-TEST(lru_cache, constructor)
+TEST(lri_cache, constructor)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
 
     cache_type cache(50);
     EXPECT_EQ(cache.size(), 0);
@@ -44,9 +45,9 @@ TEST(lru_cache, constructor)
 }
 
 
-TEST(lru_cache, capacity)
+TEST(lri_cache, capacity)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
     cache_type cache(50);
 
     // EMPTY
@@ -64,9 +65,9 @@ TEST(lru_cache, capacity)
 }
 
 
-TEST(lru_cache, iterator)
+TEST(lri_cache, iterator)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
 
     cache_type cache(50);
     cache.insert(1, 2);
@@ -79,9 +80,9 @@ TEST(lru_cache, iterator)
 }
 
 
-TEST(lru_cache, indexing)
+TEST(lri_cache, indexing)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
 
     cache_type cache(50);
     cache.insert(1, 2);
@@ -91,9 +92,9 @@ TEST(lru_cache, indexing)
 }
 
 
-TEST(lru_cache, at)
+TEST(lri_cache, at)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
 
     cache_type cache(50);
     cache.insert(1, 2);
@@ -107,9 +108,9 @@ TEST(lru_cache, at)
 }
 
 
-TEST(lru_cache, lookup)
+TEST(lri_cache, lookup)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
 
     cache_type cache(50);
     cache.insert(1, 2);
@@ -126,9 +127,9 @@ TEST(lru_cache, lookup)
 }
 
 
-TEST(lru_cache, modifiers)
+TEST(lri_cache, modifiers)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
 
     cache_type cache(50);
     EXPECT_EQ(cache.size(), 0);
@@ -159,9 +160,9 @@ TEST(lru_cache, modifiers)
 }
 
 
-TEST(lru_cache, bucket)
+TEST(lri_cache, bucket)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
     cache_type cache(50);
     cache.insert(1, 1);
     cache.bucket_count();
@@ -170,9 +171,9 @@ TEST(lru_cache, bucket)
 }
 
 
-TEST(lru_cache, hash)
+TEST(lri_cache, hash)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
     cache_type cache(50);
     cache.load_factor();
     cache.max_load_factor();
@@ -182,9 +183,9 @@ TEST(lru_cache, hash)
 }
 
 
-TEST(lru_cache, observers)
+TEST(lri_cache, observers)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
     cache_type cache(50);
 
     cache.hash_function();
@@ -193,9 +194,9 @@ TEST(lru_cache, observers)
 }
 
 
-TEST(lru_cache, cache_size)
+TEST(lri_cache, cache_size)
 {
-    using cache_type = lru_cache<int, int>;
+    using cache_type = lri_cache<int, int>;
     cache_type cache(50);
 
     for (size_t i = 0; i < 50; ++i) {
@@ -208,18 +209,18 @@ TEST(lru_cache, cache_size)
         cache.insert(i, 2*i);
     }
     EXPECT_EQ(cache.size(), 50);
-    EXPECT_NE(cache.find(0), cache.end());
-    EXPECT_EQ(cache.find(1), cache.end());
+    EXPECT_EQ(cache.find(0), cache.end());
+    EXPECT_NE(cache.find(11), cache.end());
 }
 
 
-TEST(lru_cache, access)
+TEST(lri_cache, access)
 {
-    // test the core functionality of an LRU cache
-    // accessing an item causes that item
-    // to be "refreshed", while unaccessed items
-    // are evicted from the cache.
-    using cache_type = lru_cache<int, int>;
+    // test the core functionality of an LRI cache
+    // accessing an item **does not** cause that item
+    // to be "refreshed", so items are evicted by insertion
+    // order only
+    using cache_type = lri_cache<int, int>;
     cache_type c1(2);
 
     // initialize c1
@@ -243,6 +244,6 @@ TEST(lru_cache, access)
     ASSERT_EQ(c2.cache_size(), 2);
     EXPECT_EQ(*c1.begin(), 9);
     EXPECT_EQ(*c2.begin(), 9);
-    EXPECT_EQ(*++c1.begin(), 1);
+    EXPECT_EQ(*++c1.begin(), 4);
     EXPECT_EQ(*++c2.begin(), 4);
 }
