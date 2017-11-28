@@ -2,6 +2,9 @@
 
 **Short-Term**
 
+    - LRU cache needs a put() method that takes a forwarded key
+    - Implement the LRI cache
+
 **Mid-Term**
 
 - Need an API around a key/value store.

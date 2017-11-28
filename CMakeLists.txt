@@ -639,6 +639,7 @@ list(APPEND PYCPP_LIBRARIES pycpp)
 
 set(TEST_FILES
     test/main.cc
+    test/cache/lri.cc
     test/cache/lru.cc
     test/misc/enum.cc
     test/misc/ordering.cc
