@@ -12,6 +12,7 @@
 #include <numeric>
 
 PYCPP_USING_NAMESPACE
+using namespace prod_detail;
 
 // DATA
 // ----

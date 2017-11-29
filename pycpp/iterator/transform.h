@@ -114,38 +114,38 @@ public:
     // CONDITIONAL OPERATORS
 
     template <typename It, typename F>
-    enable_if_t<rebind<It, F>::has_total, bool> operator<(const rebind<It, F>& other) const
+    typename std::enable_if<rebind<It, F>::has_total, bool>::type operator<(const rebind<It, F>& other) const
     {
         return it < other.it;
     }
 
     template <typename It, typename F>
-    enable_if_t<rebind<It, F>::has_total, bool> operator<=(const rebind<It, F>& other) const
+    typename std::enable_if<rebind<It, F>::has_total, bool>::type operator<=(const rebind<It, F>& other) const
     {
         return less_equal(*this, other);
     }
 
     template <typename It, typename F>
-    enable_if_t<rebind<It, F>::has_total, bool> operator>(const rebind<It, F>& other) const
+    typename std::enable_if<rebind<It, F>::has_total, bool>::type operator>(const rebind<It, F>& other) const
     {
         return greater(*this, other);
     }
 
     template <typename It, typename F>
-    enable_if_t<rebind<It, F>::has_total, bool> operator>=(const rebind<It, F>& other) const
+    typename std::enable_if<rebind<It, F>::has_total, bool>::type operator>=(const rebind<It, F>& other) const
     {
         return greater_equal(*this, other);
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    enable_if_t<rebind<It, F>::has_decrement, rebind<It, F>&> operator--()
+    typename std::enable_if<rebind<It, F>::has_decrement, rebind<It, F>&>::type operator--()
     {
         --it;
         return *this;
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    enable_if_t<rebind<It, F>::has_decrement, rebind<It, F>> operator--(int)
+    typename std::enable_if<rebind<It, F>::has_decrement, rebind<It, F>>::type operator--(int)
     {
         self_t copy(*this);
         operator--();
@@ -153,27 +153,27 @@ public:
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    enable_if_t<rebind<It, F>::has_indexing, typename rebind<It, F>::value_type> operator[](size_t pos) const
+    typename std::enable_if<rebind<It, F>::has_indexing, typename rebind<It, F>::value_type>::type operator[](size_t pos) const
     {
         return function(it[pos]);
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    enable_if_t<rebind<It, F>::has_arithmetic, rebind<It, F>&> operator+=(difference_type n)
+    typename std::enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>&>::type operator+=(difference_type n)
     {
         it += n;
         return *this;
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    enable_if_t<rebind<It, F>::has_arithmetic, rebind<It, F>&> operator-=(difference_type n)
+    typename std::enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>&>::type operator-=(difference_type n)
     {
         it -= n;
         return *this;
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    enable_if_t<rebind<It, F>::has_arithmetic, rebind<It, F>> operator+(difference_type n) const
+    typename std::enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>>::type operator+(difference_type n) const
     {
         self_t copy(*this);
         copy += n;
@@ -181,7 +181,7 @@ public:
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    enable_if_t<rebind<It, F>::has_arithmetic, rebind<It, F>> operator-(difference_type n) const
+    typename std::enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>>::type operator-(difference_type n) const
     {
         self_t copy(*this);
         copy -= n;
@@ -189,7 +189,7 @@ public:
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    enable_if_t<rebind<It, F>::has_arithmetic, difference_type> operator-(const rebind<It, F>& rhs) const
+    typename std::enable_if<rebind<It, F>::has_arithmetic, difference_type>::type operator-(const rebind<It, F>& rhs) const
     {
         return it - rhs.it;
     }

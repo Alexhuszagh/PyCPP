@@ -42,7 +42,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----------
 
 /**
- *  \brief O(1) LRI cache implemented via a hashtable and FIFO queue.
+ *  \brief O(1) LRI cache implemented via a hashtable and linked list.
  */
 template <
     typename Key,

@@ -35,33 +35,21 @@
 #pragma once
 
 #include <pycpp/safe/stdlib.h>
+#include <pycpp/sfinae/is_reference_wrapper.h>
 #include <algorithm>
 #include <iterator>
-#include <functional>
 #include <type_traits>
 #include <vector>
 
 PYCPP_BEGIN_NAMESPACE
 
-// DETAIL
-// ------
-
-template <bool B, typename T, typename F>
-using conditional_t = typename std::conditional<B, T, F>::type;
-
-template <bool B, typename T = void>
-using enable_if_t = typename std::enable_if<B, T>::type;
+namespace prod_detail
+{
+// ALIAS
+// -----
 
 template <typename...>
 using void_t = void;
-
-template <typename T>
-struct is_reference_wrapper: std::false_type
-{};
-
-template <typename T>
-struct is_reference_wrapper<std::reference_wrapper<T>>: std::true_type
-{};
 
 /**
  *  \brief Helper demangle and product reference types.
@@ -77,16 +65,16 @@ struct is_reference_wrapper<std::reference_wrapper<T>>: std::true_type
 template <typename T>
 struct iterator_reference
 {
-    typedef conditional_t<is_reference_wrapper<T>::value, T, std::reference_wrapper<const T>> type;
+    typedef typename std::conditional<is_reference_wrapper<T>::value, T, std::reference_wrapper<const T>>::type type;
     typedef typename type::type container_type;
     typedef typename container_type::value_type value_type;
     typedef typename container_type::const_iterator iterator;
 
-    typedef conditional_t<
+    typedef typename std::conditional<
         is_reference_wrapper<value_type>::value,
         value_type,
         std::reference_wrapper<const value_type>
-    > reference_type;
+    >::type reference_type;
 
     static iterator begin(const container_type &t)
     {
@@ -353,7 +341,7 @@ template <typename T>
 struct is_map
 {
     static constexpr bool outer = is_detected<T, mapped_t>::value;
-    typedef mapped_t<conditional_t<outer, T, map_type<T>>> U;
+    typedef mapped_t<typename std::conditional<outer, T, map_type<T>>::type> U;
     static constexpr bool inner = is_detected<U, mapped_t>::value;
 };
 
@@ -396,30 +384,31 @@ struct is_map_map
 struct cartesian_product
 {
     template <typename T, typename F>
-    enable_if_t<is_list_list<T>::value, void> operator()(const T& t, F &f)
+    typename std::enable_if<is_list_list<T>::value, void>::type operator()(const T& t, F &f)
     {
         list_list(t, f);
     }
 
     template <typename T, typename F>
-    enable_if_t<is_list_map<T>::value, void> operator()(const T& t, F &f)
+    typename std::enable_if<is_list_map<T>::value, void>::type operator()(const T& t, F &f)
     {
         list_map(t, f);
     }
 
     template <typename T, typename F>
-    enable_if_t<is_map_list<T>::value, void> operator()(const T& t, F &f)
+    typename std::enable_if<is_map_list<T>::value, void>::type operator()(const T& t, F &f)
     {
         map_list(t, f);
     }
 
     template <typename T, typename F>
-    enable_if_t<is_map_map<T>::value, void> operator()(const T& t, F &f)
+    typename std::enable_if<is_map_map<T>::value, void>::type operator()(const T& t, F &f)
     {
         map_map(t, f);
     }
 };
 
+}   /* prod_detail */
 
 /**
  *  \brief Call cartesian product for container.
@@ -427,7 +416,7 @@ struct cartesian_product
 template <typename T, typename F>
 void product(const T& t, F f)
 {
-    cartesian_product()(t, f);
+    prod_detail::cartesian_product()(t, f);
 }
 
 PYCPP_END_NAMESPACE

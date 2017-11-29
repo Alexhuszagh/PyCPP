@@ -43,7 +43,7 @@ public:
     size_t distance() const;
 
     template <typename It>
-    enable_if_t<is_random_access_iterator<It>::value, reference>
+    typename std::enable_if<is_random_access_iterator<It>::value, reference>::type
     operator[](difference_type n) const
     {
         return first[n];

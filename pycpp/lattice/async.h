@@ -54,7 +54,7 @@ public:
     next(const Duration seconds = 1);
 
     template <typename Duration>
-    typename std::enable_if<is_derived<std::chrono::duration, Duration>::value, response_t>::type
+    typename std::enable_if<is_specialization<Duration, std::chrono::duration>::value, response_t>::type
     next(const Duration &duration = std::chrono::seconds(1));
 
     explicit operator bool() const;
@@ -195,7 +195,7 @@ pool_t::next(const Duration seconds)
  *  \brief Block until next query is ready.
  */
 template <typename Duration>
-typename std::enable_if<is_derived<std::chrono::duration, Duration>::value, response_t>::type
+typename std::enable_if<is_specialization<Duration, std::chrono::duration>::value, response_t>::type
 pool_t::next(const Duration &duration)
 {
     // set our starting timepoint

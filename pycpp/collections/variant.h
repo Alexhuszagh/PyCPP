@@ -95,7 +95,7 @@ constexpr size_t variant_size_v = variant_size<T>::value;
 #endif                                              // RETURN TYPE DEDUCTION
 
 
-namespace detail
+namespace var_detail
 {
 // DETAIL
 // ------
@@ -823,7 +823,7 @@ VARIANT_RECURSIVE_UNION(Trait::Unavailable, ~recursive_union() = delete;);
 
 #undef VARIANT_RECURSIVE_UNION
 
-}   /* detail */
+}   /* var_detail */
 
 // DECLARATIONS
 // ------------
@@ -846,7 +846,7 @@ struct variant_size<const volatile T>: variant_size<T>
 {};
 
 template <typename... Ts>
-struct variant_size<variant<Ts...>>: detail::size_constant<sizeof...(Ts)>
+struct variant_size<variant<Ts...>>: var_detail::size_constant<sizeof...(Ts)>
 {};
 
 template <size_t I, typename T>
@@ -871,12 +871,12 @@ template <size_t I, typename... Ts>
 struct variant_alternative<I, variant<Ts...>>
 {
     static_assert(I < sizeof...(Ts), "Index out of bounds in std::variant_alternative<>");
-    using type = detail::type_pack_element_t<I, Ts...>;
+    using type = var_detail::type_pack_element_t<I, Ts...>;
 };
 
 constexpr size_t variant_npos = static_cast<size_t>(-1);
 
-namespace detail
+namespace var_detail
 {
 // DETAIL
 // ------
@@ -1418,20 +1418,20 @@ template <typename T>
 struct is_in_place_type<in_place_type_t<T>>: std::true_type
 {};
 
-}   /* detail */
+}   /* var_detail */
 
 template <typename... Ts>
 class variant
 {
     static_assert(0 < sizeof...(Ts), "variant must consist of at least one alternative.");
-    static_assert(detail::all_<!std::is_array<Ts>::value...>::value, "variant can not have an array type as an alternative.");
-    static_assert(detail::all_<!std::is_reference<Ts>::value...>::value, "variant can not have a reference type as an alternative.");
-    static_assert(detail::all_<!std::is_void<Ts>::value...>::value, "variant can not have a void type as an alternative.");
+    static_assert(var_detail::all_<!std::is_array<Ts>::value...>::value, "variant can not have an array type as an alternative.");
+    static_assert(var_detail::all_<!std::is_reference<Ts>::value...>::value, "variant can not have a reference type as an alternative.");
+    static_assert(var_detail::all_<!std::is_void<Ts>::value...>::value, "variant can not have a void type as an alternative.");
 
 public:
     template <
-        typename Front = detail::type_pack_element_t<0, Ts...>,
-        detail::enable_if_t<std::is_default_constructible<Front>::value, int> = 0
+        typename Front = var_detail::type_pack_element_t<0, Ts...>,
+        var_detail::enable_if_t<std::is_default_constructible<Front>::value, int> = 0
     >
     inline constexpr variant() noexcept(std::is_nothrow_default_constructible<Front>::value):
         impl_(in_place_index_t<0>{})
@@ -1442,13 +1442,13 @@ public:
 
     template <
         typename Arg,
-        typename Decayed = detail::decay_t<Arg>,
-        detail::enable_if_t<!std::is_same<Decayed, variant>::value, int> = 0,
-        detail::enable_if_t<!detail::is_in_place_index<Decayed>::value, int> = 0,
-        detail::enable_if_t<!detail::is_in_place_type<Decayed>::value, int> = 0,
-        typename T = detail::best_match_t<Arg, Ts...>,
-        size_t I = detail::find_index_sfinae<T, Ts...>::value,
-        detail::enable_if_t<std::is_constructible<T, Arg>::value, int> = 0
+        typename Decayed = var_detail::decay_t<Arg>,
+        var_detail::enable_if_t<!std::is_same<Decayed, variant>::value, int> = 0,
+        var_detail::enable_if_t<!var_detail::is_in_place_index<Decayed>::value, int> = 0,
+        var_detail::enable_if_t<!var_detail::is_in_place_type<Decayed>::value, int> = 0,
+        typename T = var_detail::best_match_t<Arg, Ts...>,
+        size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
+        var_detail::enable_if_t<std::is_constructible<T, Arg>::value, int> = 0
     >
     inline constexpr variant(Arg&& arg) noexcept(std::is_nothrow_constructible<T, Arg>::value):
         impl_(in_place_index_t<I>{}, std::forward<Arg>(arg))
@@ -1457,8 +1457,8 @@ public:
     template <
         size_t I,
         typename... Args,
-        typename T = detail::type_pack_element_t<I, Ts...>,
-        detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
+        typename T = var_detail::type_pack_element_t<I, Ts...>,
+        var_detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
     >
     inline explicit constexpr variant(in_place_index_t<I>, Args&&... args)
     noexcept(std::is_nothrow_constructible<T, Args...>::value):
@@ -1469,8 +1469,8 @@ public:
         size_t I,
         typename U,
         typename... Args,
-        typename T = detail::type_pack_element_t<I, Ts...>,
-        detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
+        typename T = var_detail::type_pack_element_t<I, Ts...>,
+        var_detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
     >
     inline explicit constexpr variant(in_place_index_t<I>, std::initializer_list<U> list, Args&&... args)
     noexcept(std::is_nothrow_constructible<T, std::initializer_list<U>&, Args...>::value):
@@ -1480,8 +1480,8 @@ public:
     template <
         typename T,
         typename... Args,
-        size_t I = detail::find_index_sfinae<T, Ts...>::value,
-        detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
+        size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
+        var_detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
     >
     inline explicit constexpr variant(in_place_type_t<T>, Args&&... args)
     noexcept(std::is_nothrow_constructible<T, Args...>::value):
@@ -1492,8 +1492,8 @@ public:
         typename T,
         typename U,
         typename... Args,
-        size_t I = detail::find_index_sfinae<T, Ts...>::value,
-        detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
+        size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
+        var_detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
     >
     inline explicit constexpr variant(in_place_type_t<T>, std::initializer_list<U> list, Args&&... args)
     noexcept(std::is_nothrow_constructible<T, std::initializer_list<U>&, Args...>::value):
@@ -1507,10 +1507,10 @@ public:
 
     template <
         typename Arg,
-        detail::enable_if_t<!std::is_same<detail::decay_t<Arg>, variant>::value, int> = 0,
-        typename T = detail::best_match_t<Arg, Ts...>,
-        size_t I = detail::find_index_sfinae<T, Ts...>::value,
-        detail::enable_if_t<(std::is_assignable<T &, Arg>::value && std::is_constructible<T, Arg>::value), int> = 0
+        var_detail::enable_if_t<!std::is_same<var_detail::decay_t<Arg>, variant>::value, int> = 0,
+        typename T = var_detail::best_match_t<Arg, Ts...>,
+        size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
+        var_detail::enable_if_t<(std::is_assignable<T &, Arg>::value && std::is_constructible<T, Arg>::value), int> = 0
     >
     inline variant& operator=(Arg&& arg) noexcept((std::is_nothrow_assignable<T&, Arg>::value && std::is_nothrow_constructible<T, Arg>::value))
     {
@@ -1521,8 +1521,8 @@ public:
     template <
         size_t I,
         typename... Args,
-        typename T = detail::type_pack_element_t<I, Ts...>,
-        detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
+        typename T = var_detail::type_pack_element_t<I, Ts...>,
+        var_detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
     >
     inline T& emplace(Args &&... args)
     {
@@ -1533,8 +1533,8 @@ public:
         size_t I,
         typename U,
         typename... Args,
-        typename T = detail::type_pack_element_t<I, Ts...>,
-        detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
+        typename T = var_detail::type_pack_element_t<I, Ts...>,
+        var_detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
     >
     inline T& emplace(std::initializer_list<U> list, Args &&... args)
     {
@@ -1544,8 +1544,8 @@ public:
     template <
         typename T,
         typename... Args,
-        size_t I = detail::find_index_sfinae<T, Ts...>::value,
-        detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
+        size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
+        var_detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
     >
     inline T& emplace(Args &&... args)
     {
@@ -1556,8 +1556,8 @@ public:
         typename T,
         typename U,
         typename... Args,
-        size_t I = detail::find_index_sfinae<T, Ts...>::value,
-        detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
+        size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
+        var_detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
     >
     inline T& emplace(std::initializer_list<U> list, Args&&... args)
     {
@@ -1576,18 +1576,18 @@ public:
 
     template <
         bool Dummy = true,
-        detail::enable_if_t<detail::all_<Dummy, (std::is_move_constructible<Ts>::value && detail::is_swappable<Ts>::value)...>::value, int> = 0
+        var_detail::enable_if_t<var_detail::all_<Dummy, (std::is_move_constructible<Ts>::value && var_detail::is_swappable<Ts>::value)...>::value, int> = 0
     >
-    inline void swap(variant &that) noexcept(detail::all_<(std::is_nothrow_move_constructible<Ts>::value && detail::is_nothrow_swappable<Ts>::value)...>::value)
+    inline void swap(variant &that) noexcept(var_detail::all_<(std::is_nothrow_move_constructible<Ts>::value && var_detail::is_nothrow_swappable<Ts>::value)...>::value)
     {
         impl_.swap(that.impl_);
     }
 
 private:
-    detail::impl<Ts...> impl_;
+    var_detail::impl<Ts...> impl_;
 
-    friend struct detail::access::variant;
-    friend struct detail::visitation::variant;
+    friend struct var_detail::access::variant;
+    friend struct var_detail::visitation::variant;
 };
 
 template <size_t I, typename... Ts>
@@ -1599,10 +1599,10 @@ inline constexpr bool holds_alternative(const variant<Ts...> &v) noexcept
 template <typename T, typename... Ts>
 inline constexpr bool holds_alternative(const variant<Ts...> &v) noexcept
 {
-    return holds_alternative<detail::find_index_checked<T, Ts...>::value>(v);
+    return holds_alternative<var_detail::find_index_checked<T, Ts...>::value>(v);
 }
 
-namespace detail
+namespace var_detail
 {
 // DETAIL
 // ------
@@ -1621,57 +1621,57 @@ template <size_t I, typename V>
 inline constexpr PYCPP_AUTO_REFREF generic_get(V&& v)
 PYCPP_AUTO_REFREF_RETURN(generic_get_impl<I, V>(holds_alternative<I>(v) ? 0 : (throw bad_variant_access(), 0))(std::forward<V>(v)))
 
-}  /* detail */
+}  /* var_detail */
 
 template <size_t I, typename... Ts>
 inline constexpr variant_alternative_t<I, variant<Ts...>>& get(variant<Ts...> &v)
 {
-    return detail::generic_get<I>(v);
+    return var_detail::generic_get<I>(v);
 }
 
 template <size_t I, typename... Ts>
 inline constexpr variant_alternative_t<I, variant<Ts...>>&& get(variant<Ts...>&& v)
 {
-    return detail::generic_get<I>(std::move(v));
+    return var_detail::generic_get<I>(std::move(v));
 }
 
 template <size_t I, typename... Ts>
 inline constexpr const variant_alternative_t<I, variant<Ts...>>& get(const variant<Ts...>& v)
 {
-    return detail::generic_get<I>(v);
+    return var_detail::generic_get<I>(v);
 }
 
 template <size_t I, typename... Ts>
 inline constexpr const variant_alternative_t<I, variant<Ts...>>&& get(const variant<Ts...>&& v)
 {
-    return detail::generic_get<I>(std::move(v));
+    return var_detail::generic_get<I>(std::move(v));
 }
 
 template <typename T, typename... Ts>
 inline constexpr T& get(variant<Ts...>& v)
 {
-    return get<detail::find_index_checked<T, Ts...>::value>(v);
+    return get<var_detail::find_index_checked<T, Ts...>::value>(v);
 }
 
 template <typename T, typename... Ts>
 inline constexpr T&& get(variant<Ts...>&& v)
 {
-    return get<detail::find_index_checked<T, Ts...>::value>(std::move(v));
+    return get<var_detail::find_index_checked<T, Ts...>::value>(std::move(v));
 }
 
 template <typename T, typename... Ts>
 inline constexpr const T& get(const variant<Ts...>& v)
 {
-    return get<detail::find_index_checked<T, Ts...>::value>(v);
+    return get<var_detail::find_index_checked<T, Ts...>::value>(v);
 }
 
 template <typename T, typename... Ts>
 inline constexpr const T&& get(const variant<Ts...>&& v)
 {
-    return get<detail::find_index_checked<T, Ts...>::value>(std::move(v));
+    return get<var_detail::find_index_checked<T, Ts...>::value>(std::move(v));
 }
 
-namespace detail
+namespace var_detail
 {
 // DETAIL
 // ------
@@ -1680,41 +1680,41 @@ template <size_t I, typename V>
 inline constexpr PYCPP_AUTO generic_get_if(V *v) noexcept
 PYCPP_AUTO_RETURN(v && holds_alternative<I>(*v) ? addressof_(access::variant::get_alt<I>(*v).value) : nullptr)
 
-}   /* detail */
+}   /* var_detail */
 
 template <size_t I, typename... Ts>
-inline constexpr detail::add_pointer_t<variant_alternative_t<I, variant<Ts...>>>
+inline constexpr var_detail::add_pointer_t<variant_alternative_t<I, variant<Ts...>>>
 get_if(variant<Ts...>* v) noexcept
 {
-    return detail::generic_get_if<I>(v);
+    return var_detail::generic_get_if<I>(v);
 }
 
 template <size_t I, typename... Ts>
-inline constexpr detail::add_pointer_t<const variant_alternative_t<I, variant<Ts...>>>
+inline constexpr var_detail::add_pointer_t<const variant_alternative_t<I, variant<Ts...>>>
 get_if(const variant<Ts...>* v) noexcept
 {
-    return detail::generic_get_if<I>(v);
+    return var_detail::generic_get_if<I>(v);
 }
 
 template <typename T, typename... Ts>
-inline constexpr detail::add_pointer_t<T>
+inline constexpr var_detail::add_pointer_t<T>
 get_if(variant<Ts...> *v) noexcept
 {
-    return get_if<detail::find_index_checked<T, Ts...>::value>(v);
+    return get_if<var_detail::find_index_checked<T, Ts...>::value>(v);
 }
 
 template <typename T, typename... Ts>
-inline constexpr detail::add_pointer_t<const T>
+inline constexpr var_detail::add_pointer_t<const T>
 get_if(const variant<Ts...>* v) noexcept
 {
-    return get_if<detail::find_index_checked<T, Ts...>::value>(v);
+    return get_if<var_detail::find_index_checked<T, Ts...>::value>(v);
 }
 
 template <typename... Ts>
 inline constexpr bool operator==(const variant<Ts...>& lhs, const variant<Ts...>& rhs)
 {
-    using detail::visitation::variant;
-    using detail::equal_to;
+    using var_detail::visitation::variant;
+    using var_detail::equal_to;
 
     return lhs.index() == rhs.index() && (lhs.valueless_by_exception() || variant::visit_value_at(lhs.index(), equal_to{}, lhs, rhs));
 }
@@ -1722,8 +1722,8 @@ inline constexpr bool operator==(const variant<Ts...>& lhs, const variant<Ts...>
 template <typename... Ts>
 inline constexpr bool operator!=(const variant<Ts...>& lhs, const variant<Ts...>& rhs)
 {
-    using detail::visitation::variant;
-    using detail::not_equal_to;
+    using var_detail::visitation::variant;
+    using var_detail::not_equal_to;
 
     return lhs.index() != rhs.index() || (!lhs.valueless_by_exception() && variant::visit_value_at(lhs.index(), not_equal_to{}, lhs, rhs));
 }
@@ -1731,8 +1731,8 @@ inline constexpr bool operator!=(const variant<Ts...>& lhs, const variant<Ts...>
 template <typename... Ts>
 inline constexpr bool operator<(const variant<Ts...>& lhs, const variant<Ts...>& rhs)
 {
-    using detail::visitation::variant;
-    using detail::less;
+    using var_detail::visitation::variant;
+    using var_detail::less;
 
     return !rhs.valueless_by_exception() && (lhs.valueless_by_exception() || lhs.index() < rhs.index() || (lhs.index() == rhs.index() && variant::visit_value_at(lhs.index(), less{}, lhs, rhs)));
 }
@@ -1740,8 +1740,8 @@ inline constexpr bool operator<(const variant<Ts...>& lhs, const variant<Ts...>&
 template <typename... Ts>
 inline constexpr bool operator>(const variant<Ts...>& lhs, const variant<Ts...>& rhs)
 {
-    using detail::visitation::variant;
-    using detail::greater;
+    using var_detail::visitation::variant;
+    using var_detail::greater;
 
     return !lhs.valueless_by_exception() && (rhs.valueless_by_exception() || lhs.index() > rhs.index() || (lhs.index() == rhs.index() && variant::visit_value_at(lhs.index(), greater{}, lhs, rhs)));
 }
@@ -1749,8 +1749,8 @@ inline constexpr bool operator>(const variant<Ts...>& lhs, const variant<Ts...>&
 template <typename... Ts>
 inline constexpr bool operator<=(const variant<Ts...>& lhs, const variant<Ts...>& rhs)
 {
-    using detail::visitation::variant;
-    using detail::less_equal;
+    using var_detail::visitation::variant;
+    using var_detail::less_equal;
 
     return lhs.valueless_by_exception() || (!rhs.valueless_by_exception() && (lhs.index() < rhs.index() || (lhs.index() == rhs.index() && variant::visit_value_at(lhs.index(), less_equal{}, lhs, rhs))));
 }
@@ -1758,8 +1758,8 @@ inline constexpr bool operator<=(const variant<Ts...>& lhs, const variant<Ts...>
 template <typename... Ts>
 inline constexpr bool operator>=(const variant<Ts...>& lhs, const variant<Ts...>& rhs)
 {
-    using detail::visitation::variant;
-    using detail::greater_equal;
+    using var_detail::visitation::variant;
+    using var_detail::greater_equal;
 
     return rhs.valueless_by_exception() || (!lhs.valueless_by_exception() && (lhs.index() > rhs.index() || (lhs.index() == rhs.index() && variant::visit_value_at(lhs.index(), greater_equal{}, lhs, rhs))));
 }
@@ -1767,8 +1767,8 @@ inline constexpr bool operator>=(const variant<Ts...>& lhs, const variant<Ts...>
 template <typename Visitor, typename... Vs>
 inline constexpr PYCPP_DECLTYPE_AUTO visit(Visitor&& visitor, Vs&&... vs)
 PYCPP_DECLTYPE_AUTO_RETURN(
-    (detail::all(!vs.valueless_by_exception()...) ? (void)0 : throw bad_variant_access()),
-    detail::visitation::variant::visit_value(std::forward<Visitor>(visitor), std::forward<Vs>(vs)...)
+    (var_detail::all(!vs.valueless_by_exception()...) ? (void)0 : throw bad_variant_access()),
+    var_detail::visitation::variant::visit_value(std::forward<Visitor>(visitor), std::forward<Vs>(vs)...)
 )
 
 struct monostate
@@ -1811,7 +1811,7 @@ inline auto swap(variant<Ts...>& lhs, variant<Ts...>& rhs) noexcept(noexcept(lhs
     lhs.swap(rhs);
 }
 
-namespace detail
+namespace var_detail
 {
 // DETAIL
 // ------
@@ -1843,7 +1843,7 @@ constexpr bool is_enabled()
 }
 
 }   /* hash */
-}   /* detail */
+}   /* var_detail */
 
 // CLEANUP
 // -------
@@ -1868,14 +1868,14 @@ namespace std
 PYCPP_USING_NAMESPACE
 
 template <typename... Ts>
-struct hash<detail::enabled_type<variant<Ts...>, detail::enable_if_t<detail::all_<detail::hash::is_enabled<detail::remove_const_t<Ts>>()...>::value>>>
+struct hash<var_detail::enabled_type<variant<Ts...>, var_detail::enable_if_t<var_detail::all_<var_detail::hash::is_enabled<var_detail::remove_const_t<Ts>>()...>::value>>>
 {
     using argument_type = variant<Ts...>;
     using result_type = size_t;
 
     inline result_type operator()(const argument_type &v) const
     {
-        using detail::visitation::variant;
+        using var_detail::visitation::variant;
         size_t result = v.valueless_by_exception() ? 299792458 : variant::visit_alt(hasher{}, v);
         return hash_combine(result, hash<size_t>{}(v.index()));
     }
@@ -1886,8 +1886,8 @@ private:
         template <typename Alt>
         inline size_t operator()(const Alt &alt) const
         {
-            using alt_type = detail::decay_t<Alt>;
-            using value_type = detail::remove_const_t<typename alt_type::value_type>;
+            using alt_type = var_detail::decay_t<Alt>;
+            using value_type = var_detail::remove_const_t<typename alt_type::value_type>;
             return hash<value_type>{}(alt.value);
         }
     };

@@ -15,9 +15,6 @@ PYCPP_BEGIN_NAMESPACE
 // DECLARATION
 // -----------
 
-template <bool B, typename T = void>
-using enable_if_t = typename std::enable_if<B, T>::type;
-
 template <typename T>
 using is_input_iterator = std::is_same<typename std::iterator_traits<T>::iterator_category, std::input_iterator_tag>;
 

@@ -659,6 +659,42 @@ set(TEST_FILES
     test/secure/allocator.cc
     test/secure/string.cc
     test/secure/stdlib.cc
+    test/sfinae/has_bit_and.cc
+    test/sfinae/has_bit_and_assign.cc
+    test/sfinae/has_bit_or.cc
+    test/sfinae/has_bit_or_assign.cc
+    test/sfinae/has_bit_xor.cc
+    test/sfinae/has_bit_xor_assign.cc
+    test/sfinae/has_divides.cc
+    test/sfinae/has_divides_assign.cc
+    test/sfinae/has_equal_to.cc
+    test/sfinae/has_greater.cc
+    test/sfinae/has_greater_equal.cc
+    test/sfinae/has_left_shift.cc
+    test/sfinae/has_left_shift_assign.cc
+    test/sfinae/has_less.cc
+    test/sfinae/has_less_equal.cc
+    test/sfinae/has_logical_and.cc
+    test/sfinae/has_logical_or.cc
+    test/sfinae/has_member_function.cc
+    test/sfinae/has_member_variable.cc
+    test/sfinae/has_minus.cc
+    test/sfinae/has_minus_assign.cc
+    test/sfinae/has_modulus.cc
+    test/sfinae/has_modulus_assign.cc
+    test/sfinae/has_multiplies.cc
+    test/sfinae/has_multiplies_assign.cc
+    test/sfinae/has_not_equal_to.cc
+    test/sfinae/has_plus.cc
+    test/sfinae/has_plus_assign.cc
+    test/sfinae/has_right_shift.cc
+    test/sfinae/has_right_shift_assign.cc
+    test/sfinae/has_subscript.cc
+    test/sfinae/is_complex.cc
+    test/sfinae/is_specialization.cc
+    test/sfinae/is_pair.cc
+    test/sfinae/is_reference_wrapper.cc
+    test/sfinae/is_string.cc
     test/string/base16.cc
     test/string/base32.cc
     test/string/base64.cc
@@ -684,6 +720,7 @@ endif()
 if(BUILD_COLLECTIONS)
     list(APPEND TEST_FILES
         test/collections/any.cc
+        test/collections/counter.cc
         test/collections/defaultdict.cc
         test/collections/optional.cc
         test/collections/ordereddict.cc
