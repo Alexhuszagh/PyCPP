@@ -11,6 +11,15 @@
         - Fix most_common
         - Write most_common unittests
 
+    - Implement an ordered_multi_map
+    - Check if C++ has a priority_queue
+    - iterutils.chunked?
+    - iterutils.windowed?
+    - iterutils.remap?
+    - iterutils.backoff?
+    - fileutils?
+    - ioutils?
+
 **Mid-Term**
 
 - Need an API around a key/value store.

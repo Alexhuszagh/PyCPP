@@ -25,7 +25,7 @@ Python-like C++ environment with independent, lightweight utilities for cross-pl
 
 Modern C++ development depends on a mix of archaic C-libraries with poorly documented interfaces, and template-driven, header-only libraries that produce significant binary and compile time bloat. PyCPP aims to be a collection loosely interconnected features missing from the C++ standard library, boasting lean headers, fast compile times, and permissive licenses, to facilitate app development with minimal overhead.
 
-PyCPP is, in many ways, a spiritual port of Python back to C++. There are idiomatic ways to do certain tasks, and there is a right and a wrong way. "Zero-cost abstractions" don't exist: enabling infinite abstraction leads to unmaintainable complexity. PyCPP also ports Python's [hashlib](https://docs.python.org/3/library/hashlib.html), [os.path](https://docs.python.org/2/library/os.path.html#module-os.path), and [string](https://docs.python.org/2/library/string.html) modules, providing familiar interfaces
+PyCPP is, in many ways, a spiritual port of Python back to C++. There are idiomatic ways to do certain tasks, and there is a right and a wrong way. "Zero-cost abstractions" don't exist: infinite abstraction leads to unmaintainable complexity. PyCPP also ports Python's [hashlib](https://docs.python.org/3/library/hashlib.html), [os.path](https://docs.python.org/2/library/os.path.html#module-os.path), and [string](https://docs.python.org/2/library/string.html) modules, providing familiar APIs to the Python standard library.
 
 ## Design
 
@@ -66,18 +66,18 @@ Supported features include:
 
 **_General_**
 
-- [Thread-local storage](/pycpp/tls.h).
-- [Optional](/pycpp/optional.h) type.
-- [Generic "any"](/pycpp/any.h) type.
-- [Bit-flag aware scoped enums](/pycpp/enum.h).
+- [Thread-local storage](/pycpp/preprocessor/tls.h).
+- [Optional](/pycpp/collections/optional.h) type.
+- [Generic "any"](/pycpp/collections/any.h) type.
+- [Bit-flag aware scoped enums](/pycpp/misc/enum.h).
 - [string_view](/str/view/string.h) and [vector_view](/pycpp/view/vector.h)
 
 **_Codec_**
 
-- [Base16](/pycpp/base16.h), [base32](/pycpp/base32.h), and [Base64](/pycpp/base64.h) encoding and decoding.
-- [Hex](/pycpp/hex.h) encoding and decoding.
-- [Punycode](/pycpp/punycode.h) encoding and decoding.
-- [Url](/pycpp/url.h) encoding and decoding.
+- [Base16](/pycpp/string/base16.h), [base32](/pycpp/string/base32.h), and [Base64](/pycpp/string/base64.h) encoding and decoding.
+- [Hex](/pycpp/string/hex.h) encoding and decoding.
+- [Punycode](/pycpp/string/punycode.h) encoding and decoding.
+- [Url](/pycpp/string/url.h) encoding and decoding.
 - [International domain name](/pycpp/lattice/url.h) encoding and decoding.
 
 **_Streams_**
@@ -93,8 +93,8 @@ Supported features include:
 
 **_Cryptography_**
 
-- [Secure memory](/pycpp/allocator.h) allocation and deallocation.
-- [Secure buffers](/pycpp/string.h).
+- [Secure memory](/pycpp/secure/allocator.h) allocation and deallocation.
+- [Secure buffers](/pycpp/secure/string.h).
 - [Cryptographic hash](/pycpp/hashlib.h) functions.
 - [Cryptographic ciphers](/pycpp/cipher.h).
 
@@ -125,6 +125,52 @@ Supported features include:
 - [Decompressing streams](/pycpp/compression/stream.h).
 
 **WARNING:** PyCPP includes cryptographic hashes and ciphers, which are tested via fuzzing. The buffer containing these objects is reset upon object destruction, to minimize side-channel attacks. However, they should be assumed to be insecure, until audited.
+
+**_SFINAE_**
+
+- Detect [operator compatibility](/pycpp/sfinae.h) between types.
+- Detect [STL](/pycpp/sfinae.h) types.
+- Detect member [variables](/pycpp/sfinae/has_member_variable.h), [functions](/pycpp/sfinae/has_member_function.h), and [types](/pycpp/sfinae/has_member_type.h).
+
+**_Cache_**
+
+- [Least-recently used](/pycpp/cache/lru.h) and [least-recently inserted](/pycpp/cache/lri.h) caches.
+
+// TODO document
+
+**_Collections_**
+
+- [Counter](/pycpp/collections/counter.h) to count hashable objects.
+- [Threshold counter](/pycpp/collections/threshold_counter.h) for long-term counting of hashable objects above a frequency threshold.
+
+// TODO document
+
+**_HTTP Requests_**
+
+PyCPP includes a lightweight, [HTTP request library](/pycpp/lattice.h) supporting:
+
+- Custom Headers
+- Parameters
+- Cookies
+- DNS caching
+- Redirections
+- Content-Type detection
+- Pooled requests
+- International domain names
+- Unicode Support (UTF8, UTF16, UTF32)
+- Auth (Basic, Digest)
+- Proxies (Beta)
+- SSL/TLS Adapters
+- Domain validation
+- Certificate validation
+
+**_Multi-Index_**
+
+PyCPP includes a container with multiple views of the stored data type, based off [Boost.MultiIndex](http://www.boost.org/doc/libs/1_62_0/libs/multi_index/doc/index.html), supporting:
+
+- Multiple views based off [hashable](/pycpp/multi_index/hashed_index.h), [ordered](/pycpp/multi_index/ordered_index.h), [ranked](/pycpp/multi_index/ranked_index.h), [sequenced](/pycpp/multi_index/sequenced_index.h), and [random-access](/pycpp/multi_index/random_access_index.h) indexes.
+- [Member](/pycpp/multi_index/member.h), [function](/pycpp/multi_index/mem_fun.h), or [composite keys](/pycpp/multi_index/composite_key.h) per view.
+- [Tagged](/pycpp/multi_index/tag.h) views.
 
 ## Separation of Logic
 
