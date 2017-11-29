@@ -4,10 +4,12 @@
 
     - Write a threshold counter and collections counter.
     - counter
-        - Need to implement unittests
+        - Fix most_common
+        - Write most_common unittests
 
     - threshold_counter
-        - TODO: implement
+        - Fix most_common
+        - Write most_common unittests
 
 **Mid-Term**
 

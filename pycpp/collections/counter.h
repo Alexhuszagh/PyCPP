@@ -16,13 +16,13 @@
 
 #pragma once
 
-#include <pycpp/reference/core.h>
+#include <pycpp/collections/counter_fwd.h>
 #include <pycpp/sfinae/is_pair.h>
 #include <algorithm>
 #include <functional>
 #include <initializer_list>
 #include <numeric>
-#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 PYCPP_BEGIN_NAMESPACE
@@ -39,16 +39,16 @@ template <typename T>
 using is_pair_iterator = is_pair<iterator_value_type<T>>;
 
 template <typename T, typename Iter>
-using enable_if_pair = std::enable_if<is_pair_iterator<T>::value, T>;
+using enable_if_pair = std::enable_if<is_pair_iterator<Iter>::value, T>;
 
 template <typename T, typename Iter>
-using enable_if_not_pair = std::enable_if<!is_pair_iterator<T>::value, T>;
+using enable_if_not_pair = std::enable_if<!is_pair_iterator<Iter>::value, T>;
 
 // FUNCTIONS
 // ---------
 
 template <typename Map, typename Iter>
-typename enable_if_pair<Iter, void>::type
+typename enable_if_pair<void, Iter>::type
 update(Map& map, Iter first, Iter last)
 {
     // update mapping from a key-value store
@@ -57,8 +57,9 @@ update(Map& map, Iter first, Iter last)
     }
 }
 
+
 template <typename Map, typename Iter>
-typename enable_if_not_pair<Iter, void>::type
+typename enable_if_not_pair<void, Iter>::type
 update(Map& map, Iter first, Iter last)
 {
     // update mapping from list of keys
@@ -67,28 +68,72 @@ update(Map& map, Iter first, Iter last)
     }
 }
 
+
+template <typename Map>
+std::vector<typename Map::value_type> most_common(const Map& map, size_t n)
+{
+    using value_type = typename Map::value_type;
+
+    // create values
+    std::vector<value_type> values;
+    values.reserve(map.size());
+    for (const auto& pair: map) {
+        values.emplace_back(pair);
+    }
+
+    // sort in descending order
+    // TODO: how do I move these items???
+    // std::pair has a deleted move assignment operator...
+//    std::sort(values.begin(), values.end(), [](const value_type& lhs, const value_type& rhs) {
+//        return lhs.second > rhs.second;
+//    });
+
+    // trim
+    if (n > 0 && n < values.size()) {
+        values.resize(n);
+    }
+
+    return values;
+}
+
+
+template <typename Map>
+std::vector<typename Map::key_type> elements(const Map& map)
+{
+    using value_type = typename Map::value_type;
+
+    // create values
+    size_t count = std::accumulate(map.begin(), map.end(), 0, [](size_t l, const value_type& rhs) {
+        count_t r = rhs.second;
+        return r > 0 ? l + r : l;
+    });
+    std::vector<typename Map::key_type> values;
+    values.reserve(count);
+
+    // add items
+    for (const auto& pair: map) {
+        count_t i = pair.second;
+        while (i-- > 0) {
+            values.emplace_back(pair.first);
+        }
+    }
+
+    return values;
+}
+
 }   /* counter_detail */
-
-// ALIAS
-// -----
-
-using count_t = std::ptrdiff_t;
 
 // DECLARATION
 // -----------
 
-template <
-    typename Key,
-    typename Hash = std::hash<Key>,
-    typename Pred = std::equal_to<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, count_t>>
->
+template <typename Key, typename Hash, typename Pred, typename Alloc>
 struct counter
 {
 public:
     // MEMBER TYPES
     // ------------
     using self = counter<Key, Hash, Pred, Alloc>;
+    using map_type = std::unordered_map<Key, count_t, Hash, Pred, Alloc>;
     using key_type = Key;
     using mapped_type = count_t;
     using value_type = std::pair<const key_type, mapped_type>;
@@ -101,8 +146,8 @@ public:
     using allocator_type = Alloc;
     using size_type = size_t;
     using difference_type = std::ptrdiff_t;
-    using iterator = typename std::unordered_map<Key, count_t, Hash, Pred, Alloc>::iterator;
-    using const_iterator = typename std::unordered_map<Key, count_t, Hash, Pred, Alloc>::const_iterator;
+    using iterator = typename map_type::iterator;
+    using const_iterator = typename map_type::const_iterator;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -112,8 +157,14 @@ public:
     self& operator=(const self&);
     counter(self&&);
     self& operator=(self&&);
+    counter(const map_type&);
+    self& operator=(const map_type&);
+    counter(map_type&&);
+    self& operator=(map_type&&);
     template <typename Iter> counter(Iter, Iter);
     template <typename Iter> counter(Iter, Iter, size_type);
+    counter(std::initializer_list<value_type>);
+    counter(std::initializer_list<value_type>, size_type);
     counter(std::initializer_list<key_type>);
     counter(std::initializer_list<key_type>, size_type);
 
@@ -135,8 +186,11 @@ public:
     mapped_type& operator[](key_type&&);
     mapped_type& at(const key_type&);
     const mapped_type& at(const key_type&) const;
+    count_t get(const key_type&, count_t = 0) const;
 
     // MODIFIERS
+    void add(const key_type&);
+    void add(key_type&&);
     template <typename Iter> void update(Iter, Iter);
     size_type erase(const key_type&);
     void clear();
@@ -151,14 +205,6 @@ public:
     self operator-(const self&) const;
     self& operator-=(count_t);
     self operator-(count_t) const;
-    self& operator*=(const self&);
-    self operator*(const self&) const;
-    self& operator*=(count_t);
-    self operator*(count_t) const;
-    self& operator/=(const self&);
-    self operator/(const self&) const;
-    self& operator/=(count_t);
-    self operator/(count_t) const;
     self& operator|=(const self&);
     self operator|(const self&) const;
     self& operator&=(const self&);
@@ -186,9 +232,13 @@ public:
     key_equal key_eq() const;
     allocator_type get_allocator() const;
 
+    // CONVERSION
+    explicit operator map_type() const;
+
 protected:
-    using map_t = std::unordered_map<Key, count_t, Hash, Pred, Alloc>;
-    map_t map_;
+    friend struct threshold_counter<Key, Hash, Pred, Alloc>;
+
+    map_type map_;
 };
 
 // IMPLEMENTATION
@@ -236,6 +286,34 @@ auto counter<K, H, P, A>::operator=(self&& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A>
+counter<K, H, P, A>::counter(const map_type& rhs):
+    map_(rhs)
+{}
+
+
+template <typename K, typename H, typename P, typename A>
+auto counter<K, H, P, A>::operator=(const map_type& rhs) -> self&
+{
+    map_ = rhs;
+    return *this;
+}
+
+
+template <typename K, typename H, typename P, typename A>
+counter<K, H, P, A>::counter(map_type&& rhs):
+    map_(std::move(rhs))
+{}
+
+
+template <typename K, typename H, typename P, typename A>
+auto counter<K, H, P, A>::operator=(map_type&& rhs) -> self&
+{
+    map_ = std::move(rhs);
+    return *this;
+}
+
+
+template <typename K, typename H, typename P, typename A>
 template <typename Iter>
 counter<K, H, P, A>::counter(Iter first, Iter last)
 {
@@ -253,10 +331,26 @@ counter<K, H, P, A>::counter(Iter first, Iter last, size_type n):
 
 
 template <typename K, typename H, typename P, typename A>
+counter<K, H, P, A>::counter(std::initializer_list<value_type> list)
+{
+    update(list.begin(), list.end());
+}
+
+
+template <typename K, typename H, typename P, typename A>
+counter<K, H, P, A>::counter(std::initializer_list<value_type> list, size_type n):
+    map_(n)
+{
+    update(list.begin(), list.end());
+}
+
+
+template <typename K, typename H, typename P, typename A>
 counter<K, H, P, A>::counter(std::initializer_list<key_type> list)
 {
     update(list.begin(), list.end());
 }
+
 
 template <typename K, typename H, typename P, typename A>
 counter<K, H, P, A>::counter(std::initializer_list<key_type> list, size_type n):
@@ -366,6 +460,32 @@ auto counter<K, H, P, A>::at(const key_type& key) const -> const mapped_type&
     return map_.at(key);
 }
 
+
+template <typename K, typename H, typename P, typename A>
+count_t counter<K, H, P, A>::get(const key_type& key, count_t n) const
+{
+    auto it = map_.find(key);
+    if (it == map_.end()) {
+        return n;
+    }
+    return it->second;
+}
+
+
+template <typename K, typename H, typename P, typename A>
+void counter<K, H, P, A>::add(const key_type& key)
+{
+    map_[key]++;
+}
+
+
+template <typename K, typename H, typename P, typename A>
+void counter<K, H, P, A>::add(key_type&& key)
+{
+    map_[std::forward<key_type>(key)]++;
+}
+
+
 template <typename K, typename H, typename P, typename A>
 template <typename Iter>
 void counter<K, H, P, A>::update(Iter first, Iter last)
@@ -398,7 +518,7 @@ void counter<K, H, P, A>::swap(self& rhs)
 template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::operator+=(const self& rhs) -> self&
 {
-    for (const auto& pair: rhs) {
+    for (const value_type& pair: rhs) {
         map_[pair.first] += pair.second;
     }
     return *this;
@@ -417,7 +537,7 @@ auto counter<K, H, P, A>::operator+(const self& rhs) const -> self
 template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::operator+=(count_t rhs) -> self&
 {
-    for (const auto& pair: map_) {
+    for (value_type& pair: map_) {
         pair.second += rhs;
     }
     return *this;
@@ -436,7 +556,7 @@ auto counter<K, H, P, A>::operator+(count_t rhs) const -> self
 template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::operator-=(const self& rhs) -> self&
 {
-    for (const auto& pair: rhs) {
+    for (const value_type& pair: rhs) {
         map_[pair.first] -= pair.second;
     }
     return *this;
@@ -455,7 +575,7 @@ auto counter<K, H, P, A>::operator-(const self& rhs) const -> self
 template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::operator-=(count_t rhs) -> self&
 {
-    for (const auto& pair: map_) {
+    for (value_type& pair: map_) {
         pair.second -= rhs;
     }
     return *this;
@@ -472,85 +592,22 @@ auto counter<K, H, P, A>::operator-(count_t rhs) const -> self
 
 
 template <typename K, typename H, typename P, typename A>
-auto counter<K, H, P, A>::operator*=(const self& rhs) -> self&
-{
-    for (const auto& pair: rhs) {
-        map_[pair.first] *= pair.second;
-    }
-    return *this;
-}
-
-
-template <typename K, typename H, typename P, typename A>
-auto counter<K, H, P, A>::operator*(const self& rhs)const -> self
-{
-    self copy(*this);
-    copy *= rhs;
-    return copy;
-}
-
-
-template <typename K, typename H, typename P, typename A>
-auto counter<K, H, P, A>::operator*=(count_t rhs) -> self&
-{
-    for (const auto& pair: map_) {
-        pair.second *= rhs;
-    }
-    return *this;
-}
-
-
-template <typename K, typename H, typename P, typename A>
-auto counter<K, H, P, A>::operator*(count_t rhs) const -> self
-{
-    self copy(*this);
-    copy *= rhs;
-    return copy;
-}
-
-
-template <typename K, typename H, typename P, typename A>
-auto counter<K, H, P, A>::operator/=(const self& rhs) -> self&
-{
-    for (const auto& pair: rhs) {
-        map_[pair.first] /= pair.second;
-    }
-    return *this;
-}
-
-
-template <typename K, typename H, typename P, typename A>
-auto counter<K, H, P, A>::operator/(const self& rhs) const -> self
-{
-    self copy(*this);
-    copy /= rhs;
-    return copy;
-}
-
-
-template <typename K, typename H, typename P, typename A>
-auto counter<K, H, P, A>::operator/=(count_t rhs) -> self&
-{
-    for (const auto& pair: map_) {
-        pair.second /= rhs;
-    }
-    return *this;
-}
-
-
-template <typename K, typename H, typename P, typename A>
-auto counter<K, H, P, A>::operator/(count_t rhs) const -> self
-{
-    self copy(*this);
-    copy /= rhs;
-    return copy;
-}
-
-
-template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::operator|=(const self& rhs) -> self&
 {
-    operator=(*this | rhs);
+    // get key list
+    std::unordered_set<std::reference_wrapper<const key_type>, std::hash<key_type>> s;
+    for (const value_type& pair: map_) {
+        s.emplace(pair.first);
+    }
+    for (const value_type& pair: rhs.map_) {
+        s.emplace(pair.first);
+    }
+
+    // get maximum value over all keys
+    for (const key_type& key: s) {
+        count_t& value = map_[key];
+        value = std::max(value, rhs.get(key, 0));
+    }
     return *this;
 }
 
@@ -558,13 +615,8 @@ auto counter<K, H, P, A>::operator|=(const self& rhs) -> self&
 template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::operator|(const self& rhs) const -> self
 {
-    self copy;
-    for (const value_type& pair: rhs.map_) {
-        auto it = map_.find(pair.first);
-        if (it != map_.end()) {
-            copy.map_[pair.first] = std::min(it->second, pair.second);
-        }
-    }
+    self copy(*this);
+    copy |= rhs;
     return copy;
 }
 
@@ -572,10 +624,7 @@ auto counter<K, H, P, A>::operator|(const self& rhs) const -> self
 template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::operator&=(const self& rhs) -> self&
 {
-    for (const value_type& pair: rhs.map_) {
-        count_t& value = map_[pair.first];
-        value = std::max(value, pair.second);
-    }
+    operator=(*this & rhs);
     return *this;
 }
 
@@ -583,56 +632,36 @@ auto counter<K, H, P, A>::operator&=(const self& rhs) -> self&
 template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::operator&(const self& rhs) const -> self
 {
-    self copy(*this);
-    copy &= rhs;
+    self copy;
+
+    // get key list
+    std::unordered_set<std::reference_wrapper<const key_type>, std::hash<key_type>> s;
+    for (const value_type& pair: map_) {
+        if (rhs.map_.find(pair.first) != rhs.map_.end()) {
+            s.emplace(pair.first);
+        }
+    }
+
+    // get minimum value over all keys
+    for (const key_type& key: s) {
+        copy.map_[key] = std::min(map_.at(key), rhs.map_.at(key));
+    }
+
     return copy;
 }
-
-
-// TODO: insert here
 
 
 template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::most_common(size_t n) const -> std::vector<value_type>
 {
-    // create values
-    std::vector<value_type> values;
-    values.reserve(size());
-    for (const auto& pair: map_) {
-        values.emplace_back(pair);
-    }
-
-    // sort in descending order
-    std::sort(values.begin(), values.end(), [](const value_type& lhs, const value_type& rhs) {
-        return lhs.second > rhs.second;
-    });
-
-    // trim
-    values.resize(n);
-
-    return values;
+    return counter_detail::most_common(map_, n);
 }
 
 
 template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::elements() const -> std::vector<key_type>
 {
-    // create values
-    size_t count = std::accumulate(begin(), end(), 0, [](size_t l, count_t r) {
-        return r > 0 ? l + r : l;
-    });
-    std::vector<value_type> values;
-    values.reserve(count);
-
-    // add items
-    for (const auto& pair: map_) {
-        count_t i = pair.second;
-        while (i-- > 0) {
-            values.emplace_back(pair.first);
-        }
-    }
-
-    return values;
+    return counter_detail::elements(map_);
 }
 
 
@@ -717,6 +746,13 @@ template <typename K, typename H, typename P, typename A>
 auto counter<K, H, P, A>::get_allocator() const -> allocator_type
 {
     return allocator_type();
+}
+
+
+template <typename K, typename H, typename P, typename A>
+counter<K, H, P, A>::operator map_type() const
+{
+    return map_;
 }
 
 PYCPP_END_NAMESPACE

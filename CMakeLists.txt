@@ -725,6 +725,7 @@ if(BUILD_COLLECTIONS)
         test/collections/defaultdict.cc
         test/collections/optional.cc
         test/collections/ordereddict.cc
+        test/collections/threshold_counter.cc
         test/collections/variant.cc
     )
 endif()
