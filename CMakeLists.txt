@@ -677,6 +677,7 @@ set(TEST_FILES
     test/sfinae/has_logical_and.cc
     test/sfinae/has_logical_or.cc
     test/sfinae/has_member_function.cc
+    test/sfinae/has_member_type.cc
     test/sfinae/has_member_variable.cc
     test/sfinae/has_minus.cc
     test/sfinae/has_minus_assign.cc

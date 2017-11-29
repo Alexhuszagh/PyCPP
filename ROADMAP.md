@@ -2,9 +2,6 @@
 
 **Short-Term**
 
-    - Might as well move other SFINAE stuff from XLTools
-        - TODO: is_string
-
     - Write a threshold counter and collections counter.
 
 **Mid-Term**
