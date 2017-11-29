@@ -47,7 +47,25 @@ using enable_if_not_pair = std::enable_if<!is_pair_iterator<T>::value, T>;
 // FUNCTIONS
 // ---------
 
-// TODO: implement update
+template <typename Map, typename Iter>
+typename enable_if_pair<Iter, void>::type
+update(Map& map, Iter first, Iter last)
+{
+    // update mapping from a key-value store
+    for (; first != last; ++first) {
+        map[first->first] += first->second;
+    }
+}
+
+template <typename Map, typename Iter>
+typename enable_if_not_pair<Iter, void>::type
+update(Map& map, Iter first, Iter last)
+{
+    // update mapping from list of keys
+    for (; first != last; ++first) {
+        map[*first]++;
+    }
+}
 
 }   /* counter_detail */
 
@@ -141,16 +159,10 @@ public:
     self operator/(const self&) const;
     self& operator/=(count_t);
     self operator/(count_t) const;
-    // self operator|(const self&) const;
-    // self& operator|=(const self&);
-    // self operator&(const self&) const;
-    // self& operator&=(const self&);
-    // TODO: need to implement the operators...
-// operator+
-// operator*
-// operator/
-// operator|            min(a[x], b[x])
-// operator&            max(a[x], b[x])
+    self& operator|=(const self&);
+    self operator|(const self&) const;
+    self& operator&=(const self&);
+    self operator&(const self&) const;
 
     // CONVENIENCE
     std::vector<value_type> most_common(size_t n = -1) const;
@@ -252,8 +264,6 @@ counter<K, H, P, A>::counter(std::initializer_list<key_type> list, size_type n):
 {
     update(list.begin(), list.end());
 }
-
-// TODO: insert here
 
 
 template <typename K, typename H, typename P, typename A>
@@ -360,10 +370,7 @@ template <typename K, typename H, typename P, typename A>
 template <typename Iter>
 void counter<K, H, P, A>::update(Iter first, Iter last)
 {
-    // TODO: implement.
-    // Call sub-method in detail that detects the proper overload
-    // Update with key-value pairs if it's a pair iterator
-    // Update hash of values otherwise.
+    counter_detail::update(map_, first, last);
 }
 
 
@@ -536,6 +543,48 @@ auto counter<K, H, P, A>::operator/(count_t rhs) const -> self
 {
     self copy(*this);
     copy /= rhs;
+    return copy;
+}
+
+
+template <typename K, typename H, typename P, typename A>
+auto counter<K, H, P, A>::operator|=(const self& rhs) -> self&
+{
+    operator=(*this | rhs);
+    return *this;
+}
+
+
+template <typename K, typename H, typename P, typename A>
+auto counter<K, H, P, A>::operator|(const self& rhs) const -> self
+{
+    self copy;
+    for (const value_type& pair: rhs.map_) {
+        auto it = map_.find(pair.first);
+        if (it != map_.end()) {
+            copy.map_[pair.first] = std::min(it->second, pair.second);
+        }
+    }
+    return copy;
+}
+
+
+template <typename K, typename H, typename P, typename A>
+auto counter<K, H, P, A>::operator&=(const self& rhs) -> self&
+{
+    for (const value_type& pair: rhs.map_) {
+        count_t& value = map_[pair.first];
+        value = std::max(value, pair.second);
+    }
+    return *this;
+}
+
+
+template <typename K, typename H, typename P, typename A>
+auto counter<K, H, P, A>::operator&(const self& rhs) const -> self
+{
+    self copy(*this);
+    copy &= rhs;
     return copy;
 }
 

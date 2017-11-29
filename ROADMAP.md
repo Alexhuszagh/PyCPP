@@ -4,11 +4,7 @@
 
     - Write a threshold counter and collections counter.
     - counter
-        - Need to implement update
-        - Need to implement operator&
-        - Need to implement operator&=
-        - Need to implement operator|
-        - Need to implement operator|=
+        - Need to implement unittests
 
     - threshold_counter
         - TODO: implement
