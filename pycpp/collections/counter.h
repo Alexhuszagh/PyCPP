@@ -44,6 +44,9 @@ using enable_if_pair = std::enable_if<is_pair_iterator<Iter>::value, T>;
 template <typename T, typename Iter>
 using enable_if_not_pair = std::enable_if<!is_pair_iterator<Iter>::value, T>;
 
+template <typename Map>
+using pair_list = std::vector<std::pair<typename Map::key_type, typename Map::mapped_type>>;
+
 // FUNCTIONS
 // ---------
 
@@ -70,23 +73,21 @@ update(Map& map, Iter first, Iter last)
 
 
 template <typename Map>
-std::vector<typename Map::value_type> most_common(const Map& map, size_t n)
+pair_list<Map> most_common(const Map& map, size_t n)
 {
-    using value_type = typename Map::value_type;
+    using value_type = typename pair_list<Map>::value_type;
 
     // create values
     std::vector<value_type> values;
     values.reserve(map.size());
     for (const auto& pair: map) {
-        values.emplace_back(pair);
+        values.emplace_back(std::make_pair(pair.first, pair.second));
     }
 
     // sort in descending order
-    // TODO: how do I move these items???
-    // std::pair has a deleted move assignment operator...
-//    std::sort(values.begin(), values.end(), [](const value_type& lhs, const value_type& rhs) {
-//        return lhs.second > rhs.second;
-//    });
+    std::sort(values.begin(), values.end(), [](const value_type& lhs, const value_type& rhs) {
+        return lhs.second > rhs.second;
+    });
 
     // trim
     if (n > 0 && n < values.size()) {
@@ -211,7 +212,7 @@ public:
     self operator&(const self&) const;
 
     // CONVENIENCE
-    std::vector<value_type> most_common(size_t n = -1) const;
+    counter_detail::pair_list<self> most_common(size_t n = -1) const;
     std::vector<key_type> elements() const;
 
     // BUCKET
@@ -652,7 +653,7 @@ auto counter<K, H, P, A>::operator&(const self& rhs) const -> self
 
 
 template <typename K, typename H, typename P, typename A>
-auto counter<K, H, P, A>::most_common(size_t n) const -> std::vector<value_type>
+auto counter<K, H, P, A>::most_common(size_t n) const -> counter_detail::pair_list<self>
 {
     return counter_detail::most_common(map_, n);
 }

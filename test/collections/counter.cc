@@ -268,7 +268,36 @@ TEST(counter, operators)
 TEST(counter, convenience)
 {
     using c = counter<int>;
-    // TODO: implement from threshold_counter....
+    c c1 = {
+        {1, 1},
+        {2, 4},
+        {3, 9},
+    };
+
+    // most_common
+    auto mc0 = c1.most_common();
+    auto mc1 = c1.most_common(1);
+    auto mc2 = c1.most_common(2);
+    auto mc3 = c1.most_common(3);
+    EXPECT_EQ(mc0.size(), 3);
+    EXPECT_EQ(mc1.size(), 1);
+    EXPECT_EQ(mc2.size(), 2);
+    EXPECT_EQ(mc3.size(), 3);
+    EXPECT_EQ(mc0[0].first, 3);
+    EXPECT_EQ(mc1[0].first, 3);
+    EXPECT_EQ(mc2[0].first, 3);
+    EXPECT_EQ(mc3[0].first, 3);
+    EXPECT_EQ(mc0[1].first, 2);
+    EXPECT_EQ(mc2[1].first, 2);
+    EXPECT_EQ(mc3[1].first, 2);
+    EXPECT_EQ(mc0[2].first, 1);
+    EXPECT_EQ(mc3[2].first, 1);
+
+    // elements
+    std::vector<int> expected = {1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3};
+    auto result = c1.elements();
+    std::sort(result.begin(), result.end());
+    EXPECT_EQ(result, expected);
 }
 
 

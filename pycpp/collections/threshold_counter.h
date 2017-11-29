@@ -152,7 +152,7 @@ public:
     void swap(self&);
 
     // CONVENIENCE
-    std::vector<value_type> most_common(size_t n = -1) const;
+    counter_detail::pair_list<self> most_common(size_t n = -1) const;
     std::vector<key_type> elements() const;
     count_t get_common_count() const;
     count_t get_uncommon_count() const;
@@ -468,7 +468,7 @@ void threshold_counter<K, H, P, A>::swap(self& rhs)
 
 
 template <typename K, typename H, typename P, typename A>
-auto threshold_counter<K, H, P, A>::most_common(size_t n) const -> std::vector<value_type>
+auto threshold_counter<K, H, P, A>::most_common(size_t n) const -> counter_detail::pair_list<self>
 {
     return counter_detail::most_common(map_, n);
 }

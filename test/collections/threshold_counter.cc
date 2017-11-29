@@ -213,9 +213,15 @@ TEST(threshold_counter, convenience)
     EXPECT_EQ(mc1.size(), 1);
     EXPECT_EQ(mc2.size(), 2);
     EXPECT_EQ(mc3.size(), 3);
-    // TODO: cannot implement yet since the std::sort doesn't
-    // work due to a deleted move constructor...
-    // Need to fix std::sort and implement...
+    EXPECT_EQ(mc0[0].first, 3);
+    EXPECT_EQ(mc1[0].first, 3);
+    EXPECT_EQ(mc2[0].first, 3);
+    EXPECT_EQ(mc3[0].first, 3);
+    EXPECT_EQ(mc0[1].first, 2);
+    EXPECT_EQ(mc2[1].first, 2);
+    EXPECT_EQ(mc3[1].first, 2);
+    EXPECT_EQ(mc0[2].first, 1);
+    EXPECT_EQ(mc3[2].first, 1);
 
     // elements
     std::vector<int> expected = {1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3};
