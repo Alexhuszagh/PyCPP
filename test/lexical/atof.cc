@@ -37,6 +37,12 @@ TEST(atof32, base10)
 }
 
 
+TEST(atof32, basen)
+{
+    EXPECT_FLOAT_EQ(atof32("YA", 36), 1234.);
+}
+
+
 TEST(atof64, base10)
 {
     EXPECT_DOUBLE_EQ(atof64("0", 10), 0);

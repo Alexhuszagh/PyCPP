@@ -3,6 +3,7 @@
 
 #include <pycpp/lexical/atoi.h>
 #include <pycpp/lexical/table.h>
+#include <cctype>
 #include <limits>
 #include <stdexcept>
 
@@ -21,6 +22,7 @@ inline bool is_valid_num(char c, char upper)
 
 inline bool is_valid_alnum(char c, char upper)
 {
+    c = ::toupper(c);
     return is_valid_num(c, '9') || (c >= 'A' && c <= upper);
 }
 
@@ -33,7 +35,7 @@ static Int atoi_num(const char* first, const char*& last, uint8_t base)
     // numerical characters are used.
 
     Int value = 0;
-    char upper = BASEN[base];
+    char upper = BASEN[base-1];
 
     while (first < last && is_valid_num(first[0], upper)) {
         value *= base;
@@ -51,15 +53,18 @@ static Int atoi_alnum(const char* first, const char*& last, uint8_t base)
     // alphabetical characters are also used.
 
     Int value = 0;
-    char upper = BASEN[base];
+    char upper = BASEN[base-1];
 
     while (first < last && is_valid_alnum(first[0], upper)) {
         value *= base;
         char c = *first++;
         if (c <= '9') {
             value += c - '0';
-        } else {
+        } else if (c >= 'A' && c <= 'Z') {
             value += c - 'A' + 10;
+        } else {
+            assert(c >= 'a' && c <= 'z');
+            value += c - 'a' + 10;
         }
     }
     last = first;

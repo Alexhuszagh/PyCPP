@@ -145,3 +145,9 @@ TEST(atoi8, basen)
         EXPECT_EQ(atoi8(pair.second, pair.first), 37);
     }
 }
+
+
+TEST(atoi16, basen)
+{
+    EXPECT_EQ(atoi16("YA", 36), 1234);
+}

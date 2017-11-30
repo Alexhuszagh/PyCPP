@@ -10,37 +10,79 @@
 
 PYCPP_USING_NAMESPACE
 
+// HELPERS
+// -------
+
+//static double epsilon(double v, double e)
+//{
+//    v = std::abs(v);
+//    return std::max(v, 1e-6) * e;
+//}
+
+// MACROS
+// ------
+
+//#define EXPECT_FLOAT_ROUGHLY_EQ(v1, v2)         \
+//    EXPECT_LE(v1 - epsilon(v1, 1e-6), v2);      \
+//    EXPECT_GE(v1 + epsilon(v1, 1e-6), v2);
+//
+//#define EXPECT_DOUBLE_ROUGHLY_EQ(v1, v2)        \
+//    EXPECT_LE(v1 - epsilon(v1, 1e-12), v2);     \
+//    EXPECT_GE(v1 + epsilon(v1, 1e-12), v2);
+
+// DATA
+// ----
+
 static std::vector<float> FLOATS = {
     0.,
+    0.1,
     1.,
+    1.1,
     12.,
+    12.1,
     123.,
+    123.1,
     1234.,
+    1234.1,
     12345.,
+    12345.1,
     123456.,
+    123456.1,
     1234567.,
+    1234567.1,
     12345678.,
+    12345678.1,
     123456789.,
-//    123456789.1,
-//    123456789.12,
-//    123456789.123,
-//    123456789.1234,
-//    123456789.12345,
-//    1.2345678912345e8,
-//    1.2345e+8,
+    123456789.1,
+    123456789.12,
+    123456789.123,
+    123456789.1234,
+    123456789.12345,
+    1.2345678912345e8,
+    1.2345e+8,
 //    1.2345e-8,
+// TODO: need 1e11 or larger, for scientific notation
 };
 
 static std::vector<double> DOUBLES = {
     0.,
+    0.1,
     1.,
+    1.1,
     12.,
+    12.1,
     123.,
+    123.1,
     1234.,
+    1234.1,
     12345.,
+    12345.1,
     123456.,
+    123456.1,
     1234567.,
+    1234567.1,
     12345678.,
+    12345678.1,
     123456789.,
 //    123456789.1,
 //    123456789.12,
@@ -48,12 +90,34 @@ static std::vector<double> DOUBLES = {
 //    123456789.1234,
 //    123456789.12345,
 //    1.2345678912345e8,
-//    1.2345e+8,
+    1.2345e+8,
 //    1.2345e-8,
+// TODO: need e11 or larger, for scientific notation
 };
 
 // TESTS
 // -----
+
+
+TEST(f32toa, base2)
+{
+    // positive
+    EXPECT_EQ(f32toa(1.2345678901234567890e0, 2).substr(0, 20), "1.001111000000110010");
+    EXPECT_EQ(f32toa(1.2345678901234567890e1, 2).substr(0, 20), "1100.010110000111111");
+    EXPECT_EQ(f32toa(1.2345678901234567890e2, 2).substr(0, 20), "1111011.011101001111");
+    EXPECT_EQ(f32toa(1.2345678901234567890e3, 2).substr(0, 20), "10011010010.10010001");
+
+    // negative
+    EXPECT_EQ(f32toa(-1.2345678901234567890e0, 2).substr(0, 21), "-1.001111000000110010");
+    EXPECT_EQ(f32toa(-1.2345678901234567890e1, 2).substr(0, 21), "-1100.010110000111111");
+    EXPECT_EQ(f32toa(-1.2345678901234567890e2, 2).substr(0, 21), "-1111011.011101001111");
+    EXPECT_EQ(f32toa(-1.2345678901234567890e3, 2).substr(0, 21), "-10011010010.10010001");
+
+    // special
+    EXPECT_EQ(f32toa(std::numeric_limits<float>::quiet_NaN(), 2), NAN_STRING);
+    EXPECT_EQ(f32toa(std::numeric_limits<float>::infinity(), 2), INFINITY_STRING);
+}
+
 
 TEST(f32toa, base10)
 {
@@ -70,23 +134,43 @@ TEST(f32toa, base10)
     EXPECT_EQ(f32toa(-1.2345678901234567890e3, 10).substr(0, 9), "-1234.567");
 
     // special
-    EXPECT_EQ(f32toa(std::numeric_limits<float>::quiet_NaN()), NAN_STRING);
-    EXPECT_EQ(f32toa(std::numeric_limits<float>::infinity()), INFINITY_STRING);
+    EXPECT_EQ(f32toa(std::numeric_limits<float>::quiet_NaN(), 10), NAN_STRING);
+    EXPECT_EQ(f32toa(std::numeric_limits<float>::infinity(), 10), INFINITY_STRING);
 
     // check parsed value is within 32-bit float error
     for (float f: FLOATS) {
-        EXPECT_FLOAT_EQ(atof32(f32toa(f, 10), 10), f);
+        EXPECT_NEAR(atof32(f32toa(f, 10), 10), f, f*1e-6);
     }
 }
 
 
 TEST(f32toa, basen)
 {
-//    for (float f: FLOATS) {
-//        for (uint8_t radix = 2; radix <= 36; radix++)  {
-//            EXPECT_FLOAT_EQ(atof32(f32toa(f, radix), radix), f);
-//        }
-//    }
+    for (float f: FLOATS) {
+        for (uint8_t radix = 2; radix <= 36; radix++)  {
+            EXPECT_NEAR(atof32(f32toa(f, radix), radix), f, f*1e-6);
+        }
+    }
+}
+
+
+TEST(f64toa, base2)
+{
+    // positive
+    EXPECT_EQ(f64toa(1.2345678901234567890e0, 2).substr(0, 40), "1.00111100000011001010010000101000110001");
+    EXPECT_EQ(f64toa(1.2345678901234567890e1, 2).substr(0, 40), "1100.01011000011111100110100110010111101");
+    EXPECT_EQ(f64toa(1.2345678901234567890e2, 2).substr(0, 40), "1111011.01110100111100000001111111101101");
+    EXPECT_EQ(f64toa(1.2345678901234567890e3, 2).substr(0, 40), "10011010010.1001000101100001001111110100");
+
+    // negative
+    EXPECT_EQ(f64toa(-1.2345678901234567890e0, 2).substr(0, 41), "-1.00111100000011001010010000101000110001");
+    EXPECT_EQ(f64toa(-1.2345678901234567890e1, 2).substr(0, 41), "-1100.01011000011111100110100110010111101");
+    EXPECT_EQ(f64toa(-1.2345678901234567890e2, 2).substr(0, 41), "-1111011.01110100111100000001111111101101");
+    EXPECT_EQ(f64toa(-1.2345678901234567890e3, 2).substr(0, 41), "-10011010010.1001000101100001001111110100");
+
+    // special
+    EXPECT_EQ(f64toa(std::numeric_limits<float>::quiet_NaN(), 2), NAN_STRING);
+    EXPECT_EQ(f64toa(std::numeric_limits<float>::infinity(), 2), INFINITY_STRING);
 }
 
 
@@ -111,15 +195,17 @@ TEST(f64toa, base10)
 
     // check parsed value is within 64-bit float error
     for (double d: DOUBLES) {
-        EXPECT_DOUBLE_EQ(atof64(f64toa(d, 10), 10), d);
+        EXPECT_NEAR(atof64(f64toa(d, 10), 10), d, d*1e-12);
     }
 }
 
+
 TEST(f64toa, basen)
 {
-//    for (double d: DOUBLES) {
-//        for (uint8_t radix = 2; radix <= 36; radix++)  {
-//            EXPECT_DOUBLE_EQ(atof64(f64toa(d, radix), radix), d);
-//        }
-//    }
+    for (double d: DOUBLES) {
+        for (uint8_t radix = 2; radix <= 36; radix++)  {
+            EXPECT_NEAR(atof64(f64toa(d, radix), radix), d, d*1e-12);
+        }
+    }
+    exit(0);
 }

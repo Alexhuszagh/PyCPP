@@ -12,6 +12,7 @@
 #include <pycpp/lexical/ftoa.h>
 #include <pycpp/lexical/table.h>
 #include <pycpp/preprocessor/os.h>
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
@@ -581,13 +582,11 @@ static double v8_modulo(double x, double y)
 
 static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
 {
-    std::cout << "ftoa_naive" << std::endl;
     assert(radix >= 2 && radix <= 36);
 
     // check for special cases
     int length = filter_special(d, first);
     if (length) {
-        std::cout << "filter_special" << std::endl;
         last = first + length;
         return;
     }
@@ -660,7 +659,15 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
                         }
                         char c = buffer[fraction_cursor];
                         // Reconstruct digit.
-                        int digit = c > '9' ? (c - 'A' + 10) : (c - '0');
+                        int digit;
+                        if (c <= '9') {
+                            digit = c - '0';
+                        } else if (c >= 'A' && c <= 'Z') {
+                            digit = c - 'A' + 10;
+                        } else {
+                            assert(c >= 'a' && c <= 'z');
+                            digit = c - 'a' + 10;
+                        }
                         if (digit + 1 < base) {
                             buffer[fraction_cursor++] = BASEN[digit + 1];
                             break;
@@ -684,37 +691,53 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
         integer = (integer - remainder) / base;
     } while (integer > 0);
 
-    // recreate representation from current digits
+//    // recreate representation from current digits
+//    char* first = buffer + integer_cursor;
+//    char* mid = buffer + initial_position;
+//    char* last = buffer + fraction_cursor;
+//    char* coefficient_first, coefficient_last;
     if (d <= 1e-5) {
         // write scientific notation with negative exponent
+//        char* first = buffer + initial_position;
+//        char* last = buffer + fraction_cursor;
+////        char* it = std::find_if_not(first, last, [](char c) { return c == '0'; });
+//
+
+        // TODO: here...
+        // Need to find the first non-zero element in the fraction component
+        // Need to shift over that many spaces.
     } else if (d >= 1e11) {
         // write scientific notation with positive exponent
+        // find the first non-zero element in the number, and
+        // then take the minimum of it and the maximum number of
+        // digits to find the end point of the fraction component
+        // of the nummber.
+//        char* first = buffer + fraction_cursor;
+//        char* last = buffer + integer_cursor;
+////        char* it = std::find_if_not(first, last, [](char c) { return c == '0'; });
+////        it = std::min(buffer + integer_cursor + max_digit_length, it);
+
+        // TODO: here...
+        // Need to rfind the first non-zero element in the integer component
+        // Need to shift over that many spaces.
     } else {
-        std::cout << "Writing integer fraction portion..." << std::endl;
-        // write using integer.fraction notation
+        last = first;
+        // get component lengths
         size_t integer_length = initial_position - integer_cursor;
         size_t fraction_length = std::min(fraction_cursor - initial_position, max_digit_length - integer_length);
+
+        // write integer component
         memcpy(first, buffer + integer_cursor, integer_length);
-        first[integer_cursor+integer_length+1] = '.';
-        memcpy(first + integer_length, buffer + initial_position, fraction_length);
-        last = first + integer_length + fraction_length + 1;
+        last = first + integer_length;
+
+        // write fraction component
+        if (fraction_length > 0) {
+            *last++ = '.';
+            memcpy(last, buffer + initial_position, fraction_length);
+            last += fraction_length;
+        }
     }
 }
-
-// TODO: use this for the Radix C-string
-//char* DoubleToRadixCString(double value, int base) {
-
-
-//
-//  // Add sign and terminate string.
-//  buffer[fraction_cursor++] = '\0';
-//  DCHECK_LT(fraction_cursor, buffer_size);
-//  DCHECK_LE(0, integer_cursor);
-//  // Allocate new string as return value.
-//  char* result = NewArray<char>(fraction_cursor - integer_cursor);
-//  memcpy(result, buffer + integer_cursor, fraction_cursor - integer_cursor);
-//  return result;
-//}
 
 
 // BASEN
