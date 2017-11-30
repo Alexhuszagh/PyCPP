@@ -1,15 +1,11 @@
 **Short-Term**
 
 - Need to finish porting Lexi to PyCpp
-    - atof
-    - ftoa
-        - Use https://github.com/jwiegley/gdtoa
+    - int
     - float
     - char
 
 - Need unittests for conversions
-    - atof
-    - ftoa
     - bool
     - int
     - null

@@ -24,6 +24,7 @@ using atoi_function = std::function<Int(const char*, const char*&, uint8_t)>;
 // ------
 
 extern precise_float_t atoi_precise_float(const char* first, const char*& last, uint8_t base);
+extern bool is_valid_digit(char c, uint8_t base);
 
 // HELPERS
 // -------
@@ -68,8 +69,8 @@ Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<In
             tmp_last = std::min(last, tmp_first + Significand);
             tmp_frac = function(tmp_first, tmp_last, base);
             digits += std::distance(tmp_first, tmp_last);
-            fraction += (tmp_frac / std::pow(base, digits));
-        } while (tmp_last != last && tmp_frac != 0);
+            fraction += (tmp_frac / std::pow<double>(base, digits));
+        } while (tmp_last != last && is_valid_digit(*tmp_last, base));
     }
     value = integer + fraction;
 

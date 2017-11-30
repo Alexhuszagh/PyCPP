@@ -27,6 +27,17 @@ inline bool is_valid_alnum(char c, char upper)
     return is_valid_num(c, '9') || (c >= 'A' && c <= upper);
 }
 
+
+bool is_valid_digit(char c, uint8_t base)
+{
+    if (base <= 10) {
+        return is_valid_num(c, BASEN[base-1]);
+    } else {
+        return is_valid_alnum(c, BASEN[base-1]);
+    }
+}
+
+
 // GENERIC
 
 template <typename Int>

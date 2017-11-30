@@ -19,7 +19,6 @@
 #include <cmath>
 #include <cstdint>
 #include <cstring>
-#include <iostream>         // TODO: remove
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -714,45 +713,22 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
         integer = (integer - remainder) / base;
     } while (integer > 0);
 
-    if (d <= 1e-5) {
+    if (d <= 1e-5 || d >= 1e9) {
         // write scientific notation with negative exponent
         int exponent = naive_exponent(d, base);
-        // TODO: need to seek the correct position...
-        // TODO: need to get the exponent...
-
-//        char* first = buffer + initial_position;
-//        char* last = buffer + fraction_cursor;
-////        char* it = std::find_if_not(first, last, [](char c) { return c == '0'; });
-//
-
-        // TODO: here...
-        // Need to find the first non-zero element in the fraction component
-        // Need to shift over that many spaces.
-        // write scientific notation with positive exponent
-        // find the first non-zero element in the number, and
-        // then take the minimum of it and the maximum number of
-        // digits to find the end point of the fraction component
-        // of the nummber.
-//        char* first = buffer + fraction_cursor;
-//        char* last = buffer + integer_cursor;
-////        char* it = std::find_if_not(first, last, [](char c) { return c == '0'; });
-////        it = std::min(buffer + integer_cursor + max_digit_length, it);
-
-        // TODO: here...
-        // Need to rfind the first non-zero element in the integer component
-        // Need to shift over that many spaces.
-    } else if (d >= 1e9) {
-        // the maximum uint32_t storage is 4e9, so we need
-        // to write all exp
-        // write scientific notation with positive exponent
-        uint16_t exponent = naive_exponent(d, base);
 
         // Non-exponent portion.
         // 1.   Get as many digits as possible, up to `max_digit_length+1`
         //      (since we are ignoring the digit for the first digit),
         //      or the number of written digits
-        size_t buf_start = integer_cursor;
-        size_t buf_end = std::min(fraction_cursor, buf_start + max_digit_length + 1);
+        size_t buf_start, buf_end;
+        if (d <= 1e-5) {
+            buf_start = initial_position - exponent - 1;
+            buf_end = std::min(fraction_cursor, buf_start + max_digit_length + 1);
+        } else {
+            buf_start = integer_cursor;
+            buf_end = std::min(fraction_cursor, buf_start + max_digit_length + 1);
+        }
         string_view buf_view(buffer + buf_start, buf_end - buf_start);
 
         // 2.   Remove any trailing 0s in the selected range.
@@ -768,7 +744,7 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
 
         // write the exponent component
         *first++ = e_notation_char(base);
-        u16toa(exponent, first, last, base);
+        i32toa(exponent, first, last, base);
 
     } else {
         last = first;

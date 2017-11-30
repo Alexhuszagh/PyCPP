@@ -617,7 +617,8 @@ if(BUILD_COMPRESSION)
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/exception.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/gzip.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/lzma.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/zlib.cc"
+        # Do not include zlib.cc, as it is already included in gzip.cc
+        #"${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/zlib.cc"
     )
 
     if(BUILD_STREAM)

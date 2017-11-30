@@ -42,8 +42,9 @@ static std::vector<float> FLOATS = {
     1.2345e+8,
     1.2345e+11,
     1.2345e+38,
-//    1.2345e-8,
-// TODO: need 1e11 or larger, for scientific notation
+    1.2345e-8,
+    1.2345e-11,
+    1.2345e-38,
 };
 
 static std::vector<double> DOUBLES = {
@@ -76,8 +77,10 @@ static std::vector<double> DOUBLES = {
     1.2345e+11,
     1.2345e+38,
     1.2345e+308,
-//    1.2345e-8,
-// TODO: need e11 or larger, for scientific notation
+    1.2345e-8,
+    1.2345e-11,
+    1.2345e-38,
+    1.2345e-308,
 };
 
 // TESTS

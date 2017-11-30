@@ -86,9 +86,6 @@ public:
     size_type max_size() const;
     bool empty() const noexcept;
 
-    // TODO: need to provide iteration based on the queue...
-    // Transform the key-based iteration to return
-
     // ITERATORS
     iterator begin();
     const_iterator begin() const;

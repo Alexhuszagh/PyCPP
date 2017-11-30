@@ -32,15 +32,26 @@ PyCPP is, in many ways, a spiritual port of Python back to C++. There are idioma
 PyCPP is broken down into multiple core parts:
 
 1. A macro-driven abstraction library to detect compiler features.
-2. Code page conversion routines.
-3. Filesystem utilities.
-4. High-level features common in other standard libraries.
+2. Lexical conversion routines.
+3. Code page conversion routines.
+4. Filesystem utilities.
+5. High-level features common in other standard libraries.
 
 Combined, the library has less than 100,00 total lines of C++ headers, with binary sizes of < 5MB, and each module has only a few dependencies, making it easy to extract individual modules for use in another project. It also makes frequent use of the Pimpl idiom, abstracting away low-level routines for a simple public API.
 
 **Abstraction Library**
 
 The files [os.h](/pycpp/os.h), [compiler.h](/pycpp/compiler.h), [architecture.h](/pycpp/architecture.h), [processor.h](/pycpp/processor.h), and [byteorder.h](/pycpp/byteorder.h) provide an abstraction platform to detect the current compiler, compiler version, operating system, system endianness, and processor. These are the largest dependencies, with ~1000 lines of code.
+
+**Lexical Conversion**
+
+PyCPP includes high-performance lexical conversions to and from string for built-in primitive types, including:
+
+- std::nullptr_t
+- bool
+- char
+- int (including 8-64 bit fixed-width integers)
+- float (both single- and double-precision)
 
 **Code Page Conversion**
 

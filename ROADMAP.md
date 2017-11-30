@@ -2,15 +2,6 @@
 
 **Short-Term**
 
-    - Write a threshold counter and collections counter.
-    - counter
-        - Fix most_common
-        - Write most_common unittests
-
-    - threshold_counter
-        - Fix most_common
-        - Write most_common unittests
-
     - Implement an ordered_multi_map
     - Check if C++ has a priority_queue
     - iterutils.chunked?
