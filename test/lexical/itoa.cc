@@ -65,8 +65,8 @@ TEST(i8toa, base10)
 {
     EXPECT_EQ(i8toa(0, 10), "0");
     EXPECT_EQ(i8toa(127, 10), "127");
-    EXPECT_EQ(i8toa(128, 10), "-128");
-    EXPECT_EQ(i8toa(255, 10), "-1");
+    EXPECT_EQ(i8toa(static_cast<int8_t>(128), 10), "-128");
+    EXPECT_EQ(i8toa(static_cast<int8_t>(255), 10), "-1");
     EXPECT_EQ(i8toa(-1, 10), "-1");
 }
 
@@ -85,8 +85,8 @@ TEST(i16toa, base10)
 {
     EXPECT_EQ(i16toa(0, 10), "0");
     EXPECT_EQ(i16toa(32767, 10), "32767");
-    EXPECT_EQ(i16toa(32768, 10), "-32768");
-    EXPECT_EQ(i16toa(65535, 10), "-1");
+    EXPECT_EQ(i16toa(static_cast<int16_t>(32768), 10), "-32768");
+    EXPECT_EQ(i16toa(static_cast<int16_t>(65535), 10), "-1");
     EXPECT_EQ(i16toa(-1, 10), "-1");
 }
 
@@ -105,8 +105,8 @@ TEST(i32toa, base10)
 {
     EXPECT_EQ(i32toa(0, 10), "0");
     EXPECT_EQ(i32toa(2147483647ULL, 10), "2147483647");
-    EXPECT_EQ(i32toa(2147483648ULL, 10), "-2147483648");
-    EXPECT_EQ(i32toa(4294967295ULL, 10), "-1");
+    EXPECT_EQ(i32toa(static_cast<int32_t>(2147483648ULL), 10), "-2147483648");
+    EXPECT_EQ(i32toa(static_cast<int32_t>(4294967295ULL), 10), "-1");
     EXPECT_EQ(i32toa(-1, 10), "-1");
 }
 
@@ -125,8 +125,8 @@ TEST(i64toa, base10)
 {
     EXPECT_EQ(i64toa(0, 10), "0");
     EXPECT_EQ(i64toa(9223372036854775807ULL, 10), "9223372036854775807");
-    EXPECT_EQ(i64toa(9223372036854775808ULL, 10), "-9223372036854775808");
-    EXPECT_EQ(i64toa(18446744073709551615ULL, 10), "-1");
+    EXPECT_EQ(i64toa(static_cast<int64_t>(9223372036854775808ULL), 10), "-9223372036854775808");
+    EXPECT_EQ(i64toa(static_cast<int64_t>(18446744073709551615ULL), 10), "-1");
     EXPECT_EQ(i64toa(-1, 10), "-1");
 }
 

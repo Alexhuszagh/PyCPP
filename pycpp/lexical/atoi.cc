@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lexical/atoi.h>
+#include <pycpp/lexical/precise_float.h>
 #include <pycpp/lexical/table.h>
 #include <cctype>
 #include <limits>
@@ -212,6 +213,16 @@ int64_t atoi64(const string_view& string, uint8_t base)
     const char* first = string.begin();
     const char* last = string.end();
     return atoi64(first, last, base);
+}
+
+
+// Compatiblility for `ftoa.cc`
+// We can have overflow with any integer type for
+// `float` and `double`, so we need to use `double`
+// for our str-to-int conversions in `ftoa.cc`.
+precise_float_t atoi_precise_float(const char* first, const char*& last, uint8_t base)
+{
+    return atoi_<precise_float_t>(first, last, base);
 }
 
 

@@ -7,6 +7,17 @@
 
 #pragma once
 
+// INTEL
+// -----
+
+#if defined(__INTEL_COMPILER)
+// Intel compilers can use different compatibility modes,
+// such as GCC, Clang, or Visual Studio compatibility,
+// so define the presence of the Intel compiler, but don't
+// treat it as a compiler.
+#   define HAVE_INTEL 1
+#endif
+
 // MSVC
 // ----
 

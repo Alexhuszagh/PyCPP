@@ -4,6 +4,8 @@
 #include <pycpp/lexical/atof.h>
 #include <pycpp/lexical/atoi.h>
 #include <pycpp/lexical/format.h>
+#include <pycpp/lexical/ftoa.h>
+#include <pycpp/lexical/precise_float.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/string.h>
 #include <cmath>
@@ -18,6 +20,11 @@ PYCPP_BEGIN_NAMESPACE
 template <typename Int>
 using atoi_function = std::function<Int(const char*, const char*&, uint8_t)>;
 
+// EXTERN
+// ------
+
+extern precise_float_t atoi_precise_float(const char* first, const char*& last, uint8_t base);
+
 // HELPERS
 // -------
 
@@ -25,6 +32,9 @@ template <typename Float, typename Int, int Significand>
 Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<Int> function)
 {
     static_assert(std::numeric_limits<Float>::is_iec559, "Must support IEC 559/IEEE 754 standard.");
+
+    // declare variables
+    precise_float_t integer, fraction, value;
 
     // check if it is a special IEEE754 number (NaN, INF)
     string_wrapper view(first, last);
@@ -45,30 +55,32 @@ Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<In
     // calculate the integer portion
     const char* tmp_first = first;
     const char* tmp_last = last;
-    double value = static_cast<double>(function(tmp_first, tmp_last, base));
+    integer = atoi_precise_float(tmp_first, tmp_last, base);
 
     // calculate the decimal portion
+    fraction = 0;
     if (tmp_last != last && *tmp_last == '.') {
         size_t digits = 0;
-        double fraction;
+        Int tmp_frac;
         ++tmp_last;
         do {
             tmp_first = tmp_last;
             tmp_last = std::min(last, tmp_first + Significand);
-            fraction = static_cast<double>(function(tmp_first, tmp_last, base));
+            tmp_frac = function(tmp_first, tmp_last, base);
             digits += std::distance(tmp_first, tmp_last);
-            value += (fraction / std::pow(base, digits));
-        } while (tmp_last != last && fraction != 0);
+            fraction += (tmp_frac / std::pow(base, digits));
+        } while (tmp_last != last && tmp_frac != 0);
     }
+    value = integer + fraction;
 
     // calculate the exponential portion, if
     // we have an `e[+-]?\d+`.
     size_t distance = std::distance(tmp_last, last);
-    if (distance > 1 && ascii_tolower(*tmp_last) == 'e') {
+    if (distance > 1 && ascii_tolower(*tmp_last) == e_notation_char(base)) {
         ++tmp_last;
         tmp_first = tmp_last;
-        tmp_last =last, tmp_first;
-        double exponent = static_cast<double>(function(tmp_first, tmp_last, base));
+        tmp_last = last;
+        Int exponent = function(tmp_first, tmp_last, base);
         value *= std::pow(base, exponent);
     }
 
@@ -80,13 +92,6 @@ Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<In
 
 float atof32(const char* first, const char*& last, uint8_t base)
 {
-    string_wrapper view(first, last);
-    if (view.startswith(NAN_STRING)) {
-        // TODO: here
-    } else if (view.startswith(INFINITY_STRING)) {
-        // TODO: here
-    }
-
     int32_t (*f)(const char*, const char*&, uint8_t) = atoi32;
     // a 32-bit, base-36 number can encoded max 7 digits, so
     // use 6 to ensure no possible overflow for any radix.

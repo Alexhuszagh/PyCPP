@@ -10,26 +10,6 @@
 
 PYCPP_USING_NAMESPACE
 
-// HELPERS
-// -------
-
-//static double epsilon(double v, double e)
-//{
-//    v = std::abs(v);
-//    return std::max(v, 1e-6) * e;
-//}
-
-// MACROS
-// ------
-
-//#define EXPECT_FLOAT_ROUGHLY_EQ(v1, v2)         \
-//    EXPECT_LE(v1 - epsilon(v1, 1e-6), v2);      \
-//    EXPECT_GE(v1 + epsilon(v1, 1e-6), v2);
-//
-//#define EXPECT_DOUBLE_ROUGHLY_EQ(v1, v2)        \
-//    EXPECT_LE(v1 - epsilon(v1, 1e-12), v2);     \
-//    EXPECT_GE(v1 + epsilon(v1, 1e-12), v2);
-
 // DATA
 // ----
 
@@ -60,6 +40,8 @@ static std::vector<float> FLOATS = {
     123456789.12345,
     1.2345678912345e8,
     1.2345e+8,
+    1.2345e+11,
+    1.2345e+38,
 //    1.2345e-8,
 // TODO: need 1e11 or larger, for scientific notation
 };
@@ -84,13 +66,16 @@ static std::vector<double> DOUBLES = {
     12345678.,
     12345678.1,
     123456789.,
-//    123456789.1,
-//    123456789.12,
-//    123456789.123,
-//    123456789.1234,
-//    123456789.12345,
-//    1.2345678912345e8,
+    123456789.1,
+    123456789.12,
+    123456789.123,
+    123456789.1234,
+    123456789.12345,
+    1.2345678912345e8,
     1.2345e+8,
+    1.2345e+11,
+    1.2345e+38,
+    1.2345e+308,
 //    1.2345e-8,
 // TODO: need e11 or larger, for scientific notation
 };
@@ -138,6 +123,7 @@ TEST(f32toa, base10)
     EXPECT_EQ(f32toa(std::numeric_limits<float>::infinity(), 10), INFINITY_STRING);
 
     // check parsed value is within 32-bit float error
+    std::cout << f32toa(1.2345e+11, 10) << std::endl;
     for (float f: FLOATS) {
         EXPECT_NEAR(atof32(f32toa(f, 10), 10), f, f*1e-6);
     }
@@ -202,10 +188,13 @@ TEST(f64toa, base10)
 
 TEST(f64toa, basen)
 {
+    // known issues
+    EXPECT_EQ(f64toa(12.1, 20), "C.2");
+
     for (double d: DOUBLES) {
         for (uint8_t radix = 2; radix <= 36; radix++)  {
+            double dd = atof64(f64toa(d, radix), radix);
             EXPECT_NEAR(atof64(f64toa(d, radix), radix), d, d*1e-12);
         }
     }
-    exit(0);
 }

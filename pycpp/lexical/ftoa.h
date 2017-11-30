@@ -17,8 +17,10 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-// TODO: use https://github.com/google/double-conversion/tree/master/double-conversion
-// This is a great back-end
+/**
+ *  \brief Get character designating the exponent in sci notation.
+ */
+char e_notation_char(uint8_t base);
 
 /**
  *  \brief Convert unsigned 8-bit value to string.

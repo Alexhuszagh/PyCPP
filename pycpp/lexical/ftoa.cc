@@ -8,10 +8,12 @@
  *      `https://github.com/night-shift/fpconv`
  */
 
+#include <pycpp/lexical/itoa.h>
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/ftoa.h>
 #include <pycpp/lexical/table.h>
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/view/string.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -129,6 +131,17 @@ static constexpr fp_t POWERS_TEN[] = {
 
 // HELPERS
 // -------
+
+// EXPONENT
+
+char e_notation_char(uint8_t base)
+{
+    // After radix of base15 and higher, 'E' and 'e' are
+    // part of the controlled vocabulary.
+    // We use a non-standard extension of '^' to signify
+    // the exponent in base15 and above.
+    return base >= 15 ? '^' : 'e';
+}
 
 // FPCONV GRISU
 
@@ -399,7 +412,7 @@ static int emit_digits(char* digits, int ndigits, char* dest, int K)
         idx += ndigits - 1;
     }
 
-    dest[idx++] = 'e';
+    dest[idx++] = e_notation_char(10);
 
     char sign = K + ndigits - 1 < 0 ? '-' : '+';
     dest[idx++] = sign;
@@ -550,9 +563,9 @@ static double v8_next_double(double d)
       return 0.0;
     }
     if (v8_sign(d) < 0) {
-      return get_u64bits(d64 - 1);
+        return get_u64bits(d64 - 1);
     } else {
-      return get_u64bits(d64 + 1);
+        return get_u64bits(d64 + 1);
     }
 }
 
@@ -580,9 +593,19 @@ static double v8_modulo(double x, double y)
 }
 
 
+static int naive_exponent(double d, uint8_t base)
+{
+    // std::floor returns the minimal value, which is our
+    // desired exponent
+    // log(1.1e-5) -> -4.95 -> -5
+    // log(1.1e5) -> -5.04 -> 5
+    return static_cast<int>(std::floor(std::log(d) / std::log(base)));
+}
+
+
 static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
 {
-    assert(radix >= 2 && radix <= 36);
+    assert(base >= 2 && base <= 36);
 
     // check for special cases
     int length = filter_special(d, first);
@@ -603,7 +626,7 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
      *  if we need scientific or regular formatting.
      *
      *    BUFFER_SIZE
-     *  - 1      # first nummber
+     *  - 1      # first digit
      *  - 1      # period
      *  - 1      # +/- sign
      *  - 2      # e and +/- sign
@@ -652,7 +675,7 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
                     // We need to back trace already written digits in case of carry-over.
                     while (true) {
                         fraction_cursor--;
-                        if (fraction_cursor == buffer_size / 2) {
+                        if (fraction_cursor == initial_position-1) {
                             // Carry over to the integer part.
                             integer += 1;
                             break;
@@ -691,13 +714,12 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
         integer = (integer - remainder) / base;
     } while (integer > 0);
 
-//    // recreate representation from current digits
-//    char* first = buffer + integer_cursor;
-//    char* mid = buffer + initial_position;
-//    char* last = buffer + fraction_cursor;
-//    char* coefficient_first, coefficient_last;
     if (d <= 1e-5) {
         // write scientific notation with negative exponent
+        int exponent = naive_exponent(d, base);
+        // TODO: need to seek the correct position...
+        // TODO: need to get the exponent...
+
 //        char* first = buffer + initial_position;
 //        char* last = buffer + fraction_cursor;
 ////        char* it = std::find_if_not(first, last, [](char c) { return c == '0'; });
@@ -706,7 +728,6 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
         // TODO: here...
         // Need to find the first non-zero element in the fraction component
         // Need to shift over that many spaces.
-    } else if (d >= 1e11) {
         // write scientific notation with positive exponent
         // find the first non-zero element in the number, and
         // then take the minimum of it and the maximum number of
@@ -720,13 +741,42 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
         // TODO: here...
         // Need to rfind the first non-zero element in the integer component
         // Need to shift over that many spaces.
+    } else if (d >= 1e9) {
+        // the maximum uint32_t storage is 4e9, so we need
+        // to write all exp
+        // write scientific notation with positive exponent
+        uint16_t exponent = naive_exponent(d, base);
+
+        // Non-exponent portion.
+        // 1.   Get as many digits as possible, up to `max_digit_length+1`
+        //      (since we are ignoring the digit for the first digit),
+        //      or the number of written digits
+        size_t buf_start = integer_cursor;
+        size_t buf_end = std::min(fraction_cursor, buf_start + max_digit_length + 1);
+        string_view buf_view(buffer + buf_start, buf_end - buf_start);
+
+        // 2.   Remove any trailing 0s in the selected range.
+        for (auto it = buf_view.rbegin(); *it == '0'; ++it, --buf_end)
+            ;
+        buf_view = string_view(buf_view.data(), buf_end - buf_start);
+
+        // 3.   Write the fraction component
+        *first++ = buf_view[0];
+        *first++ = '.';
+        memcpy(first, buf_view.data()+1, buf_view.size() - 1);
+        first += buf_view.size() - 1;
+
+        // write the exponent component
+        *first++ = e_notation_char(base);
+        u16toa(exponent, first, last, base);
+
     } else {
         last = first;
         // get component lengths
         size_t integer_length = initial_position - integer_cursor;
         size_t fraction_length = std::min(fraction_cursor - initial_position, max_digit_length - integer_length);
 
-        // write integer component
+        // write integer component123450000000
         memcpy(first, buffer + integer_cursor, integer_length);
         last = first + integer_length;
 
