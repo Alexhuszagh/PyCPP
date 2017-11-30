@@ -9,6 +9,7 @@
  */
 
 #include <pycpp/lexical/itoa.h>
+#include <pycpp/lexical/float.h>
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/ftoa.h>
 #include <pycpp/lexical/table.h>
@@ -68,7 +69,7 @@ static constexpr int EXPONENT_BIAS = 0x3FF + PHYSICAL_SIGNIFICAND_SIZE;
 static constexpr int DENORMAL_EXPONENT = -EXPONENT_BIAS + 1;
 
 // BUFFER PARAMETERS
-static constexpr size_t BUFFER_SIZE = 60;
+static constexpr size_t BUFFER_SIZE = MAX_FLOAT_SIZE;
 
 // LOOKUPS
 static constexpr uint64_t TENS[] = {

@@ -20,7 +20,7 @@ constexpr size_t SHA1_HASH_SIZE = 20;
 // UNIONS
 // ------
 
-union Char64Union
+union char64_union
 {
     uint8_t c[64];
     uint32_t l[16];
@@ -70,7 +70,7 @@ struct sha1_context
 static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 {
     uint32_t a, b, c, d, e;
-    Char64Union block[1];  /* use array to appear as a pointer */
+    char64_union block[1];  /* use array to appear as a pointer */
     memcpy(block, buffer, 64);
 
     /* Copy context->state[] to working vars */

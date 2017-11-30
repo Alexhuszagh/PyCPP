@@ -53,6 +53,8 @@ PyCPP includes high-performance lexical conversions to and from string for built
 - int (including 8-64 bit fixed-width integers)
 - float (both single- and double-precision)
 
+// TODO: add more documentation here
+
 **Code Page Conversion**
 
 Any modern application should be Unicode aware, and PyCPP includes routines for [code point conversions](/pycpp/unicode.h) and [codec conversions](codec.h), as well as [Unicode-aware case conversions](/pycpp/casemap.h). They provide two APIs: a modern wrapper for STL string conversions, and a C-API taking a src and dst buffer.

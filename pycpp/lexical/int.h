@@ -21,7 +21,15 @@ static constexpr int MAX_INTEGER_SIZE = std::numeric_limits<unsigned long long>:
 // DECLARATIONS
 // ------------
 
-#if 0
+/**
+ *  \brief Union for both signed and unsigned 64-bit integers.
+ */
+union int64bits_t
+{
+    int64_t i;
+    uint64_t u;
+};
+
 /**
  *  \brief Generic formatter for integer values.
  */
@@ -42,8 +50,8 @@ public:
     // DATA
     size_t size() const;
     size_t length() const;
-    const char * data() const;
-    const char * c_str() const;
+    const char* data() const;
+    const char* c_str() const;
 
     string_view string() const;
     string_view escape() const;
@@ -54,7 +62,7 @@ public:
 
 private:
     char buffer_[MAX_INTEGER_SIZE];
-    char* last_;
+    char* last_ = buffer_ + MAX_INTEGER_SIZE;
 };
 
 
@@ -64,7 +72,12 @@ private:
 class lexical_int_extractor
 {
 public:
-    lexical_int_extractor(const std::string& string);
+    lexical_int_extractor(const string_view& string);
+
+    // DATA
+    bool is_signed() const;
+    bool is_unsigned() const;
+    uint8_t bytes() const;
 
     // CONVERSIONS
     explicit operator int8_t() const;
@@ -79,8 +92,8 @@ public:
     explicit operator unsigned long long() const;
 
 private:
-    unsigned long long data_;
+    int64bits_t data_;
+    bool minus_;
 };
-#endif
 
 PYCPP_END_NAMESPACE

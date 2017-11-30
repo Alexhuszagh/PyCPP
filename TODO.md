@@ -1,11 +1,10 @@
 **Short-Term**
 
-- Need to finish porting Lexi to PyCpp
-    - int
-    - float
-    - char
+- Need lexical conversion master switch
+    - In top-level header include, need master switch
+    - Similar to lexi::lexi function before
 
-- Need unittests for conversions
+- Need unittests for lexical conversions
     - bool
     - int
     - null
