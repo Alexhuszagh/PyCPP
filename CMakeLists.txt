@@ -25,6 +25,8 @@ option(BUILD_JSON "Build JSON library" ON)
 option(BUILD_KEYVALUE "Build key-value database library" ON)
 option(BUILD_LATTICE "Build lattice (networking) library" ON)
 option(BUILD_MATH "Build math library" ON)
+option(BUILD_MYSQL "Build MySQL database library" ON)
+option(BUILD_POSTGRES "Build PostgreSQL database library" ON)
 option(BUILD_RE "Build regular expression library" ON)
 option(BUILD_SQLITE "Build SQLite database library" ON)
 option(BUILD_STREAM "Build stream library" ON)
@@ -36,7 +38,10 @@ option(USE_SYSTEM_BZIP2 "Use system BZIP2 installation" OFF)
 option(USE_SYSTEM_LEVELDB "Use system LEVELDB installation" OFF)
 option(USE_SYSTEM_LIBXML2 "Use system LIBXML2 installation" OFF)
 option(USE_SYSTEM_LZMA "Use system LZMA2/XZZ installation" OFF)
+option(USE_SYSTEM_MYSQL "Use system MySQL installation" OFF)
+option(USE_SYSTEM_POSTGRES "Use system PostgreSQL installation" OFF)
 option(USE_SYSTEM_RE2 "Use system RE2 installation" OFF)
+option(USE_SYSTEM_SQLITE "Use system SQLite installation" OFF)
 option(USE_SYSTEM_ZLIB "Use system ZLIB installation" OFF)
 
 # WITH MODULE
@@ -51,6 +56,8 @@ option(WITH_JSON "Build (only) JSON library" OFF)
 option(WITH_KEYVALUE "Build (only) key-value database library" OFF)
 option(WITH_LATTICE "Build (only) lattice library" OFF)
 option(WITH_MATH "Build (only) math library" OFF)
+option(WITH_MYSQL "Build (only) MySQL database library" OFF)
+option(WITH_POSTGRES "Build (only) PostgreSQL database library" ON)
 option(WITH_RE "Build (only) regular expression library" OFF)
 option(WITH_SQLITE "Build (only) SQLite database library" OFF)
 option(WITH_STREAM "Build (only) stream library" OFF)
@@ -62,7 +69,7 @@ option(BUILD_TESTS "Build pycpp library tests" OFF)
 SET(CXX_STANDARD "11" CACHE STRING "Minimum C++ standard to support.")
 SET(PYCPP_NAMESPACE "" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
 
-if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
+if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_MYSQL OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
     set(BUILD_CIPHER ${WITH_CIPHER})
     set(BUILD_COLLECTIONS ${WITH_COLLECTIONS})
     set(BUILD_COMPRESSION ${WITH_COMPRESSION})
@@ -73,6 +80,8 @@ if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV 
     set(BUILD_KEYVALUE ${WITH_KEYVALUE})
     set(BUILD_LATTICE ${WITH_LATTICE})
     set(BUILD_MATH ${WITH_MATH})
+    set(BUILD_MYSQL ${WITH_MYSQL})
+    set(BUILD_POSTGRES ${WITH_POSTGRES})
     set(BUILD_RE ${WITH_RE})
     set(BUILD_SQLITE ${WITH_SQLITE})
     set(BUILD_STREAM ${WITH_STREAM})
@@ -80,6 +89,7 @@ if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV 
 endif()
 
 set(BUILD_CACHE ${BUILD_KEYVALUE})
+set(BUILD_SQL BUILD_MYSQL OR BUILD_POSTGRES OR BUILD_SQLITE)
 
 if (BUILD_MATH OR MSVC)
     if (CXX_STANDARD LESS "14")
@@ -524,7 +534,6 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atoi.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/bool.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/char.cc"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/enum.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/float.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/format.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/ftoa.cc"
@@ -566,9 +575,10 @@ if(BUILD_CACHE)
         )
     endif()
     if(BUILD_SQLITE)
-        list(APPEND HEADER_FILES
-            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/sqlite.h"
-        )
+        # TODO: here...
+#        list(APPEND HEADER_FILES
+#            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/sqlite.h"
+#        )
     endif()
 endif()
 
@@ -872,16 +882,17 @@ set(TEST_FILES
     test/main.cc
     test/cache/lri.cc
     test/cache/lru.cc
+    test/lexical.cc
     test/lexical/atof.cc
     test/lexical/atoi.cc
-#    test/lexical/bool.cc
-#    test/lexical/char.cc
-#    test/lexical/enum.cc
-#    test/lexical/float.cc
+    test/lexical/bool.cc
+    test/lexical/char.cc
+    test/lexical/enum.cc
+    test/lexical/float.cc
     test/lexical/ftoa.cc
-#    test/lexical/int.cc
+    test/lexical/int.cc
     test/lexical/itoa.cc
-#    test/lexical/null.cc
+    test/lexical/null.cc
     test/misc/enum.cc
     test/misc/ordering.cc
     test/misc/pimpl.cc

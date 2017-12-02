@@ -45,15 +45,16 @@ The files [os.h](/pycpp/os.h), [compiler.h](/pycpp/compiler.h), [architecture.h]
 
 **Lexical Conversion**
 
-PyCPP includes high-performance lexical conversions to and from string for built-in primitive types, including:
+PyCPP includes high-performance [lexical](/pycpp/lexical.h) conversions to and from string for built-in primitive types, including:
 
 - std::nullptr_t
 - bool
 - char
 - int (including 8-64 bit fixed-width integers)
 - float (both single- and double-precision)
+- enums
 
-// TODO: add more documentation here
+Specializations for custom types can be added by extending the `lexical` template function, or the `format` and `extract` template functions.
 
 **Code Page Conversion**
 

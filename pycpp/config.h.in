@@ -30,6 +30,8 @@
 #cmakedefine01 BUILD_KEYVALUE
 #cmakedefine01 BUILD_LATTICE
 #cmakedefine01 BUILD_MATH
+#cmakedefine01 BUILD_MYSQL
+#cmakedefine01 BUILD_POSTGRES
 #cmakedefine01 BUILD_RE
 #cmakedefine01 BUILD_SQLITE
 #cmakedefine01 BUILD_STREAM

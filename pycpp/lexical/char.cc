@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lexical/char.h>
+#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -53,18 +54,6 @@ string_view lexical_char_formatter::string() const
 }
 
 
-string_view lexical_char_formatter::escape() const
-{
-    return string();
-}
-
-
-string_view lexical_char_formatter::jsonify() const
-{
-    return string();
-}
-
-
 lexical_char_formatter::operator string_view() const
 {
     return string();
@@ -73,8 +62,8 @@ lexical_char_formatter::operator string_view() const
 
 lexical_char_extractor::lexical_char_extractor(const string_view &string)
 {
-    if (string.empty()) {
-        c = '\0';
+    if (string.size() != 1) {
+        throw std::runtime_error("String is not a single character.");
     } else {
         c = string.front();
     }

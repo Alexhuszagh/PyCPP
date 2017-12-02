@@ -103,18 +103,6 @@ string_view lexical_int_formatter::string() const
 }
 
 
-string_view lexical_int_formatter::escape() const
-{
-    return string();
-}
-
-
-string_view lexical_int_formatter::jsonify() const
-{
-    return string();
-}
-
-
 lexical_int_formatter::operator string_view() const
 {
     return string();

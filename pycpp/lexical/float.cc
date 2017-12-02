@@ -52,18 +52,6 @@ string_view lexical_float_formatter::string() const
 }
 
 
-string_view lexical_float_formatter::escape() const
-{
-    return string();
-}
-
-
-string_view lexical_float_formatter::jsonify() const
-{
-    return string();
-}
-
-
 lexical_float_formatter::operator string_view() const
 {
     return string();

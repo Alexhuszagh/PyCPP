@@ -24,6 +24,8 @@
 
 - Work on the SQL bindings
     - It should provide an interface opaque to the actual SQL database...
+    - Need to add SQL logic for the backends to the CMakeLists -- done
+    - Need to find system installations
 
 - Use DyND for the NumPy interface
     - Wrap it nicely

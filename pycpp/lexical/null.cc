@@ -49,18 +49,6 @@ string_view lexical_null_formatter::string() const
 }
 
 
-string_view lexical_null_formatter::escape() const
-{
-    return string();
-}
-
-
-string_view lexical_null_formatter::jsonify() const
-{
-    return string();
-}
-
-
 lexical_null_formatter::operator string_view() const
 {
     return string();

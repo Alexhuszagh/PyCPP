@@ -53,18 +53,6 @@ string_view lexical_bool_formatter::string() const
 }
 
 
-string_view lexical_bool_formatter::escape() const
-{
-    return string();
-}
-
-
-string_view lexical_bool_formatter::jsonify() const
-{
-    return string();
-}
-
-
 lexical_bool_formatter::operator string_view() const
 {
     return string();

@@ -35,8 +35,6 @@ public:
     const char* c_str() const;
 
     string_view string() const;
-    string_view escape() const;
-    string_view jsonify() const;
 
     // CONVERSIONS
     explicit operator string_view() const;
