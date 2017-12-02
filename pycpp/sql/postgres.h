@@ -2,9 +2,16 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief SQLite database cache.
+ *  \brief PostgreSQL wrapper.
  */
 
 #pragma once
 
-// TODO: change to use a generic SQL back-end....
+#include <pycpp/sql/sql.h>
+
+PYCPP_BEGIN_NAMESPACE
+
+// TODO: implement...
+
+
+PYCPP_END_NAMESPACE
