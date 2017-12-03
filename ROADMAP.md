@@ -3,11 +3,15 @@
 **Short-Term**
 
     - Implement an ordered_multi_map
-    - Check if C++ has a priority_queue
-    - iterutils.chunked?
-    - iterutils.windowed?
-    - iterutils.remap?
-    - iterutils.backoff?
+    - iterutils?
+        - Work on iterable wrappers
+        - Will need the concept of a range likely...
+            - chunked
+            - windowed
+                - pairwise
+            - unique
+            -
+
     - fileutils?
     - ioutils?
 

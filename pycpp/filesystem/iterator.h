@@ -92,10 +92,10 @@ public:
     typedef std::iterator<std::input_iterator_tag, directory_entry> base_t;
     typedef directory_iterator self_t;
     using typename base_t::value_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
     // MEMBER FUNCTIONS
     // ----------------

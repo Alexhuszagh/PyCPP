@@ -90,3 +90,34 @@ TEST(iterator, input_iterator_facade)
     EXPECT_EQ(v[0], 0);
     EXPECT_EQ(v[4], 4);
 }
+
+
+TEST(iterator, unique_range)
+{
+    using vector = std::vector<int>;
+    using vector_range = unique_range<typename vector::const_iterator>;
+    using input_iterator = input_iterator_facade<int_generator>;
+    using input_range = unique_range<input_iterator>;
+
+    // forward+ iterators
+    vector v = {1, 2, 3, 1, 4, 2, 5};
+    vector_range r1(v.begin(), v.end());
+    vector_range r2(v.begin(), v.end());
+    vector v1(r1.begin(), r1.end());
+    vector v2(r2.begin(), r2.end());
+    ASSERT_EQ(v1.size(), 5);
+    ASSERT_EQ(v2.size(), 5);
+    EXPECT_EQ(v1[0], 1);
+    EXPECT_EQ(v2[0], 1);
+    EXPECT_EQ(v1[4], 5);
+    EXPECT_EQ(v2[4], 5);
+
+    // input iterators
+    int_generator g(0);
+    auto r3 = input_range(input_iterator(g), input_iterator());
+    vector v3(r3.begin(), r3.end());
+    ASSERT_EQ(v3.size(), 5);
+    EXPECT_EQ(v3[0], 0);
+    EXPECT_EQ(v3[4], 4);
+}
+

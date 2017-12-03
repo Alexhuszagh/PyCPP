@@ -7,5 +7,9 @@
 
 #pragma once
 
+#include <pycpp/iterator/chunked.h>
 #include <pycpp/iterator/input_iterator_facade.h>
+#include <pycpp/iterator/range.h>
 #include <pycpp/iterator/transform.h>
+#include <pycpp/iterator/windowed.h>
+#include <pycpp/iterator/unique.h>

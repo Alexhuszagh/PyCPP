@@ -14,7 +14,6 @@
 #pragma once
 
 #include <pycpp/config.h>
-
 #include <cassert>
 #include <iterator>
 #include <tuple>

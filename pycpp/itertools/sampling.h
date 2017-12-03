@@ -2,7 +2,7 @@
 //  :copyright: (c) Alex Huszagh 2017.
 //  :license: Boost,see licenses/boost.md for more details.
 /**
- *  \addtogroup funcxx
+ *  \addtogroup PyCPP
  *  \brief Combination and permutation algorithms.
  *
  *  High-performance permutation and combination algorithms

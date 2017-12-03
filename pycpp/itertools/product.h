@@ -1,7 +1,7 @@
 //  :copyright: (c) Alex Huszagh 2017.
-//  :license: Boost,see licenses/boost.md for more details.
+//  :license: MIT,see licenses/mit.md for more details.
 /**
- *  \addtogroup funcxx
+ *  \addtogroup PyCPP
  *  \brief Cartesian product algorithm.
  *
  *  Lazily calculates the cartesian product from a container of containers,

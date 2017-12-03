@@ -46,12 +46,12 @@ public:
     typename std::enable_if<is_random_access_iterator<It>::value, reference>::type
     operator[](difference_type n) const
     {
-        return first[n];
+        return first_[n];
     }
 
 private:
-    iterator first;
-    iterator last;
+    iterator first_;
+    iterator last_;
 };
 
 // DEFINITION
@@ -60,50 +60,50 @@ private:
 
 template <typename Iterator>
 range<Iterator>::range(iterator first, iterator last):
-    first(first),
-    last(last)
+    first_(first),
+    last_(last)
 {}
 
 
 template <typename Iterator>
 auto range<Iterator>::begin() const -> iterator
 {
-    return first;
+    return first_;
 }
 
 
 template <typename Iterator>
 auto range<Iterator>::end() const -> iterator
 {
-    return last;
+    return last_;
 }
 
 
 template <typename Iterator>
 auto range<Iterator>::rbegin() const -> reverse_iterator
 {
-    return reverse_iterator(last);
+    return reverse_iterator(last_);
 }
 
 
 template <typename Iterator>
 auto range<Iterator>::rend() const -> reverse_iterator
 {
-    return reverse_iterator(first);
+    return reverse_iterator(first_);
 }
 
 
 template <typename Iterator>
 bool range<Iterator>::empty() const
 {
-    return first == last;
+    return first_ == last_;
 }
 
 
 template <typename Iterator>
 size_t range<Iterator>::distance() const
 {
-    return std::distance(first, last);
+    return std::distance(first_, last_);
 }
 
 PYCPP_END_NAMESPACE
