@@ -171,7 +171,6 @@ public:
     // ------------
     using self_t = unique_range<Iterator, Hash>;
     using iterator = unique_iterator<Iterator, Hash>;
-    using reverse_iterator = std::reverse_iterator<iterator>;
     using value_type = typename iterator::value_type;
     using reference = typename iterator::reference;
     using const_reference = typename iterator::const_reference;

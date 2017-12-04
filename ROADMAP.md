@@ -9,7 +9,6 @@
             - chunked
             - windowed
                 - pairwise
-            - unique
             -
 
     - fileutils?
