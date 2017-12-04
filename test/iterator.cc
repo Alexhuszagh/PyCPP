@@ -111,7 +111,17 @@ TEST(iterator, chunked_range)
     EXPECT_EQ(f1->at(0), v[0]);
     EXPECT_EQ(f1->at(1), v[1]);
     EXPECT_EQ(f1->at(2), v[2]);
-   ++f1;
+    auto f1_copy = f1;      // store a copy to ensure incrementing doesn't use existing chunk
+    ++f1;
+
+    // first -- copy
+    // This is technically above the guarantees of an input iterator,
+    // but our input iterator is a forward iterator with expensive
+    // increments, so we make it masquerade as an input iterator.
+    ASSERT_EQ(f1_copy->size(), 3);
+    EXPECT_EQ(f1_copy->at(0), v[0]);
+    EXPECT_EQ(f1_copy->at(1), v[1]);
+    EXPECT_EQ(f1_copy->at(2), v[2]);
 
     // second
     ASSERT_NE(f1, l1);
@@ -152,7 +162,7 @@ TEST(iterator, chunked_range)
     EXPECT_EQ(f3->at(0), 0);
     EXPECT_EQ(f3->at(1), 1);
     EXPECT_EQ(f3->at(2), 2);
-   ++f3;
+    ++f3;
 
     // second
     ASSERT_NE(f3, l3);
@@ -195,4 +205,97 @@ TEST(iterator, unique_range)
     EXPECT_EQ(v3[4], 4);
 }
 
-// TODO: windowed
+
+TEST(iterator, windowed_range)
+{
+    using vector = std::vector<int>;
+    using vector_range = windowed_range<typename vector::const_iterator>;
+    using input_iterator = input_iterator_facade<int_generator>;
+    using input_range = windowed_range<input_iterator>;
+
+    // forward+ iterators
+    vector v = {1, 2, 3, 4, 5};
+    vector_range r1(v.begin(), v.end(), 3);
+    auto f1 = r1.begin();
+    auto l1 = r1.end();
+
+    // first
+    ASSERT_NE(f1, l1);
+    ASSERT_EQ(f1->size(), 3);
+    EXPECT_EQ(f1->at(0), v[0]);
+    EXPECT_EQ(f1->at(1), v[1]);
+    EXPECT_EQ(f1->at(2), v[2]);
+    auto f1_copy = f1;      // store a copy to ensure incrementing doesn't use existing chunk
+    ++f1;
+
+    // first -- copy
+    // This is technically above the guarantees of an input iterator,
+    // but our input iterator is a forward iterator with expensive
+    // increments, so we make it masquerade as an input iterator.
+    ASSERT_EQ(f1_copy->size(), 3);
+    EXPECT_EQ(f1_copy->at(0), v[0]);
+    EXPECT_EQ(f1_copy->at(1), v[1]);
+    EXPECT_EQ(f1_copy->at(2), v[2]);
+
+    // second
+    ASSERT_NE(f1, l1);
+    ASSERT_EQ(f1->size(), 3);
+    EXPECT_EQ(f1->at(0), v[1]);
+    EXPECT_EQ(f1->at(1), v[2]);
+    EXPECT_EQ(f1->at(2), v[3]);
+    ++f1;
+
+    // third
+    ASSERT_NE(f1, l1);
+    ASSERT_EQ(f1->size(), 3);
+    EXPECT_EQ(f1->at(0), v[2]);
+    EXPECT_EQ(f1->at(1), v[3]);
+    EXPECT_EQ(f1->at(2), v[4]);
+    ++f1;
+
+    // fourth
+    ASSERT_EQ(f1, l1);
+
+    // forward+ iterators -- 2nd pass
+    vector_range r2(v.begin(), v.end(), 3);
+    auto f2 = r2.begin();
+    auto l2 = r2.end();
+    ASSERT_NE(f2, l2);
+    ASSERT_EQ(f2->size(), 3);
+    EXPECT_EQ(f2->at(0), v[0]);
+    EXPECT_EQ(f2->at(1), v[1]);
+    EXPECT_EQ(f2->at(2), v[2]);
+
+    // input iterators
+    int_generator g(0);
+    auto r3 = input_range(input_iterator(g), input_iterator());
+    auto f3 = r3.begin();
+    auto l3 = r3.end();
+
+    // first
+    ASSERT_NE(f3, l3);
+    ASSERT_EQ(f3->size(), 3);
+    EXPECT_EQ(f3->at(0), 0);
+    EXPECT_EQ(f3->at(1), 1);
+    EXPECT_EQ(f3->at(2), 2);
+    ++f3;
+
+    // second
+    ASSERT_NE(f3, l3);
+    ASSERT_EQ(f3->size(), 3);
+    EXPECT_EQ(f3->at(0), 1);
+    EXPECT_EQ(f3->at(1), 2);
+    EXPECT_EQ(f3->at(2), 3);
+    ++f3;
+
+    // third
+    ASSERT_NE(f3, l3);
+    ASSERT_EQ(f3->size(), 3);
+    EXPECT_EQ(f3->at(0), 2);
+    EXPECT_EQ(f3->at(1), 3);
+    EXPECT_EQ(f3->at(2), 4);
+    ++f3;
+
+    // fourth
+    ASSERT_EQ(f3, l3);
+}

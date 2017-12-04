@@ -754,8 +754,8 @@ public:
 template <class T>
 class optional<T&>
 {
-    static_assert( !std::is_same<T, nullopt_t>::value, "bad T" );
-    static_assert( !std::is_same<T, in_place_t>::value, "bad T" );
+    static_assert(!std::is_same<T, nullopt_t>::value, "bad T");
+    static_assert(!std::is_same<T, in_place_t>::value, "bad T");
     T* ref;
 
 public:

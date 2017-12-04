@@ -911,6 +911,10 @@ set(TEST_FILES
     test/secure/allocator.cc
     test/secure/string.cc
     test/secure/stdlib.cc
+    test/sfinae/back.cc
+    test/sfinae/emplace_back.cc
+    test/sfinae/emplace_front.cc
+    test/sfinae/front.cc
     test/sfinae/has_bit_and.cc
     test/sfinae/has_bit_and_assign.cc
     test/sfinae/has_bit_or.cc
@@ -948,6 +952,12 @@ set(TEST_FILES
     test/sfinae/is_pair.cc
     test/sfinae/is_reference_wrapper.cc
     test/sfinae/is_string.cc
+    test/sfinae/pop_back.cc
+    test/sfinae/pop_front.cc
+    test/sfinae/push_back.cc
+    test/sfinae/push_front.cc
+    test/sfinae/reserve.cc
+    test/sfinae/shrink_to_fit.cc
     test/string/base16.cc
     test/string/base32.cc
     test/string/base64.cc

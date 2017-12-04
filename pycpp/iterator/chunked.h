@@ -4,14 +4,34 @@
  *  \addtogroup PyCPPs
  *  \brief Divide iterable into N-sized chunks.
  *
- *  TODO: document
+ *  Creates an input-iterable range from an iterator pair, returning
+ *  discrete N-sized chunks from the range in a custom container
+ *  (by default a `std::vector`). If the underlying iterator pair
+ *  is a forward, bidirectional, or random-access iterator, then
+ *  no value copies are introduced. If the underlying iterator pair
+ *  is an input iterator, then each iterator `value_type` is stored
+ *  by value in the chunk.
+ *
+ *  The chunked iterator is a fully valid forward iterator, however,
+ *  due to the expensive nature of increments, it masquerades as
+ *  an input iterator, so STL algorithms prefer a one-pass approach
+ *  whenever possible.
+ *
+ *  \code
+ *      using vector = std::vector<int>;
+ *      using range = chunked_range<typename vector::const_iterator>;
+ *      vector v = {1, 2, 3, 1, 4, 2, 5};
+ *      range r1(v.begin(), v.end());
+ *      std::cout << r1.begin()->at(0) << std::endl;        // 1
  */
 
 #pragma once
 
+#include <pycpp/collections/optional.h>
 #include <pycpp/iterator/category.h>
+#include <pycpp/sfinae/emplace_back.h>
+#include <pycpp/sfinae/reserve.h>
 #include <functional>
-#include <memory>
 #include <vector>
 
 PYCPP_BEGIN_NAMESPACE
@@ -19,10 +39,16 @@ PYCPP_BEGIN_NAMESPACE
 // FORWARD
 // -------
 
-template <typename Iterator>
+template <
+    typename Iterator,
+    template <typename...> class Container = std::vector
+>
 struct chunked_iterator;
 
-template <typename Iterator>
+template <
+    typename Iterator,
+    template <typename...> class Container = std::vector
+>
 struct chunked_range;
 
 namespace chunked_detail
@@ -40,8 +66,8 @@ using range_key_type = typename std::conditional<
     std::reference_wrapper<const iterator_value_type<Iterator>>
 >::type;
 
-template <typename Iterator>
-using chunked_type = std::vector<range_key_type<Iterator>>;
+template <typename Iterator, template <typename...> class Container = std::vector>
+using chunked_type = Container<range_key_type<Iterator>>;
 
 }   /* chunked_detail */
 
@@ -55,11 +81,11 @@ using chunked_type = std::vector<range_key_type<Iterator>>;
  *  Stores a pointer to the range object, the underlying iterator,
  *  and nullable chunk to store the items.
  */
-template <typename Iterator>
+template <typename Iterator, template <typename...> class Container>
 struct chunked_iterator:
     std::iterator<
         std::input_iterator_tag,
-        chunked_detail::chunked_type<Iterator>,
+        chunked_detail::chunked_type<Iterator, Container>,
         typename std::iterator_traits<Iterator>::difference_type,
         typename std::iterator_traits<Iterator>::pointer,
         typename std::iterator_traits<Iterator>::reference
@@ -70,15 +96,15 @@ struct chunked_iterator:
 public:
     // MEMBER TYPES
     // ------------
-    using self_t = chunked_iterator<Iterator>;
+    using self_t = chunked_iterator<Iterator, Container>;
     using base_t = std::iterator<
         std::input_iterator_tag,
-        chunked_detail::chunked_type<Iterator>,
+        chunked_detail::chunked_type<Iterator, Container>,
         typename std::iterator_traits<Iterator>::difference_type,
         typename std::iterator_traits<Iterator>::pointer,
         typename std::iterator_traits<Iterator>::reference
     >;
-    using range_t = chunked_range<Iterator>;
+    using range_t = chunked_range<Iterator, Container>;
     using typename base_t::value_type;
     using reference = value_type&;
     using const_reference = const value_type&;
@@ -88,7 +114,7 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    chunked_iterator(range_t* range = nullptr, Iterator it = Iterator(), value_type* value = nullptr);
+    chunked_iterator(range_t* range = nullptr, Iterator it = Iterator(), optional<value_type>&& value = nullopt);
     chunked_iterator(const self_t&) = default;
     self_t& operator=(const self_t&) = default;
     chunked_iterator(self_t&&) = default;
@@ -108,12 +134,12 @@ public:
     bool operator!=(const self_t&) const;
 
 private:
-    template <typename I>
+    template <typename I, template <typename...> class C>
     friend struct chunked_range;
 
     range_t* range_;
     Iterator it_;
-    std::shared_ptr<value_type> value_;
+    optional<value_type> value_;
 };
 
 
@@ -122,14 +148,14 @@ private:
  *
  *  Creates an input iterator begin/end pair from any non-output iterator.
  */
-template <typename Iterator>
+template <typename Iterator, template <typename...> class Container>
 struct chunked_range
 {
 public:
     // MEMBER TYPES
     // ------------
-    using self_t = chunked_range<Iterator>;
-    using iterator = chunked_iterator<Iterator>;
+    using self_t = chunked_range<Iterator, Container>;
+    using iterator = chunked_iterator<Iterator, Container>;
     using value_type = typename iterator::value_type;
     using reference = typename iterator::reference;
     using const_reference = typename iterator::const_reference;
@@ -153,7 +179,7 @@ public:
     void swap(self_t&);
 
 private:
-    template <typename I>
+    template <typename I, template <typename...> class C>
     friend struct chunked_iterator;
 
     void chunk(iterator& first);
@@ -163,29 +189,28 @@ private:
     size_t size_;
 };
 
-
 // IMPLEMENTATION
 // --------------
 
 
-template <typename Iterator>
-chunked_iterator<Iterator>::chunked_iterator(range_t* range, Iterator it, value_type* value):
+template <typename Iterator, template <typename...> class C>
+chunked_iterator<Iterator, C>::chunked_iterator(range_t* range, Iterator it, optional<value_type>&& value):
     range_(range),
     it_(it),
-    value_(value)
+    value_(std::forward<optional<value_type>>(value))
 {}
 
 
-template <typename Iterator>
-auto chunked_iterator<Iterator>::operator++() -> self_t&
+template <typename Iterator, template <typename...> class C>
+auto chunked_iterator<Iterator, C>::operator++() -> self_t&
 {
     range_->chunk(*this);
     return *this;
 }
 
 
-template <typename Iterator>
-auto chunked_iterator<Iterator>::operator++(int) -> self_t
+template <typename Iterator, template <typename...> class C>
+auto chunked_iterator<Iterator, C>::operator++(int) -> self_t
 {
     self_t copy(*this);
     operator++();
@@ -193,22 +218,22 @@ auto chunked_iterator<Iterator>::operator++(int) -> self_t
 }
 
 
-template <typename Iterator>
-auto chunked_iterator<Iterator>::operator->() const -> const_pointer
+template <typename Iterator, template <typename...> class C>
+auto chunked_iterator<Iterator, C>::operator->() const -> const_pointer
 {
     return &operator*();
 }
 
 
-template <typename Iterator>
-auto chunked_iterator<Iterator>::operator*() const -> const_reference
+template <typename Iterator, template <typename...> class C>
+auto chunked_iterator<Iterator, C>::operator*() const -> const_reference
 {
     return *value_;
 }
 
 
-template <typename Iterator>
-void chunked_iterator<Iterator>::swap(self_t& rhs)
+template <typename Iterator, template <typename...> class C>
+void chunked_iterator<Iterator, C>::swap(self_t& rhs)
 {
     std::swap(range_, rhs.range_);
     std::swap(it_, rhs.it_);
@@ -216,8 +241,8 @@ void chunked_iterator<Iterator>::swap(self_t& rhs)
 }
 
 
-template <typename Iterator>
-bool chunked_iterator<Iterator>::operator==(const self_t& rhs) const
+template <typename Iterator, template <typename...> class C>
+bool chunked_iterator<Iterator, C>::operator==(const self_t& rhs) const
 {
     size_t lhs_size, rhs_size;
     lhs_size = value_ ? value_->size() : 0;
@@ -227,53 +252,53 @@ bool chunked_iterator<Iterator>::operator==(const self_t& rhs) const
 }
 
 
-template <typename Iterator>
-bool chunked_iterator<Iterator>::operator!=(const self_t& rhs) const
+template <typename Iterator, template <typename...> class C>
+bool chunked_iterator<Iterator, C>::operator!=(const self_t& rhs) const
 {
     return !operator==(rhs);
 }
 
 
-template <typename Iterator>
-chunked_range<Iterator>::chunked_range(Iterator first, Iterator last, size_t size):
-    first_(this, first, new value_type),
-    last_(this, last, nullptr),
+template <typename Iterator, template <typename...> class C>
+chunked_range<Iterator, C>::chunked_range(Iterator first, Iterator last, size_t size):
+    first_(this, first, value_type()),
+    last_(this, last, nullopt),
     size_(size)
 {
-    first_.value_->reserve(size);
+    reserve()(*first_.value_, size);
     chunk(first_);
 }
 
 
-template <typename Iterator>
-auto chunked_range<Iterator>::begin() -> iterator
+template <typename Iterator, template <typename...> class C>
+auto chunked_range<Iterator, C>::begin() -> iterator
 {
     return first_;
 }
 
 
-template <typename Iterator>
-auto chunked_range<Iterator>::end() -> iterator
+template <typename Iterator, template <typename...> class C>
+auto chunked_range<Iterator, C>::end() -> iterator
 {
     return last_;
 }
 
 
-template <typename Iterator>
-void chunked_range<Iterator>::swap(self_t& rhs)
+template <typename Iterator, template <typename...> class C>
+void chunked_range<Iterator, C>::swap(self_t& rhs)
 {
     std::swap(first_, rhs.first_);
     std::swap(last_, rhs.last_);
 }
 
 
-template <typename Iterator>
-void chunked_range<Iterator>::chunk(iterator& first)
+template <typename Iterator, template <typename...> class C>
+void chunked_range<Iterator, C>::chunk(iterator& first)
 {
-    first_.value_->clear();
+    first.value_->clear();
     size_t size = size_;
     while (size-- && first.it_ != last_.it_) {
-        first_.value_->emplace_back(*first.it_);
+        emplace_back()(*first.value_, *first.it_);
         ++first.it_;
     }
 }

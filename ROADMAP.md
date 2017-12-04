@@ -7,7 +7,6 @@
         - Work on iterable wrappers
         - Will need the concept of a range likely...
             - chunked
-            - windowed
                 - pairwise
             -
 
