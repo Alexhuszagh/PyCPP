@@ -448,11 +448,16 @@ endif()
 
 set(HEADER_FILES
     "${CMAKE_CURRENT_BINARY_DIR}/include/pycpp/config.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm/interpolation_search.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/category.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/chunked.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/input_iterator_facade.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/range.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/transform.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/unique.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/windowed.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/itertools.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/itertools/product.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/itertools/sampling.h"
@@ -510,6 +515,54 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/char_traits.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/stdlib.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/string.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/back.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/emplace_back.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/emplace_front.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/front.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_bit_and.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_bit_and_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_bit_or.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_bit_or_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_bit_xor.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_bit_xor_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_divides.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_divides_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_equal_to.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_greater.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_greater_equal.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_left_shift.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_left_shift_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_less.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_less_equal.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_logical_and.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_logical_or.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_member_function.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_member_type.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_member_variable.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_minus.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_minus_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_modulus.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_modulus_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_multiplies.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_multiplies_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_not_equal_to.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_op.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_plus.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_plus_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_right_shift.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_right_shift_assign.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/has_subscript.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/is_complex.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/is_pair.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/is_reference_wrapper.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/is_specialization.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/is_string.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/pop_back.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/pop_front.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/push_back.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/push_front.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/reserve.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/shrink_to_fit.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base16.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base32.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base64.h"
@@ -563,6 +616,7 @@ set(SOURCE_FILES
 
 if(BUILD_CACHE)
     list(APPEND HEADER_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/lri.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/lru.h"
     )
     if(BUILD_KEYVALUE)
@@ -573,12 +627,6 @@ if(BUILD_CACHE)
         list(APPEND SOURCE_FILES
             "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/kv_backend.cc"
         )
-    endif()
-    if(BUILD_SQLITE)
-        # TODO: here...
-#        list(APPEND HEADER_FILES
-#            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/sqlite.h"
-#        )
     endif()
 endif()
 
@@ -596,9 +644,12 @@ if(BUILD_COLLECTIONS)
     list(APPEND HEADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/any.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/counter.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/defaultdict.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/optional.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordereddict.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/sorted_sequence.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/threshold_counter.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/utility.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/variant.h"
     )
@@ -880,6 +931,7 @@ list(APPEND PYCPP_LIBRARIES pycpp)
 
 set(TEST_FILES
     test/main.cc
+    test/algorithm/interpolation_search.cc
     test/cache/lri.cc
     test/cache/lru.cc
     test/lexical.cc
@@ -995,6 +1047,7 @@ if(BUILD_COLLECTIONS)
         test/collections/defaultdict.cc
         test/collections/optional.cc
         test/collections/ordereddict.cc
+        test/collections/sorted_sequence.cc
         test/collections/threshold_counter.cc
         test/collections/variant.cc
     )

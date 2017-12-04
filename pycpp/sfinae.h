@@ -7,6 +7,10 @@
 
 #pragma once
 
+#include <pycpp/sfinae/back.h>
+#include <pycpp/sfinae/emplace_back.h>
+#include <pycpp/sfinae/emplace_front.h>
+#include <pycpp/sfinae/front.h>
 #include <pycpp/sfinae/has_bit_and.h>
 #include <pycpp/sfinae/has_bit_and_assign.h>
 #include <pycpp/sfinae/has_bit_or.h>
@@ -34,13 +38,20 @@
 #include <pycpp/sfinae/has_multiplies.h>
 #include <pycpp/sfinae/has_multiplies_assign.h>
 #include <pycpp/sfinae/has_not_equal_to.h>
+#include <pycpp/sfinae/has_op.h>
 #include <pycpp/sfinae/has_plus.h>
 #include <pycpp/sfinae/has_plus_assign.h>
 #include <pycpp/sfinae/has_right_shift.h>
 #include <pycpp/sfinae/has_right_shift_assign.h>
 #include <pycpp/sfinae/has_subscript.h>
 #include <pycpp/sfinae/is_complex.h>
-#include <pycpp/sfinae/is_specialization.h>
 #include <pycpp/sfinae/is_pair.h>
 #include <pycpp/sfinae/is_reference_wrapper.h>
+#include <pycpp/sfinae/is_specialization.h>
 #include <pycpp/sfinae/is_string.h>
+#include <pycpp/sfinae/pop_back.h>
+#include <pycpp/sfinae/pop_front.h>
+#include <pycpp/sfinae/push_back.h>
+#include <pycpp/sfinae/push_front.h>
+#include <pycpp/sfinae/reserve.h>
+#include <pycpp/sfinae/shrink_to_fit.h>

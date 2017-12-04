@@ -2,14 +2,14 @@
 
 **Short-Term**
 
-    - Implement an ordered_multi_map
-    - iterutils?
-        - Work on iterable wrappers
-        - Will need the concept of a range likely...
-            - chunked
-                - pairwise
-            -
+    - Need to include SQL header files in CMakeLists
+    - Need to implement the interpolation search
 
+    - Implement a sorted vector
+        - unittests
+    - Implement a ranked set maybe?
+
+    - Implement an ordered_multi_map
     - fileutils?
     - ioutils?
 

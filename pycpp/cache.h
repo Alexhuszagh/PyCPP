@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <pycpp/cache/lri.h>
+#include <pycpp/cache/lru.h>
 #if BUILD_KEYVALUE
 #   include <pycpp/cache/kv.h>
 #endif

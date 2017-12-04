@@ -16,6 +16,8 @@ PYCPP_BEGIN_NAMESPACE
 // DECLARATION
 // -----------
 
+// TYPE
+
 template <typename T>
 using is_input_iterator = std::is_same<typename std::iterator_traits<T>::iterator_category, std::input_iterator_tag>;
 
@@ -31,10 +33,38 @@ using is_bidirectional_iterator = std::is_same<typename std::iterator_traits<T>:
 template <typename T>
 using is_random_access_iterator = std::is_same<typename std::iterator_traits<T>::iterator_category, std::random_access_iterator_tag>;
 
+// CONCEPTS
+
+template <typename T>
+using is_random_access_iterable = is_random_access_iterator<T>;
+
+template <typename T>
+using is_bidirectional_iterable = std::integral_constant<
+    bool,
+    is_random_access_iterable<T>::value || is_bidirectional_iterator<T>::value
+>;
+
+template <typename T>
+using is_forward_iterable = std::integral_constant<
+    bool,
+    is_bidirectional_iterable<T>::value || is_forward_iterator<T>::value
+>;
+
+template <typename T>
+using is_input_iterable = std::integral_constant<
+    bool,
+    is_forward_iterable<T>::value || is_input_iterator<T>::value
+>;
+
+template <typename T>
+using is_output_iterable = is_output_iterator<T>;
+
 #ifdef HAVE_CPP14
 
 // SFINAE
 // ------
+
+// TYPE
 
 template <typename T>
 constexpr bool is_input_iterator_v = is_input_iterator<T>::value;
@@ -50,6 +80,23 @@ constexpr bool is_bidirectional_iterator_v = is_bidirectional_iterator<T>::value
 
 template <typename T>
 constexpr bool is_random_access_iterator_v = is_random_access_iterator<T>::value;
+
+// CONCEPTS
+
+template <typename T>
+constexpr bool is_input_iterable_v = is_input_iterable<T>::value;
+
+template <typename T>
+constexpr bool is_output_iterable_v = is_output_iterable<T>::value;
+
+template <typename T>
+constexpr bool is_forward_iterable_v = is_forward_iterable<T>::value;
+
+template <typename T>
+constexpr bool is_bidirectional_iterable_v = is_bidirectional_iterable<T>::value;
+
+template <typename T>
+constexpr bool is_random_access_iterable_v = is_random_access_iterable<T>::value;
 
 #endif
 

@@ -36,17 +36,6 @@ PYCPP_BEGIN_NAMESPACE
 #   define TSL_NO_CONTAINER_ERASE_CONST_ITERATOR
 #endif
 
-/*
- * Only activate TSL_ASSERT if TSL_DEBUG is defined.
- * This way we avoid the performance hit when NDEBUG is not defined with assert as TSL_ASSERT is used a lot
- * (people usually compile with "-O3" and not "-O3 -DNDEBUG").
- */
-#ifdef TSL_DEBUG
-#   define TSL_ASSERT(expr) assert(expr)
-#else
-#   define TSL_ASSERT(expr) (static_cast<void>(0))
-#endif
-
 
 namespace detail_ordered_hash
 {
@@ -292,19 +281,19 @@ private:
 
         index_type index() const noexcept
         {
-            TSL_ASSERT(has_index());
+            assert(has_index());
             return m_index;
         }
 
         truncated_hash_type truncated_hash() const noexcept
         {
-            TSL_ASSERT(has_index());
+            assert(has_index());
             return m_hash;
         }
 
         void set_index(std::size_t index) noexcept
         {
-            TSL_ASSERT(index <= max_size());
+            assert(index <= max_size());
             m_index = static_cast<index_type>(index & 0xFFFFFFFF);
         }
 
@@ -484,12 +473,12 @@ public:
 
     iterator erase(const_iterator pos)
     {
-        TSL_ASSERT(pos != cend());
+        assert(pos != cend());
 
         const std::size_t index_erase = iterator_to_index(pos);
 
         auto it_bucket = find_key(pos.key(), m_hash(pos.key()));
-        TSL_ASSERT(it_bucket != m_buckets.end());
+        assert(it_bucket != m_buckets.end());
 
         erase_value_from_bucket(it_bucket);
 
@@ -504,7 +493,7 @@ public:
             return get_mutable_iterator(first);
         }
 
-        TSL_ASSERT(std::distance(first, last) > 0 && std::distance(cbegin(), first) >= 0);
+        assert(std::distance(first, last) > 0 && std::distance(cbegin(), first) >= 0);
         const std::size_t start_index = static_cast<std::size_t>(std::distance(cbegin(), first));
         const std::size_t nb_values = static_cast<std::size_t>(std::distance(first, last));
         const std::size_t end_index = start_index + nb_values;
@@ -770,9 +759,9 @@ public:
         }
 
         auto it_bucket_last_elem = find_key(KeySelect()(back()), m_hash(KeySelect()(back())));
-        TSL_ASSERT(it_bucket_last_elem != m_buckets.end());
-        TSL_ASSERT(it_bucket_last_elem->has_index());
-        TSL_ASSERT(it_bucket_last_elem->index() == m_values.size() - 1);
+        assert(it_bucket_last_elem != m_buckets.end());
+        assert(it_bucket_last_elem->has_index());
+        assert(it_bucket_last_elem->index() == m_values.size() - 1);
 
 
         std::swap(m_values[it_bucket_key->index()], m_values[it_bucket_last_elem->index()]);
@@ -830,7 +819,7 @@ private:
     template <typename K>
     typename buckets_container_type::const_iterator find_key(const K& key, std::size_t hash) const
     {
-        TSL_ASSERT(size() < m_buckets.size());
+        assert(size() < m_buckets.size());
         const auto truncated_hash = bucket_entry::truncate_hash(hash);
 
         for(std::size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
@@ -874,7 +863,7 @@ private:
                     break;
                 }
 
-                TSL_ASSERT(m_buckets[ibucket].has_index());
+                assert(m_buckets[ibucket].has_index());
                 const std::size_t distance = dist_from_initial_bucket(ibucket);
 
                 if(iprobe > distance) {
@@ -907,7 +896,7 @@ private:
      */
     void backward_shift(std::size_t empty_ibucket)
     {
-        TSL_ASSERT(m_buckets[empty_ibucket].empty());
+        assert(m_buckets[empty_ibucket].empty());
 
         std::size_t previous_ibucket = empty_ibucket;
         for(std::size_t current_ibucket = next_probe(previous_ibucket);
@@ -920,7 +909,7 @@ private:
 
     void erase_value_from_bucket(typename buckets_container_type::iterator it_bucket)
     {
-        TSL_ASSERT(it_bucket != m_buckets.end() && it_bucket->has_index());
+        assert(it_bucket != m_buckets.end() && it_bucket->has_index());
 
         m_values.erase(m_values.begin() + it_bucket->index());
 
@@ -977,7 +966,7 @@ private:
                 return;
             }
 
-            TSL_ASSERT(m_buckets[ibucket].has_index());
+            assert(m_buckets[ibucket].has_index());
             const std::size_t distance = dist_from_initial_bucket(ibucket);
             if(iprobe > distance) {
                 const auto tmp_index = m_buckets[ibucket].index();
@@ -1070,7 +1059,7 @@ private:
     std::size_t iterator_to_index(const_iterator it) const
     {
         const auto dist = std::distance(cbegin(), it);
-        TSL_ASSERT(dist >= 0);
+        assert(dist >= 0);
 
         return static_cast<std::size_t>(dist);
     }
@@ -2399,7 +2388,5 @@ public:
 private:
     ht m_ht;
 };
-
-// TODO: implement an ordered_multi_map
 
 PYCPP_END_NAMESPACE

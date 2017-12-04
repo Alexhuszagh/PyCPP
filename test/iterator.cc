@@ -7,6 +7,8 @@
 
 #include <pycpp/iterator.h>
 #include <gtest/gtest.h>
+#include <map>
+#include <unordered_map>
 #include <vector>
 
 PYCPP_USING_NAMESPACE
@@ -43,6 +45,70 @@ struct int_generator
 
 // TESTS
 // -----
+
+
+TEST(iterator, category)
+{
+    using input_iterator = std::istream_iterator<int>;
+    using output_iterator = std::ostream_iterator<int>;
+    using forward_iterator = typename std::unordered_map<int, int>::iterator;
+    using bidirectional_iterator = typename std::map<int, int>::iterator;
+    using random_access_iterator = typename std::vector<int>::iterator;
+
+    // type
+    static_assert(is_input_iterator<input_iterator>::value, "");
+    static_assert(!is_input_iterator<output_iterator>::value, "");
+    static_assert(!is_input_iterator<forward_iterator>::value, "");
+    static_assert(!is_input_iterator<bidirectional_iterator>::value, "");
+    static_assert(!is_input_iterator<random_access_iterator>::value, "");
+    static_assert(!is_output_iterator<input_iterator>::value, "");
+    static_assert(is_output_iterator<output_iterator>::value, "");
+    static_assert(!is_output_iterator<forward_iterator>::value, "");
+    static_assert(!is_output_iterator<bidirectional_iterator>::value, "");
+    static_assert(!is_output_iterator<random_access_iterator>::value, "");
+    static_assert(!is_forward_iterator<input_iterator>::value, "");
+    static_assert(!is_forward_iterator<output_iterator>::value, "");
+    static_assert(is_forward_iterator<forward_iterator>::value, "");
+    static_assert(!is_forward_iterator<bidirectional_iterator>::value, "");
+    static_assert(!is_forward_iterator<random_access_iterator>::value, "");
+    static_assert(!is_bidirectional_iterator<input_iterator>::value, "");
+    static_assert(!is_bidirectional_iterator<output_iterator>::value, "");
+    static_assert(!is_bidirectional_iterator<forward_iterator>::value, "");
+    static_assert(is_bidirectional_iterator<bidirectional_iterator>::value, "");
+    static_assert(!is_bidirectional_iterator<random_access_iterator>::value, "");
+    static_assert(!is_random_access_iterator<input_iterator>::value, "");
+    static_assert(!is_random_access_iterator<output_iterator>::value, "");
+    static_assert(!is_random_access_iterator<forward_iterator>::value, "");
+    static_assert(!is_random_access_iterator<bidirectional_iterator>::value, "");
+    static_assert(is_random_access_iterator<random_access_iterator>::value, "");
+
+    // concepts
+    static_assert(is_input_iterable<input_iterator>::value, "");
+    static_assert(!is_input_iterable<output_iterator>::value, "");
+    static_assert(is_input_iterable<forward_iterator>::value, "");
+    static_assert(is_input_iterable<bidirectional_iterator>::value, "");
+    static_assert(is_input_iterable<random_access_iterator>::value, "");
+    static_assert(!is_output_iterable<input_iterator>::value, "");
+    static_assert(is_output_iterable<output_iterator>::value, "");
+    static_assert(!is_output_iterable<forward_iterator>::value, "");
+    static_assert(!is_output_iterable<bidirectional_iterator>::value, "");
+    static_assert(!is_output_iterable<random_access_iterator>::value, "");
+    static_assert(!is_forward_iterable<input_iterator>::value, "");
+    static_assert(!is_forward_iterable<output_iterator>::value, "");
+    static_assert(is_forward_iterable<forward_iterator>::value, "");
+    static_assert(is_forward_iterable<bidirectional_iterator>::value, "");
+    static_assert(is_forward_iterable<random_access_iterator>::value, "");
+    static_assert(!is_bidirectional_iterable<input_iterator>::value, "");
+    static_assert(!is_bidirectional_iterable<output_iterator>::value, "");
+    static_assert(!is_bidirectional_iterable<forward_iterator>::value, "");
+    static_assert(is_bidirectional_iterable<bidirectional_iterator>::value, "");
+    static_assert(is_bidirectional_iterable<random_access_iterator>::value, "");
+    static_assert(!is_random_access_iterable<input_iterator>::value, "");
+    static_assert(!is_random_access_iterable<output_iterator>::value, "");
+    static_assert(!is_random_access_iterable<forward_iterator>::value, "");
+    static_assert(!is_random_access_iterable<bidirectional_iterator>::value, "");
+    static_assert(is_random_access_iterable<random_access_iterator>::value, "");
+}
 
 
 TEST(iterator, transform_iterator)
@@ -268,7 +334,7 @@ TEST(iterator, windowed_range)
 
     // input iterators
     int_generator g(0);
-    auto r3 = input_range(input_iterator(g), input_iterator());
+    auto r3 = input_range(input_iterator(g), input_iterator(), 3);
     auto f3 = r3.begin();
     auto l3 = r3.end();
 
