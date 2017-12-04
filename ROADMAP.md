@@ -2,13 +2,12 @@
 
 **Short-Term**
 
-    - Need to include SQL header files in CMakeLists
-    - Need to implement the interpolation search
-
     - Implement a sorted vector
         - unittests
-    - Implement a ranked set maybe?
 
+    - Need to include SQL header files in CMakeLists
+    - Need to implement the interpolation search
+    - Implement a ranked set maybe?
     - Implement an ordered_multi_map
     - fileutils?
     - ioutils?

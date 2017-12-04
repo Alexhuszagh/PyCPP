@@ -18,7 +18,9 @@
  *  like `the underlying container, providing access to items by
  *  position. Meanwhile, lookup methods, like `find()`, `count()`,
  *  `lower_bound()`, `upper_bound()`, and `equal_range()` behave like
- *  an associative container. // TODO: document modifiers..
+ *  an associative container. Similarly, the modifiers `insert()`,
+ *  `erase()`, `swap()`, `clear()`, `emplace()`, and `emplace_hint`
+ *  behave like associative containers.
  *
  *  The container should support a minimal subset of STL methods,
  *  including range, initializer list, copy, and move construction,
@@ -32,6 +34,7 @@
 #pragma once
 
 #include <pycpp/iterator/category.h>
+#include <pycpp/sfinae/reserve.h>
 #include <algorithm>
 #include <functional>
 #include <initializer_list>
@@ -76,10 +79,13 @@ struct sorted_sequence
     sorted_sequence();
     explicit sorted_sequence(const allocator_type&);
     template <typename Iter> sorted_sequence(Iter first, Iter last, const allocator_type& = allocator_type());
-    sorted_sequence(const sorted_sequence&, const allocator_type& = allocator_type());
-    sorted_sequence(sorted_sequence&&, const allocator_type& = allocator_type());
+    sorted_sequence(const self_t&, const allocator_type& = allocator_type());
+    sorted_sequence(self_t&&, const allocator_type& = allocator_type());
     sorted_sequence(std::initializer_list<value_type>);
     sorted_sequence(std::initializer_list<value_type>, const allocator_type&);
+    self_t& operator=(const self_t&);
+    self_t& operator=(self_t&&);
+    self_t& operator=(std::initializer_list<value_type>);
 
     // ITERATORS
     const_iterator begin() const;
@@ -116,10 +122,8 @@ struct sorted_sequence
     template <typename U> std::pair<iterator,bool> insert(U&&);
     iterator insert(const_iterator, const key_type&);
     template <typename U> iterator insert(const_iterator, U&&);
-    // TODO: insert
-//    template <class Iter> void insert(Iter first, Iter last);
+    template <typename Iter> void insert(Iter first, Iter last);
     void insert(std::initializer_list<value_type>);
-
     iterator erase(const_iterator position);
     size_type erase(const key_type&);
     iterator erase(const_iterator first, const_iterator last);
@@ -133,7 +137,24 @@ struct sorted_sequence
     value_compare value_comp() const noexcept;
     allocator_type get_allocator() const noexcept;
 
-    // TODO: also need the operators....
+    // RELATION OPERATORS
+    template <typename U, typename C, typename A, typename _>
+    friend bool operator==(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
+
+    template <typename U, typename C, typename A, typename _>
+    friend bool operator!=(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
+
+    template <typename U, typename C, typename A, typename _>
+    friend bool operator<(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
+
+    template <typename U, typename C, typename A, typename _>
+    friend bool operator<=(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
+
+    template <typename U, typename C, typename A, typename _>
+    friend bool operator>(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
+
+    template <typename U, typename C, typename A, typename _>
+    friend bool operator>=(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
 
 private:
     container_type container_;
@@ -172,7 +193,7 @@ sorted_sequence<T, C, A, _>::sorted_sequence(const self_t& rhs, const allocator_
 
 template <typename T, typename C, typename A, typename _>
 sorted_sequence<T, C, A, _>::sorted_sequence(self_t&& rhs, const allocator_type& alloc):
-    container_(std::forward<container_type>(rhs.container_), alloc)
+    container_(std::move(rhs.container_), alloc)
 {}
 
 
@@ -188,6 +209,30 @@ sorted_sequence<T, C, A, _>::sorted_sequence(std::initializer_list<value_type> l
     container_(alloc)
 {
     assign(list.begin(), list.end());
+}
+
+
+template <typename T, typename C, typename A, typename _>
+auto sorted_sequence<T, C, A, _>::operator=(const self_t& rhs) -> self_t&
+{
+    container_ = rhs.container_;
+    return *this;
+}
+
+
+template <typename T, typename C, typename A, typename _>
+auto sorted_sequence<T, C, A, _>::operator=(self_t&& rhs) -> self_t&
+{
+    container_ = std::move(rhs.container_);
+    return *this;
+}
+
+
+template <typename T, typename C, typename A, typename _>
+auto sorted_sequence<T, C, A, _>::operator=(std::initializer_list<value_type> list) -> self_t&
+{
+    assign(list.begin(), list.end());
+    return *this;
 }
 
 
@@ -451,10 +496,34 @@ auto sorted_sequence<T, C, A, _>::insert(const_iterator position, U&& k) -> iter
 
 
 template <typename T, typename C, typename A, typename _>
+template <typename Iter>
+void sorted_sequence<T, C, A, _>::insert(Iter first, Iter last)
+{
+    if (is_forward_iterable<Iter>::value) {
+        // reserve the underlying container if we can
+        size_t distance = std::distance(first, last);
+        size_t size = container_.size();
+        reserve()(container_, size + distance);
+
+        // shortcut if inserting >25% items, shortens time complexity
+        if (size < 4 || size / 4 > distance) {
+            container_.insert(first, last);
+            std::sort(container_.begin(), container_.end(), key_comp());
+            return;
+        }
+    }
+
+    // insert elements
+    for (; first != last; ++first) {
+        insert(*first);
+    }
+}
+
+
+template <typename T, typename C, typename A, typename _>
 void sorted_sequence<T, C, A, _>::insert(std::initializer_list<value_type> list)
 {
-    // TODO: restore
-//    insert(list.begin(), list.end());
+    insert(list.begin(), list.end());
 }
 
 
@@ -532,6 +601,48 @@ template <typename T, typename C, typename A, typename _>
 auto sorted_sequence<T, C, A, _>::get_allocator() const noexcept -> allocator_type
 {
     return allocator_type();
+}
+
+
+template <typename T, typename C, typename A, typename _>
+bool operator==(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+{
+    return lhs.container_ == rhs.container_;
+}
+
+
+template <typename T, typename C, typename A, typename _>
+bool operator!=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+{
+    return lhs.container_ != rhs.container_;
+}
+
+
+template <typename T, typename C, typename A, typename _>
+bool operator<(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+{
+    return lhs.container_ < rhs.container_;
+}
+
+
+template <typename T, typename C, typename A, typename _>
+bool operator<=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+{
+    return lhs.container_ <= rhs.container_;
+}
+
+
+template <typename T, typename C, typename A, typename _>
+bool operator>(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+{
+    return lhs.container_ > rhs.container_;
+}
+
+
+template <typename T, typename C, typename A, typename _>
+bool operator>=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+{
+    return lhs.container_ >= rhs.container_;
 }
 
 PYCPP_END_NAMESPACE
