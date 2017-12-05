@@ -5,9 +5,11 @@
     - Implement a sorted vector
         - unittests
     - Add tests for robin-hood hash into the project
-    
+
     - Add the btree-cpp from Google to the project
         - https://github.com/algorithm-ninja/cpp-btree
+        - Unittests
+        
     - Add benchmarks compared to STL variants
 
     - Need to include SQL header files in CMakeLists

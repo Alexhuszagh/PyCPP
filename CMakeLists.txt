@@ -644,6 +644,10 @@ if(BUILD_COLLECTIONS)
     list(APPEND HEADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/any.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree_container.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree_map.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree_set.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/counter.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/default_dict.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/optional.h"
@@ -1046,6 +1050,8 @@ endif()
 if(BUILD_COLLECTIONS)
     list(APPEND TEST_FILES
         test/collections/any.cc
+        test/collections/btree_map.cc
+        test/collections/btree_set.cc
         test/collections/counter.cc
         test/collections/default_dict.cc
         test/collections/optional.cc
