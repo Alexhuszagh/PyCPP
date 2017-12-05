@@ -8,6 +8,7 @@
     - Need to include SQL header files in CMakeLists
     - Need to implement the interpolation search
     - Implement a ranked set maybe?
+    - Implement an indexed set maybe?
     - Implement an ordered_multi_map
     - fileutils?
     - ioutils?

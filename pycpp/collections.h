@@ -9,9 +9,9 @@
 
 #include <collections/any.h>
 #include <collections/counter.h>
-#include <collections/defaultdict.h>
+#include <collections/default_dict.h>
 #include <collections/optional.h>
-#include <collections/ordereddict.h>
+#include <collections/ordered_dict.h>
 #include <collections/sorted_sequence.h>
 #include <collections/threshold_counter.h>
 #include <collections/variant.h>

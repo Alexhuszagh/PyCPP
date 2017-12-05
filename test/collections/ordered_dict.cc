@@ -5,10 +5,23 @@
  *  \brief Ordered dict unittests.
  */
 
-#include <pycpp/collections/ordereddict.h>
+#include <pycpp/collections/ordered_dict.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
+
+// HELPERS
+// -------
+
+// Simulate a bad hash function with a static hash
+template <typename T>
+struct bad_hash
+{
+    constexpr size_t operator()(const T& t) const
+    {
+        return 1;
+    }
+};
 
 // TESTS
 // -----
@@ -228,4 +241,17 @@ TEST(ordered_map, swap)
     first.swap(second);
     EXPECT_EQ(first.size(), 0);
     EXPECT_EQ(second.size(), 1);
+}
+
+
+TEST(ordered_map, bad_hash)
+{
+    using bad_map = ordered_map<int, int, bad_hash<int>>;
+    bad_map map;
+    ASSERT_EQ(map.size(), 0);
+    map[1] = 1;
+    map[2] = 4;
+    ASSERT_EQ(map.size(), 2);
+    EXPECT_EQ(map[1], 1);
+    EXPECT_EQ(map[2], 4);
 }

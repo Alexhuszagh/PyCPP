@@ -5,7 +5,7 @@
  *  \brief Default dict unittests.
  */
 
-#include <pycpp/collections/defaultdict.h>
+#include <pycpp/collections/default_dict.h>
 #include <gtest/gtest.h>
 #include <memory>
 
