@@ -36,28 +36,19 @@ using is_random_access_iterator = std::is_same<typename std::iterator_traits<T>:
 // CONCEPTS
 
 template <typename T>
-using is_random_access_iterable = is_random_access_iterator<T>;
+using is_input_iterable = std::is_base_of<std::input_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
 
 template <typename T>
-using is_bidirectional_iterable = std::integral_constant<
-    bool,
-    is_random_access_iterable<T>::value || is_bidirectional_iterator<T>::value
->;
+using is_output_iterable = std::is_base_of<std::output_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
 
 template <typename T>
-using is_forward_iterable = std::integral_constant<
-    bool,
-    is_bidirectional_iterable<T>::value || is_forward_iterator<T>::value
->;
+using is_forward_iterable = std::is_base_of<std::forward_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
 
 template <typename T>
-using is_input_iterable = std::integral_constant<
-    bool,
-    is_forward_iterable<T>::value || is_input_iterator<T>::value
->;
+using is_bidirectional_iterable = std::is_base_of<std::bidirectional_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
 
 template <typename T>
-using is_output_iterable = is_output_iterator<T>;
+using is_random_access_iterable = std::is_base_of<std::random_access_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
 
 #ifdef HAVE_CPP14
 

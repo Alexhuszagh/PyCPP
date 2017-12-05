@@ -248,8 +248,10 @@ public:
 
 private:
     /**
-     * Each bucket entry stores a 32-bits index which is the index in m_values corresponding to the bucket
-     * and a 32 bits hash (truncated if the original was 64-bits) corresponding to the value.
+     *  Each bucket entry stores a 32-bits index which is the index in
+     *  m_values corresponding to the bucket and a 32 bits hash
+     *  (truncated if the original was 64-bits) corresponding to the
+     *  value.
      */
     class bucket_entry
     {
@@ -335,7 +337,7 @@ public:
         m_hash(hash),
         m_key_equal(equal)
     {
-        if(bucket_count == 0) {
+        if (bucket_count == 0) {
             m_mask = 0;
         } else {
             m_buckets.resize(round_up_to_power_of_two(bucket_count));
@@ -430,6 +432,7 @@ public:
     }
 
     // MODIFIERS
+
     void clear() noexcept
     {
         m_buckets.clear();
@@ -445,17 +448,17 @@ public:
     template <typename InputIt>
     void insert(InputIt first, InputIt last)
     {
-        if(std::is_base_of<std::forward_iterator_tag, typename std::iterator_traits<InputIt>::iterator_category>::value)
+        if (std::is_base_of<std::forward_iterator_tag, typename std::iterator_traits<InputIt>::iterator_category>::value)
         {
             const auto nb_elements_insert = std::distance(first, last);
             const std::size_t nb_free_buckets = bucket_count() - size();
 
-            if(nb_elements_insert > 0 && nb_free_buckets < static_cast<std::size_t>(nb_elements_insert)) {
+            if (nb_elements_insert > 0 && nb_free_buckets < static_cast<std::size_t>(nb_elements_insert)) {
                 reserve(size() + (nb_elements_insert - nb_free_buckets));
             }
         }
 
-        for(; first != last; ++first) {
+        for (; first != last; ++first) {
             insert(*first);
         }
     }
@@ -483,13 +486,14 @@ public:
         erase_value_from_bucket(it_bucket);
 
         // One element was removed from m_values,
-        // due to the left shift the next element is now at the position of the previous element.
+        // due to the left shift the next element is now at the position
+        // of the previous element.
         return begin() + index_erase;
     }
 
     iterator erase(const_iterator first, const_iterator last)
     {
-        if(first == last) {
+        if (first == last) {
             return get_mutable_iterator(first);
         }
 
@@ -506,20 +510,22 @@ public:
 #endif
 
         /*
-         * Mark the buckets corresponding to the values as empty and do a backward shift.
+         *  Mark the buckets corresponding to the values as empty and do
+         *  a backward shift.
          *
-         * Also, the erase operation on m_values has shifted all the values on the right of last.m_iterator.
-         * Adapt the indexes for these values.
+         *  Also, the erase operation on m_values has shifted all the
+         *  values on the right of last.m_iterator.
+         *  Adapt the indexes for these values.
          */
-        for(std::size_t ibucket = 0; ibucket < m_buckets.size(); ibucket++) {
-            if(!m_buckets[ibucket].has_index()) {
+        for (std::size_t ibucket = 0; ibucket < m_buckets.size(); ibucket++) {
+            if (!m_buckets[ibucket].has_index()) {
                 continue;
             }
 
-            if(m_buckets[ibucket].index() >= start_index && m_buckets[ibucket].index() < end_index) {
+            if (m_buckets[ibucket].index() >= start_index && m_buckets[ibucket].index() < end_index) {
                 m_buckets[ibucket].set_empty();
                 backward_shift(ibucket);
-            } else if(m_buckets[ibucket].index() >= end_index) {
+            } else if (m_buckets[ibucket].index() >= end_index) {
                 m_buckets[ibucket].set_index(m_buckets[ibucket].index() - static_cast<std::size_t>(nb_values));
             }
         }
@@ -551,7 +557,7 @@ public:
     template <typename K>
     size_type count(const K& key) const
     {
-        if(find(key) == end()) {
+        if (find(key) == end()) {
             return 0;
         }
         else {
@@ -562,7 +568,7 @@ public:
     template <typename K>
     iterator find(const K& key)
     {
-        if(empty()) {
+        if (empty()) {
             return end();
         }
 
@@ -573,7 +579,7 @@ public:
     template <typename K>
     const_iterator find(const K& key) const
     {
-        if(empty()) {
+        if (empty()) {
             return end();
         }
 
@@ -667,7 +673,7 @@ public:
     const typename U::value_type& at(const K& key) const
     {
         auto it = find(key);
-        if(it != end()) {
+        if (it != end()) {
             return it.value();
         }
         else {
@@ -682,7 +688,7 @@ public:
         using T = typename U::value_type;
 
         auto it = find(key);
-        if(it != end()) {
+        if (it != end()) {
             return it.value();
         }
         else {
@@ -724,7 +730,7 @@ public:
 
     void pop_back()
     {
-        if(empty()) {
+        if (empty()) {
             return;
         }
 
@@ -742,19 +748,20 @@ public:
         const std::size_t index_erase = iterator_to_index(pos);
         unordered_erase(pos.key());
 
-        // One element was deleted, index_erase now point to the next element
+        // One element was deleted, index_erase now point to the
+        // next element
         return begin() + index_erase;
     }
 
     template <typename K>
     size_type unordered_erase(const K& key)
     {
-        if(empty()) {
+        if (empty()) {
             return 0;
         }
 
         auto it_bucket_key = find_key(key, m_hash(key));
-        if(it_bucket_key == m_buckets.end()) {
+        if (it_bucket_key == m_buckets.end()) {
             return 0;
         }
 
@@ -814,7 +821,7 @@ private:
     }
 
     /**
-     * Return bucket which has the key 'key' or m_buckets.end() if none.
+     *  Return bucket which has the key 'key' or m_buckets.end() if none.
      */
     template <typename K>
     typename buckets_container_type::const_iterator find_key(const K& key, std::size_t hash) const
@@ -822,13 +829,13 @@ private:
         assert(size() < m_buckets.size());
         const auto truncated_hash = bucket_entry::truncate_hash(hash);
 
-        for(std::size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
-            if(m_buckets[ibucket].empty()) {
+        for (std::size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
+            if (m_buckets[ibucket].empty()) {
                 return m_buckets.end();
-            } else if(m_buckets[ibucket].truncated_hash() == truncated_hash &&
+            } else if (m_buckets[ibucket].truncated_hash() == truncated_hash &&
                     m_key_equal(key, KeySelect()(m_values[m_buckets[ibucket].index()]))) {
                 return m_buckets.begin() + ibucket;
-            } else if(iprobe > dist_from_initial_bucket(ibucket)) {
+            } else if (iprobe > dist_from_initial_bucket(ibucket)) {
                 return m_buckets.end();
             }
         }
@@ -837,7 +844,7 @@ private:
     void rehash_impl(size_type count)
     {
         count = round_up_to_power_of_two(count);
-        if(count > max_size()) {
+        if (count > max_size()) {
             throw std::length_error("The map exceed its maxmimum size.");
         }
 
@@ -848,16 +855,16 @@ private:
         m_mask = this->bucket_count() - 1;
 
 
-        for(const bucket_entry& old_bucket: old_buckets) {
-            if(!old_bucket.has_index()) {
+        for (const bucket_entry& old_bucket: old_buckets) {
+            if (!old_bucket.has_index()) {
                 continue;
             }
 
             const auto insert_hash = old_bucket.truncated_hash();
             const auto insert_index = old_bucket.index();
 
-            for(std::size_t ibucket = bucket_for_hash(insert_hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
-                if(m_buckets[ibucket].empty()) {
+            for (std::size_t ibucket = bucket_for_hash(insert_hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
+                if (m_buckets[ibucket].empty()) {
                     m_buckets[ibucket].set_index(insert_index);
                     m_buckets[ibucket].set_hash(insert_hash);
                     break;
@@ -866,7 +873,7 @@ private:
                 assert(m_buckets[ibucket].has_index());
                 const std::size_t distance = dist_from_initial_bucket(ibucket);
 
-                if(iprobe > distance) {
+                if (iprobe > distance) {
                     const auto tmp_index = m_buckets[ibucket].index();
                     const auto tmp_hash = m_buckets[ibucket].truncated_hash();
 
@@ -891,15 +898,16 @@ private:
     {}
 
     /**
-     * Swap the empty bucket with the values on its right until we cross another empty bucket
-     * or if the other bucket has a dist_from_initial_bucket == 0.
+     *  Swap the empty bucket with the values on its right until we
+     *  cross another empty bucket or if the other bucket has a
+     *  dist_from_initial_bucket == 0.
      */
     void backward_shift(std::size_t empty_ibucket)
     {
         assert(m_buckets[empty_ibucket].empty());
 
         std::size_t previous_ibucket = empty_ibucket;
-        for(std::size_t current_ibucket = next_probe(previous_ibucket);
+        for (std::size_t current_ibucket = next_probe(previous_ibucket);
             !m_buckets[current_ibucket].empty() && dist_from_initial_bucket(current_ibucket) > 0;
             previous_ibucket = current_ibucket, current_ibucket = next_probe(current_ibucket))
         {
@@ -915,17 +923,19 @@ private:
 
         const std::size_t index_deleted = it_bucket->index();
 
-        // m_values.erase shifted all the values on the right of the erased value, shift the indexes except if
-        // it was the last value
-        if(index_deleted != m_values.size()) {
-            for(auto& bucket: m_buckets) {
-                if(bucket.has_index() && bucket.index() > index_deleted) {
+        // m_values.erase shifted all the values on the right of the
+        // erased value, shift the indexes except if it was the last
+        // value
+        if (index_deleted != m_values.size()) {
+            for (auto& bucket: m_buckets) {
+                if (bucket.has_index() && bucket.index() > index_deleted) {
                     bucket.set_index(bucket.index() - 1);
                 }
             }
         }
 
-        // Mark the bucket as empty and do a backward shift of the values on the right
+        // Mark the bucket as empty and do a backward shift of the
+        // values on the right
         it_bucket->set_empty();
         backward_shift(static_cast<std::size_t>(std::distance(m_buckets.begin(), it_bucket)));
     }
@@ -933,12 +943,12 @@ private:
     template <typename K>
     size_type erase_impl(const K& key)
     {
-        if(empty()) {
+        if (empty()) {
             return 0;
         }
 
         auto it_bucket = find_key(key, m_hash(key));
-        if(it_bucket != m_buckets.end()) {
+        if (it_bucket != m_buckets.end()) {
             erase_value_from_bucket(it_bucket);
 
             return 1;
@@ -948,18 +958,21 @@ private:
     }
 
     /**
-     * From ibucket, search for an empty bucket to store the insert_index an the insert_hash.
+     *  From ibucket, search for an empty bucket to store the
+     *  insert_index an the insert_hash.
      *
-     * If on the way we find a bucket with a value which is further away from its initial bucket
-     * than our current probing, swap the indexes and the hashes and continue the search
-     * for an empty bucket to store this new index and hash while continuing the swapping process.
+     *  If on the way we find a bucket with a value which is further
+     *  away from its initial bucket than our current probing, swap
+     *  the indexes and the hashes and continue the search for an empty
+     *  bucket to store this new index and hash while continuing the
+     *  swapping process.
      */
     void insert_with_robin_hood_swap(std::size_t ibucket, std::size_t iprobe,
         typename bucket_entry::index_type insert_index,
         typename bucket_entry::truncated_hash_type insert_hash)
     {
-        while(true) {
-            if(m_buckets[ibucket].empty()) {
+        while (true) {
+            if (m_buckets[ibucket].empty()) {
                 m_buckets[ibucket].set_index(insert_index);
                 m_buckets[ibucket].set_hash(insert_hash);
 
@@ -968,7 +981,7 @@ private:
 
             assert(m_buckets[ibucket].has_index());
             const std::size_t distance = dist_from_initial_bucket(ibucket);
-            if(iprobe > distance) {
+            if (iprobe > distance) {
                 const auto tmp_index = m_buckets[ibucket].index();
                 const auto tmp_hash = m_buckets[ibucket].truncated_hash();
 
@@ -990,9 +1003,10 @@ private:
     {
         const std::size_t initial_bucket = bucket_for_hash(m_buckets[ibucket].truncated_hash());
 
-        // If the bucket is smaller than the initial bucket for the value, there was a wrapping at the end of the
-        // bucket array due to the modulo.
-        if(ibucket < initial_bucket) {
+        // If the bucket is smaller than the initial bucket for the
+        // value, there was a wrapping at the end of the bucket array
+        // due to the modulo.
+        if (ibucket < initial_bucket) {
             return (bucket_count() + ibucket) - initial_bucket;
         } else {
             return ibucket - initial_bucket;
@@ -1005,26 +1019,27 @@ private:
     {
         resize_if_needed(1);
 
-        for(std::size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
-            if(m_buckets[ibucket].empty()) {
+        for (std::size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
+            if (m_buckets[ibucket].empty()) {
                 m_values.emplace_back(std::forward<P>(value));
                 m_buckets[ibucket].set_index(m_values.size() - 1);
                 m_buckets[ibucket].set_hash(hash);
 
                 return std::make_pair(std::prev(end()), true);
-            } else if(m_buckets[ibucket].truncated_hash() == bucket_entry::truncate_hash(hash) &&
+            } else if (m_buckets[ibucket].truncated_hash() == bucket_entry::truncate_hash(hash) &&
                     m_key_equal(key, KeySelect()(m_values[m_buckets[ibucket].index()]))) {
                 return std::make_pair(begin() + m_buckets[ibucket].index(), false);
-            } else if(rehash_on_high_nb_probes(iprobe)) {
+            } else if (rehash_on_high_nb_probes(iprobe)) {
                 return insert_impl(key, hash, std::forward<P>(value));
             } else {
                 const std::size_t distance = dist_from_initial_bucket(ibucket);
 
-                if(iprobe > distance) {
+                if (iprobe > distance) {
                     m_values.emplace_back(std::forward<P>(value));
 
-                    // Propagate the index and the hash of the current bucket to a more far away bucket
-                    // Clear the current bucket so we can use it to insert the key.
+                    // Propagate the index and the hash of the current
+                    // bucket to a more far away bucket. Clear the current
+                    // bucket so we can use it to insert the key.
                     insert_with_robin_hood_swap(next_probe(ibucket), distance + 1,
                                                 m_buckets[ibucket].index(), m_buckets[ibucket].truncated_hash());
 
@@ -1040,7 +1055,7 @@ private:
 
     void resize_if_needed(std::size_t delta)
     {
-        if(size() + delta >= m_load_threshold) {
+        if (size() + delta >= m_load_threshold) {
             rehash_impl(m_buckets.size() * REHASH_SIZE_MULTIPLICATION_FACTOR);
         }
     }
@@ -1067,7 +1082,7 @@ private:
     static std::size_t round_up_to_power_of_two(std::size_t value)
     {
         std::size_t power = 1;
-        while(power < value) {
+        while (power < value) {
             power <<= 1;
         }
 
@@ -1084,7 +1099,7 @@ public:
 
     bool rehash_on_high_nb_probes(std::size_t nb_probes)
     {
-        if(nb_probes == REHASH_ON_HIGH_NB_PROBES__NPROBES && load_factor() >= REHASH_ON_HIGH_NB_PROBES__MIN_LOAD_FACTOR) {
+        if (nb_probes == REHASH_ON_HIGH_NB_PROBES__NPROBES && load_factor() >= REHASH_ON_HIGH_NB_PROBES__MIN_LOAD_FACTOR) {
             rehash_impl(m_buckets.size() * REHASH_SIZE_MULTIPLICATION_FACTOR);
             return true;
         } else {
@@ -1109,23 +1124,29 @@ private:
 
 
 /**
- * Implementation of an hash map using open adressing with robin hood with backshift delete to resolve collision.
+ *  Implementation of an hash map using open adressing with robin hood
+ *  with backshift delete to resolve collision.
  *
- * The particularity of the hash map is that it remembers the order in which the elements were added and
- * provide a way to access the structure which stores these values through the 'values_container()' method.
- * The used container is defined by ValueTypeContainer, by default a std::deque is used (faster on rehash) but
- * a std::vector may be used. In this case the map provides a 'data()' method which give a direct access
- * to the memory used to store the values (which can be usefull to communicate with C API's).
+ *  The particularity of the hash map is that it remembers the order in
+ *  which the elements were added and provide a way to access the
+ *  structure which stores these values through the 'values_container()'
+ *  method. The used container is defined by ValueTypeContainer, by
+ *  default a std::deque is used (faster on rehash) but a std::vector
+ *  may be used. In this case the map provides a 'data()' method which
+ *  give a direct access to the memory used to store the values (which
+ *  can be useful to communicate with C API's).
  *
- *
- * Iterators invalidation:
- *  - clear, operator=, reserve, rehash: always invalidate the iterators (also invalidate end()).
- *  - insert, emplace, emplace_hint, operator[]: when a std::vector is used as ValueTypeContainer
- *                                               and if size() < capacity(), only end().
- *                                               Otherwise all the iterators are invalidated if an insert occurs.
- *  - erase: when a std::vector is used as ValueTypeContainer invalidate the iterator of the erased element
- *           and all the ones after the erased element (including end()).
- *           Otherwise all the iterators are invalidated if an erase occurs.
+ *  Iterators invalidation:
+ *      - clear, operator=, reserve, rehash: always invalidate the
+ *        iterators (also invalidate end()).
+ *      - insert, emplace, emplace_hint, operator[]: when a std::vector
+ *        is used as ValueTypeContainer and if size() < capacity(), only
+ *        end(). Otherwise all the iterators are invalidated if an
+ *        insert occurs.
+ *      - erase: when a std::vector is used as ValueTypeContainer
+ *        invalidate the iterator of the erased element and all the
+ *        ones after the erased element (including end()). Otherwise
+ *        all the iterators are invalidated if an erase occurs.
  */
 template <
     typename Key,
@@ -1133,7 +1154,7 @@ template <
     typename Hash = std::hash<Key>,
     typename KeyEqual = std::equal_to<Key>,
     typename Allocator = std::allocator<std::pair<Key, T>>,
-    typename ValueTypeContainer = std::deque<std::pair<Key, T>, Allocator>
+    template <typename, typename> class ValueTypeContainer = std::deque
 >
 class ordered_map
 {
@@ -1170,7 +1191,7 @@ private:
         }
     };
 
-    using ht = detail_ordered_hash::ordered_hash<std::pair<Key, T>, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, ValueTypeContainer>;
+    using ht = detail_ordered_hash::ordered_hash<std::pair<Key, T>, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, ValueTypeContainer<std::pair<Key, T>, Allocator>>;
 
 public:
     using key_type = typename ht::key_type;
@@ -1358,6 +1379,7 @@ public:
     }
 
     // MODIFIERS
+
     void clear() noexcept
     {
         m_ht.clear();
@@ -1381,7 +1403,7 @@ public:
 
     iterator insert(const_iterator hint, const value_type& value)
     {
-        if(hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(value))) {
+        if (hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(value))) {
             return m_ht.get_mutable_iterator(hint);
         }
 
@@ -1392,7 +1414,7 @@ public:
     iterator insert(const_iterator hint, P&& value)
     {
         value_type val(std::forward<P>(value));
-        if(hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(val))) {
+        if (hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(val))) {
             return m_ht.get_mutable_iterator(hint);
         }
 
@@ -1401,7 +1423,7 @@ public:
 
     iterator insert(const_iterator hint, value_type&& value)
     {
-        if(hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(value))) {
+        if (hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(value))) {
             return m_ht.get_mutable_iterator(hint);
         }
 
@@ -1420,10 +1442,12 @@ public:
     }
 
     /**
-     * Due to the way elements are stored, emplace will need to move or copy the key-value once.
-     * The method is equivalent to insert(value_type(std::forward<Args>(args)...));
+     *  Due to the way elements are stored, emplace will need to move or
+     *  copy the key-value once. The method is equivalent to
+     *  insert(value_type(std::forward<Args>(args)...));
      *
-     * Mainly here for compatibility with the std::unordered_map interface.
+     *  Mainly here for compatibility with the std::unordered_map
+     *  interface.
      */
     template <typename... Args>
     std::pair<iterator,bool> emplace(Args&&... args)
@@ -1432,10 +1456,12 @@ public:
     }
 
     /**
-     * Due to the way elements are stored, emplace_hint will need to move or copy the key-value once.
-     * The method is equivalent to insert(hint, value_type(std::forward<Args>(args)...));
+     *  Due to the way elements are stored, emplace_hint will need to
+     *  move or copy the key-value once. The method is equivalent to
+     *  insert(hint, value_type(std::forward<Args>(args)...));
      *
-     * Mainly here for compatibility with the std::unordered_map interface.
+     *  Mainly here for compatibility with the std::unordered_map
+     *  interface.
      */
     template <typename... Args>
     iterator emplace_hint(const_iterator hint, Args&&... args)
@@ -1444,11 +1470,13 @@ public:
     }
 
     /**
-     * When erasing an element, the insert order will be preserved and no holes will be present in the container
-     * returned by 'values_container()'.
+     *  When erasing an element, the insert order will be preserved and
+     *  no holes will be present in the container returned by
+     *  'values_container()'.
      *
-     * The method is in O(n), if the order is not important 'unordered_erase(...)' method is faster with an O(1)
-     * average complexity.
+     *  The method is in O(n), if the order is not important
+     *  'unordered_erase(...)' method is faster with an O(1)
+     *  average complexity.
      */
     iterator erase(iterator pos)
     {
@@ -1456,7 +1484,7 @@ public:
     }
 
     /**
-     * @copydoc erase(iterator pos)
+     *  @copydoc erase(iterator pos)
      */
     iterator erase(const_iterator pos)
     {
@@ -1464,7 +1492,7 @@ public:
     }
 
     /**
-     * @copydoc erase(iterator pos)
+     *  @copydoc erase(iterator pos)
      */
     iterator erase(const_iterator first, const_iterator last)
     {
@@ -1472,7 +1500,7 @@ public:
     }
 
     /**
-     * @copydoc erase(iterator pos)
+     *  @copydoc erase(iterator pos)
      */
     size_type erase(const key_type& key)
     {
@@ -1480,10 +1508,11 @@ public:
     }
 
     /**
-     * @copydoc erase(iterator pos)
+     *  @copydoc erase(iterator pos)
      *
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists.
+     *  If so, K must be hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     size_type erase(const K& key)
@@ -1509,8 +1538,9 @@ public:
     }
 
     /**
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists.
+     *  If so, K must be hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     T& at(const K& key)
@@ -1519,7 +1549,7 @@ public:
     }
 
     /**
-     * @copydoc at(const K& key)
+     *  @copydoc at(const K& key)
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     const T& at(const K& key) const
@@ -1543,8 +1573,9 @@ public:
     }
 
     /**
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists. If so, K must be
+     *  hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     size_type count(const K& key) const
@@ -1563,8 +1594,9 @@ public:
     }
 
     /**
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists. If so, K must be
+     *  hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     iterator find(const K& key)
@@ -1573,7 +1605,7 @@ public:
     }
 
     /**
-     * @copydoc find(const K& key)
+     *  @copydoc find(const K& key)
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     const_iterator find(const K& key) const
@@ -1591,8 +1623,9 @@ public:
     }
 
     /**
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists. If so, K must be
+     *  hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     std::pair<iterator, iterator> equal_range(const K& key)
@@ -1601,7 +1634,7 @@ public:
     }
 
     /**
-     * @copydoc equal_range(const K& key)
+     *  @copydoc equal_range(const K& key)
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     std::pair<const_iterator, const_iterator> equal_range(const K& key) const
@@ -1673,7 +1706,8 @@ public:
     }
 
     /**
-     * Only available if ValueTypeContainer is an std::vector. Same as calling 'values_container().data()'.
+     *  Only available if ValueTypeContainer is an std::vector. Same as
+     *  calling 'values_container().data()'.
      */
     template <typename U = values_container_type, typename std::enable_if<detail_ordered_hash::is_vector<U>::value>::type* = nullptr>
     const typename values_container_type::value_type* data() const noexcept
@@ -1682,8 +1716,9 @@ public:
     }
 
     /**
-     * Return the container in which the values are stored. The values are in the same order as the insertion order
-     * and are contiguous in the structure, no holes (size() == values_container().size()).
+     *  Return the container in which the values are stored. The values
+     *  are in the same order as the insertion order and are contiguous
+     *  in the structure, no holes (size() == values_container().size()).
      */
     const values_container_type& values_container() const noexcept
     {
@@ -1707,9 +1742,11 @@ public:
     }
 
     /**
-     * Faster erase operation with an O(1) average complexity but it doesn't preserve the insertion order.
+     *  Faster erase operation with an O(1) average complexity but it
+     *  doesn't preserve the insertion order.
      *
-     * If an erasure occurs, the last element of the map will take the place of the erased element.
+     *  If an erasure occurs, the last element of the map will take the
+     *  place of the erased element.
      */
     iterator unordered_erase(iterator pos)
     {
@@ -1725,7 +1762,7 @@ public:
     }
 
     /**
-     * @copydoc unordered_erase(iterator pos)
+     *  @copydoc unordered_erase(iterator pos)
      */
     size_type unordered_erase(const key_type& key)
     {
@@ -1733,10 +1770,11 @@ public:
     }
 
     /**
-     * @copydoc unordered_erase(iterator pos)
+     *  @copydoc unordered_erase(iterator pos)
      *
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists.
+     *  If so, K must be hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     size_type unordered_erase(const K& key)
@@ -1785,30 +1823,36 @@ private:
 
 
 /**
- * Implementation of an hash set using open adressing with robin hood with backshift delete to resolve collision.
+ *  Implementation of an hash set using open adressing with robin hood
+ *  with backshift delete to resolve collision.
  *
- * The particularity of the hash set is that it remembers the order in which the elements were added and
- * provide a way to access the structure which stores these values through the 'values_container()' method.
- * The used container is defined by ValueTypeContainer, by default a std::deque is used (faster on rehash) but
- * a std::vector may be used. In this case the set provides a 'data()' method which give a direct access
- * to the memory used to store the values (which can be usefull to communicate with C API's).
+ *  The particularity of the hash set is that it remembers the order in
+ *  which the elements were added and provide a way to access the
+ *  structure which stores these values through the 'values_container()'
+ *  method. The used container is defined by ValueTypeContainer, by
+ *  default a std::deque is used (faster on rehash) but a std::vector
+ *  may be used. In this case the set provides a 'data()' method which
+ *  give a direct access to the memory used to store the values (which
+ *  can be usefull to communicate with C API's).
  *
- *
- * Iterators invalidation:
- *  - clear, operator=, reserve, rehash: always invalidate the iterators (also invalidate end()).
- *  - insert, emplace, emplace_hint, operator[]: when a std::vector is used as ValueTypeContainer
- *                                               and if size() < capacity(), only end().
- *                                               Otherwise all the iterators are invalidated if an insert occurs.
- *  - erase: when a std::vector is used as ValueTypeContainer invalidate the iterator of the erased element
- *           and all the ones after the erased element (including end()).
- *           Otherwise all the iterators are invalidated if an erase occurs.
+ *  Iterators invalidation:
+ *     - clear, operator=, reserve, rehash: always invalidate the
+ *       iterators (also invalidate end()).
+ *     - insert, emplace, emplace_hint, operator[]: when a std::vector
+ *       is used as ValueTypeContainer and if size() < capacity(), only
+ *       end(). Otherwise all the iterators are invalidated if an insert
+ *       occurs.
+ *     - erase: when a std::vector is used as ValueTypeContainer
+ *       invalidate the iterator of the erased element and all
+ *       the ones after the erased element (including end()).
+ *       Otherwise all the iterators are invalidated if an erase occurs.
  */
 template <
     typename Key,
     typename Hash = std::hash<Key>,
     typename KeyEqual = std::equal_to<Key>,
     typename Allocator = std::allocator<Key>,
-    typename ValueTypeContainer = std::deque<Key, Allocator>
+    template <typename, typename> class ValueTypeContainer = std::deque
 >
 class ordered_set
 {
@@ -1829,7 +1873,7 @@ private:
         }
     };
 
-    using ht = detail_ordered_hash::ordered_hash<Key, KeySelect, void, Hash, KeyEqual, Allocator, ValueTypeContainer>;
+    using ht = detail_ordered_hash::ordered_hash<Key, KeySelect, void, Hash, KeyEqual, Allocator, ValueTypeContainer<Key, Allocator>>;
 
 public:
     using key_type = typename ht::key_type;
@@ -1851,6 +1895,7 @@ public:
     using values_container_type = typename ht::values_container_type;
 
     // CONSTRUCTORS
+
     ordered_set():
         ordered_set(ht::DEFAULT_INIT_BUCKETS_SIZE)
     {}
@@ -2036,7 +2081,7 @@ public:
 
     iterator insert(const_iterator hint, const value_type& value)
     {
-        if(hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(value))) {
+        if (hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(value))) {
             return m_ht.get_mutable_iterator(hint);
         }
 
@@ -2045,7 +2090,7 @@ public:
 
     iterator insert(const_iterator hint, value_type&& value)
     {
-        if(hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(value))) {
+        if (hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(value))) {
             return m_ht.get_mutable_iterator(hint);
         }
 
@@ -2064,10 +2109,12 @@ public:
     }
 
     /**
-     * Due to the way elements are stored, emplace will need to move or copy the key-value once.
-     * The method is equivalent to insert(value_type(std::forward<Args>(args)...));
+     *  Due to the way elements are stored, emplace will need to move
+     *  or copy the key-value once. The method is equivalent to
+     *  insert(value_type(std::forward<Args>(args)...));
      *
-     * Mainly here for compatibility with the std::unordered_map interface.
+     *  Mainly here for compatibility with the std::unordered_map
+     *  interface.
      */
     template <typename... Args>
     std::pair<iterator,bool> emplace(Args&&... args)
@@ -2076,10 +2123,12 @@ public:
     }
 
     /**
-     * Due to the way elements are stored, emplace_hint will need to move or copy the key-value once.
-     * The method is equivalent to insert(hint, value_type(std::forward<Args>(args)...));
+     *  Due to the way elements are stored, emplace_hint will need to
+     *  move or copy the key-value once. The method is equivalent to
+     *  insert(hint, value_type(std::forward<Args>(args)...));
      *
-     * Mainly here for compatibility with the std::unordered_map interface.
+     *  Mainly here for compatibility with the std::unordered_map
+     *  interface.
      */
     template <typename... Args>
     iterator emplace_hint(const_iterator hint, Args&&... args)
@@ -2088,11 +2137,13 @@ public:
     }
 
     /**
-     * When erasing an element, the insert order will be preserved and no holes will be present in the container
-     * returned by 'values_container()'.
+     *  When erasing an element, the insert order will be preserved and
+     *  no holes will be present in the container returned by
+     *  'values_container()'.
      *
-     * The method is in O(n), if the order is not important 'unordered_erase(...)' method is faster with an O(1)
-     * average complexity.
+     *  The method is in O(n), if the order is not important
+     *  'unordered_erase(...)' method is faster with an O(1)
+     *  average complexity.
      */
     iterator erase(iterator pos)
     {
@@ -2100,7 +2151,7 @@ public:
     }
 
     /**
-     * @copydoc erase(iterator pos)
+     *  @copydoc erase(iterator pos)
      */
     iterator erase(const_iterator pos)
     {
@@ -2108,7 +2159,7 @@ public:
     }
 
     /**
-     * @copydoc erase(iterator pos)
+     *  @copydoc erase(iterator pos)
      */
     iterator erase(const_iterator first, const_iterator last)
     {
@@ -2116,7 +2167,7 @@ public:
     }
 
     /**
-     * @copydoc erase(iterator pos)
+     *  @copydoc erase(iterator pos)
      */
     size_type erase(const key_type& key)
     {
@@ -2124,10 +2175,11 @@ public:
     }
 
     /**
-     * @copydoc erase(iterator pos)
+     *  @copydoc erase(iterator pos)
      *
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists.
+     *  If so, K must be hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     size_type erase(const K& key)
@@ -2148,8 +2200,9 @@ public:
     }
 
     /**
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists.
+     *  If so, K must be hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     size_type count(const K& key) const
@@ -2168,8 +2221,9 @@ public:
     }
 
     /**
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists.
+     *  If so, K must be hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     iterator find(const K& key)
@@ -2178,7 +2232,7 @@ public:
     }
 
     /**
-     * @copydoc find(const K& key)
+     *  @copydoc find(const K& key)
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     const_iterator find(const K& key) const
@@ -2197,8 +2251,9 @@ public:
     }
 
     /**
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists.
+     *  If so, K must be hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     std::pair<iterator, iterator> equal_range(const K& key)
@@ -2207,7 +2262,7 @@ public:
     }
 
     /**
-     * @copydoc equal_range(const K& key)
+     *  @copydoc equal_range(const K& key)
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     std::pair<const_iterator, const_iterator> equal_range(const K& key) const
@@ -2279,7 +2334,8 @@ public:
     }
 
     /**
-     * Only available if ValueTypeContainer is an std::vector. Same as calling 'values_container().data()'.
+     *  Only available if ValueTypeContainer is an std::vector. Same as
+     *  calling 'values_container().data()'.
      */
     template <typename U = values_container_type, typename std::enable_if<detail_ordered_hash::is_vector<U>::value>::type* = nullptr>
     const typename values_container_type::value_type* data() const noexcept
@@ -2288,8 +2344,9 @@ public:
     }
 
     /**
-     * Return the container in which the values are stored. The values are in the same order as the insertion order
-     * and are contiguous in the structure, no holes (size() == values_container().size()).
+     *  Return the container in which the values are stored. The values
+     *  are in the same order as the insertion order and are contiguous
+     *  in the structure, no holes (size() == values_container().size()).
      */
     const values_container_type& values_container() const noexcept
     {
@@ -2313,9 +2370,11 @@ public:
     }
 
     /**
-     * Faster erase operation with an O(1) average complexity but it doesn't preserve the insertion order.
+     *  Faster erase operation with an O(1) average complexity but it
+     *  doesn't preserve the insertion order.
      *
-     * If an erasure occurs, the last element of the map will take the place of the erased element.
+     *  If an erasure occurs, the last element of the map will take the
+     *  place of the erased element.
      */
     iterator unordered_erase(iterator pos)
     {
@@ -2331,7 +2390,7 @@ public:
     }
 
     /**
-     * @copydoc unordered_erase(iterator pos)
+     *  @copydoc unordered_erase(iterator pos)
      */
     size_type unordered_erase(const key_type& key)
     {
@@ -2339,10 +2398,11 @@ public:
     }
 
     /**
-     * @copydoc unordered_erase(iterator pos)
+     *  @copydoc unordered_erase(iterator pos)
      *
-     * This overload only participates in the overload resolution if the typedef KeyEqual::is_transparent exists.
-     * If so, K must be hashable and comparable to Key.
+     *  This overload only participates in the overload resolution if
+     *  the typedef KeyEqual::is_transparent exists.
+     *  If so, K must be hashable and comparable to Key.
      */
     template <typename K, typename KE = KeyEqual, typename std::enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
     size_type unordered_erase(const K& key)

@@ -24,7 +24,8 @@ template <
     typename Key,
     typename Hash = std::hash<Key>,
     typename Pred = std::equal_to<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, count_t>>
+    typename Alloc = std::allocator<std::pair<const Key, count_t>>,
+    template <typename, typename, typename, typename, typename> class Map = std::unordered_map
 >
 struct counter;
 
@@ -32,7 +33,8 @@ template <
     typename Key,
     typename Hash = std::hash<Key>,
     typename Pred = std::equal_to<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, count_t>>
+    typename Alloc = std::allocator<std::pair<const Key, count_t>>,
+    template <typename, typename, typename, typename, typename> class Map = std::unordered_map
 >
 struct threshold_counter;
 

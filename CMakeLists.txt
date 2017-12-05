@@ -648,6 +648,9 @@ if(BUILD_COLLECTIONS)
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/default_dict.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/optional.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordered_dict.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin_map.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin_set.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/sorted_sequence.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/threshold_counter.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/utility.h"
@@ -1047,6 +1050,8 @@ if(BUILD_COLLECTIONS)
         test/collections/default_dict.cc
         test/collections/optional.cc
         test/collections/ordered_dict.cc
+        test/collections/robin_map.cc
+        test/collections/robin_set.cc
         test/collections/sorted_sequence.cc
         test/collections/threshold_counter.cc
         test/collections/variant.cc

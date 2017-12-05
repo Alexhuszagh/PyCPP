@@ -4,12 +4,16 @@
 
     - Implement a sorted vector
         - unittests
+    - Add tests for robin-hood hash into the project
+    
+    - Add the btree-cpp from Google to the project
+        - https://github.com/algorithm-ninja/cpp-btree
+    - Add benchmarks compared to STL variants
 
     - Need to include SQL header files in CMakeLists
     - Need to implement the interpolation search
     - Implement a ranked set maybe?
     - Implement an indexed set maybe?
-    - Implement an ordered_multi_map
     - fileutils?
     - ioutils?
 

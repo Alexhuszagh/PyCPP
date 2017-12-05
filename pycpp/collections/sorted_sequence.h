@@ -50,7 +50,7 @@ template <
     typename T,
     typename Compare = std::less<T>,
     typename Alloc = std::allocator<T>,
-    typename Container = std::vector<T, Alloc>
+    template <typename, typename> class Container = std::vector
 >
 struct sorted_sequence
 {
@@ -59,7 +59,7 @@ struct sorted_sequence
     using self_t = sorted_sequence<T, Compare, Alloc, Container>;
     using key_type = T;
     using value_type = T;
-    using container_type = Container;
+    using container_type = Container<T, Alloc>;
     using key_compare = Compare;
     using value_compare = Compare;
     using allocator_type = Alloc;
@@ -138,22 +138,22 @@ struct sorted_sequence
     allocator_type get_allocator() const noexcept;
 
     // RELATION OPERATORS
-    template <typename U, typename C, typename A, typename _>
+    template <typename U, typename C, typename A, template <typename, typename> class _>
     friend bool operator==(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
 
-    template <typename U, typename C, typename A, typename _>
+    template <typename U, typename C, typename A, template <typename, typename> class _>
     friend bool operator!=(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
 
-    template <typename U, typename C, typename A, typename _>
+    template <typename U, typename C, typename A, template <typename, typename> class _>
     friend bool operator<(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
 
-    template <typename U, typename C, typename A, typename _>
+    template <typename U, typename C, typename A, template <typename, typename> class _>
     friend bool operator<=(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
 
-    template <typename U, typename C, typename A, typename _>
+    template <typename U, typename C, typename A, template <typename, typename> class _>
     friend bool operator>(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
 
-    template <typename U, typename C, typename A, typename _>
+    template <typename U, typename C, typename A, template <typename, typename> class _>
     friend bool operator>=(const sorted_sequence<U, C, A, _>& lhs, const sorted_sequence<U, C, A, _>& rhs);
 
 private:
@@ -164,19 +164,19 @@ private:
 // IMPLEMENTATION
 // --------------
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 sorted_sequence<T, C, A, _>::sorted_sequence():
     container_()
 {}
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 sorted_sequence<T, C, A, _>::sorted_sequence(const allocator_type& alloc):
     container_(alloc)
 {}
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename Iter>
 sorted_sequence<T, C, A, _>::sorted_sequence(Iter first, Iter last, const allocator_type& alloc):
     container_(alloc)
@@ -185,26 +185,26 @@ sorted_sequence<T, C, A, _>::sorted_sequence(Iter first, Iter last, const alloca
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 sorted_sequence<T, C, A, _>::sorted_sequence(const self_t& rhs, const allocator_type& alloc):
     container_(rhs.container_, alloc)
 {}
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 sorted_sequence<T, C, A, _>::sorted_sequence(self_t&& rhs, const allocator_type& alloc):
     container_(std::move(rhs.container_), alloc)
 {}
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 sorted_sequence<T, C, A, _>::sorted_sequence(std::initializer_list<value_type> list)
 {
     assign(list.begin(), list.end());
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 sorted_sequence<T, C, A, _>::sorted_sequence(std::initializer_list<value_type> list, const allocator_type& alloc):
     container_(alloc)
 {
@@ -212,7 +212,7 @@ sorted_sequence<T, C, A, _>::sorted_sequence(std::initializer_list<value_type> l
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::operator=(const self_t& rhs) -> self_t&
 {
     container_ = rhs.container_;
@@ -220,7 +220,7 @@ auto sorted_sequence<T, C, A, _>::operator=(const self_t& rhs) -> self_t&
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::operator=(self_t&& rhs) -> self_t&
 {
     container_ = std::move(rhs.container_);
@@ -228,7 +228,7 @@ auto sorted_sequence<T, C, A, _>::operator=(self_t&& rhs) -> self_t&
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::operator=(std::initializer_list<value_type> list) -> self_t&
 {
     assign(list.begin(), list.end());
@@ -236,112 +236,112 @@ auto sorted_sequence<T, C, A, _>::operator=(std::initializer_list<value_type> li
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::begin() const -> const_iterator
 {
     return container_.begin();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::end() const -> const_iterator
 {
     return container_.end();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::rbegin() const -> const_reverse_iterator
 {
     return container_.rbegin();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::rend() const -> const_reverse_iterator
 {
     return container_.rend();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::cbegin() const -> const_iterator
 {
     return container_.cbegin();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::cend() const -> const_iterator
 {
     return container_.cend();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::crbegin() const -> const_reverse_iterator
 {
     return container_.crbegin();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::crend() const -> const_reverse_iterator
 {
     return container_.crend();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::size() const -> size_type
 {
     return container_.size();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::max_size() const -> size_type
 {
     return container_.max_size();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 bool sorted_sequence<T, C, A, _>::empty() const noexcept
 {
     return container_.empty();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::operator[](size_type pos) const -> const_reference
 {
     return container_[pos];
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::at(size_type pos) const -> const_reference
 {
     return container_.at(pos);
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::front() const -> const_reference
 {
     return container_.front();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::back() const -> const_reference
 {
     return container_.back();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::find(const key_type& key) const -> const_iterator
 {
     const_iterator it = lower_bound(key);
@@ -352,7 +352,7 @@ auto sorted_sequence<T, C, A, _>::find(const key_type& key) const -> const_itera
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::count(const key_type& key) const -> size_type
 {
     if (find(key) != end()) {
@@ -362,28 +362,28 @@ auto sorted_sequence<T, C, A, _>::count(const key_type& key) const -> size_type
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::lower_bound(const key_type& key) const -> const_iterator
 {
     return std::lower_bound(begin(), end(), key, key_comp());
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::upper_bound(const key_type& key) const -> const_iterator
 {
     return std::upper_bound(begin(), end(), key, key_comp());
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::equal_range(const key_type& key) const -> std::pair<const_iterator, const_iterator>
 {
     return std::make_pair(lower_bound(key), upper_bound(key));
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename Iter>
 void sorted_sequence<T, C, A, _>::assign(Iter first, Iter last)
 {
@@ -392,14 +392,14 @@ void sorted_sequence<T, C, A, _>::assign(Iter first, Iter last)
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 void sorted_sequence<T, C, A, _>::assign(std::initializer_list<value_type> list)
 {
     assign(list.begin(), list.end());
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::insert(const key_type& key) -> std::pair<iterator,bool>
 {
     const_iterator it = lower_bound(key);
@@ -413,7 +413,7 @@ auto sorted_sequence<T, C, A, _>::insert(const key_type& key) -> std::pair<itera
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename U>
 auto sorted_sequence<T, C, A, _>::insert(U&& k) -> std::pair<iterator,bool>
 {
@@ -429,7 +429,7 @@ auto sorted_sequence<T, C, A, _>::insert(U&& k) -> std::pair<iterator,bool>
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::insert(const_iterator position, const key_type& key) -> iterator
 {
     const_iterator it;
@@ -461,7 +461,7 @@ auto sorted_sequence<T, C, A, _>::insert(const_iterator position, const key_type
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename U>
 auto sorted_sequence<T, C, A, _>::insert(const_iterator position, U&& k) -> iterator
 {
@@ -495,7 +495,7 @@ auto sorted_sequence<T, C, A, _>::insert(const_iterator position, U&& k) -> iter
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename Iter>
 void sorted_sequence<T, C, A, _>::insert(Iter first, Iter last)
 {
@@ -520,21 +520,21 @@ void sorted_sequence<T, C, A, _>::insert(Iter first, Iter last)
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 void sorted_sequence<T, C, A, _>::insert(std::initializer_list<value_type> list)
 {
     insert(list.begin(), list.end());
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::erase(const_iterator position) -> iterator
 {
     return container_.erase(position);
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::erase(const key_type& key) -> size_type
 {
     const_iterator it = find(key);
@@ -546,28 +546,28 @@ auto sorted_sequence<T, C, A, _>::erase(const key_type& key) -> size_type
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::erase(const_iterator first, const_iterator last) -> iterator
 {
     return container_.erase(first, last);
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 void sorted_sequence<T, C, A, _>::swap(self_t& rhs)
 {
     std::swap(container_, rhs.container_);
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 void sorted_sequence<T, C, A, _>::clear()
 {
     container_.clear();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename... Ts>
 auto sorted_sequence<T, C, A, _>::emplace(Ts&&... ts) -> std::pair<iterator, bool>
 {
@@ -575,7 +575,7 @@ auto sorted_sequence<T, C, A, _>::emplace(Ts&&... ts) -> std::pair<iterator, boo
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename... Ts>
 auto sorted_sequence<T, C, A, _>::emplace_hint(const_iterator position, Ts&&... ts) -> iterator
 {
@@ -583,63 +583,63 @@ auto sorted_sequence<T, C, A, _>::emplace_hint(const_iterator position, Ts&&... 
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::key_comp() const noexcept -> key_compare
 {
     return key_compare();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::value_comp() const noexcept -> value_compare
 {
     return value_compare();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::get_allocator() const noexcept -> allocator_type
 {
     return allocator_type();
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 bool operator==(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ == rhs.container_;
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 bool operator!=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ != rhs.container_;
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 bool operator<(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ < rhs.container_;
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 bool operator<=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ <= rhs.container_;
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 bool operator>(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ > rhs.container_;
 }
 
 
-template <typename T, typename C, typename A, typename _>
+template <typename T, typename C, typename A, template <typename, typename> class _>
 bool operator>=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ >= rhs.container_;
