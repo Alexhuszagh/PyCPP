@@ -15,6 +15,6 @@
 TEST(architecture, system_architecture)
 {
 #ifndef SYSTEM_ARCHITECTURE
-#   error System architecture not detected.
+#   error "System architecture not detected."
 #endif
 }

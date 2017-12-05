@@ -20,14 +20,18 @@ static constexpr int BZ2_BLOCK_SIZE = 9;
 static constexpr int BZ2_VERBOSITY = 0;
 static constexpr int BZ2_WORK_FACTOR = 30;
 
+// Calculated using `(std::numeric_limits<T>::max() / 1.01) - 600`.
 #if SYSTEM_ARCHITECTURE == 16
     static const uint16_t UNCOMPRESSED_MAX = 0xFB24ULL;
 #elif SYSTEM_ARCHITECTURE == 32
     static const uint32_t UNCOMPRESSED_MAX = 0xFD771EA0ULL;
 #elif SYSTEM_ARCHITECTURE == 64
     static const uint64_t UNCOMPRESSED_MAX = 0xFD7720F353A4C000ULL;
+#elif SYSTEM_ARCHITECTURE == 128
+    // Currently an error, assume ULLL is for 128-bit integers.
+    static const uint128_t UNCOMPRESSED_MAX = 0XFD7720F353A4C0000000000000000000ULLL;
 #else
-#   error Unrecognized system architecture.
+#   error "Unrecognized system architecture."
 #endif          // SYSTEM_ARCHITECTURE
 
 // HELPERS

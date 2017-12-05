@@ -37,8 +37,10 @@ static const size_t BLOCKSIZE = 0;
     static const uint32_t UNCOMPRESSED_MAX = std::numeric_limits<uint32_t>::max() - PADDING;
 #elif SYSTEM_ARCHITECTURE == 64
     static const uint64_t UNCOMPRESSED_MAX = std::numeric_limits<uint64_t>::max() - PADDING;
+#elif SYSTEM_ARCHITECTURE == 128
+    static const uint64_t UNCOMPRESSED_MAX = std::numeric_limits<uint128_t>::max() - PADDING;
 #else
-#   error Unrecognized system architecture.
+#   error "Unrecognized system architecture."
 #endif          // SYSTEM_ARCHITECTURE
 
 // HELPERS

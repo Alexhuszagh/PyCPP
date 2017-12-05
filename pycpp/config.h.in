@@ -18,6 +18,7 @@
 // FEATURES
 // --------
 
+#cmakedefine01 BUILD_ALLOCATOR
 #cmakedefine01 BUILD_CACHE
 #cmakedefine01 BUILD_CIPHER
 #cmakedefine01 BUILD_COLLECTIONS

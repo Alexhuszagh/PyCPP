@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 // WINDOWS
 // -------
 
@@ -39,22 +41,49 @@
 // OTHER
 // -----
 
+// Use uintptr_trather than size_t, since we might be on a segmented
+// architecture. Go smallest-to-largest, since we don't want
+// to check values too large for type.
 #ifndef SYSTEM_ARCHITECTURE
-#   if (size_t)-1 == 0x0xffffffffffffffffffffffffffffffff
-#       define SYSTEM_ARCHITECTURE 128
-#   elif (size_t)-1 == 0xffffffffffffffff
-#       define SYSTEM_ARCHITECTURE 64
-#   elif (size_t)-1 == 0xffffffff
-#       define SYSTEM_ARCHITECTURE 32
-#   elif (size_t)-1 == 0xffff
+#   if (uintptr_t)-1 == 0xffff
 #       define SYSTEM_ARCHITECTURE 16
+#   elif (uintptr_t)-1 == 0xffffffff
+#       define SYSTEM_ARCHITECTURE 32
+#   elif (uintptr_t)-1 == 0xffffffffffffffff
+#       define SYSTEM_ARCHITECTURE 64
+#   elif (uintptr_t)-1 == 0xffffffffffffffffffffffffffffffff
+#       define SYSTEM_ARCHITECTURE 128
 #   else
-#       error Unknown system architecture.
+#       error "Unknown system architecture."
+#   endif
+#endif
+
+// MEMORY ARCHITECTURE
+// -------------------
+
+// We may be using multiple memory segments, so `sizeof(size_t) <
+// sizeof(uintptr_t)`. For example, a 16-bit integer may the max
+// object size, but there may be multiple 16-bit memory segments,
+// requiring 32-bit pointers. Go smallest-to-largest, since we don't
+// want to check values too large for type.
+#ifndef MEMORY_ARCHITECTURE
+#   if (size_t)-1 == 0xffff
+#       define MEMORY_ARCHITECTURE 16
+#   elif (size_t)-1 == 0xffffffff
+#       define MEMORY_ARCHITECTURE 32
+#   elif (size_t)-1 == 0xffffffffffffffff
+#       define MEMORY_ARCHITECTURE 64
+#   elif (size_t)-1 == 0xffffffffffffffffffffffffffffffff
+#       define MEMORY_ARCHITECTURE 128
+#   else
+#       error "Unknown memory architecture."
 #   endif
 #endif
 
 // ALIGNMENT
 // ---------
 
-#define IS_ALIGNED_32(p) (0 == (3 & ((const char*)(p) - (const char*)0)))
-#define IS_ALIGNED_64(p) (0 == (7 & ((const char*)(p) - (const char*)0)))
+#define IS_ALIGNED_16(p)    (0 == (((uintptr_t) p) & 1))
+#define IS_ALIGNED_32(p)    (0 == (((uintptr_t) p) & 3))
+#define IS_ALIGNED_64(p)    (0 == (((uintptr_t) p) & 7))
+#define IS_ALIGNED_128(p)   (0 == (((uintptr_t) p) & 15))

@@ -4,12 +4,13 @@
 
     - Implement a sorted vector
         - unittests
+    - Ordered set unittests
     - Add tests for robin-hood hash into the project
+    - Add tests from btree-cpp into the project
 
-    - Add the btree-cpp from Google to the project
-        - https://github.com/algorithm-ninja/cpp-btree
-        - Unittests
-        
+    - Add custom memory allocators
+        - https://github.com/mtrebi/memory-allocators
+        - Need an alias for the secure memory allocator
     - Add benchmarks compared to STL variants
 
     - Need to include SQL header files in CMakeLists

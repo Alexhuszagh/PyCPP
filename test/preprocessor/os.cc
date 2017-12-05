@@ -15,6 +15,6 @@
 TEST(os, os_detected)
 {
 #ifndef OS_DETECTED
-#   error Operating system not detected.
+#   error "Operating system not detected."
 #endif
 }

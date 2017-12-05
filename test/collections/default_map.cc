@@ -2,10 +2,10 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief Default dict unittests.
+ *  \brief Default map unittests.
  */
 
-#include <pycpp/collections/default_dict.h>
+#include <pycpp/collections/default_map.h>
 #include <gtest/gtest.h>
 #include <memory>
 

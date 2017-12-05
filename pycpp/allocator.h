@@ -2,9 +2,10 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Convience header for <pycpp/allocator/secure.h>.
+ *  \brief Custom allocator definitions.
  */
 
 #pragma once
 
+// TODO: add custom allocators
 #include <pycpp/allocator/secure.h>

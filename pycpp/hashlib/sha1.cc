@@ -4,6 +4,7 @@
 
 #include <pycpp/hashlib.h>
 #include <pycpp/preprocessor/architecture.h>
+#include <pycpp/secure/stdlib.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <cstdio>

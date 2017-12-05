@@ -15,6 +15,7 @@ endif()
 # -----
 
 # MODULES
+option(BUILD_ALLOCATOR "Build allocator library" ON)
 option(BUILD_CIPHER "Build cipher library" ON)
 option(BUILD_COLLECTIONS "Build collections library" ON)
 option(BUILD_COMPRESSION "Build compression library" ON)
@@ -46,6 +47,7 @@ option(USE_SYSTEM_ZLIB "Use system ZLIB installation" OFF)
 
 # WITH MODULE
 option(WITH_CORE "Build (only) core library" OFF)
+option(WITH_ALLOCATOR "Build (only) allocator library" OFF)
 option(WITH_CIPHER "Build (only) cipher library" OFF)
 option(WITH_COLLECTIONS "Build (only) collections library" OFF)
 option(WITH_COMPRESSION "Build (only) compression library" OFF)
@@ -57,7 +59,7 @@ option(WITH_KEYVALUE "Build (only) key-value database library" OFF)
 option(WITH_LATTICE "Build (only) lattice library" OFF)
 option(WITH_MATH "Build (only) math library" OFF)
 option(WITH_MYSQL "Build (only) MySQL database library" OFF)
-option(WITH_POSTGRES "Build (only) PostgreSQL database library" ON)
+option(WITH_POSTGRES "Build (only) PostgreSQL database library" OFF)
 option(WITH_RE "Build (only) regular expression library" OFF)
 option(WITH_SQLITE "Build (only) SQLite database library" OFF)
 option(WITH_STREAM "Build (only) stream library" OFF)
@@ -69,7 +71,8 @@ option(BUILD_TESTS "Build pycpp library tests" OFF)
 SET(CXX_STANDARD "11" CACHE STRING "Minimum C++ standard to support.")
 SET(PYCPP_NAMESPACE "" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
 
-if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_MYSQL OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
+if(WITH_CORE OR WITH_ALLOCATOR OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_MYSQL OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
+    set(BUILD_ALLOCATOR ${WITH_ALLOCATOR})
     set(BUILD_CIPHER ${WITH_CIPHER})
     set(BUILD_COLLECTIONS ${WITH_COLLECTIONS})
     set(BUILD_COMPRESSION ${WITH_COMPRESSION})
@@ -450,6 +453,8 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_BINARY_DIR}/include/pycpp/config.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm/interpolation_search.h"
+    # Build secure allocator even if custom allocators are disabled
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/category.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/chunked.h"
@@ -583,6 +588,8 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
+    # Build secure allocator even if custom allocators are disabled
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atof.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atoi.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/bool.cc"
@@ -614,8 +621,19 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/mman.cc"
 )
 
+if(BUILD_ALLOCATOR)
+    # TODO: implement....
+#    list(APPEND HEADER_FILES
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/xx.h"
+#    )
+#    list(APPEND SOURCE_FILES
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/xx.cc"
+#    )
+endif()
+
 if(BUILD_CACHE)
     list(APPEND HEADER_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/lri.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache/lru.h"
     )
@@ -645,13 +663,14 @@ if(BUILD_COLLECTIONS)
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/any.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree_container.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree_map.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree_set.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/counter.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/default_dict.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/default_map.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/optional.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordered_dict.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordered.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordered_map.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordered_set.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin_map.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin_set.h"
@@ -939,6 +958,7 @@ list(APPEND PYCPP_LIBRARIES pycpp)
 set(TEST_FILES
     test/main.cc
     test/algorithm/interpolation_search.cc
+    test/allocator/secure.cc
     test/cache/lri.cc
     test/cache/lru.cc
     test/lexical.cc
@@ -1053,9 +1073,10 @@ if(BUILD_COLLECTIONS)
         test/collections/btree_map.cc
         test/collections/btree_set.cc
         test/collections/counter.cc
-        test/collections/default_dict.cc
+        test/collections/default_map.cc
         test/collections/optional.cc
-        test/collections/ordered_dict.cc
+        test/collections/ordered_map.cc
+        test/collections/ordered_set.cc
         test/collections/robin_map.cc
         test/collections/robin_set.cc
         test/collections/sorted_sequence.cc

@@ -21,5 +21,5 @@
 #       define thread_local_storage __declspec(thread)
 #   endif
 #else
-#   error Compiler does not support thread-local storage.
+#   error "Compiler does not support thread-local storage."
 #endif

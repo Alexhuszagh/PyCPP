@@ -17,7 +17,6 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-
 /**
  *  Implementation of a hash map using open-adressing and the robin hood
  *  hashing algorithm with backward shift deletion.

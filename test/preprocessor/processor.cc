@@ -15,6 +15,6 @@
 TEST(processor, system_architecture)
 {
 #ifndef PROCESSOR_DETECTED
-#   error Processor not detected.
+#   error "Processor not detected."
 #endif
 }

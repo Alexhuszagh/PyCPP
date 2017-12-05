@@ -2,10 +2,10 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief Ordered dict unittests.
+ *  \brief Ordered map unittests.
  */
 
-#include <pycpp/collections/ordered_dict.h>
+#include <pycpp/collections/ordered_map.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE

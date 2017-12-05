@@ -15,87 +15,87 @@
 TEST(endian, macros)
 {
 #ifndef bswap16
-#   error bswap16 should have been defined.
+#   error "bswap16 should have been defined."
 #endif
 
 #ifndef bswap32
-#   error bswap32 should have been defined.
+#   error "bswap32 should have been defined."
 #endif
 
 #ifndef bswap64
-#   error bswap64 should have been defined.
+#   error "bswap64 should have been defined."
 #endif
 
 #ifndef htobe
-#   error htobe should have been defined.
+#   error "htobe should have been defined."
 #endif
 
 #ifndef htole
-#   error htole should have been defined.
+#   error "htole should have been defined."
 #endif
 
 #ifndef betoh
-#   error betoh should have been defined.
+#   error "betoh should have been defined."
 #endif
 
 #ifndef letoh
-#   error letoh should have been defined.
+#   error "letoh should have been defined."
 #endif
 
 #ifndef BYTE_ORDER
-#   error BYTE_ORDER should have been defined.
+#   error "BYTE_ORDER should have been defined."
 #endif
 
 #ifndef FLOAT_WORD_ORDER
-#   error FLOAT_WORD_ORDER should have been defined.
+#   error "FLOAT_WORD_ORDER should have been defined."
 #endif
 
 #ifndef htobe16
-#   error htobe16 should have been defined.
+#   error "htobe16 should have been defined."
 #endif
 
 #ifndef htole16
-#   error htole16 should have been defined.
+#   error "htole16 should have been defined."
 #endif
 
 #ifndef be16toh
-#   error be16toh should have been defined.
+#   error "be16toh should have been defined."
 #endif
 
 #ifndef le16toh
-#   error le16toh should have been defined.
+#   error "le16toh should have been defined."
 #endif
 
 #ifndef htobe32
-#   error htobe32 should have been defined.
+#   error "htobe32 should have been defined."
 #endif
 
 #ifndef htole32
-#   error htole32 should have been defined.
+#   error "htole32 should have been defined."
 #endif
 
 #ifndef be32toh
-#   error be32toh should have been defined.
+#   error "be32toh should have been defined."
 #endif
 
 #ifndef le32toh
-#   error le32toh should have been defined.
+#   error "le32toh should have been defined."
 #endif
 
 #ifndef htobe64
-#   error htobe64 should have been defined.
+#   error "htobe64 should have been defined."
 #endif
 
 #ifndef htole64
-#   error htole64 should have been defined.
+#   error "htole64 should have been defined."
 #endif
 
 #ifndef be64toh
-#   error be64toh should have been defined.
+#   error "be64toh should have been defined."
 #endif
 
 #ifndef le64toh
-#   error le64toh should have been defined.
+#   error "le64toh should have been defined."
 #endif
 }
 

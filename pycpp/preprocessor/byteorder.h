@@ -131,7 +131,7 @@
 
 #   else
 
-#       error byte order not supported
+#       error "Byte order not supported."
 
 #   endif
 
@@ -142,7 +142,7 @@
 
 #else
 
-#   error platform not supported
+#   error "Platform not supported."
 
 #endif
 
@@ -250,7 +250,7 @@ void memcpy_bswap(void* dst, void* src, size_t bytes, int width);
 
 #else
 
-#   error byte order not supported
+#   error "Byte order not supported."
 
 #endif
 

@@ -362,7 +362,7 @@ static size_t get_page_size_impl()
 
 #else
 
-#   error Bug
+#   error "Bug, unsupported platform."
 
 #endif
 
