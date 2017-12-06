@@ -152,22 +152,22 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    counter();
-    counter(size_type);
-    counter(const self&);
+    counter(const allocator_type& alloc = allocator_type());
+    counter(size_type, const allocator_type& alloc = allocator_type());
+    counter(const self&, const allocator_type& alloc = allocator_type());
     self& operator=(const self&);
-    counter(self&&);
+    counter(self&&, const allocator_type& alloc = allocator_type());
     self& operator=(self&&);
-    counter(const map_type&);
+    counter(const map_type&, const allocator_type& alloc = allocator_type());
     self& operator=(const map_type&);
-    counter(map_type&&);
+    counter(map_type&&, const allocator_type& alloc = allocator_type());
     self& operator=(map_type&&);
-    template <typename Iter> counter(Iter, Iter);
-    template <typename Iter> counter(Iter, Iter, size_type);
-    counter(std::initializer_list<value_type>);
-    counter(std::initializer_list<value_type>, size_type);
-    counter(std::initializer_list<key_type>);
-    counter(std::initializer_list<key_type>, size_type);
+    template <typename Iter> counter(Iter, Iter, const allocator_type& alloc = allocator_type());
+    template <typename Iter> counter(Iter, Iter, size_type, const allocator_type& alloc = allocator_type());
+    counter(std::initializer_list<value_type>, const allocator_type& alloc = allocator_type());
+    counter(std::initializer_list<value_type>, size_type, const allocator_type& alloc = allocator_type());
+    counter(std::initializer_list<key_type>, const allocator_type& alloc = allocator_type());
+    counter(std::initializer_list<key_type>, size_type, const allocator_type& alloc = allocator_type());
 
     // CAPACITY
     size_type size() const;
@@ -247,19 +247,20 @@ protected:
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter()
+counter<K, H, P, A, M>::counter(const allocator_type& alloc):
+    map_(alloc)
 {}
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(size_type n):
-    map_(n)
+counter<K, H, P, A, M>::counter(size_type n, const allocator_type& alloc):
+    map_(n, alloc)
 {}
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(const self& rhs):
-    map_(rhs.map_)
+counter<K, H, P, A, M>::counter(const self& rhs, const allocator_type& alloc):
+    map_(rhs.map_, alloc)
 {}
 
 
@@ -272,7 +273,8 @@ auto counter<K, H, P, A, M>::operator=(const self& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(self&& rhs)
+counter<K, H, P, A, M>::counter(self&& rhs, const allocator_type& alloc):
+    map_(alloc)
 {
     swap(rhs);
 }
@@ -287,8 +289,8 @@ auto counter<K, H, P, A, M>::operator=(self&& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(const map_type& rhs):
-    map_(rhs)
+counter<K, H, P, A, M>::counter(const map_type& rhs, const allocator_type& alloc):
+    map_(rhs, alloc)
 {}
 
 
@@ -301,8 +303,8 @@ auto counter<K, H, P, A, M>::operator=(const map_type& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(map_type&& rhs):
-    map_(std::move(rhs))
+counter<K, H, P, A, M>::counter(map_type&& rhs, const allocator_type& alloc):
+    map_(std::move(rhs), alloc)
 {}
 
 
@@ -316,7 +318,8 @@ auto counter<K, H, P, A, M>::operator=(map_type&& rhs) -> self&
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 template <typename Iter>
-counter<K, H, P, A, M>::counter(Iter first, Iter last)
+counter<K, H, P, A, M>::counter(Iter first, Iter last, const allocator_type& alloc):
+    map_(alloc)
 {
     update(first, last);
 }
@@ -324,38 +327,40 @@ counter<K, H, P, A, M>::counter(Iter first, Iter last)
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 template <typename Iter>
-counter<K, H, P, A, M>::counter(Iter first, Iter last, size_type n):
-    map_(n)
+counter<K, H, P, A, M>::counter(Iter first, Iter last, size_type n, const allocator_type& alloc):
+    map_(n, alloc)
 {
     update(first, last);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(std::initializer_list<value_type> list)
+counter<K, H, P, A, M>::counter(std::initializer_list<value_type> list, const allocator_type& alloc):
+    map_(alloc)
 {
     update(list.begin(), list.end());
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(std::initializer_list<value_type> list, size_type n):
-    map_(n)
+counter<K, H, P, A, M>::counter(std::initializer_list<value_type> list, size_type n, const allocator_type& alloc):
+    map_(n, alloc)
 {
     update(list.begin(), list.end());
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(std::initializer_list<key_type> list)
+counter<K, H, P, A, M>::counter(std::initializer_list<key_type> list, const allocator_type& alloc):
+    map_(alloc)
 {
     update(list.begin(), list.end());
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(std::initializer_list<key_type> list, size_type n):
-    map_(n)
+counter<K, H, P, A, M>::counter(std::initializer_list<key_type> list, size_type n, const allocator_type& alloc):
+    map_(n, alloc)
 {
     update(list.begin(), list.end());
 }
@@ -746,8 +751,7 @@ auto counter<K, H, P, A, M>::key_eq() const -> key_equal
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 auto counter<K, H, P, A, M>::get_allocator() const -> allocator_type
 {
-    // TODO: fix...
-    return allocator_type();
+    return map_.get_allocator();
 }
 
 

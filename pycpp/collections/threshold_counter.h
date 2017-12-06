@@ -111,22 +111,22 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    threshold_counter(float threshold = 0.01);
-    threshold_counter(const self&);
+    threshold_counter(float threshold = 0.01, const allocator_type& alloc = allocator_type());
+    threshold_counter(const self&, const allocator_type& alloc = allocator_type());
     self& operator=(const self&);
-    threshold_counter(self&&);
+    threshold_counter(self&&, const allocator_type& alloc = allocator_type());
     self& operator=(self&&);
-    threshold_counter(const counter_type&, float = 0.01);
+    threshold_counter(const counter_type&, float = 0.01, const allocator_type& alloc = allocator_type());
     self& operator=(const counter_type&);
-    threshold_counter(counter_type&&, float = 0.01);
+    threshold_counter(counter_type&&, float = 0.01, const allocator_type& alloc = allocator_type());
     self& operator=(counter_type&&);
-    threshold_counter(const map_type&, float = 0.01);
+    threshold_counter(const map_type&, float = 0.01, const allocator_type& alloc = allocator_type());
     self& operator=(const map_type&);
-    threshold_counter(map_type&&, float = 0.01);
+    threshold_counter(map_type&&, float = 0.01, const allocator_type& alloc = allocator_type());
     self& operator=(map_type&&);
-    template <typename Iter> threshold_counter(Iter, Iter, float = 0.01);
-    threshold_counter(std::initializer_list<value_type>, float = 0.01);
-    threshold_counter(std::initializer_list<key_type>, float = 0.01);
+    template <typename Iter> threshold_counter(Iter, Iter, float = 0.01, const allocator_type& alloc = allocator_type());
+    threshold_counter(std::initializer_list<value_type>, float = 0.01, const allocator_type& alloc = allocator_type());
+    threshold_counter(std::initializer_list<key_type>, float = 0.01, const allocator_type& alloc = allocator_type());
 
     // CAPACITY
     size_type size() const;
@@ -195,7 +195,8 @@ protected:
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(float threshold):
+threshold_counter<K, H, P, A, M>::threshold_counter(float threshold, const allocator_type& alloc):
+    map_(alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
@@ -204,8 +205,8 @@ threshold_counter<K, H, P, A, M>::threshold_counter(float threshold):
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(const self& rhs):
-    map_(rhs.map_),
+threshold_counter<K, H, P, A, M>::threshold_counter(const self& rhs, const allocator_type& alloc):
+    map_(rhs.map_, alloc),
     interval_(rhs.interval_),
     count_(rhs.count_)
 {}
@@ -222,7 +223,8 @@ auto threshold_counter<K, H, P, A, M>::operator=(const self& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(self&& rhs)
+threshold_counter<K, H, P, A, M>::threshold_counter(self&& rhs, const allocator_type& alloc):
+    map_(alloc)
 {
     swap(rhs);
 }
@@ -237,7 +239,8 @@ auto threshold_counter<K, H, P, A, M>::operator=(self&& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(const counter_type& rhs, float threshold):
+threshold_counter<K, H, P, A, M>::threshold_counter(const counter_type& rhs, float threshold, const allocator_type& alloc):
+    map_(alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
@@ -256,13 +259,13 @@ auto threshold_counter<K, H, P, A, M>::operator=(const counter_type& rhs) -> sel
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(counter_type&& rhs, float threshold):
+threshold_counter<K, H, P, A, M>::threshold_counter(counter_type&& rhs, float threshold, const allocator_type& alloc):
+    map_(std::move(rhs.map_), alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
     assert(threshold <= 1 && threshold >= 1./static_cast<float>(SIZE_MAX));
 
-    map_ = std::move(rhs.map_);
     counter_detail::update_from_map(map_, count_);
 }
 
@@ -277,7 +280,8 @@ auto threshold_counter<K, H, P, A, M>::operator=(counter_type&& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(const map_type& rhs, float threshold):
+threshold_counter<K, H, P, A, M>::threshold_counter(const map_type& rhs, float threshold, const allocator_type& alloc):
+    map_(alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
@@ -296,13 +300,13 @@ auto threshold_counter<K, H, P, A, M>::operator=(const map_type& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(map_type&& rhs, float threshold):
+threshold_counter<K, H, P, A, M>::threshold_counter(map_type&& rhs, float threshold, const allocator_type& alloc):
+    map_(std::move(rhs), alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
     assert(threshold <= 1 && threshold >= 1./static_cast<float>(SIZE_MAX));
 
-    map_ = std::move(rhs);
     counter_detail::update_from_map(map_, count_);
 }
 
@@ -318,7 +322,8 @@ auto threshold_counter<K, H, P, A, M>::operator=(map_type&& rhs) -> self&
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 template <typename Iter>
-threshold_counter<K, H, P, A, M>::threshold_counter(Iter first, Iter last, float threshold):
+threshold_counter<K, H, P, A, M>::threshold_counter(Iter first, Iter last, float threshold, const allocator_type& alloc):
+    map_(alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
@@ -329,7 +334,8 @@ threshold_counter<K, H, P, A, M>::threshold_counter(Iter first, Iter last, float
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(std::initializer_list<value_type> list, float threshold):
+threshold_counter<K, H, P, A, M>::threshold_counter(std::initializer_list<value_type> list, float threshold, const allocator_type& alloc):
+    map_(alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
@@ -340,7 +346,8 @@ threshold_counter<K, H, P, A, M>::threshold_counter(std::initializer_list<value_
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(std::initializer_list<key_type> list, float threshold):
+threshold_counter<K, H, P, A, M>::threshold_counter(std::initializer_list<key_type> list, float threshold, const allocator_type& alloc):
+    map_(alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
@@ -612,8 +619,7 @@ auto threshold_counter<K, H, P, A, M>::key_eq() const -> key_equal
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 auto threshold_counter<K, H, P, A, M>::get_allocator() const -> allocator_type
 {
-    // TODO: fix....
-    return allocator_type();
+    return map_.get_allocator();
 }
 
 

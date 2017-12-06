@@ -11,9 +11,6 @@
     - Add tests from btree-cpp into the project
         - Need to add support for C++11 stuff...
 
-    - Need to stop copying allocators or declaring them...
-        - Defeats the purpose of an allocator really?
-
     - Add custom memory allocators
         - https://github.com/mtrebi/memory-allocators
         - Need an alias for the secure memory allocator
