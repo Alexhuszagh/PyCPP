@@ -58,13 +58,13 @@ struct compressed_pair_switch_helper<T1, T2, false, false, true>
 template <typename T1, typename T2>
 struct compressed_pair_switch_helper<T1, T2, true, true, true>
 {
-    static const int value = 1;
+    static const int value = 4;
 };
 
 template <typename T1, typename T2>
 struct compressed_pair_switch_helper<T1, T2, true, false, false>
 {
-    static const int value = 0;
+    static const int value = 5;
 };
 
 // Uses the helper to get the value for the proper specialization
@@ -120,12 +120,6 @@ private:
 
 
 // 1    derive from T1
-//      Either T1 != T2, and T1 is empty, or T1 == T2, T1 and T2 both empty
-//  Originally, the second case did not store an instance of T2 at all
-//  but that led to problems beause it meant &x.first() == &x.second()
-//  which is not true for any other kind of pair, so now we store an
-//  instance of T2 just in case the user is relying on first() and
-//  second() returning different objects (albeit both empty).
 template <typename T1, typename T2>
 class compressed_pair_impl<T1, T2, 1>: protected std::remove_cv<T1>::type
 {
@@ -237,6 +231,83 @@ public:
     void swap(compressed_pair<T1, T2>& y);
 };
 
+
+// 4    T1 == T2, T1 and T2 both empty
+//  Originally, the pair did not store an instance of T2 at all
+//  but that led to problems beause it meant &x.first() == &x.second()
+//  which is not true for any other kind of pair, so now we store an
+//  instance of T2 just in case the user is relying on first() and
+//  second() returning different objects (albeit both empty).
+template <typename T1, typename T2>
+class compressed_pair_impl<T1, T2, 4>: protected std::remove_cv<T1>::type
+{
+public:
+    // MEMBER TYPES
+    // ------------
+    using first_type = T1;
+    using second_type = T2;
+    using first_reference = first_type&;
+    using first_const_reference = const first_type&;
+    using second_reference = second_type&;
+    using second_const_reference = const second_type&;
+
+    // MEMBER FUNCTIONS
+    // ----------------
+    compressed_pair_impl();
+    compressed_pair_impl(first_const_reference x, second_const_reference y);
+    compressed_pair_impl(first_const_reference x);
+    compressed_pair_impl(first_type&& x, second_type&& y);
+    compressed_pair_impl(first_type&& x);
+
+    // ELEMENT ACCESS
+    first_reference first();
+    first_const_reference first() const;
+    second_reference second();
+    second_const_reference second() const;
+
+    // MODIFIERS
+    void swap(compressed_pair<T1, T2>& y);
+
+private:
+    second_type second_;
+};
+
+// 5    T1 == T2, both not empty
+template <typename T1, typename T2>
+class compressed_pair_impl<T1, T2, 5>
+{
+public:
+    // MEMBER TYPES
+    // ------------
+    using first_type = T1;
+    using second_type = T2;
+    using first_reference = first_type&;
+    using first_const_reference = const first_type&;
+    using second_reference = second_type&;
+    using second_const_reference = const second_type&;
+
+    // MEMBER FUNCTIONS
+    // ----------------
+    compressed_pair_impl();
+    compressed_pair_impl(first_const_reference x, second_const_reference y);
+    compressed_pair_impl(first_const_reference x);
+    compressed_pair_impl(first_type&& x, second_type&& y);
+    compressed_pair_impl(first_type&& x);
+
+    // ELEMENT ACCESS
+    first_reference first();
+    first_const_reference first() const;
+    second_reference second();
+    second_const_reference second() const;
+
+    // MODIFIERS
+    void swap(compressed_pair<T1, T2>& y);
+
+private:
+    first_type first_;
+    second_type second_;
+};
+
 // Helper to select the proper compressed pair
 template <typename T1, typename T2>
 using compressed_pair_selector = compressed_pair_impl<
@@ -327,7 +398,6 @@ void compressed_pair_impl<T1, T2, 0>::swap(compressed_pair<T1, T2>& y)
     std::swap(first_, y.first());
     std::swap(second_, y.second());
 }
-
 
 // 1    derive from T1
 
@@ -566,6 +636,145 @@ template <typename T1, typename T2>
 void compressed_pair_impl<T1, T2, 3>::swap(compressed_pair<T1, T2>& y)
 {
     // no need to swap empty base class:
+}
+
+// 4    T1 == T2, T1 and T2 both empty
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 4>::compressed_pair_impl()
+{}
+
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_const_reference x, second_const_reference y):
+    first_type(x),
+    second_(y)
+{}
+
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_const_reference x):
+    first_type(x),
+    second_(x)
+{}
+
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_type&& x, second_type&& y):
+    first_type(std::forward<first_type>(x)),
+    second_(std::forward<second_type>(y))
+{}
+
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_type&& x):
+    first_type(x),
+    second_(std::forward<first_type>(x))
+{}
+
+
+template <typename T1, typename T2>
+auto compressed_pair_impl<T1, T2, 4>::first() -> first_reference
+{
+    return *this;
+}
+
+
+template <typename T1, typename T2>
+auto compressed_pair_impl<T1, T2, 4>::first() const -> first_const_reference
+{
+    return *this;
+}
+
+
+template <typename T1, typename T2>
+auto compressed_pair_impl<T1, T2, 4>::second() -> second_reference
+{
+    return second_;
+}
+
+
+template <typename T1, typename T2>
+auto compressed_pair_impl<T1, T2, 4>::second() const -> second_const_reference
+{
+    return second_;
+}
+
+
+template <typename T1, typename T2>
+void compressed_pair_impl<T1, T2, 4>::swap(compressed_pair<T1, T2>& y)
+{
+    // no need to swap empty base class:
+}
+
+// 5    T1 == T2, both not empty
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 5>::compressed_pair_impl()
+{}
+
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_const_reference x, second_const_reference y):
+    first_(x),
+    second_(y)
+{}
+
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_const_reference x):
+    first_(x),
+    second_(x)
+{}
+
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_type&& x, second_type&& y):
+    first_(std::forward<first_type>(x)),
+    second_(std::forward<second_type>(y))
+{}
+
+
+template <typename T1, typename T2>
+compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_type&& x):
+    first_(x),
+    second_(std::forward<first_type>(x))
+{}
+
+
+template <typename T1, typename T2>
+auto compressed_pair_impl<T1, T2, 5>::first() -> first_reference
+{
+    return first_;
+}
+
+
+template <typename T1, typename T2>
+auto compressed_pair_impl<T1, T2, 5>::first() const -> first_const_reference
+{
+    return first_;
+}
+
+
+template <typename T1, typename T2>
+auto compressed_pair_impl<T1, T2, 5>::second() -> second_reference
+{
+    return second_;
+}
+
+
+template <typename T1, typename T2>
+auto compressed_pair_impl<T1, T2, 5>::second() const -> second_const_reference
+{
+    return second_;
+}
+
+
+template <typename T1, typename T2>
+void compressed_pair_impl<T1, T2, 5>::swap(compressed_pair<T1, T2>& y)
+{
+    std::swap(first_, y.first());
+    std::swap(second_, y.second());
 }
 
 }   /* compressed_detail */
