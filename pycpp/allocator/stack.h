@@ -15,6 +15,7 @@
 #include <pycpp/config.h>
 #include <cstddef>
 #include <cassert>
+#include <limits>
 #include <memory>
 
 PYCPP_BEGIN_NAMESPACE
@@ -37,6 +38,8 @@ public:
     ~stack_allocator_arena();
     stack_allocator_arena(const stack_allocator_arena&) = delete;
     stack_allocator_arena& operator=(const stack_allocator_arena&) = delete;
+    stack_allocator_arena(stack_allocator_arena&&) = delete;
+    stack_allocator_arena& operator=(stack_allocator_arena&&) = delete;
 
     // ALLOCATION
     template <size_t RequiredAlignment> char* allocate(size_t n);
@@ -57,6 +60,14 @@ private:
 
 // ALLOCATOR
 
+/**
+ *  \brief Base for stack memory allocator.
+ */
+struct stack_allocator_base
+{
+    size_t max_size(size_t size) const noexcept;
+};
+
 
 /**
  *  \brief Allocator optimized for stack-based allocation.
@@ -66,7 +77,7 @@ template <
     size_t N,
     size_t Alignment = alignof(std::max_align_t)
 >
-class stack_allocator
+class stack_allocator: stack_allocator_base
 {
 public:
     // STATIC VARIABLES
@@ -77,13 +88,38 @@ public:
     // MEMBER TYPES
     // ------------
     using value_type = T;
+    using pointer = T*;
+    using const_pointer = const T*;
+    using reference = T&;
+    using const_reference = const T&;
+    using size_type = size_t;
+    using difference_type = std::ptrdiff_t;
     using arena_type = stack_allocator_arena<size, alignment>;
 
     // MEMBER FUNCTIONS
     // ----------------
-    // TODO: need a default constructor...
+    stack_allocator(arena_type& arena) noexcept;
     stack_allocator(const stack_allocator&) = default;
-    stack_allocator& operator=(const stack_allocator&) = delete;
+    stack_allocator& operator=(const stack_allocator&) = default;
+    stack_allocator(stack_allocator&&) = delete;
+    stack_allocator& operator=(stack_allocator&&) = delete;
+    ~stack_allocator() noexcept;
+
+    pointer address(reference) const noexcept;
+    const_pointer address(const_reference) const noexcept;
+    pointer allocate(size_type, const void* = nullptr);
+    void deallocate(pointer, size_type);
+    template <typename U, class... Ts> void construct(U*, Ts&&...);
+    template <typename U> void destroy(U*);
+    size_type max_size() const noexcept;
+
+    // STATIC
+    // ------
+    static pointer allocate(const stack_allocator<T, N, Alignment>&, size_type, const void* = nullptr);
+    static void deallocate(const stack_allocator<T, N, Alignment>&, pointer p, size_type);
+    template <typename U, size_t O, size_t B, class... Ts> static void construct(const stack_allocator<U, O, B>&, U*, Ts&&...);
+    template <typename U, size_t O, size_t B> static void destroy(const stack_allocator<U, O, B>&, U*);
+    static size_type max_size(const stack_allocator<T, N, Alignment>&) noexcept;
 
 private:
     arena_type& arena_;
@@ -178,5 +214,103 @@ bool stack_allocator_arena<N, Alignment>::pointer_in_buffer(char* p) noexcept
 
 // ALLOCATOR
 
+
+template <typename T, size_t N, size_t Alignment>
+stack_allocator<T, N, Alignment>::stack_allocator(arena_type& arena) noexcept:
+    arena_(arena)
+{}
+
+
+template <typename T, size_t N, size_t Alignment>
+stack_allocator<T, N, Alignment>::~stack_allocator() noexcept
+{}
+
+
+template <typename T, size_t N, size_t Alignment>
+auto stack_allocator<T, N, Alignment>::address(reference t) const noexcept -> pointer
+{
+    return std::addressof(t);
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+auto stack_allocator<T, N, Alignment>::address(const_reference t) const noexcept -> const_pointer
+{
+    return std::addressof(t);
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+auto stack_allocator<T, N, Alignment>::allocate(size_type n, const void* hint) -> pointer
+{
+    return reinterpret_cast<T*>(arena_.template allocate<alignof(T)>(sizeof(T) * n));
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+void stack_allocator<T, N, Alignment>::deallocate(pointer p, size_type n)
+{
+    arena_.deallocate(reinterpret_cast<char*>(p), sizeof(T) * n);
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+template<typename U, class... Ts>
+void stack_allocator<T, N, Alignment>::construct(U* p, Ts&&... ts)
+{
+    new ((void*)p) value_type(std::forward<Ts>(ts)...);
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+template <typename U>
+void stack_allocator<T, N, Alignment>::destroy(U* p)
+{
+    p->~U();
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+auto stack_allocator<T, N, Alignment>::max_size() const noexcept -> size_type
+{
+    return stack_allocator_base::max_size(sizeof(value_type));
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+auto stack_allocator<T, N, Alignment>::allocate(const stack_allocator<T, N, Alignment>& a, size_type n, const void* p) -> pointer
+{
+    return a.allocate(n, p);
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+void stack_allocator<T, N, Alignment>::deallocate(const stack_allocator<T, N, Alignment>& a, pointer p, size_type n)
+{
+    a.deallocate(p, n);
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+template <typename U, size_t O, size_t B, class... Ts>
+void stack_allocator<T, N, Alignment>::construct(const stack_allocator<U, O, B>& a, U* p, Ts&&... ts)
+{
+    a.construct(p, std::forward<Ts>(ts)...);
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+template <typename U, size_t O, size_t B>
+void stack_allocator<T, N, Alignment>::destroy(const stack_allocator<U, O, B>& a, U* p)
+{
+    a.destroy(p);
+}
+
+
+template <typename T, size_t N, size_t Alignment>
+auto stack_allocator<T, N, Alignment>::max_size(const stack_allocator<T, N, Alignment>& other) noexcept -> size_type
+{
+    return other.max_size();
+}
 
 PYCPP_END_NAMESPACE

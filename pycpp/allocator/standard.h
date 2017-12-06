@@ -45,13 +45,13 @@ struct standard_allocator: private standard_allocator_base
 
     // MEMBER TYPES
     // ------------
-    typedef T value_type;
-    typedef T* pointer;
-    typedef const T* const_pointer;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
+    using value_type = T;
+    using pointer = T*;
+    using const_pointer = const T*;
+    using reference = T&;
+    using const_reference = const T&;
+    using size_type = size_t;
+    using difference_type = std::ptrdiff_t;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -72,8 +72,8 @@ struct standard_allocator: private standard_allocator_base
     // ------
     static pointer allocate(const standard_allocator<T>&, size_type, const void* = nullptr);
     static void deallocate(const standard_allocator<T>&, pointer p, size_type);
-    template<typename U, class... Ts> static void construct(const standard_allocator<U>&, U*, Ts&&...);
-    template<typename U> static void destroy(const standard_allocator<U>&, U*);
+    template <typename U, class... Ts> static void construct(const standard_allocator<U>&, U*, Ts&&...);
+    template <typename U> static void destroy(const standard_allocator<U>&, U*);
     static size_type max_size(const standard_allocator<T>&) noexcept;
 };
 
@@ -127,7 +127,7 @@ auto standard_allocator<T>::allocate(size_type n, const void* hint) -> pointer
 template <typename T>
 void standard_allocator<T>::deallocate(pointer p, size_type n)
 {
-    standard_allocator_base::deallocate(p, n);
+    standard_allocator_base::deallocate(p, sizeof(value_type) * n);
 }
 
 

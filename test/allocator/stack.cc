@@ -12,15 +12,21 @@ PYCPP_USING_NAMESPACE
 
 TEST(stack_allocator, stack_allocator)
 {
-// TODO: restore
-//    using allocator_type = stack_allocator<char>;
-//    allocator_type allocator;
-//
-//    char* ptr = allocator.allocate(50);
-//    allocator.deallocate(ptr, 50);
-//
-//    ptr = allocator.allocate(50);
-//    allocator.construct(ptr, 0);
-//    allocator.destroy(ptr);
-//    allocator.deallocate(ptr, 50);
+    using allocator_type = stack_allocator<char, 200>;
+    using arena_type = typename allocator_type::arena_type;
+    arena_type arena;
+    allocator_type allocator(arena);
+
+    char* ptr = allocator.allocate(50);
+    allocator.deallocate(ptr, 50);
+
+    // allocate larger than buffer
+    ptr = allocator.allocate(250);
+    ASSERT_NE(ptr, nullptr);
+    allocator.deallocate(ptr, 250);
+
+    ptr = allocator.allocate(50);
+    allocator.construct(ptr, 0);
+    allocator.destroy(ptr);
+    allocator.deallocate(ptr, 50);
 }

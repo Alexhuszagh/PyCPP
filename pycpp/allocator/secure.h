@@ -45,13 +45,13 @@ struct secure_allocator: private secure_allocator_base
 
     // MEMBER TYPES
     // ------------
-    typedef T value_type;
-    typedef T* pointer;
-    typedef const T* const_pointer;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef std::size_t size_type;
-    typedef std::ptrdiff_t difference_type;
+    using value_type = T;
+    using pointer = T*;
+    using const_pointer = const T*;
+    using reference = T&;
+    using const_reference = const T&;
+    using size_type = size_t;
+    using difference_type = std::ptrdiff_t;
 
     // MEMBER FUNCTIONS
     // ----------------

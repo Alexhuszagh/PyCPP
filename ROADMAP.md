@@ -2,8 +2,6 @@
 
 **Short-Term**
 
-    - Need a compressed_pair and compressed_class definition
-        - Unittests
     - Implement a sorted vector
         - unittests
     - Ordered set unittests

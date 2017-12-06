@@ -625,14 +625,15 @@ set(SOURCE_FILES
 
 if(BUILD_ALLOCATOR)
     # TODO: implement....
-    # TODO: add pool, list, etc. allocators....
+    # TODO: add pool, linear, etc. allocators....
     list(APPEND HEADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/stack.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.h"
     )
     list(APPEND SOURCE_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/stack.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.cc"
     )
 endif()
