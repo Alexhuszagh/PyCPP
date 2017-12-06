@@ -78,10 +78,10 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    lri_cache(int cache_size = 128);
-    lri_cache(const self&);
+    lri_cache(int cache_size = 128, const allocator_type& alloc = allocator_type());
+    lri_cache(const self&, const allocator_type& alloc = allocator_type());
     self& operator=(const self&);
-    lri_cache(self&&);
+    lri_cache(self&&, const allocator_type& alloc = allocator_type());
     self& operator=(self&&);
 
     // CAPACITY
@@ -159,15 +159,18 @@ protected:
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-lri_cache<K, V, H, P, A, L, M>::lri_cache(int cache_size):
+lri_cache<K, V, H, P, A, L, M>::lri_cache(int cache_size, const allocator_type& alloc):
+    list_(alloc),
+    map_(alloc),
     cache_size_(cache_size)
 {}
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-lri_cache<K, V, H, P, A, L, M>::lri_cache(const self& rhs):
-    cache_size_(rhs.cache_size_),
-    list_(rhs.list_)
+lri_cache<K, V, H, P, A, L, M>::lri_cache(const self& rhs, const allocator_type& alloc):
+    list_(rhs.list_, alloc),
+    map_(alloc),
+    cache_size_(rhs.cache_size_)
 {
     for (auto it = list_.begin(); it != list_.end(); ++it) {
         map_.emplace(std::make_pair(std::cref(it->first), it));
@@ -191,7 +194,9 @@ auto lri_cache<K, V, H, P, A, L, M>::operator=(const self& rhs) -> self&
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-lri_cache<K, V, H, P, A, L, M>::lri_cache(self&& rhs)
+lri_cache<K, V, H, P, A, L, M>::lri_cache(self&& rhs, const allocator_type& alloc):
+    list_(alloc),
+    map_(alloc)
 {
     swap(rhs);
 }
@@ -544,7 +549,7 @@ auto lri_cache<K, V, H, P, A, L, M>::key_eq() const -> key_equal
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
 auto lri_cache<K, V, H, P, A, L, M>::get_allocator() const -> allocator_type
 {
-    return allocator_type();
+    return map_.get_allocator();
 }
 
 

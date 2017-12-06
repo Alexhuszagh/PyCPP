@@ -2,11 +2,17 @@
 
 **Short-Term**
 
+    - Need a compressed_pair and compressed_class definition
+        - Unittests
     - Implement a sorted vector
         - unittests
     - Ordered set unittests
     - Add tests for robin-hood hash into the project
     - Add tests from btree-cpp into the project
+        - Need to add support for C++11 stuff...
+
+    - Need to stop copying allocators or declaring them...
+        - Defeats the purpose of an allocator really?
 
     - Add custom memory allocators
         - https://github.com/mtrebi/memory-allocators

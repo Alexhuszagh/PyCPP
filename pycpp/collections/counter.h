@@ -746,6 +746,7 @@ auto counter<K, H, P, A, M>::key_eq() const -> key_equal
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 auto counter<K, H, P, A, M>::get_allocator() const -> allocator_type
 {
+    // TODO: fix...
     return allocator_type();
 }
 

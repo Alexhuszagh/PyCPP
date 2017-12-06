@@ -136,10 +136,10 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    lru_cache(int cache_size = 128);
-    lru_cache(const self&);
+    lru_cache(int cache_size = 128, const allocator_type& alloc = allocator_type());
+    lru_cache(const self&, const allocator_type& alloc = allocator_type());
     self& operator=(const self&);
-    lru_cache(self&&);
+    lru_cache(self&&, const allocator_type& alloc = allocator_type());
     self& operator=(self&&);
 
     // CAPACITY
@@ -216,15 +216,18 @@ protected:
 // --------------
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-lru_cache<K, V, H, P, A, L, M>::lru_cache(int cache_size):
+lru_cache<K, V, H, P, A, L, M>::lru_cache(int cache_size, const allocator_type& alloc):
+    list_(alloc),
+    map_(alloc),
     cache_size_(cache_size)
 {}
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-lru_cache<K, V, H, P, A, L, M>::lru_cache(const self& rhs):
-    cache_size_(rhs.cache_size_),
-    list_(rhs.list_)
+lru_cache<K, V, H, P, A, L, M>::lru_cache(const self& rhs, const allocator_type& alloc):
+    list_(rhs.list_, alloc),
+    map_(alloc),
+    cache_size_(rhs.cache_size_)
 {
     for (auto it = list_.begin(); it != list_.end(); ++it) {
         map_.emplace(std::make_pair(std::cref(it->first), it));
@@ -248,7 +251,9 @@ auto lru_cache<K, V, H, P, A, L, M>::operator=(const self& rhs) -> self&
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-lru_cache<K, V, H, P, A, L, M>::lru_cache(self&& rhs)
+lru_cache<K, V, H, P, A, L, M>::lru_cache(self&& rhs, const allocator_type& alloc):
+    list_(alloc),
+    map_(alloc)
 {
     swap(rhs);
 }
@@ -601,7 +606,7 @@ auto lru_cache<K, V, H, P, A, L, M>::key_eq() const -> key_equal
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
 auto lru_cache<K, V, H, P, A, L, M>::get_allocator() const -> allocator_type
 {
-    return allocator_type();
+    return map_.get_allocator();
 }
 
 

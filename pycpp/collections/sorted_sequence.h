@@ -600,6 +600,7 @@ auto sorted_sequence<T, C, A, _>::value_comp() const noexcept -> value_compare
 template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::get_allocator() const noexcept -> allocator_type
 {
+    // TODO: fix
     return allocator_type();
 }
 

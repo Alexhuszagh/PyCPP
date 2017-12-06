@@ -155,7 +155,6 @@ auto secure_allocator<T>::max_size() const noexcept -> size_type
 }
 
 
-
 template <typename T>
 auto secure_allocator<T>::allocate(const secure_allocator<T>& a, size_type n, const void* p) -> pointer
 {

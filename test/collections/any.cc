@@ -2,7 +2,7 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief any unittests.
+ *  \brief `any` unittests.
  */
 
 #include <pycpp/collections/any.h>

@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/allocator/secure.h>
+#include <pycpp/allocator/standard.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -10,9 +10,9 @@ PYCPP_USING_NAMESPACE
 // -----
 
 
-TEST(secure_allocator, secure_allocator)
+TEST(standard_allocator, standard_allocator)
 {
-    using allocator_type = secure_allocator<char>;
+    using allocator_type = standard_allocator<char>;
     allocator_type allocator;
 
     char* ptr = allocator.allocate(50);

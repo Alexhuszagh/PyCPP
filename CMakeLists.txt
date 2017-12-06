@@ -455,6 +455,8 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm/interpolation_search.h"
     # Build secure allocator even if custom allocators are disabled
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.h"
+    # Include compressed pair header even if collections are disabled.
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/compressed_pair.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/category.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/chunked.h"
@@ -623,12 +625,16 @@ set(SOURCE_FILES
 
 if(BUILD_ALLOCATOR)
     # TODO: implement....
-#    list(APPEND HEADER_FILES
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/xx.h"
-#    )
-#    list(APPEND SOURCE_FILES
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/xx.cc"
-#    )
+    # TODO: add pool, list, etc. allocators....
+    list(APPEND HEADER_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/stack.h"
+    )
+    list(APPEND SOURCE_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.cc"
+    )
 endif()
 
 if(BUILD_CACHE)
@@ -961,6 +967,7 @@ set(TEST_FILES
     test/allocator/secure.cc
     test/cache/lri.cc
     test/cache/lru.cc
+    test/collections/compressed_pair.cc
     test/lexical.cc
     test/lexical/atof.cc
     test/lexical/atoi.cc
@@ -1054,6 +1061,15 @@ set(TEST_FILES
     test/itertools.cc
     test/random.cc
 )
+
+
+if(BUILD_ALLOCATOR)
+    list(APPEND TEST_FILES
+        test/allocator/pool.cc
+        test/allocator/stack.cc
+        test/allocator/standard.cc
+    )
+endif()
 
 if (BUILD_CACHE)
     if(BUILD_KEYVALUE)
