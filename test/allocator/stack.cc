@@ -32,9 +32,9 @@ TEST(stack_allocator, stack_allocator)
 
 TEST(stack_allocator, vector)
 {
-//    using allocator_type = stack_allocator<char, 200>;
-//    using vector = std::vector<char, allocator_type>;
-//
-//    vector v1;
-//    v1.emplace_back(1);
+    using allocator_type = stack_allocator<char, 200>;
+    using vector = std::vector<char, allocator_type>;
+
+    vector v1;
+    v1.emplace_back(1);
 }

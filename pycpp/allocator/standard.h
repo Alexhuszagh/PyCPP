@@ -51,6 +51,7 @@ struct standard_allocator: private standard_allocator_base
     // ----------------
     standard_allocator() noexcept = default;
     standard_allocator(const standard_allocator<T>&) noexcept = default;
+    standard_allocator<T>& operator=(const standard_allocator<T>&) noexcept = default;
     ~standard_allocator() = default;
 
     pointer allocate(size_type, const void* = nullptr);

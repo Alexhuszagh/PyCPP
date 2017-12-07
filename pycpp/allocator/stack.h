@@ -67,15 +67,6 @@ private:
 // ALLOCATOR
 
 /**
- *  \brief Base for stack memory allocator.
- */
-struct stack_allocator_base
-{
-    size_t max_size(size_t size) const noexcept;
-};
-
-
-/**
  *  \brief Allocator optimized for stack-based allocation.
  */
 template <
@@ -83,7 +74,7 @@ template <
     size_t N,
     size_t Alignment = alignof(std::max_align_t)
 >
-class stack_allocator: stack_allocator_base
+class stack_allocator
 {
 public:
     // MEMBER TEMPLATES
@@ -112,25 +103,11 @@ public:
     stack_allocator();
     stack_allocator(arena_type& arena) noexcept;
     stack_allocator(const stack_allocator<T, N, Alignment>&);
-    template <typename T1, size_t N1 = N, size_t A1 = Alignment> stack_allocator(const stack_allocator<T1, N1, A1>&);
-    stack_allocator& operator=(const stack_allocator<T, N, Alignment>&) = delete;
+    stack_allocator<T, N, Alignment>& operator=(const stack_allocator<T, N, Alignment>&);
     ~stack_allocator() noexcept;
 
-    pointer address(reference) const noexcept;
-    const_pointer address(const_reference) const noexcept;
     pointer allocate(size_type, const void* = nullptr);
     void deallocate(pointer, size_type);
-    template <typename U, class... Ts> void construct(U*, Ts&&...);
-    template <typename U> void destroy(U*);
-    size_type max_size() const noexcept;
-
-    // STATIC
-    // ------
-    static pointer allocate(const stack_allocator<T, N, Alignment>&, size_type, const void* = nullptr);
-    static void deallocate(const stack_allocator<T, N, Alignment>&, pointer p, size_type);
-    template <typename U, size_t O, size_t B, class... Ts> static void construct(const stack_allocator<U, O, B>&, U*, Ts&&...);
-    template <typename U, size_t O, size_t B> static void destroy(const stack_allocator<U, O, B>&, U*);
-    static size_type max_size(const stack_allocator<T, N, Alignment>&) noexcept;
 
 private:
     bool delete_;
@@ -252,11 +229,11 @@ stack_allocator<T, N, Alignment>::stack_allocator(const stack_allocator<T, N, Al
 
 
 template <typename T, size_t N, size_t Alignment>
-template <typename T1, size_t N1, size_t A1>
-stack_allocator<T, N, Alignment>::stack_allocator(const stack_allocator<T1, N1, A1>& rhs):
-    delete_(rhs.delete_),
-    arena_(delete_ ? new arena_type : rhs.arena_)
-{}
+stack_allocator<T, N, Alignment>& stack_allocator<T, N, Alignment>::operator=(const stack_allocator<T, N, Alignment>& rhs)
+{
+    delete_ = rhs.delete_;
+    arena_ = delete_ ? new arena_type : rhs.arena_;
+}
 
 
 template <typename T, size_t N, size_t Alignment>
@@ -265,20 +242,6 @@ stack_allocator<T, N, Alignment>::~stack_allocator() noexcept
     if (delete_) {
         delete arena_;
     }
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-auto stack_allocator<T, N, Alignment>::address(reference t) const noexcept -> pointer
-{
-    return std::addressof(t);
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-auto stack_allocator<T, N, Alignment>::address(const_reference t) const noexcept -> const_pointer
-{
-    return std::addressof(t);
 }
 
 
@@ -293,66 +256,6 @@ template <typename T, size_t N, size_t Alignment>
 void stack_allocator<T, N, Alignment>::deallocate(pointer p, size_type n)
 {
     arena_->deallocate(reinterpret_cast<char*>(p), sizeof(T) * n);
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-template<typename U, class... Ts>
-void stack_allocator<T, N, Alignment>::construct(U* p, Ts&&... ts)
-{
-    new ((void*)p) value_type(std::forward<Ts>(ts)...);
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-template <typename U>
-void stack_allocator<T, N, Alignment>::destroy(U* p)
-{
-    p->~U();
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-auto stack_allocator<T, N, Alignment>::max_size() const noexcept -> size_type
-{
-    return stack_allocator_base::max_size(sizeof(value_type));
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-auto stack_allocator<T, N, Alignment>::allocate(const stack_allocator<T, N, Alignment>& a, size_type n, const void* p) -> pointer
-{
-    return a.allocate(n, p);
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-void stack_allocator<T, N, Alignment>::deallocate(const stack_allocator<T, N, Alignment>& a, pointer p, size_type n)
-{
-    a.deallocate(p, n);
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-template <typename U, size_t O, size_t B, class... Ts>
-void stack_allocator<T, N, Alignment>::construct(const stack_allocator<U, O, B>& a, U* p, Ts&&... ts)
-{
-    a.construct(p, std::forward<Ts>(ts)...);
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-template <typename U, size_t O, size_t B>
-void stack_allocator<T, N, Alignment>::destroy(const stack_allocator<U, O, B>& a, U* p)
-{
-    a.destroy(p);
-}
-
-
-template <typename T, size_t N, size_t Alignment>
-auto stack_allocator<T, N, Alignment>::max_size(const stack_allocator<T, N, Alignment>& other) noexcept -> size_type
-{
-    return other.max_size();
 }
 
 PYCPP_END_NAMESPACE

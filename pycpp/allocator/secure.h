@@ -49,6 +49,7 @@ struct secure_allocator: private secure_allocator_base
     // ----------------
     secure_allocator() noexcept = default;
     secure_allocator(const secure_allocator<T>&) noexcept = default;
+    secure_allocator<T>& operator=(const secure_allocator<T>&) noexcept = default;
     ~secure_allocator() = default;
 
     pointer allocate(size_type, const void* = nullptr);

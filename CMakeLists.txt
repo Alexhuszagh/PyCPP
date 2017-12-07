@@ -634,7 +634,6 @@ if(BUILD_ALLOCATOR)
     )
     list(APPEND SOURCE_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/stack.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.cc"
     )
 endif()
