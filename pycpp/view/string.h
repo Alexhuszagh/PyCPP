@@ -761,8 +761,7 @@ basic_string_view<C, T>::basic_string_view(const C* str)
 
 
 template <typename C, typename T>
-basic_string_view<C, T>::basic_string_view(const C* str,
-    size_t n)
+basic_string_view<C, T>::basic_string_view(const C* str, size_t n)
 {
     data_ = str;
     length_ = n;
@@ -770,8 +769,7 @@ basic_string_view<C, T>::basic_string_view(const C* str,
 
 
 template <typename C, typename T>
-basic_string_view<C, T>::basic_string_view(const C* begin,
-        const C* end):
+basic_string_view<C, T>::basic_string_view(const C* begin, const C* end):
     data_(begin),
     length_(end - begin)
 {}

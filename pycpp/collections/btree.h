@@ -1347,11 +1347,10 @@ public:
     // Assign the contents of x to *this.
     self_type& operator=(const self_type& x)
     {
-        if (&x == this) {
-            // Don't copy onto ourselves.
-            return *this;
+        if (this != &x) {
+            assign(x);
         }
-        assign(x);
+
         return *this;
     }
 

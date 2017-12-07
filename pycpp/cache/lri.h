@@ -181,12 +181,14 @@ lri_cache<K, V, H, P, A, L, M>::lri_cache(const self& rhs, const allocator_type&
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
 auto lri_cache<K, V, H, P, A, L, M>::operator=(const self& rhs) -> self&
 {
-    clear();
+    if (this != &rhs) {
+        clear();
 
-    cache_size_ = rhs.cache_size_;
-    list_ = list_type(rhs.list_);
-    for (auto it = list_.begin(); it != list_.end(); ++it) {
-        map_.emplace(std::make_pair(std::cref(it->first), it));
+        cache_size_ = rhs.cache_size_;
+        list_ = list_type(rhs.list_);
+        for (auto it = list_.begin(); it != list_.end(); ++it) {
+            map_.emplace(std::make_pair(std::cref(it->first), it));
+        }
     }
 
     return *this;

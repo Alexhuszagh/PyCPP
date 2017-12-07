@@ -630,6 +630,7 @@ if(BUILD_ALLOCATOR)
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/stack.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/vector.h"
     )
     list(APPEND SOURCE_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.cc"
@@ -1069,6 +1070,7 @@ if(BUILD_ALLOCATOR)
         test/allocator/pool.cc
         test/allocator/stack.cc
         test/allocator/standard.cc
+        test/fixed/vector.cc
     )
 endif()
 

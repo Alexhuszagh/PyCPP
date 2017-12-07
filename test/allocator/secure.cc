@@ -3,6 +3,7 @@
 
 #include <pycpp/allocator/secure.h>
 #include <gtest/gtest.h>
+#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -19,7 +20,15 @@ TEST(secure_allocator, secure_allocator)
     allocator.deallocate(ptr, 50);
 
     ptr = allocator.allocate(50);
-    allocator.construct(ptr, 0);
-    allocator.destroy(ptr);
     allocator.deallocate(ptr, 50);
+}
+
+
+TEST(secure_allocator, vector)
+{
+    using allocator_type = secure_allocator<char>;
+    using vector = std::vector<char, allocator_type>;
+
+    vector v1;
+    v1.emplace_back(1);
 }

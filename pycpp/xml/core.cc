@@ -79,8 +79,10 @@ xml_node_iterator_t::xml_node_iterator_t(const self& other):
 
 auto xml_node_iterator_t::operator=(const self& other) -> xml_node_iterator_t&
 {
-    delete (xml_node_iterator_impl_t*) ptr_;
-    ptr_ = (void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) other.ptr_);
+    if (this != &other) {
+        delete (xml_node_iterator_impl_t*) ptr_;
+        ptr_ = (void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) other.ptr_);
+    }
     return *this;
 }
 
@@ -204,13 +206,15 @@ xml_node_list_t::xml_node_list_t(const self& other):
 
 auto xml_node_list_t::operator=(const self& other) -> self&
 {
-    auto& src = *(const xml_node_list_impl_t*) other.ptr_;
-    auto& dst = *(xml_node_list_impl_t*) ptr_;
-    dst.clear();
-    for (const xml_node_t& node: src) {
-        xml_node_impl_t* ptr = new xml_node_impl_t(*node.ptr_);
-        ptr->parent = this;
-        dst.emplace_back(xml_node_t(ptr));
+    if (this != &other) {
+        auto& src = *(const xml_node_list_impl_t*) other.ptr_;
+        auto& dst = *(xml_node_list_impl_t*) ptr_;
+        dst.clear();
+        for (const xml_node_t& node: src) {
+            xml_node_impl_t* ptr = new xml_node_impl_t(*node.ptr_);
+            ptr->parent = this;
+            dst.emplace_back(xml_node_t(ptr));
+        }
     }
 
     return *this;

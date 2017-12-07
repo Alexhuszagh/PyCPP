@@ -26,7 +26,15 @@ TEST(stack_allocator, stack_allocator)
     allocator.deallocate(ptr, 250);
 
     ptr = allocator.allocate(50);
-    allocator.construct(ptr, 0);
-    allocator.destroy(ptr);
     allocator.deallocate(ptr, 50);
+}
+
+
+TEST(stack_allocator, vector)
+{
+//    using allocator_type = stack_allocator<char, 200>;
+//    using vector = std::vector<char, allocator_type>;
+//
+//    vector v1;
+//    v1.emplace_back(1);
 }

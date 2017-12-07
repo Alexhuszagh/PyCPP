@@ -13,8 +13,9 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <cstddef>
 #include <cassert>
+#include <cstddef>
+#include <cstring>
 #include <limits>
 #include <memory>
 
@@ -26,6 +27,11 @@ PYCPP_BEGIN_NAMESPACE
 
 /**
  *  \brief Arena to allocate memory from the stack.
+ *
+ *  Move constructores are disabled since arrays are not pointers,
+ *  and therefore would require an O(n) swap. Likewise, copy constructors
+ *  are disabled, since it would require copying the entire internal state,
+ *  something which is a relatively rare use-case.
  */
 template <
     size_t N,
@@ -35,11 +41,11 @@ class stack_allocator_arena
 {
 public:
     stack_allocator_arena() noexcept;
-    ~stack_allocator_arena();
     stack_allocator_arena(const stack_allocator_arena&) = delete;
     stack_allocator_arena& operator=(const stack_allocator_arena&) = delete;
     stack_allocator_arena(stack_allocator_arena&&) = delete;
     stack_allocator_arena& operator=(stack_allocator_arena&&) = delete;
+    ~stack_allocator_arena();
 
     // ALLOCATION
     template <size_t RequiredAlignment> char* allocate(size_t n);
@@ -80,6 +86,11 @@ template <
 class stack_allocator: stack_allocator_base
 {
 public:
+    // MEMBER TEMPLATES
+    // ----------------
+    template <typename T1, size_t N1 = N, size_t A1 = Alignment>
+    struct rebind { using other = stack_allocator<T1, N1, A1>; };
+
     // STATIC VARIABLES
     // ----------------
     static constexpr size_t alignment = Alignment;
@@ -98,11 +109,11 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
+    stack_allocator();
     stack_allocator(arena_type& arena) noexcept;
-    stack_allocator(const stack_allocator&) = default;
-    stack_allocator& operator=(const stack_allocator&) = default;
-    stack_allocator(stack_allocator&&) = delete;
-    stack_allocator& operator=(stack_allocator&&) = delete;
+    stack_allocator(const stack_allocator<T, N, Alignment>&);
+    template <typename T1, size_t N1 = N, size_t A1 = Alignment> stack_allocator(const stack_allocator<T1, N1, A1>&);
+    stack_allocator& operator=(const stack_allocator<T, N, Alignment>&) = delete;
     ~stack_allocator() noexcept;
 
     pointer address(reference) const noexcept;
@@ -122,7 +133,8 @@ public:
     static size_type max_size(const stack_allocator<T, N, Alignment>&) noexcept;
 
 private:
-    arena_type& arena_;
+    bool delete_;
+    arena_type* arena_;
 };
 
 // IMPLEMENTATION
@@ -150,8 +162,8 @@ char* stack_allocator_arena<N, Alignment>::allocate(size_t n)
     static_assert(RequiredAlignment <= Alignment, "Alignment is too small for this arena");
     assert(pointer_in_buffer(ptr_) && "Allocator has outlived arena.");
 
-    auto const aligned_n = align_up(n);
-    if (static_cast<decltype(aligned_n)>(buf_ + N - ptr_) >= aligned_n) {
+    size_t aligned_n = align_up(n);
+    if (static_cast<size_t>(buf_ + N - ptr_) >= aligned_n) {
         char* r = ptr_;
         ptr_ += aligned_n;
         return r;
@@ -163,6 +175,7 @@ char* stack_allocator_arena<N, Alignment>::allocate(size_t n)
     );
     return static_cast<char*>(operator new(n));
 }
+
 
 template <size_t N, size_t Alignment>
 void stack_allocator_arena<N, Alignment>::deallocate(char* p, size_t n) noexcept
@@ -186,11 +199,13 @@ size_t stack_allocator_arena<N, Alignment>::size() noexcept
     return N;
 }
 
+
 template <size_t N, size_t Alignment>
 size_t stack_allocator_arena<N, Alignment>::used() const noexcept
 {
     return static_cast<size_t>(ptr_ - buf_);
 }
+
 
 template <size_t N, size_t Alignment>
 void stack_allocator_arena<N, Alignment>::reset() noexcept
@@ -216,14 +231,41 @@ bool stack_allocator_arena<N, Alignment>::pointer_in_buffer(char* p) noexcept
 
 
 template <typename T, size_t N, size_t Alignment>
+stack_allocator<T, N, Alignment>::stack_allocator():
+    delete_(true),
+    arena_(new arena_type)
+{}
+
+
+template <typename T, size_t N, size_t Alignment>
 stack_allocator<T, N, Alignment>::stack_allocator(arena_type& arena) noexcept:
-    arena_(arena)
+    delete_(false),
+    arena_(&arena)
+{}
+
+
+template <typename T, size_t N, size_t Alignment>
+stack_allocator<T, N, Alignment>::stack_allocator(const stack_allocator<T, N, Alignment>& rhs):
+    delete_(rhs.delete_),
+    arena_(delete_ ? new arena_type : rhs.arena_)
+{}
+
+
+template <typename T, size_t N, size_t Alignment>
+template <typename T1, size_t N1, size_t A1>
+stack_allocator<T, N, Alignment>::stack_allocator(const stack_allocator<T1, N1, A1>& rhs):
+    delete_(rhs.delete_),
+    arena_(delete_ ? new arena_type : rhs.arena_)
 {}
 
 
 template <typename T, size_t N, size_t Alignment>
 stack_allocator<T, N, Alignment>::~stack_allocator() noexcept
-{}
+{
+    if (delete_) {
+        delete arena_;
+    }
+}
 
 
 template <typename T, size_t N, size_t Alignment>
@@ -243,14 +285,14 @@ auto stack_allocator<T, N, Alignment>::address(const_reference t) const noexcept
 template <typename T, size_t N, size_t Alignment>
 auto stack_allocator<T, N, Alignment>::allocate(size_type n, const void* hint) -> pointer
 {
-    return reinterpret_cast<T*>(arena_.template allocate<alignof(T)>(sizeof(T) * n));
+    return reinterpret_cast<T*>(arena_->template allocate<alignof(T)>(sizeof(T) * n));
 }
 
 
 template <typename T, size_t N, size_t Alignment>
 void stack_allocator<T, N, Alignment>::deallocate(pointer p, size_type n)
 {
-    arena_.deallocate(reinterpret_cast<char*>(p), sizeof(T) * n);
+    arena_->deallocate(reinterpret_cast<char*>(p), sizeof(T) * n);
 }
 
 

@@ -156,6 +156,8 @@ Supported features include:
 
 - [Counter](/pycpp/collections/counter.h) to count hashable objects.
 - [Threshold counter](/pycpp/collections/threshold_counter.h) for long-term counting of hashable objects above a frequency threshold.
+- Binary Search Tree [map](/pycpp/collections/btree_map.h) and [set](/pycpp/collections/btree_set.h) implemented using B-trees for enhanced performance.
+- Hash [map](/pycpp/collections/robin_map.h) and [set](/pycpp/collections/robin_set.h) implemented using robin-hood addressing for enhanced performance.
 
 // TODO document
 
@@ -185,6 +187,24 @@ PyCPP includes a container with multiple views of the stored data type, based of
 - Multiple views based off [hashable](/pycpp/multi_index/hashed_index.h), [ordered](/pycpp/multi_index/ordered_index.h), [ranked](/pycpp/multi_index/ranked_index.h), [sequenced](/pycpp/multi_index/sequenced_index.h), and [random-access](/pycpp/multi_index/random_access_index.h) indexes.
 - [Member](/pycpp/multi_index/member.h), [function](/pycpp/multi_index/mem_fun.h), or [composite keys](/pycpp/multi_index/composite_key.h) per view.
 - [Tagged](/pycpp/multi_index/tag.h) views.
+
+**_Allocators_**
+
+Custom STL-compatible allocators for both specialized and general-purpose allocators.
+
+- [Memory pools](/pycpp/allocator/pool.h).
+- [Stack allocators](/pycpp/allocator/stack.h) that preallocate a fixed amount of memory on the stack and only dynamically request memory after the stack has been exhausted.
+- [Secure allocator](/pycpp/allocator/secure.h) that allows memory locking, and securely zeroes memory prior to deallocation.
+
+// TODO: document
+
+**_Fixed Containers_**
+
+PyCPP includes STL-like containers that use a stack allocator to preallocate memory for the container, and therefore defines a static size with fast allocation. If the fixed buffer size is fully exhausted, these containers use dynamic memory allocation as a fallback.
+
+- [Fixed vector](/pycpp/fixed/vector.h)
+
+// TODO: document
 
 ## Separation of Logic
 

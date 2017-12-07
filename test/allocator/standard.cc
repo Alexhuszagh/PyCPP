@@ -19,7 +19,15 @@ TEST(standard_allocator, standard_allocator)
     allocator.deallocate(ptr, 50);
 
     ptr = allocator.allocate(50);
-    allocator.construct(ptr, 0);
-    allocator.destroy(ptr);
     allocator.deallocate(ptr, 50);
+}
+
+
+TEST(standard_allocator, vector)
+{
+    using allocator_type = standard_allocator<char>;
+    using vector = std::vector<char, allocator_type>;
+
+    vector v1;
+    v1.emplace_back(1);
 }
