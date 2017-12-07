@@ -61,6 +61,12 @@ private:
 
 
 template <typename T, size_t StackSize>
+fixed_vector<T, StackSize>::fixed_vector():
+    base_t(allocator_type(arena))
+{}
+
+
+template <typename T, size_t StackSize>
 fixed_vector<T, StackSize>::fixed_vector(const self_t& rhs):
     base_t(rhs, allocator_type(arena))
 {}
