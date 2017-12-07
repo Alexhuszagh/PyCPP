@@ -479,8 +479,9 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/itoa.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/null.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/enum.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/heap_pimpl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/ordering.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/pimpl.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/stack_pimpl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/xrange.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/composite_key.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/container.h"
@@ -981,8 +982,9 @@ set(TEST_FILES
     test/lexical/itoa.cc
     test/lexical/null.cc
     test/misc/enum.cc
+    test/misc/heap_pimpl.cc
     test/misc/ordering.cc
-    test/misc/pimpl.cc
+    test/misc/stack_pimpl.cc
     test/misc/xrange.cc
     test/preprocessor/architecture.cc
     test/preprocessor/byteorder.cc
