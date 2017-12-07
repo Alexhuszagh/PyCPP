@@ -126,7 +126,6 @@ TEST(f32toa, base10)
     EXPECT_EQ(f32toa(std::numeric_limits<float>::infinity(), 10), INFINITY_STRING);
 
     // check parsed value is within 32-bit float error
-    std::cout << f32toa(1.2345e+11, 10) << std::endl;
     for (float f: FLOATS) {
         EXPECT_NEAR(atof32(f32toa(f, 10), 10), f, f*1e-6);
     }

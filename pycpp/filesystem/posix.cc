@@ -143,8 +143,20 @@ static Path expanduser_impl(const Path& path)
 template <typename Path, typename FromPath, typename ToPath>
 static Path expandvars_impl(const Path& path, FromPath frompath, ToPath topath)
 {
+    // handle any error codes
     wordexp_t word;
-    wordexp(frompath(path).data(), &word, 0);
+    switch (wordexp(frompath(path).data(), &word, 0)) {
+        case 0:
+            break;
+        case WRDE_NOSPACE:
+            // memory allocation issue, likely partially allocated
+            wordfree(&word);
+        default:
+            return path;
+    }
+
+
+    // process our words
     char** ptr = word.we_wordv;
     if (word.we_wordc == 0) {
         wordfree(&word);
@@ -655,11 +667,14 @@ path_t expanduser(const path_t& path)
 
 path_t expandvars(const path_t& path)
 {
-    auto frompath = [](const path_t& p) {
+    auto frompath = [](const path_t& p) -> const std::string&
+    {
         return p;
     };
-    auto topath = [](const char* p) {
-        return p;
+
+    auto topath = [](const char* p) -> std::string
+    {
+        return path_t(p);
     };
 
     return expandvars_impl(path, frompath, topath);

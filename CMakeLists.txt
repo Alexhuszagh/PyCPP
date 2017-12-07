@@ -1063,7 +1063,6 @@ set(TEST_FILES
     test/random.cc
 )
 
-
 if(BUILD_ALLOCATOR)
     list(APPEND TEST_FILES
         test/allocator/pool.cc

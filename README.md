@@ -16,6 +16,7 @@ Python-like C++ environment with independent, lightweight utilities for cross-pl
 - [Separation of Logic](#separation-of-logic)
 - [Namespace](#namespace)
 - [Building](#building)
+- [Developer Resources](#developer-resources)
 - [Performance](#performance)
 - [Platforms](#platforms)
 - [Contributors](#contributors)
@@ -266,6 +267,10 @@ make -j 5                       # "msbuild pycpp.sln" for MSVC
 ```
 
 > **WARNING** Linking with libc++ (LLVM) causes issues with the LZMA compressors and decompressors. Any patches would be wonderful, in the meantime, please use GCC or link with libstdc++.
+
+## Developer Resources
+
+For more resources on getting started as a contributor, please read the documents in [dev](/dev).
 
 ## Performance
 

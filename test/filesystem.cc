@@ -92,6 +92,7 @@ TEST(directory_iterator, recursive_directory_iterator)
     recursive_directory_iterator last;
     EXPECT_NE(first, last);
     for (; first != last; ++first) {
+        EXPECT_TRUE(first->exists());
         list.emplace_back(first->path());
     }
     EXPECT_EQ(list.size(), 3);

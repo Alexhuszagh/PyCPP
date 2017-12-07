@@ -41,6 +41,7 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     pimpl();
+    ~pimpl();
     pimpl(const self&);
     self& operator=(const self&);
     pimpl(pimpl&&);
@@ -57,10 +58,13 @@ public:
     operator const_reference() const;
 
     void swap(self&);
+    void reset();
 
 private:
     typedef typename std::aligned_storage<S>::type memory_type;
-    memory_type mem;
+
+    memory_type mem_;
+    bool destroy_;
 };
 
 
@@ -68,36 +72,58 @@ private:
 // --------------
 
 template <typename T, size_t S>
-pimpl<T, S>::pimpl()
+pimpl<T, S>::pimpl():
+    destroy_(false)
 {}
 
 
 template <typename T, size_t S>
-pimpl<T, S>::pimpl(const self& other)
+pimpl<T, S>::~pimpl()
 {
-    new(reinterpret_cast<pointer>(&mem)) value_type(*other);
+    reset();
+}
+
+
+template <typename T, size_t S>
+pimpl<T, S>::pimpl(const self& other):
+    destroy_(other.destroy_)
+{
+    if (destroy_) {
+        new(reinterpret_cast<pointer>(&mem_)) value_type(*other);
+    }
 }
 
 
 template <typename T, size_t S>
 auto pimpl<T, S>::operator=(const self& other) -> self&
 {
-    new(reinterpret_cast<pointer>(&mem)) value_type(*other);
+    reset();
+    destroy_ = other.destroy_;
+    if (destroy_) {
+        new(reinterpret_cast<pointer>(&mem_)) value_type(*other);
+    }
     return *this;
 }
 
 
 template <typename T, size_t S>
-pimpl<T, S>::pimpl(pimpl&& other)
+pimpl<T, S>::pimpl(self&& other)
 {
-    new(reinterpret_cast<pointer>(&mem)) value_type(std::move(*other));
+    destroy_ = std::move(other.destroy_);
+    if (destroy_) {
+        new(reinterpret_cast<pointer>(&mem_)) value_type(std::move(*other));
+    }
 }
 
 
 template <typename T, size_t S>
 auto pimpl<T, S>::operator=(self&& other) -> self&
 {
-    new(reinterpret_cast<pointer>(&mem)) value_type(std::move(*other));
+    reset();
+    destroy_ = std::move(other.destroy_);
+    if (destroy_) {
+        new(reinterpret_cast<pointer>(&mem_)) value_type(std::move(*other));
+    }
     return *this;
 }
 
@@ -105,14 +131,17 @@ auto pimpl<T, S>::operator=(self&& other) -> self&
 template <typename T, size_t S>
 pimpl<T, S>::pimpl(const value_type& other)
 {
-    new(reinterpret_cast<pointer>(&mem)) value_type(other);
+    destroy_ = true;
+    new(reinterpret_cast<pointer>(&mem_)) value_type(other);
 }
 
 
 template <typename T, size_t S>
 auto pimpl<T, S>::operator=(const value_type& other) -> self&
 {
-    new(reinterpret_cast<pointer>(&mem)) value_type(other);
+    reset();
+    destroy_ = true;
+    new(reinterpret_cast<pointer>(&mem_)) value_type(other);
     return *this;
 }
 
@@ -120,14 +149,17 @@ auto pimpl<T, S>::operator=(const value_type& other) -> self&
 template <typename T, size_t S>
 pimpl<T, S>::pimpl(value_type&& other)
 {
-    new(reinterpret_cast<pointer>(&mem)) value_type(std::move(other));
+    destroy_ = true;
+    new(reinterpret_cast<pointer>(&mem_)) value_type(std::move(other));
 }
 
 
 template <typename T, size_t S>
 auto pimpl<T, S>::operator=(value_type&& other) -> self&
 {
-    new(reinterpret_cast<pointer>(&mem)) value_type(std::move(other));
+    reset();
+    destroy_ = true;
+    new(reinterpret_cast<pointer>(&mem_)) value_type(std::move(other));
     return *this;
 }
 
@@ -135,41 +167,52 @@ auto pimpl<T, S>::operator=(value_type&& other) -> self&
 template <typename T, size_t S>
 auto pimpl<T, S>::operator*() -> reference
 {
-    return reinterpret_cast<reference>(mem);
+    return reinterpret_cast<reference>(mem_);
 }
 
 
 template <typename T, size_t S>
 auto pimpl<T, S>::operator*() const -> const_reference
 {
-    return reinterpret_cast<const_reference>(mem);
+    return reinterpret_cast<const_reference>(mem_);
 }
 
 
 template <typename T, size_t S>
 auto pimpl<T, S>::operator->() -> pointer
 {
-    return reinterpret_cast<pointer>(&mem);
+    return reinterpret_cast<pointer>(&mem_);
 }
 
 template <typename T, size_t S>
 auto pimpl<T, S>::operator->() const -> const_pointer
 {
-    return reinterpret_cast<const_pointer>(&mem);
+    return reinterpret_cast<const_pointer>(&mem_);
 }
 
 
 template <typename T, size_t S>
 pimpl<T, S>::operator const_reference() const
 {
-    return reinterpret_cast<const_reference>(mem);
+    return reinterpret_cast<const_reference>(mem_);
 }
 
 
 template <typename T, size_t S>
 void pimpl<T, S>::swap(self& other)
 {
-    std::swap(mem, other.mem);
+    std::swap(destroy_, other.destroy_);
+    std::swap(**this, *other);
+}
+
+
+template <typename T, size_t S>
+void pimpl<T, S>::reset()
+{
+    if (destroy_) {
+        reinterpret_cast<pointer>(&mem_)->~T();
+    }
+    destroy_ = false;
 }
 
 PYCPP_END_NAMESPACE

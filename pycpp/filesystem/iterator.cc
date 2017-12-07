@@ -589,6 +589,7 @@ recursive_directory_data& recursive_directory_data::operator++()
     if (!dir_list.empty() && !entry) {
         // clean our values
         path_list.pop_back();
+        closedir(dir_list.back());
         dir_list.pop_back();
 
         // if we still have parents, recurse

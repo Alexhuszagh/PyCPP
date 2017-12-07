@@ -74,3 +74,6 @@ TEST(pimpl, structure)
     EXPECT_EQ(a->x, 2);
     EXPECT_EQ(b->x, 5);
 }
+
+
+// TODO: need an actual resource: a constructor/destructor, not POD

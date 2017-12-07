@@ -2,6 +2,8 @@
 
 **Short-Term**
 
+    - Test PIMPL with non-POD data
+
     - Implement a sorted vector
         - unittests
     - Ordered set unittests

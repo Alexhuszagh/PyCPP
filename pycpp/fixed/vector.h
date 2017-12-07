@@ -9,8 +9,8 @@
 
 #include <pycpp/allocator/stack.h>
 #include <initializer_list>
+#include <iostream>         // TODO: remove
 #include <vector>
-
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -46,6 +46,7 @@ public:
     fixed_vector(size_t n, const value_type& value = value_type());
     template <typename Iter> fixed_vector(Iter first, Iter last);
     fixed_vector(std::initializer_list<value_type> list);
+    ~fixed_vector();
     self_t& operator=(const self_t&);
     self_t& operator=(self_t&&) = delete;
     self_t& operator=(std::initializer_list<value_type> list);
@@ -89,6 +90,16 @@ template <typename T, size_t StackSize>
 fixed_vector<T, StackSize>::fixed_vector(std::initializer_list<value_type> list):
     base_t(list.begin(), list.end(), allocator_type(arena))
 {}
+
+
+template <typename T, size_t StackSize>
+fixed_vector<T, StackSize>::~fixed_vector()
+{
+    base_t::~base_t();
+//    ~arena();
+    std::cout << "~fixed_vector()" << std::endl;
+    // TODO: here...
+}
 
 
 template <typename T, size_t StackSize>
