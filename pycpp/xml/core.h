@@ -134,6 +134,7 @@ public:
     bool operator!=(const self&) const;
 
     // LOOKUP
+    // TODO: this should really be a string view....
     iterator find(const xml_string_t&) const;
     std::pair<iterator, iterator> findall(const xml_string_t&) const;
 

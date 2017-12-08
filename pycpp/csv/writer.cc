@@ -11,17 +11,17 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-static bool is_minimal(const std::string& value, csvpunct_impl& punct)
+static bool is_minimal(const string_view& value, csvpunct_impl& punct)
 {
-    auto has_delimiter = value.find(punct.delimiter()) != std::string::npos;
-    auto has_quote = value.find(punct.quote()) != std::string::npos;
-    auto has_newline = value.find(NEWLINE) != std::string::npos;
+    auto has_delimiter = value.find(punct.delimiter()) != string_view::npos;
+    auto has_quote = value.find(punct.quote()) != string_view::npos;
+    auto has_newline = value.find(NEWLINE) != string_view::npos;
 
     return !(has_delimiter || has_quote || has_newline);
 }
 
 
-static std::string quote_all(const std::string& value, csvpunct_impl& punct)
+static std::string quote_all(const string_view& value, csvpunct_impl& punct)
 {
     // initialize parameters
     std::string quoted, sub, repl;
@@ -31,20 +31,20 @@ static std::string quote_all(const std::string& value, csvpunct_impl& punct)
 
     // quote the value
     quoted += punct.quote();
-    quoted += replace(value, sub, repl);
+    quoted += string_wrapper(value).replace(sub, repl);
     quoted += punct.quote();
 
     return quoted;
 }
 
 
-static std::string quote_none(const std::string& value, csvpunct_impl& punct)
+static std::string quote_none(const string_view& value, csvpunct_impl& punct)
 {
-    return value;
+    return std::string(value);
 }
 
 
-static std::string quote_minimal(const std::string& value, csvpunct_impl& punct)
+static std::string quote_minimal(const string_view& value, csvpunct_impl& punct)
 {
     if (is_minimal(value, punct)) {
         return quote_none(value, punct);
@@ -54,7 +54,7 @@ static std::string quote_minimal(const std::string& value, csvpunct_impl& punct)
 }
 
 
-static std::string quote_value(const std::string& value, csvpunct_impl& punct, csv_quoting quoting)
+static std::string quote_value(const string_view& value, csvpunct_impl& punct, csv_quoting quoting)
 {
     switch (quoting) {
         case CSV_QUOTE_ALL:
@@ -141,13 +141,13 @@ csv_file_writer::csv_file_writer(csv_quoting quoting, csvpunct_impl* punct):
 {}
 
 
-csv_file_writer::csv_file_writer(const std::string &name, csv_quoting quoting, csvpunct_impl* punct)
+csv_file_writer::csv_file_writer(const string_view& name, csv_quoting quoting, csvpunct_impl* punct)
 {
     open(name, quoting, punct);
 }
 
 
-void csv_file_writer::open(const std::string &name, csv_quoting quoting, csvpunct_impl* punct)
+void csv_file_writer::open(const string_view& name, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     csv_stream_writer::open(file_, quoting, punct);
@@ -156,28 +156,28 @@ void csv_file_writer::open(const std::string &name, csv_quoting quoting, csvpunc
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-csv_file_writer::csv_file_writer(const std::wstring &name, csv_quoting quoting, csvpunct_impl* punct):
+csv_file_writer::csv_file_writer(const wstring_view& name, csv_quoting quoting, csvpunct_impl* punct):
     csv_stream_writer(quoting)
 {
     open(name);
 }
 
 
-void csv_file_writer::open(const std::wstring &name, csv_quoting quoting, csvpunct_impl* punct)
+void csv_file_writer::open(const wstring_view& name, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     csv_stream_writer::open(file_, quoting, punct);
 }
 
 
-csv_file_writer::csv_file_writer(const std::u16string &name, csv_quoting quoting, csvpunct_impl* punct):
+csv_file_writer::csv_file_writer(const u16string_view& name, csv_quoting quoting, csvpunct_impl* punct):
     csv_stream_writer(quoting)
 {
     open(name);
 }
 
 
-void csv_file_writer::open(const std::u16string &name, csv_quoting quoting, csvpunct_impl* punct)
+void csv_file_writer::open(const u16string_view& name, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     csv_stream_writer::open(file_, quoting, punct);

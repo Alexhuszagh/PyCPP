@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <string>
+#include <pycpp/view/string.h>
 #include <initializer_list>
 
 PYCPP_BEGIN_NAMESPACE
@@ -30,7 +30,7 @@ struct url_t;
 struct url_impl_t: std::string
 {
     url_impl_t() = default;
-    url_impl_t(const url_impl_t &other) = default;
+    url_impl_t(const url_impl_t&) = default;
     url_impl_t & operator=(const url_impl_t&) = default;
     url_impl_t(url_impl_t&&) = default;
     url_impl_t & operator=(url_impl_t&&) = default;
@@ -57,22 +57,21 @@ struct url_impl_t: std::string
 struct punycode_idna_t: url_impl_t
 {
     punycode_idna_t() = default;
-    punycode_idna_t(const punycode_idna_t &other) = default;
+    punycode_idna_t(const punycode_idna_t&) = default;
     punycode_idna_t & operator=(const punycode_idna_t&) = default;
     punycode_idna_t(punycode_idna_t&&) = default;
     punycode_idna_t & operator=(punycode_idna_t&&) = default;
 
-    punycode_idna_t(const char *cstring);
-    punycode_idna_t(const char *array, size_t size);
-    punycode_idna_t(const std::string &string);
+    punycode_idna_t(const char*, size_t);
+    punycode_idna_t(const string_view&);
     punycode_idna_t(std::initializer_list<char> list);
 
     // SETTERS
-    void set_service(const std::string &service);
-    void set_host(const std::string &host);
-    void set_path(const std::string &path);
-    void set_directory(const std::string &directory);
-    void set_file(const std::string &file);
+    void set_service(const std::string& service);
+    void set_host(const std::string& host);
+    void set_path(const std::string& path);
+    void set_directory(const std::string& directory);
+    void set_file(const std::string& file);
 
     unicode_idna_t to_unicode() const;
 };
@@ -89,17 +88,16 @@ struct unicode_idna_t: url_impl_t
     unicode_idna_t(unicode_idna_t&&) = default;
     unicode_idna_t & operator=(unicode_idna_t&&) = default;
 
-    unicode_idna_t(const char *cstring);
-    unicode_idna_t(const char *array, size_t size);
-    unicode_idna_t(const std::string &string);
+    unicode_idna_t(const char*, size_t);
+    unicode_idna_t(const string_view&);
     unicode_idna_t(std::initializer_list<char> list);
 
     // SETTERS
-    void set_service(const std::string &service);
-    void set_host(const std::string &host);
-    void set_path(const std::string &path);
-    void set_directory(const std::string &directory);
-    void set_file(const std::string &file);
+    void set_service(const std::string& service);
+    void set_host(const std::string& host);
+    void set_path(const std::string& path);
+    void set_directory(const std::string& directory);
+    void set_file(const std::string& file);
 
     punycode_idna_t to_punycode() const;
 };

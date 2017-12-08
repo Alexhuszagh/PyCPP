@@ -42,15 +42,14 @@ auto address_iterator_t::operator->() const -> const_pointer
 }
 
 
-auto address_iterator_t::operator++() -> address_iterator_t &
+auto address_iterator_t::operator++() -> address_iterator_t&
 {
     ptr = ptr->ai_next;
     return *this;
 }
 
 
-auto address_iterator_t::operator++(int)
-    -> address_iterator_t
+auto address_iterator_t::operator++(int) -> address_iterator_t
 {
     address_iterator_t copy(*this);
     operator++();
@@ -90,7 +89,7 @@ bool address_iterator_t::operator!=(const address_iterator_t& other) const
 }
 
 
-address_t::address_t(const addrinfo &info):
+address_t::address_t(const addrinfo& info):
     family(info.ai_family),
     socket_type(info.ai_socktype),
     protocol(info.ai_protocol),
@@ -112,7 +111,7 @@ address_t::operator addrinfo() const
 }
 
 
-dns_lookup_t::dns_lookup_t(const std::string &host, const std::string &service)
+dns_lookup_t::dns_lookup_t(const string_view& host, const string_view& service)
 {
     // initialize our hints
     struct addrinfo hints, *result;
@@ -121,19 +120,19 @@ dns_lookup_t::dns_lookup_t(const std::string &host, const std::string &service)
     hints.ai_socktype = SOCK_STREAM;
 
     // get our host and port
-    std::string nodeString, portString;
+    string_view node_string, port_string;
     const char *node = host.data();
     const char *port = service.data();
     const size_t index = host.find(":");
     if (index != std::string::npos) {
-        nodeString = host.substr(0, index);
-        portString = host.substr(index+1);
-        node = nodeString.data();
-        port = portString.data();
+        node_string = host.substr(0, index);
+        port_string = host.substr(index+1);
+        node = node_string.data();
+        port = port_string.data();
     }
 
     if (getaddrinfo(node, port, &hints, &result)) {
-        throw std::runtime_error("Unable to get address from getaddrinfo(): " + host + service);
+        throw std::runtime_error("Unable to get address from getaddrinfo(): " + std::string(host) + std::string(service));
     }
 
     info = result;

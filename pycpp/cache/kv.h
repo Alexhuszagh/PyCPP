@@ -89,7 +89,7 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     // TODO: need to use the comparator...
-    kv_cache(const path_t&, kv_options = kv_none);
+    kv_cache(const path_view_t&, kv_options = kv_none);
     ~kv_cache();
 
 // TODO: need everything
@@ -104,7 +104,7 @@ private:
 
 
 template <typename K, typename T, typename C>
-kv_cache<K, T, C>::kv_cache(const path_t& path, kv_options options):
+kv_cache<K, T, C>::kv_cache(const path_view_t& path, kv_options options):
     options_(options)
 {
     kv_open(db_, path, options);

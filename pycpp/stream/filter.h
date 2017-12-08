@@ -14,6 +14,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/stream/fstream.h>
+#include <pycpp/view/string.h>
 #include <functional>
 #include <iostream>
 #include <sstream>
@@ -169,14 +170,14 @@ public:
     filter_ifstream(filter_ifstream&&);
     filter_ifstream & operator=(filter_ifstream&&);
 
-    filter_ifstream(const std::string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
-    void open(const std::string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    filter_ifstream(const string_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    void open(const string_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    filter_ifstream(const std::wstring&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
-    void open(const std::wstring&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
-    filter_ifstream(const std::u16string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
-    void open(const std::u16string&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    filter_ifstream(const wstring_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    void open(const wstring_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    filter_ifstream(const u16string_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    void open(const u16string_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
 #endif                                          // WINDOWS
 
     bool is_open() const;
@@ -203,14 +204,14 @@ public:
     filter_ofstream(filter_ofstream&&);
     filter_ofstream & operator=(filter_ofstream&&);
 
-    filter_ofstream(const std::string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
-    void open(const std::string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    filter_ofstream(const string_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    void open(const string_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    filter_ofstream(const std::wstring&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
-    void open(const std::wstring&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
-    filter_ofstream(const std::u16string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
-    void open(const std::u16string&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    filter_ofstream(const wstring_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    void open(const wstring_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    filter_ofstream(const u16string_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    void open(const u16string_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
 #endif                                          // WINDOWS
 
     bool is_open() const;

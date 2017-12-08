@@ -12,13 +12,10 @@
 #include <pycpp/lattice/adaptor/windows.h>
 #include <pycpp/lattice/util.h>
 #include <pycpp/windows/winapi.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 #include <winsock2.h>
 #include <cstdlib>
-
-#if defined(HAVE_MSVC)
-#   pragma warning(push)
-#   pragma warning(disable:4267)
-#endif
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -54,7 +51,7 @@ win32_socket_adaptor_t::~win32_socket_adaptor_t()
 {}
 
 
-bool win32_socket_adaptor_t::open(const addrinfo& info, const std::string&)
+bool win32_socket_adaptor_t::open(const addrinfo& info, const string_view&)
 {
     sock = ::socket(info.ai_family, info.ai_socktype, info.ai_protocol);
     if (sock == INVALID_SOCKET) {
@@ -146,8 +143,6 @@ const SOCKET win32_socket_adaptor_t::fd() const
 
 PYCPP_END_NAMESPACE
 
-#if defined(HAVE_MSVC)
-#   pragma warning(pop)
-#endif
+#include <warnings/pop.h>
 
 #endif

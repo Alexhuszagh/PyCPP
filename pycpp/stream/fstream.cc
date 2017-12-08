@@ -84,7 +84,7 @@ std::string c_ios_mode(std::ios_base::openmode mode)
 /**
  *  \brief Get C FILE pointer from narrow filename.
  */
-FILE * get_c_file(const std::string& narrow, std::ios_base::openmode mode)
+FILE * get_c_file(const string_view& narrow, std::ios_base::openmode mode)
 {
     auto str = c_ios_mode(mode);
     if (str.size()) {
@@ -100,7 +100,7 @@ FILE * get_c_file(const std::string& narrow, std::ios_base::openmode mode)
 /**
  *  \brief Get C FILE pointer from wide filename.
  */
-FILE * get_c_file(const std::u16string& wide, const std::ios_base::openmode mode)
+FILE * get_c_file(const u16string_view& wide, const std::ios_base::openmode mode)
 {
     auto str = c_ios_mode(mode);
     if (str.size()) {
@@ -113,7 +113,7 @@ FILE * get_c_file(const std::u16string& wide, const std::ios_base::openmode mode
 /**
  *  \brief Get C FILE pointer from wide filename.
  */
-FILE * get_c_file(const std::wstring& wide, const std::ios_base::openmode mode)
+FILE * get_c_file(const wstring_view& wide, const std::ios_base::openmode mode)
 {
     return get_c_file(reinterpret_cast<const char16_t*>(wide.data()), mode);
 }
@@ -150,13 +150,13 @@ fstream & fstream::operator=(fstream &&other)
 }
 
 
-fstream::fstream(const std::string& name, std::ios_base::openmode mode)
+fstream::fstream(const string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const std::string& name, std::ios_base::openmode mode)
+void fstream::open(const string_view& name, std::ios_base::openmode mode)
 {
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
@@ -169,13 +169,13 @@ void fstream::open(const std::string& name, std::ios_base::openmode mode)
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-fstream::fstream(const std::wstring& name, std::ios_base::openmode mode)
+fstream::fstream(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void fstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
@@ -183,13 +183,13 @@ void fstream::open(const std::wstring& name, std::ios_base::openmode mode)
 }
 
 
-fstream::fstream(const std::u16string& name, std::ios_base::openmode mode)
+fstream::fstream(const u16string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void fstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
@@ -266,13 +266,13 @@ ifstream & ifstream::operator=(ifstream &&other)
 }
 
 
-ifstream::ifstream(const std::string& name, std::ios_base::openmode mode)
+ifstream::ifstream(const string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const std::string& name, std::ios_base::openmode mode)
+void ifstream::open(const string_view& name, std::ios_base::openmode mode)
 {
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
@@ -286,13 +286,13 @@ void ifstream::open(const std::string& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-ifstream::ifstream(const std::wstring& name, std::ios_base::openmode mode)
+ifstream::ifstream(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
@@ -300,13 +300,13 @@ void ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
 }
 
 
-ifstream::ifstream(const std::u16string& name, std::ios_base::openmode mode)
+ifstream::ifstream(const u16string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
@@ -381,12 +381,12 @@ ofstream & ofstream::operator=(ofstream &&other)
 }
 
 
-ofstream::ofstream(const std::string& name, std::ios_base::openmode mode)
+ofstream::ofstream(const string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void ofstream::open(const std::string& name, std::ios_base::openmode mode)
+void ofstream::open(const string_view& name, std::ios_base::openmode mode)
 {
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
@@ -400,13 +400,13 @@ void ofstream::open(const std::string& name, std::ios_base::openmode mode)
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-ofstream::ofstream(const std::wstring& name, std::ios_base::openmode mode)
+ofstream::ofstream(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void ofstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
@@ -414,13 +414,13 @@ void ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
 }
 
 
-ofstream::ofstream(const std::u16string& name, std::ios_base::openmode mode)
+ofstream::ofstream(const u16string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void ofstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
@@ -495,43 +495,43 @@ fstream & fstream::operator=(fstream &&other)
 }
 
 
-fstream::fstream(const std::string& name, std::ios_base::openmode mode)
+fstream::fstream(const string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const std::string& name, std::ios_base::openmode mode)
+void fstream::open(const string_view& name, std::ios_base::openmode mode)
 {
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
 #else
-    std::fstream::open(name, mode);
+    std::fstream::open(name.data(), mode);
 #endif
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-fstream::fstream(const std::wstring& name, std::ios_base::openmode mode)
+fstream::fstream(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void fstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
-    std::fstream::open(name, mode);
+    std::fstream::open(name.data(), mode);
 }
 
 
-fstream::fstream(const std::u16string& name, std::ios_base::openmode mode)
+fstream::fstream(const u16string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void fstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     std::fstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
@@ -561,43 +561,43 @@ ifstream & ifstream::operator=(ifstream &&other)
 }
 
 
-ifstream::ifstream(const std::string& name, std::ios_base::openmode mode)
+ifstream::ifstream(const string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const std::string& name, std::ios_base::openmode mode)
+void ifstream::open(const string_view& name, std::ios_base::openmode mode)
 {
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
 #else
-    std::ifstream::open(name, mode);
+    std::ifstream::open(name.data(), mode);
 #endif
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-ifstream::ifstream(const std::wstring& name, std::ios_base::openmode mode)
+ifstream::ifstream(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
-    std::ifstream::open(name, mode);
+    std::ifstream::open(name.data(), mode);
 }
 
 
-ifstream::ifstream(const std::u16string& name, std::ios_base::openmode mode)
+ifstream::ifstream(const u16string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     std::ifstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
@@ -628,43 +628,43 @@ ofstream & ofstream::operator=(ofstream &&other)
 }
 
 
-ofstream::ofstream(const std::string& name, std::ios_base::openmode mode)
+ofstream::ofstream(const string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const std::string& name, std::ios_base::openmode mode)
+void ofstream::open(const string_view& name, std::ios_base::openmode mode)
 {
 #if defined(HAVE_WFOPEN)
     open(codec_utf8_utf16(name), mode);
 #else
-    std::ofstream::open(name, mode);
+    std::ofstream::open(name.data(), mode);
 #endif
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-ofstream::ofstream(const std::wstring& name, std::ios_base::openmode mode)
+ofstream::ofstream(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void ofstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
-    std::ofstream::open(name, mode);
+    std::ofstream::open(name.data(), mode);
 }
 
 
-ofstream::ofstream(const std::u16string& name, std::ios_base::openmode mode)
+ofstream::ofstream(const u16string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void ofstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     std::ofstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }

@@ -93,9 +93,9 @@ void xml_dom_handler::characters(const string_view& content)
 }
 
 
-void xml_document_t::loads(const std::string& data)
+void xml_document_t::loads(const string_view& data)
 {
-    std::istringstream stream(data);
+    std::istringstream stream = std::istringstream(std::string(data));
     load(stream);
 }
 
@@ -109,7 +109,7 @@ void xml_document_t::load(std::istream& stream)
 }
 
 
-void xml_document_t::load(const std::string& path)
+void xml_document_t::load(const string_view& path)
 {
     ifstream stream(path);
     load(stream);
@@ -118,14 +118,14 @@ void xml_document_t::load(const std::string& path)
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-void xml_document_t::load(const std::wstring& path)
+void xml_document_t::load(const wstring_view& path)
 {
     ifstream stream(path);
     load(stream);
 }
 
 
-void xml_document_t::load(const std::u16string& path)
+void xml_document_t::load(const u16string_view& path)
 {
     ifstream stream(path);
     load(stream);
@@ -149,7 +149,7 @@ void xml_document_t::dump(std::ostream& stream, char c, int width)
 }
 
 
-void xml_document_t::dump(const std::string& path, char c, int width)
+void xml_document_t::dump(const string_view& path, char c, int width)
 {
     ofstream stream(path);
     dump(stream, c, width);
@@ -158,14 +158,14 @@ void xml_document_t::dump(const std::string& path, char c, int width)
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-void xml_document_t::dump(const std::wstring& path, char c, int width)
+void xml_document_t::dump(const wstring_view& path, char c, int width)
 {
     ofstream stream(path);
     dump(stream, c, width);
 }
 
 
-void xml_document_t::dump(const std::u16string& path, char c, int width)
+void xml_document_t::dump(const u16string_view& path, char c, int width)
 {
     ofstream stream(path);
     dump(stream, c, width);

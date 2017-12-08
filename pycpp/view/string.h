@@ -76,34 +76,34 @@ class basic_string_view
 {
 public:
     // MEMBER TEMPLATES
-    template <typename C, typename T>
+    template <typename C, typename T = std::char_traits<C>>
     using view = basic_string_view<C, T>;
 
-    template <typename C, typename T>
-    using string = std::basic_string<C, T>;
+    template <typename C, typename T = std::char_traits<C>, typename A = std::allocator<C>>
+    using string = std::basic_string<C, T, A>;
 
-    template <typename C, typename T>
+    template <typename C, typename T = std::char_traits<C>>
     using istream = std::basic_istream<C, T>;
 
-    template <typename C, typename T>
+    template <typename C, typename T = std::char_traits<C>>
     using ostream = std::basic_ostream<C, T>;
 
     // MEMBER TYPES
     // ------------
-    typedef basic_string_view<Char, Traits> self;
-    typedef std::basic_string<Char, Traits> stl_type;
-    typedef Char value_type;
-    typedef Traits traits_type;
-    typedef Char& reference;
-    typedef const Char& const_reference;
-    typedef Char* pointer;
-    typedef const Char* const_pointer;
-    typedef std::ptrdiff_t difference_type;
-    typedef size_t size_type;
-    typedef pointer iterator;
-    typedef const_pointer const_iterator;
-    typedef std::reverse_iterator<pointer> reverse_iterator;
-    typedef std::reverse_iterator<const_pointer> const_reverse_iterator;
+    using self = basic_string_view<Char, Traits>;
+    using stl_type = string<Char, Traits>;
+    using value_type = Char;
+    using traits_type = Traits;
+    using reference = Char&;
+    using const_reference = const Char&;
+    using pointer = Char*;
+    using const_pointer = const Char*;
+    using difference_type = std::ptrdiff_t;
+    using size_type = size_t;
+    using iterator = pointer;
+    using const_iterator = const_pointer;
+    using reverse_iterator = std::reverse_iterator<pointer>;
+    using const_reverse_iterator = std::reverse_iterator<const_pointer>;
 
     // MEMBER VARIABLES
     // ----------------
@@ -117,9 +117,9 @@ public:
     basic_string_view(self&& str);
     self& operator=(self&& str);
 
-    basic_string_view(const stl_type& str);
+    template <typename A> basic_string_view(const string<Char, Traits, A>& str);
     basic_string_view(const self& str, size_type pos, size_type len = npos);
-    basic_string_view(const stl_type& str, size_type pos, size_type len = npos);
+    template <typename A> basic_string_view(const string<Char, Traits, A>& str, size_type pos, size_type len = npos);
     basic_string_view(const_pointer str);
     basic_string_view(const_pointer str, size_type n);
     basic_string_view(const_pointer begin, const_pointer end);
@@ -727,7 +727,8 @@ auto basic_string_view<C, T>::operator=(self&& str) -> self&
 
 
 template <typename C, typename T>
-basic_string_view<C, T>::basic_string_view(const stl_type& str):
+template <typename A>
+basic_string_view<C, T>::basic_string_view(const string<C, T, A>& str):
     data_(str.data()),
     length_(str.length())
 {}
@@ -746,7 +747,8 @@ basic_string_view<C, T>::basic_string_view(const self& str, size_type pos, size_
 
 
 template <typename C, typename T>
-basic_string_view<C, T>::basic_string_view(const stl_type& str, size_type pos, size_type len)
+template <typename A>
+basic_string_view<C, T>::basic_string_view(const string<C, T, A>& str, size_type pos, size_type len)
 {
     operator=(self(str), pos, len);
 }

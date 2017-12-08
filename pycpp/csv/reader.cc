@@ -140,13 +140,13 @@ csv_file_reader::csv_file_reader(csvpunct_impl* punct):
 {}
 
 
-csv_file_reader::csv_file_reader(const std::string &name, size_t skip, csvpunct_impl* punct)
+csv_file_reader::csv_file_reader(const string_view& name, size_t skip, csvpunct_impl* punct)
 {
     open(name, skip, punct);
 }
 
 
-void csv_file_reader::open(const std::string &name, size_t skip, csvpunct_impl* punct)
+void csv_file_reader::open(const string_view& name, size_t skip, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     csv_stream_reader::open(file_, skip, punct);
@@ -156,26 +156,26 @@ void csv_file_reader::open(const std::string &name, size_t skip, csvpunct_impl* 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-csv_file_reader::csv_file_reader(const std::wstring &name, size_t skip, csvpunct_impl* punct)
+csv_file_reader::csv_file_reader(const wstring_view& name, size_t skip, csvpunct_impl* punct)
 {
     open(name, skip, punct);
 }
 
 
-void csv_file_reader::open(const std::wstring &name, size_t skip, csvpunct_impl* punct)
+void csv_file_reader::open(const wstring_view& name, size_t skip, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     csv_stream_reader::open(file_, skip, punct);
 }
 
 
-csv_file_reader::csv_file_reader(const std::u16string &name, size_t skip, csvpunct_impl* punct)
+csv_file_reader::csv_file_reader(const u16string_view& name, size_t skip, csvpunct_impl* punct)
 {
     open(name, skip, punct);
 }
 
 
-void csv_file_reader::open(const std::u16string &name, size_t skip, csvpunct_impl* punct)
+void csv_file_reader::open(const u16string_view& name, size_t skip, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     csv_stream_reader::open(file_, skip, punct);
@@ -189,15 +189,15 @@ csv_string_reader::csv_string_reader(csvpunct_impl* punct):
 {}
 
 
-csv_string_reader::csv_string_reader(const std::string &str, size_t skip, csvpunct_impl* punct)
+csv_string_reader::csv_string_reader(const string_view& str, size_t skip, csvpunct_impl* punct)
 {
     open(str, skip, punct);
 }
 
 
-void csv_string_reader::open(const std::string &str, size_t skip, csvpunct_impl* punct)
+void csv_string_reader::open(const string_view& str, size_t skip, csvpunct_impl* punct)
 {
-    sstream_ = std::istringstream(str, std::ios_base::in | std::ios_base::binary);
+    sstream_ = std::istringstream(std::string(str), std::ios_base::in | std::ios_base::binary);
     csv_stream_reader::open(sstream_, skip, punct);
 }
 

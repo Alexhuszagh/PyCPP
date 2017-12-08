@@ -10,7 +10,6 @@
 #include <pycpp/collections/ordered_map.h>
 #include <pycpp/csv/reader.h>
 #include <pycpp/csv/writer.h>
-
 #include <unordered_map>
 
 PYCPP_BEGIN_NAMESPACE
@@ -70,14 +69,14 @@ struct csv_dict_file_reader: csv_dict_stream_reader
 {
 public:
     csv_dict_file_reader(csvpunct_impl* = nullptr);
-    csv_dict_file_reader(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_dict_file_reader(const string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    csv_dict_file_reader(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
-    csv_dict_file_reader(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_dict_file_reader(const wstring_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const wstring_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_dict_file_reader(const u16string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const u16string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
 #endif                                          // WINDOWS
 
 private:
@@ -92,8 +91,8 @@ struct csv_dict_string_reader: csv_dict_stream_reader
 {
 public:
     csv_dict_string_reader(csvpunct_impl* = nullptr);
-    csv_dict_string_reader(const std::string &str, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const std::string &str, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_dict_string_reader(const string_view& str, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const string_view& str, size_t skip = 0, csvpunct_impl* = nullptr);
 
 private:
     std::istringstream sstream_;
@@ -141,14 +140,14 @@ struct csv_dict_file_writer: csv_dict_stream_writer
 {
 public:
     csv_dict_file_writer(csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    csv_dict_file_writer(const std::string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    void open(const std::string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_dict_file_writer(const string_view&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(const string_view&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    csv_dict_file_writer(const std::wstring&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    void open(const std::wstring&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    csv_dict_file_writer(const std::u16string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    void open(const std::u16string&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_dict_file_writer(const wstring_view&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(const wstring_view&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_dict_file_writer(const u16string_view&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(const u16string_view&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
 #endif                                          // WINDOWS
 
 private:

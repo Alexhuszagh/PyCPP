@@ -36,7 +36,7 @@ static bool detect_stream(std::istream& stream, const magic_bytes& magic)
 }
 
 
-static bool detect_path(const std::string& path, const magic_bytes& magic)
+static bool detect_path(const string_view& path, const magic_bytes& magic)
 {
     ifstream stream(path, std::ios_base::in | std::ios_base::binary);
     return detect_stream(stream, magic);
@@ -45,14 +45,14 @@ static bool detect_path(const std::string& path, const magic_bytes& magic)
 
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-static bool detect_path(const std::wstring& path, const magic_bytes& magic)
+static bool detect_path(const wstring_view& path, const magic_bytes& magic)
 {
     ifstream stream(path, std::ios_base::in | std::ios_base::binary);
     return detect_stream(stream, magic);
 }
 
 
-static bool detect_path(const std::u16string& path, const magic_bytes& magic)
+static bool detect_path(const u16string_view& path, const magic_bytes& magic)
 {
     ifstream stream(path, std::ios_base::in | std::ios_base::binary);
     return detect_stream(stream, magic);
@@ -87,7 +87,7 @@ bool is_bz2::stream(std::istream& stream)
 }
 
 
-bool is_bz2::path(const std::string& path)
+bool is_bz2::path(const string_view& path)
 {
     return detect_path(path, magic());
 }
@@ -95,13 +95,13 @@ bool is_bz2::path(const std::string& path)
 
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-bool is_bz2::path(const std::wstring& path)
+bool is_bz2::path(const wstring_view& path)
 {
     return detect_path(path, magic());
 }
 
 
-bool is_bz2::path(const std::u16string& path)
+bool is_bz2::path(const u16string_view& path)
 {
     return detect_path(path, magic());
 }
@@ -139,7 +139,7 @@ bool is_zlib::stream(std::istream& stream)
 }
 
 
-bool is_zlib::path(const std::string& path)
+bool is_zlib::path(const string_view& path)
 {
     return detect_path(path, magic());
 }
@@ -147,13 +147,13 @@ bool is_zlib::path(const std::string& path)
 
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-bool is_zlib::path(const std::wstring& path)
+bool is_zlib::path(const wstring_view& path)
 {
     return detect_path(path, magic());
 }
 
 
-bool is_zlib::path(const std::u16string& path)
+bool is_zlib::path(const u16string_view& path)
 {
     return detect_path(path, magic());
 }
@@ -183,7 +183,7 @@ bool is_gzip::stream(std::istream& stream)
 }
 
 
-bool is_gzip::path(const std::string& path)
+bool is_gzip::path(const string_view& path)
 {
     return detect_path(path, magic());
 }
@@ -191,13 +191,13 @@ bool is_gzip::path(const std::string& path)
 
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-bool is_gzip::path(const std::wstring& path)
+bool is_gzip::path(const wstring_view& path)
 {
     return detect_path(path, magic());
 }
 
 
-bool is_gzip::path(const std::u16string& path)
+bool is_gzip::path(const u16string_view& path)
 {
     return detect_path(path, magic());
 }
@@ -227,7 +227,7 @@ bool is_lzma::stream(std::istream& stream)
 }
 
 
-bool is_lzma::path(const std::string& path)
+bool is_lzma::path(const string_view& path)
 {
     return detect_path(path, magic());
 }
@@ -235,13 +235,13 @@ bool is_lzma::path(const std::string& path)
 
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-bool is_lzma::path(const std::wstring& path)
+bool is_lzma::path(const wstring_view& path)
 {
     return detect_path(path, magic());
 }
 
 
-bool is_lzma::path(const std::u16string& path)
+bool is_lzma::path(const u16string_view& path)
 {
     return detect_path(path, magic());
 }
@@ -283,7 +283,7 @@ bool is_blosc::stream(std::istream& stream)
 }
 
 
-bool is_blosc::path(const std::string& path)
+bool is_blosc::path(const string_view& path)
 {
     return detect_path(path, magic());
 }
@@ -291,13 +291,13 @@ bool is_blosc::path(const std::string& path)
 
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-bool is_blosc::path(const std::wstring& path)
+bool is_blosc::path(const wstring_view& path)
 {
     return detect_path(path, magic());
 }
 
 
-bool is_blosc::path(const std::u16string& path)
+bool is_blosc::path(const u16string_view& path)
 {
     return detect_path(path, magic());
 }

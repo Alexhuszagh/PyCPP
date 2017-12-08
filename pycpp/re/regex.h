@@ -27,6 +27,8 @@ struct regexp_t;
 struct regexp_t
 {
 public:
+    // MEMBER FUNCTIONS
+    // ----------------
     regexp_t() = delete;
     regexp_t(const string_view& view);
     regexp_t(regexp_t&&);

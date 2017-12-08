@@ -16,6 +16,7 @@
 #include <pycpp/lattice/timeout.h>
 #include <pycpp/lattice/url.h>
 #include <pycpp/lattice/util.h>
+#include <pycpp/view/string.h>
 #include <openssl/asn1.h>
 #include <openssl/err.h>
 #include <openssl/ssl.h>
@@ -57,7 +58,7 @@ public:
     ~open_ssl_adaptor_t();
 
     // REQUESTS
-    bool open(const addrinfo& info, const std::string& host);
+    bool open(const addrinfo& info, const string_view& host);
     void close();
     size_t write(const char *buf, size_t len);
     size_t read(char *buf, size_t count);
@@ -85,7 +86,7 @@ protected:
     void set_context();
     void set_certificate();
     void set_revoke();
-    void set_verify(const std::string& host);
+    void set_verify(const string_view& host);
     void ssl_connect();
 };
 
@@ -209,7 +210,7 @@ void open_ssl_adaptor_t<HttpAdaptor>::set_revoke()
  *  \brief Verify untrusted certificate with certificate bundle.
  */
 template <typename HttpAdaptor>
-void open_ssl_adaptor_t<HttpAdaptor>::set_verify(const std::string& host)
+void open_ssl_adaptor_t<HttpAdaptor>::set_verify(const string_view& host)
 {
     // set verification context
     int mode = verifypeer ? SSL_VERIFY_PEER : SSL_VERIFY_NONE;
@@ -306,7 +307,7 @@ open_ssl_adaptor_t<HttpAdaptor>::open_ssl_adaptor_t()
 
 
 template <typename HttpAdaptor>
-bool open_ssl_adaptor_t<HttpAdaptor>::open(const addrinfo& info, const std::string& host)
+bool open_ssl_adaptor_t<HttpAdaptor>::open(const addrinfo& info, const string_view& host)
 {
     set_context();
     ssl = SSL_new(ctx);

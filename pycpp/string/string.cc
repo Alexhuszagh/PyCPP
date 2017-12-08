@@ -474,6 +474,11 @@ string_t expandtabs(const string_t& str, size_t tabsize)
 // -------
 
 
+string_wrapper::string_wrapper(const string_view& str):
+    string_view(str)
+{}
+
+
 string_view& string_wrapper::view()
 {
     return *this;

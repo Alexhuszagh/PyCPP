@@ -9,7 +9,7 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <string>
+#include <pycpp/view/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -31,8 +31,9 @@ struct authentication_t
     authentication_t(authentication_t&&) = default;
     authentication_t & operator=(authentication_t&&) = default;
 
-    authentication_t(std::string &&username, std::string &&password);
-    authentication_t(const std::string &username, const std::string &password);
+    authentication_t(const char* username, const char* password);
+    authentication_t(std::string&& username, std::string&& password);
+    authentication_t(const string_view& username, const string_view& password);
 
     const std::string string() const noexcept;
     explicit operator bool() const;

@@ -89,6 +89,7 @@ public:
 
     // MEMBER TYPES
     // ------------
+    using self_t = stack_allocator<T, N, Alignment>;
     using value_type = T;
     using pointer = T*;
     using const_pointer = const T*;
@@ -102,8 +103,8 @@ public:
     // ----------------
     stack_allocator();
     stack_allocator(arena_type& arena) noexcept;
-    stack_allocator(const stack_allocator<T, N, Alignment>&);
-    stack_allocator<T, N, Alignment>& operator=(const stack_allocator<T, N, Alignment>&);
+    stack_allocator(const self_t&);
+    self_t& operator=(const self_t&);
     ~stack_allocator() noexcept;
 
     pointer allocate(size_type, const void* = nullptr);
@@ -222,14 +223,14 @@ stack_allocator<T, N, Alignment>::stack_allocator(arena_type& arena) noexcept:
 
 
 template <typename T, size_t N, size_t Alignment>
-stack_allocator<T, N, Alignment>::stack_allocator(const stack_allocator<T, N, Alignment>& rhs):
+stack_allocator<T, N, Alignment>::stack_allocator(const self_t& rhs):
     delete_(rhs.delete_),
     arena_(delete_ ? new arena_type : rhs.arena_)
 {}
 
 
 template <typename T, size_t N, size_t Alignment>
-stack_allocator<T, N, Alignment>& stack_allocator<T, N, Alignment>::operator=(const stack_allocator<T, N, Alignment>& rhs)
+auto stack_allocator<T, N, Alignment>::operator=(const self_t& rhs) -> self_t&
 {
     delete_ = rhs.delete_;
     arena_ = delete_ ? new arena_type : rhs.arena_;
@@ -256,6 +257,20 @@ template <typename T, size_t N, size_t Alignment>
 void stack_allocator<T, N, Alignment>::deallocate(pointer p, size_type n)
 {
     arena_->deallocate(reinterpret_cast<char*>(p), sizeof(T) * n);
+}
+
+
+template <typename T1, size_t N1, size_t A1, typename T2, size_t N2, size_t A2>
+bool operator==(const stack_allocator<T1, N1, A1>&, const stack_allocator<T2, N2, A2>&) noexcept
+{
+    return false;
+}
+
+
+template <typename T1, size_t N1, size_t A1, typename T2, size_t N2, size_t A2>
+bool operator!=(const stack_allocator<T1, N1, A1>& lhs, const stack_allocator<T2, N2, A2>& rhs) noexcept
+{
+    return !(lhs == rhs);
 }
 
 PYCPP_END_NAMESPACE

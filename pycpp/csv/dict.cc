@@ -92,13 +92,13 @@ csv_dict_file_reader::csv_dict_file_reader(csvpunct_impl* punct):
 {}
 
 
-csv_dict_file_reader::csv_dict_file_reader(const std::string &name, size_t skip, csvpunct_impl* punct)
+csv_dict_file_reader::csv_dict_file_reader(const string_view& name, size_t skip, csvpunct_impl* punct)
 {
     open(name, skip, punct);
 }
 
 
-void csv_dict_file_reader::open(const std::string &name, size_t skip, csvpunct_impl* punct)
+void csv_dict_file_reader::open(const string_view& name, size_t skip, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     csv_dict_stream_reader::open(file_, skip, punct);
@@ -108,13 +108,13 @@ void csv_dict_file_reader::open(const std::string &name, size_t skip, csvpunct_i
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-csv_dict_file_reader::csv_dict_file_reader(const std::wstring &name, size_t skip, csvpunct_impl* punct)
+csv_dict_file_reader::csv_dict_file_reader(const wstring_view& name, size_t skip, csvpunct_impl* punct)
 {
     open(name, skip, punct);
 }
 
 
-void csv_dict_file_reader::open(const std::wstring &name, size_t skip, csvpunct_impl* punct)
+void csv_dict_file_reader::open(const wstring_view& name, size_t skip, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     csv_dict_stream_reader::open(file_, skip, punct);
@@ -122,13 +122,13 @@ void csv_dict_file_reader::open(const std::wstring &name, size_t skip, csvpunct_
 
 
 
-csv_dict_file_reader::csv_dict_file_reader(const std::u16string &name, size_t skip, csvpunct_impl* punct)
+csv_dict_file_reader::csv_dict_file_reader(const u16string_view& name, size_t skip, csvpunct_impl* punct)
 {
     open(name, skip, punct);
 }
 
 
-void csv_dict_file_reader::open(const std::u16string &name, size_t skip, csvpunct_impl* punct)
+void csv_dict_file_reader::open(const u16string_view& name, size_t skip, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     csv_dict_stream_reader::open(file_, skip, punct);
@@ -142,15 +142,15 @@ csv_dict_string_reader::csv_dict_string_reader(csvpunct_impl* punct):
 {}
 
 
-csv_dict_string_reader::csv_dict_string_reader(const std::string &str, size_t skip, csvpunct_impl* punct)
+csv_dict_string_reader::csv_dict_string_reader(const string_view& str, size_t skip, csvpunct_impl* punct)
 {
     open(str, skip, punct);
 }
 
 
-void csv_dict_string_reader::open(const std::string &str, size_t skip, csvpunct_impl* punct)
+void csv_dict_string_reader::open(const string_view& str, size_t skip, csvpunct_impl* punct)
 {
-    sstream_ = std::istringstream(str, std::ios_base::binary);
+    sstream_ = std::istringstream(std::string(str), std::ios_base::binary);
     csv_dict_stream_reader::open(sstream_, skip, punct);
 }
 
@@ -214,13 +214,13 @@ csv_dict_file_writer::csv_dict_file_writer(csv_quoting quoting, csvpunct_impl* p
 {}
 
 
-csv_dict_file_writer::csv_dict_file_writer(const std::string &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+csv_dict_file_writer::csv_dict_file_writer(const string_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     open(name, header, quoting, punct);
 }
 
 
-void csv_dict_file_writer::open(const std::string &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+void csv_dict_file_writer::open(const string_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     csv_dict_stream_writer::open(file_, header, quoting, punct);
@@ -228,26 +228,26 @@ void csv_dict_file_writer::open(const std::string &name, const csv_row& header, 
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-csv_dict_file_writer::csv_dict_file_writer(const std::wstring &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+csv_dict_file_writer::csv_dict_file_writer(const wstring_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     open(name, header, quoting, punct);
 }
 
 
-void csv_dict_file_writer::open(const std::wstring &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+void csv_dict_file_writer::open(const wstring_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     csv_dict_stream_writer::open(file_, header, quoting, punct);
 }
 
 
-csv_dict_file_writer::csv_dict_file_writer(const std::u16string &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+csv_dict_file_writer::csv_dict_file_writer(const u16string_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     open(name, header, quoting, punct);
 }
 
 
-void csv_dict_file_writer::open(const std::u16string &name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+void csv_dict_file_writer::open(const u16string_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     csv_dict_stream_writer::open(file_, header, quoting, punct);

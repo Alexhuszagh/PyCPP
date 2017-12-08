@@ -11,7 +11,6 @@
 #include <pycpp/stream/filter.h>
 #include <pycpp/view/string.h>
 #include <pycpp/view/vector.h>
-#include <string>
 #include <istream>
 
 PYCPP_BEGIN_NAMESPACE
@@ -45,12 +44,12 @@ enum compression_format
  */
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 #   define DETECT_PATH                                      \
-        static bool path(const std::wstring& path);         \
-        static bool path(const std::u16string& path);       \
-        static bool path(const std::string& path);
+        static bool path(const wstring_view& path);         \
+        static bool path(const u16string_view& path);       \
+        static bool path(const string_view& path);
 #else                                       // POSIX
 #   define DETECT_PATH                                      \
-        static bool path(const std::string& path);
+        static bool path(const string_view& path);
 #endif                                      // WINDOWS
 
 /**

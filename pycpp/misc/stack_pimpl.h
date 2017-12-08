@@ -147,6 +147,11 @@ private:
 // IMPLEMENTATION
 // --------------
 
+template <typename T, size_t Size, size_t Alignment>
+const size_t stack_pimpl<T, Size, Alignment>::size;
+
+template <typename T, size_t Size, size_t Alignment>
+const size_t stack_pimpl<T, Size, Alignment>::alignment;
 
 template <typename T, size_t Size, size_t Alignment>
 stack_pimpl<T, Size, Alignment>::stack_pimpl()

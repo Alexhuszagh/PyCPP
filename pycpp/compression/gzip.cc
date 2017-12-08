@@ -426,7 +426,7 @@ void gzip_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string gzip_compress(const std::string &str)
+std::string gzip_compress(const string_view& str)
 {
     size_t dstlen = gzip_compress_bound(str.size());
     return compress_bound(str, dstlen, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
@@ -435,7 +435,7 @@ std::string gzip_compress(const std::string &str)
 }
 
 
-std::string gzip_decompress(const std::string &str)
+std::string gzip_decompress(const string_view& str)
 {
     return ctx_decompress<gzip_decompressor>(str);
 }
@@ -448,7 +448,7 @@ void gzip_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
 }
 
 
-std::string gzip_decompress(const std::string &str, size_t bound)
+std::string gzip_decompress(const string_view& str, size_t bound)
 {
     return decompress_bound(str, bound, [](const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound) {
         gzip_decompress(src, srclen, dst, dstlen, bound);

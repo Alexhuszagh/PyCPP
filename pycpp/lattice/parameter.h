@@ -9,7 +9,7 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <string>
+#include <pycpp/view/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -31,8 +31,9 @@ struct parameter_t
     parameter_t(parameter_t&&) = default;
     parameter_t & operator=(parameter_t&&) = default;
 
+    parameter_t(const char* username, const char* password);
     parameter_t(std::string&& key, std::string&& value);
-    parameter_t(const std::string& key, const std::string& value);
+    parameter_t(const string_view& key, const string_view& value);
 };
 
 
@@ -50,9 +51,9 @@ struct parameters_t: std::string
     parameters_t & operator=(parameters_t&&) = default;
 
     using base::base;
-    parameters_t(const std::initializer_list<parameter_t>& parameters);
+    parameters_t(std::initializer_list<parameter_t> list);
 
-    parameters_t & add(const parameter_t &parameter);
+    parameters_t& add(const parameter_t& parameter);
 
     std::string get() const;
     const std::string& post() const;

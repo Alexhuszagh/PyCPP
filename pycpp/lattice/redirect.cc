@@ -12,7 +12,7 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-redirects_t::redirects_t(const long count):
+redirects_t::redirects_t(long count):
     count(count)
 {}
 

@@ -11,27 +11,32 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
+parameter_t::parameter_t(const char* key, const char* value):
+    parameter_t(string_view(key), string_view(value))
+{}
+
+
 parameter_t::parameter_t(std::string&& key, std::string&& value):
     key(std::forward<std::string>(key)),
     value(std::forward<std::string>(value))
 {}
 
 
-parameter_t::parameter_t(const std::string& key, const std::string& value):
+parameter_t::parameter_t(const string_view& key, const string_view& value):
     key(key),
     value(value)
 {}
 
 
-parameters_t::parameters_t(const std::initializer_list<parameter_t>& parameters)
+parameters_t::parameters_t(std::initializer_list<parameter_t> list)
 {
-    for (const auto &parameter: parameters) {
-        add(parameter);
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        add(*it);
     }
 }
 
 
-parameters_t & parameters_t::add(const parameter_t &parameter)
+parameters_t & parameters_t::add(const parameter_t& parameter)
 {
     // add delimiter
     if (!empty()) {

@@ -9,6 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/view/string.h>
 
 #if defined(OS_WINDOWS)
 #   include <winsock2.h>
@@ -85,12 +86,12 @@ struct address_t
     size_t length;
 
     address_t() = default;
-    address_t(const address_t &other) = default;
-    address_t & operator=(const address_t&) = default;
+    address_t(const address_t&) = default;
+    address_t& operator=(const address_t&) = default;
     address_t(address_t&&) = default;
-    address_t & operator=(address_t&&) = default;
+    address_t& operator=(address_t&&) = default;
 
-    address_t(const addrinfo &info);
+    address_t(const addrinfo& info);
 
     explicit operator addrinfo() const;
 };
@@ -118,17 +119,17 @@ struct address_cache_t: std::unordered_multimap<std::string, address_t>
 class dns_lookup_t
 {
 protected:
-    addrinfo *info = nullptr;
+    addrinfo* info = nullptr;
 
 public:
     dns_lookup_t() = default;
-    dns_lookup_t(const dns_lookup_t &other) = delete;
-    dns_lookup_t & operator=(const dns_lookup_t&) = delete;
+    dns_lookup_t(const dns_lookup_t&) = delete;
+    dns_lookup_t& operator=(const dns_lookup_t&) = delete;
     dns_lookup_t(dns_lookup_t&&) = default;
-    dns_lookup_t & operator=(dns_lookup_t&&) = default;
+    dns_lookup_t& operator=(dns_lookup_t&&) = default;
     ~dns_lookup_t();
 
-    dns_lookup_t(const std::string &host, const std::string &service);
+    dns_lookup_t(const string_view& host, const string_view& service);
 
     // ITERATORS
     address_iterator_t begin() const;

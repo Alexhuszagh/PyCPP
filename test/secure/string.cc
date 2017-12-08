@@ -233,6 +233,48 @@ TEST(secure_string, modifier)
 
     str.append("xyz\0", 4);
     EXPECT_EQ(str.size(), 54);
+
+    // insert
+    str = secure_string("example");
+    EXPECT_EQ(str, "example");
+    str.insert(0, "b");
+    EXPECT_EQ(str, "bexample");
+
+    str.insert(0, "bee", 1, 1);
+    EXPECT_EQ(str, "ebexample");
+
+    str.insert(2, 3, 'c');
+    EXPECT_EQ(str, "ebcccexample");
+
+    str.insert(str.begin() + 2, 3, 'd');
+    EXPECT_EQ(str, "ebdddcccexample");
+
+    str.insert(str.begin() + 2, 'f');
+    EXPECT_EQ(str, "ebfdddcccexample");
+
+    secure_string tmp("123");
+    str.insert(str.begin() + 2, tmp.begin(), tmp.end());
+    EXPECT_EQ(str, "eb123fdddcccexample");
+
+    str.insert(str.begin() + 2, {'4', '5', '6'});
+    EXPECT_EQ(str, "eb456123fdddcccexample");
+
+    // replace
+    str.replace(2, 3, "4");
+    EXPECT_EQ(str, "eb4123fdddcccexample");
+
+    str.replace(2, 4, "4123", 1, 1);
+    EXPECT_EQ(str, "eb1fdddcccexample");
+
+    str.replace(str.begin()+2, str.begin()+4, "f");
+    EXPECT_EQ(str, "ebfdddcccexample");
+
+    str.replace(1, 8, 3, 'd');
+    EXPECT_EQ(str, "edddexample");
+
+    str.replace(str.begin()+1, str.begin()+4, 3, 'c');
+    EXPECT_EQ(str, "ecccexample");
+
 }
 
 

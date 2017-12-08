@@ -9,8 +9,8 @@
 
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/string/codec.h>
+#include <pycpp/view/string.h>
 #include <deque>
-#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -21,9 +21,13 @@ PYCPP_BEGIN_NAMESPACE
    typedef wchar_t native_char_type;
    typedef char backup_char_type;
    typedef std::u16string path_t;
+   typedef u16string_view path_view_t;
    typedef std::string backup_path_t;
+   typedef string_view backup_path_view_t;
    typedef std::deque<path_t> path_list_t;
+   typedef std::deque<path_view_t> path_view_list_t;
    typedef std::deque<backup_path_t> backup_path_list_t;
+   typedef std::deque<backup_path_view_t> backup_path_view_list_t;
    std::u16string ansi_to_utf16(const std::string&);
    std::string utf16_to_ansi(const std::u16string&);
 #   define path_to_string(s) codec_utf16_utf8(s)
@@ -36,7 +40,9 @@ PYCPP_BEGIN_NAMESPACE
 #else                               // POSIX
    typedef char native_char_type;
    typedef std::string path_t;
+   typedef string_view path_view_t;
    typedef std::deque<path_t> path_list_t;
+   typedef std::deque<path_view_t> path_view_list_t;
 #   define path_to_string(s) (s)
 #   define string_to_path(s) (s)
 #   define path_prefix(p) (p)

@@ -346,13 +346,13 @@ xml_file_reader::xml_file_reader()
 {}
 
 
-xml_file_reader::xml_file_reader(const std::string &name)
+xml_file_reader::xml_file_reader(const string_view& name)
 {
     open(name);
 }
 
 
-void xml_file_reader::open(const std::string &name)
+void xml_file_reader::open(const string_view& name)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     xml_stream_reader::open(file_);
@@ -362,26 +362,26 @@ void xml_file_reader::open(const std::string &name)
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-xml_file_reader::xml_file_reader(const std::wstring &name)
+xml_file_reader::xml_file_reader(const wstring_view& name)
 {
     open(name);
 }
 
 
-void xml_file_reader::open(const std::wstring &name)
+void xml_file_reader::open(const wstring_view& name)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     xml_stream_reader::open(file_);
 }
 
 
-xml_file_reader::xml_file_reader(const std::u16string &name)
+xml_file_reader::xml_file_reader(const u16string_view& name)
 {
     open(name);
 }
 
 
-void xml_file_reader::open(const std::u16string &name)
+void xml_file_reader::open(const u16string_view& name)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     xml_stream_reader::open(file_);
@@ -393,15 +393,15 @@ xml_string_reader::xml_string_reader()
 {}
 
 
-xml_string_reader::xml_string_reader(const std::string &str)
+xml_string_reader::xml_string_reader(const string_view& str)
 {
     open(str);
 }
 
 
-void xml_string_reader::open(const std::string &str)
+void xml_string_reader::open(const string_view& str)
 {
-    sstream_ = std::istringstream(str, std::ios_base::in | std::ios_base::binary);
+    sstream_ = std::istringstream(std::string(str), std::ios_base::in | std::ios_base::binary);
     xml_stream_reader::open(sstream_);
 }
 

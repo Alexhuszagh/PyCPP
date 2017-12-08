@@ -13,30 +13,32 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 
-inline bool is_relative(const std::string &str)
+inline bool is_relative(const string_view& str)
 {
     return str.empty() || str.front() == '/';
 }
 
 
-inline bool is_punycode(const std::string& str)
+inline bool is_punycode(const string_view& str)
 {
     return string_wrapper(str).startswith("xn--");
 }
 
 
-static std::string to_idna(const std::string& str)
+static std::string to_idna(const string_view& str)
 {
     return "xn--" + utf8_to_punycode(str);
 }
 
 
-static std::string from_idna(const std::string& str)
+static std::string from_idna(const string_view& str)
 {
     return punycode_to_utf8(str.substr(4));
 }
 
 
+// TODO: change here... string_view
+// TODO: how do I handle tjhe replaece??
 static void set_service_impl(std::string& url, const std::string& service)
 {
     assert(!is_relative(url));
@@ -51,6 +53,8 @@ static void set_service_impl(std::string& url, const std::string& service)
 }
 
 
+// TODO: change here... string_view
+// TODO: how do I handle tjhe replaece??
 static void set_host_impl(std::string& url, const std::string& host)
 {
     size_t start = url.find("://");
@@ -63,6 +67,8 @@ static void set_host_impl(std::string& url, const std::string& host)
 }
 
 
+// TODO: change here... string_view
+// TODO: how do I handle tjhe replaece??
 static void set_path_impl(std::string& url, const std::string& path)
 {
     if (is_relative(url)) {
@@ -78,6 +84,8 @@ static void set_path_impl(std::string& url, const std::string& path)
 }
 
 
+// TODO: change here... string_view
+// TODO: how do I handle tjhe replaece??
 static void set_directory_impl(std::string& url, const std::string& directory)
 {
     size_t separator, start, end;
@@ -95,6 +103,8 @@ static void set_directory_impl(std::string& url, const std::string& directory)
 }
 
 
+// TODO: change here... string_view
+// TODO: how do I handle tjhe replaece??
 static void set_file_impl(std::string& url, const std::string& file)
 {
     size_t index = url.find_last_of('/');
@@ -227,21 +237,12 @@ url_impl_t::operator bool() const
 }
 
 
-punycode_idna_t::punycode_idna_t(const char *cstring):
-    url_impl_t(cstring)
-{
-    punycode_encode_url(*this);
-}
+punycode_idna_t::punycode_idna_t(const char* p, size_t s):
+    punycode_idna_t(string_view(p, s))
+{}
 
 
-punycode_idna_t::punycode_idna_t(const char *array, size_t size):
-    url_impl_t(array, size)
-{
-    punycode_encode_url(*this);
-}
-
-
-punycode_idna_t::punycode_idna_t(const std::string &string):
+punycode_idna_t::punycode_idna_t(const string_view& string):
     url_impl_t(string.data(), string.size())
 {
     punycode_encode_url(*this);
@@ -291,25 +292,16 @@ void punycode_idna_t::set_file(const std::string &file)
 
 unicode_idna_t punycode_idna_t::to_unicode() const
 {
-    return unicode_idna_t(data(), size());
+    return unicode_idna_t(string_view(data(), size()));
 }
 
 
-unicode_idna_t::unicode_idna_t(const char *cstring):
-    url_impl_t(cstring)
-{
-    unicode_encode_url(*this);
-}
+unicode_idna_t::unicode_idna_t(const char* p, size_t s):
+    unicode_idna_t(string_view(p, s))
+{}
 
 
-unicode_idna_t::unicode_idna_t(const char *array, size_t size):
-    url_impl_t(array, size)
-{
-    unicode_encode_url(*this);
-}
-
-
-unicode_idna_t::unicode_idna_t(const std::string &string):
+unicode_idna_t::unicode_idna_t(const string_view& string):
     url_impl_t(string.data(), string.size())
 {
     unicode_encode_url(*this);
@@ -359,7 +351,7 @@ void unicode_idna_t::set_file(const std::string &file)
 
 punycode_idna_t unicode_idna_t::to_punycode() const
 {
-    return punycode_idna_t(data(), size());
+    return punycode_idna_t(string_view(data(), size()));
 }
 
 PYCPP_END_NAMESPACE

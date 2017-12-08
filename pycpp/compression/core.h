@@ -8,9 +8,9 @@
 #pragma once
 
 #include <pycpp/compression/exception.h>
+#include <pycpp/view/string.h>
 #include <pycpp/safe/stdlib.h>
 #include <cstdlib>
-#include <string>
 #include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
@@ -165,7 +165,7 @@ compression_status filter_impl<S>::operator()(const void*& src, size_t srclen, v
 
 
 template <typename Ctx>
-std::string ctx_decompress(const std::string& str)
+std::string ctx_decompress(const string_view& str)
 {
     // configurations
     size_t dstlen = BUFFER_SIZE;
@@ -208,7 +208,7 @@ std::string ctx_decompress(const std::string& str)
 
 
 template <typename Function>
-std::string compress_bound(const std::string &str, size_t dstlen, Function function)
+std::string compress_bound(const string_view& str, size_t dstlen, Function function)
 {
     const char* src = str.data();
     char *dst = (char*) safe_malloc(dstlen);
@@ -230,7 +230,7 @@ std::string compress_bound(const std::string &str, size_t dstlen, Function funct
 
 
 template <typename Function>
-std::string decompress_bound(const std::string &str, size_t bound, Function function)
+std::string decompress_bound(const string_view& str, size_t bound, Function function)
 {
     const char* src = str.data();
     char *dst = (char*) safe_malloc(bound);

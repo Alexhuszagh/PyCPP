@@ -40,6 +40,9 @@ size_t sysrandom(void* dst, size_t dstlen);
 
 /**
  *  \brief Get random bytes for cryptographic applications.
+ *  \warning Due to how STL strings allocate memory, this function
+ *  cannot be cryptographically secure. Use only for non-cryptographic
+ *  applications.
  */
 std::string sysrandom(size_t length);
 
@@ -212,7 +215,8 @@ auto choice(Iter first, Iter last) -> decltype(*std::declval<Iter>())
  *  of the iterator range. Iter must a RandomAccessIterator.
  */
 template <typename Iter>
-auto sample(Iter first, Iter last, size_t k) -> reference_vector<decltype(*std::declval<Iter>())>
+auto sample(Iter first, Iter last, size_t k)
+    -> reference_vector<typename std::iterator_traits<Iter>::value_type>
 {
     // parameters
     std::ptrdiff_t distance = std::distance(first, last);
@@ -231,7 +235,7 @@ auto sample(Iter first, Iter last, size_t k) -> reference_vector<decltype(*std::
     }
 
     // fill vector
-    reference_vector<decltype(*std::declval<Iter>())> vector;
+    reference_vector<typename std::iterator_traits<Iter>::value_type> vector;
     vector.reserve(k);
     for (size_t i = 0; i < k; ++i) {
         size_t j = index[i];

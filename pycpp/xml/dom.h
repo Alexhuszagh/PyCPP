@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/view/string.h>
 #include <pycpp/xml/sax.h>
 #include <pycpp/xml/writer.h>
 #include <deque>
@@ -42,20 +43,20 @@ private:
  */
 struct xml_document_t: xml_node_t
 {
-    void loads(const std::string&);
+    void loads(const string_view&);
     void load(std::istream&);
-    void load(const std::string&);
+    void load(const string_view&);
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    void load(const std::wstring&);
-    void load(const std::u16string&);
+    void load(const wstring_view&);
+    void load(const u16string_view&);
 #endif                                          // WINDOWS
 
     std::string dumps(char = ' ', int = 4);
     void dump(std::ostream&, char = ' ', int = 4);
-    void dump(const std::string&, char = ' ', int = 4);
+    void dump(const string_view&, char = ' ', int = 4);
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    void dump(const std::wstring&, char = ' ', int = 4);
-    void dump(const std::u16string&, char = ' ', int = 4);
+    void dump(const wstring_view&, char = ' ', int = 4);
+    void dump(const u16string_view&, char = ' ', int = 4);
 #endif                                          // WINDOWS
 };
 

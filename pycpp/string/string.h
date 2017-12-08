@@ -186,6 +186,7 @@ string_t replace(const string_t& str, const string_t& sub, const string_t& repl,
 struct string_wrapper: string_view
 {
     using string_view::string_view;
+    string_wrapper(const string_view&);
 
     // BASE
     string_view& view();
@@ -202,8 +203,11 @@ struct string_wrapper: string_view
     string_t trim(const string_wrapper& characters = " \n\r\t");
 
     // TOKENS
+    // TODO: split_iter...
+//    std::pair<> splititer(split_function is_split, size_t maxsplit = SIZE_MAX) const;
     string_wrapper_list_t split(split_function is_split, size_t maxsplit = SIZE_MAX) const;
     string_wrapper_list_t rsplit(split_function is_split, size_t maxsplit = SIZE_MAX) const;
+//    std::pair<> splititer(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
     string_wrapper_list_t split(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
     string_wrapper_list_t rsplit(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
     string_t join(const string_wrapper_list_t& list);

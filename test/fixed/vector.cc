@@ -16,16 +16,27 @@ PYCPP_USING_NAMESPACE
 
 TEST(fixed_vector, ctor)
 {
-    // TODO: restore
-//    using vector = fixed_vector<int>;
-//    vector v1, v2;
-//    EXPECT_EQ(v1, v2);
-//
-//    v1.emplace_back(1);
-//    EXPECT_NE(v1, v2);
+    using vector = fixed_vector<int>;
 
-//    // TODO: issue:
-//    // "Allocator has outlived arena."
-//    v2 = v1;
-//    EXPECT_EQ(v1, v2);
+    // check type properties
+    EXPECT_GE(sizeof(vector), vector::stack_size());
+
+    // check basic vector properties
+    vector v1, v2;
+    EXPECT_EQ(v1, v2);
+
+    v1.emplace_back(1);
+    EXPECT_EQ(v1.size(), 1);
+    EXPECT_EQ(v2.size(), 0);
+    EXPECT_NE(v1, v2);
+
+    v2 = v1;
+    EXPECT_EQ(v1.size(), 1);
+    EXPECT_EQ(v2.size(), 1);
+    EXPECT_EQ(v1, v2);
+
+    // check the arena is working well
+    EXPECT_NE(&v1.get_arena(), &v2.get_arena());
+    EXPECT_LE(v1.stack_used(), v1.stack_size());
+    EXPECT_GE(v1.stack_percent_used(), 0);
 }

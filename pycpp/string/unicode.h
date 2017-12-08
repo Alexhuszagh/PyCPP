@@ -12,8 +12,8 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/view/string.h>
 #include <functional>
-#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -25,7 +25,7 @@ using unicode_lowlevel_callback = std::function<void(
     void*& dst, size_t dstlen)
 >;
 
-using unicode_highlevel_callback = std::function<std::string(const std::string&)>;
+using unicode_highlevel_callback = std::function<std::string(const string_view&)>;
 
 // FUNCTIONS
 // ---------
@@ -100,7 +100,7 @@ bool is_continuation_byte(uint8_t c);
 /**
  *  \brief Check if string is likely not Unicode.
  */
-bool is_ascii(const std::string &str);
+bool is_ascii(const string_view& str);
 
 /**
  *  \brief Check if string is likely Unicode.
@@ -110,7 +110,7 @@ bool is_ascii(const std::string &str);
  *  the data is likely Unicode, if not, the data is almost certainly
  *  ASCII.
  */
-bool is_unicode(const std::string &str);
+bool is_unicode(const string_view& str);
 
 // CONVERSIONS
 
@@ -122,7 +122,7 @@ void utf8_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-8 string to UTF-16.
  */
-std::string utf8_to_utf16(const std::string& str);
+std::string utf8_to_utf16(const string_view& str);
 
 /**
  *  \brief Convert UTF-8 to UTF-32. Returns number of bytes converted.
@@ -132,7 +132,7 @@ void utf8_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-8 string to UTF-32.
  */
-std::string utf8_to_utf32(const std::string& str);
+std::string utf8_to_utf32(const string_view& str);
 
 /**
  *  \brief Convert UTF-16 to UTF-8. Returns number of bytes converted.
@@ -142,7 +142,7 @@ void utf16_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-16 string to UTF-8.
  */
-std::string utf16_to_utf8(const std::string& str);
+std::string utf16_to_utf8(const string_view& str);
 
 /**
  *  \brief Convert UTF-16 to UTF-32. Returns number of bytes converted.
@@ -152,7 +152,7 @@ void utf16_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-16 string to UTF-32.
  */
-std::string utf16_to_utf32(const std::string& str);
+std::string utf16_to_utf32(const string_view& str);
 
 /**
  *  \brief Convert UTF-32 to UTF-8. Returns number of bytes converted.
@@ -162,7 +162,7 @@ void utf32_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-32 string to UTF-8.
  */
-std::string utf32_to_utf8(const std::string& str);
+std::string utf32_to_utf8(const string_view& str);
 
 /**
  *  \brief Convert UTF-32 to UTF-16. Returns number of bytes converted.
@@ -172,6 +172,6 @@ void utf32_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-32 string to UTF-16.
  */
-std::string utf32_to_utf16(const std::string& str);
+std::string utf32_to_utf16(const string_view& str);
 
 PYCPP_END_NAMESPACE

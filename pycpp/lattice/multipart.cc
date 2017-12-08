@@ -157,24 +157,29 @@ static std::string detect_content_type(const std::string &filename)
 // -------
 
 
-part_value_t::part_value_t(const std::string& filename, const std::string& content_type):
-    filename(filename)
-{
-    if (content_type.empty()) {
-        this->content_type_ = detect_content_type(this->filename);
-    } else {
-        this->content_type_ = content_type;
-    }
-}
+part_value_t::part_value_t(const char* filename, const char* content_type):
+    part_value_t(string_view(filename), string_view(content_type))
+{}
 
 
-part_value_t::part_value_t(std::string&& path, std::string&& content_type):
+part_value_t::part_value_t(std::string&& filename, std::string&& content_type):
     filename(std::forward<std::string>(filename))
 {
     if (content_type.empty()) {
         this->content_type_ = detect_content_type(this->filename);
     } else {
-        this->content_type_ = content_type;
+        this->content_type_ = std::move(content_type);
+    }
+}
+
+
+part_value_t::part_value_t(const string_view& filename, const string_view& content_type):
+    filename(filename)
+{
+    if (content_type.empty()) {
+        this->content_type_ = detect_content_type(this->filename);
+    } else {
+        this->content_type_ = std::string(content_type);
     }
 }
 
@@ -191,9 +196,9 @@ std::string part_value_t::name() const
 }
 
 
-const std::string & part_value_t::content_type() const
+string_view part_value_t::content_type() const
 {
-    return content_type_;
+    return string_view(content_type_);
 }
 
 
@@ -203,17 +208,17 @@ const std::string & part_value_t::content_type() const
  */
 std::string part_value_t::string() const
 {
-    std::ostringstream stream;
-    stream << "Content-Disposition: form-data; "
-           << "name=\"" <<  name() << "\"; "
-           << "filename=\"" << basename() << "\"\r\n";
+    std::string string;
+    string += "Content-Disposition: form-data; ";
+    string += "name=\"" + name() + "\"; ";
+    string += "filename=\"" + basename() + "\"\r\n";
 
     if (!content_type().empty()) {
-       stream << "Content-Type: " << content_type() << "\r\n";
+       string += "Content-Type: " + std::string(content_type()) + "\r\n";
     }
-    stream << "\r\n";
+    string += "\r\n";
 
-    return stream.str();
+    return string;
 }
 
 
@@ -230,30 +235,37 @@ std::string file_value_t::buffer() const
 
 std::string file_value_t::string() const
 {
-    std::ostringstream stream;
-    stream << part_value_t::string() << buffer() << "\r\n";
+    std::string string;
+    string += part_value_t::string() + buffer() + "\r\n";
 
-    return stream.str();
+    return string;
 }
 
 
-buffer_value_t::buffer_value_t(const std::string &filename,
-        const std::string &buffer,
-        const std::string &content_type):
-    part_value_t(filename, content_type),
-    buffer_(buffer)
+buffer_value_t::buffer_value_t(const char* filename,
+                               const char* buffer,
+                               const char* content_type):
+    buffer_value_t(string_view(filename), string_view(buffer), string_view(content_type))
 {}
 
 
-buffer_value_t::buffer_value_t(std::string &&filename,
-        std::string &&buffer,
-        std::string &&content_type):
+buffer_value_t::buffer_value_t(std::string&& filename,
+                               std::string&& buffer,
+                               std::string&& content_type):
     part_value_t(std::forward<std::string>(filename), std::forward<std::string>(content_type)),
     buffer_(std::forward<std::string>(buffer))
 {}
 
 
-const std::string & buffer_value_t::buffer() const
+buffer_value_t::buffer_value_t(const string_view& filename,
+                               const string_view& buffer,
+                               const string_view& content_type):
+    part_value_t(filename, content_type),
+    buffer_(buffer)
+{}
+
+
+std::string buffer_value_t::buffer() const
 {
     return buffer_;
 }
@@ -261,52 +273,52 @@ const std::string & buffer_value_t::buffer() const
 
 std::string buffer_value_t::string() const
 {
-    std::ostringstream stream;
-    stream << part_value_t::string() << buffer() << "\r\n";
+    std::string string;
+    string += part_value_t::string() + buffer() + "\r\n";
 
-    return stream.str();
+    return string;
 }
 
 }   /* detail */
 
 
-const std::string & multipart_t::boundary() const
+string_view multipart_t::boundary() const
 {
-    return boundary_;
+    return string_view(boundary_);
 }
 
 
-void multipart_t::add(const detail::part_ptr_t &part)
+void multipart_t::add(const part_ptr_t& part)
 {
     push_back(part);
 }
 
 
-void multipart_t::add(detail::part_ptr_t&& part)
+void multipart_t::add(part_ptr_t&& part)
 {
-    emplace_back(std::forward<detail::part_ptr_t>(part));
+    emplace_back(std::forward<part_ptr_t>(part));
 }
 
 
 std::string multipart_t::string() const
 {
-    std::ostringstream stream;
+    std::string string;
     for (const auto &item: *this) {
-        stream << "--" << boundary() << "\r\n" << item->string();
+        string += "--" + std::string(boundary()) + "\r\n" + item->string();
     }
 
     // if any elements were written, write a trailing separator.
     if (*this) {
-        stream << "--" << boundary() << "--\r\n";
+        string += "--" + std::string(boundary()) + "--\r\n";
     }
 
-    return stream.str();
+    return string;
 }
 
 
 std::string multipart_t::header() const
 {
-    return "multipart/form-data; boundary=" + boundary();
+    return "multipart/form-data; boundary=" + std::string(boundary());
 }
 
 

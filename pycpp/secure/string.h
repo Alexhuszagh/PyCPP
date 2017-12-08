@@ -21,12 +21,85 @@
 #pragma once
 
 #include <pycpp/collections/compressed_pair.h>
+#include <pycpp/iterator/category.h>
 #include <pycpp/secure/allocator.h>
 #include <pycpp/secure/char_traits.h>
 #include <pycpp/secure/stdlib.h>
 #include <pycpp/view/string.h>
 
 PYCPP_BEGIN_NAMESPACE
+
+namespace string_detail
+{
+// DETAIL
+// ------
+
+// Slow route for input iterators
+template <typename String, typename ConstIter, typename Iter>
+typename std::enable_if<is_input_iterator<Iter>::value, String&>::type
+replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
+{
+    std::string str(first, last);
+    return string.replace(p1, p2, str);
+}
+
+
+// Optimization for forward iterable iterables
+template <typename String, typename ConstIter, typename Iter>
+typename std::enable_if<is_forward_iterable<Iter>::value, String&>::type
+replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
+{
+    ConstIter it = string.erase(p1, p2);
+    string.insert(it, first, last);
+    return string;
+}
+
+
+// Slow route for input iterators
+template <typename String, typename ConstIter, typename Iter>
+typename std::enable_if<is_input_iterator<Iter>::value, typename String::iterator>::type
+insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
+{
+    size_t pos = p - string.begin();
+    std::string str(first, last);
+    string.insert(p, str);
+
+    return string.begin() + pos;
+}
+
+
+// Optimization for forward iterable iterables
+template <typename String, typename ConstIter, typename Iter>
+typename std::enable_if<is_forward_iterable<Iter>::value, typename String::iterator>::type
+insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
+{
+    using traits_type = typename String::traits_type;
+
+    // reallocate if necessary
+    size_t n = std::distance(first, last);
+    size_t pos = p - string.begin();
+    size_t move = string.size() - pos;
+    size_t new_size = string.size() + n;
+    if (new_size >= string.capacity()) {
+        string.reserve(std::max(new_size+1, 2 * string.capacity()));
+    }
+
+    // move
+    char* src = &string[0] + pos;
+    char* dst = src + n;
+    traits_type::move(dst, src, move);
+
+    // assign
+    for (; first != last; ++src, ++first) {
+        traits_type::assign(*src, *first);
+    }
+    // update size
+    size = new_size;
+
+    return string.begin() + pos;
+}
+
+}   /* string_detail*/
 
 // OBJECTS
 // -------
@@ -43,21 +116,21 @@ struct secure_basic_string
 public:
     // MEMBER TYPES
     // ------------
-    typedef secure_basic_string<Char, Traits, Allocator> self;
-    typedef basic_string_view<Char, Traits> view_type;
-    typedef Traits traits_type;
-    typedef typename traits_type::char_type value_type;
-    typedef Allocator allocator_type;
-    typedef typename allocator_type::size_type size_type;
-    typedef typename allocator_type::difference_type difference_type;
-    typedef typename allocator_type::reference reference;
-    typedef typename allocator_type::const_reference const_reference;
-    typedef typename allocator_type::pointer pointer;
-    typedef typename allocator_type::const_pointer const_pointer;
-    typedef pointer iterator;
-    typedef const_pointer const_iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    using self_t = secure_basic_string<Char, Traits, Allocator>;
+    using view_type = basic_string_view<Char, Traits>;
+    using traits_type = Traits;
+    using value_type = typename traits_type::char_type;
+    using allocator_type = Allocator;
+    using size_type = typename allocator_type::size_type;
+    using difference_type = typename allocator_type::difference_type;
+    using reference = typename allocator_type::reference;
+    using const_reference = typename allocator_type::const_reference;
+    using pointer = typename allocator_type::pointer;
+    using const_pointer = typename allocator_type::const_pointer;
+    using iterator = pointer;
+    using const_iterator = const_pointer;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     // MEMBER VARIABLES
     // ----------------
@@ -67,15 +140,15 @@ public:
     // ----------------
     secure_basic_string();
     secure_basic_string(const allocator_type& alloc);
-    secure_basic_string(const self& str);
-    secure_basic_string(const self& str, const allocator_type& alloc);
-    secure_basic_string& operator=(const self& str);
-    secure_basic_string(self&& str);
-    secure_basic_string(self&& str, const allocator_type& alloc);
-    secure_basic_string& operator=(self&& str);
+    secure_basic_string(const self_t& str);
+    secure_basic_string(const self_t& str, const allocator_type& alloc);
+    secure_basic_string& operator=(const self_t& str);
+    secure_basic_string(self_t&& str);
+    secure_basic_string(self_t&& str, const allocator_type& alloc);
+    secure_basic_string& operator=(self_t&& str);
     ~secure_basic_string();
 
-    secure_basic_string(const self& str, size_t pos, size_t len = npos, const allocator_type& alloc = allocator_type());
+    secure_basic_string(const self_t& str, size_t pos, size_t len = npos, const allocator_type& alloc = allocator_type());
     secure_basic_string(const_pointer s, const allocator_type& alloc = allocator_type());
     secure_basic_string(const_pointer s, size_t n, const allocator_type& alloc = allocator_type());
     secure_basic_string(size_t n, value_type c, const allocator_type& alloc = allocator_type());
@@ -124,34 +197,49 @@ public:
     const_reference back() const;
 
     // MODIFIERS
-    self& operator+=(const self& str);
-    self& operator+=(const view_type& str);
-    self& operator+=(const_pointer s);
-    self& operator+=(value_type c);
-    self& operator+=(std::initializer_list<value_type> list);
-    self& append(const self& str);
-    self& append(const view_type& str);
-    self& append(const self& str, size_t subpos, size_t sublen);
-    self& append(const_pointer s);
-    self& append(const_pointer s, size_t n);
-    self& append(size_t n, char c);
-    template <typename Iter> self& append(Iter first, Iter last);
-    self& append(std::initializer_list<value_type> list);
+    self_t& operator+=(const self_t& str);
+    self_t& operator+=(const view_type& str);
+    self_t& operator+=(const_pointer s);
+    self_t& operator+=(value_type c);
+    self_t& operator+=(std::initializer_list<value_type> list);
+    self_t& append(const self_t& str);
+    self_t& append(const view_type& str);
+    self_t& append(const self_t& str, size_t subpos, size_t sublen);
+    self_t& append(const_pointer s);
+    self_t& append(const_pointer s, size_t n);
+    self_t& append(size_t n, char c);
+    template <typename Iter> self_t& append(Iter first, Iter last);
+    self_t& append(std::initializer_list<value_type> list);
     void push_back(value_type c);
-    self& assign(const self& str);
-    self& assign(const view_type& str);
-    self& assign(const self& str, size_t subpos, size_t sublen = npos);
-    self& assign(const_pointer s);
-    self& assign(const_pointer s, size_t n);
-    self& assign(size_t n, value_type c);
-    template <typename Iter> self& assign(Iter first, Iter last);
-    self& assign(std::initializer_list<value_type> list);
-    self& assign(self&& str) noexcept;
-    self& erase(size_t pos = 0, size_t len = npos);
+    self_t& assign(const self_t& str);
+    self_t& assign(const view_type& str);
+    self_t& assign(const self_t& str, size_t subpos, size_t sublen = npos);
+    self_t& assign(const_pointer s);
+    self_t& assign(const_pointer s, size_t n);
+    self_t& assign(size_t n, value_type c);
+    template <typename Iter> self_t& assign(Iter first, Iter last);
+    self_t& assign(std::initializer_list<value_type> list);
+    self_t& assign(self_t&& str) noexcept;
+    self_t& insert(size_t pos, const basic_string_view<Char, Traits>& str);
+    self_t& insert(size_t pos, const basic_string_view<Char, Traits>& str, size_t subpos, size_t sublen);
+    self_t& insert(size_t pos, size_t n, char c);
+    iterator insert(const_iterator p, size_t n, char c);
+    iterator insert(const_iterator p, char c);
+    template <typename Iter> iterator insert(iterator p, Iter first, Iter last);
+    template <typename Iter> iterator insert(const_iterator p, Iter first, Iter last);
+    self_t& insert(const_iterator p, std::initializer_list<char> list);
+    self_t& erase(size_t pos = 0, size_t len = npos);
     const_iterator erase(const_iterator p);
     const_iterator erase(const_iterator first, const_iterator last);
+    self_t& replace(size_t pos, size_t len, const basic_string_view<Char, Traits>& str);
+    self_t& replace(const_iterator p1, const_iterator p2, const basic_string_view<Char, Traits>& str);
+    self_t& replace(size_t pos, size_t len, const basic_string_view<Char, Traits>& str, size_t subpos, size_t sublen);
+    self_t& replace(size_t pos, size_t len, size_t n, char c);
+    self_t& replace(const_iterator p1, const_iterator p2, size_t n, char c);
+    template <typename Iter> self_t& replace(const_iterator p1, const_iterator p2, Iter first, Iter last);
+    self_t& replace(const_iterator p1, const_iterator p2, std::initializer_list<char> list);
     void pop_back();
-    void swap(self& other);
+    void swap(self_t& other);
 
     // STRING OPERATIONS
     const_pointer c_str() const noexcept;
@@ -161,59 +249,59 @@ public:
     size_t copy(pointer s, size_t len, size_t pos = 0) const;
 
     // FIND
-    size_type find(const self& str, size_type pos = 0) const noexcept;
+    size_type find(const self_t& str, size_type pos = 0) const noexcept;
     size_type find(const view_type& str, size_type pos = 0) const noexcept;
     size_type find(const_pointer array, size_type pos = 0) const;
     size_type find(const_pointer cstring, size_type pos, size_type length) const;
     size_type find(value_type c, size_type pos = 0) const noexcept;
 
     // FIND FIRST OF
-    size_type find_first_of(const self& str, size_type pos = 0) const noexcept;
+    size_type find_first_of(const self_t& str, size_type pos = 0) const noexcept;
     size_type find_first_of(const view_type& str, size_type pos = 0) const noexcept;
     size_type find_first_of(const_pointer array, size_type pos = 0) const;
     size_type find_first_of(const_pointer cstring, size_type pos, size_type length) const;
     size_type find_first_of(value_type c, size_type pos = 0) const noexcept;
 
     // FIND FIRST NOT OF
-    size_type find_first_not_of(const self& str, size_type pos = 0) const noexcept;
+    size_type find_first_not_of(const self_t& str, size_type pos = 0) const noexcept;
     size_type find_first_not_of(const view_type& str, size_type pos = 0) const noexcept;
     size_type find_first_not_of(const_pointer array, size_type pos = 0) const;
     size_type find_first_not_of(const_pointer cstring, size_type pos, size_type length) const;
     size_type find_first_not_of(value_type c, size_type pos = 0) const noexcept;
 
     // RFIND
-    size_type rfind(const self& str, size_type pos = 0) const noexcept;
+    size_type rfind(const self_t& str, size_type pos = 0) const noexcept;
     size_type rfind(const view_type& str, size_type pos = 0) const noexcept;
     size_type rfind(const_pointer array, size_type pos = 0) const;
     size_type rfind(const_pointer cstring, size_type pos, size_type length) const;
     size_type rfind(value_type c, size_type pos = 0) const noexcept;
 
     // FIND LAST OF
-    size_type find_last_of(const self& str, size_type pos = 0) const noexcept;
+    size_type find_last_of(const self_t& str, size_type pos = 0) const noexcept;
     size_type find_last_of(const view_type& str, size_type pos = 0) const noexcept;
     size_type find_last_of(const_pointer array, size_type pos = 0) const;
     size_type find_last_of(const_pointer cstring, size_type pos, size_type length) const;
     size_type find_last_of(value_type c, size_type pos = 0) const noexcept;
 
     // FIND LAST NOT OF
-    size_type find_last_not_of(const self& str, size_type pos = 0) const noexcept;
+    size_type find_last_not_of(const self_t& str, size_type pos = 0) const noexcept;
     size_type find_last_not_of(const view_type& str, size_type pos = 0) const noexcept;
     size_type find_last_not_of(const_pointer array, size_type pos = 0) const;
     size_type find_last_not_of(const_pointer cstring, size_type pos, size_type length) const;
     size_type find_last_not_of(value_type c, size_type pos = 0) const noexcept;
 
     // COMPARE
-    int compare(const self& str) const noexcept;
+    int compare(const self_t& str) const noexcept;
     int compare(const view_type& str) const noexcept;
-    int compare(size_type pos, size_type len, const self& str) const;
+    int compare(size_type pos, size_type len, const self_t& str) const;
     int compare(size_type pos, size_type len, const view_type& str) const;
-    int compare(size_type pos, size_type len, const self& str, size_type subpos, size_type sublen) const;
+    int compare(size_type pos, size_type len, const self_t& str, size_type subpos, size_type sublen) const;
     int compare(size_type pos, size_type len, const view_type& str, size_type subpos, size_type sublen) const;
     int compare(const_pointer s) const;
     int compare(size_type pos, size_type len, const_pointer s) const;
     int compare(size_type pos, size_type len, const_pointer s, size_type n) const;
 
-    self substr(size_type pos = 0, size_type len = npos) const;
+    self_t substr(size_type pos = 0, size_type len = npos) const;
 
     // CONVERSIONS
     explicit operator bool() const;
@@ -592,7 +680,7 @@ secure_basic_string<C, T, A>::secure_basic_string(const allocator_type& alloc):
 
 
 template <typename C, typename T, typename A>
-secure_basic_string<C, T, A>::secure_basic_string(const self& str):
+secure_basic_string<C, T, A>::secure_basic_string(const self_t& str):
     capacity_(str.capacity_),
     length_(str.length_)
 {
@@ -602,7 +690,7 @@ secure_basic_string<C, T, A>::secure_basic_string(const self& str):
 
 
 template <typename C, typename T, typename A>
-secure_basic_string<C, T, A>::secure_basic_string(const self& str, const allocator_type& alloc):
+secure_basic_string<C, T, A>::secure_basic_string(const self_t& str, const allocator_type& alloc):
     capacity_(str.capacity_),
     length_(str.length_),
     data_(alloc)
@@ -613,7 +701,7 @@ secure_basic_string<C, T, A>::secure_basic_string(const self& str, const allocat
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator=(const self& str) -> self&
+auto secure_basic_string<C, T, A>::operator=(const self_t& str) -> self_t&
 {
     if (this != &str) {
         reset();
@@ -628,7 +716,7 @@ auto secure_basic_string<C, T, A>::operator=(const self& str) -> self&
 
 
 template <typename C, typename T, typename A>
-secure_basic_string<C, T, A>::secure_basic_string(self&& str):
+secure_basic_string<C, T, A>::secure_basic_string(self_t&& str):
     capacity_(15),
     length_(0)
 {
@@ -638,7 +726,7 @@ secure_basic_string<C, T, A>::secure_basic_string(self&& str):
 
 
 template <typename C, typename T, typename A>
-secure_basic_string<C, T, A>::secure_basic_string(self&& str, const allocator_type& alloc):
+secure_basic_string<C, T, A>::secure_basic_string(self_t&& str, const allocator_type& alloc):
     capacity_(15),
     length_(0),
     data_(alloc)
@@ -649,7 +737,7 @@ secure_basic_string<C, T, A>::secure_basic_string(self&& str, const allocator_ty
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator=(self&& str) -> self&
+auto secure_basic_string<C, T, A>::operator=(self_t&& str) -> self_t&
 {
     swap(str);
     return *this;
@@ -664,7 +752,7 @@ secure_basic_string<C, T, A>::~secure_basic_string()
 
 
 template <typename C, typename T, typename A>
-secure_basic_string<C, T, A>::secure_basic_string(const self& str, size_t pos, size_t len, const allocator_type& alloc):
+secure_basic_string<C, T, A>::secure_basic_string(const self_t& str, size_t pos, size_t len, const allocator_type& alloc):
     data_(alloc)
 {
     size_type n = str.size();
@@ -997,28 +1085,28 @@ auto secure_basic_string<C, T, A>::back() const -> const_reference
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator+=(const self& str) -> self&
+auto secure_basic_string<C, T, A>::operator+=(const self_t& str) -> self_t&
 {
     return append(str);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator+=(const view_type& str) -> self&
+auto secure_basic_string<C, T, A>::operator+=(const view_type& str) -> self_t&
 {
     return append(str);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator+=(const_pointer s) -> self&
+auto secure_basic_string<C, T, A>::operator+=(const_pointer s) -> self_t&
 {
     return append(s);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator+=(value_type c) -> self&
+auto secure_basic_string<C, T, A>::operator+=(value_type c) -> self_t&
 {
     push_back(c);
     return *this;
@@ -1026,21 +1114,21 @@ auto secure_basic_string<C, T, A>::operator+=(value_type c) -> self&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator+=(std::initializer_list<value_type> list) -> self&
+auto secure_basic_string<C, T, A>::operator+=(std::initializer_list<value_type> list) -> self_t&
 {
     return append(list);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::append(const self& str) -> self&
+auto secure_basic_string<C, T, A>::append(const self_t& str) -> self_t&
 {
     return append(view_type(str));
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::append(const view_type& str) -> self&
+auto secure_basic_string<C, T, A>::append(const view_type& str) -> self_t&
 {
     size_t n = str.length();
     size_t r = length() + n;
@@ -1055,28 +1143,28 @@ auto secure_basic_string<C, T, A>::append(const view_type& str) -> self&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::append(const self& str, size_t subpos, size_t sublen) -> self&
+auto secure_basic_string<C, T, A>::append(const self_t& str, size_t subpos, size_t sublen) -> self_t&
 {
     return append(view_type(str).substr(subpos, sublen));
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::append(const_pointer s) -> self&
+auto secure_basic_string<C, T, A>::append(const_pointer s) -> self_t&
 {
     return append(view_type(s));
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::append(const_pointer s, size_t n) -> self&
+auto secure_basic_string<C, T, A>::append(const_pointer s, size_t n) -> self_t&
 {
     return append(view_type(s, n));
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::append(size_t n, char c) -> self&
+auto secure_basic_string<C, T, A>::append(size_t n, char c) -> self_t&
 {
     size_t r = length() + n;
     if (r >= capacity()) {
@@ -1094,7 +1182,7 @@ auto secure_basic_string<C, T, A>::append(size_t n, char c) -> self&
 
 template <typename C, typename T, typename A>
 template <typename Iter>
-auto secure_basic_string<C, T, A>::append(Iter first, Iter last) -> self&
+auto secure_basic_string<C, T, A>::append(Iter first, Iter last) -> self_t&
 {
     size_t n = std::distance(first, last);
     size_t r = length() + n;
@@ -1112,7 +1200,7 @@ auto secure_basic_string<C, T, A>::append(Iter first, Iter last) -> self&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::append(std::initializer_list<value_type> list) -> self&
+auto secure_basic_string<C, T, A>::append(std::initializer_list<value_type> list) -> self_t&
 {
     return append(list.begin(), list.size());
 }
@@ -1134,14 +1222,14 @@ void secure_basic_string<C, T, A>::push_back(value_type c)
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::assign(const self& str) -> self&
+auto secure_basic_string<C, T, A>::assign(const self_t& str) -> self_t&
 {
     return assign(view_type(str));
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::assign(const view_type& str) -> self&
+auto secure_basic_string<C, T, A>::assign(const view_type& str) -> self_t&
 {
     size_t n = str.length();
     size_t r = length() + n;
@@ -1158,14 +1246,14 @@ auto secure_basic_string<C, T, A>::assign(const view_type& str) -> self&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::assign(const self& str, size_t subpos, size_t sublen) -> self&
+auto secure_basic_string<C, T, A>::assign(const self_t& str, size_t subpos, size_t sublen) -> self_t&
 {
     return assign(view_type(str).substr(subpos, sublen));
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::assign(const_pointer s) -> self&
+auto secure_basic_string<C, T, A>::assign(const_pointer s) -> self_t&
 {
     assert(s && "secure_basic_string:: assign() nullptr.");
     return assign(view_type(s));
@@ -1173,7 +1261,7 @@ auto secure_basic_string<C, T, A>::assign(const_pointer s) -> self&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::assign(const_pointer s, size_t n) -> self&
+auto secure_basic_string<C, T, A>::assign(const_pointer s, size_t n) -> self_t&
 {
     assert(s && "secure_basic_string:: assign() nullptr.");
     return assign(view_type(s, n));
@@ -1181,7 +1269,7 @@ auto secure_basic_string<C, T, A>::assign(const_pointer s, size_t n) -> self&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::assign(size_t n, value_type c) -> self&
+auto secure_basic_string<C, T, A>::assign(size_t n, value_type c) -> self_t&
 {
     size_t r = length() + n;
     if (r >= capacity()) {
@@ -1198,21 +1286,21 @@ auto secure_basic_string<C, T, A>::assign(size_t n, value_type c) -> self&
 
 template <typename C, typename T, typename A>
 template <typename Iter>
-auto secure_basic_string<C, T, A>::assign(Iter first, Iter last) -> self&
+auto secure_basic_string<C, T, A>::assign(Iter first, Iter last) -> self_t&
 {
-    return assign(self(first, last));
+    return assign(self_t(first, last));
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::assign(std::initializer_list<value_type> list) -> self&
+auto secure_basic_string<C, T, A>::assign(std::initializer_list<value_type> list) -> self_t&
 {
     return assign(list.begin(), list.size());
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::assign(self&& str) noexcept -> self&
+auto secure_basic_string<C, T, A>::assign(self_t&& str) noexcept -> self_t&
 {
     swap(str);
     return *this;
@@ -1220,7 +1308,96 @@ auto secure_basic_string<C, T, A>::assign(self&& str) noexcept -> self&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::erase(size_t pos, size_t len) -> self&
+auto secure_basic_string<C, T, A>::insert(size_t pos, const basic_string_view<C, T>& str) -> self_t&
+{
+    if (pos > size()) {
+        throw std::out_of_range("secure_basic_string::erase().");
+    }
+
+    const_iterator p = begin() + pos;
+    insert(p, str.begin(), str.end());
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::insert(size_t pos, const basic_string_view<C, T>& str, size_t subpos, size_t sublen) -> self_t&
+{
+    return insert(pos, str.substr(subpos, sublen));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::insert(size_t pos, size_t n, char c) -> self_t&
+{
+    if (pos > size()) {
+        throw std::out_of_range("secure_basic_string::insert().");
+    }
+
+    const_iterator p = begin() + pos;
+    insert(p, n, c);
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::insert(const_iterator p, size_t n, char c) -> iterator
+{
+    // reallocate if necessary
+    size_t pos = p - begin();
+    size_t move = size() - pos;
+    size_t new_size = size() + n;
+    if (new_size > capacity()) {
+        reserve(new_size);
+    }
+
+    // move
+    char* src = data_.first() + pos;
+    char* dst = src + n;
+    traits_type::move(dst, src, move);
+
+    // assign
+    traits_type::assign(src, n, c);
+    length_ += n;
+
+    return begin() + pos;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::insert(const_iterator p, char c) -> iterator
+{
+    return insert(p, 1, c);
+}
+
+
+
+template <typename C, typename T, typename A>
+template <typename Iter>
+auto secure_basic_string<C, T, A>::insert(iterator p, Iter first, Iter last) -> iterator
+{
+    return insert(const_iterator(p), first, last);
+}
+
+
+template <typename C, typename T, typename A>
+template <typename Iter>
+auto secure_basic_string<C, T, A>::insert(const_iterator p, Iter first, Iter last) -> iterator
+{
+    return string_detail::insert(*this, p, length_, first, last);
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::insert(const_iterator p, std::initializer_list<char> list) -> self_t&
+{
+    insert(p, list.begin(), list.end());
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::erase(size_t pos, size_t len) -> self_t&
 {
     if (pos > size()) {
         throw std::out_of_range("secure_basic_string::erase().");
@@ -1240,7 +1417,10 @@ auto secure_basic_string<C, T, A>::erase(size_t pos, size_t len) -> self&
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::erase(const_iterator p) -> const_iterator
 {
-    return erase(p, p+1);
+    assert(p != end() && "Erase called with a non-dereferencable iterator.");
+
+    size_type pos = static_cast<size_type>(p - begin());
+    return erase(pos, 1);
 }
 
 
@@ -1255,6 +1435,70 @@ auto secure_basic_string<C, T, A>::erase(const_iterator first, const_iterator la
 
 
 template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::replace(size_t pos, size_t len, const basic_string_view<C, T>& str) -> self_t&
+{
+    if (pos > size()) {
+        throw std::out_of_range("secure_basic_string::replace().");
+    }
+
+    const_iterator p1 = begin() + pos;
+    const_iterator p2 = (len == npos || pos + len >= size()) ? end() : p1 + len;
+    return replace(p1, p2, str);
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::replace(const_iterator p1, const_iterator p2, const basic_string_view<C, T>& str) -> self_t&
+{
+    return replace(p1, p2, str.begin(), str.end());
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::replace(size_t pos, size_t len, const basic_string_view<C, T>& str, size_t subpos, size_t sublen) -> self_t&
+{
+    return replace(pos, len, str.substr(subpos, sublen));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::replace(size_t pos, size_t len, size_t n, char c) -> self_t&
+{
+    if (pos > size()) {
+        throw std::out_of_range("secure_basic_string::replace().");
+    }
+
+    const_iterator p1 = begin() + pos;
+    const_iterator p2 = (len == npos || pos + len >= size()) ? end() : p1 + len;
+    return replace(p1, p2, n, c);
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::replace(const_iterator p1, const_iterator p2, size_t n, char c) -> self_t&
+{
+    auto it = erase(p1, p2);
+    insert(it, n, c);
+    return *this;
+}
+
+
+template <typename C, typename T, typename A>
+template <typename Iter>
+auto secure_basic_string<C, T, A>::replace(const_iterator p1, const_iterator p2, Iter first, Iter last) -> self_t&
+{
+    return string_detail::replace(*this, p1, p2, first, last);
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::replace(const_iterator p1, const_iterator p2, std::initializer_list<char> list) -> self_t&
+{
+    return replace(p1, p2, list.begin(), list.end());
+}
+
+
+template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::pop_back()
 {
     assert(!empty() && "string::pop_back(): string is empty");
@@ -1264,7 +1508,7 @@ void secure_basic_string<C, T, A>::pop_back()
 
 
 template <typename C, typename T, typename A>
-void secure_basic_string<C, T, A>::swap(self& other)
+void secure_basic_string<C, T, A>::swap(self_t& other)
 {
     std::swap(capacity_, other.capacity_);
     std::swap(length_, other.length_);
@@ -1314,7 +1558,7 @@ size_t secure_basic_string<C, T, A>::copy(pointer s, size_t len, size_t pos) con
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find(const self& str, size_type pos) const noexcept -> size_type
+auto secure_basic_string<C, T, A>::find(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_find(data()+pos, size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1356,7 +1600,7 @@ auto secure_basic_string<C, T, A>::find(value_type c, size_type pos) const noexc
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_first_of(const self& str, size_type pos) const noexcept -> size_type
+auto secure_basic_string<C, T, A>::find_first_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_find_of(data()+pos, size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1398,7 +1642,7 @@ auto secure_basic_string<C, T, A>::find_first_of(value_type c, size_type pos) co
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_first_not_of(const self& str, size_type pos) const noexcept -> size_type
+auto secure_basic_string<C, T, A>::find_first_not_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_find_not_of(data()+pos, size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1440,7 +1684,7 @@ auto secure_basic_string<C, T, A>::find_first_not_of(value_type c, size_type pos
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::rfind(const self& str, size_type pos) const noexcept -> size_type
+auto secure_basic_string<C, T, A>::rfind(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_rfind(end(), size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1482,7 +1726,7 @@ auto secure_basic_string<C, T, A>::rfind(value_type c, size_type pos) const noex
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_last_of(const self& str, size_type pos) const noexcept -> size_type
+auto secure_basic_string<C, T, A>::find_last_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_rfind_of(end(), size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1524,7 +1768,7 @@ auto secure_basic_string<C, T, A>::find_last_of(value_type c, size_type pos) con
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_last_not_of(const self& str, size_type pos) const noexcept -> size_type
+auto secure_basic_string<C, T, A>::find_last_not_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_rfind_not_of(end(), size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1566,7 +1810,7 @@ auto secure_basic_string<C, T, A>::find_last_not_of(value_type c, size_type pos)
 
 
 template <typename C, typename T, typename A>
-int secure_basic_string<C, T, A>::compare(const self& str) const noexcept
+int secure_basic_string<C, T, A>::compare(const self_t& str) const noexcept
 {
     return compare(view_type(str));
 }
@@ -1580,7 +1824,7 @@ int secure_basic_string<C, T, A>::compare(const view_type& str) const noexcept
 
 
 template <typename C, typename T, typename A>
-int secure_basic_string<C, T, A>::compare(size_type pos, size_type len, const self& str) const
+int secure_basic_string<C, T, A>::compare(size_type pos, size_type len, const self_t& str) const
 {
     return view_type(*this, pos, len).compare(str);
 }
@@ -1595,7 +1839,7 @@ int secure_basic_string<C, T, A>::compare(size_type pos, size_type len, const vi
 
 template <typename C, typename T, typename A>
 int secure_basic_string<C, T, A>::compare(size_type pos, size_type len,
-    const self& str,
+    const self_t& str,
     size_type subpos,
     size_type sublen) const
 {
@@ -1632,9 +1876,9 @@ int secure_basic_string<C, T, A>::compare(size_type pos, size_type len, const_po
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::substr(size_type pos, size_type len) const -> self
+auto secure_basic_string<C, T, A>::substr(size_type pos, size_type len) const -> self_t
 {
-    return self(*this, pos, len);
+    return self_t(*this, pos, len);
 }
 
 

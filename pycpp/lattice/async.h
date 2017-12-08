@@ -51,11 +51,11 @@ public:
 
     template <typename Duration>
     typename std::enable_if<std::is_integral<Duration>::value, response_t>::type
-    next(const Duration seconds = 1);
+    next(Duration seconds = 1);
 
     template <typename Duration>
     typename std::enable_if<is_specialization<Duration, std::chrono::duration>::value, response_t>::type
-    next(const Duration &duration = std::chrono::seconds(1));
+    next(const Duration& duration = std::chrono::seconds(1));
 
     explicit operator bool() const;
 
@@ -185,7 +185,7 @@ void pool_t::trace(Ts&&... ts)
  */
 template <typename Duration>
 typename std::enable_if<std::is_integral<Duration>::value, response_t>::type
-pool_t::next(const Duration seconds)
+pool_t::next(Duration seconds)
 {
     return next(std::chrono::seconds(seconds));
 }
@@ -196,7 +196,7 @@ pool_t::next(const Duration seconds)
  */
 template <typename Duration>
 typename std::enable_if<is_specialization<Duration, std::chrono::duration>::value, response_t>::type
-pool_t::next(const Duration &duration)
+pool_t::next(const Duration& duration)
 {
     // set our starting timepoint
     typedef std::chrono::high_resolution_clock highres_clock;

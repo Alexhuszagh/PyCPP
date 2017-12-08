@@ -75,14 +75,14 @@ struct xml_file_writer: xml_stream_writer
 {
 public:
     xml_file_writer();
-    xml_file_writer(const std::string &name);
-    void open(const std::string &name);
+    xml_file_writer(const string_view& name);
+    void open(const string_view& name);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    xml_file_writer(const std::wstring &name);
-    void open(const std::wstring &name);
-    xml_file_writer(const std::u16string &name);
-    void open(const std::u16string &name);
+    xml_file_writer(const wstring_view& name);
+    void open(const wstring_view& name);
+    xml_file_writer(const u16string_view& name);
+    void open(const u16string_view& name);
 #endif                                          // WINDOWS
     virtual void flush() const override;
 

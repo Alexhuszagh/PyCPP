@@ -11,13 +11,18 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
+authentication_t::authentication_t(const char* username, const char* password):
+    authentication_t(string_view(username), string_view(password))
+{}
+
+
 authentication_t::authentication_t(std::string &&username, std::string &&password):
     username(std::forward<std::string>(username)),
     password(std::forward<std::string>(password))
 {}
 
 
-authentication_t::authentication_t(const std::string &username, const std::string &password):
+authentication_t::authentication_t(const string_view& username, const string_view& password):
     username(username),
     password(password)
 {}

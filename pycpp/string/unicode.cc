@@ -623,7 +623,7 @@ template <typename Char1, typename Char2>
 struct to_wide
 {
     template <typename Function>
-    std::string operator()(const std::string &str, Function function)
+    std::string operator()(const string_view& str, Function function)
     {
         // types
         constexpr size_t size1 = sizeof(Char1);
@@ -661,7 +661,7 @@ template <typename Char1, typename Char2>
 struct to_narrow
 {
     template <typename Function>
-    std::string operator()(const std::string &str, Function function)
+    std::string operator()(const string_view& str, Function function)
     {
         // types
         constexpr size_t size1 = sizeof(Char1);
@@ -765,13 +765,13 @@ bool is_punctuation(uint32_t c)
 }
 
 
-bool is_ascii(const std::string &str)
+bool is_ascii(const string_view& str)
 {
     return !is_unicode(str);
 }
 
 
-bool is_unicode(const std::string &str)
+bool is_unicode(const string_view& str)
 {
     return std::any_of(str.cbegin(), str.cend(), [](char c) {
         return c <= 0;
@@ -798,7 +798,7 @@ void utf8_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_to_utf16(const std::string& str)
+std::string utf8_to_utf16(const string_view& str)
 {
     return to_wide<uint8_t, uint16_t>()(str, utf8_to_utf16_ptr);
 }
@@ -821,7 +821,7 @@ void utf8_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_to_utf32(const std::string& str)
+std::string utf8_to_utf32(const string_view& str)
 {
     return to_wide<uint8_t, uint32_t>()(str, utf8_to_utf32_ptr);
 }
@@ -844,7 +844,7 @@ void utf16_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf16_to_utf8(const std::string& str)
+std::string utf16_to_utf8(const string_view& str)
 {
     return to_narrow<uint16_t, uint8_t>()(str, utf16_to_utf8_ptr);
 }
@@ -867,7 +867,7 @@ void utf16_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf16_to_utf32(const std::string& str)
+std::string utf16_to_utf32(const string_view& str)
 {
     return to_wide<uint16_t, uint32_t>()(str, utf16_to_utf32_ptr);
 }
@@ -890,7 +890,7 @@ void utf32_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf32_to_utf8(const std::string& str)
+std::string utf32_to_utf8(const string_view& str)
 {
     return to_narrow<uint32_t, uint8_t>()(str, utf32_to_utf8_ptr);
 }
@@ -913,7 +913,7 @@ void utf32_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf32_to_utf16(const std::string& str)
+std::string utf32_to_utf16(const string_view& str)
 {
     return to_narrow<uint32_t, uint16_t>()(str, utf32_to_utf16_ptr);
 }

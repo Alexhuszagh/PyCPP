@@ -4,7 +4,6 @@
 
 #include <pycpp/lattice/cookie.h>
 #include <pycpp/string/url.h>
-#include <sstream>
 
 
 PYCPP_BEGIN_NAMESPACE
@@ -27,18 +26,18 @@ bool encode_version_one_cookie(const std::string &cookie)
 
 std::string cookies_t::encode() const
 {
-    std::stringstream stream;
+    std::string string;
     for (const auto &item: *this) {
-        stream << url_encode(item.first) << "=";
+        string += url_encode(item.first) + "=";
         if (encode_version_one_cookie(item.second)) {
-            stream << item.second;
+            string += item.second;
         } else {
-            stream << url_encode(item.second);
+            string += url_encode(item.second);
         }
-        stream << "; ";
+        string += "; ";
     }
 
-    return stream.str();
+    return string;
 }
 
 

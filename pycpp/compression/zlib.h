@@ -10,8 +10,8 @@
 #if defined(HAVE_ZLIB)
 
 #include <pycpp/compression/exception.h>
+#include <pycpp/view/string.h>
 #include <memory>
-#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -74,12 +74,12 @@ void zlib_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief ZLIB-compress data.
  */
-std::string zlib_compress(const std::string &str);
+std::string zlib_compress(const string_view& str);
 
 /**
  *  \brief ZLIB-decompress data.
  */
-std::string zlib_decompress(const std::string &str);
+std::string zlib_decompress(const string_view& str);
 
 /**
  *  \brief ZLIB-decompress data.
@@ -93,7 +93,7 @@ void zlib_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
  *
  *  \param bound            Known size of decompressed buffer.
  */
-std::string zlib_decompress(const std::string &str, size_t bound);
+std::string zlib_decompress(const string_view& str, size_t bound);
 
 PYCPP_END_NAMESPACE
 

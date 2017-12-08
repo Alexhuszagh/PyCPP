@@ -9,8 +9,8 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/view/string.h>
 #include <functional>
-#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -22,7 +22,7 @@ using punycode_lowlevel_callback = std::function<void(
     void*& dst, size_t dstlen)
 >;
 
-using punycode_highlevel_callback = std::function<std::string(const std::string&)>;
+using punycode_highlevel_callback = std::function<std::string(const string_view&)>;
 
 // FUNCTIONS
 // ---------
@@ -35,7 +35,7 @@ void utf8_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstlen
 /**
  *  \brief Convert UTF8-encoded data to Punycode.
  */
-std::string utf8_to_punycode(const std::string &str);
+std::string utf8_to_punycode(const string_view& str);
 
 /**
  *  \brief Convert UTF16-encoded data to Punycode.
@@ -45,7 +45,7 @@ void utf16_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstle
 /**
  *  \brief Convert UTF16-encoded data to Punycode.
  */
-std::string utf16_to_punycode(const std::string &str);
+std::string utf16_to_punycode(const string_view& str);
 
 /**
  *  \brief Convert UTF32-encoded data to Punycode.
@@ -55,7 +55,7 @@ void utf32_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstle
 /**
  *  \brief Convert UTF32-encoded data to Punycode.
  */
-std::string utf32_to_punycode(const std::string &str);
+std::string utf32_to_punycode(const string_view& str);
 
 /**
  *  \brief Convert Punycode to UTF-8.
@@ -65,7 +65,7 @@ void punycode_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen
 /**
  *  \brief Convert Punycode to UTF-8.
  */
-std::string punycode_to_utf8(const std::string &str);
+std::string punycode_to_utf8(const string_view& str);
 
 /**
  *  \brief Convert Punycode to UTF-16.
@@ -75,7 +75,7 @@ void punycode_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstle
 /**
  *  \brief Convert Punycode to UTF-16.
  */
-std::string punycode_to_utf16(const std::string &str);
+std::string punycode_to_utf16(const string_view& str);
 
 /**
  *  \brief Convert Punycode to UTF-32.
@@ -85,6 +85,6 @@ void punycode_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstle
 /**
  *  \brief Convert Punycode to UTF-32.
  */
-std::string punycode_to_utf32(const std::string &str);
+std::string punycode_to_utf32(const string_view& str);
 
 PYCPP_END_NAMESPACE

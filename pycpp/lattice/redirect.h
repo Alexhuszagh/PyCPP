@@ -24,12 +24,12 @@ struct redirects_t
     long count = 0;
 
     redirects_t() = default;
-    redirects_t(const redirects_t &other) = default;
+    redirects_t(const redirects_t&) = default;
     redirects_t & operator=(const redirects_t&) = default;
     redirects_t(redirects_t&&) = default;
     redirects_t & operator=(redirects_t&&) = default;
 
-    redirects_t(const long count);
+    redirects_t(long count);
 
     redirects_t & operator++();
     redirects_t operator++(int);

@@ -13,6 +13,7 @@
 
 #include <pycpp/lattice/auth.h>
 #include <pycpp/lattice/crypto.h>
+#include <pycpp/view/string.h>
 #include <unordered_map>
 #include <vector>
 
@@ -65,7 +66,7 @@ protected:
 
 public:
     using Base::Base;
-    quality_of_protection_t(const std::string &qop);
+    quality_of_protection_t(const std::string& qop);
 
     bool auth() const;
     bool authint() const;
@@ -88,14 +89,14 @@ struct digest_challenge_t: public std::unordered_map<
     >
 {
 public:
-    typedef std::unordered_map<std::string, std::string, lowercase_hash, lowercase_equal_to> base;
+    using base = std::unordered_map<std::string, std::string, lowercase_hash, lowercase_equal_to>;
     using base::base;
     digest_challenge_t(const std::string& string);
 
     // DATA
-    const std::string & realm() const;
-    const std::string & nonce() const;
-    const std::string & cnonce();
+    const std::string& realm() const;
+    const std::string& nonce() const;
+    const std::string& cnonce();
     std::string nc() const;
     digest_algorithm_t algorithm() const;
     quality_of_protection_t qop() const;

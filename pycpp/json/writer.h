@@ -78,14 +78,14 @@ struct json_file_writer: json_stream_writer
 {
 public:
     json_file_writer();
-    json_file_writer(const std::string &name);
-    void open(const std::string &name);
+    json_file_writer(const string_view& name);
+    void open(const string_view& name);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    json_file_writer(const std::wstring &name);
-    void open(const std::wstring &name);
-    json_file_writer(const std::u16string &name);
-    void open(const std::u16string &name);
+    json_file_writer(const wstring_view& name);
+    void open(const wstring_view& name);
+    json_file_writer(const u16string_view& name);
+    void open(const u16string_view& name);
 #endif                                          // WINDOWS
     virtual void flush() const override;
 

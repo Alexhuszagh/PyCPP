@@ -190,13 +190,13 @@ xml_file_writer::xml_file_writer()
 {}
 
 
-xml_file_writer::xml_file_writer(const std::string &name)
+xml_file_writer::xml_file_writer(const string_view& name)
 {
     open(name);
 }
 
 
-void xml_file_writer::open(const std::string &name)
+void xml_file_writer::open(const string_view& name)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     xml_stream_writer::open(file_);
@@ -205,26 +205,26 @@ void xml_file_writer::open(const std::string &name)
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-xml_file_writer::xml_file_writer(const std::wstring &name)
+xml_file_writer::xml_file_writer(const wstring_view& name)
 {
     open(name);
 }
 
 
-void xml_file_writer::open(const std::wstring &name)
+void xml_file_writer::open(const wstring_view& name)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     xml_stream_writer::open(file_);
 }
 
 
-xml_file_writer::xml_file_writer(const std::u16string &name)
+xml_file_writer::xml_file_writer(const u16string_view& name)
 {
     open(name);
 }
 
 
-void xml_file_writer::open(const std::u16string &name)
+void xml_file_writer::open(const u16string_view& name)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     xml_stream_writer::open(file_);

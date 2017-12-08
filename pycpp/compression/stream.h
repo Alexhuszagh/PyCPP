@@ -26,18 +26,18 @@ PYCPP_BEGIN_NAMESPACE
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
 #   define WIDE_PATH_IFSTREAM(name)                                                                             \
-        name##_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);                 \
-        void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);                       \
-        name##_ifstream(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);               \
-        void open(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);
+        name##_ifstream(const wstring_view& name, std::ios_base::openmode = std::ios_base::in);                 \
+        void open(const wstring_view& name, std::ios_base::openmode = std::ios_base::in);                       \
+        name##_ifstream(const u16string_view& name, std::ios_base::openmode = std::ios_base::in);               \
+        void open(const u16string_view& name, std::ios_base::openmode = std::ios_base::in);
 
 #   define WIDE_PATH_OFSTREAM(name)                                                                             \
-        name##_ofstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::out);                \
-        name##_ofstream(const std::wstring &name, int level, std::ios_base::openmode = std::ios_base::out);     \
-        void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::out);                      \
-        name##_ofstream(const std::u16string &name, std::ios_base::openmode = std::ios_base::out);              \
-        name##_ofstream(const std::u16string &name, int level, std::ios_base::openmode = std::ios_base::out);   \
-        void open(const std::u16string &name, std::ios_base::openmode = std::ios_base::out);
+        name##_ofstream(const wstring_view& name, std::ios_base::openmode = std::ios_base::out);                \
+        name##_ofstream(const wstring_view& name, int level, std::ios_base::openmode = std::ios_base::out);     \
+        void open(const wstring_view& name, std::ios_base::openmode = std::ios_base::out);                      \
+        name##_ofstream(const u16string_view& name, std::ios_base::openmode = std::ios_base::out);              \
+        name##_ofstream(const u16string_view& name, int level, std::ios_base::openmode = std::ios_base::out);   \
+        void open(const u16string_view& name, std::ios_base::openmode = std::ios_base::out);
 
 #else                                       // POSIX
 
@@ -111,8 +111,8 @@ PYCPP_BEGIN_NAMESPACE
         name##_ifstream & operator=(name##_ifstream&&);                                         \
         ~name##_ifstream();                                                                     \
                                                                                                 \
-        name##_ifstream(const std::string &name, std::ios_base::openmode = std::ios_base::in);  \
-        void open(const std::string &name, std::ios_base::openmode = std::ios_base::in);        \
+        name##_ifstream(const string_view& name, std::ios_base::openmode = std::ios_base::in);  \
+        void open(const string_view& name, std::ios_base::openmode = std::ios_base::in);        \
         WIDE_PATH_IFSTREAM(name)                                                                \
                                                                                                 \
     private:                                                                                    \
@@ -135,9 +135,9 @@ PYCPP_BEGIN_NAMESPACE
         name##_ofstream & operator=(name##_ofstream&&);                                                     \
         ~name##_ofstream();                                                                                 \
                                                                                                             \
-        name##_ofstream(const std::string &name, std::ios_base::openmode = std::ios_base::out);             \
-        name##_ofstream(const std::string &name, int level, std::ios_base::openmode = std::ios_base::out);  \
-        void open(const std::string &name, std::ios_base::openmode = std::ios_base::out);                   \
+        name##_ofstream(const string_view& name, std::ios_base::openmode = std::ios_base::out);             \
+        name##_ofstream(const string_view& name, int level, std::ios_base::openmode = std::ios_base::out);  \
+        void open(const string_view& name, std::ios_base::openmode = std::ios_base::out);                   \
         WIDE_PATH_OFSTREAM(name)                                                                            \
                                                                                                             \
     private:                                                                                                \
@@ -207,13 +207,13 @@ public:
     decompressing_ifstream & operator=(decompressing_ifstream&&);
     ~decompressing_ifstream();
 
-    decompressing_ifstream(const std::string &name, std::ios_base::openmode = std::ios_base::in);
-    void open(const std::string &name, std::ios_base::openmode = std::ios_base::in);
+    decompressing_ifstream(const string_view& name, std::ios_base::openmode = std::ios_base::in);
+    void open(const string_view& name, std::ios_base::openmode = std::ios_base::in);
 #if defined(HAVE_WFOPEN)                    // WINDOWS
-    decompressing_ifstream(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
-    void open(const std::wstring &name, std::ios_base::openmode = std::ios_base::in);
-    decompressing_ifstream(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);
-    void open(const std::u16string &name, std::ios_base::openmode = std::ios_base::in);
+    decompressing_ifstream(const wstring_view& name, std::ios_base::openmode = std::ios_base::in);
+    void open(const wstring_view& name, std::ios_base::openmode = std::ios_base::in);
+    decompressing_ifstream(const u16string_view& name, std::ios_base::openmode = std::ios_base::in);
+    void open(const u16string_view& name, std::ios_base::openmode = std::ios_base::in);
 #endif                                      // WINDOWS
 
 private:

@@ -187,13 +187,13 @@ json_file_writer::json_file_writer()
 {}
 
 
-json_file_writer::json_file_writer(const std::string &name)
+json_file_writer::json_file_writer(const string_view& name)
 {
     open(name);
 }
 
 
-void json_file_writer::open(const std::string &name)
+void json_file_writer::open(const string_view& name)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     json_stream_writer::open(file_);
@@ -202,26 +202,26 @@ void json_file_writer::open(const std::string &name)
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-json_file_writer::json_file_writer(const std::wstring &name)
+json_file_writer::json_file_writer(const wstring_view& name)
 {
     open(name);
 }
 
 
-void json_file_writer::open(const std::wstring &name)
+void json_file_writer::open(const wstring_view& name)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     json_stream_writer::open(file_);
 }
 
 
-json_file_writer::json_file_writer(const std::u16string &name)
+json_file_writer::json_file_writer(const u16string_view& name)
 {
     open(name);
 }
 
 
-void json_file_writer::open(const std::u16string &name)
+void json_file_writer::open(const u16string_view& name)
 {
     file_.open(name, std::ios_base::out | std::ios_base::binary);
     json_stream_writer::open(file_);

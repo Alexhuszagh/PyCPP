@@ -402,14 +402,14 @@ filter_ifstream & filter_ifstream::operator=(filter_ifstream &&other)
 }
 
 
-filter_ifstream::filter_ifstream(const std::string &name, std::ios_base::openmode mode, filter_callback c):
+filter_ifstream::filter_ifstream(const string_view& name, std::ios_base::openmode mode, filter_callback c):
     filter_istream(file, c)
 {
     open(name, mode, c);
 }
 
 
-void filter_ifstream::open(const std::string &name, std::ios_base::openmode mode, filter_callback c)
+void filter_ifstream::open(const string_view& name, std::ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
@@ -417,26 +417,26 @@ void filter_ifstream::open(const std::string &name, std::ios_base::openmode mode
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-filter_ifstream::filter_ifstream(const std::wstring &name, std::ios_base::openmode mode, filter_callback c):
+filter_ifstream::filter_ifstream(const wstring_view& name, std::ios_base::openmode mode, filter_callback c):
     filter_istream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ifstream::open(const std::wstring &name, std::ios_base::openmode mode, filter_callback c)
+void filter_ifstream::open(const wstring_view& name, std::ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
 }
 
 
-filter_ifstream::filter_ifstream(const std::u16string &name, std::ios_base::openmode mode, filter_callback c):
+filter_ifstream::filter_ifstream(const u16string_view& name, std::ios_base::openmode mode, filter_callback c):
     filter_istream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ifstream::open(const std::u16string &name, std::ios_base::openmode mode, filter_callback c)
+void filter_ifstream::open(const u16string_view& name, std::ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
@@ -491,13 +491,13 @@ filter_ofstream & filter_ofstream::operator=(filter_ofstream &&other)
 }
 
 
-filter_ofstream::filter_ofstream(const std::string &name, std::ios_base::openmode mode, filter_callback c):
+filter_ofstream::filter_ofstream(const string_view& name, std::ios_base::openmode mode, filter_callback c):
     filter_ostream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ofstream::open(const std::string &name, std::ios_base::openmode mode, filter_callback c)
+void filter_ofstream::open(const string_view& name, std::ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
@@ -505,26 +505,26 @@ void filter_ofstream::open(const std::string &name, std::ios_base::openmode mode
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-filter_ofstream::filter_ofstream(const std::wstring &name, std::ios_base::openmode mode, filter_callback c):
+filter_ofstream::filter_ofstream(const wstring_view& name, std::ios_base::openmode mode, filter_callback c):
     filter_ostream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ofstream::open(const std::wstring &name, std::ios_base::openmode mode, filter_callback c)
+void filter_ofstream::open(const wstring_view& name, std::ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
 }
 
 
-filter_ofstream::filter_ofstream(const std::u16string &name, std::ios_base::openmode mode, filter_callback c):
+filter_ofstream::filter_ofstream(const u16string_view& name, std::ios_base::openmode mode, filter_callback c):
     filter_ostream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ofstream::open(const std::u16string &name, std::ios_base::openmode mode, filter_callback c)
+void filter_ofstream::open(const u16string_view& name, std::ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);

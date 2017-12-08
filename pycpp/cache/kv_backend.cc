@@ -10,7 +10,7 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-void kv_open(void* db, const path_t& path, kv_options options, comparator_callback cb)
+void kv_open(void* db, const path_view_t& path, kv_options options, comparator_callback cb)
 {
     // set options
     leveldb::Options opts;
@@ -19,6 +19,7 @@ void kv_open(void* db, const path_t& path, kv_options options, comparator_callba
 //    }
 
     // create database
+    // TODO: maybe see if there's a more efficient way???
     auto status = leveldb::DB::Open(opts, path_to_string(path), (leveldb::DB**) &db);
     if (!status.ok()) {
         throw std::runtime_error(status.ToString().data());

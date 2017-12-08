@@ -10,7 +10,7 @@
 #include <pycpp/csv/punct.h>
 #include <pycpp/iterator/input_iterator_facade.h>
 #include <pycpp/stream/fstream.h>
-
+#include <pycpp/view/string.h>
 #include <memory>
 #include <sstream>
 
@@ -67,15 +67,15 @@ struct csv_file_reader: csv_stream_reader
 {
 public:
     csv_file_reader(csvpunct_impl* = nullptr);
-    csv_file_reader(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const std::string &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_file_reader(const string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
 
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    csv_file_reader(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const std::wstring &name, size_t skip = 0, csvpunct_impl* = nullptr);
-    csv_file_reader(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const std::u16string &name, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_file_reader(const wstring_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const wstring_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_file_reader(const u16string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const u16string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
 #endif                                          // WINDOWS
 
 private:
@@ -90,8 +90,8 @@ struct csv_string_reader: csv_stream_reader
 {
 public:
     csv_string_reader(csvpunct_impl* = nullptr);
-    csv_string_reader(const std::string &str, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const std::string &str, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_string_reader(const string_view& str, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const string_view& str, size_t skip = 0, csvpunct_impl* = nullptr);
 
 private:
     std::istringstream sstream_;

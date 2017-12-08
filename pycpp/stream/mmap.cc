@@ -125,7 +125,7 @@ mmap_fstream & mmap_fstream::operator=(mmap_fstream &&other)
 }
 
 
-mmap_fstream::mmap_fstream(const std::string& name, std::ios_base::openmode mode):
+mmap_fstream::mmap_fstream(const string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
     std::iostream(&buffer)
 {
@@ -133,7 +133,7 @@ mmap_fstream::mmap_fstream(const std::string& name, std::ios_base::openmode mode
 }
 
 
-void mmap_fstream::open(const std::string& name, std::ios_base::openmode mode)
+void mmap_fstream::open(const string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in | std::ios_base::out;
@@ -142,7 +142,7 @@ void mmap_fstream::open(const std::string& name, std::ios_base::openmode mode)
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-mmap_fstream::mmap_fstream(const std::wstring& name, std::ios_base::openmode mode):
+mmap_fstream::mmap_fstream(const wstring_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
     std::iostream(&buffer)
 {
@@ -150,13 +150,13 @@ mmap_fstream::mmap_fstream(const std::wstring& name, std::ios_base::openmode mod
 }
 
 
-void mmap_fstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void mmap_fstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-mmap_fstream::mmap_fstream(const std::u16string& name, std::ios_base::openmode mode):
+mmap_fstream::mmap_fstream(const u16string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
     std::iostream(&buffer)
 {
@@ -164,7 +164,7 @@ mmap_fstream::mmap_fstream(const std::u16string& name, std::ios_base::openmode m
 }
 
 
-void mmap_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void mmap_fstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in | std::ios_base::out;
@@ -319,7 +319,7 @@ mmap_ifstream & mmap_ifstream::operator=(mmap_ifstream &&other)
 }
 
 
-mmap_ifstream::mmap_ifstream(const std::string& name, std::ios_base::openmode mode):
+mmap_ifstream::mmap_ifstream(const string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in, INVALID_FD_VALUE),
     std::istream(&buffer)
 {
@@ -327,7 +327,7 @@ mmap_ifstream::mmap_ifstream(const std::string& name, std::ios_base::openmode mo
 }
 
 
-void mmap_ifstream::open(const std::string& name, std::ios_base::openmode mode)
+void mmap_ifstream::open(const string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in;
@@ -336,7 +336,7 @@ void mmap_ifstream::open(const std::string& name, std::ios_base::openmode mode)
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-mmap_ifstream::mmap_ifstream(const std::wstring& name, std::ios_base::openmode mode):
+mmap_ifstream::mmap_ifstream(const wstring_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in, INVALID_FD_VALUE),
     std::istream(&buffer)
 {
@@ -344,13 +344,13 @@ mmap_ifstream::mmap_ifstream(const std::wstring& name, std::ios_base::openmode m
 }
 
 
-void mmap_ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void mmap_ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-mmap_ifstream::mmap_ifstream(const std::u16string& name, std::ios_base::openmode mode):
+mmap_ifstream::mmap_ifstream(const u16string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in, INVALID_FD_VALUE),
     std::istream(&buffer)
 {
@@ -358,7 +358,7 @@ mmap_ifstream::mmap_ifstream(const std::u16string& name, std::ios_base::openmode
 }
 
 
-void mmap_ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void mmap_ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in;
@@ -499,7 +499,7 @@ mmap_ofstream & mmap_ofstream::operator=(mmap_ofstream &&other)
 }
 
 
-mmap_ofstream::mmap_ofstream(const std::string& name, std::ios_base::openmode mode):
+mmap_ofstream::mmap_ofstream(const string_view& name, std::ios_base::openmode mode):
     // Linux and Windows require read/write access for mmap
     // Lie about the underlying fd and just provide write methods
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
@@ -509,7 +509,7 @@ mmap_ofstream::mmap_ofstream(const std::string& name, std::ios_base::openmode mo
 }
 
 
-void mmap_ofstream::open(const std::string& name, std::ios_base::openmode mode)
+void mmap_ofstream::open(const string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in | std::ios_base::out;
@@ -518,7 +518,7 @@ void mmap_ofstream::open(const std::string& name, std::ios_base::openmode mode)
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-mmap_ofstream::mmap_ofstream(const std::wstring& name, std::ios_base::openmode mode):
+mmap_ofstream::mmap_ofstream(const wstring_view& name, std::ios_base::openmode mode):
     // Linux and Windows require read/write access for mmap
     // Lie about the underlying fd and just provide write methods
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
@@ -528,13 +528,13 @@ mmap_ofstream::mmap_ofstream(const std::wstring& name, std::ios_base::openmode m
 }
 
 
-void mmap_ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void mmap_ofstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-mmap_ofstream::mmap_ofstream(const std::u16string& name, std::ios_base::openmode mode):
+mmap_ofstream::mmap_ofstream(const u16string_view& name, std::ios_base::openmode mode):
     // Linux and Windows require read/write access for mmap
     // Lie about the underlying fd and just provide write methods
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
@@ -544,7 +544,7 @@ mmap_ofstream::mmap_ofstream(const std::u16string& name, std::ios_base::openmode
 }
 
 
-void mmap_ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void mmap_ofstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in | std::ios_base::out;

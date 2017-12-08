@@ -8,9 +8,9 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <pycpp/xml/core.h>
 #include <pycpp/stream/fstream.h>
 #include <pycpp/view/string.h>
+#include <pycpp/xml/core.h>
 
 #include <sstream>
 
@@ -72,14 +72,14 @@ struct xml_file_reader: xml_stream_reader
 {
 public:
     xml_file_reader();
-    xml_file_reader(const std::string &name);
-    void open(const std::string &name);
+    xml_file_reader(const string_view& name);
+    void open(const string_view& name);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    xml_file_reader(const std::wstring &name);
-    void open(const std::wstring &name);
-    xml_file_reader(const std::u16string &name);
-    void open(const std::u16string &name);
+    xml_file_reader(const wstring_view& name);
+    void open(const wstring_view& name);
+    xml_file_reader(const u16string_view& name);
+    void open(const u16string_view& name);
 #endif                                          // WINDOWS
 
 private:
@@ -94,8 +94,8 @@ struct xml_string_reader: xml_stream_reader
 {
 public:
     xml_string_reader();
-    xml_string_reader(const std::string &str);
-    void open(const std::string &str);
+    xml_string_reader(const string_view& str);
+    void open(const string_view& str);
 
 private:
     std::istringstream sstream_;

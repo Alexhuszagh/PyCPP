@@ -195,9 +195,9 @@ void json_dom_handler::string(const string_view& str)
 }
 
 
-void json_document_t::loads(const std::string& data)
+void json_document_t::loads(const string_view& data)
 {
-    std::istringstream stream(data);
+    std::istringstream stream = std::istringstream(std::string(data));
     load(stream);
 }
 
@@ -211,7 +211,7 @@ void json_document_t::load(std::istream& stream)
 }
 
 
-void json_document_t::load(const std::string& path)
+void json_document_t::load(const string_view& path)
 {
     ifstream stream(path);
     load(stream);
@@ -220,14 +220,14 @@ void json_document_t::load(const std::string& path)
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-void json_document_t::load(const std::wstring& path)
+void json_document_t::load(const wstring_view& path)
 {
     ifstream stream(path);
     load(stream);
 }
 
 
-void json_document_t::load(const std::u16string& path)
+void json_document_t::load(const u16string_view& path)
 {
     ifstream stream(path);
     load(stream);
@@ -251,7 +251,7 @@ void json_document_t::dump(std::ostream& stream, char c, int width)
 }
 
 
-void json_document_t::dump(const std::string& path, char c, int width)
+void json_document_t::dump(const string_view& path, char c, int width)
 {
     ofstream stream(path);
     dump(stream, c, width);
@@ -260,14 +260,14 @@ void json_document_t::dump(const std::string& path, char c, int width)
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-void json_document_t::dump(const std::wstring& path, char c, int width)
+void json_document_t::dump(const wstring_view& path, char c, int width)
 {
     ofstream stream(path);
     dump(stream, c, width);
 }
 
 
-void json_document_t::dump(const std::u16string& path, char c, int width)
+void json_document_t::dump(const u16string_view& path, char c, int width)
 {
     ofstream stream(path);
     dump(stream, c, width);

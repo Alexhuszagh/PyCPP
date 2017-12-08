@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <string>
+#include <pycpp/view/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -23,7 +23,7 @@ size_t base16_encode(const void* src, size_t srclen, void* dst, size_t dstlen);
 /**
   *\brief Encode string to base16.
  */
-std::string base16_encode(const std::string& str);
+std::string base16_encode(const string_view& str);
 
 /**
   *\brief Decode buffer from base16. Returns number of bytes converted.
@@ -33,6 +33,6 @@ size_t base16_decode(const void* src, size_t srclen, void* dst, size_t dstlen);
 /**
   *\brief Decode string from base16.
  */
-std::string base16_decode(const std::string& str);
+std::string base16_decode(const string_view& str);
 
 PYCPP_END_NAMESPACE

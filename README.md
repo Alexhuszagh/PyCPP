@@ -274,7 +274,7 @@ For more resources on getting started as a contributor, please read the document
 
 ## Performance
 
-To avoid long build times, PyCPP avoids inlining functions at all costs, and minimizes template definitions within headers, coming with a slight performance penalty. Using link-time optimization should remedy these issues, and mitigate the need for explicit inlining.
+To avoid long build times, PyCPP avoids inlining functions at all costs, and minimizes template definitions within headers, coming with a slight performance penalty. To optimize performance, you should use custom allocators provided in the [pycpp/allocators](/pycpp/allocators), link-time optimization, and the low-level APIs. This should provide comparable or superior performance to most existing libraries, and mitigate the need for explicit inlining.
 
 ## Platforms
 

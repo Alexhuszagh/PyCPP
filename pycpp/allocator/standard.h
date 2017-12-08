@@ -50,8 +50,8 @@ struct standard_allocator: private standard_allocator_base
     // MEMBER FUNCTIONS
     // ----------------
     standard_allocator() noexcept = default;
-    standard_allocator(const standard_allocator<T>&) noexcept = default;
-    standard_allocator<T>& operator=(const standard_allocator<T>&) noexcept = default;
+    standard_allocator(const self_t&) noexcept = default;
+    self_t& operator=(const self_t&) noexcept = default;
     ~standard_allocator() = default;
 
     pointer allocate(size_type, const void* = nullptr);
@@ -73,6 +73,20 @@ template <typename T>
 void standard_allocator<T>::deallocate(pointer p, size_type n)
 {
     standard_allocator_base::deallocate(p, sizeof(value_type) * n);
+}
+
+
+template <typename T, typename U>
+bool operator==(const standard_allocator<T>&, const standard_allocator<U>&) noexcept
+{
+    return true;
+}
+
+
+template <typename T, typename U>
+bool operator!=(const standard_allocator<T>& lhs, const standard_allocator<U>& rhs) noexcept
+{
+    return !(lhs == rhs);
 }
 
 PYCPP_END_NAMESPACE

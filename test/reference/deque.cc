@@ -21,7 +21,7 @@ static std::deque<int> DATA = {1, 2, 3, 4, 5};
 
 TEST(reference_deque, constructor)
 {
-    using reference = reference_deque<int&>;
+    using reference = reference_deque<int>;
 
     reference deque;
     EXPECT_EQ(deque.size(), 0);
@@ -45,7 +45,7 @@ TEST(reference_deque, constructor)
 
 TEST(reference_deque, iterator)
 {
-    using reference = reference_deque<int&>;
+    using reference = reference_deque<int>;
 
     // create deques
     reference deque;
@@ -65,7 +65,7 @@ TEST(reference_deque, iterator)
 
 TEST(reference_deque, capacity)
 {
-    using reference = reference_deque<int&>;
+    using reference = reference_deque<int>;
     reference deque(5, DATA[0]);
 
     EXPECT_EQ(deque.size(), 5);
@@ -79,7 +79,7 @@ TEST(reference_deque, capacity)
 
 TEST(reference_deque, element)
 {
-    using reference = reference_deque<int&>;
+    using reference = reference_deque<int>;
 
     reference deque;
     for (auto &item: DATA) {
@@ -97,7 +97,7 @@ TEST(reference_deque, element)
 
 TEST(reference_deque, modifiers)
 {
-    using reference = reference_deque<int&>;
+    using reference = reference_deque<int>;
     std::deque<int> data(DATA);
 
     // push_back
@@ -150,7 +150,7 @@ TEST(reference_deque, modifiers)
 
 TEST(reference_deque, relational)
 {
-    using reference = reference_deque<int&>;
+    using reference = reference_deque<int>;
 
     // create deques
     reference deque;

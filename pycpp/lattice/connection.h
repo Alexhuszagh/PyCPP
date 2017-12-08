@@ -13,13 +13,11 @@
 #include <pycpp/lattice/ssl.h>
 #include <pycpp/lattice/timeout.h>
 #include <pycpp/lattice/util.h>
+#include <pycpp/view/string.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 #include <cstdlib>
 #include <cstring>
-
-#if defined(HAVE_MSVC)
-#   pragma warning(push)
-#   pragma warning(disable:4267)
-#endif
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -108,13 +106,13 @@ public:
     // REQUESTS
     void open(const url_t& url);
     void close();
-    void write(const std::string& data);
+    void write(const string_view& data);
     void set_cache(const dns_cache_t& cache);
 
     // RESPONSE
     std::string headers();
     std::string chunked();
-    std::string body(const long length);
+    std::string body(long length);
     std::string read();
 
     // OPTIONAL
@@ -326,7 +324,7 @@ void connection_t<Adapter>::set_cache(const dns_cache_t& cache)
  *  \brief Send data through socket.
  */
 template <typename Adapter>
-void connection_t<Adapter>::write(const std::string& data)
+void connection_t<Adapter>::write(const string_view& data)
 {
     int sent = adaptor.write(data.data(), data.size());
     if (sent != static_cast<int>(data.size())) {
@@ -409,7 +407,7 @@ std::string connection_t<Adapter>::chunked()
  *  \brief Read non-chunked content of fixed length.
  */
 template <typename Adapter>
-std::string connection_t<Adapter>::body(const long length)
+std::string connection_t<Adapter>::body(long length)
 {
     std::string string;
     if (length > 0) {
@@ -455,6 +453,4 @@ typedef connection_t<ssl_adaptor_t> https_connection_t;
 
 PYCPP_END_NAMESPACE
 
-#if defined(HAVE_MSVC)
-#   pragma warning(pop)
-#endif
+#include <warnings/pop.h>

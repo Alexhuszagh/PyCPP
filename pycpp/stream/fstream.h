@@ -9,6 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/view/string.h>
 #include <fstream>
 
 #if defined(HAVE_GCC)
@@ -42,14 +43,14 @@ public:
     fstream(fstream &&other);
     fstream & operator=(fstream &&other);
 
-    fstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    fstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    fstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 #endif                                          // WINDOWS
 
     // DATA
@@ -82,14 +83,14 @@ public:
     ifstream(ifstream &&other);
     ifstream & operator=(ifstream &&other);
 
-    ifstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::in);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    ifstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
-    ifstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in);
 #endif                                          // WINDOWS
 
     bool is_open() const;
@@ -121,14 +122,14 @@ public:
     ofstream(ofstream &&other);
     ofstream & operator=(ofstream &&other);
 
-    ofstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    ofstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
-    ofstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::out);
 #endif                                          // WINDOWS
 
     bool is_open() const;
@@ -160,14 +161,14 @@ public:
     fstream(fstream &&other);
     fstream & operator=(fstream &&other);
 
-    fstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    fstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    fstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    fstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
 #endif                                          // WINDOWS
 };
 
@@ -188,14 +189,14 @@ public:
     ifstream(ifstream &&other);
     ifstream & operator=(ifstream &&other);
 
-    ifstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::in);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    ifstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
-    ifstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    ifstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in);
 #endif                                          // WINDOWS
 };
 
@@ -216,14 +217,14 @@ public:
     ofstream(ofstream &&other);
     ofstream & operator=(ofstream &&other);
 
-    ofstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    ofstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
-    ofstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    ofstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::out);
 #endif                                          // WINDOWS
 };
 

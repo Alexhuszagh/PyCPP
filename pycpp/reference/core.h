@@ -13,7 +13,7 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-namespace detail
+namespace sequence_detail
 {
 // DECLARATION
 // -----------
@@ -36,6 +36,6 @@ using sequence_iterator_impl = transform_iterator<P, std::function<double_deref<
 template <typename P>
 using sequence_const_iterator_impl = transform_iterator<P, std::function<const_double_deref<P>(deref<P>)>>;
 
-}   /* detail */
+}   /* sequence_detail */
 
 PYCPP_END_NAMESPACE

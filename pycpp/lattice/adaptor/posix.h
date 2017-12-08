@@ -16,7 +16,7 @@
 #include <pycpp/lattice/ssl.h>
 #include <pycpp/lattice/timeout.h>
 #include <pycpp/lattice/url.h>
-
+#include <pycpp/view/string.h>
 #include <netdb.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -39,7 +39,7 @@ public:
     ~posix_socket_adaptor_t();
 
     // REQUESTS
-    bool open(const addrinfo& info, const std::string&);
+    bool open(const addrinfo& info, const string_view&);
     void close();
     size_t write(const char *buf, size_t len);
     size_t read(char *buf, size_t count);

@@ -21,7 +21,7 @@ static std::vector<int> DATA = {1, 2, 3, 4, 5};
 
 TEST(reference_vector, constructor)
 {
-    using reference = reference_vector<int&>;
+    using reference = reference_vector<int>;
 
     reference vector;
     EXPECT_EQ(vector.size(), 0);
@@ -45,7 +45,7 @@ TEST(reference_vector, constructor)
 
 TEST(reference_vector, iterator)
 {
-    using reference = reference_vector<int&>;
+    using reference = reference_vector<int>;
 
     // create vectors
     reference vector;
@@ -67,7 +67,7 @@ TEST(reference_vector, iterator)
 
 TEST(reference_vector, capacity)
 {
-    using reference = reference_vector<int&>;
+    using reference = reference_vector<int>;
     reference vector(5, DATA[0]);
 
     EXPECT_EQ(vector.size(), 5);
@@ -83,7 +83,7 @@ TEST(reference_vector, capacity)
 
 TEST(reference_vector, element)
 {
-    using reference = reference_vector<int&>;
+    using reference = reference_vector<int>;
 
     reference vector;
     for (auto &item: DATA) {
@@ -101,7 +101,7 @@ TEST(reference_vector, element)
 
 TEST(reference_vector, modifiers)
 {
-    using reference = reference_vector<int&>;
+    using reference = reference_vector<int>;
     std::vector<int> data(DATA);
 
     // push_back
@@ -143,7 +143,7 @@ TEST(reference_vector, modifiers)
 
 TEST(reference_vector, relational)
 {
-    using reference = reference_vector<int&>;
+    using reference = reference_vector<int>;
 
     // create vectors
     reference vector;

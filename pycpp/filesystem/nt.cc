@@ -813,7 +813,7 @@ bool makedirs(const path_t& path, int mode)
 // FILE UTILS
 
 
-fd_t fd_open(const path_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
+fd_t fd_open(const path_view_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
     const wchar_t* p = (const wchar_t*) path.data();
     fd_t fd = fd_open_impl(p, mode, permission, access, CreateFileW);
@@ -1110,7 +1110,7 @@ bool makedirs(const backup_path_t& path, int mode)
 
 // FILE UTILS
 
-fd_t fd_open(const backup_path_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
+fd_t fd_open(const backup_path_view_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
 #if defined(HAVE_WFOPEN)
     return fd_open(backup_path_to_path(path), mode, permission, access);

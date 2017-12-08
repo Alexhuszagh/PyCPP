@@ -372,7 +372,7 @@ void ascii_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string ascii_tolower(const std::string &str)
+std::string ascii_tolower(const string_view& str)
 {
     typedef casemap<char, char> functor;
     std::string lower;
@@ -385,7 +385,7 @@ std::string ascii_tolower(const std::string &str)
 }
 
 
-std::string ascii_toupper(const std::string &str)
+std::string ascii_toupper(const string_view& str)
 {
     typedef casemap<char, char> functor;
     std::string upper;
@@ -427,7 +427,7 @@ void ascii_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string ascii_totitle(const std::string &str)
+std::string ascii_totitle(const string_view& str)
 {
     typedef title_tokenizer<char, char> functor;
     std::string title;
@@ -470,7 +470,7 @@ void ascii_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen
 }
 
 
-std::string ascii_capitalize(const std::string &str)
+std::string ascii_capitalize(const string_view& str)
 {
     typedef capitalize<char, char> functor;
     std::string title;
@@ -509,7 +509,7 @@ void utf8_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_tolower(const std::string &str)
+std::string utf8_tolower(const string_view& str)
 {
     return utf32_to_utf8(utf32_tolower(utf8_to_utf32(str)));
 }
@@ -536,7 +536,7 @@ void utf8_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_toupper(const std::string &str)
+std::string utf8_toupper(const string_view& str)
 {
     return utf32_to_utf8(utf32_toupper(utf8_to_utf32(str)));
 }
@@ -563,7 +563,7 @@ void utf8_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_totitle(const std::string &str)
+std::string utf8_totitle(const string_view& str)
 {
     return utf32_to_utf8(utf32_totitle(utf8_to_utf32(str)));
 }
@@ -590,7 +590,7 @@ void utf8_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_capitalize(const std::string &str)
+std::string utf8_capitalize(const string_view& str)
 {
     return utf32_to_utf8(utf32_capitalize(utf8_to_utf32(str)));
 }
@@ -617,7 +617,7 @@ void utf16_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf16_tolower(const std::string &str)
+std::string utf16_tolower(const string_view& str)
 {
     return utf32_to_utf16(utf32_tolower(utf16_to_utf32(str)));
 }
@@ -650,7 +650,7 @@ void utf16_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf16_toupper(const std::string &str)
+std::string utf16_toupper(const string_view& str)
 {
     return utf32_to_utf16(utf32_toupper(utf16_to_utf32(str)));
 }
@@ -683,7 +683,7 @@ void utf16_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf16_totitle(const std::string &str)
+std::string utf16_totitle(const string_view& str)
 {
     return utf32_to_utf16(utf32_totitle(utf16_to_utf32(str)));
 }
@@ -716,7 +716,7 @@ void utf16_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen
 }
 
 
-std::string utf16_capitalize(const std::string &str)
+std::string utf16_capitalize(const string_view& str)
 {
     return utf32_to_utf16(utf32_capitalize(utf16_to_utf32(str)));
 }
@@ -751,7 +751,7 @@ void utf32_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf32_tolower(const std::string &str)
+std::string utf32_tolower(const string_view& str)
 {
     typedef casemap<uint32_t, uint8_t> functor;
     std::string lower;
@@ -766,7 +766,7 @@ std::string utf32_tolower(const std::string &str)
 }
 
 
-std::u32string utf32_tolower(const std::u32string &str)
+std::u32string utf32_tolower(const u32string_view& str)
 {
     typedef casemap<uint32_t, uint32_t> functor;
     std::u32string lower;
@@ -802,7 +802,7 @@ void utf32_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf32_toupper(const std::string &str)
+std::string utf32_toupper(const string_view& str)
 {
     typedef casemap<uint32_t, uint8_t> functor;
     std::string upper;
@@ -817,7 +817,7 @@ std::string utf32_toupper(const std::string &str)
 }
 
 
-std::u32string utf32_toupper(const std::u32string &str)
+std::u32string utf32_toupper(const u32string_view& str)
 {
     typedef casemap<uint32_t, uint32_t> functor;
     std::u32string upper;
@@ -859,7 +859,7 @@ void utf32_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf32_totitle(const std::string &str)
+std::string utf32_totitle(const string_view& str)
 {
     typedef title_tokenizer<uint32_t, uint8_t> functor;
     std::string upper;
@@ -877,7 +877,7 @@ std::string utf32_totitle(const std::string &str)
 }
 
 
-std::u32string utf32_totitle(const std::u32string &str)
+std::u32string utf32_totitle(const u32string_view& str)
 {
     typedef title_tokenizer<uint32_t, uint32_t> functor;
     std::u32string upper;
@@ -920,7 +920,7 @@ void utf32_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen
 }
 
 
-std::string utf32_capitalize(const std::string &str)
+std::string utf32_capitalize(const string_view& str)
 {
     typedef capitalize<uint32_t, uint8_t> functor;
     std::string upper;
@@ -937,7 +937,7 @@ std::string utf32_capitalize(const std::string &str)
 }
 
 
-std::u32string utf32_capitalize(const std::u32string &str)
+std::u32string utf32_capitalize(const u32string_view& str)
 {
     typedef capitalize<uint32_t, uint32_t> functor;
     std::u32string upper;

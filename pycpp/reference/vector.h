@@ -6,6 +6,9 @@
  *
  *  Stores non-nullable pointers to existing objects, using a vector
  *  wrapper as the underlying structure.
+ *
+ *  This is quite similar to the EASTL's instrusive vector, where
+ *  the user allocates storage for each node.
  */
 
 #pragma once
@@ -16,7 +19,7 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-namespace detail
+namespace sequence_detail
 {
 // MACROS
 // ------
@@ -45,23 +48,28 @@ namespace detail
 /**
  *  \brief Vector wrapper mapping value pointers to values.
  */
-template <typename T>
+template <
+    typename T,
+    typename Alloc = std::allocator<T*>,
+    template <typename, typename> class Container = std::vector
+>
 struct reference_vector_base
 {
     // MEMBER TYPES
     // ------------
-    typedef reference_vector_base<T> self;
-    using value_type = typename std::remove_pointer<T>::type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
-    typedef std::ptrdiff_t difference_type;
-    typedef size_t size_type;
-    typedef sequence_iterator_impl<typename std::vector<pointer>::iterator> iterator;
-    typedef sequence_const_iterator_impl<typename std::vector<pointer>::const_iterator> const_iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    using self_t = reference_vector_base<T, Alloc, Container>;
+    using container_type = Container<T*, Alloc>;
+    using value_type = T;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using difference_type = std::ptrdiff_t;
+    using size_type = size_t;
+    using iterator = sequence_iterator_impl<typename container_type::iterator>;
+    using const_iterator = sequence_const_iterator_impl<typename container_type::const_iterator>;
+    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -69,10 +77,10 @@ struct reference_vector_base
     // CONSTRUCTORS
     reference_vector_base() = default;
     reference_vector_base(size_type n, reference);
-    reference_vector_base(const self&) = default;
-    self & operator=(const self&) = default;
-    reference_vector_base(self&&) = default;
-    self & operator=(self&&) = default;
+    reference_vector_base(const self_t&) = default;
+    self_t & operator=(const self_t&) = default;
+    reference_vector_base(self_t&&) = default;
+    self_t & operator=(self_t&&) = default;
 
     // ITERATORS
     iterator begin();
@@ -115,35 +123,27 @@ struct reference_vector_base
     iterator erase(const_iterator position);
     iterator erase(const_iterator first, const_iterator last);
     void clear();
-    void swap(self&);
+    void swap(self_t&);
 
     // RELATIONAL OPERATORS
-    bool operator==(const self&) const;
-    bool operator!=(const self&) const;
-    bool operator<(const self&) const;
-    bool operator<=(const self&) const;
-    bool operator>(const self&) const;
-    bool operator>=(const self&) const;
+    bool operator==(const self_t&) const;
+    bool operator!=(const self_t&) const;
+    bool operator<(const self_t&) const;
+    bool operator<=(const self_t&) const;
+    bool operator>(const self_t&) const;
+    bool operator>=(const self_t&) const;
 
 private:
-    std::vector<pointer> vector_;
+    container_type vector_;
 };
-
-
-template <typename T>
-using reference_vector_impl = typename std::conditional<
-    std::is_reference<T>::value,
-    reference_vector_base<typename std::remove_reference<T>::type*>,
-    std::vector<T>
->::type;
 
 
 // IMPLEMENTATION
 // --------------
 
 
-template <typename T>
-reference_vector_base<T>::reference_vector_base(size_type n, reference r)
+template <typename T, typename A, template <typename, typename> class _>
+reference_vector_base<T, A, _>::reference_vector_base(size_type n, reference r)
 {
     vector_.reserve(n);
     for (size_t i = 0; i < n; ++i) {
@@ -152,211 +152,211 @@ reference_vector_base<T>::reference_vector_base(size_type n, reference r)
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::begin() -> iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::begin() -> iterator
 {
     return REFERENCE_VECTOR_ITERATOR(vector_.begin());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::begin() const -> const_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::begin() const -> const_iterator
 {
     return REFERENCE_VECTOR_CONST_ITERATOR(vector_.begin());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::cbegin() const -> const_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::cbegin() const -> const_iterator
 {
     return REFERENCE_VECTOR_CONST_ITERATOR(vector_.begin());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::end() -> iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::end() -> iterator
 {
     return REFERENCE_VECTOR_ITERATOR(vector_.end());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::end() const -> const_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::end() const -> const_iterator
 {
     return REFERENCE_VECTOR_CONST_ITERATOR(vector_.end());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::cend() const -> const_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::cend() const -> const_iterator
 {
     return REFERENCE_VECTOR_CONST_ITERATOR(vector_.end());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::rbegin() -> reverse_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::rbegin() -> reverse_iterator
 {
     return reverse_iterator(end());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::rbegin() const -> const_reverse_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::rbegin() const -> const_reverse_iterator
 {
     return const_reverse_iterator(end());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::crbegin() const -> const_reverse_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::crbegin() const -> const_reverse_iterator
 {
     return const_reverse_iterator(end());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::rend() -> reverse_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::rend() -> reverse_iterator
 {
     return reverse_iterator(begin());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::rend() const -> const_reverse_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::rend() const -> const_reverse_iterator
 {
     return const_reverse_iterator(begin());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::crend() const -> const_reverse_iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::crend() const -> const_reverse_iterator
 {
     return const_reverse_iterator(begin());
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::size() const -> size_type
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::size() const -> size_type
 {
     return vector_.size();
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::max_size() const -> size_type
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::max_size() const -> size_type
 {
     return vector_.max_size();
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::capacity() const -> size_type
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::capacity() const -> size_type
 {
     return vector_.capacity();
 }
 
 
-template <typename T>
-bool reference_vector_base<T>::empty() const noexcept
+template <typename T, typename A, template <typename, typename> class _>
+bool reference_vector_base<T, A, _>::empty() const noexcept
 {
     return vector_.empty();
 }
 
 
-template <typename T>
-void reference_vector_base<T>::reserve(size_type n)
+template <typename T, typename A, template <typename, typename> class _>
+void reference_vector_base<T, A, _>::reserve(size_type n)
 {
     vector_.reserve(n);
 }
 
 
-template <typename T>
-void reference_vector_base<T>::shrink_to_fit()
+template <typename T, typename A, template <typename, typename> class _>
+void reference_vector_base<T, A, _>::shrink_to_fit()
 {
     vector_.shrink_to_fit();
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::operator[](size_type n) -> reference
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::operator[](size_type n) -> reference
 {
     return *vector_[n];
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::operator[](size_type n) const -> const_reference
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::operator[](size_type n) const -> const_reference
 {
     return *vector_[n];
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::at(size_type n) -> reference
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::at(size_type n) -> reference
 {
     return *vector_.at(n);
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::at(size_type n) const -> const_reference
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::at(size_type n) const -> const_reference
 {
     return *vector_.at(n);
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::front() -> reference
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::front() -> reference
 {
     return *vector_.front();
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::front() const -> const_reference
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::front() const -> const_reference
 {
     return *vector_.front();
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::back() -> reference
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::back() -> reference
 {
     return *vector_.back();
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::back() const -> const_reference
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::back() const -> const_reference
 {
     return *vector_.back();
 }
 
 
-template <typename T>
-void reference_vector_base<T>::assign(size_type n, reference r)
+template <typename T, typename A, template <typename, typename> class _>
+void reference_vector_base<T, A, _>::assign(size_type n, reference r)
 {
     vector_.assign(n, std::addressof(r));
 }
 
 
-template <typename T>
-void reference_vector_base<T>::push_back(reference r)
+template <typename T, typename A, template <typename, typename> class _>
+void reference_vector_base<T, A, _>::push_back(reference r)
 {
     vector_.push_back(std::addressof(r));
 }
 
 
-template <typename T>
-void reference_vector_base<T>::pop_back()
+template <typename T, typename A, template <typename, typename> class _>
+void reference_vector_base<T, A, _>::pop_back()
 {
     vector_.pop_back();
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::insert(const_iterator position, reference r) -> iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::insert(const_iterator position, reference r) -> iterator
 {
     auto distance = std::distance(cbegin(), position);
     auto it = vector_.insert(vector_.cbegin()+distance, std::addressof(r));
@@ -366,8 +366,8 @@ auto reference_vector_base<T>::insert(const_iterator position, reference r) -> i
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::insert(const_iterator position, size_type n, reference r) -> iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::insert(const_iterator position, size_type n, reference r) -> iterator
 {
     auto distance = std::distance(cbegin(), position);
     auto it = vector_.insert(vector_.cbegin()+distance, n, std::addressof(r));
@@ -377,8 +377,8 @@ auto reference_vector_base<T>::insert(const_iterator position, size_type n, refe
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::erase(const_iterator position) -> iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::erase(const_iterator position) -> iterator
 {
     auto distance = std::distance(cbegin(), position);
     auto it = vector_.erase(vector_.cbegin()+distance);
@@ -388,8 +388,8 @@ auto reference_vector_base<T>::erase(const_iterator position) -> iterator
 }
 
 
-template <typename T>
-auto reference_vector_base<T>::erase(const_iterator first, const_iterator last) -> iterator
+template <typename T, typename A, template <typename, typename> class _>
+auto reference_vector_base<T, A, _>::erase(const_iterator first, const_iterator last) -> iterator
 {
     auto f = std::distance(cbegin(), first);
     auto l = std::distance(cbegin(), last);
@@ -400,57 +400,57 @@ auto reference_vector_base<T>::erase(const_iterator first, const_iterator last) 
 }
 
 
-template <typename T>
-void reference_vector_base<T>::clear()
+template <typename T, typename A, template <typename, typename> class _>
+void reference_vector_base<T, A, _>::clear()
 {
     vector_.clear();
 }
 
 
-template <typename T>
-void reference_vector_base<T>::swap(self& rhs)
+template <typename T, typename A, template <typename, typename> class _>
+void reference_vector_base<T, A, _>::swap(self_t& rhs)
 {
     std::swap(vector_, rhs.vector_);
 }
 
 
-template <typename T>
-bool reference_vector_base<T>::operator==(const self& rhs) const
+template <typename T, typename A, template <typename, typename> class _>
+bool reference_vector_base<T, A, _>::operator==(const self_t& rhs) const
 {
     return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
 }
 
 
-template <typename T>
-bool reference_vector_base<T>::operator!=(const self& rhs) const
+template <typename T, typename A, template <typename, typename> class _>
+bool reference_vector_base<T, A, _>::operator!=(const self_t& rhs) const
 {
     return not_equal_to(*this, rhs);
 }
 
 
-template <typename T>
-bool reference_vector_base<T>::operator<(const self& rhs) const
+template <typename T, typename A, template <typename, typename> class _>
+bool reference_vector_base<T, A, _>::operator<(const self_t& rhs) const
 {
     return std::lexicographical_compare(begin(), end(), rhs.begin(), rhs.end());
 }
 
 
-template <typename T>
-bool reference_vector_base<T>::operator<=(const self& rhs) const
+template <typename T, typename A, template <typename, typename> class _>
+bool reference_vector_base<T, A, _>::operator<=(const self_t& rhs) const
 {
     return less_equal(*this, rhs);
 }
 
 
-template <typename T>
-bool reference_vector_base<T>::operator>(const self& rhs) const
+template <typename T, typename A, template <typename, typename> class _>
+bool reference_vector_base<T, A, _>::operator>(const self_t& rhs) const
 {
     return greater(*this, rhs);
 }
 
 
-template <typename T>
-bool reference_vector_base<T>::operator>=(const self& rhs) const
+template <typename T, typename A, template <typename, typename> class _>
+bool reference_vector_base<T, A, _>::operator>=(const self_t& rhs) const
 {
     return greater_equal(*this, rhs);
 }
@@ -461,20 +461,20 @@ bool reference_vector_base<T>::operator>=(const self& rhs) const
 #undef REFERENCE_VECTOR_ITERATOR
 #undef REFERENCE_VECTOR_CONST_ITERATOR
 
-}   /* detail */
+}   /* sequence_detail */
 
 // OBJECTS
 // -------
 
-
 /**
  *  \brief Vector wrapper that handles reference values.
  */
-template <typename T>
-struct reference_vector: PYCPP_NAMESPACE::detail::reference_vector_impl<T>
-{
-    using base = PYCPP_NAMESPACE::detail::reference_vector_impl<T>;
-    using base::base;
-};
+template <
+    typename T,
+    typename Alloc = std::allocator<T*>,
+    template <typename, typename> class Container = std::vector
+>
+using reference_vector = sequence_detail::reference_vector_base<T, Alloc, Container>;
+
 
 PYCPP_END_NAMESPACE

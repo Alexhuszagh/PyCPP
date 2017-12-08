@@ -63,14 +63,14 @@ struct json_file_reader: json_stream_reader
 {
 public:
     json_file_reader();
-    json_file_reader(const std::string &name);
-    void open(const std::string &name);
+    json_file_reader(const string_view& name);
+    void open(const string_view& name);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    json_file_reader(const std::wstring &name);
-    void open(const std::wstring &name);
-    json_file_reader(const std::u16string &name);
-    void open(const std::u16string &name);
+    json_file_reader(const wstring_view& name);
+    void open(const wstring_view& name);
+    json_file_reader(const u16string_view& name);
+    void open(const u16string_view& name);
 #endif                                          // WINDOWS
 
 private:
@@ -85,8 +85,8 @@ struct json_string_reader: json_stream_reader
 {
 public:
     json_string_reader();
-    json_string_reader(const std::string &str);
-    void open(const std::string &str);
+    json_string_reader(const string_view& str);
+    void open(const string_view& str);
 
 private:
     std::istringstream sstream_;

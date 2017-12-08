@@ -1,9 +1,9 @@
 //  :copyright: (c) 2012-2017 Steven Lee.
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
-
 /*
  *  \brief `sys/mman.h` implementation for MSVC/MinGW.
+ *
  *  Adapted from https://github.com/witwall/mman-win32
  */
 

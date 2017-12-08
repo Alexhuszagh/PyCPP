@@ -6,7 +6,6 @@
 #include <pycpp/string/casemap.h>
 #include <algorithm>
 #include <cctype>
-#include <sstream>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -24,16 +23,16 @@ bool lowercase_less::operator()(const std::string &lhs, const std::string &rhs) 
 
 std::string header_t::string() const
 {
-    std::stringstream stream;
+    std::string string;
     for (const auto &pair: *this) {
         if (pair.second.empty()) {
-            stream << pair.first << ";\r\n";
+            string +=  pair.first + ";\r\n";
         } else {
-            stream << pair.first << ": " << pair.second << "\r\n";
+            string += pair.first + ": " + pair.second + "\r\n";
         }
     }
 
-    return stream.str();
+    return string;
 }
 
 

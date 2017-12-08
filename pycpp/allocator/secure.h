@@ -37,6 +37,7 @@ struct secure_allocator: private secure_allocator_base
 {
     // MEMBER TYPES
     // ------------
+    using self_t = secure_allocator<T>;
     using value_type = T;
     using pointer = T*;
     using const_pointer = const T*;
@@ -48,8 +49,8 @@ struct secure_allocator: private secure_allocator_base
     // MEMBER FUNCTIONS
     // ----------------
     secure_allocator() noexcept = default;
-    secure_allocator(const secure_allocator<T>&) noexcept = default;
-    secure_allocator<T>& operator=(const secure_allocator<T>&) noexcept = default;
+    secure_allocator(const self_t&) noexcept = default;
+    self_t& operator=(const self_t&) noexcept = default;
     ~secure_allocator() = default;
 
     pointer allocate(size_type, const void* = nullptr);

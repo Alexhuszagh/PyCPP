@@ -23,32 +23,32 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Search for pattern within string.
  */
-match_t search(const std::string& pattern, const string_view& str);
+match_t search(const string_view& pattern, const string_view& str);
 
 /**
  *  \brief Match pattern within string.
  */
-match_t match(const std::string& pattern, const string_view& str);
+match_t match(const string_view& pattern, const string_view& str);
 
 /**
  *  \brief Split string by pattern.
  */
-match_groups split(const std::string& pattern, const string_view& str, size_t maxsplit = -1);
+match_groups split(const string_view& pattern, const string_view& str, size_t maxsplit = -1);
 
 /**
  *  \brief Get all matches from pattern within a string.
  */
-match_groups findall(const std::string& pattern, const string_view& str);
+match_groups findall(const string_view& pattern, const string_view& str);
 
 /**
  *  \brief Iteratively find matches within string.
  */
-match_range finditer(const std::string& pattern, const string_view& str);
+match_range finditer(const string_view& pattern, const string_view& str);
 
 /**
  *  \brief Replace all matches of pattern in str with repl.
  */
-std::string sub(const std::string& pattern, const string_view& repl, const string_view& str);
+std::string sub(const string_view& pattern, const string_view& repl, const string_view& str);
 
 /**
  *  \brief Escape all characters except for ASCII numbers and letters.

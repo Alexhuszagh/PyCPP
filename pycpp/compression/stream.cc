@@ -12,8 +12,7 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Callback function for compression.
  */
 #define COMPRESS_CALLBACK                                                                                       \
-    [this](const void*& src, size_t srclen, void*& dst,                                                         \
-           size_t dstlen, size_t char_size)                                                                     \
+    [this](const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size)                        \
     {                                                                                                           \
         if (srclen) {                                                                                           \
             ctx.compress(src, srclen, dst, dstlen);                                                             \
@@ -27,8 +26,7 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Callback function for decompression.
  */
 #define DECOMPRESS_CALLBACK                                                                                     \
-    [this](const void*& src, size_t srclen, void*& dst,                                                         \
-           size_t dstlen, size_t char_size)                                                                     \
+    [this](const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t char_size)                        \
     {                                                                                                           \
         if (srclen) {                                                                                           \
             ctx.decompress(src, srclen, dst, dstlen);                                                           \
@@ -45,56 +43,56 @@ PYCPP_BEGIN_NAMESPACE
 
 #   define WIDE_PATH_IFSTREAM(name)                                                                             \
                                                                                                                 \
-        name##_ifstream::name##_ifstream(const std::wstring &name, std::ios_base::openmode mode)                \
+        name##_ifstream::name##_ifstream(const wstring_view& name, std::ios_base::openmode mode)                \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        void name##_ifstream::open(const std::wstring &name, std::ios_base::openmode mode)                      \
+        void name##_ifstream::open(const wstring_view& name, std::ios_base::openmode mode)                      \
         {                                                                                                       \
             filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                                             \
         }                                                                                                       \
                                                                                                                 \
-        name##_ifstream::name##_ifstream(const std::u16string &name, std::ios_base::openmode mode)              \
+        name##_ifstream::name##_ifstream(const u16string_view& name, std::ios_base::openmode mode)              \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        void name##_ifstream::open(const std::u16string &name, std::ios_base::openmode mode)                    \
+        void name##_ifstream::open(const u16string_view& name, std::ios_base::openmode mode)                    \
         {                                                                                                       \
             filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                                             \
         }
 
 #   define WIDE_PATH_OFSTREAM(name)                                                                             \
                                                                                                                 \
-        name##_ofstream::name##_ofstream(const std::wstring &name, std::ios_base::openmode mode)                \
+        name##_ofstream::name##_ofstream(const wstring_view& name, std::ios_base::openmode mode)                \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        name##_ofstream::name##_ofstream(const std::wstring &name, int level, std::ios_base::openmode mode):    \
+        name##_ofstream::name##_ofstream(const wstring_view& name, int level, std::ios_base::openmode mode):    \
             ctx(level)                                                                                          \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        void name##_ofstream::open(const std::wstring &name, std::ios_base::openmode mode)                      \
+        void name##_ofstream::open(const wstring_view& name, std::ios_base::openmode mode)                      \
         {                                                                                                       \
             filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                               \
         }                                                                                                       \
                                                                                                                 \
-        name##_ofstream::name##_ofstream(const std::u16string &name, std::ios_base::openmode mode)              \
+        name##_ofstream::name##_ofstream(const u16string_view& name, std::ios_base::openmode mode)              \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        name##_ofstream::name##_ofstream(const std::u16string &name, int level, std::ios_base::openmode mode):  \
+        name##_ofstream::name##_ofstream(const u16string_view& name, int level, std::ios_base::openmode mode):  \
             ctx(level)                                                                                          \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        void name##_ofstream::open(const std::u16string &name, std::ios_base::openmode mode)                    \
+        void name##_ofstream::open(const u16string_view& name, std::ios_base::openmode mode)                    \
         {                                                                                                       \
             filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                               \
         }
@@ -217,12 +215,12 @@ PYCPP_BEGIN_NAMESPACE
         ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
-    name##_ifstream::name##_ifstream(const std::string &name, std::ios_base::openmode mode)                     \
+    name##_ifstream::name##_ifstream(const string_view& name, std::ios_base::openmode mode)                     \
     {                                                                                                           \
         open(name, mode);                                                                                       \
     }                                                                                                           \
                                                                                                                 \
-    void name##_ifstream::open(const std::string &name, std::ios_base::openmode mode)                           \
+    void name##_ifstream::open(const string_view& name, std::ios_base::openmode mode)                           \
     {                                                                                                           \
         filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                                                 \
     }                                                                                                           \
@@ -260,18 +258,18 @@ PYCPP_BEGIN_NAMESPACE
         ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
-    name##_ofstream::name##_ofstream(const std::string &name, std::ios_base::openmode mode)                     \
+    name##_ofstream::name##_ofstream(const string_view& name, std::ios_base::openmode mode)                     \
     {                                                                                                           \
         open(name, mode);                                                                                       \
     }                                                                                                           \
                                                                                                                 \
-    name##_ofstream::name##_ofstream(const std::string &name, int level, std::ios_base::openmode mode):         \
+    name##_ofstream::name##_ofstream(const string_view& name, int level, std::ios_base::openmode mode):         \
         ctx(level)                                                                                              \
     {                                                                                                           \
         open(name, mode);                                                                                       \
     }                                                                                                           \
                                                                                                                 \
-    void name##_ofstream::open(const std::string &name, std::ios_base::openmode mode)                           \
+    void name##_ofstream::open(const string_view& name, std::ios_base::openmode mode)                           \
     {                                                                                                           \
         filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                                   \
     }                                                                                                           \
@@ -530,12 +528,12 @@ decompressing_ifstream::~decompressing_ifstream()
 }
 
 
-decompressing_ifstream::decompressing_ifstream(const std::string &name, std::ios_base::openmode mode)
+decompressing_ifstream::decompressing_ifstream(const string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void decompressing_ifstream::open(const std::string &name, std::ios_base::openmode mode)
+void decompressing_ifstream::open(const string_view& name, std::ios_base::openmode mode)
 {
     filter_ifstream::open(name, mode);
     new_decompressor(*this, name, format, ctx);
@@ -543,25 +541,25 @@ void decompressing_ifstream::open(const std::string &name, std::ios_base::openmo
 
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-decompressing_ifstream::decompressing_ifstream(const std::wstring &name, std::ios_base::openmode mode)
+decompressing_ifstream::decompressing_ifstream(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void decompressing_ifstream::open(const std::wstring &name, std::ios_base::openmode mode)
+void decompressing_ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     filter_ifstream::open(name, mode);
     new_decompressor(*this, name, format, ctx);
 }
 
 
-decompressing_ifstream::decompressing_ifstream(const std::u16string &name, std::ios_base::openmode mode)
+decompressing_ifstream::decompressing_ifstream(const u16string_view& name, std::ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void decompressing_ifstream::open(const std::u16string &name, std::ios_base::openmode mode)
+void decompressing_ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     filter_ifstream::open(name, mode);
     new_decompressor(*this, name, format, ctx);

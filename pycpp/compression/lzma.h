@@ -10,8 +10,8 @@
 #if defined(HAVE_LZMA)
 
 #include <pycpp/compression/exception.h>
+#include <pycpp/view/string.h>
 #include <memory>
-#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -74,12 +74,12 @@ void lzma_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief LZMA2-compress data.
  */
-std::string lzma_compress(const std::string &str);
+std::string lzma_compress(const string_view& str);
 
 /**
  *  \brief LZMA2-decompress data.
  */
-std::string lzma_decompress(const std::string &str);
+std::string lzma_decompress(const string_view& str);
 
 /**
  *  \brief LZMA2-decompress data.
@@ -93,7 +93,7 @@ void lzma_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
  *
  *  \param bound            Known size of decompressed buffer.
  */
-std::string lzma_decompress(const std::string &str, size_t bound);
+std::string lzma_decompress(const string_view& str, size_t bound);
 
 PYCPP_END_NAMESPACE
 

@@ -43,7 +43,7 @@ random_access_fstream & random_access_fstream::operator=(random_access_fstream &
 }
 
 
-random_access_fstream::random_access_fstream(const std::string& name, std::ios_base::openmode mode):
+random_access_fstream::random_access_fstream(const string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::iostream(&buffer)
 {
@@ -51,7 +51,7 @@ random_access_fstream::random_access_fstream(const std::string& name, std::ios_b
 }
 
 
-void random_access_fstream::open(const std::string& name, std::ios_base::openmode mode)
+void random_access_fstream::open(const string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in | std::ios_base::out;
@@ -60,7 +60,7 @@ void random_access_fstream::open(const std::string& name, std::ios_base::openmod
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-random_access_fstream::random_access_fstream(const std::wstring& name, std::ios_base::openmode mode):
+random_access_fstream::random_access_fstream(const wstring_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::iostream(&buffer)
 {
@@ -68,13 +68,13 @@ random_access_fstream::random_access_fstream(const std::wstring& name, std::ios_
 }
 
 
-void random_access_fstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void random_access_fstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-random_access_fstream::random_access_fstream(const std::u16string& name, std::ios_base::openmode mode):
+random_access_fstream::random_access_fstream(const u16string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::iostream(&buffer)
 {
@@ -82,7 +82,7 @@ random_access_fstream::random_access_fstream(const std::u16string& name, std::io
 }
 
 
-void random_access_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void random_access_fstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in | std::ios_base::out;
@@ -147,7 +147,7 @@ random_access_ifstream & random_access_ifstream::operator=(random_access_ifstrea
 }
 
 
-random_access_ifstream::random_access_ifstream(const std::string& name, std::ios_base::openmode mode):
+random_access_ifstream::random_access_ifstream(const string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::istream(&buffer)
 {
@@ -155,7 +155,7 @@ random_access_ifstream::random_access_ifstream(const std::string& name, std::ios
 }
 
 
-void random_access_ifstream::open(const std::string& name, std::ios_base::openmode mode)
+void random_access_ifstream::open(const string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in;
@@ -164,7 +164,7 @@ void random_access_ifstream::open(const std::string& name, std::ios_base::openmo
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-random_access_ifstream::random_access_ifstream(const std::wstring& name, std::ios_base::openmode mode):
+random_access_ifstream::random_access_ifstream(const wstring_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::istream(&buffer)
 {
@@ -172,13 +172,13 @@ random_access_ifstream::random_access_ifstream(const std::wstring& name, std::io
 }
 
 
-void random_access_ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void random_access_ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-random_access_ifstream::random_access_ifstream(const std::u16string& name, std::ios_base::openmode mode):
+random_access_ifstream::random_access_ifstream(const u16string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::istream(&buffer)
 {
@@ -186,7 +186,7 @@ random_access_ifstream::random_access_ifstream(const std::u16string& name, std::
 }
 
 
-void random_access_ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void random_access_ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::in;
@@ -250,7 +250,7 @@ random_access_ofstream & random_access_ofstream::operator=(random_access_ofstrea
 }
 
 
-random_access_ofstream::random_access_ofstream(const std::string& name, std::ios_base::openmode mode):
+random_access_ofstream::random_access_ofstream(const string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::ostream(&buffer)
 {
@@ -258,7 +258,7 @@ random_access_ofstream::random_access_ofstream(const std::string& name, std::ios
 }
 
 
-void random_access_ofstream::open(const std::string& name, std::ios_base::openmode mode)
+void random_access_ofstream::open(const string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::out;
@@ -267,7 +267,7 @@ void random_access_ofstream::open(const std::string& name, std::ios_base::openmo
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-random_access_ofstream::random_access_ofstream(const std::wstring& name, std::ios_base::openmode mode):
+random_access_ofstream::random_access_ofstream(const wstring_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::ostream(&buffer)
 {
@@ -275,13 +275,13 @@ random_access_ofstream::random_access_ofstream(const std::wstring& name, std::io
 }
 
 
-void random_access_ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void random_access_ofstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-random_access_ofstream::random_access_ofstream(const std::u16string& name, std::ios_base::openmode mode):
+random_access_ofstream::random_access_ofstream(const u16string_view& name, std::ios_base::openmode mode):
     buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
     std::ostream(&buffer)
 {
@@ -289,7 +289,7 @@ random_access_ofstream::random_access_ofstream(const std::u16string& name, std::
 }
 
 
-void random_access_ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void random_access_ofstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
     close();
     mode |= std::ios_base::out;

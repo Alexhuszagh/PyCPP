@@ -212,13 +212,13 @@ json_file_reader::json_file_reader()
 {}
 
 
-json_file_reader::json_file_reader(const std::string &name)
+json_file_reader::json_file_reader(const string_view& name)
 {
     open(name);
 }
 
 
-void json_file_reader::open(const std::string &name)
+void json_file_reader::open(const string_view& name)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     json_stream_reader::open(file_);
@@ -228,26 +228,26 @@ void json_file_reader::open(const std::string &name)
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-json_file_reader::json_file_reader(const std::wstring &name)
+json_file_reader::json_file_reader(const wstring_view& name)
 {
     open(name);
 }
 
 
-void json_file_reader::open(const std::wstring &name)
+void json_file_reader::open(const wstring_view& name)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     json_stream_reader::open(file_);
 }
 
 
-json_file_reader::json_file_reader(const std::u16string &name)
+json_file_reader::json_file_reader(const u16string_view& name)
 {
     open(name);
 }
 
 
-void json_file_reader::open(const std::u16string &name)
+void json_file_reader::open(const u16string_view& name)
 {
     file_.open(name, std::ios_base::in | std::ios_base::binary);
     json_stream_reader::open(file_);
@@ -260,15 +260,15 @@ json_string_reader::json_string_reader()
 {}
 
 
-json_string_reader::json_string_reader(const std::string &str)
+json_string_reader::json_string_reader(const string_view& str)
 {
     open(str);
 }
 
 
-void json_string_reader::open(const std::string &str)
+void json_string_reader::open(const string_view& str)
 {
-    sstream_ = std::istringstream(str, std::ios_base::in | std::ios_base::binary);
+    sstream_ = std::istringstream(std::string(str), std::ios_base::in | std::ios_base::binary);
     json_stream_reader::open(sstream_);
 }
 

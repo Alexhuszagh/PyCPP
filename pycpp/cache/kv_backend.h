@@ -55,7 +55,7 @@ using comparator_callback = std::function<void(
 /**
  *  \brief Open key-value database.
  */
-void kv_open(void* db, const path_t& path, kv_options options, comparator_callback cb);
+void kv_open(void* db, const path_view_t& path, kv_options options, comparator_callback cb);
 
 /**
  *  \brief Close key-value database.
