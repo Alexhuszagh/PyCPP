@@ -5,6 +5,7 @@
  *  \brief Getline unittests.
  */
 
+#include <pycpp/lexical.h>
 #include <pycpp/string/getline.h>
 #include <gtest/gtest.h>
 
@@ -20,7 +21,7 @@ TEST(getline, unix)
     std::string line;
     int counter = 1;
     while (getline(stream, line)) {
-        EXPECT_EQ(line, "line" + std::to_string(counter++));
+        EXPECT_EQ(line, "line" + lexical(counter++));
     }
     EXPECT_EQ(counter, 4);
 }
@@ -32,7 +33,7 @@ TEST(getline, windows)
     std::string line;
     int counter = 1;
     while (getline(stream, line)) {
-        EXPECT_EQ(line, "line" + std::to_string(counter++));
+        EXPECT_EQ(line, "line" + lexical(counter++));
     }
     EXPECT_EQ(counter, 4);
 }
@@ -44,7 +45,7 @@ TEST(getline, macos9)
     std::string line;
     int counter = 1;
     while (getline(stream, line)) {
-        EXPECT_EQ(line, "line" + std::to_string(counter++));
+        EXPECT_EQ(line, "line" + lexical(counter++));
     }
     EXPECT_EQ(counter, 4);
 }

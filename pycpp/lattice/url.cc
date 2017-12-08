@@ -37,56 +37,50 @@ static std::string from_idna(const string_view& str)
 }
 
 
-// TODO: change here... string_view
-// TODO: how do I handle tjhe replaece??
-static void set_service_impl(std::string& url, const std::string& service)
+static void set_service_impl(std::string& url, const string_view& service)
 {
     assert(!is_relative(url));
     size_t index = url.find("://");
     if (index != std::string::npos) {
         // replace service
-        url.replace(0, index, service);
+        url.replace(0, index, service.data(), service.size());
     } else {
         // set a service
-        url.insert(0, service + "://");
+        std::string str(service);
+        str += "://";
+        url.insert(0, str);
     }
 }
 
 
-// TODO: change here... string_view
-// TODO: how do I handle tjhe replaece??
-static void set_host_impl(std::string& url, const std::string& host)
+static void set_host_impl(std::string& url, const string_view& host)
 {
     size_t start = url.find("://");
     if (start == std::string::npos) {
-        url.replace(0, url.find_first_of('/'), host);
+        url.replace(0, url.find_first_of('/'), host.data(), host.size());
     } else {
         size_t end = url.find_first_of('/', start+4);
-        url.replace(start+3, end-start-3, host);
+        url.replace(start+3, end-start-3, host.data(), host.size());
     }
 }
 
 
-// TODO: change here... string_view
-// TODO: how do I handle tjhe replaece??
-static void set_path_impl(std::string& url, const std::string& path)
+static void set_path_impl(std::string& url, const string_view& path)
 {
     if (is_relative(url)) {
-        url.assign(path);
+        url.assign(path.data(), path.size());
     } else {
         size_t separator = url.find("://");
         if (separator == std::string::npos) {
-            url.replace(url.find_first_of('/'), std::string::npos, path);
+            url.replace(url.find_first_of('/'), std::string::npos, path.data(), path.size());
         } else {
-            url.replace(url.find_first_of('/', separator+4), std::string::npos, path);
+            url.replace(url.find_first_of('/', separator+4), std::string::npos, path.data(), path.size());
         }
     }
 }
 
 
-// TODO: change here... string_view
-// TODO: how do I handle tjhe replaece??
-static void set_directory_impl(std::string& url, const std::string& directory)
+static void set_directory_impl(std::string& url, const string_view& directory)
 {
     size_t separator, start, end;
     end = url.find_last_of('/');
@@ -98,17 +92,15 @@ static void set_directory_impl(std::string& url, const std::string& directory)
 
     if (start != std::string::npos && ++start < end) {
         const size_t length = end - start;
-        url.replace(start, length, directory);
+        url.replace(start, length, directory.data(), directory.size());
     }
 }
 
 
-// TODO: change here... string_view
-// TODO: how do I handle tjhe replaece??
-static void set_file_impl(std::string& url, const std::string& file)
+static void set_file_impl(std::string& url, const string_view& file)
 {
     size_t index = url.find_last_of('/');
-    url.replace(index + 1, std::string::npos, file);
+    url.replace(index + 1, std::string::npos, file.data(), file.size());
 }
 
 
@@ -256,13 +248,13 @@ punycode_idna_t::punycode_idna_t(std::initializer_list<char> list):
 }
 
 
-void punycode_idna_t::set_service(const std::string &service)
+void punycode_idna_t::set_service(const string_view& service)
 {
     set_service_impl(*this, service);
 }
 
 
-void punycode_idna_t::set_host(const std::string &host)
+void punycode_idna_t::set_host(const string_view& host)
 {
     if (is_unicode(host)) {
         set_host_impl(*this, to_idna(host));
@@ -272,19 +264,19 @@ void punycode_idna_t::set_host(const std::string &host)
 }
 
 
-void punycode_idna_t::set_path(const std::string &path)
+void punycode_idna_t::set_path(const string_view& path)
 {
     set_path_impl(*this, path);
 }
 
 
-void punycode_idna_t::set_directory(const std::string &directory)
+void punycode_idna_t::set_directory(const string_view& directory)
 {
     set_directory_impl(*this, directory);
 }
 
 
-void punycode_idna_t::set_file(const std::string &file)
+void punycode_idna_t::set_file(const string_view& file)
 {
     set_file_impl(*this, file);
 }
@@ -315,13 +307,13 @@ unicode_idna_t::unicode_idna_t(std::initializer_list<char> list):
 }
 
 
-void unicode_idna_t::set_service(const std::string &service)
+void unicode_idna_t::set_service(const string_view& service)
 {
     set_service_impl(*this, service);
 }
 
 
-void unicode_idna_t::set_host(const std::string &host)
+void unicode_idna_t::set_host(const string_view& host)
 {
     if (is_punycode(host)) {
         set_host_impl(*this, from_idna(host));
@@ -331,19 +323,19 @@ void unicode_idna_t::set_host(const std::string &host)
 }
 
 
-void unicode_idna_t::set_path(const std::string &path)
+void unicode_idna_t::set_path(const string_view& path)
 {
     set_path_impl(*this, path);
 }
 
 
-void unicode_idna_t::set_directory(const std::string &directory)
+void unicode_idna_t::set_directory(const string_view& directory)
 {
     set_directory_impl(*this, directory);
 }
 
 
-void unicode_idna_t::set_file(const std::string &file)
+void unicode_idna_t::set_file(const string_view& file)
 {
     set_file_impl(*this, file);
 }

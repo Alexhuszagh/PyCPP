@@ -84,7 +84,7 @@ struct verify_peer_t
     verify_peer_t(verify_peer_t&&) = default;
     verify_peer_t & operator=(verify_peer_t&&) = default;
 
-    verify_peer_t(const bool verify);
+    verify_peer_t(bool verify);
 
     explicit operator bool() const;
 };

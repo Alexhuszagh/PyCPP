@@ -165,7 +165,7 @@ void directory_data_impl::open(HANDLE& handle, WIN32_FIND_DATAW*& data, const pa
     // get data
     auto find_data = new WIN32_FIND_DATAW;
     path_list_t paths = {path, path_prefix("*")};
-    path_t joined = join(paths);
+    path_t joined = join_path(paths);
     auto str = reinterpret_cast<const wchar_t*>(joined.data());
 
     // create our handle
@@ -643,7 +643,7 @@ const stat_t& directory_data_impl::stat()
 path_t directory_data::fullpath() const
 {
     path_list_t paths = {dirname(), basename()};
-    return join(paths);
+    return join_path(paths);
 }
 
 
@@ -803,7 +803,7 @@ bool directory_iterator::operator!=(const self_t& rhs) const
 path_t recursive_directory_data::fullpath() const
 {
     path_list_t paths = {dirname(), basename()};
-    return join(paths);
+    return join_path(paths);
 }
 
 

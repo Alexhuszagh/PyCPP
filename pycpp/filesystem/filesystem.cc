@@ -85,6 +85,14 @@ static std::deque<Path> listdir_impl(const Path& path, ToPath topath)
 // FUNCTIONS
 // ---------
 
+
+path_t join_path(std::initializer_list<path_view_t> paths)
+{
+    path_view_list_t list(paths.begin(), paths.end());
+    return join_path(list);
+}
+
+
 bool move_path(const path_t& src, const path_t& dst, bool replace)
 {
     return move_path_impl(src, dst, replace);
@@ -129,6 +137,13 @@ std::streampos fd_tell(fd_t fd)
 }
 
 #if defined(OS_WINDOWS)          // BACKUP PATH
+
+
+backup_path_t join_path(std::initializer_list<backup_path_view_t> paths)
+{
+    backup_path_view_list_t list(paths.begin(), paths.end());
+    return join_path(list);
+}
 
 
 bool move_path(const backup_path_t& src, const backup_path_t& dst, bool replace)

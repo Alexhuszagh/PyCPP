@@ -105,7 +105,10 @@ TEST(string, rsplit)
 TEST(string, join)
 {
     string_list_t data = {"a", "b"};
+    string_wrapper_list_t wrapper = {data[0], data[1]};
+    EXPECT_EQ(join({"a", "c"}, " "), "a c");
     EXPECT_EQ(join(data), "a b");
+    EXPECT_EQ(join(wrapper), "a b");
     EXPECT_EQ(join(data, "  "), "a  b");
 }
 

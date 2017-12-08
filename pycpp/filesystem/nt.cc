@@ -75,42 +75,44 @@ static Path make_preferred(const Path& path)
  *  Any absolute paths from the drive will replace previous roots,
  *  and any new drives will replace the root and the path.
  */
-template <typename List, typename ToPath>
-static typename List::value_type join_impl(const List &paths, ToPath topath)
+template <typename Path>
+struct join_impl
 {
-    typedef typename List::value_type Path;
-
-    Path drive, path;
-    for (auto &item: paths) {
-        auto split = splitdrive(item);
-        if (split[0].size()) {
-            // new drive
-            drive = split[0];
-            path = split[1];
-            if (path.size()) {
-                // add only if non-empty, so join("D:", "temp") -> "D:temp"
+    template <typename List, typename ToPath>
+    Path operator()(const List &paths, ToPath topath)
+    {
+        Path drive, path;
+        for (auto &item: paths) {
+            auto split = splitdrive(item);
+            if (split[0].size()) {
+                // new drive
+                drive = split[0];
+                path = split[1];
+                if (path.size()) {
+                    // add only if non-empty, so join("D:", "temp") -> "D:temp"
+                    path += topath(path_separator);
+                }
+            } else if (split[1].size()) {
+                // skip empty elements
+                auto &root = split[1];
+                if (path_separators.find(root[0]) != path_separators.npos) {
+                    // new root
+                    path = root;
+                } else {
+                    path += root;
+                }
                 path += topath(path_separator);
             }
-        } else if (split[1].size()) {
-            // skip empty elements
-            auto &root = split[1];
-            if (path_separators.find(root[0]) != path_separators.npos) {
-                // new root
-                path = root;
-            } else {
-                path += root;
-            }
-            path += topath(path_separator);
         }
-    }
 
-    // clean up trailing separator
-    if (path.size()) {
-        path.erase(path.length() - 1);
-    }
+        // clean up trailing separator
+        if (path.size()) {
+            path.erase(path.length() - 1);
+        }
 
-    return drive + path;
-}
+        return drive + path;
+    }
+};
 
 // SPLIT
 
@@ -405,15 +407,15 @@ static bool copy_dir_recursive_impl(const path_t& src, const path_t& dst)
     for (; first != last; ++first) {
         path_list_t dst_list = {dst, first->basename()};
         if (first->isfile()) {
-            if (!copy_file(first->path(), join(dst_list))) {
+            if (!copy_file(first->path(), join_path(dst_list))) {
                 return false;
             }
         } else if (first->islink()) {
-            if (!copy_link(first->path(), join(dst_list))) {
+            if (!copy_link(first->path(), join_path(dst_list))) {
                 return false;
             }
         } else if (first->isdir()) {
-            if (!copy_dir_recursive_impl(first->path(), join(dst_list))) {
+            if (!copy_dir_recursive_impl(first->path(), join_path(dst_list))) {
                 return false;
             }
         }
@@ -635,9 +637,17 @@ path_t getcwd()
 }
 
 
-path_t join(const path_list_t &paths)
+path_t join_path(const path_list_t &paths)
 {
-    return join_impl(paths, [](char16_t c) {
+    return join_impl<path_t>()(paths, [](char16_t c) {
+        return c;
+    });
+}
+
+
+path_t join_path(const path_view_list_t &paths)
+{
+    return join_impl<path_t>()(paths, [](char16_t c) {
         return c;
     });
 }
@@ -664,7 +674,7 @@ path_list_t splitunc(const path_t& path)
 // NORMALIZATION
 
 
-bool isabs(const path_t& path)
+bool isabs(const path_view_t& path)
 {
     return isabs_impl(path);
 }
@@ -944,16 +954,24 @@ int fd_truncate(const path_t& path, std::streamsize size)
 
 // RUNTIME
 
-backup_path_t join(const backup_path_list_t &paths)
+backup_path_t join_path(const backup_path_list_t &paths)
 {
-    return join_impl(paths, [](char16_t c) {
+    return join_impl<backup_path_t>()(paths, [](char16_t c) {
         return static_cast<char>(c);
+    });
+}
+
+
+backup_path_t join_path(const backup_path_view_list_t &paths)
+{
+    return join_impl<backup_path_t>()(paths, [](char16_t c) {
+        return c;
     });
 }
 
 // STAT
 
-bool isabs(const backup_path_t& path)
+bool isabs(const backup_path_view_t& path)
 {
     return isabs_impl(path);
 }

@@ -67,11 +67,11 @@ struct punycode_idna_t: url_impl_t
     punycode_idna_t(std::initializer_list<char> list);
 
     // SETTERS
-    void set_service(const std::string& service);
-    void set_host(const std::string& host);
-    void set_path(const std::string& path);
-    void set_directory(const std::string& directory);
-    void set_file(const std::string& file);
+    void set_service(const string_view& service);
+    void set_host(const string_view& host);
+    void set_path(const string_view& path);
+    void set_directory(const string_view& directory);
+    void set_file(const string_view& file);
 
     unicode_idna_t to_unicode() const;
 };
@@ -93,11 +93,11 @@ struct unicode_idna_t: url_impl_t
     unicode_idna_t(std::initializer_list<char> list);
 
     // SETTERS
-    void set_service(const std::string& service);
-    void set_host(const std::string& host);
-    void set_path(const std::string& path);
-    void set_directory(const std::string& directory);
-    void set_file(const std::string& file);
+    void set_service(const string_view& service);
+    void set_host(const string_view& host);
+    void set_path(const string_view& path);
+    void set_directory(const string_view& directory);
+    void set_file(const string_view& file);
 
     punycode_idna_t to_punycode() const;
 };

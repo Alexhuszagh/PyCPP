@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lattice/response.h>
+#include <pycpp/lexical.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/getline.h>
 #include <pycpp/string/string.h>
@@ -23,19 +24,19 @@ PYCPP_BEGIN_NAMESPACE
  *
  *  [reference] http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6
  */
-void response_t::parse_code(const std::string &line)
+void response_t::parse_code(const string_view& line)
 {
     const size_t start = 9;
     size_t end = start;
     while (end < line.size() && isdigit(line[end++]));
 
     // no code returned, give an ok status (non-standard conforming)
-    const int number = start == end ? 200 : std::stoi(line.substr(start, end));
+    int number = start == end ? 200 : lexical<int>(line.substr(start, end));
     status_ = static_cast<status_code_t>(number);
 }
 
 
-void response_t::parse_cookie(const std::string &string)
+void response_t::parse_cookie(const string_view& string)
 {
     size_t delimiter = string.find_first_of("=");
     size_t end = string.find_first_of(";", delimiter);
@@ -44,10 +45,10 @@ void response_t::parse_cookie(const std::string &string)
 }
 
 
-void response_t::parse_transfer_encoding(std::string &string)
+void response_t::parse_transfer_encoding(const string_view& string)
 {
-    string = ascii_tolower(string);
-    auto encodings = split(string, ",");
+    std::string str = ascii_tolower(string);
+    auto encodings = split(str, ",");
     for (auto &encoding: encodings) {
         encoding = trim(encoding);
         if (encoding == "chunked") {
@@ -65,10 +66,10 @@ void response_t::parse_transfer_encoding(std::string &string)
 }
 
 
-void response_t::parse_content_type(std::string &string)
+void response_t::parse_content_type(const string_view& string)
 {
-    string = ascii_tolower(string);
-    auto values = split(string, ";");
+    std::string str = ascii_tolower(string);
+    auto values = split(str, ";");
     if (values.size()) {
         // get type, subtype
         auto &front = values.front();
@@ -88,8 +89,12 @@ void response_t::parse_content_type(std::string &string)
 }
 
 
-void response_t::parse_type(const std::string &string)
+void response_t::parse_type(const string_view& string)
 {
+    if (string.empty()) {
+        return;
+    }
+
     switch (string.front()) {
         case 'a': {
             std::get<0>(mime) = string[1] == 'p' ? APPLICATION : AUDIO;
@@ -114,7 +119,8 @@ void response_t::parse_type(const std::string &string)
         case 'x': {
             // custom token, must store
             std::get<0>(mime) = XTOKEN;
-            headers_["x-token"] += string.substr(2, string.find("/") - 2);
+            string_view token = string.substr(2, string.find("/") - 2);
+            headers_["x-token"].append(token.data(), token.size());
             break;
         }
         default:
@@ -126,7 +132,7 @@ void response_t::parse_type(const std::string &string)
 /**
  *  The parsed code must, for HTTP/1.1, start with the status code.
  */
-void response_t::parse_header_line(const std::string &line)
+void response_t::parse_header_line(const string_view& line)
 {
     if (startswith(line, "HTTP/")) {
         // this is valid
@@ -134,8 +140,12 @@ void response_t::parse_header_line(const std::string &line)
     } else {
         // common headers
         size_t colon = line.find_first_of(":");
+        if (colon == string_view::npos) {
+            return;
+        }
+
         std::string key = ascii_tolower(line.substr(0, colon));
-        std::string value = line.substr(colon+1);
+        std::string value(line.substr(colon+1));
         value = trim(value);
 
         if (key == "set-cookie") {
@@ -154,9 +164,9 @@ void response_t::parse_header_line(const std::string &line)
 }
 
 
-void response_t::parse_header(const std::string &lines)
+void response_t::parse_header(const string_view& lines)
 {
-    std::istringstream stream(lines);
+    std::istringstream stream = std::istringstream(std::string(lines));
     std::string line;
     while (getline(stream, line)) {
         if (!line.empty()) {

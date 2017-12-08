@@ -48,27 +48,31 @@ static typename Path::const_iterator stem_impl(const Path& path)
 /**
  *  \brief Join POSIX-compliant paths to create path to full file.
  */
-template <typename List, typename ToPath>
-static typename List::value_type join_impl(const List &paths, ToPath topath)
+template <typename Path>
+struct join_impl
 {
-    typename List::value_type path;
-    for (auto &item: paths) {
-        if (item.empty()) {
-        } else if (path_separators.find(item[0]) != path_separators.npos) {
-            path = item;
-        } else {
-            path += item;
+    template <typename List, typename ToPath>
+    Path operator()(const List &paths, ToPath topath)
+    {
+        Path path;
+        for (auto &item: paths) {
+            if (item.empty()) {
+            } else if (path_separators.find(item[0]) != path_separators.npos) {
+                path = Path(item);
+            } else {
+                path += Path(item);
+            }
+            path += topath(path_separator);
         }
-        path += topath(path_separator);
-    }
 
-    // clean up trailing separator
-    if (path.size()) {
-        path.erase(path.length() - 1);
-    }
+        // clean up trailing separator
+        if (path.size()) {
+            path.erase(path.length() - 1);
+        }
 
-    return path;
-}
+        return path;
+    }
+};
 
 // SPLIT
 
@@ -358,15 +362,15 @@ static bool copy_dir_recursive_impl(const Path&src, const Path& dst)
     for (; first != last; ++first) {
         path_list_t dst_list = {dst, first->basename()};
         if (first->isfile()) {
-            if (!copy_file(first->path(), join(dst_list))) {
+            if (!copy_file(first->path(), join_path(dst_list))) {
                 return false;
             }
         } else if (first->islink()) {
-            if (!copy_link(first->path(), join(dst_list))) {
+            if (!copy_link(first->path(), join_path(dst_list))) {
                 return false;
             }
         } else if (first->isdir()) {
-            if (!copy_dir_recursive_impl(first->path(), join(dst_list))) {
+            if (!copy_dir_recursive_impl(first->path(), join_path(dst_list))) {
                 return false;
             }
         }
@@ -612,9 +616,17 @@ path_t getcwd()
 }
 
 
-path_t join(const path_list_t &paths)
+path_t join_path(const path_list_t &paths)
 {
-    return join_impl(paths, [](char c) {
+    return join_impl<path_t>()(paths, [](char c) {
+        return c;
+    });
+}
+
+
+path_t join_path(const path_view_list_t &paths)
+{
+    return join_impl<path_t>()(paths, [](char16_t c) {
         return c;
     });
 }
@@ -641,7 +653,7 @@ path_list_t splitunc(const path_t& path)
 // NORMALIZATION
 
 
-bool isabs(const path_t& path)
+bool isabs(const path_view_t& path)
 {
     return isabs_impl(path);
 }

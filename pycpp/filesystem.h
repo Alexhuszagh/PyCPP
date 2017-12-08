@@ -30,6 +30,7 @@
 #include <pycpp/filesystem/stat.h>
 #include <pycpp/filesystem/tmp.h>
 #include <pycpp/iterator/range.h>
+#include <initializer_list>
 #include <ios>
 
 PYCPP_BEGIN_NAMESPACE
@@ -74,25 +75,27 @@ path_t getcwd();
  *  will reset the current root.
  *
  *  \code
- *      join("/tmp", "path", "to")          // "/tmp/path/to"
- *      join("/tmp", "/path", "to")         // "/path/to"
+ *      join_path("/tmp", "path", "to")         // "/tmp/path/to"
+ *      join_path("/tmp", "/path", "to")        // "/path/to"
  *
  *  \param paths            Paths to join
  *  \return                 Joined paths
  */
-path_t join(const path_list_t &paths);
+path_t join_path(std::initializer_list<path_view_t> paths);
+path_t join_path(const path_list_t &paths);
+path_t join_path(const path_view_list_t &paths);
 
 // STAT
 
 /**
  * \brief POSIX-like stat call.
  */
-stat_t stat(const path_t& path);
+stat_t stat(const path_view_t& path);
 
 /**
  * \brief POSIX-like lstat call.
  */
-stat_t lstat(const path_t& path);
+stat_t lstat(const path_view_t& path);
 
 /**
  *  \brief Get access time of file, as if by stat.
@@ -142,57 +145,57 @@ bool samestat(const stat_t& s1, const stat_t& s2);
 /**
  *  \brief Get access time of file, as if by stat.
  */
-time_t getatime(const path_t& path);
+time_t getatime(const path_view_t& path);
 
 /**
  *  \brief Get modified time of file, as if by stat.
  */
-time_t getmtime(const path_t& path);
+time_t getmtime(const path_view_t& path);
 
 /**
  *  \brief Get created time of file, as if by stat.
  */
-time_t getctime(const path_t& path);
+time_t getctime(const path_view_t& path);
 
 /**
  *  \brief Get size of file, as if by stat.
  */
-off_t getsize(const path_t& path);
+off_t getsize(const path_view_t& path);
 
 /**
  *  \brief Check if path points to file.
  */
-bool isfile(const path_t& path);
+bool isfile(const path_view_t& path);
 
 /**
  *  \brief Check if path points to directory.
  */
-bool isdir(const path_t& path);
+bool isdir(const path_view_t& path);
 
 /**
  *  \brief Check if path points to symbolic link.
  */
-bool islink(const path_t& path);
+bool islink(const path_view_t& path);
 
 /**
  *  \brief Check if path exists on filesystem.
  */
-bool exists(const path_t& path);
+bool exists(const path_view_t& path);
 
 /**
  *  \brief Check if path exists on filesystem as if by lstat.
  */
-bool lexists(const path_t& path);
+bool lexists(const path_view_t& path);
 
 /**
  *  \brief Check if path is absolute.
  */
-bool isabs(const path_t& path);
+bool isabs(const path_view_t& path);
 
 /**
  *  \brief Check if two paths point to same file.
  */
-bool samefile(const path_t& p1, const path_t& p2);
+bool samefile(const path_view_t& p1, const path_view_t& p2);
 
 // DIRECTORY
 
@@ -217,6 +220,7 @@ path_list_t split(const path_t& path);
  *  \brief Split path into drive and tail components.
  */
 path_list_t splitdrive(const path_t& path);
+// TODO: lols.... This can be optimized away....
 
 /**
  *  \brief Split path into root and filename extension components.
@@ -233,7 +237,7 @@ path_list_t splitunc(const path_t& path);
 /**
  *  \brief Read value of a symlink.
  */
-path_t read_link(const path_t& path);
+path_t read_link(const path_view_t& path);
 
 /**
  *  \brief Return the absolute path relative to the base.
@@ -300,7 +304,7 @@ path_t relpath(const path_t& path, const path_t& start);
 /**
  *  \brief Copy file metadata from src to dst.
  */
-bool copystat(const path_t& src, const path_t& dst);
+bool copystat(const path_view_t& src, const path_view_t& dst);
 
 /**
  *  \brief Make symbolic link pointing to target at dst.
@@ -448,12 +452,14 @@ int fd_truncate(const path_t& path, std::streamsize size);
 
 // RUNTIME
 
-backup_path_t join(const backup_path_list_t &paths);
+backup_path_t join_path(std::initializer_list<backup_path_view_t> paths);
+backup_path_t join_path(const backup_path_list_t &paths);
+backup_path_t join_path(const backup_path_view_list_t &paths);
 
 // STAT
 
-stat_t stat(const backup_path_t& path);
-stat_t lstat(const backup_path_t& path);
+stat_t stat(const backup_path_view_t& path);
+stat_t lstat(const backup_path_view_t& path);
 time_t getatime(const backup_path_t& path);
 time_t getmtime(const backup_path_t& path);
 time_t getctime(const backup_path_t& path);
@@ -480,7 +486,7 @@ backup_path_list_t splitunc(const backup_path_t& path);
 
 // NORMALIZATION
 
-backup_path_t read_link(const backup_path_t& path);
+backup_path_t read_link(const backup_path_view_t& path);
 backup_path_t abspath(const backup_path_t& path);
 backup_path_t base_name(const backup_path_t& path);
 backup_path_t dir_name(const backup_path_t& path);
@@ -494,7 +500,7 @@ backup_path_t relpath(const backup_path_t& path, const backup_path_t& start);
 
 // MANIPULATION
 
-bool copystat(const backup_path_t& src, const backup_path_t& dst);
+bool copystat(const backup_path_view_t& src, const backup_path_view_t& dst);
 bool mklink(const backup_path_t& target, const backup_path_t& dst, bool replace = false);
 bool mkdir(const backup_path_t& path, int = 0777);
 bool makedirs(const backup_path_t& path, int = 0777);

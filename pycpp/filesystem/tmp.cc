@@ -195,7 +195,7 @@ path_t gettempnam(const path_t& dir, const path_t& prefix)
     } else {
         paths = {dir, prefix + gettempsuffix()};
     }
-    return join(paths);
+    return join_path(paths);
 }
 
 #if defined(OS_WINDOWS)          // WINDOWS NT && BACKUP PATH

@@ -14,6 +14,7 @@
 #include <pycpp/lattice/redirect.h>
 #include <pycpp/lattice/transfer.h>
 #include <pycpp/lattice/url.h>
+#include <pycpp/view/string.h>
 #include <tuple>
 
 PYCPP_BEGIN_NAMESPACE
@@ -175,7 +176,7 @@ struct response_t
     bool rar() const;
 
     // TYPE
-    const mime_t & type() const;
+    const mime_t& type() const;
     bool application() const;
     bool audio() const;
     bool image() const;
@@ -205,13 +206,13 @@ protected:
     std::string charset;
     std::string body_;
 
-    void parse_code(const std::string &line);
-    void parse_cookie(const std::string &string);
-    void parse_transfer_encoding(std::string &string);
-    void parse_content_type(std::string &string);
-    void parse_type(const std::string &string);
-    void parse_header_line(const std::string &line);
-    void parse_header(const std::string &lines);
+    void parse_code(const string_view& line);
+    void parse_cookie(const string_view& string);
+    void parse_transfer_encoding(const string_view& string);
+    void parse_content_type(const string_view& string);
+    void parse_type(const string_view& string);
+    void parse_header_line(const string_view& line);
+    void parse_header(const string_view& lines);
 };
 
 

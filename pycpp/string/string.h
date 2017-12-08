@@ -12,6 +12,7 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/string/whitespace.h>
 #include <pycpp/view/string.h>
 #include <functional>
 #include <vector>
@@ -53,42 +54,42 @@ extern const string_t whitespace;
 /**
  *  \brief Check if str starts with substr.
  */
-bool startswith(const string_t& str, const string_t& sub);
+bool startswith(const string_view& str, const string_view& sub);
 
 /**
  *  \brief Check if str ends with substr.
  */
-bool endswith(const string_t& str, const string_t& sub);
+bool endswith(const string_view& str, const string_view& sub);
 
 /**
  *  \brief Trim characters from left-end of string.
  */
-string_t ltrim(const string_t& str, const string_t& characters = " \n\r\t");
+string_t ltrim(const string_view& str, const string_view& characters = whitespace);
 
 /**
  *  \brief Trim characters from right-end of string.
  */
-string_t rtrim(const string_t& str, const string_t& characters = " \n\r\t");
+string_t rtrim(const string_view& str, const string_view& characters = whitespace);
 
 /**
  *  \brief Trim characters from both ends of string.
  */
-string_t trim(const string_t& str, const string_t& characters = " \n\r\t");
+string_t trim(const string_view& str, const string_view& characters = whitespace);
 
 /**
  *  \brief Split characters by delimiters into dst.
  */
-string_list_t split(const string_t& str, split_function is_split, size_t maxsplit = SIZE_MAX);
+string_list_t split(const string_view& str, split_function is_split, size_t maxsplit = SIZE_MAX);
 
 /**
  *  \brief Same as split, except scanning in reverse order.
  */
-string_list_t rsplit(const string_t& str, split_function is_split, size_t maxsplit = SIZE_MAX);
+string_list_t rsplit(const string_view& str, split_function is_split, size_t maxsplit = SIZE_MAX);
 
 /**
  *  \brief Split characters by delimiters into dst.
  */
-string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit = SIZE_MAX);
+string_list_t split(const string_view& str, const string_view& sep, size_t maxsplit = SIZE_MAX);
 
 /**
  *  \brief Split characters by delimiter into dst.
@@ -101,22 +102,24 @@ string_list_t split(const string_t& str, const string_t& sep, size_t maxsplit = 
  *  \param escape           Escape character
  *  \param delimiters       Character delimiter
  */
-string_list_t quoted_split(const string_t& str, char delimiter, char quote, char escape);
+string_list_t quoted_split(const string_view& str, char delimiter, char quote, char escape);
 
 /**
  *  \brief Same as split, except scanning in reverse order.
  */
-string_list_t rsplit(const string_t& str, const string_t& sep, size_t maxsplit = SIZE_MAX);
+string_list_t rsplit(const string_view& str, const string_view& sep, size_t maxsplit = SIZE_MAX);
 
 /**
  *  \brief Convert tabs to spaces, using the tabsize.
  */
-string_t join(const string_list_t& list, const std::string& sep = " ");
+string_t join(std::initializer_list<string_view> list, const string_view& sep = SPACE);
+string_t join(const string_list_t& list, const string_view& sep = SPACE);
+string_t join(const string_wrapper_list_t& list, const string_view& sep = SPACE);
 
 /**
  *  \brief Convert tabs to spaces, using the tabsize.
  */
-string_t expandtabs(const string_t& str, size_t tabsize = 8);
+string_t expandtabs(const string_view& str, size_t tabsize = 8);
 
 /**
  *  \brief Find in substring in string.
@@ -125,51 +128,51 @@ string_t expandtabs(const string_t& str, size_t tabsize = 8);
  *  \param end          Last character in str to search for substr.
  *  \return             Position of substr, or -1 on failure.
  */
-size_t find(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t find(const string_view& str, const string_view& sub, size_t start = 0, size_t end = SIZE_MAX);
 
 /**
  *  \brief Like find, but find last position of substring in string.
  */
-size_t rfind(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t rfind(const string_view& str, const string_view& sub, size_t start = 0, size_t end = SIZE_MAX);
 
 /**
  *  \brief Like find, but raise error if substring not found.
  */
-size_t index(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t index(const string_view& str, const string_view& sub, size_t start = 0, size_t end = SIZE_MAX);
 
 /**
  *  \brief Like rfind, but raise error if substring not found.
  */
-size_t rindex(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t rindex(const string_view& str, const string_view& sub, size_t start = 0, size_t end = SIZE_MAX);
 
 /**
  *  \brief Count instances of substring in string.
  */
-size_t count(const string_t& str, const string_t& sub, size_t start = 0, size_t end = SIZE_MAX);
+size_t count(const string_view& str, const string_view& sub, size_t start = 0, size_t end = SIZE_MAX);
 
 /**
  *  \brief Capitalize first letter of word.
  */
-string_t capitalize(const string_t& str);
+string_t capitalize(const string_view& str);
 
 /**
  *  \brief Convert all uppercase characters to lowercase in string.
  *
  *  This function **this** Unicode aware.
  */
-string_t lower(const string_t& str);
+string_t lower(const string_view& str);
 
 /**
  *  \brief Convert all uppercase characters to uppercase in string.
  *
  *  This function **this** Unicode aware.
  */
-string_t upper(const string_t& str);
+string_t upper(const string_view& str);
 
 /**
  *  \brief Replace maxreplace instances of sub with repl in str.
  */
-string_t replace(const string_t& str, const string_t& sub, const string_t& repl, size_t maxreplace = SIZE_MAX);
+string_t replace(const string_view& str, const string_view& sub, const string_view& repl, size_t maxreplace = SIZE_MAX);
 
 // OBJECTS
 // -------
@@ -198,16 +201,13 @@ struct string_wrapper: string_view
     string_t upper() const;
     string_t replace(const string_wrapper& sub, const string_wrapper& repl, size_t maxreplace = SIZE_MAX);
     string_t expandtabs(size_t tabsize = 8);
-    string_t ltrim(const string_wrapper& characters = " \n\r\t");
-    string_t rtrim(const string_wrapper& characters = " \n\r\t");
-    string_t trim(const string_wrapper& characters = " \n\r\t");
+    string_t ltrim(const string_wrapper& characters = whitespace);
+    string_t rtrim(const string_wrapper& characters = whitespace);
+    string_t trim(const string_wrapper& characters = whitespace);
 
     // TOKENS
-    // TODO: split_iter...
-//    std::pair<> splititer(split_function is_split, size_t maxsplit = SIZE_MAX) const;
     string_wrapper_list_t split(split_function is_split, size_t maxsplit = SIZE_MAX) const;
     string_wrapper_list_t rsplit(split_function is_split, size_t maxsplit = SIZE_MAX) const;
-//    std::pair<> splititer(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
     string_wrapper_list_t split(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
     string_wrapper_list_t rsplit(const string_wrapper& sep, size_t maxsplit = SIZE_MAX) const;
     string_t join(const string_wrapper_list_t& list);

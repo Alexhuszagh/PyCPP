@@ -16,7 +16,7 @@ timeout_t::timeout_t(const std::chrono::milliseconds &timeout):
 {}
 
 
-timeout_t::timeout_t(const long ms):
+timeout_t::timeout_t(long ms):
     timeout(std::chrono::milliseconds(ms))
 {}
 

@@ -50,7 +50,7 @@ revocation_lists_t::operator bool() const
 }
 
 
-verify_peer_t::verify_peer_t(const bool verify):
+verify_peer_t::verify_peer_t(bool verify):
     verify(verify)
 {}
 

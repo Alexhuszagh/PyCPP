@@ -40,7 +40,7 @@ public:
     timeout_t & operator=(timeout_t&&) = default;
 
     timeout_t(const std::chrono::milliseconds &timeout);
-    timeout_t(const long ms);
+    timeout_t(long ms);
 
     long seconds() const;
     long milliseconds() const;

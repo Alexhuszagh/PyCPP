@@ -3,59 +3,14 @@
 **Short-Term**
 
     - Need path views.
-        
+    - Remove all stoi, strtoull, etc....
+
     - The robin map needs to use std::pair<const Key, Value> rather than it's bullshit.
 
     - Need to ensure all the streams have a low-level API and that is used for... well, everything.
         - We want to minimize the number of things an allocator can't be used for.
-        - algorithm -- DONE
-        - allocator -- DONE
-        - cache -- DONE
-        - cipher -- DONE
-        - collections -- DONE
-        - compression -- DONE
-        - csv -- DONE
         - filesystem
-        - fixed -- DONE
-        - hashlib -- DONE
-        - iterator -- DONE
-        - itertools -- DONE
-        - json -- DONE
-        - lattice
-            - Up to crypto....
-            - digest
-            - dns -- done
-            - header -- done
-            - method -- done
-            - multipart -- done
-            - parameter -- done
-            - proxy -- done
-            - redirect -- done
-            - request
-            - response
-            - ssl
-            - timeout
-            - url
-            - util -- DONE
-        - lexical -- DONE
-        - math -- DONE
-        - memmap -- DONE
-        - misc -- DONE
-        - multi_index -- DONE
-        - preprocessor -- DONE
-        - random -- DONE
-        - re -- DONE
-        - reference -- DONE
-        - runtime -- DONE
-        - safe -- DONE
-        - secure -- DONE
-        - sfinae -- DONE
-        - sql -- DONE
-        - stream -- DONE
-        - string -- DONE
-        - view -- DONE
-        - windows -- DONE
-        - xml -- DONE
+            -- All besides filesystem
     - Need to implement splititer
     - Implement more reference (intrusive) containers.
 

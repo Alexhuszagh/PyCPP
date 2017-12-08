@@ -194,38 +194,38 @@ TEST(stat, samestat)
 }
 
 
-TEST(path, join)
+TEST(path, join_path)
 {
     path_list_t list;
-    EXPECT_EQ(join(list), path_prefix(""));
+    EXPECT_EQ(join_path(list), path_prefix(""));
 
 #if defined(OS_WINDOWS)             // WINDOWS
 
     list = {u"\\tmp", u"path", u"to"};
-    EXPECT_EQ(join(list), u"\\tmp\\path\\to");
+    EXPECT_EQ(join_path(list), u"\\tmp\\path\\to");
 
     list = {u"\\tmp", u"\\path", u"to"};
-    EXPECT_EQ(join(list), u"\\path\\to");
+    EXPECT_EQ(join_path(list), u"\\path\\to");
 
     list = {u"\\\\?\\D:", u"long"};
-    EXPECT_EQ(join(list), u"\\\\?\\D:long");
+    EXPECT_EQ(join_path(list), u"\\\\?\\D:long");
 
     list = {u"\\\\?\\D:", u"\\long", u"\\x"};
-    EXPECT_EQ(join(list), u"\\\\?\\D:\\x");
+    EXPECT_EQ(join_path(list), u"\\\\?\\D:\\x");
 
     list = {u"\\\\?\\D:", u"C:\\long", u"\\x"};
-    EXPECT_EQ(join(list), u"C:\\x");
+    EXPECT_EQ(join_path(list), u"C:\\x");
 
     list = {u"D:source", u"C:\\long", u"\\x"};
-    EXPECT_EQ(join(list), u"C:\\x");
+    EXPECT_EQ(join_path(list), u"C:\\x");
 
 #else                               // POSIX
 
     list = {"/path", "to", "file"};
-    EXPECT_EQ(join(list), "/path/to/file");
+    EXPECT_EQ(join_path(list), "/path/to/file");
 
     list = {"/path", "/to", "file"};
-    EXPECT_EQ(join(list), "/to/file");
+    EXPECT_EQ(join_path(list), "/to/file");
 
 #endif
 }

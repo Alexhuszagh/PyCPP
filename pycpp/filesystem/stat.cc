@@ -267,14 +267,14 @@ static HANDLE get_handle(Pointer path, bool use_lstat, Function function)
 }
 
 
-static HANDLE get_handle(const path_t& path, bool use_lstat)
+static HANDLE get_handle(const path_view_t& path, bool use_lstat)
 {
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     return get_handle(data, use_lstat, CreateFileW);
 }
 
 
-static HANDLE get_handle(const backup_path_t& path, bool use_lstat)
+static HANDLE get_handle(const backup_path_view_t& path, bool use_lstat)
 {
     auto data = reinterpret_cast<const char*>(path.data());
     return get_handle(data, use_lstat, CreateFileA);
@@ -378,7 +378,7 @@ static int wstat(const path_t& path, stat_t* buffer, bool use_lstat)
 }
 
 
-stat_t stat(const path_t& path)
+stat_t stat(const path_view_t& path)
 {
     stat_t data;
     int code;
@@ -390,7 +390,7 @@ stat_t stat(const path_t& path)
 }
 
 
-stat_t lstat(const path_t& path)
+stat_t lstat(const path_view_t& path)
 {
     stat_t data;
     int code;
@@ -402,7 +402,7 @@ stat_t lstat(const path_t& path)
 }
 
 
-path_t read_link(const path_t& path)
+path_t read_link(const path_view_t& path)
 {
     HANDLE handle = get_handle(path, true);
     if (handle == INVALID_HANDLE_VALUE) {
@@ -469,7 +469,7 @@ static void copy_native(const struct stat& src, stat_t& dst)
 }
 
 
-stat_t stat(const path_t& path)
+stat_t stat(const path_view_t& path)
 {
     struct stat sb;
     stat_t data;
@@ -483,7 +483,7 @@ stat_t stat(const path_t& path)
 }
 
 
-stat_t lstat(const path_t& path)
+stat_t lstat(const path_view_t& path)
 {
     struct stat sb;
     stat_t data;
@@ -497,9 +497,9 @@ stat_t lstat(const path_t& path)
 }
 
 
-path_t read_link(const path_t& path)
+path_t read_link(const path_view_t& path)
 {
-    typedef typename path_t::value_type Char;
+    typedef typename path_view_t::value_type Char;
 
     auto buf = new Char[PATH_MAX];
     auto length = ::readlink(path.data(), buf, PATH_MAX);
@@ -517,7 +517,7 @@ path_t read_link(const path_t& path)
 
 #if defined(OS_WINDOWS)             // BACKUP PATH
 
-stat_t stat(const backup_path_t& path)
+stat_t stat(const backup_path_view_t& path)
 {
     stat_t data;
     int code;
@@ -529,7 +529,7 @@ stat_t stat(const backup_path_t& path)
 }
 
 
-stat_t lstat(const backup_path_t& path)
+stat_t lstat(const backup_path_view_t& path)
 {
     stat_t data;
     int code;
@@ -541,7 +541,7 @@ stat_t lstat(const backup_path_t& path)
 }
 
 
-backup_path_t read_link(const backup_path_t& path)
+backup_path_t read_link(const backup_path_view_t& path)
 {
     HANDLE handle = get_handle(path, true);
     if (handle == INVALID_HANDLE_VALUE) {
@@ -691,61 +691,61 @@ static bool copystat_impl(const Path& src, const Path& dst)
 // ---------
 
 
-time_t getatime(const path_t& path)
+time_t getatime(const path_view_t& path)
 {
     return getatime(stat(path));
 }
 
 
-time_t getmtime(const path_t& path)
+time_t getmtime(const path_view_t& path)
 {
     return getmtime(stat(path));
 }
 
 
-time_t getctime(const path_t& path)
+time_t getctime(const path_view_t& path)
 {
     return getctime(stat(path));
 }
 
 
-off_t getsize(const path_t& path)
+off_t getsize(const path_view_t& path)
 {
     return getsize(stat(path));
 }
 
 
-bool isfile(const path_t& path)
+bool isfile(const path_view_t& path)
 {
     return isfile_impl(path);
 }
 
 
-bool isdir(const path_t& path)
+bool isdir(const path_view_t& path)
 {
     return isdir_impl(path);
 }
 
 
-bool islink(const path_t& path)
+bool islink(const path_view_t& path)
 {
     return islink_impl(path);
 }
 
 
-bool exists(const path_t& path)
+bool exists(const path_view_t& path)
 {
     return exists_impl(path);
 }
 
 
-bool lexists(const path_t& path)
+bool lexists(const path_view_t& path)
 {
     return lexists_impl(path);
 }
 
 
-bool samefile(const path_t& p1, const path_t& p2)
+bool samefile(const path_view_t& p1, const path_view_t& p2)
 {
     return samestat(stat(p1), stat(p2));
 }
@@ -756,7 +756,7 @@ bool samestat(const stat_t& s1, const stat_t& s2)
     return s1.st_ino == s2.st_ino && s1.st_dev == s2.st_dev;
 }
 
-bool copystat(const path_t& src, const path_t& dst)
+bool copystat(const path_view_t& src, const path_view_t& dst)
 {
     return copystat_impl(src, dst);
 }

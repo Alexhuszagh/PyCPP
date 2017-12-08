@@ -53,7 +53,7 @@ bool lowercase_equal_to::operator()(const std::string& lhs, const std::string& r
 }
 
 
-quality_of_protection_t::quality_of_protection_t(const std::string& qop)
+quality_of_protection_t::quality_of_protection_t(const string_view& qop)
 {
     auto data = split(qop, ",");
     insert(begin(), data.begin(), data.end());
@@ -85,7 +85,7 @@ quality_of_protection_t::operator bool() const
 }
 
 
-digest_challenge_t::digest_challenge_t(const std::string& string)
+digest_challenge_t::digest_challenge_t(const string_view& string)
 {
     auto data = quoted_split(string.substr(7), ',', '"', '\\');
     for (auto &value: data) {
@@ -173,16 +173,18 @@ quality_of_protection_t digest_challenge_t::qop() const
 std::string digest_challenge_t::header(const url_t& url,
     const parameters_t& parameters,
     const digest_t& digest,
-    const std::string& body,
-    const std::string& method)
+    const string_view& body,
+    const string_view& method)
 {
     // get string to hash
     auto quality = qop();
     auto path = url.path() + parameters.get();
     std::string a1 = digest.username + ":" + realm() + ":" + digest.password;
-    std::string a2 = method + ":" + path;
+    std::string a2(method);
+    a2 += ":" + path;
     if (quality.authint()) {
-        a2 += ":" + body;
+        a2 += ":";
+        a2.append(body.data(), body.size());
     }
 
     // get our initial hash values
@@ -206,29 +208,29 @@ std::string digest_challenge_t::header(const url_t& url,
     }
 
     // create our header
-    std::ostringstream header;
-    header << "Authorization: Digest " << "username=\"" + digest.username
-           << "\", realm=\"" << realm()
-           << "\", nonce=\"" << nonce()
-           << "\", uri=\"" << path
-           << "\", response=\"" << response << "\"";
+    std::string header;
+    header += "Authorization: Digest username=\"" + digest.username;
+    header += "\", realm=\"" + realm();
+    header += "\", nonce=\"" + nonce();
+    header += "\", uri=\"" + path;
+    header += "\", response=\"" + response + "\"";
 
     // optional arguments
     if (quality) {
-        header << ", qop=\"" << join(quality, ",")
-               << "\", nc=" << nc()
-               << ", cnonce=\"" << cnonce() << "\"";
+        header += ", qop=\"" + join(quality, ",");
+        header += "\", nc=" + nc();
+        header += ", cnonce=\"" + cnonce() + "\"";
     }
     if (find("opaque") != end()) {
-        header << ", opaque=\"" << at("opaque") << "\"";
+        header += ", opaque=\"" + at("opaque") + "\"";
     }
     if (find("algorithm") != end()) {
-        header << ", algorithm=\"" << at("algorithm") << "\"";
+        header += ", algorithm=\"" + at("algorithm") + "\"";
     }
 
-    header << "\r\n";
+    header += "\r\n";
 
-    return header.str();
+    return header;
 }
 
 

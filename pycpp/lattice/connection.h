@@ -13,6 +13,8 @@
 #include <pycpp/lattice/ssl.h>
 #include <pycpp/lattice/timeout.h>
 #include <pycpp/lattice/util.h>
+#include <pycpp/lexical.h>
+#include <pycpp/lexical/atoi.h>
 #include <pycpp/view/string.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
@@ -328,7 +330,7 @@ void connection_t<Adapter>::write(const string_view& data)
 {
     int sent = adaptor.write(data.data(), data.size());
     if (sent != static_cast<int>(data.size())) {
-        throw std::runtime_error("Unable to make request, sent " + std::to_string(sent) + " bytes.");
+        throw std::runtime_error("Unable to make request, sent " + lexical(sent) + " bytes.");
     }
 }
 
@@ -382,9 +384,9 @@ std::string connection_t<Adapter>::chunked()
             result = adaptor.read(&byte, 1);
 
             // read bytes
-            long bytes = std::strtoul(hex.data(), nullptr, 16);
+            int64_t bytes = atoi64(hex, 16);
             buffer = static_cast<char*>(realloc(buffer, bytes + offset));
-            long read = readn(buffer + offset, bytes);
+            int64_t read = readn(buffer + offset, bytes);
             offset += read;
             if (read != bytes) {
                 break;
