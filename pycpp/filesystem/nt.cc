@@ -20,12 +20,14 @@
 #include <pycpp/preprocessor/errno.h>
 #include <pycpp/preprocessor/sysstat.h>
 #include <pycpp/string/casemap.h>
+#include <pycpp/string/unicode.h>
 #include <pycpp/windows/error.h>
 #include <pycpp/windows/winapi.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <io.h>
 #include <algorithm>
+#include <cassert>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -245,15 +247,14 @@ struct expanduser_impl
 };
 
 
-template <typename Path>
+template <typename Path, typename Char>
 struct expandvars_impl
 {
-    template <typename View, typename FromPath, typename ToPath, typename Function>
-    Path operator()(const View& path, FromPath frompath, ToPath topath, Function function)
+    template <typename View, typename ToPath, typename Function>
+    Path operator()(const View& path, ToPath topath, Function function)
     {
-        wchar_t* buf = new wchar_t[MAX_PATH];
-        auto wide = frompath(path);
-        auto data = reinterpret_cast<const wchar_t*>(wide.data());
+        Char* buf = new Char[MAX_PATH];
+        auto data = reinterpret_cast<const Char*>(path.data());
         DWORD length = function(data, buf, MAX_PATH);
         if (length == 0) {
             throw filesystem_error(filesystem_unexpected_error);
@@ -398,21 +399,27 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyF
 }
 
 
-static bool copy_dir_shallow_impl(const path_t&src, const path_t& dst)
+static bool copy_dir_shallow_impl(const path_view_t&src, const path_view_t& dst)
 {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
     auto s = reinterpret_cast<const wchar_t*>(src.data());
     auto d = reinterpret_cast<const wchar_t*>(dst.data());
     return CreateDirectoryExW(s, d, 0);
 }
 
 
-static bool copy_dir_shallow_impl(const backup_path_t&src, const backup_path_t& dst)
+static bool copy_dir_shallow_impl(const backup_path_view_t&src, const backup_path_view_t& dst)
 {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
     return CreateDirectoryExA(src.data(), dst.data(), 0);
 }
 
 
-static bool copy_dir_recursive_impl(const path_t& src, const path_t& dst)
+static bool copy_dir_recursive_impl(const path_view_t& src, const path_view_t& dst)
 {
     if (!copy_dir_shallow_impl(src, dst)) {
         return false;
@@ -421,7 +428,8 @@ static bool copy_dir_recursive_impl(const path_t& src, const path_t& dst)
     directory_iterator first(src);
     directory_iterator last;
     for (; first != last; ++first) {
-        path_list_t dst_list = {dst, first->basename()};
+        path_t basename = first->basename();
+        path_view_list_t dst_list = {dst, basename};
         if (first->isfile()) {
             if (!copy_file(first->path(), join_path(dst_list))) {
                 return false;
@@ -441,7 +449,7 @@ static bool copy_dir_recursive_impl(const path_t& src, const path_t& dst)
 }
 
 
-static bool copy_dir_recursive_impl(const backup_path_t& src, const backup_path_t& dst)
+static bool copy_dir_recursive_impl(const backup_path_view_t& src, const backup_path_view_t& dst)
 {
     return copy_dir_recursive_impl(backup_path_to_path(src), backup_path_to_path(dst));
 }
@@ -480,15 +488,23 @@ static bool remove_link_impl(const Path& path)
 }
 
 
-static bool remove_dir_shallow_impl(const path_t& path)
+static bool remove_dir_shallow_impl(const path_view_t& path)
 {
+    assert(path.is_null_terminated());
+
     auto p = reinterpret_cast<const wchar_t*>(path.data());
     return RemoveDirectoryW(p);
 }
 
 
-static bool remove_dir_shallow_impl(const backup_path_t& path)
+static bool remove_dir_shallow_impl(const backup_path_view_t& path)
 {
+    if (is_unicode(path)) {
+        return remove_dir_shallow_impl(backup_path_to_path(path));
+    }
+
+    assert(path.is_null_terminated());
+
     return RemoveDirectoryA(path.data());
 }
 
@@ -514,7 +530,7 @@ static bool remove_dir_recursive_impl(const Path& path)
         }
     }
 
-    return true;
+    return remove_dir_shallow_impl(path);
 }
 
 
@@ -716,17 +732,14 @@ path_t expanduser(const path_view_t& path)
 
 path_t expandvars(const path_view_t& path)
 {
-    auto frompath = [](const path_view_t& path) -> const path_view_t&
-    {
-        return path;
-    };
-
-    auto topath = [](wchar_t* str, size_t l) -> std::u16string
+    auto topath = [](wchar_t* str, size_t l) -> path_t
     {
         return path_t(reinterpret_cast<char16_t*>(str), l);
     };
 
-    return expandvars_impl<path_t>()(path, frompath, topath, ExpandEnvironmentStringsW);
+    assert(path.is_null_terminated());
+
+    return expandvars_impl<path_t, wchar_t>()(path, topath, ExpandEnvironmentStringsW);
 }
 
 
@@ -740,16 +753,19 @@ path_t normcase(const path_view_t& path)
 // MANIPULATION
 
 
-bool move_link(const path_t& src, const path_t& dst, bool replace)
+bool move_link(const path_view_t& src, const path_view_t& dst, bool replace)
 {
     // same as move_file
     return move_file(src, dst, replace);
 }
 
 
-bool move_file(const path_t& src, const path_t& dst, bool replace)
+bool move_file(const path_view_t& src, const path_view_t& dst, bool replace)
 {
-    return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst, DWORD f) {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return move_file_impl(src, dst, replace, [](const path_view_t& src, const path_view_t& dst, DWORD f) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
         return MoveFileExW(s, d, f);
@@ -757,9 +773,12 @@ bool move_file(const path_t& src, const path_t& dst, bool replace)
 }
 
 
-bool move_dir(const path_t& src, const path_t& dst, bool replace)
+bool move_dir(const path_view_t& src, const path_view_t& dst, bool replace)
 {
-    return move_dir_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return move_dir_impl(src, dst, replace, [](const path_view_t& src, const path_view_t& dst) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
         return MoveFileW(s, d);
@@ -767,9 +786,12 @@ bool move_dir(const path_t& src, const path_t& dst, bool replace)
 }
 
 
-bool mklink(const path_t& target, const path_t& dst, bool replace)
+bool mklink(const path_view_t& target, const path_view_t& dst, bool replace)
 {
-    return mklink_impl(target, dst, replace, [](const path_t& tar, const path_t& dst, DWORD f) {
+    assert(target.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return mklink_impl(target, dst, replace, [](const path_view_t& tar, const path_view_t& dst, DWORD f) {
         auto t = reinterpret_cast<const wchar_t*>(tar.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
         return CreateSymbolicLinkW(d, t, f);
@@ -777,9 +799,12 @@ bool mklink(const path_t& target, const path_t& dst, bool replace)
 }
 
 
-bool copy_file(const path_t& src, const path_t& dst, bool replace)
+bool copy_file(const path_view_t& src, const path_view_t& dst, bool replace)
 {
-    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst, bool replace) {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return copy_file_impl(src, dst, replace, [](const path_view_t& src, const path_view_t& dst, bool replace) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
         auto d = reinterpret_cast<const wchar_t*>(dst.data());
         return CopyFileW(s, d, replace);
@@ -787,25 +812,30 @@ bool copy_file(const path_t& src, const path_t& dst, bool replace)
 }
 
 
-bool copy_dir(const path_t& src, const path_t& dst, bool recursive, bool replace)
+bool copy_dir(const path_view_t& src, const path_view_t& dst, bool recursive, bool replace)
 {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
     return copy_dir_impl(src, dst, recursive, replace);
 }
 
 
-bool remove_link(const path_t& path)
+bool remove_link(const path_view_t& path)
 {
     return remove_link_impl(path);
 }
 
 
-bool remove_file(const path_t& path)
+bool remove_file(const path_view_t& path)
 {
+    assert(path.is_null_terminated());
+
     return DeleteFileW(reinterpret_cast<const wchar_t*>(path.data()));
 }
 
 
-bool remove_dir(const path_t& path, bool recursive)
+bool remove_dir(const path_view_t& path, bool recursive)
 {
     return remove_dir_impl(path, recursive);
 }
@@ -813,6 +843,8 @@ bool remove_dir(const path_t& path, bool recursive)
 
 bool mkdir(const path_view_t& path, int mode)
 {
+    assert(path.is_null_terminated());
+
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     if (CreateDirectoryW(data, nullptr)) {
         int mask = 0;
@@ -845,6 +877,8 @@ bool makedirs(const path_view_t& path, int mode)
 
 fd_t fd_open(const path_view_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
+    assert(path.is_null_terminated());
+
     const wchar_t* p = (const wchar_t*) path.data();
     fd_t fd = fd_open_impl(p, mode, permission, access, CreateFileW);
     if (fd == INVALID_HANDLE_VALUE) {
@@ -950,19 +984,19 @@ int fd_truncate(fd_t fd, std::streamsize size)
 }
 
 
-int fd_chmod(const path_t& path, mode_t permissions)
+int fd_chmod(const path_view_t& path, mode_t permissions)
 {
     return fd_chmod_impl(path, permissions);
 }
 
 
-int fd_allocate(const path_t& path, std::streamsize size)
+int fd_allocate(const path_view_t& path, std::streamsize size)
 {
     return fd_allocate_impl(path, size);
 }
 
 
-int fd_truncate(const path_t& path, std::streamsize size)
+int fd_truncate(const path_view_t& path, std::streamsize size)
 {
     return fd_truncate_impl(path, size);
 }
@@ -1031,23 +1065,28 @@ backup_path_view_t dir_name(const backup_path_view_t& path)
 
 backup_path_t expanduser(const backup_path_view_t& path)
 {
+    if (is_unicode(path)) {
+        return path_to_backup_path(expanduser(backup_path_to_path(path)));
+    }
+
     return expanduser_impl<backup_path_t>()(path, gettempdira);
 }
 
 
 backup_path_t expandvars(const backup_path_view_t& path)
 {
-    auto frompath = [](const backup_path_view_t& path) -> path_t
+    if (is_unicode(path)) {
+        return path_to_backup_path(expandvars(backup_path_to_path(path)));
+    }
+
+    auto topath = [](char* str, size_t l) -> backup_path_t
     {
-        return backup_path_to_path(path);
+        return backup_path_t(str, l);
     };
 
-    auto topath = [](wchar_t* str, size_t l) -> backup_path_t
-    {
-        return path_to_backup_path(path_t(reinterpret_cast<char16_t*>(str), l));
-    };
+    assert(path.is_null_terminated());
 
-    return expandvars_impl<backup_path_t>()(path, frompath, topath, ExpandEnvironmentStringsW);
+    return expandvars_impl<backup_path_t, char>()(path, topath, ExpandEnvironmentStringsA);
 }
 
 
@@ -1060,64 +1099,101 @@ backup_path_t normcase(const backup_path_view_t& path)
 
 // MANIPULATION
 
-bool move_link(const backup_path_t& src, const backup_path_t& dst, bool replace)
+bool move_link(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace)
 {
     // same as move_file
     return move_file(src, dst, replace);
 }
 
 
-bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
+bool move_file(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace)
 {
-    return move_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst, DWORD f) {
+    if (is_unicode(src) || is_unicode(dst)) {
+        return move_file(backup_path_to_path(src), backup_path_to_path(dst), replace);
+    }
+
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return move_file_impl(src, dst, replace, [](const backup_path_view_t& src, const backup_path_view_t& dst, DWORD f) {
         return MoveFileExA(src.data(), dst.data(), f);
     });
 }
 
 
-bool move_dir(const backup_path_t& src, const backup_path_t& dst, bool replace)
+bool move_dir(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace)
 {
-    return move_dir_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst) {
+    if (is_unicode(src) || is_unicode(dst)) {
+        return move_dir(backup_path_to_path(src), backup_path_to_path(dst), replace);
+    }
+
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return move_dir_impl(src, dst, replace, [](const backup_path_view_t& src, const backup_path_view_t& dst) {
         return MoveFileA(src.data(), dst.data());
     });
 }
 
 
-bool mklink(const backup_path_t& target, const backup_path_t& dst, bool replace)
+bool mklink(const backup_path_view_t& target, const backup_path_view_t& dst, bool replace)
 {
-    return mklink_impl(target, dst, replace, [](const backup_path_t& t, const backup_path_t& d, DWORD f) {
+    if (is_unicode(target) || is_unicode(dst)) {
+        return mklink(backup_path_to_path(target), backup_path_to_path(dst), replace);
+    }
+
+    assert(target.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return mklink_impl(target, dst, replace, [](const backup_path_view_t& t, const backup_path_view_t& d, DWORD f) {
         return CreateSymbolicLinkA(d.data(), t.data(), f);
     });
 }
 
 
-bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace)
+bool copy_file(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace)
 {
-    return copy_file_impl(src, dst, replace, [](const backup_path_t& src, const backup_path_t& dst, bool replace) {
+    if (is_unicode(src) || is_unicode(dst)) {
+        return copy_file(backup_path_to_path(src), backup_path_to_path(dst), replace);
+    }
+
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return copy_file_impl(src, dst, replace, [](const backup_path_view_t& src, const backup_path_view_t& dst, bool replace) {
         return CopyFileA(src.data(), dst.data(), replace);
     });
 }
 
 
-bool copy_dir(const backup_path_t& src, const backup_path_t& dst, bool recursive, bool replace)
+bool copy_dir(const backup_path_view_t& src, const backup_path_view_t& dst, bool recursive, bool replace)
 {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
     return copy_dir_impl(src, dst, recursive, replace);
 }
 
 
-bool remove_link(const backup_path_t& path)
+bool remove_link(const backup_path_view_t& path)
 {
     return remove_link_impl(path);
 }
 
 
-bool remove_file(const backup_path_t& path)
+bool remove_file(const backup_path_view_t& path)
 {
+    if (is_unicode(path)) {
+        return remove_file(backup_path_to_path(path));
+    }
+
+    assert(path.is_null_terminated());
+
     return DeleteFileA(path.data());
 }
 
 
-bool remove_dir(const backup_path_t& path, bool recursive)
+bool remove_dir(const backup_path_view_t& path, bool recursive)
 {
     return remove_dir_impl(path, recursive);
 }
@@ -1125,6 +1201,12 @@ bool remove_dir(const backup_path_t& path, bool recursive)
 
 bool mkdir(const backup_path_view_t& path, int mode)
 {
+    if (is_unicode(path)) {
+        return mkdir(backup_path_to_path(path), mode);
+    }
+
+    assert(path.is_null_terminated());
+
     if (CreateDirectoryA(path.data(), nullptr)) {
         int mask = 0;
         if (mode & S_IRUSR) {
@@ -1154,45 +1236,55 @@ bool makedirs(const backup_path_view_t& path, int mode)
 
 fd_t fd_open(const backup_path_view_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
-#if defined(HAVE_WFOPEN)
-    return fd_open(backup_path_to_path(path), mode, permission, access);
-#else
-    return fd_open_impl(path.data(), mode, permission, access, CreateFileA);
-#endif
+    // Windows, Unicode API
+    if (is_unicode(path)) {
+        return fd_open(backup_path_to_path(path), mode, permission, access);
+    }
+
+    assert(path.is_null_terminated());
+
+    fd_t fd = fd_open_impl(path.data(), mode, permission, access, CreateFileA);
+    if (fd == INVALID_HANDLE_VALUE) {
+        set_errno_win32();
+    }
+    return fd;
 }
 
 
-int fd_chmod(const backup_path_t& path, mode_t permissions)
+int fd_chmod(const backup_path_view_t& path, mode_t permissions)
 {
-#if defined(HAVE_WFOPEN)
-    return fd_chmod(backup_path_to_path(path), permissions);
-#else
+    // Windows, Unicode API
+    if (is_unicode(path)) {
+        return fd_chmod(backup_path_to_path(path), permissions);
+    }
+
     return fd_chmod_impl(path, permissions);
-#endif
 }
 
 
-int fd_allocate(const backup_path_t& path, std::streamsize size)
+int fd_allocate(const backup_path_view_t& path, std::streamsize size)
 {
-#if defined(HAVE_WFOPEN)
-    return fd_allocate(backup_path_to_path(path), size);
-#else
+    // Windows, Unicode API
+    if (is_unicode(path)) {
+        return fd_allocate(backup_path_to_path(path), size);
+    }
+
     return fd_allocate_impl(path, size);
-#endif
 }
 
 
-int fd_truncate(const backup_path_t& path, std::streamsize size)
+int fd_truncate(const backup_path_view_t& path, std::streamsize size)
 {
-#if defined(HAVE_WFOPEN)
-    return fd_truncate(backup_path_to_path(path), size);
-#else
+    // Windows, Unicode API
+    if (is_unicode(path)) {
+        return fd_truncate(backup_path_to_path(path), size);
+    }
+
     return fd_truncate_impl(path, size);
-#endif
 }
 
 PYCPP_END_NAMESPACE
 
 #include <warnings/pop.h>
 
-#endif
+#endif                              // WINDOWS

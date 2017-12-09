@@ -7,6 +7,7 @@
 
 #include <pycpp/filesystem.h>
 #include <gtest/gtest.h>
+#include <fstream>
 
 PYCPP_USING_NAMESPACE
 
@@ -483,3 +484,43 @@ TEST(fd, fd_utils)
         EXPECT_TRUE(remove_file(path));
     }
 }
+
+
+TEST(remove, remove_file)
+{
+    std::string file("sample_testing_file");
+    {
+        // create file
+        ASSERT_FALSE(exists(file));
+        std::ofstream stream(file);
+        stream << "data" << std::endl;
+        stream.close();
+        ASSERT_TRUE(exists(file));
+    }
+    {
+        // use in a separate block cause Windows can be... finnicky.
+        EXPECT_TRUE(remove_file(file));
+        EXPECT_FALSE(exists(file));
+    }
+}
+
+
+TEST(remove, remove_dir)
+{
+    std::string dir("sample_testing_folder");
+    {
+        // shallow
+        mkdir(dir);
+        ASSERT_TRUE(isdir(dir));
+        EXPECT_TRUE(remove_dir(dir, false));
+        EXPECT_FALSE(exists(dir));
+    }
+    {
+        // deep
+        mkdir(dir);
+        ASSERT_TRUE(isdir(dir));
+        EXPECT_TRUE(remove_dir(dir, true));
+        EXPECT_FALSE(exists(dir));
+    }
+}
+

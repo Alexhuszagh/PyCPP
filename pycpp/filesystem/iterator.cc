@@ -6,6 +6,7 @@
 #include <pycpp/preprocessor/errno.h>
 #include <string.h>
 #include <algorithm>
+#include <cassert>
 #include <tuple>
 #if defined(OS_WINDOWS)
 #   include <pycpp/windows/winapi.h>
@@ -262,7 +263,7 @@ void directory_data::open(const path_view_t& p)
 
 void directory_data::open(const backup_path_view_t& p)
 {
-    open(ansi_to_utf16(p));
+    open(backup_path_to_path(p));
 }
 
 
@@ -338,7 +339,7 @@ void recursive_directory_data::open(const path_view_t& p)
 
 void recursive_directory_data::open(const backup_path_view_t& p)
 {
-    open(ansi_to_utf16(p));
+    open(backup_path_to_path(p));
 }
 
 
@@ -452,6 +453,8 @@ path_t directory_data_impl::basename() const
 
 void directory_data_impl::open(DIR*& dir, const path_view_t& path)
 {
+    assert(path.is_null_terminated());
+
     dir = opendir(path.data());
     if (dir == nullptr) {
         handle_error(errno);

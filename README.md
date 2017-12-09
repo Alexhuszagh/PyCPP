@@ -69,7 +69,7 @@ Supported features include:
 - std::string, std::u16string, and std::u32string conversions.
 - Lowercase, uppercase, capitalized, and titlecase Unicode conversions.
 
-**Fileystem**
+**File System**
 
 PyCPP includes a high-level filesystem library, a spiritual port of the `os.path` module from Python.
 
@@ -77,7 +77,12 @@ Supported features include:
 
 - Portable stat and lstat
 - Path normalization
-- Environment variable expansion
+- Copying, moving, or removing files and directories
+- Environment variable and home directory expansion
+- Directory and recursive directory iterators
+- Toggling file permissions and pre-allocation.
+
+On POSIX systems, PyCPP expects UTF-8-encoded paths exclusively. On Windows, PyCPP either accepts UTF-8-encoded narrow strings or UTF-16-encoded wide strings. Internally, it uses the wide Win32 API for all strings with non-ASCII characters, internally converting UTF-8 strings to UTF-16.
 
 **High-Level Features**
 

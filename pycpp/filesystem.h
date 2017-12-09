@@ -308,7 +308,7 @@ bool copystat(const path_view_t& src, const path_view_t& dst);
 /**
  *  \brief Make symbolic link pointing to target at dst.
  */
-bool mklink(const path_t& target, const path_t& dst, bool replace = false);
+bool mklink(const path_view_t& target, const path_view_t& dst, bool replace = false);
 
 /**
  *  \brief Make directory at path, return if successful.
@@ -323,64 +323,64 @@ bool makedirs(const path_view_t& path, int = 0777);
 /**
  *  \brief Move symbolic link, as if by rename, and return if rename was successful.
  */
-bool move_link(const path_t& src, const path_t& dst, bool replace = false);
+bool move_link(const path_view_t& src, const path_view_t& dst, bool replace = false);
 
 /**
  *  \brief Move file, as if by rename, and return if rename was successful.
  */
-bool move_file(const path_t& src, const path_t& dst, bool replace = false);
+bool move_file(const path_view_t& src, const path_view_t& dst, bool replace = false);
 
 /**
  *  \brief Move directory, as if by rename, and return if rename was successful.
  */
-bool move_dir(const path_t& src, const path_t& dst, bool replace = false);
+bool move_dir(const path_view_t& src, const path_view_t& dst, bool replace = false);
 
 /**
  *  \brief Move generic path, and return if move was successful.
  */
-bool move_path(const path_t& src, const path_t& dst, bool replace = false);
+bool move_path(const path_view_t& src, const path_view_t& dst, bool replace = false);
 
 /**
  *  \brief Copy symbolic link from src to dst.
  */
-bool copy_link(const path_t& src, const path_t& dst, bool replace = false);
+bool copy_link(const path_view_t& src, const path_view_t& dst, bool replace = false);
 
 /**
  *  \brief Copy file, and copy was successful.
  *
  *  \param replace          Replace dst if it exists.
  */
-bool copy_file(const path_t& src, const path_t& dst, bool replace = false);
+bool copy_file(const path_view_t& src, const path_view_t& dst, bool replace = false);
 
 /**
  *  \brief Copy directory, and copy was successful.
  */
-bool copy_dir(const path_t& src, const path_t& dst, bool recursive = true, bool replace = false);
+bool copy_dir(const path_view_t& src, const path_view_t& dst, bool recursive = true, bool replace = false);
 
 /**
  *  \brief Copy generic path, and return if copy was successful.
  */
-bool copy_path(const path_t& src, const path_t& dst, bool recursive = true, bool replace = false);
+bool copy_path(const path_view_t& src, const path_view_t& dst, bool recursive = true, bool replace = false);
 
 /**
  *  \brief Remove symbolic link, return if link was successfully removed.
  */
-bool remove_link(const path_t& path);
+bool remove_link(const path_view_t& path);
 
 /**
  *  \brief Remove file, return if file was successfully removed.
  */
-bool remove_file(const path_t& path);
+bool remove_file(const path_view_t& path);
 
 /**
  *  \brief Remove directory, return if directory was successfully removed.
  */
-bool remove_dir(const path_t& path, bool recursive = true);
+bool remove_dir(const path_view_t& path, bool recursive = true);
 
 /**
  *  \brief Remove generic path, and return if successfully removed.
  */
-bool remove_path(const path_t& path, bool recursive = true);
+bool remove_path(const path_view_t& path, bool recursive = true);
 
 // FILE UTILS
 
@@ -435,17 +435,17 @@ int fd_truncate(fd_t fd, std::streamsize size);
 /**
  *  \brief Change file permissions, as if by `fchmod()`.
  */
-int fd_chmod(const path_t& path, mode_t permissions);
+int fd_chmod(const path_view_t& path, mode_t permissions);
 
 /**
  *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
  */
-int fd_allocate(const path_t& path, std::streamsize size);
+int fd_allocate(const path_view_t& path, std::streamsize size);
 
 /**
  *  \brief Truncate file size to `size` (n bytes).
  */
-int fd_truncate(const path_t& path, std::streamsize size);
+int fd_truncate(const path_view_t& path, std::streamsize size);
 
 #if defined(OS_WINDOWS)          // BACKUP PATH
 
@@ -500,28 +500,28 @@ backup_path_t relpath(const backup_path_view_t& path, const backup_path_view_t& 
 // MANIPULATION
 
 bool copystat(const backup_path_view_t& src, const backup_path_view_t& dst);
-bool mklink(const backup_path_t& target, const backup_path_t& dst, bool replace = false);
+bool mklink(const backup_path_view_t& target, const backup_path_view_t& dst, bool replace = false);
 bool mkdir(const backup_path_view_t& path, int = 0777);
 bool makedirs(const backup_path_view_t& path, int = 0777);
-bool move_link(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
-bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
-bool move_dir(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
-bool move_path(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
-bool copy_link(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
-bool copy_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
-bool copy_dir(const backup_path_t& src, const backup_path_t& dst, bool recursive = true, bool replace = false);
-bool copy_path(const backup_path_t& src, const backup_path_t& dst, bool recursive = true, bool replace = false);
-bool remove_link(const backup_path_t& path);
-bool remove_file(const backup_path_t& path);
-bool remove_dir(const backup_path_t& path, bool recursive = true);
-bool remove_path(const backup_path_t& path, bool recursive = true);
+bool move_link(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace = false);
+bool move_file(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace = false);
+bool move_dir(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace = false);
+bool move_path(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace = false);
+bool copy_link(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace = false);
+bool copy_file(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace = false);
+bool copy_dir(const backup_path_view_t& src, const backup_path_view_t& dst, bool recursive = true, bool replace = false);
+bool copy_path(const backup_path_view_t& src, const backup_path_view_t& dst, bool recursive = true, bool replace = false);
+bool remove_link(const backup_path_view_t& path);
+bool remove_file(const backup_path_view_t& path);
+bool remove_dir(const backup_path_view_t& path, bool recursive = true);
+bool remove_path(const backup_path_view_t& path, bool recursive = true);
 
 // FILE UTILS
 
 fd_t fd_open(const backup_path_view_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP, io_access_pattern access = access_normal);
-int fd_chmod(const backup_path_t& path, mode_t permissions);
-int fd_allocate(const backup_path_t& path, std::streamsize size);
-int fd_truncate(const backup_path_t& path, std::streamsize size);
+int fd_chmod(const backup_path_view_t& path, mode_t permissions);
+int fd_allocate(const backup_path_view_t& path, std::streamsize size);
+int fd_truncate(const backup_path_view_t& path, std::streamsize size);
 
 #endif
 

@@ -97,25 +97,25 @@ path_t join_path(std::initializer_list<path_view_t> paths)
 }
 
 
-bool move_path(const path_t& src, const path_t& dst, bool replace)
+bool move_path(const path_view_t& src, const path_view_t& dst, bool replace)
 {
     return move_path_impl(src, dst, replace);
 }
 
 
-bool copy_link(const path_t& src, const path_t& dst, bool replace)
+bool copy_link(const path_view_t& src, const path_view_t& dst, bool replace)
 {
     return copy_link_impl(src, dst, replace);
 }
 
 
-bool copy_path(const path_t& src, const path_t& dst, bool recursive, bool replace)
+bool copy_path(const path_view_t& src, const path_view_t& dst, bool recursive, bool replace)
 {
     return copy_path_impl(src, dst, recursive, replace);
 }
 
 
-bool remove_path(const path_t& path, bool recursive)
+bool remove_path(const path_view_t& path, bool recursive)
 {
     return remove_path_impl(path, recursive);
 }
@@ -150,25 +150,25 @@ backup_path_t join_path(std::initializer_list<backup_path_view_t> paths)
 }
 
 
-bool move_path(const backup_path_t& src, const backup_path_t& dst, bool replace)
+bool move_path(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace)
 {
     return move_path_impl(src, dst, replace);
 }
 
 
-bool copy_link(const backup_path_t& src, const backup_path_t& dst, bool replace)
+bool copy_link(const backup_path_view_t& src, const backup_path_view_t& dst, bool replace)
 {
     return copy_link_impl(src, dst, replace);
 }
 
 
-bool copy_path(const backup_path_t& src, const backup_path_t& dst, bool recursive, bool replace)
+bool copy_path(const backup_path_view_t& src, const backup_path_view_t& dst, bool recursive, bool replace)
 {
     return copy_path_impl(src, dst, recursive, replace);
 }
 
 
-bool remove_path(const backup_path_t& path, bool recursive)
+bool remove_path(const backup_path_view_t& path, bool recursive)
 {
     return remove_path_impl(path, recursive);
 }

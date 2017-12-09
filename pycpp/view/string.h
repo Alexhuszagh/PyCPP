@@ -166,6 +166,7 @@ public:
     self_t operator-(size_type shift);
 
     // STRING OPERATIONS
+    bool is_null_terminated() const noexcept;
     const_pointer c_str() const noexcept;
     const_pointer data() const noexcept;
 
@@ -1077,6 +1078,13 @@ auto basic_string_view<C, T>::operator-(size_type shift) -> self_t
     self_t copy(*this);
     copy -= shift;
     return copy;
+}
+
+
+template <typename C, typename T>
+bool basic_string_view<C, T>::is_null_terminated() const noexcept
+{
+    return data_ == nullptr || *end() == value_type();
 }
 
 

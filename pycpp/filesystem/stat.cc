@@ -6,7 +6,9 @@
 #include <pycpp/filesystem/exception.h>
 #include <pycpp/preprocessor/errno.h>
 #include <pycpp/preprocessor/sysstat.h>
+#include <pycpp/string/unicode.h>
 #include <sys/types.h>
+#include <cassert>
 
 #if defined(OS_WINDOWS)
 #   include <pycpp/windows/winapi.h>
@@ -269,6 +271,8 @@ static HANDLE get_handle(Pointer path, bool use_lstat, Function function)
 
 static HANDLE get_handle(const path_view_t& path, bool use_lstat)
 {
+    assert(path.is_null_terminated());
+
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     return get_handle(data, use_lstat, CreateFileW);
 }
@@ -276,6 +280,12 @@ static HANDLE get_handle(const path_view_t& path, bool use_lstat)
 
 static HANDLE get_handle(const backup_path_view_t& path, bool use_lstat)
 {
+    if (is_unicode(path)) {
+        return get_handle(backup_path_to_path(path), use_lstat);
+    }
+
+    assert(path.is_null_terminated());
+
     auto data = reinterpret_cast<const char*>(path.data());
     return get_handle(data, use_lstat, CreateFileA);
 }
@@ -499,9 +509,11 @@ stat_t lstat(const path_view_t& path)
 
 path_t read_link(const path_view_t& path)
 {
-    typedef typename path_view_t::value_type Char;
+    assert(path.is_null_terminated());
 
-    auto buf = new Char[PATH_MAX];
+    typedef typename path_view_t::value_type value_type;
+
+    auto buf = new value_type[PATH_MAX];
     auto length = ::readlink(path.data(), buf, PATH_MAX);
     if (length == -1) {
         handle_error(errno);
@@ -551,7 +563,7 @@ backup_path_t read_link(const backup_path_view_t& path)
     return path_to_string(read_link_impl(handle));
 }
 
-#endif
+#endif                              // BACKUP PATH
 
 // STAT PROPERTIES
 
@@ -758,6 +770,9 @@ bool samestat(const stat_t& s1, const stat_t& s2)
 
 bool copystat(const path_view_t& src, const path_view_t& dst)
 {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
     return copystat_impl(src, dst);
 }
 
@@ -827,6 +842,9 @@ bool samefile(const backup_path_view_t& p1, const backup_path_view_t& p2)
 
 bool copystat(const backup_path_view_t& src, const backup_path_view_t& dst)
 {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
     return copystat_impl(src, dst);
 }
 

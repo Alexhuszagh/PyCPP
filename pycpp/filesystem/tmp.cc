@@ -186,7 +186,6 @@ path_t gettempprefix()
 
 path_t gettempnam(const path_view_t& dir, const path_view_t& prefix)
 {
-    // TODO: here....
     path_list_t paths;
     if (prefix.empty() && dir.empty()) {
         paths = {gettempdir(), gettempprefix() + gettempsuffix()};

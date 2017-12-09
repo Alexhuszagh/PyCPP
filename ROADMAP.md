@@ -2,6 +2,8 @@
 
 **Short-Term**
 
+    - Test is_null_terminated()
+
     - Need path views.
         - filesystem.h
         - access.h -- DONE
@@ -12,6 +14,12 @@
         - path.h -- DONE
         - stat.h -- DONE
         - tmp.h -- DONE
+
+    - Add asserts to make sure views are **NULL** terminated
+        - filesystem should be clear
+
+    - Need to optimize narrow to wide conversions for the windows API
+        - **CHECK** first if it's Unicode at the lowest level
 
     - The robin map needs to use std::pair<const Key, Value> rather than it's bullshit.
 

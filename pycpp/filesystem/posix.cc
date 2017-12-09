@@ -18,6 +18,7 @@
 #   include <unistd.h>
 #   include <wordexp.h>
 #   include <algorithm>
+#   include <cassert>
 #   include <cstdlib>
 #endif
 
@@ -199,29 +200,34 @@ bool isabs_impl(const Path& path)
 /**
  *  \brief Use C FILE descriptors for high performance file copying.
  */
-static bool copy_file_buffer(const path_t& src, const path_t& dst)
+static bool copy_file_buffer(const path_view_t& src, const path_view_t& dst)
 {
-    static constexpr size_t length = 4096;
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
 
-    FILE *in = fopen(src.data(), "rb");
-    if (!in) {
+    // choose a value between 4096 and 8 * 4096 (4-32KB).
+    static constexpr size_t length = 2 * 4096;
+
+    fd_t in = ::open(src.data(), O_RDONLY);
+    if (in < 0) {
         return false;
     }
-    FILE *out = fopen(dst.data(), "wb");
-    if (!out) {
+    fd_t out = ::open(dst.data(), O_WRONLY);
+    if (out < 0) {
+        ::close(in);
         return false;
     }
 
     char* buf = new char[length];
-    int read = 0;
-    while ((read = fread(buf, 1, length, in)) == length) {
-        fwrite(buf, 1, length, out);
+    int bytes = 0;
+    while ((bytes = ::read(in, buf, length)) == length) {
+        ::write(out, buf, length);
     }
-    fwrite(buf, 1, read, out);
+    ::write(out, buf, bytes);
 
     delete[] buf;
-    fclose(out);
-    fclose(in);
+    ::close(out);
+    ::close(in);
 
     return true;
 }
@@ -368,7 +374,8 @@ static bool copy_dir_recursive_impl(const Path&src, const Path& dst)
     directory_iterator first(src);
     directory_iterator last;
     for (; first != last; ++first) {
-        path_list_t dst_list = {dst, first->basename()};
+        path_t basename = first->basename();
+        path_view_list_t dst_list = {dst, basename};
         if (first->isfile()) {
             if (!copy_file(first->path(), join_path(dst_list))) {
                 return false;
@@ -709,63 +716,77 @@ path_t normcase(const path_view_t& path)
 // MANIPULATION
 
 
-bool move_link(const path_t& src, const path_t& dst, bool replace)
+bool move_link(const path_view_t& src, const path_view_t& dst, bool replace)
 {
     // POSIX rename works identically on files.
     return move_file(src, dst, replace);
 }
 
 
-bool move_file(const path_t& src, const path_t& dst, bool replace)
+bool move_file(const path_view_t& src, const path_view_t& dst, bool replace)
 {
-    return move_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return move_file_impl(src, dst, replace, [](const path_view_t& src, const path_view_t& dst) {
         return rename(src.data(), dst.data()) == 0;
     });
 }
 
 
-bool move_dir(const path_t& src, const path_t& dst, bool replace)
+bool move_dir(const path_view_t& src, const path_view_t& dst, bool replace)
 {
     return move_dir_impl(src, dst, replace);
 }
 
 
-bool mklink(const path_t& target, const path_t& dst, bool replace)
+bool mklink(const path_view_t& target, const path_view_t& dst, bool replace)
 {
-    return mklink_impl(target, dst, replace, [](const path_t& t, const path_t& d) {
+    assert(target.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return mklink_impl(target, dst, replace, [](const path_view_t& t, const path_view_t& d) {
         return symlink(d.data(), t.data()) == 0;
     });
 }
 
 
-bool copy_file(const path_t& src, const path_t& dst, bool replace)
+bool copy_file(const path_view_t& src, const path_view_t& dst, bool replace)
 {
-    return copy_file_impl(src, dst, replace, [](const path_t& src, const path_t& dst) {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
+    return copy_file_impl(src, dst, replace, [](const path_view_t& src, const path_view_t& dst) {
         return copy_file_buffer(src, dst);
     });
 }
 
 
-bool remove_link(const path_t& path)
+bool remove_link(const path_view_t& path)
 {
-    // same as remove_file on POSIX systems
+    assert(path.is_null_terminated());
+
     return remove_file(path);
 }
 
 
-bool remove_file(const path_t& path)
+bool remove_file(const path_view_t& path)
 {
+    assert(path.is_null_terminated());
+
     return unlink(path.data()) == 0;
 }
 
 
-static bool remove_dir_shallow_impl(const path_t& path)
+static bool remove_dir_shallow_impl(const path_view_t& path)
 {
+    assert(path.is_null_terminated());
+
     return rmdir(path.data()) == 0;
 }
 
 
-static bool remove_dir_recursive_impl(const path_t& path)
+static bool remove_dir_recursive_impl(const path_view_t& path)
 {
     directory_iterator first(path);
     directory_iterator last;
@@ -785,11 +806,11 @@ static bool remove_dir_recursive_impl(const path_t& path)
         }
     }
 
-    return true;
+    return remove_dir_shallow_impl(path);
 }
 
 
-bool remove_dir(const path_t& path, bool recursive)
+bool remove_dir(const path_view_t& path, bool recursive)
 {
     if (recursive) {
         return remove_dir_recursive_impl(path);
@@ -799,14 +820,19 @@ bool remove_dir(const path_t& path, bool recursive)
 }
 
 
-bool copy_dir(const path_t& src, const path_t& dst, bool recursive, bool replace)
+bool copy_dir(const path_view_t& src, const path_view_t& dst, bool recursive, bool replace)
 {
+    assert(src.is_null_terminated());
+    assert(dst.is_null_terminated());
+
     return copy_dir_impl(src, dst, recursive, replace);
 }
 
 
 bool mkdir(const path_view_t& path, int mode)
 {
+    assert(path.is_null_terminated());
+
     return ::mkdir(path.data(), static_cast<mode_t>(mode)) == 0;
 }
 
@@ -826,6 +852,8 @@ bool makedirs(const path_view_t& path, int mode)
 
 fd_t fd_open(const path_view_t& path, std::ios_base::openmode openmode, mode_t permission, io_access_pattern access)
 {
+    assert(path.is_null_terminated());
+
     fd_t fd = ::open(path.data(), convert_openmode(openmode), permission);
     if (fd != INVALID_FD_VALUE) {
         if (fadvise_impl(fd, 0, 0, access) != 0) {
@@ -884,7 +912,7 @@ int fd_chmod(fd_t fd, mode_t permissions)
 }
 
 
-int fd_chmod(const path_t& path, mode_t permissions)
+int fd_chmod(const path_view_t& path, mode_t permissions)
 {
     return fd_chmod_impl(path, permissions);
 }
@@ -896,7 +924,7 @@ int fd_allocate(fd_t fd, std::streamsize size)
 }
 
 
-int fd_allocate(const path_t& path, std::streamsize size)
+int fd_allocate(const path_view_t& path, std::streamsize size)
 {
     return fd_allocate_impl(path, size);
 }
@@ -908,7 +936,7 @@ int fd_truncate(fd_t fd, std::streamsize size)
 }
 
 
-int fd_truncate(const path_t& path, std::streamsize size)
+int fd_truncate(const path_view_t& path, std::streamsize size)
 {
     return fd_truncate_impl(path, size);
 }
