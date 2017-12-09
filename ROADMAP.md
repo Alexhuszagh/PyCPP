@@ -3,7 +3,15 @@
 **Short-Term**
 
     - Need path views.
-    - Remove all stoi, strtoull, etc....
+        - filesystem.h
+        - access.h
+        - exception.h
+        - fd.h
+        - home.h
+        - iterator.h
+        - path.h
+        - stat.h -- DONE
+        - tmp.h -- DONE
 
     - The robin map needs to use std::pair<const Key, Value> rather than it's bullshit.
 

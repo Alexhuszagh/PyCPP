@@ -58,7 +58,7 @@ extern path_t TMP_SUFFIX_CHARACTERS;
  *  The file is opened exclusively, and cannot be shared by other
  *  processes for security reasons.
  */
-fd_stream temporary_file(const path_t& dir = path_t(), const path_t& prefix = path_t());
+fd_stream temporary_file(const path_view_t& dir = path_view_t(), const path_view_t& prefix = path_view_t());
 
 /**
  *  \brief Create a temporary directory using the given prefix and directory.
@@ -67,7 +67,7 @@ fd_stream temporary_file(const path_t& dir = path_t(), const path_t& prefix = pa
  *  This is analogous to mkdtemp, and the directory may only be accessed
  *  by the current user.
  */
-path_t temporary_directory(const path_t& dir = path_t(), const path_t& prefix = path_t());
+path_t temporary_directory(const path_view_t& dir = path_view_t(), const path_view_t& prefix = path_view_t());
 
 /**
  * \brief Get path to temp directory.
@@ -87,20 +87,20 @@ path_t gettempprefix();
  *
  *  \warning This function is not secure, and should not be used.
  */
-path_t gettempnam(const path_t& dir = path_t(), const path_t& prefix = path_t());
+path_t gettempnam(const path_view_t& dir = path_view_t(), const path_view_t& prefix = path_view_t());
 
 #if defined(OS_WINDOWS)          // BACKUP PATH
 
-fd_stream temporary_filew(const path_t& dir = path_t(), const path_t& prefix = path_t());
-path_t temporary_directoryw(const path_t& dir = path_t(), const path_t& prefix = path_t());
+fd_stream temporary_filew(const path_view_t& dir = path_view_t(), const path_view_t& prefix = path_view_t());
+path_t temporary_directoryw(const path_view_t& dir = path_view_t(), const path_view_t& prefix = path_view_t());
 path_t gettempdirw();
 path_t gettempprefixw();
-path_t gettempnamw(const path_t& dir = path_t(), const path_t& prefix = path_t());
+path_t gettempnamw(const path_view_t& dir = path_view_t(), const path_view_t& prefix = path_view_t());
 fd_stream temporary_filea(const backup_path_t& dir = backup_path_t(), const backup_path_t& prefix = backup_path_t());
-backup_path_t temporary_directorya(const backup_path_t& dir = backup_path_t(), const backup_path_t& prefix = backup_path_t());
+backup_path_t temporary_directorya(const backup_path_view_t& dir = backup_path_view_t(), const backup_path_view_t& prefix = backup_path_view_t());
 backup_path_t gettempdira();
 backup_path_t gettempprefixa();
-backup_path_t gettempnama(const backup_path_t& dir = backup_path_t(), const backup_path_t& prefix = backup_path_t());
+backup_path_t gettempnama(const backup_path_view_t& dir = backup_path_view_t(), const backup_path_view_t& prefix = backup_path_view_t());
 
 #endif
 

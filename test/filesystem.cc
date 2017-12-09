@@ -261,67 +261,67 @@ TEST(directory, listdir)
 }
 
 
-TEST(path, split)
+TEST(path, path_split)
 {
-    EXPECT_EQ(split("test").front(), "");
-    EXPECT_EQ(split("test").back(), "test");
-    EXPECT_EQ(split("test/").front(), "test");
-    EXPECT_EQ(split("test/").back(), "");
-    EXPECT_EQ(split("test/files").front(), "test");
-    EXPECT_EQ(split("test/files").back(), "files");
-    EXPECT_EQ(split("/usr/lib").front(), "/usr");
-    EXPECT_EQ(split("/usr/lib").back(), "lib");
+    EXPECT_EQ(path_split("test").front(), "");
+    EXPECT_EQ(path_split("test").back(), "test");
+    EXPECT_EQ(path_split("test/").front(), "test");
+    EXPECT_EQ(path_split("test/").back(), "");
+    EXPECT_EQ(path_split("test/files").front(), "test");
+    EXPECT_EQ(path_split("test/files").back(), "files");
+    EXPECT_EQ(path_split("/usr/lib").front(), "/usr");
+    EXPECT_EQ(path_split("/usr/lib").back(), "lib");
 }
 
 
-TEST(path, splitdrive)
+TEST(path, path_splitdrive)
 {
-    EXPECT_EQ(splitdrive("test/files").front(), "");
-    EXPECT_EQ(splitdrive("test/files").back(), "test/files");
-    EXPECT_EQ(splitdrive("/usr/lib").front(), "");
-    EXPECT_EQ(splitdrive("/usr/lib").back(), "/usr/lib");
+    EXPECT_EQ(path_splitdrive("test/files").front(), "");
+    EXPECT_EQ(path_splitdrive("test/files").back(), "test/files");
+    EXPECT_EQ(path_splitdrive("/usr/lib").front(), "");
+    EXPECT_EQ(path_splitdrive("/usr/lib").back(), "/usr/lib");
 
 #if defined(OS_WINDOWS)
-    EXPECT_EQ(splitdrive("c:/users").front(), "c:");
-    EXPECT_EQ(splitdrive("c:/users").back(), "/users");
-    EXPECT_EQ(splitdrive("c:..").front(), "c:");
-    EXPECT_EQ(splitdrive("c:..").back(), "..");
-    EXPECT_EQ(splitdrive("\\\\localhost").front(), "");
-    EXPECT_EQ(splitdrive("\\\\localhost").back(), "\\\\localhost");
-    EXPECT_EQ(splitdrive("\\\\localhost\\x").front(), "\\\\localhost\\x");
-    EXPECT_EQ(splitdrive("\\\\localhost\\x").back(), "");
+    EXPECT_EQ(path_splitdrive("c:/users").front(), "c:");
+    EXPECT_EQ(path_splitdrive("c:/users").back(), "/users");
+    EXPECT_EQ(path_splitdrive("c:..").front(), "c:");
+    EXPECT_EQ(path_splitdrive("c:..").back(), "..");
+    EXPECT_EQ(path_splitdrive("\\\\localhost").front(), "");
+    EXPECT_EQ(path_splitdrive("\\\\localhost").back(), "\\\\localhost");
+    EXPECT_EQ(path_splitdrive("\\\\localhost\\x").front(), "\\\\localhost\\x");
+    EXPECT_EQ(path_splitdrive("\\\\localhost\\x").back(), "");
 #endif
 }
 
 
-TEST(path, splitext)
+TEST(path, path_splitext)
 {
-    EXPECT_EQ(splitext(".").front(), ".");
-    EXPECT_EQ(splitext(".").back(), "");
-    EXPECT_EQ(splitext(".dat").front(), ".dat");
-    EXPECT_EQ(splitext(".dat").back(), "");
-    EXPECT_EQ(splitext("file.").front(), "file");
-    EXPECT_EQ(splitext("file.").back(), ".");
-    EXPECT_EQ(splitext("test/files").front(), "test/files");
-    EXPECT_EQ(splitext("test/files").back(), "");
-    EXPECT_EQ(splitext("/usr/lib").front(), "/usr/lib");
-    EXPECT_EQ(splitext("/usr/lib").back(), "");
-    EXPECT_EQ(splitext("test/files.dat").front(), "test/files");
-    EXPECT_EQ(splitext("test/files.dat").back(), ".dat");
-    EXPECT_EQ(splitext("test/.dat").front(), "test/.dat");
-    EXPECT_EQ(splitext("test/.dat").back(), "");
+    EXPECT_EQ(path_splitext(".").front(), ".");
+    EXPECT_EQ(path_splitext(".").back(), "");
+    EXPECT_EQ(path_splitext(".dat").front(), ".dat");
+    EXPECT_EQ(path_splitext(".dat").back(), "");
+    EXPECT_EQ(path_splitext("file.").front(), "file");
+    EXPECT_EQ(path_splitext("file.").back(), ".");
+    EXPECT_EQ(path_splitext("test/files").front(), "test/files");
+    EXPECT_EQ(path_splitext("test/files").back(), "");
+    EXPECT_EQ(path_splitext("/usr/lib").front(), "/usr/lib");
+    EXPECT_EQ(path_splitext("/usr/lib").back(), "");
+    EXPECT_EQ(path_splitext("test/files.dat").front(), "test/files");
+    EXPECT_EQ(path_splitext("test/files.dat").back(), ".dat");
+    EXPECT_EQ(path_splitext("test/.dat").front(), "test/.dat");
+    EXPECT_EQ(path_splitext("test/.dat").back(), "");
 }
 
 
-TEST(path, splitunc)
+TEST(path, path_splitunc)
 {
 #if defined(OS_WINDOWS)
-    EXPECT_EQ(splitunc("c:/users").front(), "");
-    EXPECT_EQ(splitunc("c:/users").back(), "c:/users");
-    EXPECT_EQ(splitunc("\\\\localhost").front(), "");
-    EXPECT_EQ(splitunc("\\\\localhost").back(), "\\\\localhost");
-    EXPECT_EQ(splitunc("\\\\localhost\\x").front(), "\\\\localhost\\x");
-    EXPECT_EQ(splitunc("\\\\localhost\\x").back(), "");
+    EXPECT_EQ(path_splitunc("c:/users").front(), "");
+    EXPECT_EQ(path_splitunc("c:/users").back(), "c:/users");
+    EXPECT_EQ(path_splitunc("\\\\localhost").front(), "");
+    EXPECT_EQ(path_splitunc("\\\\localhost").back(), "\\\\localhost");
+    EXPECT_EQ(path_splitunc("\\\\localhost\\x").front(), "\\\\localhost\\x");
+    EXPECT_EQ(path_splitunc("\\\\localhost\\x").back(), "");
 #endif
 }
 

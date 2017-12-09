@@ -11,6 +11,9 @@
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
+#if BUILD_STREAM
+#   include <pycpp/stream/fstream.h>
+#endif      // BUILD_STREAM
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -92,6 +95,22 @@ std::string get_boundary()
 }
 
 
+#if BUILD_STREAM                    // BUILD_STREAM
+
+/**
+ *  \brief Read file using custom fstream
+ */
+static std::string read_fstream(const string_view& filename)
+{
+    ifstream file(filename, std::ios_base::in | std::ios_base::binary);
+    std::ostringstream stream;
+    stream << file.rdbuf();
+
+    return stream.str();
+}
+
+#else                               // POSIX && WINDOWS
+
 /**
  *  \brief Read a file on a POSIX system.
  *
@@ -100,7 +119,7 @@ std::string get_boundary()
  *  filename encoding. This is easy, since it's our internal
  *  representation.
  */
-static std::string read_narrow(const std::string &filename)
+static std::string read_narrow(const string_view& filename)
 {
     auto *name = filename.data();
     std::ifstream file(name, std::ios_base::in | std::ios_base::binary);
@@ -110,6 +129,7 @@ static std::string read_narrow(const std::string &filename)
     return stream.str();
 }
 
+#if defined(OS_WINDOWS)           // WINDOWS
 
 /**
  *  \brief Read a file on a Win32 system.
@@ -120,7 +140,7 @@ static std::string read_narrow(const std::string &filename)
  *  overload for std::ifstream, MinGW does not, so the file must
  *  be opened with std::wifstream.
  */
-static std::string read_wide(const std::string &filename)
+static std::string read_wide(const string_view& filename)
 {
     if (!is_unicode(filename)) {
         // ascii only filename, narrow API works.
@@ -140,10 +160,14 @@ static std::string read_wide(const std::string &filename)
     return utf16_to_utf8(string);
 }
 
+#endif                              // WINDOWS
 
-static std::string detect_content_type(const std::string &filename)
+#endif                              // BUILD_STREAM
+
+
+static std::string detect_content_type(const string_view& filename)
 {
-    std::string suffix = splitext(filename)[1];
+    std::string suffix(path_splitext(filename)[1]);
     auto it = CONTENT_TYPES.find(suffix);
     if (it != CONTENT_TYPES.end()) {
         return it->second;
@@ -192,7 +216,7 @@ std::string part_value_t::basename() const
 
 std::string part_value_t::name() const
 {
-    return splitext(basename())[0];
+    return std::string(path_splitext(basename())[0]);
 }
 
 
@@ -224,7 +248,9 @@ std::string part_value_t::string() const
 
 std::string file_value_t::buffer() const
 {
-#if defined(OS_WINDOWS)
+#if BUILD_STREAM
+    return read_fstream(filename);
+#elif defined(OS_WINDOWS)
     // WIN32 has the wide API for files, using UTF-16
     return read_wide(filename);
 #else

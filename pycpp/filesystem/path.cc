@@ -32,7 +32,7 @@ static std::deque<Path> splitext_impl(const Path& path)
 {
     typedef typename Path::value_type char_type;
 
-    auto list = split(path);
+    auto list = path_split(path);
     auto &tail = list.back();
     size_t i = tail.rfind(path_extension);
     if (i == 0 || i == tail.npos) {
@@ -57,8 +57,8 @@ static Path abspath_impl(const Path& path, ToPath topath)
         return path;
     }
 
-    auto list = splitdrive(path);
-    return list.front() + topath(getcwd()) + separator + normpath(path);
+    auto list = path_splitdrive(path);
+    return Path(list.front()) + topath(getcwd()) + separator + normpath(path);
 }
 
 
@@ -83,7 +83,7 @@ static Path normpath_impl(const Path& path, ToPath topath, FromPath frompath)
 {
     // get drive/root components
     Path root;
-    auto list = splitdrive(path);
+    auto list = path_splitdrive(path);
     auto &drive = list.front();
     auto &tail = list.back();
     if (!tail.empty() && path_separators.find(tail.front()) != path_separators.npos) {
@@ -92,7 +92,8 @@ static Path normpath_impl(const Path& path, ToPath topath, FromPath frompath)
     }
 
     // get directory components
-    auto dirs = split(frompath(tail), path_to_string(path_separators));
+    auto tail_string = frompath(tail);
+    auto dirs = split(tail_string, path_to_string(path_separators));
     std::vector<std::string> buffer;
     for (auto it = dirs.begin(); it != dirs.end(); ++it) {
         if (*it == current_directory) {
@@ -125,7 +126,8 @@ static Path normpath_impl(const Path& path, ToPath topath, FromPath frompath)
     }
 
     // create output
-    Path output = drive + root;
+    Path output(drive);
+    output += root;
     for (auto &item: buffer) {
         output += topath(item);
         output += path_separator;
@@ -178,7 +180,7 @@ Path relpath_impl(const Path& path, ToPath topath)
 // CONVERSIONS
 
 
-std::u16string ansi_to_utf16(const std::string& ansi)
+std::u16string ansi_to_utf16(const string_view& ansi)
 {
     // parameters
     auto srclen = ansi.size();
@@ -201,7 +203,7 @@ std::u16string ansi_to_utf16(const std::string& ansi)
 }
 
 
-std::string utf16_to_ansi(const std::u16string& u16)
+std::string utf16_to_ansi(const u16string_view& u16)
 {
     // parameters
     auto srclen = u16.size();
@@ -229,7 +231,7 @@ std::string utf16_to_ansi(const std::u16string& u16)
 
 // SPLIT
 
-path_list_t splitext(const path_t& path)
+path_view_list_t path_splitext(const path_view_t& path)
 {
     return splitext_impl(path);
 }
@@ -254,13 +256,13 @@ path_t realpath(const path_t& path)
 
 path_t normpath(const path_t& path)
 {
-    auto topath = [](const std::string& str)
+    auto topath = [](const string_view& str) -> path_t
     {
-        return string_to_path(str);
+        return path_t(string_to_path(str));
     };
-    auto frompath = [](const path_t& p)
+    auto frompath = [](const path_view_t& p) -> std::string
     {
-        return path_to_string(p);
+        return std::string(path_to_string(p));
     };
 
     return normpath_impl(path, topath, frompath);
@@ -284,7 +286,7 @@ path_t relpath(const path_t& path, const path_t& start)
 
 // SPLIT
 
-backup_path_list_t splitext(const backup_path_t& path)
+backup_path_view_list_t path_splitext(const backup_path_view_t& path)
 {
     return splitext_impl(path);
 }
@@ -307,13 +309,13 @@ backup_path_t realpath(const backup_path_t& path)
 
 backup_path_t normpath(const backup_path_t& path)
 {
-    auto topath = [](const std::string& str)
+    auto topath = [](const string_view& str) -> backup_path_t
     {
-        return string_to_backup_path(str);
+        return backup_path_t(string_to_backup_path(str));
     };
-    auto frompath = [](const backup_path_t& p)
+    auto frompath = [](const backup_path_view_t& p) -> std::string
     {
-        return backup_path_to_string(p);
+        return std::string(backup_path_to_string(p));
     };
 
     return normpath_impl(path, topath, frompath);

@@ -15,6 +15,8 @@ Python-like C++ environment with independent, lightweight utilities for cross-pl
 - [Design](#design)
 - [Separation of Logic](#separation-of-logic)
 - [Namespace](#namespace)
+- [Documentation](#documentation)
+  - [Strings](#strings)
 - [Building](#building)
 - [Developer Resources](#developer-resources)
 - [Performance](#performance)
@@ -254,6 +256,57 @@ Similar choices to separate discrete logic are found throughout PyCPP, simplifyi
 By default, PyCPP uses no namespace. However, a custom namespace can be set during configuration. For example, to use `pycpp` as the namespace name, add `-DPYCPP_NAMESPACE:STRING=pycpp` during the CMake configuration step.
 
 To access members in the PyCPP namespace, you can either preface method calls with `PYCPP_NAMESPACE::method()`, where `PYCPP_NAMESPACE` evaluates to the desired namespace, or `PYCPP_USING_NAMESPACE`, which introduces methods from PyCPP to the current namespace.
+
+## Documentation
+
+- [Algorithm](/pycpp/algorithm/README.md)
+- [Allocator](/pycpp/allocator/README.md)
+- [Cache](/pycpp/cache/README.md)
+- [Cipher](/pycpp/cipher/README.md)
+- [Collections](/pycpp/collections/README.md)
+- [CSV](/pycpp/csv/README.md)
+- [Filesystem](/pycpp/filesystem/README.md)
+- [Fixed](/pycpp/fixed/README.md)
+- [Hashlib](/pycpp/hashlib/README.md)
+- [Iterator](/pycpp/iterator/README.md)
+- [Itertools](/pycpp/itertools/README.md)
+- [JSON](/pycpp/json/README.md)
+- [Lattice](/pycpp/lattice/README.md)
+- [Lexical](/pycpp/lexical/README.md)
+- [Math](/pycpp/math/README.md)
+- [Memmap](/pycpp/memmap/README.md)
+- [Misc](/pycpp/misc/README.md)
+- [MultiIndex](/pycpp/multi_index/README.md)
+- [Preprocessor](/pycpp/preprocessor/README.md)
+- [Random](/pycpp/random/README.md)
+- [Re](/pycpp/re/README.md)
+- [Reference](/pycpp/reference/README.md)
+- [Runtime](/pycpp/runtime/README.md)
+- [Safe](/pycpp/safe/README.md)
+- [Secure](/pycpp/secure/README.md)
+- [SFINAE](/pycpp/sfinae/README.md)
+- [SQL](/pycpp/sql/README.md)
+- [Stream](/pycpp/stream/README.md)
+- [String](/pycpp/string/README.md)
+- [View](/pycpp/view/README.md)
+- [Windows](/pycpp/windows/README.md)
+- [XML](/pycpp/xml/README.md)
+
+### Strings
+
+Most algorithms in PyCPP uses string views, a non-copying reference to a string to avoid copies. These references are therefore **only** valid as long as the original string is valid, and therefore the returned values from temporary string literals will be invalid after evaluating the expression.
+
+```cpp
+#include <pycpp/string.h>
+
+int main()
+{
+//    auto list = split("This is a sentence.");       // invalid
+    char str[] = "This is a sentence.";
+    auto list = split(str);                           // valid
+    return 0;
+}
+```
 
 ## Building
 

@@ -18,6 +18,7 @@
 
 #include <pycpp/stream/fstream.h>
 #include <pycpp/string/codec.h>
+#include <pycpp/string/unicode.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -158,13 +159,17 @@ fstream::fstream(const string_view& name, std::ios_base::openmode mode)
 
 void fstream::open(const string_view& name, std::ios_base::openmode mode)
 {
+    // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
-    open(codec_utf8_utf16(name), mode);
-#else
+    if (is_unicode(name)) {
+        open(codec_utf8_utf16(name), mode);
+        return;
+    }
+#endif      // HAVE_WFOPEN
+
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
-#endif
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -274,13 +279,17 @@ ifstream::ifstream(const string_view& name, std::ios_base::openmode mode)
 
 void ifstream::open(const string_view& name, std::ios_base::openmode mode)
 {
+    // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
-    open(codec_utf8_utf16(name), mode);
-#else
+    if (is_unicode(name)) {
+        open(codec_utf8_utf16(name), mode);
+        return;
+    }
+#endif      // HAVE_WFOPEN
+
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
-#endif
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -388,13 +397,17 @@ ofstream::ofstream(const string_view& name, std::ios_base::openmode mode)
 
 void ofstream::open(const string_view& name, std::ios_base::openmode mode)
 {
+    // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
-    open(codec_utf8_utf16(name), mode);
-#else
+    if (is_unicode(name)) {
+        open(codec_utf8_utf16(name), mode);
+        return;
+    }
+#endif      // HAVE_WFOPEN
+
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
     std::ios::rdbuf(&buffer);
-#endif
 }
 
 
@@ -503,11 +516,15 @@ fstream::fstream(const string_view& name, std::ios_base::openmode mode)
 
 void fstream::open(const string_view& name, std::ios_base::openmode mode)
 {
+    // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
-    open(codec_utf8_utf16(name), mode);
-#else
+    if (is_unicode(name)) {
+        open(codec_utf8_utf16(name), mode);
+        return;
+    }
+#endif      // HAVE_WFOPEN
+
     std::fstream::open(name.data(), mode);
-#endif
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -569,11 +586,15 @@ ifstream::ifstream(const string_view& name, std::ios_base::openmode mode)
 
 void ifstream::open(const string_view& name, std::ios_base::openmode mode)
 {
+    // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
-    open(codec_utf8_utf16(name), mode);
-#else
+    if (is_unicode(name)) {
+        open(codec_utf8_utf16(name), mode);
+        return;
+    }
+#endif      // HAVE_WFOPEN
+
     std::ifstream::open(name.data(), mode);
-#endif
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -636,11 +657,15 @@ ofstream::ofstream(const string_view& name, std::ios_base::openmode mode)
 
 void ofstream::open(const string_view& name, std::ios_base::openmode mode)
 {
+    // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
-    open(codec_utf8_utf16(name), mode);
-#else
+    if (is_unicode(name)) {
+        open(codec_utf8_utf16(name), mode);
+        return;
+    }
+#endif      // HAVE_WFOPEN
+
     std::ofstream::open(name.data(), mode);
-#endif
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS

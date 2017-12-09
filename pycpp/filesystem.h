@@ -214,23 +214,22 @@ path_list_t listdir(const path_t& path);
 /**
  *  \brief Split path into head and tail using last pathname component.
  */
-path_list_t split(const path_t& path);
+path_view_list_t path_split(const path_view_t& path);
 
 /**
  *  \brief Split path into drive and tail components.
  */
-path_list_t splitdrive(const path_t& path);
-// TODO: lols.... This can be optimized away....
+path_view_list_t path_splitdrive(const path_view_t& path);
 
 /**
  *  \brief Split path into root and filename extension components.
  */
-path_list_t splitext(const path_t& path);
+path_view_list_t path_splitext(const path_view_t& path);
 
 /**
  *  \brief Split path into UNC mount point and tail components.
  */
-path_list_t splitunc(const path_t& path);
+path_view_list_t path_splitunc(const path_view_t& path);
 
 // NORMALIZATION
 
@@ -268,7 +267,7 @@ path_t expandvars(const path_t& path);
  *  \brief Collapse redundant relative and normalize case.
  *  \warning This method will not preserve path containing symlinks.
  */
-path_t normcase(const path_t& path);
+path_t normcase(const path_view_t& path);
 
 /**
  *  \brief Collapse redundant relative references.
@@ -469,7 +468,7 @@ bool isdir(const backup_path_t& path);
 bool islink(const backup_path_t& path);
 bool exists(const backup_path_t& path);
 bool lexists(const backup_path_t& path);
-bool isabs(const backup_path_t& path);
+bool isabs(const backup_path_view_t& path);
 bool samefile(const backup_path_t& p1, const backup_path_t& p2);
 
 // DIRECTORY
@@ -479,10 +478,10 @@ backup_path_list_t listdir(const backup_path_t& path);
 
 // SPLIT
 
-backup_path_list_t split(const backup_path_t& path);
-backup_path_list_t splitdrive(const backup_path_t& path);
-backup_path_list_t splitext(const backup_path_t& path);
-backup_path_list_t splitunc(const backup_path_t& path);
+backup_path_view_list_t path_split(const backup_path_view_t& path);
+backup_path_view_list_t path_splitdrive(const backup_path_view_t& path);
+backup_path_view_list_t path_splitext(const backup_path_view_t& path);
+backup_path_view_list_t path_splitunc(const backup_path_view_t& path);
 
 // NORMALIZATION
 
@@ -492,7 +491,7 @@ backup_path_t base_name(const backup_path_t& path);
 backup_path_t dir_name(const backup_path_t& path);
 backup_path_t expanduser(const backup_path_t& path);
 backup_path_t expandvars(const backup_path_t& path);
-backup_path_t normcase(const backup_path_t& path);
+backup_path_t normcase(const backup_path_view_t& path);
 backup_path_t normpath(const backup_path_t& path);
 backup_path_t realpath(const backup_path_t& path);
 backup_path_t relpath(const backup_path_t& path);

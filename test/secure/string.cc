@@ -113,6 +113,41 @@ TEST(secure_string, relational)
 }
 
 
+TEST(secure_string, concatenation)
+{
+    secure_string str1("exa");
+    secure_string str2("mple");
+    secure_string str3(str1), str4(str2), str5(str1), str6(str2);
+
+    // secure_string + secure_string
+    EXPECT_EQ(str3 + str4, "example");
+    EXPECT_EQ(std::move(str3) + str4, "example");
+    EXPECT_EQ(str5 + std::move(str4), "example");
+    EXPECT_EQ(std::move(str5) + std::move(str6), "example");
+
+    // secure_string + const char*
+    str3 = str1, str4 = str2, str5 = str1, str6 = str2;
+    EXPECT_EQ(str3 + "mple", "example");
+    EXPECT_EQ(std::move(str3) + "mple", "example");
+    EXPECT_EQ("exa" + str4, "example");
+    EXPECT_EQ("exa" + std::move(str4), "example");
+
+    // secure_string + char
+    str3 = str1, str4 = str2, str5 = str1, str6 = str2;
+    EXPECT_EQ(str3 + 'm', "exam");
+    EXPECT_EQ(std::move(str3) + 'm', "exam");
+    EXPECT_EQ('a' + str4, "ample");
+    EXPECT_EQ('a' + std::move(str4), "ample");
+
+    // secure_string + view
+    str3 = str1, str4 = str2, str5 = str1, str6 = str2;
+    EXPECT_EQ(str3 + string_view("mple"), "example");
+    EXPECT_EQ(std::move(str3) + string_view("mple"), "example");
+    EXPECT_EQ(string_view("exa") + str4, "example");
+    EXPECT_EQ(string_view("exa") + std::move(str4), "example");
+}
+
+
 TEST(secure_string, memory)
 {
     secure_string str = {0, 84, 104, 105, 115, 32, 105, 115, 32, 100, 97, 116, 97, 10};

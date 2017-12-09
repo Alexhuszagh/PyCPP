@@ -53,20 +53,24 @@ static typename Path::const_iterator stem_impl(const Path& path)
  *  \brief Convert separators to preferred separators..
  */
 template <typename Path>
-static Path make_preferred(const Path& path)
+struct make_preferred
 {
-    Path output;
-    output.reserve(path.size());
-    for (auto c: path) {
-        if (path_separators.find(c) != path_separators.npos) {
-            output.push_back(path_separator);
-        } else {
-            output.push_back(c);
+    template <typename View>
+    Path operator()(const View& path)
+    {
+        Path output;
+        output.reserve(path.size());
+        for (auto c: path) {
+            if (path_separators.find(c) != path_separators.npos) {
+                output.push_back(path_separator);
+            } else {
+                output.push_back(c);
+            }
         }
-    }
 
-    return output;
-}
+        return output;
+    }
+};
 
 // RUNTIME
 
@@ -83,11 +87,11 @@ struct join_impl
     {
         Path drive, path;
         for (auto &item: paths) {
-            auto split = splitdrive(item);
+            auto split = path_splitdrive(item);
             if (split[0].size()) {
                 // new drive
-                drive = split[0];
-                path = split[1];
+                drive = Path(split[0]);
+                path = Path(split[1]);
                 if (path.size()) {
                     // add only if non-empty, so join("D:", "temp") -> "D:temp"
                     path += topath(path_separator);
@@ -97,9 +101,9 @@ struct join_impl
                 auto &root = split[1];
                 if (path_separators.find(root[0]) != path_separators.npos) {
                     // new root
-                    path = root;
+                    path = Path(root);
                 } else {
-                    path += root;
+                    path += Path(root);
                 }
                 path += topath(path_separator);
             }
@@ -119,16 +123,16 @@ struct join_impl
 template <typename Path>
 static std::deque<Path> split_impl(const Path& path)
 {
-    auto list = splitdrive(path);
+    auto list = path_splitdrive(path);
     Path &tail = list.back();
     auto it = stem_impl(tail);
     Path basename(it, tail.cend());
     Path dir(tail.cbegin(), it);
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
-        dir.erase(dir.length() - 1);
+        dir = dir.substr(0, dir.length() - 1);
     }
 
-    return {list.front() + dir, std::move(basename)};
+    return {Path(path.begin(), dir.end()), basename};
 }
 
 
@@ -137,8 +141,8 @@ static std::deque<Path> split_impl(const Path& path)
  *  1. https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
  *
  *  \code
- *      splitunc("\\\\localhost")  => {"", "\\\\localhost"}
- *      splitunc("\\\\localhost\\x")  => {"\\\\localhost\\x", ""}
+ *      path_splitunc("\\\\localhost")  => {"", "\\\\localhost"}
+ *      path_splitunc("\\\\localhost\\x")  => {"\\\\localhost\\x", ""}
  */
 template <typename Path>
 static std::deque<Path> splitunc_impl(const Path& path)
@@ -177,9 +181,9 @@ static std::deque<Path> splitunc_impl(const Path& path)
  *  1. https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
  *
  *  \code
- *      splitdrive("\\\\localhost")  => {"", "\\\\localhost"}
- *      splitdrive("\\\\localhost\\x")  => {"\\\\localhost\\x", ""}
- *      splitdrive("\\\\localhost\\x\\y")  => {"\\\\localhost\\x", "\\y"}
+ *      path_splitdrive("\\\\localhost")  => {"", "\\\\localhost"}
+ *      path_splitdrive("\\\\localhost\\x")  => {"\\\\localhost\\x", ""}
+ *      path_splitdrive("\\\\localhost\\x\\y")  => {"\\\\localhost\\x", "\\y"}
  *      "\\\\?\\D:\\very long path" => {"\\\\?\\D:", "\\very long path"}
  */
 template <typename Path>
@@ -200,7 +204,7 @@ static std::deque<Path> splitdrive_impl(const Path& path)
 template <typename Path>
 static Path base_name_impl(const Path& path)
 {
-    auto tail = splitdrive(path).back();
+    auto tail = path_splitdrive(path).back();
     return Path(stem_impl(tail), tail.cend());
 }
 
@@ -208,7 +212,7 @@ static Path base_name_impl(const Path& path)
 template <typename Path>
 static Path dir_name_impl(const Path& path)
 {
-    auto tail = splitdrive(path).back();
+    auto tail = path_splitdrive(path).back();
     auto it = stem_impl(tail);
     Path dir(tail.cbegin(), it);
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
@@ -268,11 +272,15 @@ static bool isabs_impl(const Path& path)
 }
 
 
-template <typename Path, typename NormCase>
-static Path normcase_impl(const Path& path, NormCase normcase)
+template <typename Path>
+struct normcase_impl
 {
-    return normcase(make_preferred(path));
-}
+    template <typename View, typename NormCase>
+    Path operator()(const View& path, NormCase normcase)
+    {
+        return normcase(make_preferred<Path>()(path));
+    }
+};
 
 
 // MANIPULATION
@@ -654,19 +662,19 @@ path_t join_path(const path_view_list_t &paths)
 
 // SPLIT
 
-path_list_t split(const path_t& path)
+path_view_list_t path_split(const path_view_t& path)
 {
     return split_impl(path);
 }
 
 
-path_list_t splitdrive(const path_t& path)
+path_view_list_t path_splitdrive(const path_view_t& path)
 {
     return splitdrive_impl(path);
 }
 
 
-path_list_t splitunc(const path_t& path)
+path_view_list_t path_splitunc(const path_view_t& path)
 {
     return splitunc_impl(path);
 }
@@ -710,9 +718,9 @@ path_t expandvars(const path_t& path)
 }
 
 
-path_t normcase(const path_t& path)
+path_t normcase(const path_view_t& path)
 {
-    return normcase_impl(path, [](const path_t& p) {
+    return normcase_impl<path_t>()(path, [](const path_t& p) {
         return utf16_tolower(p);
     });
 }
@@ -978,19 +986,19 @@ bool isabs(const backup_path_view_t& path)
 
 // SPLIT
 
-backup_path_list_t split(const backup_path_t& path)
+backup_path_view_list_t path_split(const backup_path_view_t& path)
 {
     return split_impl(path);
 }
 
 
-backup_path_list_t splitdrive(const backup_path_t& path)
+backup_path_view_list_t path_splitdrive(const backup_path_view_t& path)
 {
     return splitdrive_impl(path);
 }
 
 
-backup_path_list_t splitunc(const backup_path_t& path)
+backup_path_view_list_t path_splitunc(const backup_path_view_t& path)
 {
     return splitunc_impl(path);
 }
@@ -1027,9 +1035,9 @@ backup_path_t expandvars(const backup_path_t& path)
 }
 
 
-backup_path_t normcase(const backup_path_t& path)
+backup_path_t normcase(const backup_path_view_t& path)
 {
-    return normcase_impl(path, [](const backup_path_t& p) {
+    return normcase_impl<backup_path_t>()(path, [](const backup_path_t& p) {
         return utf8_tolower(p);
     });
 }

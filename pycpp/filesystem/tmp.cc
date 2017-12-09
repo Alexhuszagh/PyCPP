@@ -48,7 +48,7 @@ static path_t gettempprefix_impl()
 }
 
 
-static fd_stream temporary_file_impl(const path_t& dir, const path_t& prefix)
+static fd_stream temporary_file_impl(const path_view_t& dir, const path_view_t& prefix)
 {
 
     path_t name;
@@ -101,7 +101,7 @@ static path_t gettempprefix_impl()
     return path_t("tmp");
 }
 
-static fd_stream temporary_file_impl(const path_t& dir, const path_t& prefix)
+static fd_stream temporary_file_impl(const path_view_t& dir, const path_view_t& prefix)
 {
     path_t name;
     fd_t fd;
@@ -109,6 +109,7 @@ static fd_stream temporary_file_impl(const path_t& dir, const path_t& prefix)
     mode_t permission = S_IRUSR | S_IWUSR;
 
     for (size_t i = 0; i < TMP_MAX_PATHS; ++i) {
+        name = gettempnam(dir, prefix);
         fd = ::open(name.data(), flags, permission);
         if (fd != INVALID_FD_VALUE) {
             return fd_stream(fd, true);
@@ -150,13 +151,13 @@ path_t TMP_SUFFIX_CHARACTERS = path_prefix("abcdefghijklmnopqrstuvwxyz0123456789
 // ---------
 
 
-fd_stream temporary_file(const path_t& dir, const path_t& prefix)
+fd_stream temporary_file(const path_view_t& dir, const path_view_t& prefix)
 {
     return temporary_file_impl(dir, prefix);
 }
 
 
-path_t temporary_directory(const path_t& dir, const path_t& prefix)
+path_t temporary_directory(const path_view_t& dir, const path_view_t& prefix)
 {
     path_t name;
     mode_t permission = S_IRUSR | S_IWUSR;
@@ -183,30 +184,31 @@ path_t gettempprefix()
 }
 
 
-path_t gettempnam(const path_t& dir, const path_t& prefix)
+path_t gettempnam(const path_view_t& dir, const path_view_t& prefix)
 {
+    // TODO: here....
     path_list_t paths;
     if (prefix.empty() && dir.empty()) {
         paths = {gettempdir(), gettempprefix() + gettempsuffix()};
     } else if (dir.empty()) {
         paths = {gettempdir(), prefix + gettempsuffix()};
     } else if (prefix.empty()) {
-        paths = {dir, gettempprefix() + gettempsuffix()};
+        paths = {path_t(dir), gettempprefix() + gettempsuffix()};
     } else {
-        paths = {dir, prefix + gettempsuffix()};
+        paths = {path_t(dir), prefix + gettempsuffix()};
     }
     return join_path(paths);
 }
 
 #if defined(OS_WINDOWS)          // WINDOWS NT && BACKUP PATH
 
-fd_stream temporary_filew(const path_t& dir, const path_t& prefix)
+fd_stream temporary_filew(const path_view_t& dir, const path_view_t& prefix)
 {
     return temporary_file(dir, prefix);
 }
 
 
-path_t temporary_directoryw(const path_t& dir, const path_t& prefix)
+path_t temporary_directoryw(const path_view_t& dir, const path_view_t& prefix)
 {
     return temporary_directory(dir, prefix);
 }
@@ -224,13 +226,13 @@ path_t gettempprefixw()
 }
 
 
-path_t gettempnamw(const path_t& dir, const path_t& prefix)
+path_t gettempnamw(const path_view_t& dir, const path_view_t& prefix)
 {
     return gettempnam(dir, prefix);
 }
 
 
-fd_stream temporary_filea(const backup_path_t& dir, const backup_path_t& prefix)
+fd_stream temporary_filea(const backup_path_view_t& dir, const backup_path_view_t& prefix)
 {
     return temporary_file(backup_path_to_path(dir), backup_path_to_path(prefix));
 }
@@ -254,7 +256,7 @@ backup_path_t gettempprefixa()
 }
 
 
-backup_path_t gettempnama(const backup_path_t& dir, const backup_path_t& prefix)
+backup_path_t gettempnama(const backup_path_view_t& dir, const backup_path_view_t& prefix)
 {
     return path_to_backup_path(gettempnam(backup_path_to_path(dir), backup_path_to_path(prefix)));
 }

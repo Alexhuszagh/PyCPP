@@ -90,7 +90,7 @@ public:
 
     // MEMBER TYPES
     // ------------
-    using self = basic_string_view<Char, Traits>;
+    using self_t = basic_string_view<Char, Traits>;
     using stl_type = string<Char, Traits>;
     using value_type = Char;
     using traits_type = Traits;
@@ -100,7 +100,7 @@ public:
     using const_pointer = const Char*;
     using difference_type = std::ptrdiff_t;
     using size_type = size_t;
-    using iterator = pointer;
+    using iterator = const_pointer;
     using const_iterator = const_pointer;
     using reverse_iterator = std::reverse_iterator<pointer>;
     using const_reverse_iterator = std::reverse_iterator<const_pointer>;
@@ -112,22 +112,20 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     basic_string_view() = default;
-    basic_string_view(const self& str);
-    self& operator=(const self& str);
-    basic_string_view(self&& str);
-    self& operator=(self&& str);
+    basic_string_view(const self_t& str);
+    self_t& operator=(const self_t& str);
+    basic_string_view(self_t&& str);
+    self_t& operator=(self_t&& str);
 
     template <typename A> basic_string_view(const string<Char, Traits, A>& str);
-    basic_string_view(const self& str, size_type pos, size_type len = npos);
+    basic_string_view(const self_t& str, size_type pos, size_type len = npos);
     template <typename A> basic_string_view(const string<Char, Traits, A>& str, size_type pos, size_type len = npos);
     basic_string_view(const_pointer str);
     basic_string_view(const_pointer str, size_type n);
     basic_string_view(const_pointer begin, const_pointer end);
-    self& operator=(const_pointer str);
+    self_t& operator=(const_pointer str);
 
     // ITERATORS
-    iterator begin();
-    iterator end();
     const_iterator begin() const;
     const_iterator end() const;
     const_reverse_iterator rbegin() const;
@@ -143,92 +141,88 @@ public:
     bool empty() const noexcept;
 
     // ELEMENT ACCESS
-    reference operator[](size_type pos);
     const_reference operator[](size_type pos) const;
-    reference at(size_type pos);
     const_reference at(size_type pos) const;
-    reference front();
     const_reference front() const;
-    reference back();
     const_reference back() const;
 
     // MODIFIERS
-    self& assign(const self& str);
-    self& assign(const stl_type& str);
-    self& assign(const self& str, size_type subpos, size_type sublen);
-    self& assign(const stl_type& str, size_type subpos, size_type sublen);
-    self& assign(const_pointer s);
-    self& assign(const_pointer s, size_type n);
-    void swap(self& other);
+    self_t& assign(const self_t& str);
+    self_t& assign(const stl_type& str);
+    self_t& assign(const self_t& str, size_type subpos, size_type sublen);
+    self_t& assign(const stl_type& str, size_type subpos, size_type sublen);
+    self_t& assign(const_pointer s);
+    self_t& assign(const_pointer s, size_type n);
+    void swap(self_t& other);
 
     // OPERATORS
-    self& operator++();
-    self operator++(int);
-    self& operator--();
-    self operator--(int);
-    self& operator+=(size_type shift);
-    self operator+(size_type shift);
-    self& operator-=(size_type shift);
-    self operator-(size_type shift);
+    self_t& operator++();
+    self_t operator++(int);
+    self_t& operator--();
+    self_t operator--(int);
+    self_t& operator+=(size_type shift);
+    self_t operator+(size_type shift);
+    self_t& operator-=(size_type shift);
+    self_t operator-(size_type shift);
 
     // STRING OPERATIONS
     const_pointer c_str() const noexcept;
     const_pointer data() const noexcept;
 
     // FIND
-    size_type find(const self& str, size_type pos = 0) const noexcept;
+    size_type find(const self_t& str, size_type pos = 0) const noexcept;
     size_type find(const stl_type &str, size_type pos = 0) const;
     size_type find(const_pointer array, size_type pos = 0) const;
     size_type find(const_pointer cstring, size_type pos, size_type length) const;
     size_type find(value_type c, size_type pos = 0) const noexcept;
 
     // FIND FIRST OF
-    size_type find_first_of(const self& str, size_type pos = 0) const noexcept;
+    size_type find_first_of(const self_t& str, size_type pos = 0) const noexcept;
     size_type find_first_of(const stl_type &str, size_type pos = 0) const;
     size_type find_first_of(const_pointer array, size_type pos = 0) const;
     size_type find_first_of(const_pointer cstring, size_type pos, size_type length) const;
     size_type find_first_of(value_type c, size_type pos = 0) const noexcept;
 
     // FIND FIRST NOT OF
-    size_type find_first_not_of(const self& str, size_type pos = 0) const noexcept;
+    size_type find_first_not_of(const self_t& str, size_type pos = 0) const noexcept;
     size_type find_first_not_of(const stl_type& str, size_type pos = 0) const;
     size_type find_first_not_of(const_pointer array, size_type pos = 0) const;
     size_type find_first_not_of(const_pointer cstring, size_type pos, size_type length) const;
     size_type find_first_not_of(value_type c, size_type pos = 0) const noexcept;
 
     // RFIND
-    size_type rfind(const self& str, size_type pos = 0) const noexcept;
+    size_type rfind(const self_t& str, size_type pos = 0) const noexcept;
     size_type rfind(const stl_type& str, size_type pos = 0) const;
     size_type rfind(const_pointer array, size_type pos = 0) const;
     size_type rfind(const_pointer cstring, size_type pos, size_type length) const;
     size_type rfind(value_type c, size_type pos = 0) const noexcept;
 
     // FIND LAST OF
-    size_type find_last_of(const self& str, size_type pos = 0) const noexcept;
+    size_type find_last_of(const self_t& str, size_type pos = 0) const noexcept;
     size_type find_last_of(const stl_type& str, size_type pos = 0) const;
     size_type find_last_of(const_pointer array, size_type pos = 0) const;
     size_type find_last_of(const_pointer cstring, size_type pos, size_type length) const;
     size_type find_last_of(value_type c, size_type pos = 0) const noexcept;
 
     // FIND LAST NOT OF
-    size_type find_last_not_of(const self& str, size_type pos = 0) const noexcept;
+    size_type find_last_not_of(const self_t& str, size_type pos = 0) const noexcept;
     size_type find_last_not_of(const stl_type &str, size_type pos = 0) const;
     size_type find_last_not_of(const_pointer array, size_type pos = 0) const;
     size_type find_last_not_of(const_pointer cstring, size_type pos, size_type length) const;
     size_type find_last_not_of(value_type c, size_type pos = 0) const noexcept;
 
     // COMPARE
-    int compare(const self& str) const noexcept;
+    int compare(const self_t& str) const noexcept;
     int compare(const stl_type& str) const noexcept;
-    int compare(size_type pos, size_type len, const self& str) const;
+    int compare(size_type pos, size_type len, const self_t& str) const;
     int compare(size_type pos, size_type len, const stl_type& str) const;
-    int compare(size_type pos, size_type len, const self& str, size_type subpos, size_type sublen) const;
+    int compare(size_type pos, size_type len, const self_t& str, size_type subpos, size_type sublen) const;
     int compare(size_type pos, size_type len, const stl_type& str, size_type subpos, size_type sublen) const;
     int compare(const_pointer s) const;
     int compare(size_type pos, size_type len, const_pointer s) const;
     int compare(size_type pos, size_type len, const_pointer s, size_type n) const;
 
-    self substr(size_type pos = 0, size_type len = npos) const;
+    self_t substr(size_type pos = 0, size_type len = npos) const;
 
     // CONVERSIONS
     explicit operator bool() const;
@@ -253,11 +247,11 @@ private:
     template <typename C, typename T>
     friend bool operator==(const view<C, T>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator==(const string<C, T>& lhs, const view<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator==(const string<C, T, A>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator==(const view<C, T>& lhs, const string<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator==(const view<C, T>& lhs, const string<C, T, A>& rhs) noexcept;
 
     template <typename C, typename T>
     friend bool operator==(const C* lhs, const view<C, T>& rhs);
@@ -268,11 +262,11 @@ private:
     template <typename C, typename T>
     friend bool operator!=(const view<C, T>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator!=(const string<C, T>& lhs, const view<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator!=(const string<C, T, A>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator!=(const view<C, T>& lhs, const string<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator!=(const view<C, T>& lhs, const string<C, T, A>& rhs) noexcept;
 
     template <typename C, typename T>
     friend bool operator!=(const C* lhs, const view<C, T>& rhs);
@@ -283,11 +277,11 @@ private:
     template <typename C, typename T>
     friend bool operator<(const view<C, T>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator<(const string<C, T>& lhs, const view<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator<(const string<C, T, A>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator<(const view<C, T>& lhs, const string<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator<(const view<C, T>& lhs, const string<C, T, A>& rhs) noexcept;
 
     template <typename C, typename T>
     friend bool operator<(const C* lhs, const view<C, T>& rhs);
@@ -298,11 +292,11 @@ private:
     template <typename C, typename T>
     friend bool operator<=(const view<C, T>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator<=(const string<C, T>& lhs, const view<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator<=(const string<C, T, A>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator<=(const view<C, T>& lhs, const string<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator<=(const view<C, T>& lhs, const string<C, T, A>& rhs) noexcept;
 
     template <typename C, typename T>
     friend bool operator<=(const C* lhs, const view<C, T>& rhs);
@@ -313,11 +307,11 @@ private:
     template <typename C, typename T>
     friend bool operator>(const view<C, T>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator>(const string<C, T>& lhs, const view<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator>(const string<C, T, A>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator>(const view<C, T>& lhs, const string<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator>(const view<C, T>& lhs, const string<C, T, A>& rhs) noexcept;
 
     template <typename C, typename T>
     friend bool operator>(const C* lhs, const view<C, T>& rhs);
@@ -328,17 +322,30 @@ private:
     template <typename C, typename T>
     friend bool operator>=(const view<C, T>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator>=(const string<C, T>& lhs, const view<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator>=(const string<C, T, A>& lhs, const view<C, T>& rhs) noexcept;
 
-    template <typename C, typename T>
-    friend bool operator>=(const view<C, T>& lhs, const string<C, T>& rhs) noexcept;
+    template <typename C, typename T, typename A>
+    friend bool operator>=(const view<C, T>& lhs, const string<C, T, A>& rhs) noexcept;
 
     template <typename C, typename T>
     friend bool operator>=(const C* lhs, const view<C, T>& rhs);
 
     template <typename C, typename T>
     friend bool operator>=(const view<C, T>& lhs, const C* rhs);
+
+    // CONCATENATION OPERATORS
+    template <typename C, typename T, typename A>
+    friend string<C, T, A> operator+(const string<C, T, A>& lhs, const view<C, T>& rhs);
+
+    template <typename C, typename T, typename A>
+    friend string<C, T, A> operator+(string<C, T, A>&& lhs, const view<C, T>& rhs);
+
+    template <typename C, typename T, typename A>
+    friend string<C, T, A> operator+(const view<C, T>& lhs, const string<C, T, A>& rhs);
+
+    template <typename C, typename T, typename A>
+    friend string<C, T, A> operator+(const view<C, T>& lhs, string<C, T, A>&& rhs);
 };
 
 
@@ -489,15 +496,15 @@ bool operator==(const basic_string_view<C, T>& lhs, const basic_string_view<C, T
 }
 
 
-template <typename C, typename T>
-bool operator==(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator==(const std::basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
     return basic_string_view<C, T>(lhs) == rhs;
 }
 
 
-template <typename C, typename T>
-bool operator==(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator==(const basic_string_view<C, T>& lhs, const std::basic_string<C, T, A>& rhs) noexcept
 {
     return lhs == basic_string_view<C, T>(rhs);
 }
@@ -525,16 +532,15 @@ bool operator!=(const basic_string_view<C, T>& lhs, const basic_string_view<C, T
 }
 
 
-template <typename C, typename T>
-bool operator!=(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator!=(const std::basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
     return !(lhs == rhs);
 }
 
 
-template <typename C, typename T>
-bool operator!=(const basic_string_view<C, T>& lhs,
-    const std::basic_string<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator!=(const basic_string_view<C, T>& lhs, const std::basic_string<C, T, A>& rhs) noexcept
 {
     return !(lhs == rhs);
 }
@@ -561,15 +567,15 @@ bool operator<(const basic_string_view<C, T>& lhs, const basic_string_view<C, T>
 }
 
 
-template <typename C, typename T>
-bool operator<(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator<(const std::basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
     return basic_string_view<C, T>(lhs) < rhs;
 }
 
 
-template <typename C, typename T>
-bool operator<(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator<(const basic_string_view<C, T>& lhs, const std::basic_string<C, T, A>& rhs) noexcept
 {
     return lhs < basic_string_view<C, T>(rhs);
 }
@@ -596,15 +602,15 @@ bool operator<=(const basic_string_view<C, T>& lhs, const basic_string_view<C, T
 }
 
 
-template <typename C, typename T>
-bool operator<=(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator<=(const std::basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
     return basic_string_view<C, T>(lhs) <= rhs;
 }
 
 
-template <typename C, typename T>
-bool operator<=(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator<=(const basic_string_view<C, T>& lhs, const std::basic_string<C, T, A>& rhs) noexcept
 {
     return lhs <= basic_string_view<C, T>(rhs);
 }
@@ -631,16 +637,15 @@ bool operator>(const basic_string_view<C, T>& lhs, const basic_string_view<C, T>
 }
 
 
-template <typename C, typename T>
-bool operator>(const std::basic_string<C, T>& lhs,
-    const basic_string_view<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator>(const std::basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
     return basic_string_view<C, T>(lhs) > rhs;
 }
 
 
-template <typename C, typename T>
-bool operator>(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator>(const basic_string_view<C, T>& lhs, const std::basic_string<C, T, A>& rhs) noexcept
 {
     return lhs > basic_string_view<C, T>(rhs);
 }
@@ -667,15 +672,15 @@ bool operator>=(const basic_string_view<C, T>& lhs, const basic_string_view<C, T
 }
 
 
-template <typename C, typename T>
-bool operator>=(const std::basic_string<C, T>& lhs, const basic_string_view<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator>=(const std::basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs) noexcept
 {
     return basic_string_view<C, T>(lhs) >= rhs;
 }
 
 
-template <typename C, typename T>
-bool operator>=(const basic_string_view<C, T>& lhs, const std::basic_string<C, T>& rhs) noexcept
+template <typename C, typename T, typename A>
+bool operator>=(const basic_string_view<C, T>& lhs, const std::basic_string<C, T, A>& rhs) noexcept
 {
     return lhs >= basic_string_view<C, T>(rhs);
 }
@@ -695,15 +700,51 @@ bool operator>=(const basic_string_view<C, T>& lhs, const C* rhs)
 }
 
 
+template <typename C, typename T, typename A>
+std::basic_string<C, T, A> operator+(const std::basic_string<C, T, A>& lhs, const basic_string_view<C, T>& rhs)
+{
+    std::basic_string<C, T, A> output;
+    output.reserve(lhs.size() + rhs.size());
+    output.append(lhs.data(), lhs.size());
+    output.append(rhs.data(), rhs.size());
+    return output;
+}
+
+
+template <typename C, typename T, typename A>
+std::basic_string<C, T, A> operator+(std::basic_string<C, T, A>&& lhs, const basic_string_view<C, T>& rhs)
+{
+    return std::move(lhs.append(rhs.data(), rhs.size()));
+}
+
+
+template <typename C, typename T, typename A>
+std::basic_string<C, T, A> operator+(const basic_string_view<C, T>& lhs, const std::basic_string<C, T, A>& rhs)
+{
+    std::basic_string<C, T, A> output;
+    output.reserve(lhs.size() + rhs.size());
+    output.append(lhs.data(), lhs.size());
+    output.append(rhs.data(), rhs.size());
+    return output;
+}
+
+
+template <typename C, typename T, typename A>
+std::basic_string<C, T, A> operator+(const basic_string_view<C, T>& lhs, std::basic_string<C, T, A>&& rhs)
+{
+    return std::move(rhs.insert(0, lhs.data(), lhs.size()));
+}
+
+
 template <typename C, typename T>
-basic_string_view<C, T>::basic_string_view(const self& str):
+basic_string_view<C, T>::basic_string_view(const self_t& str):
     data_(str.data()),
     length_(str.length())
 {}
 
 
 template <typename C, typename T>
-basic_string_view<C, T>&  basic_string_view<C, T>::operator=(const self& str)
+basic_string_view<C, T>&  basic_string_view<C, T>::operator=(const self_t& str)
 {
     data_ = str.data_;
     length_ = str.length_;
@@ -712,14 +753,14 @@ basic_string_view<C, T>&  basic_string_view<C, T>::operator=(const self& str)
 
 
 template <typename C, typename T>
-basic_string_view<C, T>::basic_string_view(self&& str)
+basic_string_view<C, T>::basic_string_view(self_t&& str)
 {
     swap(str);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::operator=(self&& str) -> self&
+auto basic_string_view<C, T>::operator=(self_t&& str) -> self_t&
 {
     swap(str);
     return *this;
@@ -735,7 +776,7 @@ basic_string_view<C, T>::basic_string_view(const string<C, T, A>& str):
 
 
 template <typename C, typename T>
-basic_string_view<C, T>::basic_string_view(const self& str, size_type pos, size_type len)
+basic_string_view<C, T>::basic_string_view(const self_t& str, size_type pos, size_type len)
 {
     size_type size_ = str.size();
     if (pos > size_) {
@@ -750,7 +791,7 @@ template <typename C, typename T>
 template <typename A>
 basic_string_view<C, T>::basic_string_view(const string<C, T, A>& str, size_type pos, size_type len)
 {
-    operator=(self(str), pos, len);
+    operator=(self_t(str), pos, len);
 }
 
 
@@ -782,20 +823,6 @@ basic_string_view<C, T>&  basic_string_view<C, T>::operator=(const C* str)
 {
     assign(str);
     return *this;
-}
-
-
-template <typename C, typename T>
-auto basic_string_view<C, T>::begin() -> iterator
-{
-    return const_cast<iterator>(data_);
-}
-
-
-template <typename C, typename T>
-auto basic_string_view<C, T>::end() -> iterator
-{
-    return begin() + length_;
 }
 
 
@@ -877,14 +904,6 @@ bool basic_string_view<C, T>::empty() const noexcept
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::operator[](size_type pos) -> reference
-{
-    assert(pos <= size() && "string index out of bounds");
-    return *const_cast<char*>(data_ + pos);
-}
-
-
-template <typename C, typename T>
 auto basic_string_view<C, T>::operator[](size_type pos) const -> const_reference
 {
     assert(pos <= size() && "string index out of bounds");
@@ -893,24 +912,9 @@ auto basic_string_view<C, T>::operator[](size_type pos) const -> const_reference
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::at(size_type pos) -> reference
-{
-    return operator[](pos);
-}
-
-
-template <typename C, typename T>
 auto basic_string_view<C, T>::at(size_type pos) const -> const_reference
 {
     return operator[](pos);
-}
-
-
-template <typename C, typename T>
-auto basic_string_view<C, T>::front() -> reference
-{
-    assert(!empty() && "string::front(): string is empty");
-    return *const_cast<char*>(data_);
 }
 
 
@@ -923,14 +927,6 @@ auto basic_string_view<C, T>::front() const -> const_reference
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::back() -> reference
-{
-    assert(!empty() && "string::back(): string is empty");
-    return *const_cast<char*>(data_ + length_ - 1);
-}
-
-
-template <typename C, typename T>
 auto basic_string_view<C, T>::back() const -> const_reference
 {
     assert(!empty() && "string::back(): string is empty");
@@ -939,7 +935,7 @@ auto basic_string_view<C, T>::back() const -> const_reference
 
 
 template <typename C, typename T>
-basic_string_view<C, T>&  basic_string_view<C, T>::assign(const self& str)
+basic_string_view<C, T>&  basic_string_view<C, T>::assign(const self_t& str)
 {
     data_ = str.data();
     length_ = str.length();
@@ -955,7 +951,7 @@ basic_string_view<C, T>&  basic_string_view<C, T>::assign(const stl_type& str)
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::assign(const self& str, size_type subpos, size_type sublen) -> self&
+auto basic_string_view<C, T>::assign(const self_t& str, size_type subpos, size_type sublen) -> self_t&
 {
     size_type size = str.size();
     if (subpos > size) {
@@ -966,14 +962,14 @@ auto basic_string_view<C, T>::assign(const self& str, size_type subpos, size_typ
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::assign(const stl_type& str, size_type subpos, size_type sublen) -> self&
+auto basic_string_view<C, T>::assign(const stl_type& str, size_type subpos, size_type sublen) -> self_t&
 {
     return assign(basic_string_view<C, T>(str), subpos, sublen);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::assign(const_pointer s) -> self&
+auto basic_string_view<C, T>::assign(const_pointer s) -> self_t&
 {
     data_ = s;
     length_ = s ? traits_type::length(s) : 0;
@@ -982,7 +978,7 @@ auto basic_string_view<C, T>::assign(const_pointer s) -> self&
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::assign(const_pointer s, size_type n) -> self&
+auto basic_string_view<C, T>::assign(const_pointer s, size_type n) -> self_t&
 {
     data_ = s;
     length_ = n;
@@ -999,7 +995,7 @@ void basic_string_view<C, T>::swap(basic_string_view<C, T>& other)
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::operator++() -> self&
+auto basic_string_view<C, T>::operator++() -> self_t&
 {
     if (length_) {
         ++data_;
@@ -1016,7 +1012,7 @@ auto basic_string_view<C, T>::operator++() -> self&
 template <typename C, typename T>
 basic_string_view<C, T> basic_string_view<C, T>::operator++(int)
 {
-    self copy(*this);
+    self_t copy(*this);
     operator++();
 
     return copy;
@@ -1035,9 +1031,9 @@ basic_string_view<C, T>&  basic_string_view<C, T>::operator--()
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::operator--(int) -> self
+auto basic_string_view<C, T>::operator--(int) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     operator--();
 
     return copy;
@@ -1045,7 +1041,7 @@ auto basic_string_view<C, T>::operator--(int) -> self
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::operator+=(size_type shift) -> self&
+auto basic_string_view<C, T>::operator+=(size_type shift) -> self_t&
 {
     size_type offset = std::min<size_type>(shift, length_);
     data_ += offset;
@@ -1056,16 +1052,16 @@ auto basic_string_view<C, T>::operator+=(size_type shift) -> self&
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::operator+(size_type shift) -> self
+auto basic_string_view<C, T>::operator+(size_type shift) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     copy += shift;
     return copy;
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::operator-=(size_type shift) -> self&
+auto basic_string_view<C, T>::operator-=(size_type shift) -> self_t&
 {
     if (!empty()) {
         data_ -= shift;
@@ -1076,9 +1072,9 @@ auto basic_string_view<C, T>::operator-=(size_type shift) -> self&
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::operator-(size_type shift) -> self
+auto basic_string_view<C, T>::operator-(size_type shift) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     copy -= shift;
     return copy;
 }
@@ -1099,7 +1095,7 @@ auto basic_string_view<C, T>::data() const noexcept -> const_pointer
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find(const self& str, size_type pos) const noexcept -> size_type
+auto basic_string_view<C, T>::find(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_find(data()+pos, size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1143,7 +1139,7 @@ auto basic_string_view<C, T>::find(value_type c, size_type pos) const noexcept -
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_first_of(const self& str, size_type pos) const noexcept -> size_type
+auto basic_string_view<C, T>::find_first_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_find_of(data()+pos, size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1187,7 +1183,7 @@ auto basic_string_view<C, T>::find_first_of(value_type c, size_type pos) const n
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_first_not_of(const self& str, size_type pos) const noexcept -> size_type
+auto basic_string_view<C, T>::find_first_not_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_find_not_of(data()+pos, size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1231,7 +1227,7 @@ auto basic_string_view<C, T>::find_first_not_of(value_type c, size_type pos) con
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::rfind(const self& str, size_type pos) const noexcept -> size_type
+auto basic_string_view<C, T>::rfind(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_rfind(end(), size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1275,7 +1271,7 @@ auto basic_string_view<C, T>::rfind(value_type c, size_type pos) const noexcept 
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_last_of(const self& str, size_type pos) const noexcept -> size_type
+auto basic_string_view<C, T>::find_last_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_rfind_of(end(), size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1319,7 +1315,7 @@ auto basic_string_view<C, T>::find_last_of(value_type c, size_type pos) const no
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_last_not_of(const self& str, size_type pos) const noexcept -> size_type
+auto basic_string_view<C, T>::find_last_not_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
     auto found = string_rfind_not_of(end(), size()-pos, str.data(), str.size());
     return found ? found - data() : npos;
@@ -1363,7 +1359,7 @@ auto basic_string_view<C, T>::find_last_not_of(value_type c, size_type pos) cons
 
 
 template <typename C, typename T>
-int basic_string_view<C, T>::compare(const self& str) const noexcept
+int basic_string_view<C, T>::compare(const self_t& str) const noexcept
 {
     size_type lhs_size = size();
     size_type rhs_size = str.size();
@@ -1382,66 +1378,66 @@ int basic_string_view<C, T>::compare(const self& str) const noexcept
 template <typename C, typename T>
 int basic_string_view<C, T>::compare(const stl_type& str) const noexcept
 {
-    return compare(self(str));
+    return compare(self_t(str));
 }
 
 
 template <typename C, typename T>
-int basic_string_view<C, T>::compare(size_type pos, size_type len, const self& str) const
+int basic_string_view<C, T>::compare(size_type pos, size_type len, const self_t& str) const
 {
-    return self(*this, pos, len).compare(str);
+    return self_t(*this, pos, len).compare(str);
 }
 
 
 template <typename C, typename T>
 int basic_string_view<C, T>::compare(size_type pos, size_type len, const stl_type& str) const
 {
-    return self(*this, pos, len).compare(str);
+    return self_t(*this, pos, len).compare(str);
 }
 
 
 template <typename C, typename T>
 int basic_string_view<C, T>::compare(size_type pos, size_type len,
-    const self& str,
+    const self_t& str,
     size_type subpos,
     size_type sublen) const
 {
-    return self(*this, pos, len).compare(self(str, subpos, sublen));
+    return self_t(*this, pos, len).compare(self_t(str, subpos, sublen));
 }
 
 
 template <typename C, typename T>
 int basic_string_view<C, T>::compare(size_type pos, size_type len, const stl_type& str, size_type subpos, size_type sublen) const
 {
-    return self(*this, pos, len).compare(self(str, subpos, sublen));
+    return self_t(*this, pos, len).compare(self_t(str, subpos, sublen));
 }
 
 
 template <typename C, typename T>
 int basic_string_view<C, T>::compare(const_pointer s) const
 {
-    return compare(self(s));
+    return compare(self_t(s));
 }
 
 
 template <typename C, typename T>
 int basic_string_view<C, T>::compare(size_type pos, size_type len, const_pointer s) const
 {
-    return self(*this, pos, len).compare(s);
+    return self_t(*this, pos, len).compare(s);
 }
 
 
 template <typename C, typename T>
 int basic_string_view<C, T>::compare(size_type pos, size_type len, const_pointer s, size_type n) const
 {
-    return self(*this, pos, len).compare(s, n);
+    return self_t(*this, pos, len).compare(s, n);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::substr(size_type pos, size_type len) const -> self
+auto basic_string_view<C, T>::substr(size_type pos, size_type len) const -> self_t
 {
-    return self(*this, pos, len);
+    return self_t(*this, pos, len);
 }
 
 

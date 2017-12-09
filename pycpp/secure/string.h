@@ -220,8 +220,11 @@ public:
     template <typename Iter> self_t& assign(Iter first, Iter last);
     self_t& assign(std::initializer_list<value_type> list);
     self_t& assign(self_t&& str) noexcept;
+    // TODO: no correct insert??
     self_t& insert(size_t pos, const basic_string_view<Char, Traits>& str);
     self_t& insert(size_t pos, const basic_string_view<Char, Traits>& str, size_t subpos, size_t sublen);
+    self_t& insert(size_t pos, const char* s);
+    self_t& insert(size_t pos, const char* s, size_t n);
     self_t& insert(size_t pos, size_t n, char c);
     iterator insert(const_iterator p, size_t n, char c);
     iterator insert(const_iterator p, char c);
@@ -417,6 +420,57 @@ private:
 
     template <typename C, typename T, typename A>
     friend bool operator>=(const secure_basic_string<C, T, A>& lhs, const C* rhs);
+
+    // CONCATENATION OPERATORS
+    // Do not overload `std::string`, since it cannot securely
+    // store data.
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, const secure_basic_string<C, T, A>& rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, secure_basic_string<C, T, A>&& rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, const secure_basic_string<C, T, A>& rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, secure_basic_string<C, T, A>&& rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, const C* rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, const C* rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(const C* lhs, const secure_basic_string<C, T, A>& rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(const C* lhs, secure_basic_string<C, T, A>&& rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, C rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, C rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(C lhs, const secure_basic_string<C, T, A>& rhs);
+
+    template <typename C, typename T, typename A>
+    friend secure_basic_string<C, T, A> operator+(C lhs, secure_basic_string<C, T, A>&& rhs);
+
+    template <typename C, typename T1, typename A, typename T2>
+    friend secure_basic_string<C, T1, A> operator+(const secure_basic_string<C, T1, A>& lhs, const basic_string_view<C, T2>& rhs);
+
+    template <typename C, typename T1, typename A, typename T2>
+    friend secure_basic_string<C, T1, A> operator+(secure_basic_string<C, T1, A>&& lhs, const basic_string_view<C, T2>& rhs);
+
+    template <typename C, typename T1, typename A, typename T2>
+    friend secure_basic_string<C, T1, A> operator+(const basic_string_view<C, T2>& lhs, const secure_basic_string<C, T1, A>& rhs);
+
+    template <typename C, typename T1, typename A, typename T2>
+    friend secure_basic_string<C, T1, A> operator+(const basic_string_view<C, T2>& lhs, secure_basic_string<C, T1, A>&& rhs);
 };
 
 
@@ -657,6 +711,149 @@ template <typename C, typename T, typename A>
 bool operator>=(const secure_basic_string<C, T, A>& lhs, const C* rhs)
 {
     return lhs >= basic_string_view<C, T>(rhs);
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, const secure_basic_string<C, T, A>& rhs)
+{
+    secure_basic_string<C, T, A> output;
+    output.reserve(lhs.size() + rhs.size());
+    output.append(lhs.data(), lhs.size());
+    output.append(rhs.data(), rhs.size());
+    return output;
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, secure_basic_string<C, T, A>&& rhs)
+{
+    return std::move(lhs.append(rhs.data(), rhs.size()));
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, const secure_basic_string<C, T, A>& rhs)
+{
+    return std::move(lhs.append(rhs.data(), rhs.size()));
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, secure_basic_string<C, T, A>&& rhs)
+{
+    return std::move(rhs.insert(0, lhs.data(), lhs.size()));
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, const C* rhs)
+{
+    secure_basic_string<C, T, A> output;
+    size_t rhs_length = T::length(rhs);
+    output.reserve(lhs.size() + rhs_length);
+    output.append(lhs.data(), lhs.size());
+    output.append(rhs);
+    return output;
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, const C* rhs)
+{
+    return std::move(lhs.append(rhs));
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(const C* lhs, const secure_basic_string<C, T, A>& rhs)
+{
+    secure_basic_string<C, T, A> output;
+    size_t lhs_length = T::length(lhs);
+    output.reserve(lhs_length + rhs.size());
+    output.append(lhs, lhs_length);
+    output.append(rhs.data(), rhs.size());
+    return  output;
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(const C* lhs, secure_basic_string<C, T, A>&& rhs)
+{
+    return std::move(rhs.insert(0, lhs, T::length(lhs)));
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, C rhs)
+{
+    secure_basic_string<C, T, A> output;
+    output.reserve(lhs.size() + 1);
+    output.append(lhs.data(), lhs.size());
+    output.push_back(rhs);
+    return output;
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, C rhs)
+{
+    lhs.push_back(rhs);
+    return std::move(lhs);
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(C lhs, const secure_basic_string<C, T, A>& rhs)
+{
+    secure_basic_string<C, T, A> output;
+    output.reserve(1 + rhs.size());
+    output.push_back(lhs);
+    output.append(rhs.data(), rhs.size());
+    return  output;
+}
+
+
+template <typename C, typename T, typename A>
+secure_basic_string<C, T, A> operator+(C lhs, secure_basic_string<C, T, A>&& rhs)
+{
+    return std::move(rhs.insert(size_t(0), size_t(1), lhs));
+}
+
+
+template <typename C, typename T1, typename A, typename T2>
+secure_basic_string<C, T1, A> operator+(const secure_basic_string<C, T1, A>& lhs, const basic_string_view<C, T2>& rhs)
+{
+    secure_basic_string<C, T1, A> output;
+    output.reserve(lhs.size() + rhs.size());
+    output.append(lhs.data(), lhs.size());
+    output.append(rhs.data(), rhs.size());
+    return output;
+}
+
+
+template <typename C, typename T1, typename A, typename T2>
+secure_basic_string<C, T1, A> operator+(secure_basic_string<C, T1, A>&& lhs, const basic_string_view<C, T2>& rhs)
+{
+    return std::move(lhs.append(rhs.data(), rhs.size()));
+}
+
+
+template <typename C, typename T1, typename A, typename T2>
+secure_basic_string<C, T1, A> operator+(const basic_string_view<C, T2>& lhs, const secure_basic_string<C, T1, A>& rhs)
+{
+    secure_basic_string<C, T1, A> output;
+    output.reserve(lhs.size() + rhs.size());
+    output.append(lhs.data(), lhs.size());
+    output.append(rhs.data(), rhs.size());
+    return output;
+}
+
+
+template <typename C, typename T1, typename A, typename T2>
+secure_basic_string<C, T1, A> operator+(const basic_string_view<C, T2>& lhs, secure_basic_string<C, T1, A>&& rhs)
+{
+    return std::move(rhs.insert(0, lhs.data(), lhs.size()));
 }
 
 
@@ -1310,13 +1507,7 @@ auto secure_basic_string<C, T, A>::assign(self_t&& str) noexcept -> self_t&
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::insert(size_t pos, const basic_string_view<C, T>& str) -> self_t&
 {
-    if (pos > size()) {
-        throw std::out_of_range("secure_basic_string::erase().");
-    }
-
-    const_iterator p = begin() + pos;
-    insert(p, str.begin(), str.end());
-    return *this;
+    return insert(pos, str.data(), str.size());
 }
 
 
@@ -1324,6 +1515,26 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::insert(size_t pos, const basic_string_view<C, T>& str, size_t subpos, size_t sublen) -> self_t&
 {
     return insert(pos, str.substr(subpos, sublen));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::insert(size_t pos, const char* s) -> self_t&
+{
+    return insert(pos, s, traits_type::length(s));
+}
+
+
+template <typename C, typename T, typename A>
+auto secure_basic_string<C, T, A>::insert(size_t pos, const char* s, size_t n) -> self_t&
+{
+    if (pos > size()) {
+        throw std::out_of_range("secure_basic_string::erase().");
+    }
+
+    const_iterator p = begin() + pos;
+    insert(p, s, s + n);
+    return *this;
 }
 
 

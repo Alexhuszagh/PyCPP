@@ -28,8 +28,8 @@ PYCPP_BEGIN_NAMESPACE
    typedef std::deque<path_view_t> path_view_list_t;
    typedef std::deque<backup_path_t> backup_path_list_t;
    typedef std::deque<backup_path_view_t> backup_path_view_list_t;
-   std::u16string ansi_to_utf16(const std::string&);
-   std::string utf16_to_ansi(const std::u16string&);
+   std::u16string ansi_to_utf16(const string_view&);
+   std::string utf16_to_ansi(const u16string_view&);
 #   define path_to_string(s) codec_utf16_utf8(s)
 #   define backup_path_to_string(s) (s)
 #   define path_to_backup_path(s) utf16_to_ansi(s)

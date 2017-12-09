@@ -108,6 +108,18 @@ TEST(string_view, relational)
 }
 
 
+TEST(string_view, concatenation)
+{
+    std::string cpy1(STR), cpy2(STR);
+
+    string_view str(STR);
+    EXPECT_EQ(str + STR, STR + STR);
+    EXPECT_EQ(STR + str, STR + STR);
+    EXPECT_EQ(str + std::move(cpy1), STR + STR);
+    EXPECT_EQ(std::move(cpy2) + str, STR + STR);
+}
+
+
 TEST(string_view, iterator)
 {
     string_view str(STR);

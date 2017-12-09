@@ -83,10 +83,10 @@ static std::deque<Path> split_impl(const Path& path)
     Path basename(it, path.cend());
     Path dir(path.cbegin(), it);
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
-        dir.erase(dir.length() - 1);
+        dir = dir.substr(0, dir.length() - 1);
     }
 
-    return {std::move(dir), std::move(basename)};
+    return {dir, basename};
 }
 
 
@@ -633,19 +633,19 @@ path_t join_path(const path_view_list_t &paths)
 
 // SPLIT
 
-path_list_t split(const path_t& path)
+path_view_list_t path_split(const path_view_t& path)
 {
     return split_impl(path);
 }
 
 
-path_list_t splitdrive(const path_t& path)
+path_view_list_t path_splitdrive(const path_view_t& path)
 {
     return splitdrive_impl(path);
 }
 
 
-path_list_t splitunc(const path_t& path)
+path_view_list_t path_splitunc(const path_view_t& path)
 {
     return splitunc_impl(path);
 }
@@ -693,9 +693,9 @@ path_t expandvars(const path_t& path)
 }
 
 
-path_t normcase(const path_t& path)
+path_t normcase(const path_view_t& path)
 {
-    return path;
+    return path_t(path);
 }
 
 // MANIPULATION

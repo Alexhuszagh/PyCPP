@@ -366,13 +366,13 @@ static path_t read_link_impl(HANDLE handle)
     return out;
 }
 
-static int stat(const backup_path_t& path, stat_t* buffer, bool use_lstat)
+static int stat(const backup_path_view_t& path, stat_t* buffer, bool use_lstat)
 {
     return stat_impl(path, buffer, use_lstat);
 }
 
 
-static int wstat(const path_t& path, stat_t* buffer, bool use_lstat)
+static int wstat(const path_view_t& path, stat_t* buffer, bool use_lstat)
 {
     return stat_impl(path, buffer, use_lstat);
 }
