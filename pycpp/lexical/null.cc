@@ -39,7 +39,7 @@ const char* lexical_null_formatter::data() const
 
 const char* lexical_null_formatter::c_str() const
 {
-    return NULL_STRING.c_str();
+    return NULL_STRING.data();
 }
 
 

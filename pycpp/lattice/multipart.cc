@@ -8,6 +8,7 @@
 #include <pycpp/lattice/multipart.h>
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/string/unicode.h>
+#include <cassert>
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
@@ -121,6 +122,8 @@ static std::string read_fstream(const string_view& filename)
  */
 static std::string read_narrow(const string_view& filename)
 {
+    assert(filename.is_null_terminated());
+
     auto *name = filename.data();
     std::ifstream file(name, std::ios_base::in | std::ios_base::binary);
     std::ostringstream stream;

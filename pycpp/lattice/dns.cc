@@ -4,6 +4,7 @@
 #include <pycpp/lattice/dns.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 
@@ -113,6 +114,9 @@ address_t::operator addrinfo() const
 
 dns_lookup_t::dns_lookup_t(const string_view& host, const string_view& service)
 {
+    assert(host.is_null_terminated());
+    assert(service.is_null_terminated());
+
     // initialize our hints
     struct addrinfo hints, *result;
     memset(&hints, 0, sizeof(struct addrinfo));

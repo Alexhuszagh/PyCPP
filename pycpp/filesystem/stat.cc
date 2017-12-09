@@ -481,10 +481,12 @@ static void copy_native(const struct stat& src, stat_t& dst)
 
 stat_t stat(const path_view_t& path)
 {
+    assert(path.is_null_terminated());
+
     struct stat sb;
     stat_t data;
 
-    if (::stat(path.c_str(), &sb) == -1) {
+    if (::stat(path.data(), &sb) == -1) {
         handle_error(errno);
     }
     copy_native(sb, data);
@@ -495,10 +497,12 @@ stat_t stat(const path_view_t& path)
 
 stat_t lstat(const path_view_t& path)
 {
+    assert(path.is_null_terminated());
+
     struct stat sb;
     stat_t data;
 
-    if (::lstat(path.c_str(), &sb) == -1)  {
+    if (::lstat(path.data(), &sb) == -1)  {
         handle_error(errno);
     }
     copy_native(sb, data);

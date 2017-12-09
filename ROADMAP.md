@@ -2,9 +2,6 @@
 
 **Short-Term**
 
-    - Add asserts to make sure views are **NULL** terminated
-        - filesystem should be clear
-
     - Need to optimize narrow to wide conversions for the windows API
         - **CHECK** first if it's Unicode at the lowest level
 
