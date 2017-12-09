@@ -2,19 +2,6 @@
 
 **Short-Term**
 
-    - Test is_null_terminated()
-
-    - Need path views.
-        - filesystem.h
-        - access.h -- DONE
-        - exception.h -- DONE
-        - fd.h -- DONE
-        - home.h -- DONE
-        - iterator.h -- DONE
-        - path.h -- DONE
-        - stat.h -- DONE
-        - tmp.h -- DONE
-
     - Add asserts to make sure views are **NULL** terminated
         - filesystem should be clear
 

@@ -292,3 +292,15 @@ TEST(string_view, conversions)
     EXPECT_EQ(std::string(str), STR);
     EXPECT_EQ(std::string(other), "");
 }
+
+
+TEST(string_view, is_null_terminated)
+{
+    string_view str1(STR);
+    string_view str2;
+    string_view str3(str1.substr(0, 1));
+
+    EXPECT_TRUE(str1.is_null_terminated());
+    EXPECT_TRUE(str2.is_null_terminated());
+    EXPECT_FALSE(str3.is_null_terminated());
+}
