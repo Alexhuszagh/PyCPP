@@ -47,129 +47,144 @@ static std::deque<Path> splitext_impl(const Path& path)
 // NORMALIZATION
 
 
-template <typename Path, typename ToPath>
-static Path abspath_impl(const Path& path, ToPath topath)
+template <typename Path>
+struct abspath_impl
 {
-    typedef typename Path::value_type char_type;
-    static constexpr char_type separator(path_separator);
+    template <typename View, typename ToPath>
+    Path operator()(const View& path, ToPath topath)
+    {
+        typedef typename Path::value_type char_type;
+        static constexpr char_type separator(path_separator);
 
-    if (isabs(path)) {
-        return path;
+        if (isabs(path)) {
+            return Path(path);
+        }
+
+        auto list = path_splitdrive(path);
+        return Path(list.front()) + topath(getcwd()) + separator + normpath(path);
     }
-
-    auto list = path_splitdrive(path);
-    return Path(list.front()) + topath(getcwd()) + separator + normpath(path);
-}
+};
 
 
 template <typename Path>
-static Path realpath_impl(const Path& path)
+struct realpath_impl
 {
-    if (islink(path)) {
-        auto link = read_link(path);
-        if (isabs(link)) {
-            return link;
-        } else {
-            return abspath(link);
-        }
-    }
-
-    return path;
-}
-
-
-template <typename Path, typename ToPath, typename FromPath>
-static Path normpath_impl(const Path& path, ToPath topath, FromPath frompath)
-{
-    // get drive/root components
-    Path root;
-    auto list = path_splitdrive(path);
-    auto &drive = list.front();
-    auto &tail = list.back();
-    if (!tail.empty() && path_separators.find(tail.front()) != path_separators.npos) {
-        root += path_separator;
-        tail = tail.substr(1);
-    }
-
-    // get directory components
-    auto tail_string = frompath(tail);
-    auto dirs = split(tail_string, path_to_string(path_separators));
-    std::vector<std::string> buffer;
-    for (auto it = dirs.begin(); it != dirs.end(); ++it) {
-        if (*it == current_directory) {
-            if (root.empty() && buffer.empty() && std::distance(it, dirs.end()) == 1) {
-                buffer.push_back(*it);
+    template <typename View>
+    Path operator()(const View& path)
+    {
+        if (islink(path)) {
+            auto link = read_link(path);
+            if (isabs(link)) {
+                return link;
+            } else {
+                return abspath(link);
             }
-        } else if (*it == parent_directory) {
-            // Erase if the buffer is not empty and the last element is not ..
-            // otherwise, we have a relative path, and need to keep the item
-            // If the path is "./..", we just want "..".
-            // If the buffer is empty and it has a root path, we're already
-            // at the root, so skip the item. Otherwise, we have a relative
-            // path, so add the element.
-            if (!buffer.empty()) {
-                auto &parent = buffer.back();
-                if (parent == current_directory) {
-                    buffer.erase(buffer.end()-1);
+        }
+
+        return Path(path);
+    }
+};
+
+
+template <typename Path>
+struct normpath_impl
+{
+    template <typename View, typename ToPath, typename FromPath>
+    Path operator()(const View& path, ToPath topath, FromPath frompath)
+    {
+        // get drive/root components
+        Path root;
+        auto list = path_splitdrive(path);
+        auto &drive = list.front();
+        auto &tail = list.back();
+        if (!tail.empty() && path_separators.find(tail.front()) != path_separators.npos) {
+            root += path_separator;
+            tail = tail.substr(1);
+        }
+
+        // get directory components
+        auto tail_string = frompath(tail);
+        auto dirs = split(tail_string, path_to_string(path_separators));
+        std::vector<std::string> buffer;
+        for (auto it = dirs.begin(); it != dirs.end(); ++it) {
+            if (*it == current_directory) {
+                if (root.empty() && buffer.empty() && std::distance(it, dirs.end()) == 1) {
                     buffer.push_back(*it);
-                } else if (parent == parent_directory) {
-                    buffer.emplace_back(*it);
-                } else {
-                    buffer.erase(buffer.end()-1);
                 }
-            } else if (root.empty()) {
+            } else if (*it == parent_directory) {
+                // Erase if the buffer is not empty and the last element is not ..
+                // otherwise, we have a relative path, and need to keep the item
+                // If the path is "./..", we just want "..".
+                // If the buffer is empty and it has a root path, we're already
+                // at the root, so skip the item. Otherwise, we have a relative
+                // path, so add the element.
+                if (!buffer.empty()) {
+                    auto &parent = buffer.back();
+                    if (parent == current_directory) {
+                        buffer.erase(buffer.end()-1);
+                        buffer.push_back(*it);
+                    } else if (parent == parent_directory) {
+                        buffer.emplace_back(*it);
+                    } else {
+                        buffer.erase(buffer.end()-1);
+                    }
+                } else if (root.empty()) {
+                    buffer.emplace_back(*it);
+                }
+            } else {
                 buffer.emplace_back(*it);
             }
-        } else {
-            buffer.emplace_back(*it);
         }
-    }
 
-    // create output
-    Path output(drive);
-    output += root;
-    for (auto &item: buffer) {
-        output += topath(item);
-        output += path_separator;
-    }
-    if (!buffer.empty()) {
-        output.erase(output.size() - 1);
-    }
-    if (output.empty()) {
-        return topath(".");
-    }
+        // create output
+        Path output(drive);
+        output += root;
+        for (auto &item: buffer) {
+            output += topath(item);
+            output += path_separator;
+        }
+        if (!buffer.empty()) {
+            output.erase(output.size() - 1);
+        }
+        if (output.empty()) {
+            return topath(".");
+        }
 
-    return output;
-}
+        return output;
+    }
+};
 
 
 template <typename Path>
-Path relpath_impl(const Path& path, const Path& start)
+struct relpath_impl
 {
-    typedef typename Path::value_type char_type;
-    typedef typename Path::iterator iterator;
+    template <typename View>
+    Path operator()(const View& path, const View& start)
+    {
+        typedef typename Path::value_type char_type;
+        typedef typename Path::iterator iterator;
 
-    auto length = std::min(path.size(), start.size());
-    auto f1 = path.begin();
-    auto l1 = f1 + length;
-    auto f2 = start.begin();
-    auto it = std::mismatch(f1, l1, f2).first;
+        auto length = std::min(path.size(), start.size());
+        auto f1 = path.begin();
+        auto l1 = f1 + length;
+        auto f2 = start.begin();
+        auto it = std::mismatch(f1, l1, f2).first;
 
-    if (it == path.end()) {
-        return Path();
-    } else if (path_separators.find(*it) != path_separators.npos) {
-        ++it;
+        if (it == path.end()) {
+            return Path();
+        } else if (path_separators.find(*it) != path_separators.npos) {
+            ++it;
+        }
+
+        return Path(it, path.end());
     }
 
-    return Path(it, path.end());
-}
-
-
-template <typename Path, typename ToPath>
-Path relpath_impl(const Path& path, ToPath topath)
-{
-    return relpath_impl(path, topath(getcwd()));
-}
+    template <typename View, typename ToPath>
+    Path operator()(const View& path, ToPath topath)
+    {
+        return operator()(path, View(topath(getcwd())));
+    }
+};
 
 
 // FUNCTIONS
@@ -240,21 +255,21 @@ path_view_list_t path_splitext(const path_view_t& path)
 // NORMALIZATION
 
 
-path_t abspath(const path_t& path)
+path_t abspath(const path_view_t& path)
 {
-    return abspath_impl(path, [](const path_t& p) {
+    return abspath_impl<path_t>()(path, [](const path_t& p) {
         return p;
     });
 }
 
 
-path_t realpath(const path_t& path)
+path_t realpath(const path_view_t& path)
 {
-    return realpath_impl(path);
+    return realpath_impl<path_t>()(path);
 }
 
 
-path_t normpath(const path_t& path)
+path_t normpath(const path_view_t& path)
 {
     auto topath = [](const string_view& str) -> path_t
     {
@@ -265,21 +280,21 @@ path_t normpath(const path_t& path)
         return std::string(path_to_string(p));
     };
 
-    return normpath_impl(path, topath, frompath);
+    return normpath_impl<path_t>()(path, topath, frompath);
 }
 
 
-path_t relpath(const path_t& path)
+path_t relpath(const path_view_t& path)
 {
-    return relpath_impl(path, [](const path_t& p) {
+    return relpath_impl<path_t>()(path, [](const path_view_t& p) {
         return p;
     });
 }
 
 
-path_t relpath(const path_t& path, const path_t& start)
+path_t relpath(const path_view_t& path, const path_view_t& start)
 {
-    return relpath_impl(path, start);
+    return relpath_impl<path_t>()(path, start);
 }
 
 #if defined(OS_WINDOWS)          // BACKUP PATH
@@ -293,21 +308,21 @@ backup_path_view_list_t path_splitext(const backup_path_view_t& path)
 
 // NORMALIZATION
 
-backup_path_t abspath(const backup_path_t& path)
+backup_path_t abspath(const backup_path_view_t& path)
 {
-    return abspath_impl(path, [](const path_t& p) {
+    return abspath_impl<backup_path_t>()(path, [](const path_t& p) {
         return path_to_backup_path(p);
     });
 }
 
 
-backup_path_t realpath(const backup_path_t& path)
+backup_path_t realpath(const backup_path_view_t& path)
 {
-    return realpath_impl(path);
+    return realpath_impl<backup_path_t>()(path);
 }
 
 
-backup_path_t normpath(const backup_path_t& path)
+backup_path_t normpath(const backup_path_view_t& path)
 {
     auto topath = [](const string_view& str) -> backup_path_t
     {
@@ -318,21 +333,21 @@ backup_path_t normpath(const backup_path_t& path)
         return std::string(backup_path_to_string(p));
     };
 
-    return normpath_impl(path, topath, frompath);
+    return normpath_impl<backup_path_t>()(path, topath, frompath);
 }
 
 
-backup_path_t relpath(const backup_path_t& path)
+backup_path_t relpath(const backup_path_view_t& path)
 {
-    return relpath_impl(path, [](const path_t& p) {
+    return relpath_impl<backup_path_t>()(path, [](const path_view_t& p) {
         return path_to_backup_path(p);
     });
 }
 
 
-backup_path_t relpath(const backup_path_t& path, const backup_path_t& start)
+backup_path_t relpath(const backup_path_view_t& path, const backup_path_view_t& start)
 {
-    return relpath_impl(path, start);
+    return relpath_impl<backup_path_t>()(path, start);
 }
 
 #endif

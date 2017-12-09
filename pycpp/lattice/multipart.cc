@@ -210,7 +210,7 @@ part_value_t::part_value_t(const string_view& filename, const string_view& conte
 
 std::string part_value_t::basename() const
 {
-    return PYCPP_NAMESPACE::base_name(filename);
+    return std::string(base_name(filename));
 }
 
 

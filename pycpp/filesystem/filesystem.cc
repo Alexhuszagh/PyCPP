@@ -70,16 +70,20 @@ static range<directory_iterator> iterdir_impl(const Path& path)
 
 
 
-template <typename Path, typename ToPath>
-static std::deque<Path> listdir_impl(const Path& path, ToPath topath)
+template <typename Path>
+struct listdir_impl
 {
-    std::deque<Path> list;
-    for (auto entry: iterdir_impl(path)) {
-        list.emplace_back(topath(entry.basename()));
-    }
+    template <typename View, typename ToPath>
+    std::deque<Path> operator()(const View& path, ToPath topath)
+    {
+        std::deque<Path> list;
+        for (auto entry: iterdir_impl(path)) {
+            list.emplace_back(topath(entry.basename()));
+        }
 
-    return list;
-}
+        return list;
+    }
+};
 
 
 // FUNCTIONS
@@ -117,15 +121,15 @@ bool remove_path(const path_t& path, bool recursive)
 }
 
 
-range<directory_iterator> iterdir(const path_t& path)
+range<directory_iterator> iterdir(const path_view_t& path)
 {
     return iterdir_impl(path);
 }
 
 
-path_list_t listdir(const path_t& path)
+path_list_t listdir(const path_view_t& path)
 {
-    return listdir_impl(path, [](path_t&& path) {
+    return listdir_impl<path_t>()(path, [](path_t&& path) {
         return std::forward<path_t>(path);
     });
 }
@@ -170,15 +174,15 @@ bool remove_path(const backup_path_t& path, bool recursive)
 }
 
 
-range<directory_iterator> iterdir(const backup_path_t& path)
+range<directory_iterator> iterdir(const backup_path_view_t& path)
 {
     return iterdir_impl(path);
 }
 
 
-backup_path_list_t listdir(const backup_path_t& path)
+backup_path_list_t listdir(const backup_path_view_t& path)
 {
-    return listdir_impl(path, [](path_t&& path) {
+    return listdir_impl<backup_path_t>()(path, [](path_t&& path) {
         return path_to_backup_path(path);
     });
 }

@@ -96,7 +96,7 @@ static int get_error_code()
 }
 
 
-static bool has_wildcards(const path_t& path)
+static bool has_wildcards(const path_view_t& path)
 {
     return std::any_of(path.begin(), path.end(), [](native_char_type c) {
         return c == path_prefix('*') || c == path_prefix('?');
@@ -104,7 +104,7 @@ static bool has_wildcards(const path_t& path)
 }
 
 
-static bool has_wildcards(const backup_path_t& path)
+static bool has_wildcards(const backup_path_view_t& path)
 {
     return std::any_of(path.begin(), path.end(), [](backup_char_type c) {
         return c == '*' || c == '?';
@@ -143,7 +143,7 @@ struct directory_data_impl
     virtual path_t basename() const = 0;
     virtual const path_t& dirname() const = 0;
     const stat_t& stat();
-    void open(HANDLE& handle, WIN32_FIND_DATAW*& data, const path_t& path);
+    void open(HANDLE& handle, WIN32_FIND_DATAW*& data, const path_view_t& path);
 
     void increment(HANDLE& handle, WIN32_FIND_DATAW*& data);
 };
@@ -155,7 +155,7 @@ directory_data_impl::~directory_data_impl()
 }
 
 
-void directory_data_impl::open(HANDLE& handle, WIN32_FIND_DATAW*& data, const path_t& path)
+void directory_data_impl::open(HANDLE& handle, WIN32_FIND_DATAW*& data, const path_view_t& path)
 {
     // don't allow wildcards in the search
     if (has_wildcards(path)) {
@@ -164,8 +164,7 @@ void directory_data_impl::open(HANDLE& handle, WIN32_FIND_DATAW*& data, const pa
 
     // get data
     auto find_data = new WIN32_FIND_DATAW;
-    path_list_t paths = {path, path_prefix("*")};
-    path_t joined = join_path(paths);
+    path_t joined = join_path({path, path_prefix("*")});
     auto str = reinterpret_cast<const wchar_t*>(joined.data());
 
     // create our handle
@@ -231,8 +230,8 @@ struct directory_data: directory_data_impl
     virtual path_t basename() const override;
     virtual const path_t& dirname() const override;
 
-    void open(const path_t& path);
-    void open(const backup_path_t& path);
+    void open(const path_view_t& path);
+    void open(const backup_path_view_t& path);
     directory_data& operator++();
     directory_data operator++(int);
     bool operator==(const directory_data&) const;
@@ -254,14 +253,14 @@ path_t directory_data::basename() const
 }
 
 
-void directory_data::open(const path_t& p)
+void directory_data::open(const path_view_t& p)
 {
-    path = p;
+    path = path_t(p);
     directory_data_impl::open(handle, data, path);
 }
 
 
-void directory_data::open(const backup_path_t& p)
+void directory_data::open(const backup_path_view_t& p)
 {
     open(ansi_to_utf16(p));
 }
@@ -301,8 +300,8 @@ struct recursive_directory_data: directory_data_impl
     virtual path_t basename() const override;
     virtual const path_t& dirname() const override;
 
-    void open(const path_t& path);
-    void open(const backup_path_t& path);
+    void open(const path_view_t& path);
+    void open(const backup_path_view_t& path);
     recursive_directory_data& operator++();
     recursive_directory_data operator++(int);
     bool operator==(const recursive_directory_data&) const;
@@ -328,16 +327,16 @@ path_t recursive_directory_data::basename() const
 }
 
 
-void recursive_directory_data::open(const path_t& p)
+void recursive_directory_data::open(const path_view_t& p)
 {
-    path_list.emplace_back(p);
+    path_list.emplace_back(path_t(p));
     handle_list.emplace_back(INVALID_HANDLE_VALUE);
     data_list.emplace_back(nullptr);
     directory_data_impl::open(handle_list.back(), data_list.back(), path_list.back());
 }
 
 
-void recursive_directory_data::open(const backup_path_t& p)
+void recursive_directory_data::open(const backup_path_view_t& p)
 {
     open(ansi_to_utf16(p));
 }
@@ -382,7 +381,7 @@ recursive_directory_data::operator bool() const
 }
 
 
-directory_iterator::directory_iterator(const path_t& path)
+directory_iterator::directory_iterator(const path_view_t& path)
 {
     entry_.ptr_.reset(new directory_data);
     entry_.ptr_->open(path);
@@ -390,7 +389,7 @@ directory_iterator::directory_iterator(const path_t& path)
 }
 
 
-directory_iterator::directory_iterator(const backup_path_t& path)
+directory_iterator::directory_iterator(const backup_path_view_t& path)
 {
     entry_.ptr_.reset(new directory_data);
     entry_.ptr_->open(path);
@@ -398,7 +397,7 @@ directory_iterator::directory_iterator(const backup_path_t& path)
 }
 
 
-recursive_directory_iterator::recursive_directory_iterator(const path_t& path)
+recursive_directory_iterator::recursive_directory_iterator(const path_view_t& path)
 {
     entry_.ptr_.reset(new recursive_directory_data);
     entry_.ptr_->open(path);
@@ -406,7 +405,7 @@ recursive_directory_iterator::recursive_directory_iterator(const path_t& path)
 }
 
 
-recursive_directory_iterator::recursive_directory_iterator(const backup_path_t& path)
+recursive_directory_iterator::recursive_directory_iterator(const backup_path_view_t& path)
 {
     entry_.ptr_.reset(new recursive_directory_data);
     entry_.ptr_->open(path);
@@ -431,7 +430,7 @@ struct directory_data_impl
     path_t basename() const;
     virtual const path_t& dirname() const = 0;
     const stat_t& stat();
-    void open(DIR*& dir, const path_t& path);
+    void open(DIR*& dir, const path_view_t& path);
 
     void increment(DIR*& dir);
     bool operator==(const directory_data_impl&) const;
@@ -451,7 +450,7 @@ path_t directory_data_impl::basename() const
 }
 
 
-void directory_data_impl::open(DIR*& dir, const path_t& path)
+void directory_data_impl::open(DIR*& dir, const path_view_t& path)
 {
     dir = opendir(path.data());
     if (dir == nullptr) {
@@ -501,7 +500,7 @@ struct directory_data: directory_data_impl
     path_t path;
 
     ~directory_data();
-    void open(const path_t& path);
+    void open(const path_view_t& path);
 
     virtual path_t fullpath() const override;
     virtual const path_t& dirname() const override;
@@ -519,10 +518,10 @@ directory_data::~directory_data()
 }
 
 
-void directory_data::open(const path_t& p)
+void directory_data::open(const path_view_t& p)
 {
+    path = path_t(p);
     directory_data_impl::open(dir, p);
-    path = p;
 }
 
 
@@ -551,7 +550,7 @@ struct recursive_directory_data: directory_data_impl
     virtual path_t fullpath() const override;
     virtual const path_t& dirname() const override;
 
-    void open(const path_t& path);
+    void open(const path_view_t& path);
     recursive_directory_data& operator++();
     recursive_directory_data operator++(int);
     bool operator==(const recursive_directory_data&) const;
@@ -567,9 +566,9 @@ recursive_directory_data::~recursive_directory_data()
 }
 
 
-void recursive_directory_data::open(const path_t& p)
+void recursive_directory_data::open(const path_view_t& p)
 {
-    path_list.emplace_back(p);
+    path_list.emplace_back(path_t(p));
     dir_list.emplace_back(nullptr);
     directory_data_impl::open(dir_list.back(), p);
 }
@@ -608,7 +607,7 @@ bool recursive_directory_data::operator==(const recursive_directory_data& rhs) c
 }
 
 
-directory_iterator::directory_iterator(const path_t& path)
+directory_iterator::directory_iterator(const path_view_t& path)
 {
     entry_.ptr_.reset(new directory_data);
     entry_.ptr_->open(path);
@@ -616,7 +615,7 @@ directory_iterator::directory_iterator(const path_t& path)
 }
 
 
-recursive_directory_iterator::recursive_directory_iterator(const path_t& path)
+recursive_directory_iterator::recursive_directory_iterator(const path_view_t& path)
 {
     entry_.ptr_.reset(new recursive_directory_data);
     entry_.ptr_->open(path);

@@ -106,9 +106,9 @@ public:
     self_t& operator=(self_t&&) = default;
     ~directory_iterator();
 
-    directory_iterator(const path_t& path);
+    directory_iterator(const path_view_t& path);
 #if defined(OS_WINDOWS)
-    directory_iterator(const backup_path_t& path);
+    directory_iterator(const backup_path_view_t& path);
 #endif
 
     // OPERATORS
@@ -201,9 +201,9 @@ public:
     self_t& operator=(self_t&&) = default;
     ~recursive_directory_iterator();
 
-    recursive_directory_iterator(const path_t& path);
+    recursive_directory_iterator(const path_view_t& path);
 #if defined(OS_WINDOWS)
-    recursive_directory_iterator(const backup_path_t& path);
+    recursive_directory_iterator(const backup_path_view_t& path);
 #endif
 
     // OPERATORS

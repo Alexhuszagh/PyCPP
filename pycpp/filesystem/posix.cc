@@ -119,7 +119,7 @@ static Path dir_name_impl(const Path& path)
     auto it = stem_impl(path);
     Path dir(path.cbegin(), it);
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
-        dir.erase(dir.length() - 1);
+        dir = dir.substr(0, dir.length() - 1);
     }
 
     return dir;
@@ -127,50 +127,58 @@ static Path dir_name_impl(const Path& path)
 
 
 template <typename Path>
-static Path expanduser_impl(const Path& path)
+struct expanduser_impl
 {
-    switch (path.size()) {
-        case 0:
-            return path;
-        case 1:
-            return path[0] == '~' ? gethomedir() : path;
-        default: {
-            if (path[0] == '~' && path_separators.find(path[1]) != path_separators.npos) {
-                return gethomedir() + path.substr(1);
+    template <typename View>
+    Path operator()(const View& path)
+    {
+        switch (path.size()) {
+            case 0:
+                return Path(path);
+            case 1:
+                return path[0] == '~' ? gethomedir() : Path(path);
+            default: {
+                if (path[0] == '~' && path_separators.find(path[1]) != path_separators.npos) {
+                    return gethomedir() + path.substr(1);
+                }
+                return Path(path);
             }
-            return path;
         }
     }
-}
+};
 
 
-template <typename Path, typename FromPath, typename ToPath>
-static Path expandvars_impl(const Path& path, FromPath frompath, ToPath topath)
+template <typename Path>
+struct expandvars_impl
 {
-    // handle any error codes
-    wordexp_t word;
-    switch (wordexp(frompath(path).data(), &word, 0)) {
-        case 0:
-            break;
-        case WRDE_NOSPACE:
-            // memory allocation issue, likely partially allocated
+    template <typename View, typename FromPath, typename ToPath>
+    Path operator()(const View& path, FromPath frompath, ToPath topath)
+    {
+        // handle any error codes
+        wordexp_t word;
+        switch (wordexp(frompath(path).data(), &word, 0)) {
+            case 0:
+                break;
+            case WRDE_NOSPACE:
+                // memory allocation issue, likely partially allocated
+                wordfree(&word);
+            default:
+                return Path(path);
+        }
+
+
+        // process our words
+        char** ptr = word.we_wordv;
+        if (word.we_wordc == 0) {
             wordfree(&word);
-        default:
-            return path;
+            return Path(path);
+        } else {
+            auto out = topath(ptr[0]);
+            wordfree(&word);
+            return out;
+        }
     }
-
-
-    // process our words
-    char** ptr = word.we_wordv;
-    if (word.we_wordc == 0) {
-        wordfree(&word);
-        return path;
-    } else {
-        auto out = topath(ptr[0]);
-        wordfree(&word);
-        return out;
-    }
-}
+};
 
 
 template <typename Path>
@@ -659,27 +667,27 @@ bool isabs(const path_view_t& path)
 }
 
 
-path_t base_name(const path_t& path)
+path_view_t base_name(const path_view_t& path)
 {
     return base_name_impl(path);
 }
 
 
-path_t dir_name(const path_t& path)
+path_view_t dir_name(const path_view_t& path)
 {
     return dir_name_impl(path);
 }
 
 
-path_t expanduser(const path_t& path)
+path_t expanduser(const path_view_t& path)
 {
-    return expanduser_impl(path);
+    return expanduser_impl<path_t>()(path);
 }
 
 
-path_t expandvars(const path_t& path)
+path_t expandvars(const path_view_t& path)
 {
-    auto frompath = [](const path_t& p) -> const std::string&
+    auto frompath = [](const path_view_t& p) -> const path_view_t&
     {
         return p;
     };
@@ -689,7 +697,7 @@ path_t expandvars(const path_t& path)
         return path_t(p);
     };
 
-    return expandvars_impl(path, frompath, topath);
+    return expandvars_impl<path_t>()(path, frompath, topath);
 }
 
 
@@ -797,13 +805,13 @@ bool copy_dir(const path_t& src, const path_t& dst, bool recursive, bool replace
 }
 
 
-bool mkdir(const path_t& path, int mode)
+bool mkdir(const path_view_t& path, int mode)
 {
     return ::mkdir(path.data(), static_cast<mode_t>(mode)) == 0;
 }
 
 
-bool makedirs(const path_t& path, int mode)
+bool makedirs(const path_view_t& path, int mode)
 {
     if (!exists(path)) {
         makedirs(dir_name(path), mode);

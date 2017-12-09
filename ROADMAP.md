@@ -4,12 +4,12 @@
 
     - Need path views.
         - filesystem.h
-        - access.h
-        - exception.h
-        - fd.h
-        - home.h
-        - iterator.h
-        - path.h
+        - access.h -- DONE
+        - exception.h -- DONE
+        - fd.h -- DONE
+        - home.h -- DONE
+        - iterator.h -- DONE
+        - path.h -- DONE
         - stat.h -- DONE
         - tmp.h -- DONE
 
@@ -19,8 +19,10 @@
         - We want to minimize the number of things an allocator can't be used for.
         - filesystem
             -- All besides filesystem
-    - Need to implement splititer
     - Implement more reference (intrusive) containers.
+        - vector -- DONE
+        - deque -- DONE
+        - Rest of the STL?
 
     - Implement a sorted vector
         - unittests

@@ -202,12 +202,12 @@ bool samefile(const path_view_t& p1, const path_view_t& p2);
 /**
  *  \brief Iterate over all items in the directory.
  */
-range<directory_iterator> iterdir(const path_t& path);
+range<directory_iterator> iterdir(const path_view_t& path);
 
 /**
  *  \brief List all items in the directory.
  */
-path_list_t listdir(const path_t& path);
+path_list_t listdir(const path_view_t& path);
 
 // SPLIT
 
@@ -241,27 +241,27 @@ path_t read_link(const path_view_t& path);
 /**
  *  \brief Return the absolute path relative to the base.
  */
-path_t abspath(const path_t& path);
+path_t abspath(const path_view_t& path);
 
 /**
  *  \brief Return name of file, relative to parent directory.
  */
-path_t base_name(const path_t& path);
+path_view_t base_name(const path_view_t& path);
 
 /**
  *  \brief Return the path of the parent directory.
  */
-path_t dir_name(const path_t& path);
+path_view_t dir_name(const path_view_t& path);
 
 /**
  *  \brief Convert first ~ to username if followed by path separator.
  */
-path_t expanduser(const path_t& path);
+path_t expanduser(const path_view_t& path);
 
 /**
  *  \brief Perform variable expansion for `$name`, `${name}`, and `%name%`.
  */
-path_t expandvars(const path_t& path);
+path_t expandvars(const path_view_t& path);
 
 /**
  *  \brief Collapse redundant relative and normalize case.
@@ -278,7 +278,7 @@ path_t normcase(const path_view_t& path);
  *
  *  \warning This method will not preserve path containing symlinks.
  */
-path_t normpath(const path_t& path);
+path_t normpath(const path_view_t& path);
 
 /**
  *  \brief Convert path to a realpath, converting any symlinks in the process.
@@ -286,17 +286,17 @@ path_t normpath(const path_t& path);
  *  In order for relative path operators to properly work ("." and ".."),
  *  the path is read from the topmost directory down.
  */
-path_t realpath(const path_t& path);
+path_t realpath(const path_view_t& path);
 
 /**
  *  \brief Get a relative path from the current working directory.
  */
-path_t relpath(const path_t& path);
+path_t relpath(const path_view_t& path);
 
 /**
  *  \brief Get a relative path from start.
  */
-path_t relpath(const path_t& path, const path_t& start);
+path_t relpath(const path_view_t& path, const path_view_t& start);
 
 // MANIPULATION
 
@@ -313,12 +313,12 @@ bool mklink(const path_t& target, const path_t& dst, bool replace = false);
 /**
  *  \brief Make directory at path, return if successful.
  */
-bool mkdir(const path_t& path, int = 0777);
+bool mkdir(const path_view_t& path, int = 0777);
 
 /**
  *  \brief Make directory at path including all parents, return if successful.
  */
-bool makedirs(const path_t& path, int = 0777);
+bool makedirs(const path_view_t& path, int = 0777);
 
 /**
  *  \brief Move symbolic link, as if by rename, and return if rename was successful.
@@ -459,22 +459,22 @@ backup_path_t join_path(const backup_path_view_list_t &paths);
 
 stat_t stat(const backup_path_view_t& path);
 stat_t lstat(const backup_path_view_t& path);
-time_t getatime(const backup_path_t& path);
-time_t getmtime(const backup_path_t& path);
-time_t getctime(const backup_path_t& path);
-off_t getsize(const backup_path_t& path);
-bool isfile(const backup_path_t& path);
-bool isdir(const backup_path_t& path);
-bool islink(const backup_path_t& path);
-bool exists(const backup_path_t& path);
-bool lexists(const backup_path_t& path);
+time_t getatime(const backup_path_view_t& path);
+time_t getmtime(const backup_path_view_t& path);
+time_t getctime(const backup_path_view_t& path);
+off_t getsize(const backup_path_view_t& path);
+bool isfile(const backup_path_view_t& path);
+bool isdir(const backup_path_view_t& path);
+bool islink(const backup_path_view_t& path);
+bool exists(const backup_path_view_t& path);
+bool lexists(const backup_path_view_t& path);
 bool isabs(const backup_path_view_t& path);
-bool samefile(const backup_path_t& p1, const backup_path_t& p2);
+bool samefile(const backup_path_view_t& p1, const backup_path_view_t& p2);
 
 // DIRECTORY
 
-range<directory_iterator> iterdir(const backup_path_t& path);
-backup_path_list_t listdir(const backup_path_t& path);
+range<directory_iterator> iterdir(const backup_path_view_t& path);
+backup_path_list_t listdir(const backup_path_view_t& path);
 
 // SPLIT
 
@@ -486,23 +486,23 @@ backup_path_view_list_t path_splitunc(const backup_path_view_t& path);
 // NORMALIZATION
 
 backup_path_t read_link(const backup_path_view_t& path);
-backup_path_t abspath(const backup_path_t& path);
-backup_path_t base_name(const backup_path_t& path);
-backup_path_t dir_name(const backup_path_t& path);
-backup_path_t expanduser(const backup_path_t& path);
-backup_path_t expandvars(const backup_path_t& path);
+backup_path_t abspath(const backup_path_view_t& path);
+backup_path_view_t base_name(const backup_path_view_t& path);
+backup_path_view_t dir_name(const backup_path_view_t& path);
+backup_path_t expanduser(const backup_path_view_t& path);
+backup_path_t expandvars(const backup_path_view_t& path);
 backup_path_t normcase(const backup_path_view_t& path);
-backup_path_t normpath(const backup_path_t& path);
-backup_path_t realpath(const backup_path_t& path);
-backup_path_t relpath(const backup_path_t& path);
-backup_path_t relpath(const backup_path_t& path, const backup_path_t& start);
+backup_path_t normpath(const backup_path_view_t& path);
+backup_path_t realpath(const backup_path_view_t& path);
+backup_path_t relpath(const backup_path_view_t& path);
+backup_path_t relpath(const backup_path_view_t& path, const backup_path_view_t& start);
 
 // MANIPULATION
 
 bool copystat(const backup_path_view_t& src, const backup_path_view_t& dst);
 bool mklink(const backup_path_t& target, const backup_path_t& dst, bool replace = false);
-bool mkdir(const backup_path_t& path, int = 0777);
-bool makedirs(const backup_path_t& path, int = 0777);
+bool mkdir(const backup_path_view_t& path, int = 0777);
+bool makedirs(const backup_path_view_t& path, int = 0777);
 bool move_link(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
 bool move_file(const backup_path_t& src, const backup_path_t& dst, bool replace = false);
 bool move_dir(const backup_path_t& src, const backup_path_t& dst, bool replace = false);

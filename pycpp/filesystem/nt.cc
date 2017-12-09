@@ -216,46 +216,54 @@ static Path dir_name_impl(const Path& path)
     auto it = stem_impl(tail);
     Path dir(tail.cbegin(), it);
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
-        dir.erase(dir.length() - 1);
+        dir = dir.substr(0, dir.length() - 1);
     }
 
     return dir;
 }
 
 
-template <typename Path, typename HomeFunc>
-static Path expanduser_impl(const Path& path, HomeFunc homefunc)
+template <typename Path>
+struct expanduser_impl
 {
-    switch (path.size()) {
-        case 0:
-            return path;
-        case 1:
-            return path[0] == '~' ? homefunc() : path;
-        default: {
-            if (path[0] == '~' && path_separators.find(path[1]) != path_separators.npos) {
-                return homefunc() + path.substr(1);
+    template <typename View, typename HomeFunc>
+    Path operator()(const View& path, HomeFunc homefunc)
+    {
+        switch (path.size()) {
+            case 0:
+                return Path(path);
+            case 1:
+                return path[0] == '~' ? homefunc() : Path(path);
+            default: {
+                if (path[0] == '~' && path_separators.find(path[1]) != path_separators.npos) {
+                    return homefunc() + path.substr(1);
+                }
+                return Path(path);
             }
-            return path;
         }
     }
-}
+};
 
 
-template <typename Path, typename FromPath, typename ToPath, typename Function>
-static Path expandvars_impl(const Path& path, FromPath frompath, ToPath topath, Function function)
+template <typename Path>
+struct expandvars_impl
 {
-    wchar_t* buf = new wchar_t[MAX_PATH];
-    auto wide = frompath(path);
-    auto data = reinterpret_cast<const wchar_t*>(wide.data());
-    DWORD length = function(data, buf, MAX_PATH);
-    if (length == 0) {
-        throw filesystem_error(filesystem_unexpected_error);
-    }
+    template <typename View, typename FromPath, typename ToPath, typename Function>
+    Path operator()(const View& path, FromPath frompath, ToPath topath, Function function)
+    {
+        wchar_t* buf = new wchar_t[MAX_PATH];
+        auto wide = frompath(path);
+        auto data = reinterpret_cast<const wchar_t*>(wide.data());
+        DWORD length = function(data, buf, MAX_PATH);
+        if (length == 0) {
+            throw filesystem_error(filesystem_unexpected_error);
+        }
 
-    Path output(topath(buf, length-1));
-    delete[] buf;
-    return output;
-}
+        Path output(topath(buf, length-1));
+        delete[] buf;
+        return output;
+    }
+};
 
 
 template <typename Path>
@@ -688,33 +696,37 @@ bool isabs(const path_view_t& path)
 }
 
 
-path_t base_name(const path_t& path)
+path_view_t base_name(const path_view_t& path)
 {
     return base_name_impl(path);
 }
 
 
-path_t dir_name(const path_t& path)
+path_view_t dir_name(const path_view_t& path)
 {
     return dir_name_impl(path);
 }
 
 
-path_t expanduser(const path_t& path)
+path_t expanduser(const path_view_t& path)
 {
-    return expanduser_impl(path, gettempdirw);
+    return expanduser_impl<path_t>()(path, gettempdirw);
 }
 
 
-path_t expandvars(const path_t& path)
+path_t expandvars(const path_view_t& path)
 {
-    auto frompath = [](const path_t& path) {
+    auto frompath = [](const path_view_t& path) -> const path_view_t&
+    {
         return path;
     };
-    auto topath = [](wchar_t* str, size_t l) {
+
+    auto topath = [](wchar_t* str, size_t l) -> std::u16string
+    {
         return path_t(reinterpret_cast<char16_t*>(str), l);
     };
-    return expandvars_impl(path, frompath, topath, ExpandEnvironmentStringsW);
+
+    return expandvars_impl<path_t>()(path, frompath, topath, ExpandEnvironmentStringsW);
 }
 
 
@@ -799,7 +811,7 @@ bool remove_dir(const path_t& path, bool recursive)
 }
 
 
-bool mkdir(const path_t& path, int mode)
+bool mkdir(const path_view_t& path, int mode)
 {
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     if (CreateDirectoryW(data, nullptr)) {
@@ -818,7 +830,7 @@ bool mkdir(const path_t& path, int mode)
 }
 
 
-bool makedirs(const path_t& path, int mode)
+bool makedirs(const path_view_t& path, int mode)
 {
     if (!exists(path)) {
         makedirs(dir_name(path), mode);
@@ -1005,33 +1017,37 @@ backup_path_view_list_t path_splitunc(const backup_path_view_t& path)
 
 // NORMALIZATION
 
-backup_path_t base_name(const backup_path_t& path)
+backup_path_view_t base_name(const backup_path_view_t& path)
 {
     return base_name_impl(path);
 }
 
 
-backup_path_t dir_name(const backup_path_t& path)
+backup_path_view_t dir_name(const backup_path_view_t& path)
 {
     return dir_name_impl(path);
 }
 
 
-backup_path_t expanduser(const backup_path_t& path)
+backup_path_t expanduser(const backup_path_view_t& path)
 {
-    return expanduser_impl(path, gettempdira);
+    return expanduser_impl<backup_path_t>()(path, gettempdira);
 }
 
 
-backup_path_t expandvars(const backup_path_t& path)
+backup_path_t expandvars(const backup_path_view_t& path)
 {
-    auto frompath = [](const backup_path_t& path) {
+    auto frompath = [](const backup_path_view_t& path) -> path_t
+    {
         return backup_path_to_path(path);
     };
-    auto topath = [](wchar_t* str, size_t l) {
+
+    auto topath = [](wchar_t* str, size_t l) -> backup_path_t
+    {
         return path_to_backup_path(path_t(reinterpret_cast<char16_t*>(str), l));
     };
-    return expandvars_impl(path, frompath, topath, ExpandEnvironmentStringsW);
+
+    return expandvars_impl<backup_path_t>()(path, frompath, topath, ExpandEnvironmentStringsW);
 }
 
 
@@ -1107,7 +1123,7 @@ bool remove_dir(const backup_path_t& path, bool recursive)
 }
 
 
-bool mkdir(const backup_path_t& path, int mode)
+bool mkdir(const backup_path_view_t& path, int mode)
 {
     if (CreateDirectoryA(path.data(), nullptr)) {
         int mask = 0;
@@ -1124,7 +1140,7 @@ bool mkdir(const backup_path_t& path, int mode)
 }
 
 
-bool makedirs(const backup_path_t& path, int mode)
+bool makedirs(const backup_path_view_t& path, int mode)
 {
     if (!exists(path)) {
         makedirs(dir_name(path), mode);

@@ -765,67 +765,67 @@ bool copystat(const path_view_t& src, const path_view_t& dst)
 #if defined(OS_WINDOWS)             // BACKUP PATH
 
 
-time_t getatime(const backup_path_t& path)
+time_t getatime(const backup_path_view_t& path)
 {
     return getatime(stat(path));
 }
 
 
-time_t getmtime(const backup_path_t& path)
+time_t getmtime(const backup_path_view_t& path)
 {
     return getmtime(stat(path));
 }
 
 
-time_t getctime(const backup_path_t& path)
+time_t getctime(const backup_path_view_t& path)
 {
     return getctime(stat(path));
 }
 
 
-off_t getsize(const backup_path_t& path)
+off_t getsize(const backup_path_view_t& path)
 {
     return getsize(stat(path));
 }
 
 
-bool isfile(const backup_path_t& path)
+bool isfile(const backup_path_view_t& path)
 {
     return isfile_impl(path);
 }
 
 
-bool isdir(const backup_path_t& path)
+bool isdir(const backup_path_view_t& path)
 {
     return isdir_impl(path);
 }
 
 
-bool islink(const backup_path_t& path)
+bool islink(const backup_path_view_t& path)
 {
     return islink_impl(path);
 }
 
 
-bool exists(const backup_path_t& path)
+bool exists(const backup_path_view_t& path)
 {
     return exists_impl(path);
 }
 
 
-bool lexists(const backup_path_t& path)
+bool lexists(const backup_path_view_t& path)
 {
     return lexists_impl(path);
 }
 
 
-bool samefile(const backup_path_t& p1, const backup_path_t& p2)
+bool samefile(const backup_path_view_t& p1, const backup_path_view_t& p2)
 {
     return samestat(stat(p1), stat(p2));
 }
 
 
-bool copystat(const backup_path_t& src, const backup_path_t& dst)
+bool copystat(const backup_path_view_t& src, const backup_path_view_t& dst)
 {
     return copystat_impl(src, dst);
 }
