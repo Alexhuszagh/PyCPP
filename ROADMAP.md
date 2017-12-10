@@ -2,6 +2,9 @@
 
 **Short-Term**
 
+    - Change the default hash...
+        - The faster the hash...
+
     - Make allocators non-optional, use a polymorphic allocator by default...
         - Allow a CMake flag to use polymorphic or the standard allocator by default 
             -- DONE
@@ -10,10 +13,14 @@
             - Need to finish pool options, etc...
 
         - Implement all other allocators as a resource
-            - stack_allocator, stack_resource, wrapping the original allocator.
+            - DONE
+
         - Implement top-level types as a typedef of the STL containers using that as the default allocator...
             - Folder, stl, example, stl/vector.h
                 template <typename T, typename A = ...> using vector = std::vector<T, A>;
+
+        - Add STL types to CMakeLists
+
         - Need a custom stringstream that takes a view or some shit, since that STL stringstream constructor is fucking dumb as shit.
 
     - Change fixed containers to use the polymorphic allocator with the stack wrapper.

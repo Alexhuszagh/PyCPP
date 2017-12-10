@@ -2,13 +2,13 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief STL deque alias.
+ *  \brief STL array alias.
  */
 
 #pragma once
 
-#include <pycpp/stl/allocator.h>
-#include <deque>
+#include <pycpp/config.h>
+#include <array>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -17,8 +17,8 @@ PYCPP_BEGIN_NAMESPACE
 
 template <
     typename T,
-    typename Alloc = allocator<T>
+    size_t N
 >
-using deque = std::deque<T, Alloc>;
+using array = std::array<T, N>;
 
 PYCPP_END_NAMESPACE

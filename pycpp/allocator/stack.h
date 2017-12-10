@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/allocator/polymorphic.h>
 #include <cassert>
 #include <cstddef>
 #include <cstring>
@@ -20,6 +20,22 @@
 #include <memory>
 
 PYCPP_BEGIN_NAMESPACE
+
+// FORWARD
+// -------
+
+template <
+    size_t StackSize,
+    size_t Alignment = alignof(std::max_align_t)
+>
+class stack_allocator_arena;
+
+template <
+    typename T,
+    size_t StackSize,
+    size_t Alignment = alignof(std::max_align_t)
+>
+class stack_allocator;
 
 // DECLARATIONS
 // ------------
@@ -34,7 +50,7 @@ PYCPP_BEGIN_NAMESPACE
  */
 template <
     size_t StackSize,
-    size_t Alignment = alignof(std::max_align_t)
+    size_t Alignment
 >
 class stack_allocator_arena
 {
@@ -92,7 +108,7 @@ private:
 template <
     typename T,
     size_t StackSize,
-    size_t Alignment = alignof(std::max_align_t)
+    size_t Alignment
 >
 class stack_allocator
 {
@@ -137,8 +153,25 @@ private:
     template <typename U, size_t S, size_t A>
     friend class stack_allocator;
 
+    template <typename T1, size_t S1, size_t A1, typename T2, size_t S2, size_t A2>
+    friend bool operator==(const stack_allocator<T1, S1, A1>& lhs, const stack_allocator<T2, S2, A2>& rhs) noexcept;
+
+    template <typename T1, size_t S1, size_t A1, typename T2, size_t S2, size_t A2>
+    friend bool operator!=(const stack_allocator<T1, S1, A1>& lhs, const stack_allocator<T2, S2, A2>& rhs) noexcept;
+
     arena_type* arena_ = nullptr;
 };
+
+// ALIAS
+// -----
+
+template <
+    size_t StackSize,
+    size_t Alignment = alignof(std::max_align_t)
+>
+using stack_resource = resource_adaptor<
+    stack_allocator<char, StackSize, Alignment>
+>;
 
 // IMPLEMENTATION
 // --------------
@@ -175,7 +208,6 @@ char* stack_allocator_arena<S, A>::allocate(size_t n)
     if (static_cast<size_t>(buf_ + stack_size - ptr_) >= aligned_n) {
         char* r = ptr_;
         ptr_ += aligned_n;
-        printf("Buf_ is %p, stack is %zu\n", buf_, stack_size);
         return r;
     }
 
@@ -183,10 +215,7 @@ char* stack_allocator_arena<S, A>::allocate(size_t n)
         alignment <= alignof(std::max_align_t),
         "Alignment is larger than alignof(std::max_align_t), and cannot be guaranteed by new."
     );
-    char* p = static_cast<char*>(operator new(n));
-    printf("p1 is %p, %zu\n", p, n);
-    return p;
-//    return static_cast<char*>(operator new(n));
+    return static_cast<char*>(operator new(n));
 }
 
 
@@ -201,8 +230,6 @@ void stack_allocator_arena<S, A>::deallocate(char* p, size_t n) noexcept
             ptr_ = p;
         }
     } else {
-        printf("p2 is %p, buf_ is %p, stack is %zu\n", p, buf_, stack_size);
-        // TODO: getting a double free here....
         delete p;
     }
 }

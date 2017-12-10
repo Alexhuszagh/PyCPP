@@ -13,6 +13,7 @@ Python-like C++ environment with independent, lightweight utilities for cross-pl
 
 - [Introduction](#introduction)
 - [Design](#design)
+- [Getting Started](#getting-started)
 - [Separation of Logic](#separation-of-logic)
 - [Namespace](#namespace)
 - [Documentation](#documentation)
@@ -30,21 +31,82 @@ Modern C++ development depends on a mix of archaic C-libraries with poorly docum
 
 PyCPP is, in many ways, a spiritual port of Python back to C++. There are idiomatic ways to do certain tasks, and there is a right and a wrong way. "Zero-cost abstractions" don't exist: infinite abstraction leads to unmaintainable complexity. PyCPP also ports Python's [hashlib](https://docs.python.org/3/library/hashlib.html), [os.path](https://docs.python.org/2/library/os.path.html#module-os.path), and [string](https://docs.python.org/2/library/string.html) modules, providing familiar APIs to the Python standard library.
 
+## Getting Started
+
+// TODO: lols document
+
 ## Design
 
 PyCPP is broken down into multiple core parts:
 
 1. A macro-driven abstraction library to detect compiler features.
-2. Lexical conversion routines.
-3. Code page conversion routines.
-4. Filesystem utilities.
-5. High-level features common in other standard libraries.
+2. Aliases for STL types.
+3. Lexical conversion routines.
+4. Code page conversion routines.
+5. Filesystem utilities.
+6. High-level features common in other standard libraries.
 
 Combined, the library has less than 100,00 total lines of C++ headers, with binary sizes of < 5MB, and each module has only a few dependencies, making it easy to extract individual modules for use in another project. It also makes frequent use of the Pimpl idiom, abstracting away low-level routines for a simple public API.
 
 **Abstraction Library**
 
 The files [os.h](/pycpp/os.h), [compiler.h](/pycpp/compiler.h), [architecture.h](/pycpp/architecture.h), [processor.h](/pycpp/processor.h), and [byteorder.h](/pycpp/byteorder.h) provide an abstraction platform to detect the current compiler, compiler version, operating system, system endianness, and processor. These are the largest dependencies, with ~1000 lines of code.
+
+**Aliases for STL Types**
+
+Generic programming, especially through the use of header-only templates in C++, is great for common, reusable functions that accept a wide variety of potential types, like `std::sort`. Templates, however, require the inclusion of al dependent code in the header, significantly increasing compile times and compiler memory usage.
+
+In order to reduce compile times (as well as hide proprietary code), C++ applications frequently use non-generic or virtual interfaces. For example, to find a list of elements in our custom container, rather than take a generic iterator pair, we may take a pointer pair of a custom type.
+
+```cpp
+// Requires all code now to be in the header,
+// even if this is proprietary, or extremely long.
+template <typename Iter>
+std::vector<int> custom_container::find(Iter first, Iter last)
+{
+    ...
+}
+
+// Implement in terms of a common type.
+std::vector<int> custom_container::find(int* first, int* last);
+```
+
+This approach works great for C++ containers with data storage in contiguous memory, however, frequently we must work with non-contiguous data and therefore C++ iterators. It is therefore preferable to use interfaces take a reference to an STL-like container.
+
+```cpp
+// Requires all code now to be in the header,
+// even if this is proprietary, or extremely long.
+template <typename Iter>
+std::vector<int> custom_container::find(Iter first, Iter last)
+{
+    ...
+}
+
+// Implement in terms of a common type.
+std::vector<int> custom_container::find(const std::map<int, int>&);
+```
+
+However, the design of the STL makes this very difficult to do effectively, since any template parameter for an STL type changes the type. For example, an interface expecting a `std::string` will not accept a string with a custom memory allocator.
+
+To solve this issue, PyCPP backports C++17's [polymorphic allocator](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0336r1.pdf) and makes it the default allocator for all STL containers using aliasing. Library users can use custom allocators through a virtual interface without breaking compatibility with the PyCPP API. To use an aliased STL container, simply use the aliased types:
+
+```cpp
+#include <pycpp/stl/vector.h>
+
+PYCPP_USING_NAMESPACE
+
+int main()
+{
+    vector<int> v;
+    v.emplace_back(1);
+    // add code here...
+
+    return 0;
+}
+
+To disable defaulting to polymorphic allocators, pass `-DUSE_POLYMORPHIC_ALLOCATORS=OFF` to CMake during configuration.
+
+```
 
 **Lexical Conversion**
 

@@ -37,6 +37,7 @@
 #cmakedefine01 BUILD_STREAM
 #cmakedefine01 BUILD_XML
 #cmakedefine01 USE_POLYMORPHIC_ALLOCATOR
+#cmakedefine01 USE_XXHASH
 
 // SYSTEM
 // ------

@@ -32,6 +32,7 @@ option(BUILD_SQLITE "Build SQLite database library" ON)
 option(BUILD_STREAM "Build stream library" ON)
 option(BUILD_XML "Build XML library" ON)
 option(USE_POLYMORPHIC_ALLOCATOR "Use polymorphic allocator as default allocator" ON)
+option(USE_XXHASH "Use xxHash as default hash function" ON)
 
 # DEPENDENCIES
 option(USE_SYSTEM_BLOSC "Use system BLOSC installation" OFF)
@@ -467,7 +468,9 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/unordered_map.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/unordered_set.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/vector.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator.h"
+    # Include xxHash even if the rest of hashlib is disabled.
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/xxhash.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/xxhash_c.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/category.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/chunked.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/input_iterator_facade.h"
@@ -605,6 +608,8 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.cc"
+    # Include xxHash even if the rest of hashlib is disabled.
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/xxhash_c.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atof.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atoi.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/bool.cc"

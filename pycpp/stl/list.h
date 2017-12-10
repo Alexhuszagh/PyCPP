@@ -7,10 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#if USE_POLYMORPHIC_ALLOCATOR
-#   include <pycpp/allocator/polymorphic.h>
-#endif
+#include <pycpp/stl/allocator.h>
 #include <list>
 
 PYCPP_BEGIN_NAMESPACE
@@ -18,22 +15,10 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-#if USE_POLYMORPHIC_ALLOCATOR           // POLYMOPRHIC
-
 template <
     typename T,
-    typename Alloc = polymorphic_allocator<T>
+    typename Alloc = allocator<T>
 >
 using list = std::list<T, Alloc>;
-
-#else                                   // !POLYMOPRHIC
-
-template <
-    typename T,
-    typename Alloc = std::allocator<T>
->
-using list = std::list<T, Alloc>;
-
-#endif                                  // POLYMOPRHIC
 
 PYCPP_END_NAMESPACE

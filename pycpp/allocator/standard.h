@@ -11,11 +11,17 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/allocator/polymorphic.h>
 #include <cstddef>
 #include <memory>
 
 PYCPP_BEGIN_NAMESPACE
+
+// FORWARD
+// -------
+
+template <typename T>
+struct standard_allocator;
 
 // OBJECTS
 // -------
@@ -60,6 +66,11 @@ struct standard_allocator: private standard_allocator_base
     pointer allocate(size_type, const void* = nullptr);
     void deallocate(pointer, size_type);
 };
+
+// ALIAS
+// -----
+
+using standard_resource = resource_adaptor<standard_allocator<char>>;
 
 // IMPLEMENTATION
 // --------------

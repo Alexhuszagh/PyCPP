@@ -41,3 +41,19 @@ TEST(stack_allocator, vector)
     vector v1(arena);
     v1.emplace_back(1);
 }
+
+
+TEST(stack_allocator, polymorphic)
+{
+    using allocator_type = polymorphic_allocator<int>;
+    using resource_type = stack_resource<200>;
+    using arena_type = typename resource_type::allocator_type::arena_type;
+    using vector = std::vector<int, allocator_type>;
+
+    arena_type arena;
+    resource_type resource(arena);
+    vector v1 = vector(allocator_type(&resource));
+    v1.emplace_back(1);
+
+    EXPECT_GE(arena.used(), sizeof(int));
+}

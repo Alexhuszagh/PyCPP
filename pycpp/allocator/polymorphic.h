@@ -31,6 +31,7 @@ PYCPP_BEGIN_NAMESPACE
 
 using memory_resource = std::pmr::memory_resource;
 template <typename T> using polymorphic_allocator = std::pmr::polymorphic_allocator;
+template <typename T> using resource_adaptor_imp = std::pmr::resource_adaptor_imp<T>;
 template <typename T> using resource_adaptor = std::pmr::resource_adaptor<T>;
 using pool_options = std::pmr::pool_options;
 using synchronized_pool_resource = std::pmr::synchronized_pool_resource;
@@ -84,6 +85,15 @@ size_t max_size(size_t align);
 
 struct memory_resource;
 template <typename T> struct polymorphic_allocator;
+template <typename Allocator> struct resource_adaptor_imp;
+
+// ALIAS
+// -----
+
+template <typename Allocator>
+using resource_adaptor = resource_adaptor_imp<
+    typename std::allocator_traits<Allocator>::template rebind_alloc<char>
+>;
 
 // FUNCTIONS
 // ---------
@@ -145,7 +155,7 @@ private:
  *  \brief Adapts an STL allocator to a polymorphic resource.
  */
 template <typename Allocator>
-struct resource_adaptor: memory_resource
+struct resource_adaptor_imp: memory_resource
 {
     // MEMBER TYPES
     // ------------
@@ -153,12 +163,12 @@ struct resource_adaptor: memory_resource
 
     // MEMBER FUNCTIONS
     // ----------------
-    resource_adaptor() = default;
-    resource_adaptor(const resource_adaptor&) = default;
-    resource_adaptor(resource_adaptor&&) = default;
-    resource_adaptor& operator=(const resource_adaptor&) = default;
-    explicit resource_adaptor(const allocator_type&);
-    explicit resource_adaptor(allocator_type&&);
+    resource_adaptor_imp() = default;
+    resource_adaptor_imp(const resource_adaptor_imp&) = default;
+    resource_adaptor_imp(resource_adaptor_imp&&) = default;
+    resource_adaptor_imp& operator=(const resource_adaptor_imp&) = default;
+    explicit resource_adaptor_imp(const allocator_type&);
+    explicit resource_adaptor_imp(allocator_type&&);
 
     // ALLOCATOR TRAITS
     allocator_type get_allocator() const;
@@ -173,7 +183,7 @@ private:
     static constexpr size_t max_align = alignof(max_align_t);
     using traits_type = std::allocator_traits<Allocator>;
     using storage = typename std::aligned_storage<max_align, max_align>::type;
-    using alloc = typename traits_type::template rebind_aloc<storage>;
+    using alloc = typename traits_type::template rebind_alloc<storage>;
     static_assert(std::is_same<typename traits_type::value_type, char>::value, "");
 
     alloc alloc_;
@@ -227,19 +237,19 @@ bool operator!=(const memory_resource& lhs, const memory_resource& rhs);
 
 
 template <typename Allocator>
-resource_adaptor<Allocator>::resource_adaptor(const allocator_type& alloc):
+resource_adaptor_imp<Allocator>::resource_adaptor_imp(const allocator_type& alloc):
     alloc_(alloc)
 {}
 
 
 template <typename Allocator>
-resource_adaptor<Allocator>::resource_adaptor(allocator_type&& alloc):
+resource_adaptor_imp<Allocator>::resource_adaptor_imp(allocator_type&& alloc):
     alloc_(std::move(alloc))
 {}
 
 
 template <typename Allocator>
-void* resource_adaptor<Allocator>::do_allocate(size_t n, size_t alignment)
+void* resource_adaptor_imp<Allocator>::do_allocate(size_t n, size_t alignment)
 {
     if (n > polymorphic_detail::max_size(max_align)) {
             throw std::bad_alloc();
@@ -251,25 +261,25 @@ void* resource_adaptor<Allocator>::do_allocate(size_t n, size_t alignment)
 
 
 template <typename Allocator>
-void resource_adaptor<Allocator>::do_deallocate(void* p, size_t n, size_t alignment)
+void resource_adaptor_imp<Allocator>::do_deallocate(void* p, size_t n, size_t alignment)
 {
-    using value_type = typename traits_type::value_type;
+    using value_type = typename std::allocator_traits<alloc>::value_type;
     size_t s = polymorphic_detail::aligned_allocation_size(n, max_align) / max_align;
     alloc_.deallocate(reinterpret_cast<value_type*>(p), s);
 }
 
 
 template <typename Allocator>
-bool resource_adaptor<Allocator>::do_is_equal(const memory_resource& other) const noexcept
+bool resource_adaptor_imp<Allocator>::do_is_equal(const memory_resource& other) const noexcept
 {
-    using self = resource_adaptor<Allocator>;
+    using self = resource_adaptor_imp<Allocator>;
     const self* p = dynamic_cast<const self*>(&other);
     return p ? alloc_ == p->alloc_ : false;
 }
 
 
 template <typename Allocator>
-auto resource_adaptor<Allocator>::get_allocator() const -> allocator_type
+auto resource_adaptor_imp<Allocator>::get_allocator() const -> allocator_type
 {
     return alloc_;
 }

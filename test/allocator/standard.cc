@@ -31,3 +31,15 @@ TEST(standard_allocator, vector)
     vector v1;
     v1.emplace_back(1);
 }
+
+
+TEST(standard_allocator, polymorphic)
+{
+    using allocator_type = polymorphic_allocator<int>;
+    using resource_type = standard_resource;
+    using vector = std::vector<int, allocator_type>;
+
+    resource_type resource;
+    vector v1 = vector(allocator_type(&resource));
+    v1.emplace_back(1);
+}

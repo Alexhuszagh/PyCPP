@@ -2,13 +2,13 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief STL deque alias.
+ *  \brief STL set and multiset alias.
  */
 
 #pragma once
 
 #include <pycpp/stl/allocator.h>
-#include <deque>
+#include <set>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -17,8 +17,16 @@ PYCPP_BEGIN_NAMESPACE
 
 template <
     typename T,
+    typename Compare = std::less<T>,
     typename Alloc = allocator<T>
 >
-using deque = std::deque<T, Alloc>;
+using set = std::set<T, Compare, Alloc>;
+
+template <
+    typename T,
+    typename Compare = std::less<T>,
+    typename Alloc = allocator<T>
+>
+using multiset = std::multiset<T, Compare, Alloc>;
 
 PYCPP_END_NAMESPACE

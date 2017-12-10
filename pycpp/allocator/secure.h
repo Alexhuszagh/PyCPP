@@ -10,10 +10,16 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/allocator/polymorphic.h>
 #include <cstddef>
 
 PYCPP_BEGIN_NAMESPACE
+
+// FORWARD
+// -------
+
+template <typename T>
+struct secure_allocator;
 
 // DECLARATION
 // -----------
@@ -59,6 +65,11 @@ struct secure_allocator: private secure_allocator_base
     pointer allocate(size_type, const void* = nullptr);
     void deallocate(pointer, size_type);
 };
+
+// ALIAS
+// -----
+
+using secure_resource = resource_adaptor<secure_allocator<char>>;
 
 // IMPLEMENTATION
 // --------------
