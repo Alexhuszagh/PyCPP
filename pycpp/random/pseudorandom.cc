@@ -2,8 +2,8 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/random.h>
-#include <pycpp/collections/optional.h>
 #include <pycpp/preprocessor/tls.h>
+#include <pycpp/stl/optional.h>
 #include <algorithm>
 #include <chrono>
 #include <cmath>

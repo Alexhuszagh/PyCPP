@@ -458,8 +458,6 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/stack.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.h"
-    # Include compressed pair header even if collections are disabled.
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/compressed_pair.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/deque.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/forward_list.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/list.h"
@@ -491,6 +489,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/int.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/itoa.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/null.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/compressed_pair.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/enum.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/heap_pimpl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/ordering.h"
@@ -597,6 +596,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/url.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/whitespace.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/allocator.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/any.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/array.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/bitset.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/deque.h"
@@ -605,11 +605,17 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/list.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/map.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/memory.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/optional.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/set.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/sstream.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/string.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/system_error.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/thread.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/typeindex.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/unordered_map.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/unordered_set.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/utility.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/view/string.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/view/vector.h"
@@ -641,6 +647,8 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/runtime/os.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/safe/stdlib.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/stdlib.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/any.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base16.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base32.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base64.cc"
@@ -686,13 +694,11 @@ endif()
 if(BUILD_COLLECTIONS)
     list(APPEND HEADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/any.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree_map.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/btree_set.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/counter.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/default_map.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/optional.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordered.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordered_map.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/ordered_set.h"
@@ -701,12 +707,6 @@ if(BUILD_COLLECTIONS)
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin_set.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/sorted_sequence.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/threshold_counter.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/utility.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/variant.h"
-    )
-    list(APPEND SOURCE_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/any.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/variant.cc"
     )
 endif()
 
@@ -990,7 +990,6 @@ set(TEST_FILES
     test/allocator/standard.cc
     test/cache/lri.cc
     test/cache/lru.cc
-    test/collections/compressed_pair.cc
     test/fixed/deque.cc
     test/fixed/forward_list.cc
     test/fixed/list.cc
@@ -1010,6 +1009,7 @@ set(TEST_FILES
     test/lexical/int.cc
     test/lexical/itoa.cc
     test/lexical/null.cc
+    test/misc/compressed_pair.cc
     test/misc/enum.cc
     test/misc/heap_pimpl.cc
     test/misc/ordering.cc
@@ -1077,6 +1077,7 @@ set(TEST_FILES
     test/sfinae/reserve.cc
     test/sfinae/shrink_to_fit.cc
     test/stl/allocator.cc
+    test/stl/any.cc
     test/stl/array.cc
     test/stl/bitset.cc
     test/stl/deque.cc
@@ -1085,11 +1086,15 @@ set(TEST_FILES
     test/stl/list.cc
     test/stl/map.cc
     test/stl/memory.cc
+    test/stl/optional.cc
     test/stl/set.cc
     test/stl/string.cc
     test/stl/system_error.cc
+    test/stl/thread.cc
+    test/stl/typeindex.cc
     test/stl/unordered_map.cc
     test/stl/unordered_set.cc
+    test/stl/variant.cc
     test/stl/vector.cc
     test/string/base16.cc
     test/string/base32.cc
@@ -1123,19 +1128,16 @@ endif()
 
 if(BUILD_COLLECTIONS)
     list(APPEND TEST_FILES
-        test/collections/any.cc
         test/collections/btree_map.cc
         test/collections/btree_set.cc
         test/collections/counter.cc
         test/collections/default_map.cc
-        test/collections/optional.cc
         test/collections/ordered_map.cc
         test/collections/ordered_set.cc
         test/collections/robin_map.cc
         test/collections/robin_set.cc
         test/collections/sorted_sequence.cc
         test/collections/threshold_counter.cc
-        test/collections/variant.cc
     )
 endif()
 

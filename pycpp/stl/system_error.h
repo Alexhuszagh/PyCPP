@@ -21,11 +21,14 @@ struct hash;
 // SPECIALIZATION
 // --------------
 
-#if USE_XXHASH
+#if defined(USE_XXHASH)
 
 template <>
 struct hash<std::error_code>
 {
+    using argument_type = std::error_code;
+    using result_type = size_t;
+
     inline size_t operator()(const std::error_code& x) const noexcept
     {
         return hash<int>()(x.value());
@@ -35,6 +38,9 @@ struct hash<std::error_code>
 template <>
 struct hash<std::error_condition>
 {
+    using argument_type = std::error_condition;
+    using result_type = size_t;
+
     inline size_t operator()(const std::error_condition& x) const noexcept
     {
         return hash<int>()(x.value());

@@ -45,6 +45,9 @@ PYCPP_BEGIN_NAMESPACE
     template <>                                                         \
     struct xxhash<type>                                                 \
     {                                                                   \
+        using argument_type = type;                                     \
+        using result_type = size_t;                                     \
+                                                                        \
         inline size_t operator()(type x) const noexcept                 \
         {                                                               \
             return std::hash<type>()(x);                                \
@@ -58,6 +61,9 @@ PYCPP_BEGIN_NAMESPACE
     template <>                                                         \
     struct xxhash<type>                                                 \
     {                                                                   \
+        using argument_type = type;                                     \
+        using result_type = size_t;                                     \
+                                                                        \
         inline size_t operator()(const type& x) const                   \
         {                                                               \
             return std::hash<type>()(x);                                \
@@ -114,6 +120,9 @@ PYCPP_SPECIALIZE_PRIMITIVE(std::nullptr_t);
 template <typename T>
 struct xxhash<T*>
 {
+    using argument_type = T*;
+    using result_type = size_t;
+
     inline size_t operator()(T* x) const noexcept
     {
         return std::hash<T*>()(x);
@@ -124,6 +133,9 @@ struct xxhash<T*>
 template <typename T, bool = std::is_enum<T>::value>
 struct enum_xxhash
 {
+    using argument_type = T;
+    using result_type = size_t;
+
     inline size_t operator()(T x) const noexcept
     {
         using type = typename std::underlying_type<T>::type;

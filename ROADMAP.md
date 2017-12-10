@@ -6,15 +6,9 @@
         - The faster the hash...
             - Done
         - SPecialize all classes
-            - Need to specialize typeindex
-            - Need to specialize thread::id
             - Need to specialize string_views
             - Need to specialize secure_view
             - Need to specialize vector::bool
-
-
-        - Move variant, any and optional to stl
-            - Specialize hashes
 
     - Look at use fatal rope and tokenizer, maybe some other tools
         - Importing code is great: easier to test, fast.

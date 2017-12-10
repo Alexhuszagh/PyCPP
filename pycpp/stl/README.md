@@ -6,10 +6,11 @@
 - [Changes](#changes)
   - [Allocator](#allocator)
   - [Hash](#hash)
+  - [Backports](#backports)
 
 ## Introduction
 
-This module defines custom aliases for Standard Template Library (STL) types for PyCPP's custom allocator and hash model. To use a type, for example, a vector, you would traditionally use the following:
+This module defines custom aliases for Standard Template Library (STL) types, including backports and aliases for PyCPP's custom allocator and hash model. To use a type, for example, a vector, you would traditionally use the following:
 
 ```cpp
 #include <vector>
@@ -57,3 +58,11 @@ C++ depends on fast hash functions for unordered container performance, and the 
 For small hashes, such as primitive types and wrappers around primitive types (like `std::error_condition`), our custom hasher reuses the `std::hash` implementation. For larger hashes, like `std::string`, our custom hasher uses xxHash internally.
 
  To disable defaulting to `xxhash`, simply configure the project by passing `-DUSE_XXHASH=OFF` to CMake.
+
+## Backports
+
+C++17 includes novel STL containers which provide much-needed functionality to C++. However, all these types are fully standards-compliant with a C++11 compiler, so we provide backports for them. Please reference the STL documentation for each of the following types, as it will not be duplicated here:
+
+ - [any](/pycpp/stl/any.h)
+ - [optional](/pycpp/stl/optional.h)
+ - [variant](/pycpp/stl/variant.h)

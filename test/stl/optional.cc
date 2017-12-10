@@ -6,7 +6,7 @@
  *  \brief Optional type unittests.
  */
 
-#include <pycpp/collections/optional.h>
+#include <pycpp/stl/optional.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -532,3 +532,15 @@ TEST(optional, mixed_order)
     EXPECT_TRUE(!(0 >= o1));
     EXPECT_TRUE((1 >= o1));
 };
+
+
+TEST(optional, hash)
+{
+    using on1 = optional<int>;
+    using on2 = optional<int&>;
+    using rt1 = decltype(hash<on1>()(std::declval<on1>()));
+    using rt2 = decltype(hash<on2>()(std::declval<on2>()));
+
+    static_assert(std::is_same<rt1, size_t>::value, "");
+    static_assert(std::is_same<rt2, size_t>::value, "");
+}

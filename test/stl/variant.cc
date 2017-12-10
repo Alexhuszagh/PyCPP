@@ -6,7 +6,8 @@
  *  \brief variant unittests.
  */
 
-#include <pycpp/collections/variant.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/variant.h>
 #include <gtest/gtest.h>
 #include <sstream>
 #include <tuple>
@@ -534,9 +535,13 @@ TEST(variant, modifier_emplace_type_initializer_list)
 TEST(variant, hash_monostate)
 {
     variant<int, monostate, std::string> v(monostate{});
-    std::hash<monostate> monostate_hash;
-    std::hash<variant<int, monostate, std::string>> variant_hash;
-    EXPECT_NE(monostate_hash(monostate{}), variant_hash(v));
+    std::hash<monostate> std_monostate_hash;
+    std::hash<variant<int, monostate, std::string>> std_variant_hash;
+    EXPECT_NE(std_monostate_hash(monostate{}), std_variant_hash(v));
+
+    hash<monostate> pycpp_monostate_hash;
+    hash<variant<int, monostate, std::string>> pycpp_variant_hash;
+    EXPECT_NE(pycpp_monostate_hash(monostate{}), pycpp_variant_hash(v));
 }
 
 
@@ -544,9 +549,13 @@ TEST(variant, hash_string)
 {
     variant<int, std::string> v("hello");
     EXPECT_EQ("hello", get<std::string>(v));
-    std::hash<std::string> string_hash;
-    std::hash<variant<int, std::string>> variant_hash;
-    EXPECT_NE(string_hash("hello"), variant_hash(v));
+    std::hash<std::string> std_string_hash;
+    std::hash<variant<int, std::string>> std_variant_hash;
+    EXPECT_NE(std_string_hash("hello"), std_variant_hash(v));
+
+    hash<std::string> pycpp_string_hash;
+    hash<variant<int, std::string>> pycpp_variant_hash;
+    EXPECT_NE(pycpp_string_hash("hello"), pycpp_variant_hash(v));
 }
 
 

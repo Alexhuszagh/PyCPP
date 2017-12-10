@@ -2,7 +2,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 
-#include <pycpp/collections/any.h>
+#include <pycpp/stl/any.h>
 
 #if !defined(HAVE_CPP17)             // !HAVE_CPP17
 

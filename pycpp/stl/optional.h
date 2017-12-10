@@ -10,11 +10,12 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/stl/hash.h>
 
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <optional>
 #else                               // !HAVE_CPP17
-#   include <pycpp/collections/utility.h>
+#   include <pycpp/stl/utility.h>
 #   include <utility>
 #   include <type_traits>
 #   include <initializer_list>
@@ -1188,8 +1189,6 @@ PYCPP_END_NAMESPACE
 
 #if !defined(HAVE_CPP17)             // HAVE_CPP17
 
-// TODO: need to specialize for xxhash
-
 namespace std
 {
 // SPECIALIZATION
@@ -1203,7 +1202,7 @@ struct hash<optional<T>>
     typedef typename hash<T>::result_type result_type;
     typedef optional<T> argument_type;
 
-    constexpr result_type operator()(argument_type const& arg) const
+    constexpr result_type operator()(const argument_type& arg) const
     {
         return arg ? std::hash<T>{}(*arg) : result_type{};
     }
@@ -1216,7 +1215,7 @@ struct hash<optional<T&>>
     typedef typename hash<T>::result_type result_type;
     typedef optional<T&> argument_type;
 
-    constexpr result_type operator()(argument_type const& arg) const
+    constexpr result_type operator()(const argument_type& arg) const
     {
         return arg ? std::hash<T>{}(*arg) : result_type{};
     }
@@ -1225,3 +1224,45 @@ struct hash<optional<T&>>
 }   /* std */
 
 #endif                              // HAVE_CPP17
+
+
+PYCPP_BEGIN_NAMESPACE
+
+// FORWARD
+// -------
+
+template <typename Key>
+struct hash;
+
+// SPECIALIZATION
+// --------------
+
+#if defined(USE_XXHASH)
+
+template <typename T>
+struct hash<optional<T>>
+{
+    typedef typename hash<T>::result_type result_type;
+    typedef optional<T> argument_type;
+
+    constexpr result_type operator()(const argument_type& arg) const
+    {
+        return std::hash<argument_type>()(arg);
+    }
+};
+
+template <typename T>
+struct hash<optional<T&>>
+{
+    typedef typename hash<T>::result_type result_type;
+    typedef optional<T&> argument_type;
+
+    constexpr result_type operator()(const argument_type& arg) const
+    {
+        return std::hash<argument_type>()(arg);
+    }
+};
+
+#endif          // USE_XXHASH
+
+PYCPP_END_NAMESPACE

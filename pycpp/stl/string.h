@@ -39,16 +39,18 @@ struct hash;
 // SPECIALIZATION
 // --------------
 
-// Must specialize if we have a custom allocator or we want to use
-// the faster hash.
-#if USE_XXHASH || USE_POLYMORPHIC_ALLOCATOR
+// Specialize polymorphic hash aliases with default hash function.
+#if USE_POLYMORPHIC_ALLOCATOR
 
 template <>
 struct hash<string>
 {
+    using argument_type = string;
+    using result_type = size_t;
+
     inline size_t operator()(const string& x) const
     {
-        using value_type = typename wstring::value_type;
+        using value_type = typename string::value_type;
         return xxhash_string(x.data(), x.size() * sizeof(value_type));
     }
 };
@@ -56,6 +58,9 @@ struct hash<string>
 template <>
 struct hash<wstring>
 {
+    using argument_type = wstring;
+    using result_type = size_t;
+
     inline size_t operator()(const wstring& x) const
     {
         using value_type = typename wstring::value_type;
@@ -66,6 +71,9 @@ struct hash<wstring>
 template <>
 struct hash<u16string>
 {
+    using argument_type = u16string;
+    using result_type = size_t;
+
     inline size_t operator()(const u16string& x) const
     {
         using value_type = typename u16string::value_type;
@@ -76,6 +84,9 @@ struct hash<u16string>
 template <>
 struct hash<u32string>
 {
+    using argument_type = u32string;
+    using result_type = size_t;
+
     inline size_t operator()(const u32string& x) const
     {
         using value_type = typename u32string::value_type;
@@ -83,6 +94,63 @@ struct hash<u32string>
     }
 };
 
-#endif          // USE_XXHASH || USE_POLYMORPHIC_ALLOCATOR
+#endif          // USE_POLYMORPHIC_ALLOCATOR
+
+// Specialize std::basic_string types for xxhash
+#if USE_XXHASH
+
+template <>
+struct hash<std::string>
+{
+    using argument_type = std::string;
+    using result_type = size_t;
+
+    inline size_t operator()(const std::string& x) const
+    {
+        using value_type = typename std::string::value_type;
+        return xxhash_string(x.data(), x.size() * sizeof(value_type));
+    }
+};
+
+template <>
+struct hash<std::wstring>
+{
+    using argument_type = std::wstring;
+    using result_type = size_t;
+
+    inline size_t operator()(const std::wstring& x) const
+    {
+        using value_type = typename std::wstring::value_type;
+        return xxhash_string(x.data(), x.size() * sizeof(value_type));
+    }
+};
+
+template <>
+struct hash<std::u16string>
+{
+    using argument_type = std::u16string;
+    using result_type = size_t;
+
+    inline size_t operator()(const std::u16string& x) const
+    {
+        using value_type = typename std::u16string::value_type;
+        return xxhash_string(x.data(), x.size() * sizeof(value_type));
+    }
+};
+
+template <>
+struct hash<std::u32string>
+{
+    using argument_type = std::u32string;
+    using result_type = size_t;
+
+    inline size_t operator()(const std::u32string& x) const
+    {
+        using value_type = typename std::u32string::value_type;
+        return xxhash_string(x.data(), x.size() * sizeof(value_type));
+    }
+};
+
+#endif          // USE_XXHASH
 
 PYCPP_END_NAMESPACE

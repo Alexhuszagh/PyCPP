@@ -34,11 +34,11 @@
 
 #pragma once
 
-#include <pycpp/collections/optional.h>
 #include <pycpp/iterator/category.h>
 #include <pycpp/sfinae/emplace_back.h>
 #include <pycpp/sfinae/pop_front.h>
 #include <pycpp/sfinae/reserve.h>
+#include <pycpp/stl/optional.h>
 #include <deque>
 #include <functional>
 

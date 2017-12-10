@@ -5,7 +5,7 @@
  *  \brief `compressed_pair` unittests.
  */
 
-#include <pycpp/collections/compressed_pair.h>
+#include <pycpp/misc/compressed_pair.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE

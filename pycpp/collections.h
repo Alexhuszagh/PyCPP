@@ -7,16 +7,13 @@
 
 #pragma once
 
-#include <collections/any.h>
 #include <collections/btree_map.h>
 #include <collections/btree_set.h>
 #include <collections/counter.h>
 #include <collections/default_map.h>
-#include <collections/optional.h>
 #include <collections/ordered_map.h>
 #include <collections/ordered_set.h>
 #include <collections/robin_map.h>
 #include <collections/robin_set.h>
 #include <collections/sorted_sequence.h>
 #include <collections/threshold_counter.h>
-#include <collections/variant.h>

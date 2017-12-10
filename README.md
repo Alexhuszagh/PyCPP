@@ -16,9 +16,12 @@ Python-like C++ environment with independent, lightweight utilities for cross-pl
 - [Getting Started](#getting-started)
 - [Separation of Logic](#separation-of-logic)
 - [Namespace](#namespace)
+- [Building](#building)
+- [Advanced](#advanced)
+  - [Generics and Allocator Model](#generics-and-allocator-model)
+  - [Custom Allocators](#custom-allocators)
 - [Documentation](#documentation)
   - [Strings](#strings)
-- [Building](#building)
 - [Developer Resources](#developer-resources)
 - [Performance](#performance)
 - [Platforms](#platforms)
@@ -54,41 +57,7 @@ The files [os.h](/pycpp/os.h), [compiler.h](/pycpp/compiler.h), [architecture.h]
 
 **Aliases for STL Types**
 
-Generic programming, especially through the use of header-only templates in C++, is great for common, reusable functions that accept a wide variety of potential types, like `std::sort`. Templates, however, require the inclusion of al dependent code in the header, significantly increasing compile times and compiler memory usage.
-
-In order to reduce compile times (as well as hide proprietary code), C++ applications frequently use non-generic or virtual interfaces. For example, to find a list of elements in our custom container, rather than take a generic iterator pair, we may take a pointer pair of a custom type.
-
-```cpp
-// Requires all code now to be in the header,
-// even if this is proprietary, or extremely long.
-template <typename Iter>
-std::vector<int> custom_container::find(Iter first, Iter last)
-{
-    ...
-}
-
-// Implement in terms of a common type.
-std::vector<int> custom_container::find(int* first, int* last);
-```
-
-This approach works great for C++ containers with data storage in contiguous memory, however, frequently we must work with non-contiguous data and therefore C++ iterators. It is therefore preferable to use interfaces take a reference to an STL-like container.
-
-```cpp
-// Requires all code now to be in the header,
-// even if this is proprietary, or extremely long.
-template <typename Iter>
-std::vector<int> custom_container::find(Iter first, Iter last)
-{
-    ...
-}
-
-// Implement in terms of a common type.
-std::vector<int> custom_container::find(const std::map<int, int>&);
-```
-
-However, the design of the STL makes this very difficult to do effectively, since any template parameter for an STL type changes the type. For example, an interface expecting a `std::string` will not accept a string with a custom memory allocator.
-
-To solve this issue, PyCPP backports C++17's [polymorphic allocator](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0336r1.pdf) and makes it the default allocator for all STL containers using aliasing. Library users can use custom allocators through a virtual interface without breaking compatibility with the PyCPP API. To use an aliased STL container, simply use the aliased types:
+PyCPP includes aliases for STL types in `PYCPP_NAMESPACE`, the rationale for which is explained in the [advanced usage](#generics-and). To use an aliased container, include the relevant header from `<pycpp/stl/*.h>` and use the type of the same name within the PyCPP namespace:
 
 ```cpp
 #include <pycpp/stl/vector.h>
@@ -103,9 +72,6 @@ int main()
 
     return 0;
 }
-
-To disable defaulting to polymorphic allocators, pass `-DUSE_POLYMORPHIC_ALLOCATORS=OFF` to CMake during configuration.
-
 ```
 
 **Lexical Conversion**
@@ -324,6 +290,63 @@ By default, PyCPP uses no namespace. However, a custom namespace can be set duri
 
 To access members in the PyCPP namespace, you can either preface method calls with `PYCPP_NAMESPACE::method()`, where `PYCPP_NAMESPACE` evaluates to the desired namespace, or `PYCPP_USING_NAMESPACE`, which introduces methods from PyCPP to the current namespace.
 
+## Building
+
+Simply clone, configure with CMake, and build.
+
+```bash
+git clone https://github.com/Alexhuszagh/pycpp.git
+git submodule update --init --recursive
+cmake .                         # `-DBUILD_TESTS=ON`
+make -j 5                       # "msbuild pycpp.sln" for MSVC
+```
+
+> **WARNING** Linking with libc++ (LLVM) causes issues with the LZMA compressors and decompressors. Any patches would be wonderful, in the meantime, please use GCC or link with libstdc++.
+
+## Advanced
+
+### Generics and Allocator Model
+
+Generic programming, especially through the use of header-only templates in C++, is great for common, reusable functions that accept a wide variety of potential types, like `std::sort`. Templates, however, require the inclusion of al dependent code in the header, significantly increasing compile times and compiler memory usage.
+
+In order to reduce compile times (as well as hide proprietary code), C++ applications frequently use non-generic or virtual interfaces. For example, to find a list of elements in our custom container, rather than take a generic iterator pair, we may take a pointer pair of a custom type.
+
+```cpp
+// Requires all code now to be in the header,
+// even if this is proprietary, or extremely long.
+template <typename Iter>
+std::vector<int> custom_container::find(Iter first, Iter last)
+{
+    ...
+}
+
+// Implement in terms of a common type.
+std::vector<int> custom_container::find(int* first, int* last);
+```
+
+This approach works great for C++ containers with data storage in contiguous memory, however, frequently we must work with non-contiguous data and therefore C++ iterators. It is therefore preferable to use interfaces take a reference to an STL-like container.
+
+```cpp
+// Requires all code now to be in the header,
+// even if this is proprietary, or extremely long.
+template <typename Iter>
+std::vector<int> custom_container::find(Iter first, Iter last)
+{
+    ...
+}
+
+// Implement in terms of a common type.
+std::vector<int> custom_container::find(const std::map<int, int>&);
+```
+
+However, the design of the STL makes this very difficult to do effectively, since any template parameter for an STL type changes the type. For example, an interface expecting a `std::string` will not accept a string with a custom memory allocator.
+
+To solve this issue, PyCPP backports C++17's [polymorphic allocator](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0336r1.pdf) and makes it the default allocator for all STL containers using aliasing. Library users can use custom allocators through a virtual interface without breaking compatibility with the PyCPP API. To disable defaulting to polymorphic allocators, pass `-DUSE_POLYMORPHIC_ALLOCATORS=OFF` to CMake during configuration.
+
+### Custom Allocators
+
+// TODO: document
+
 ## Documentation
 
 - [Algorithm](/pycpp/algorithm/README.md)
@@ -375,19 +398,6 @@ int main()
     return 0;
 }
 ```
-
-## Building
-
-Simply clone, configure with CMake, and build.
-
-```bash
-git clone https://github.com/Alexhuszagh/pycpp.git
-git submodule update --init --recursive
-cmake .                         # `-DBUILD_TESTS=ON`
-make -j 5                       # "msbuild pycpp.sln" for MSVC
-```
-
-> **WARNING** Linking with libc++ (LLVM) causes issues with the LZMA compressors and decompressors. Any patches would be wonderful, in the meantime, please use GCC or link with libstdc++.
 
 ## Developer Resources
 

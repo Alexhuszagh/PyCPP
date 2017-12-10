@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include <pycpp/collections/compressed_pair.h>
 #include <pycpp/iterator/category.h>
+#include <pycpp/misc/compressed_pair.h>
 #include <pycpp/secure/allocator.h>
 #include <pycpp/secure/char_traits.h>
 #include <pycpp/secure/stdlib.h>

@@ -10,14 +10,14 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/stl/hash.h>
 
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <variant>
 #else                               // !HAVE_CPP17
-#   include <pycpp/collections/utility.h>
+#   include <pycpp/stl/utility.h>
 #   include <cstddef>
 #   include <exception>
-#   include <functional>
 #   include <initializer_list>
 #   include <memory>
 #   include <new>
@@ -1860,7 +1860,8 @@ constexpr bool is_enabled()
 
 PYCPP_END_NAMESPACE
 
-// TODO: need to specialize for xxhash
+#if !defined(HAVE_CPP17)             // HAVE_CPP17
+
 namespace std
 {
 // SPECIALIZATION
@@ -1912,3 +1913,43 @@ struct hash<monostate>
 };
 
 }   /* std */
+
+#endif                              // HAVE_CPP17
+
+
+PYCPP_BEGIN_NAMESPACE
+
+// FORWARD
+// -------
+
+template <typename Key>
+struct hash;
+
+// SPECIALIZATION
+// --------------
+
+#if defined(USE_XXHASH)
+
+template <typename... Ts>
+struct hash<var_detail::enabled_type<variant<Ts...>, var_detail::enable_if_t<var_detail::all_<var_detail::hash::is_enabled<var_detail::remove_const_t<Ts>>()...>::value>>>
+{
+    using argument_type = variant<Ts...>;
+
+    inline size_t operator()(const argument_type &v) const
+    {
+        return std::hash<argument_type>()(v);
+    }
+};
+
+template <>
+struct hash<monostate>
+{
+    inline size_t operator()(const monostate& x) const noexcept
+    {
+        return std::hash<monostate>()(x);
+    }
+};
+
+#endif          // USE_XXHASH
+
+PYCPP_END_NAMESPACE

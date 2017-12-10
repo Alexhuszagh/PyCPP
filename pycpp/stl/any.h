@@ -14,7 +14,7 @@
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <any>
 #else                               // !HAVE_CPP17
-#   include <pycpp/collections/utility.h>
+#   include <pycpp/stl/utility.h>
 #   include <initializer_list>
 #   include <memory>
 #   include <typeinfo>
