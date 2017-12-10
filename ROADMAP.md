@@ -15,15 +15,12 @@
         - Implement all other allocators as a resource
             - DONE
 
-        - Implement top-level types as a typedef of the STL containers using that as the default allocator...
-            - Folder, stl, example, stl/vector.h
-                template <typename T, typename A = ...> using vector = std::vector<T, A>;
+        - Implement top-level types as a typedef of the STL containers using that as the default allocator...   
+            -- DONE
 
-        - Add STL types to CMakeLists
+        - Use all default types as aliases of the STL types...
 
         - Need a custom stringstream that takes a view or some shit, since that STL stringstream constructor is fucking dumb as shit.
-
-    - Change fixed containers to use the polymorphic allocator with the stack wrapper.
 
     - The robin map needs to use std::pair<const Key, Value> rather than it's bullshit.
 
