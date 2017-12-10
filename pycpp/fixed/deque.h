@@ -2,9 +2,9 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Fixed-size vector implementation.
+ *  \brief Fixed-size deque implementation.
  *
- *  Based on the EASTL, this vector implementation preallocates a fixed-
+ *  Based on the EASTL, this deque implementation preallocates a fixed-
  *  size buffer on the stack for allocation up until a certain size,
  *  and uses dynamic memory allocation afterwards.
  */
@@ -13,7 +13,8 @@
 
 #include <pycpp/fixed/arena.h>
 #include <initializer_list>
-#include <vector>
+#include <deque>
+
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -21,25 +22,24 @@ PYCPP_BEGIN_NAMESPACE
 // -----------
 
 /**
- *  \brief Fixed-sized vector that preallocates memory on the stack.
+ *  \brief Fixed-sized deque that preallocates memory on the stack.
  *
- *  By default, the vector preallocates ~4096 bytes, which can hold
- *  rouhgly `4096 / sizeof(T)` elements.
+ *  By default, the deque preallocates ~4096 bytes, which can hold
+ *  rouhgly `4096 / (sizeof(T) + 8)` elements.
  */
 template <
     typename T,
     size_t StackSize = 4096,
-    template <typename, typename> class Container = std::vector
+    template <typename, typename> class Container = std::deque
 >
-struct fixed_vector:
+struct fixed_deque:
     fixed_arena<T, StackSize>,
     Container<T, stack_allocator<T, StackSize>>
 {
 public:
     // MEMBER TYPES
     // ------------
-    using self_t = fixed_vector<T, StackSize, Container>;
-    using base_t = fixed_arena<T, StackSize>;
+    using self_t = fixed_deque<T, StackSize, Container>;
     using container_type = Container<T, stack_allocator<T, StackSize>>;
     using value_type = typename container_type::value_type;
     using allocator_type = typename container_type::allocator_type;
@@ -47,12 +47,12 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    fixed_vector();
-    fixed_vector(const self_t&);
-    fixed_vector(self_t&&) = delete;
-    fixed_vector(size_t n, const value_type& value = value_type());
-    template <typename Iter> fixed_vector(Iter first, Iter last);
-    fixed_vector(std::initializer_list<value_type> list);
+    fixed_deque();
+    fixed_deque(const self_t&);
+    fixed_deque(self_t&&) = delete;
+    fixed_deque(size_t n, const value_type& value = value_type());
+    template <typename Iter> fixed_deque(Iter first, Iter last);
+    fixed_deque(std::initializer_list<value_type> list);
     self_t& operator=(const self_t&);
     self_t& operator=(self_t&&) = delete;
     self_t& operator=(std::initializer_list<value_type> list);
@@ -65,40 +65,38 @@ private:
 // --------------
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
-fixed_vector<T, StackSize, _>::fixed_vector():
-    base_t(),
+fixed_deque<T, StackSize, _>::fixed_deque():
     container_type(allocator_type(this->arena_))
 {}
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
-fixed_vector<T, StackSize, _>::fixed_vector(const self_t& rhs):
-    base_t(),
+fixed_deque<T, StackSize, _>::fixed_deque(const self_t& rhs):
     container_type(rhs, allocator_type(this->arena_))
 {}
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
-fixed_vector<T, StackSize, _>::fixed_vector(size_t n, const value_type& value):
+fixed_deque<T, StackSize, _>::fixed_deque(size_t n, const value_type& value):
     container_type(n, value, allocator_type(this->arena_))
 {}
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
 template <typename Iter>
-fixed_vector<T, StackSize, _>::fixed_vector(Iter first, Iter last):
+fixed_deque<T, StackSize, _>::fixed_deque(Iter first, Iter last):
     container_type(first, last, allocator_type(this->arena_))
 {}
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
-fixed_vector<T, StackSize, _>::fixed_vector(std::initializer_list<value_type> list):
+fixed_deque<T, StackSize, _>::fixed_deque(std::initializer_list<value_type> list):
     container_type(list.begin(), list.end(), allocator_type(this->arena_))
 {}
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
-auto fixed_vector<T, StackSize, _>::operator=(const self_t& rhs) -> self_t&
+auto fixed_deque<T, StackSize, _>::operator=(const self_t& rhs) -> self_t&
 {
     if (this != &rhs) {
         reset();
@@ -109,7 +107,7 @@ auto fixed_vector<T, StackSize, _>::operator=(const self_t& rhs) -> self_t&
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
-auto fixed_vector<T, StackSize, _>::operator=(std::initializer_list<value_type> list) -> self_t&
+auto fixed_deque<T, StackSize, _>::operator=(std::initializer_list<value_type> list) -> self_t&
 {
     reset();
     this->assign(list.begin(), list.end());
@@ -118,7 +116,7 @@ auto fixed_vector<T, StackSize, _>::operator=(std::initializer_list<value_type> 
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
-void fixed_vector<T, StackSize, _>::reset()
+void fixed_deque<T, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
     this->clear();

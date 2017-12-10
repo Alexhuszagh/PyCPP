@@ -3,6 +3,7 @@
 
 #include <pycpp/allocator/stack.h>
 #include <gtest/gtest.h>
+#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -32,9 +33,11 @@ TEST(stack_allocator, stack_allocator)
 
 TEST(stack_allocator, vector)
 {
-    using allocator_type = stack_allocator<char, 200>;
-    using vector = std::vector<char, allocator_type>;
+    using allocator_type = stack_allocator<int, 200>;
+    using arena_type = typename allocator_type::arena_type;
+    using vector = std::vector<int, allocator_type>;
 
-    vector v1;
+    arena_type arena;
+    vector v1(arena);
     v1.emplace_back(1);
 }

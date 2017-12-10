@@ -488,7 +488,7 @@ void ofstream::swap(ofstream &other)
     other.rdbuf(&other.buffer);
 }
 
-#elif defined(HAVE_MSVC)                // MSVC
+#else                                   // NON-GCC/MSVC COMPILER
 
 // FSTREAM
 

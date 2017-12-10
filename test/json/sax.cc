@@ -11,6 +11,8 @@
 #include <gtest/gtest.h>
 #include <sstream>
 
+PYCPP_USING_NAMESPACE
+
 // HELPERS
 // -------
 

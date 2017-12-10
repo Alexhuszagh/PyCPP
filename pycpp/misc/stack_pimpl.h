@@ -67,8 +67,8 @@ namespace pimp_detail
 template <typename T, size_t Size, size_t Alignment>
 inline void assert_storage()
 {
-    static_assert(sizeof(T) == Size);
-    static_assert(alignof(T) <= Alignment);
+    static_assert(sizeof(T) == Size, "");
+    static_assert(alignof(T) <= Alignment, "");
 }
 
 

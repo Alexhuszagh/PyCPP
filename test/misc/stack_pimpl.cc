@@ -61,6 +61,7 @@ int_wrapper& int_wrapper::operator=(const int_wrapper& rhs)
 {
     delete x_;
     x_ = rhs.x_ ? new uint64_t(*rhs.x_) : nullptr;
+    return *this;
 }
 
 
@@ -73,6 +74,7 @@ int_wrapper::int_wrapper(int_wrapper&& rhs)
 int_wrapper& int_wrapper::operator=(int_wrapper&& rhs)
 {
     std::swap(x_, rhs.x_);
+    return *this;
 }
 
 

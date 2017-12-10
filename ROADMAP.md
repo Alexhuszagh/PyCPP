@@ -2,19 +2,48 @@
 
 **Short-Term**
 
-    - Need to optimize narrow to wide conversions for the windows API
-        - **CHECK** first if it's Unicode at the lowest level
+    - Make allocators non-optional, use a polymorphic allocator by default...
+        - Allow a CMake flag to use polymorphic or the standard allocator by default 
+            -- DONE
+        - Implement the polymorphic allocator
+            -- DONE (msotly)
+            - Need to finish pool options, etc...
+
+        - Implement all other allocators as a resource
+            - stack_allocator, stack_resource, wrapping the original allocator.
+        - Implement top-level types as a typedef of the STL containers using that as the default allocator...
+            - Folder, stl, example, stl/vector.h
+                template <typename T, typename A = ...> using vector = std::vector<T, A>;
+        - Need a custom stringstream that takes a view or some shit, since that STL stringstream constructor is fucking dumb as shit.
+
+    - Change fixed containers to use the polymorphic allocator with the stack wrapper.
 
     - The robin map needs to use std::pair<const Key, Value> rather than it's bullshit.
 
-    - Need to ensure all the streams have a low-level API and that is used for... well, everything.
-        - We want to minimize the number of things an allocator can't be used for.
-        - filesystem
-            -- All besides filesystem
     - Implement more reference (intrusive) containers.
         - vector -- DONE
         - deque -- DONE
+
         - Rest of the STL?
+
+    - Implement fixed containers
+        - Add to CMakeLists
+        - Vector -- DONE
+        - Deque -- DONE
+            - Bug, the allocators need to support a generic type in the constructor....
+                - Need a generic T
+
+
+        - ForwardList
+        - List
+        - Map
+        - MultiMap
+        - UnorderedMap
+        - UnorderedMultiMap
+        - Set
+        - MultiSet
+        - UnorderedSet
+        - UnorderedMultiSet
 
     - Implement a sorted vector
         - unittests
@@ -27,9 +56,6 @@
         - https://github.com/mtrebi/memory-allocators
         - Need an alias for the secure memory allocator
     - Add benchmarks compared to STL variants
-
-    - Implement fixed containers
-        - Add to CMakeLists
 
     - Need to include SQL header files in CMakeLists
     - Need to implement the interpolation search

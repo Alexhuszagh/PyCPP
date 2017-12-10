@@ -9,6 +9,7 @@
 #pragma once
 
 #include <cstdint>
+#include <climits>
 
 // WINDOWS
 // -------
@@ -45,13 +46,13 @@
 // architecture. Go smallest-to-largest, since we don't want
 // to check values too large for type.
 #ifndef SYSTEM_ARCHITECTURE
-#   if (uintptr_t)-1 == 0xffff
+#   if UINTPTR_MAX == 0xffff
 #       define SYSTEM_ARCHITECTURE 16
-#   elif (uintptr_t)-1 == 0xffffffff
+#   elif UINTPTR_MAX == 0xffffffff
 #       define SYSTEM_ARCHITECTURE 32
-#   elif (uintptr_t)-1 == 0xffffffffffffffff
+#   elif UINTPTR_MAX == 0xffffffffffffffff
 #       define SYSTEM_ARCHITECTURE 64
-#   elif (uintptr_t)-1 == 0xffffffffffffffffffffffffffffffff
+#   elif UINTPTR_MAX == 0xffffffffffffffffffffffffffffffff
 #       define SYSTEM_ARCHITECTURE 128
 #   else
 #       error "Unknown system architecture."
@@ -67,13 +68,13 @@
 // requiring 32-bit pointers. Go smallest-to-largest, since we don't
 // want to check values too large for type.
 #ifndef MEMORY_ARCHITECTURE
-#   if (size_t)-1 == 0xffff
+#   if SIZE_MAX == 0xffff
 #       define MEMORY_ARCHITECTURE 16
-#   elif (size_t)-1 == 0xffffffff
+#   elif SIZE_MAX == 0xffffffff
 #       define MEMORY_ARCHITECTURE 32
-#   elif (size_t)-1 == 0xffffffffffffffff
+#   elif SIZE_MAX == 0xffffffffffffffff
 #       define MEMORY_ARCHITECTURE 64
-#   elif (size_t)-1 == 0xffffffffffffffffffffffffffffffff
+#   elif SIZE_MAX == 0xffffffffffffffffffffffffffffffff
 #       define MEMORY_ARCHITECTURE 128
 #   else
 #       error "Unknown memory architecture."

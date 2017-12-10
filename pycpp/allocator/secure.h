@@ -50,15 +50,32 @@ struct secure_allocator: private secure_allocator_base
     // ----------------
     secure_allocator() noexcept = default;
     secure_allocator(const self_t&) noexcept = default;
+    template <typename U> secure_allocator(const secure_allocator<U>&) noexcept;
     self_t& operator=(const self_t&) noexcept = default;
+    template <typename U> self_t& operator=(const secure_allocator<U>&) noexcept;
     ~secure_allocator() = default;
 
+    // ALLOCATOR TRAITS
     pointer allocate(size_type, const void* = nullptr);
     void deallocate(pointer, size_type);
 };
 
 // IMPLEMENTATION
 // --------------
+
+
+template <typename T>
+template <typename U>
+secure_allocator<T>::secure_allocator(const secure_allocator<U>&) noexcept
+{}
+
+
+template <typename T>
+template <typename U>
+auto secure_allocator<T>::operator=(const secure_allocator<U>&) noexcept -> self_t&
+{
+    return *this;
+}
 
 
 template <typename T>

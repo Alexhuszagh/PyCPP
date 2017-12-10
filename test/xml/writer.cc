@@ -12,6 +12,7 @@
 #include <pycpp/xml.h>
 #include <gtest/gtest.h>
 
+PYCPP_USING_NAMESPACE
 
 // HELPERS
 // -------

@@ -83,7 +83,7 @@ TEST(compressed_pair, e1_e2)
 TEST(compressed_pair, c1_e1)
 {
     using pair = compressed_pair<c1, e1>;
-    static_assert(sizeof(pair) == sizeof(c1));
+    static_assert(sizeof(pair) == sizeof(c1), "");
     pair p1, p2;
     p1.first();
     p1.second();
@@ -94,7 +94,7 @@ TEST(compressed_pair, c1_e1)
 TEST(compressed_pair, c1_c1)
 {
     using pair = compressed_pair<c1, c1>;
-    static_assert(sizeof(pair) >= 2* sizeof(c1));
+    static_assert(sizeof(pair) >= 2* sizeof(c1), "");
     pair p1, p2;
     p1.first();
     p1.second();
@@ -105,7 +105,7 @@ TEST(compressed_pair, c1_c1)
 TEST(compressed_pair, c1_c2)
 {
     using pair = compressed_pair<c1, c2>;
-    static_assert(sizeof(pair) >= sizeof(c1) + sizeof(c2));
+    static_assert(sizeof(pair) >= sizeof(c1) + sizeof(c2), "");
     pair p1, p2;
     p1.first();
     p1.second();

@@ -143,7 +143,7 @@ private:
     std::basic_filebuf<char> buffer;
 };
 
-#elif defined(HAVE_MSVC)        // MSVC
+#else                           // NON-GCC/MSVC COMPILER
 
 /**
  *  \brief Stream supporting both UTF-8 and UTF-16 paths on Windows.
@@ -227,12 +227,6 @@ public:
     void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::out);
 #endif                                          // WINDOWS
 };
-
-#else                           // NON-GCC/MSVC COMPILER
-
-typedef std::fstream fstream;
-typedef std::ifstream ifstream;
-typedef std::ofstream ofstream;
 
 #endif
 

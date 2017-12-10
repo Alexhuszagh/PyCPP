@@ -16,6 +16,8 @@
 #   include <io.h>
 #endif
 
+PYCPP_USING_NAMESPACE
+
 // CONSTANTS
 // ---------
 

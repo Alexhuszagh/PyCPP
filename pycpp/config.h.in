@@ -18,7 +18,6 @@
 // FEATURES
 // --------
 
-#cmakedefine01 BUILD_ALLOCATOR
 #cmakedefine01 BUILD_CACHE
 #cmakedefine01 BUILD_CIPHER
 #cmakedefine01 BUILD_COLLECTIONS
@@ -37,6 +36,7 @@
 #cmakedefine01 BUILD_SQLITE
 #cmakedefine01 BUILD_STREAM
 #cmakedefine01 BUILD_XML
+#cmakedefine01 USE_POLYMORPHIC_ALLOCATOR
 
 // SYSTEM
 // ------

@@ -51,15 +51,32 @@ struct standard_allocator: private standard_allocator_base
     // ----------------
     standard_allocator() noexcept = default;
     standard_allocator(const self_t&) noexcept = default;
+    template <typename U> standard_allocator(const standard_allocator<U>&) noexcept;
     self_t& operator=(const self_t&) noexcept = default;
+    template <typename U> self_t& operator=(const standard_allocator<U>&) noexcept;
     ~standard_allocator() = default;
 
+    // ALLOCATOR TRAITS
     pointer allocate(size_type, const void* = nullptr);
     void deallocate(pointer, size_type);
 };
 
 // IMPLEMENTATION
 // --------------
+
+
+template <typename T>
+template <typename U>
+standard_allocator<T>::standard_allocator(const standard_allocator<U>&) noexcept
+{}
+
+
+template <typename T>
+template <typename U>
+auto standard_allocator<T>::operator=(const standard_allocator<U>&) noexcept -> self_t&
+{
+    return *this;
+}
 
 
 template <typename T>

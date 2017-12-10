@@ -24,7 +24,6 @@ PYCPP_BEGIN_NAMESPACE
 // DECLARATIONS
 // ------------
 
-
 /**
  *  \brief Arena to allocate memory from the stack.
  *
@@ -34,12 +33,24 @@ PYCPP_BEGIN_NAMESPACE
  *  something which is a relatively rare use-case.
  */
 template <
-    size_t N,
+    size_t StackSize,
     size_t Alignment = alignof(std::max_align_t)
 >
 class stack_allocator_arena
 {
 public:
+    // MEMBER TEMPLATES
+    // ----------------
+    template <size_t S1 = StackSize, size_t A1 = Alignment>
+    struct rebind { using other = stack_allocator_arena<S1, A1>; };
+
+    // STATIC VARIABLES
+    // ----------------
+    static constexpr size_t alignment = Alignment;
+    static constexpr size_t stack_size = StackSize;
+
+    // MEMBER FUNCTIONS
+    // ----------------
     stack_allocator_arena() noexcept;
     stack_allocator_arena(const stack_allocator_arena&) = delete;
     stack_allocator_arena& operator=(const stack_allocator_arena&) = delete;
@@ -57,7 +68,7 @@ public:
     void reset() noexcept;
 
 private:
-    alignas(Alignment) char buf_[N];
+    alignas(Alignment) char buf_[StackSize];
     char* ptr_;
 
     static size_t align_up(size_t n) noexcept;
@@ -66,12 +77,21 @@ private:
 
 // ALLOCATOR
 
+// TODO: change this...
+// Get rid of the delete_
+// Use only an existing arena.
+// Remove NodeSize...
+
+// Basically, the allocator is getting duplicated without the
+// reference member and they're CROSSING FUCKING
+// STREAMS.
+
 /**
  *  \brief Allocator optimized for stack-based allocation.
  */
 template <
     typename T,
-    size_t N,
+    size_t StackSize,
     size_t Alignment = alignof(std::max_align_t)
 >
 class stack_allocator
@@ -79,17 +99,17 @@ class stack_allocator
 public:
     // MEMBER TEMPLATES
     // ----------------
-    template <typename T1, size_t N1 = N, size_t A1 = Alignment>
-    struct rebind { using other = stack_allocator<T1, N1, A1>; };
+    template <typename U = T, size_t S = StackSize, size_t A = Alignment>
+    struct rebind { using other = stack_allocator<U, S, A>; };
 
     // STATIC VARIABLES
     // ----------------
     static constexpr size_t alignment = Alignment;
-    static constexpr size_t size = N;
+    static constexpr size_t stack_size = StackSize;
 
     // MEMBER TYPES
     // ------------
-    using self_t = stack_allocator<T, N, Alignment>;
+    using self_t = stack_allocator<T, StackSize, Alignment>;
     using value_type = T;
     using pointer = T*;
     using const_pointer = const T*;
@@ -97,22 +117,27 @@ public:
     using const_reference = const T&;
     using size_type = size_t;
     using difference_type = std::ptrdiff_t;
-    using arena_type = stack_allocator_arena<size, alignment>;
+    using arena_type = stack_allocator_arena<stack_size, alignment>;
 
     // MEMBER FUNCTIONS
     // ----------------
     stack_allocator();
     stack_allocator(arena_type& arena) noexcept;
     stack_allocator(const self_t&);
+    template <typename U> stack_allocator(const stack_allocator<U, StackSize, Alignment>&);
     self_t& operator=(const self_t&);
+    template <typename U> self_t& operator=(const stack_allocator<U, StackSize, Alignment>&);
     ~stack_allocator() noexcept;
 
+    // ALLOCATOR TRAITS
     pointer allocate(size_type, const void* = nullptr);
     void deallocate(pointer, size_type);
 
 private:
-    bool delete_;
-    arena_type* arena_;
+    template <typename U, size_t S, size_t A>
+    friend class stack_allocator;
+
+    arena_type* arena_ = nullptr;
 };
 
 // IMPLEMENTATION
@@ -120,43 +145,53 @@ private:
 
 // ARENA
 
-template <size_t N, size_t Alignment>
-stack_allocator_arena<N, Alignment>::stack_allocator_arena() noexcept:
+template <size_t S, size_t A>
+const size_t stack_allocator_arena<S, A>::alignment;
+
+template <size_t S, size_t A>
+const size_t stack_allocator_arena<S, A>::stack_size;
+
+template <size_t S, size_t A>
+stack_allocator_arena<S, A>::stack_allocator_arena() noexcept:
     ptr_(buf_)
 {}
 
 
-template <size_t N, size_t Alignment>
-stack_allocator_arena<N, Alignment>::~stack_allocator_arena()
+template <size_t S, size_t A>
+stack_allocator_arena<S, A>::~stack_allocator_arena()
 {
     ptr_ = nullptr;
 }
 
 
-template <size_t N, size_t Alignment>
+template <size_t S, size_t A>
 template <size_t RequiredAlignment>
-char* stack_allocator_arena<N, Alignment>::allocate(size_t n)
+char* stack_allocator_arena<S, A>::allocate(size_t n)
 {
-    static_assert(RequiredAlignment <= Alignment, "Alignment is too small for this arena");
+    static_assert(RequiredAlignment <= alignment, "Alignment is too small for this arena");
     assert(pointer_in_buffer(ptr_) && "Allocator has outlived arena.");
 
     size_t aligned_n = align_up(n);
-    if (static_cast<size_t>(buf_ + N - ptr_) >= aligned_n) {
+    if (static_cast<size_t>(buf_ + stack_size - ptr_) >= aligned_n) {
         char* r = ptr_;
         ptr_ += aligned_n;
+        printf("Buf_ is %p, stack is %zu\n", buf_, stack_size);
         return r;
     }
 
     static_assert(
-        Alignment <= alignof(std::max_align_t),
+        alignment <= alignof(std::max_align_t),
         "Alignment is larger than alignof(std::max_align_t), and cannot be guaranteed by new."
     );
-    return static_cast<char*>(operator new(n));
+    char* p = static_cast<char*>(operator new(n));
+    printf("p1 is %p, %zu\n", p, n);
+    return p;
+//    return static_cast<char*>(operator new(n));
 }
 
 
-template <size_t N, size_t Alignment>
-void stack_allocator_arena<N, Alignment>::deallocate(char* p, size_t n) noexcept
+template <size_t S, size_t A>
+void stack_allocator_arena<S, A>::deallocate(char* p, size_t n) noexcept
 {
     assert(pointer_in_buffer(ptr_) && "Allocator has outlived arena.");
 
@@ -166,109 +201,130 @@ void stack_allocator_arena<N, Alignment>::deallocate(char* p, size_t n) noexcept
             ptr_ = p;
         }
     } else {
+        printf("p2 is %p, buf_ is %p, stack is %zu\n", p, buf_, stack_size);
+        // TODO: getting a double free here....
         delete p;
     }
 }
 
 
-template <size_t N, size_t Alignment>
-size_t stack_allocator_arena<N, Alignment>::size() noexcept
+template <size_t S, size_t A>
+size_t stack_allocator_arena<S, A>::size() noexcept
 {
-    return N;
+    return stack_size;
 }
 
 
-template <size_t N, size_t Alignment>
-size_t stack_allocator_arena<N, Alignment>::used() const noexcept
+template <size_t S, size_t A>
+size_t stack_allocator_arena<S, A>::used() const noexcept
 {
     return static_cast<size_t>(ptr_ - buf_);
 }
 
 
-template <size_t N, size_t Alignment>
-void stack_allocator_arena<N, Alignment>::reset() noexcept
+template <size_t S, size_t A>
+void stack_allocator_arena<S, A>::reset() noexcept
 {
     ptr_ = buf_;
 }
 
 
-template <size_t N, size_t Alignment>
-size_t stack_allocator_arena<N, Alignment>::align_up(size_t n) noexcept
+template <size_t S, size_t A>
+size_t stack_allocator_arena<S, A>::align_up(size_t n) noexcept
 {
-    return (n + (Alignment-1)) & ~(Alignment-1);
+    return (n + (alignment-1)) & ~(alignment-1);
 }
 
 
-template <size_t N, size_t Alignment>
-bool stack_allocator_arena<N, Alignment>::pointer_in_buffer(char* p) noexcept
+template <size_t S, size_t A>
+bool stack_allocator_arena<S, A>::pointer_in_buffer(char* p) noexcept
 {
-    return buf_ <= p && p <= buf_ + N;
+    return (buf_ <= p) && (p <= buf_ + stack_size);
 }
 
 // ALLOCATOR
 
+template <typename T, size_t S, size_t A>
+const size_t stack_allocator<T, S, A>::alignment;
 
-template <typename T, size_t N, size_t Alignment>
-stack_allocator<T, N, Alignment>::stack_allocator():
-    delete_(true),
-    arena_(new arena_type)
+template <typename T, size_t S, size_t A>
+const size_t stack_allocator<T, S, A>::stack_size;
+
+
+template <typename T, size_t S, size_t A>
+stack_allocator<T, S, A>::stack_allocator():
+    arena_(nullptr)
 {}
 
 
-template <typename T, size_t N, size_t Alignment>
-stack_allocator<T, N, Alignment>::stack_allocator(arena_type& arena) noexcept:
-    delete_(false),
+template <typename T, size_t S, size_t A>
+stack_allocator<T, S, A>::stack_allocator(arena_type& arena) noexcept:
     arena_(&arena)
 {}
 
 
-template <typename T, size_t N, size_t Alignment>
-stack_allocator<T, N, Alignment>::stack_allocator(const self_t& rhs):
-    delete_(rhs.delete_),
-    arena_(delete_ ? new arena_type : rhs.arena_)
+template <typename T, size_t S, size_t A>
+stack_allocator<T, S, A>::stack_allocator(const self_t& rhs):
+    arena_(rhs.arena_)
 {}
 
 
-template <typename T, size_t N, size_t Alignment>
-auto stack_allocator<T, N, Alignment>::operator=(const self_t& rhs) -> self_t&
+template <typename T, size_t S, size_t A>
+template <typename U>
+stack_allocator<T, S, A>::stack_allocator(const stack_allocator<U, S, A>& rhs):
+    arena_(rhs.arena_)
+{}
+
+
+template <typename T, size_t S, size_t A>
+auto stack_allocator<T, S, A>::operator=(const self_t& rhs) -> self_t&
 {
-    delete_ = rhs.delete_;
-    arena_ = delete_ ? new arena_type : rhs.arena_;
+    arena_ = rhs.arena_;
+    return *this;
 }
 
 
-template <typename T, size_t N, size_t Alignment>
-stack_allocator<T, N, Alignment>::~stack_allocator() noexcept
+template <typename T, size_t S, size_t A>
+template <typename U>
+auto stack_allocator<T, S, A>::operator=(const stack_allocator<U, S, A>& rhs) -> self_t&
 {
-    if (delete_) {
-        delete arena_;
-    }
+    arena_ = rhs.arena_;
+    return *this;
 }
 
 
-template <typename T, size_t N, size_t Alignment>
-auto stack_allocator<T, N, Alignment>::allocate(size_type n, const void* hint) -> pointer
+template <typename T, size_t S, size_t A>
+stack_allocator<T, S, A>::~stack_allocator() noexcept
 {
+    arena_ = nullptr;
+}
+
+
+template <typename T, size_t S, size_t A>
+auto stack_allocator<T, S, A>::allocate(size_type n, const void* hint) -> pointer
+{
+    assert(arena_ && "Arena cannot be null.");
     return reinterpret_cast<T*>(arena_->template allocate<alignof(T)>(sizeof(T) * n));
 }
 
 
-template <typename T, size_t N, size_t Alignment>
-void stack_allocator<T, N, Alignment>::deallocate(pointer p, size_type n)
+template <typename T, size_t S, size_t A>
+void stack_allocator<T, S, A>::deallocate(pointer p, size_type n)
 {
+    assert(arena_ && "Arena cannot be null.");
     arena_->deallocate(reinterpret_cast<char*>(p), sizeof(T) * n);
 }
 
 
-template <typename T1, size_t N1, size_t A1, typename T2, size_t N2, size_t A2>
-bool operator==(const stack_allocator<T1, N1, A1>&, const stack_allocator<T2, N2, A2>&) noexcept
+template <typename T1, size_t S1, size_t A1, typename T2, size_t S2, size_t A2>
+bool operator==(const stack_allocator<T1, S1, A1>& lhs, const stack_allocator<T2, S2, A2>& rhs) noexcept
 {
-    return false;
+    return lhs.arena_ == rhs.arena_;
 }
 
 
-template <typename T1, size_t N1, size_t A1, typename T2, size_t N2, size_t A2>
-bool operator!=(const stack_allocator<T1, N1, A1>& lhs, const stack_allocator<T2, N2, A2>& rhs) noexcept
+template <typename T1, size_t S1, size_t A1, typename T2, size_t S2, size_t A2>
+bool operator!=(const stack_allocator<T1, S1, A1>& lhs, const stack_allocator<T2, S2, A2>& rhs) noexcept
 {
     return !(lhs == rhs);
 }

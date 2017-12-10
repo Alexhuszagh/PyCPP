@@ -291,6 +291,7 @@ To access members in the PyCPP namespace, you can either preface method calls wi
 - [Secure](/pycpp/secure/README.md)
 - [SFINAE](/pycpp/sfinae/README.md)
 - [SQL](/pycpp/sql/README.md)
+- [STL](/pycpp/stl/README.md)
 - [Stream](/pycpp/stream/README.md)
 - [String](/pycpp/string/README.md)
 - [View](/pycpp/view/README.md)
