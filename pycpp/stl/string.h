@@ -20,7 +20,7 @@ template <
     typename Traits = std::char_traits<Char>,
     typename Alloc = allocator<Char>
 >
-using basic_string = std::string<Char, Traits, Alloc>;
+using basic_string = std::basic_string<Char, Traits, Alloc>;
 
 using string = basic_string<char>;
 using wstring = basic_string<wchar_t>;

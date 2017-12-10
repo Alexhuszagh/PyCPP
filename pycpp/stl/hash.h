@@ -8,7 +8,10 @@
 #pragma once
 
 #include <pycpp/config.h>
-#if USE_POLYMORPHIC_ALLOCATOR
+// TODO: when xxhash is implemented, use it.
+// Right now, just use std::hash
+#undef USE_XXHASH
+#if USE_XXHASH
 #   include <pycpp/hashlib/xxhash.h>
 #else
 #   include <functional>
@@ -18,10 +21,6 @@ PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
-
-// TODO: when xxhash is implemented, use it.
-// Right now, just use std::hash
-#undef USE_XXHASH
 
 #if USE_XXHASH                          // XXHASH
 

@@ -1073,6 +1073,18 @@ set(TEST_FILES
     test/sfinae/push_front.cc
     test/sfinae/reserve.cc
     test/sfinae/shrink_to_fit.cc
+    test/stl/allocator.cc
+    test/stl/array.cc
+    test/stl/deque.cc
+    test/stl/forward_list.cc
+    test/stl/hash.cc
+    test/stl/list.cc
+    test/stl/map.cc
+    test/stl/set.cc
+    test/stl/string.cc
+    test/stl/unordered_map.cc
+    test/stl/unordered_set.cc
+    test/stl/vector.cc
     test/string/base16.cc
     test/string/base32.cc
     test/string/base64.cc

@@ -9,6 +9,7 @@
 
 #include <pycpp/stl/allocator.h>
 #include <pycpp/stl/hash.h>
+#include <unordered_set>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -18,7 +19,7 @@ PYCPP_BEGIN_NAMESPACE
 template <
     typename T,
     typename Hash = hash<T>,
-    typename Pred = std::equal_to<Key>,
+    typename Pred = std::equal_to<T>,
     typename Alloc = allocator<T>
 >
 using unordered_set = std::unordered_set<T, Hash, Pred, Alloc>;
@@ -26,7 +27,7 @@ using unordered_set = std::unordered_set<T, Hash, Pred, Alloc>;
 template <
     typename T,
     typename Hash = hash<T>,
-    typename Pred = std::equal_to<Key>,
+    typename Pred = std::equal_to<T>,
     typename Alloc = allocator<T>
 >
 using unordered_multiset = std::unordered_multiset<T, Hash, Pred, Alloc>;

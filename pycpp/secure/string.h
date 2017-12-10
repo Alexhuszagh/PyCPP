@@ -2153,7 +2153,7 @@ typedef basic_string_view<char32_t, secure_char_traits<char32_t>> secure_u32stri
 
 PYCPP_END_NAMESPACE
 
-
+// TODO: need to specialize with my new hash, not std::hash
 namespace std
 {
 // SPECIALIZATION
