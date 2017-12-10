@@ -1860,6 +1860,7 @@ constexpr bool is_enabled()
 
 PYCPP_END_NAMESPACE
 
+// TODO: need to specialize for xxhash
 namespace std
 {
 // SPECIALIZATION

@@ -1188,6 +1188,8 @@ PYCPP_END_NAMESPACE
 
 #if !defined(HAVE_CPP17)             // HAVE_CPP17
 
+// TODO: need to specialize for xxhash
+
 namespace std
 {
 // SPECIALIZATION

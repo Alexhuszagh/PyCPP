@@ -598,13 +598,16 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/whitespace.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/allocator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/array.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/bitset.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/deque.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/forward_list.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/hash.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/list.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/map.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/memory.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/set.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/string.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/system_error.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/unordered_map.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/unordered_set.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector.h"
@@ -1075,13 +1078,16 @@ set(TEST_FILES
     test/sfinae/shrink_to_fit.cc
     test/stl/allocator.cc
     test/stl/array.cc
+    test/stl/bitset.cc
     test/stl/deque.cc
     test/stl/forward_list.cc
     test/stl/hash.cc
     test/stl/list.cc
     test/stl/map.cc
+    test/stl/memory.cc
     test/stl/set.cc
     test/stl/string.cc
+    test/stl/system_error.cc
     test/stl/unordered_map.cc
     test/stl/unordered_set.cc
     test/stl/vector.cc

@@ -8,12 +8,8 @@
 #pragma once
 
 #include <pycpp/config.h>
-// TODO: when xxhash is implemented, use it.
-// Right now, just use std::hash
-#undef USE_XXHASH
-#if USE_XXHASH
-#   include <pycpp/hashlib/xxhash.h>
-#else
+#include <pycpp/hashlib/xxhash.h>
+#if !defined(USE_XXHASH)
 #   include <functional>
 #endif
 
@@ -25,12 +21,14 @@ PYCPP_BEGIN_NAMESPACE
 #if USE_XXHASH                          // XXHASH
 
 template <typename Key>
-using hash = xxhash<Key>;
+struct hash: xxhash<Key>
+{};
 
 #else                                   // !XXHASH
 
 template <typename Key>
-using hash = std::hash<Key>;
+struct hash: std::hash<Key>
+{};
 
 #endif                                  // XXHASH
 

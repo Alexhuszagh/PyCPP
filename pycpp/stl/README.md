@@ -54,4 +54,6 @@ To use custom allocators, see the [allocator documentation](/pycpp/allocator/REA
 
 C++ depends on fast hash functions for unordered container performance, and the hash function performance varies wildly in quality by compiler and compiler version. While GCC provides a good hash function for both [performance and hash quality]((https://gcc.gnu.org/git/?p=gcc.git;a=blob_plain;f=libstdc%2b%2b-v3/libsupc%2b%2b/hash_bytes.cc;hb=HEAD) (MurmurHash 2, as of version 7.2), MSVC uses a relatively [poor](https://docs.microsoft.com/en-us/cpp/porting/fix-your-dependencies-on-library-internals) hash function (FNV 1a). Furthermore, both hash functions are dramatically slower than [xxHash](https://aras-p.info/blog/2016/08/02/Hash-Functions-all-the-way-down/). Replacing the default hash function with xxHash provides increased performance, hash quality, and consistency between different platforms.
 
+For small hashes, such as primitive types and wrappers around primitive types (like `std::error_condition`), our custom hasher reuses the `std::hash` implementation. For larger hashes, like `std::string`, our custom hasher uses xxHash internally.
+
  To disable defaulting to `xxhash`, simply configure the project by passing `-DUSE_XXHASH=OFF` to CMake.
