@@ -95,14 +95,15 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/preprocessor/architecture.h>
+#include <pycpp/stl/memory.h>
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <functional>
+#include <initializer_list>
 #include <iostream>
 #include <iterator>
 #include <limits>
@@ -112,6 +113,8 @@
 #include <type_traits>
 #include <utility>
 #include <sys/types.h>
+
+// TODO: need to add emplace, emplace_hint
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -828,7 +831,8 @@ public:
 
     // Inserts the value x at position i, shifting all existing values
     // and children at positions >= i to the right by 1.
-    void insert_value(int i, const value_type& x);
+    template <typename ... Ts>
+    void insert_value(int i, Ts&&... ts);
 
     // Removes the value at position i, shifting all existing values
     // and children at positions > i to the left by 1.
@@ -890,14 +894,10 @@ public:
     }
 
 private:
-    void value_init(int i)
+    template <typename ... Ts>
+    void value_init(int i, Ts&&... ts)
     {
-        new (&fields_.values[i]) mutable_value_type;
-    }
-
-    void value_init(int i, const value_type& x)
-    {
-        new (&fields_.values[i]) mutable_value_type(x);
+        new (&fields_.values[i]) mutable_value_type(std::forward<Ts>(ts)...);
     }
 
     void value_destroy(int i)
@@ -1126,6 +1126,7 @@ public:
     using data_type = typename Params::data_type;
     using mapped_type = typename Params::mapped_type;
     using value_type = typename Params::value_type;
+    using mutable_value_type = typename Params::mutable_value_type;
     using key_compare = typename Params::key_compare;
     using pointer = typename Params::pointer;
     using const_pointer = typename Params::const_pointer;
@@ -1139,13 +1140,19 @@ public:
     using reverse_iterator = std::reverse_iterator<iterator>;
 
     using allocator_type = typename Params::allocator_type;
-    using internal_allocator_type = typename allocator_type::template rebind<char>::other;
+    using internal_allocator_type = typename allocator_traits<allocator_type>::template rebind_alloc<char>;
 
     // Default constructor.
+    btree(const allocator_type& alloc);
     btree(const key_compare& comp, const allocator_type& alloc);
 
     // Copy constructor.
     btree(const self_type& x);
+    btree(const self_type& x, const allocator_type& alloc);
+
+    // Move constructor.
+    btree(self_type&& x);
+    btree(self_type&& x, const allocator_type& alloc);
 
     // Destructor.
     ~btree()
@@ -1229,6 +1236,13 @@ public:
         return std::make_pair(lower_bound(key), upper_bound(key));
     }
 
+    // Finds if an element already exists in the tree. Boolean
+    // indicates whether insertion can continue, and the
+    // iterator if the boolean is false is the position
+    // of the value in the map, otherwise, it is the position
+    // to insert.
+    std::pair<iterator, bool> find_insert_unique(const key_type& key);
+
     // Inserts a value into the btree only if it does not already
     // exist. The boolean return value indicates whether insertion
     // succeeded or failed. The ValuePointer type is used to avoid
@@ -1246,16 +1260,30 @@ public:
         return insert_unique(params_type::key(v), &v);
     }
 
+    // Construct value in-place as if by insert_unique
+    template <typename ... Ts>
+    std::pair<iterator, bool> emplace_unique(Ts&&... ts);
+
+    // Find insertion position and insert condition with hint.
+    std::pair<iterator, bool> find_insert_unique_hint(iterator position, const key_type& key);
+
     // Insert with hint. Check to see if the value should be placed
     // immediately before position in the tree. If it does, then the
     // insertion will take amortized constant time. If not, the
     // insertion will take amortized logarithmic time as if a call
     // to insert_unique(v) were made.
-    iterator insert_unique(iterator position, const value_type& v);
+    iterator insert_unique_hint(iterator position, const value_type& v);
+
+    // Construct value in-place as if by insert_unique_hint
+    template <typename ... Ts>
+    iterator emplace_unique_hint(iterator position, Ts&&... ts);
 
     // Insert a range of values into the btree.
     template <typename InputIterator>
-    void insert_unique(InputIterator b, InputIterator e);
+    void insert_unique_range(InputIterator b, InputIterator e);
+
+    // Get iterator to internal insertion point.
+    iterator find_insert_multi(const key_type& key);
 
     // Inserts a value into the btree. The ValuePointer type is used
     // to avoid instatiating the value unless the key is being
@@ -1270,16 +1298,27 @@ public:
         return insert_multi(params_type::key(v), &v);
     }
 
+    // Construct value in-place as if by insert_multi
+    template <typename ... Ts>
+    iterator emplace_multi(Ts&&... ts);
+
+    // Find insertion position and insert condition with hint.
+    iterator find_insert_multi_hint(iterator position, const key_type& key);
+
     // Insert with hint. Check to see if the value should be placed
     // immediately before position in the tree. If it does, then the
     // insertion will take amortized constant time. If not, the
     // insertion will take amortized logarithmic time as if a call
     // to insert_multi(v) were made.
-    iterator insert_multi(iterator position, const value_type& v);
+    iterator insert_multi_hint(iterator position, const value_type& v);
+
+    // Construct value in-place as if by insert_multi_hint
+    template <typename ... Ts>
+    iterator emplace_multi_hint(iterator position, Ts&&... ts);
 
     // Insert a range of values into the btree.
     template <typename InputIterator>
-    void insert_multi(InputIterator b, InputIterator e);
+    void insert_multi_range(InputIterator b, InputIterator e);
 
     void assign(const self_type& x);
 
@@ -1619,7 +1658,8 @@ private:
 
     // Inserts a value into the btree immediately before iter. Requires
     // that key(v) <= iter.key() and (--iter).key() <= key(v).
-    iterator internal_insert(iterator iter, const value_type& v);
+    template <typename ... Ts>
+    iterator internal_insert(iterator iter, Ts&&... ts);
 
     // Returns an iterator pointing to the first value >= the value "iter"
     // is pointing at. Note that "iter" might be pointing to an invalid
@@ -1760,13 +1800,30 @@ public:
     using const_reverse_iterator = typename Tree::const_reverse_iterator;
 
     // Default constructor.
+    btree_container(const allocator_type& alloc):
+        tree_(alloc)
+    {}
+
     btree_container(const key_compare& comp, const allocator_type& alloc):
-      tree_(comp, alloc)
+        tree_(comp, alloc)
     {}
 
     // Copy constructor.
     btree_container(const self_type& x):
-      tree_(x.tree_)
+        tree_(x.tree_)
+    {}
+
+    btree_container(const self_type& x, const allocator_type& alloc):
+        tree_(x.tree_, alloc)
+    {}
+
+    // Move constructor
+    btree_container(self_type&& x):
+        tree_(std::move(x.tree_))
+    {}
+
+    btree_container(self_type&& x, const allocator_type& alloc):
+        tree_(std::move(x.tree_), alloc)
     {}
 
     // Iterator routines.
@@ -1957,7 +2014,11 @@ public:
     using iterator = typename Tree::iterator;
     using const_iterator = typename Tree::const_iterator;
 
-  // Default constructor.
+    // Default constructor.
+    btree_unique_container(const allocator_type& alloc):
+        super_type(alloc)
+    {}
+
     btree_unique_container(const key_compare& comp = key_compare(),
                            const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -1968,6 +2029,19 @@ public:
         super_type(x)
     {}
 
+    btree_unique_container(const self_type& x, const allocator_type& alloc):
+        super_type(x, alloc)
+    {}
+
+    // Move constructor
+    btree_unique_container(self_type&& x):
+        super_type(std::forward<self_type>(x))
+    {}
+
+    btree_unique_container(self_type&& x, const allocator_type& alloc):
+        super_type(std::forward<self_type>(x), alloc)
+    {}
+
     // Range constructor.
     template <typename InputIterator>
     btree_unique_container(InputIterator b, InputIterator e,
@@ -1976,6 +2050,30 @@ public:
         super_type(comp, alloc)
     {
         insert(b, e);
+    }
+
+    template <typename InputIterator>
+    btree_unique_container(InputIterator b, InputIterator e,
+                           const allocator_type& alloc):
+        super_type(alloc)
+    {
+        insert(b, e);
+    }
+
+    // Initializer list constructor
+    btree_unique_container(std::initializer_list<value_type> list,
+                           const key_compare& comp = key_compare(),
+                           const allocator_type& alloc = allocator_type()):
+        super_type(comp, alloc)
+    {
+        insert(list.begin(), list.end());
+    }
+
+    btree_unique_container(std::initializer_list<value_type> list,
+                           const allocator_type& alloc = allocator_type()):
+        super_type(alloc)
+    {
+        insert(list.begin(), list.end());
     }
 
     // Lookup routines.
@@ -1994,6 +2092,19 @@ public:
         return this->tree_.count_unique(key);
     }
 
+    // Emplace routines
+    template <typename... Ts>
+    std::pair<iterator,bool> emplace(Ts&&... ts)
+    {
+        return this->tree_.emplace_unique(std::forward<Ts>(ts)...);
+    }
+
+    template <typename... Ts>
+    iterator emplace_hint(const_iterator hint, Ts&&... ts)
+    {
+        return this->tree_.emplace_unique_hint(hint, std::forward<Ts>(ts)...);
+    }
+
     // Insertion routines.
     std::pair<iterator,bool> insert(const value_type &x)
     {
@@ -2002,13 +2113,13 @@ public:
 
     iterator insert(iterator position, const value_type &x)
     {
-        return this->tree_.insert_unique(position, x);
+        return this->tree_.insert_unique_hint(position, x);
     }
 
     template <typename InputIterator>
     void insert(InputIterator b, InputIterator e)
     {
-        this->tree_.insert_unique(b, e);
+        this->tree_.insert_unique_range(b, e);
     }
 
     // Deletion routines.
@@ -2068,6 +2179,10 @@ private:
 
 public:
     // Default constructor.
+    btree_map_container(const allocator_type& alloc):
+        super_type(alloc)
+    {}
+
     btree_map_container(const key_compare& comp = key_compare(),
                         const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -2078,12 +2193,43 @@ public:
         super_type(x)
     {}
 
+    btree_map_container(const self_type& x, const allocator_type& alloc):
+        super_type(x, alloc)
+    {}
+
+    // Move constructor
+    btree_map_container(self_type&& x):
+        super_type(std::forward<self_type>(x))
+    {}
+
+    btree_map_container(self_type&& x, const allocator_type& alloc):
+        super_type(std::forward<self_type>(x), alloc)
+    {}
+
     // Range constructor.
     template <typename InputIterator>
     btree_map_container(InputIterator b, InputIterator e,
                         const key_compare& comp = key_compare(),
                         const allocator_type& alloc = allocator_type()):
         super_type(b, e, comp, alloc)
+    {}
+
+    template <typename InputIterator>
+    btree_map_container(InputIterator b, InputIterator e,
+                        const allocator_type& alloc):
+        super_type(b, e, alloc)
+    {}
+
+    // Initalizer list constructor
+    btree_map_container(std::initializer_list<value_type> list,
+                        const key_compare& comp = key_compare(),
+                        const allocator_type& alloc = allocator_type()):
+        super_type(list.begin(), list.end(), comp, alloc)
+    {}
+
+    btree_map_container(std::initializer_list<value_type> list,
+                        const allocator_type& alloc = allocator_type()):
+        super_type(list.begin(), list.end(), alloc)
     {}
 
     // Insertion routines.
@@ -2111,6 +2257,10 @@ public:
     using const_iterator = typename Tree::const_iterator;
 
     // Default constructor.
+    btree_multi_container(const allocator_type& alloc):
+        super_type(alloc)
+    {}
+
     btree_multi_container(const key_compare& comp = key_compare(),
                           const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -2121,6 +2271,19 @@ public:
         super_type(x)
     {}
 
+    btree_multi_container(const self_type& x, const allocator_type& alloc):
+        super_type(x, alloc)
+    {}
+
+    // Move constructor
+    btree_multi_container(self_type&& x):
+        super_type(std::forward<self_type>(x))
+    {}
+
+    btree_multi_container(self_type&& x, const allocator_type& alloc):
+        super_type(std::forward<self_type>(x), alloc)
+    {}
+
     // Range constructor.
     template <typename InputIterator>
     btree_multi_container(InputIterator b, InputIterator e,
@@ -2129,6 +2292,30 @@ public:
         super_type(comp, alloc)
     {
         insert(b, e);
+    }
+
+    template <typename InputIterator>
+    btree_multi_container(InputIterator b, InputIterator e,
+                          const allocator_type& alloc = allocator_type()):
+        super_type(alloc)
+    {
+        insert(b, e);
+    }
+
+    // Initializer list constructor
+    btree_multi_container(std::initializer_list<value_type> list,
+                          const key_compare& comp = key_compare(),
+                          const allocator_type& alloc = allocator_type()):
+        super_type(comp, alloc)
+    {
+        insert(list.begin(), list.end());
+    }
+
+    btree_multi_container(std::initializer_list<value_type> list,
+                          const allocator_type& alloc = allocator_type()):
+        super_type(alloc)
+    {
+        insert(list.begin(), list.end());
     }
 
     // Lookup routines.
@@ -2147,6 +2334,19 @@ public:
         return this->tree_.count_multi(key);
     }
 
+    // Emplace routines
+    template <typename... Ts>
+    iterator emplace(Ts&&... ts)
+    {
+        return this->tree_.emplace_multi(std::forward<Ts>(ts)...);
+    }
+
+    template <typename... Ts>
+    iterator emplace_hint(const_iterator hint, Ts&&... ts)
+    {
+        return this->tree_.emplace_multi_hint(hint, std::forward<Ts>(ts)...);
+    }
+
     // Insertion routines.
     iterator insert(const value_type &x)
     {
@@ -2155,13 +2355,13 @@ public:
 
     iterator insert(iterator position, const value_type &x)
     {
-        return this->tree_.insert_multi(position, x);
+        return this->tree_.insert_multi_hint(position, x);
     }
 
     template <typename InputIterator>
     void insert(InputIterator b, InputIterator e)
     {
-        this->tree_.insert_multi(b, e);
+        this->tree_.insert_multi_range(b, e);
     }
 
     // Deletion routines.
@@ -2192,10 +2392,11 @@ public:
 
 // btree_node methods
 template <typename P>
-inline void btree_node<P>::insert_value(int i, const value_type& x)
+template <typename ... Ts>
+inline void btree_node<P>::insert_value(int i, Ts&&... ts)
 {
     assert(i <= count());
-    value_init(count(), x);
+    value_init(count(), std::forward<Ts>(ts)...);
     for (int j = count(); j > i; --j) {
         value_swap(j, this, j - 1);
     }
@@ -2520,6 +2721,12 @@ void btree_iterator<N, R, P>::decrement_slow()
 
 // btree methods
 template <typename P>
+btree<P>::btree(const allocator_type& alloc):
+    root_(alloc, nullptr)
+{}
+
+
+template <typename P>
 btree<P>::btree(const key_compare &comp, const allocator_type& alloc):
     key_compare(comp),
     root_(alloc, nullptr)
@@ -2535,9 +2742,36 @@ btree<P>::btree(const self_type& x):
 }
 
 
-template <typename P> template <typename ValuePointer>
+template <typename P>
+btree<P>::btree(const self_type& x, const allocator_type& alloc):
+    key_compare(x.key_comp()),
+    root_(alloc, nullptr)
+{
+    assign(x);
+}
+
+
+template <typename P>
+btree<P>::btree(self_type&& x):
+    key_compare(x.key_comp()),
+    root_(x.internal_allocator(), nullptr)
+{
+    swap(x);
+}
+
+
+template <typename P>
+btree<P>::btree(self_type&& x, const allocator_type& alloc):
+    key_compare(x.key_comp()),
+    root_(alloc, nullptr)
+{
+    swap(x);
+}
+
+
+template <typename P>
 std::pair<typename btree<P>::iterator, bool>
-btree<P>::insert_unique(const key_type& key, ValuePointer value)
+btree<P>::find_insert_unique(const key_type& key)
 {
     if (empty()) {
         *mutable_root() = new_leaf_root_node(1);
@@ -2556,40 +2790,96 @@ btree<P>::insert_unique(const key_type& key, ValuePointer value)
         }
     }
 
-    return std::make_pair(internal_insert(iter, *value), true);
+    return std::make_pair(iter, true);
+}
+
+
+template <typename P> template <typename ValuePointer>
+std::pair<typename btree<P>::iterator, bool>
+btree<P>::insert_unique(const key_type& key, ValuePointer value)
+{
+    std::pair<iterator, bool> p = find_insert_unique(key);
+    if (p.second) {
+        return std::make_pair(internal_insert(p.first, *value), p.second);
+    }
+    return p;
+}
+
+
+template <typename P>
+template <typename ... Ts>
+std::pair<typename btree<P>::iterator, bool>
+btree<P>::emplace_unique(Ts&&... ts)
+{
+    mutable_value_type v(std::forward<Ts>(ts)...);
+    const auto& key = params_type::key(v);
+
+    std::pair<iterator, bool> p = find_insert_unique(key);
+    if (p.second) {
+        return std::make_pair(internal_insert(p.first, std::move(v)), p.second);
+    }
+    return p;
+}
+
+
+template <typename P>
+inline std::pair<typename btree<P>::iterator, bool>
+btree<P>::find_insert_unique_hint(iterator position, const key_type& key)
+{
+    if (position == end() || compare_keys(key, position.key())) {
+        iterator prev = position;
+        if (position == begin() || compare_keys((--prev).key(), key)) {
+            // prev.key() < key < position.key()
+            return std::make_pair(position, true);
+        }
+    } else if (compare_keys(position.key(), key)) {
+        iterator next = position;
+        ++next;
+        if (next == end() || compare_keys(key, next.key())) {
+            // position.key() < key < next.key()
+            return std::make_pair(next, true);
+        }
+    } else {
+        // position.key() == key
+        return std::make_pair(position, false);
+    }
 }
 
 
 template <typename P>
 inline typename btree<P>::iterator
-btree<P>::insert_unique(iterator position, const value_type& v)
+btree<P>::insert_unique_hint(iterator position, const value_type& v)
 {
     if (!empty()) {
-        const key_type& key = params_type::key(v);
-        if (position == end() || compare_keys(key, position.key())) {
-            iterator prev = position;
-            if (position == begin() || compare_keys((--prev).key(), key)) {
-                // prev.key() < key < position.key()
-                return internal_insert(position, v);
-            }
-        } else if (compare_keys(position.key(), key)) {
-            iterator next = position;
-            ++next;
-            if (next == end() || compare_keys(key, next.key())) {
-                // position.key() < key < next.key()
-                return internal_insert(next, v);
-            }
-        } else {
-            // position.key() == key
-            return position;
+        auto p = find_insert_unique_hint(position, params_type::key(v));
+        if (p.second) {
+            return internal_insert(p.first, v);
         }
+        return p.first;
     }
     return insert_unique(v).first;
 }
 
 
+template <typename P>
+template <typename ... Ts>
+inline typename btree<P>::iterator
+btree<P>::emplace_unique_hint(iterator position, Ts&&... ts)
+{
+    if (!empty()) {
+        mutable_value_type v(std::forward<Ts>(ts)...);
+        auto p = find_insert_unique_hint(position, params_type::key(v));
+        if (p.second) {
+            return internal_insert(p.first, std::move(v));
+        }
+        return p.first;
+    }
+    return emplace_unique(std::forward<Ts>(ts)...).first;
+}
+
+
 template <typename P> template <typename InputIterator>
-void btree<P>::insert_unique(InputIterator b, InputIterator e)
+void btree<P>::insert_unique_range(InputIterator b, InputIterator e)
 {
     for (; b != e; ++b) {
         insert_unique(end(), *b);
@@ -2597,48 +2887,90 @@ void btree<P>::insert_unique(InputIterator b, InputIterator e)
 }
 
 
+template <typename P>
+typename btree<P>::iterator
+btree<P>::find_insert_multi(const key_type &key)
+{
+    if (empty()) {
+        *mutable_root() = new_leaf_root_node(1);
+    }
+
+    iterator iter = internal_upper_bound(key, iterator(root(), 0));
+    if (!iter.node) {
+        iter = end();
+    }
+    return iter;
+}
+
+
 template <typename P> template <typename ValuePointer>
 typename btree<P>::iterator
-btree<P>::insert_multi(const key_type &key, ValuePointer value) {
-  if (empty()) {
-    *mutable_root() = new_leaf_root_node(1);
-  }
+btree<P>::insert_multi(const key_type &key, ValuePointer value)
+{
+    return internal_insert(find_insert_multi(key), *value);
+}
 
-  iterator iter = internal_upper_bound(key, iterator(root(), 0));
-  if (!iter.node) {
-    iter = end();
-  }
-  return internal_insert(iter, *value);
+
+template <typename P>
+template <typename ... Ts>
+typename btree<P>::iterator
+btree<P>::emplace_multi(Ts&&... ts)
+{
+    mutable_value_type v(std::forward<Ts>(ts)...);
+    iterator it = find_insert_multi(params_type::key(v));
+    return internal_insert(it, std::move(v));
 }
 
 
 template <typename P>
 typename btree<P>::iterator
-btree<P>::insert_multi(iterator position, const value_type& v)
+btree<P>::find_insert_multi_hint(iterator position, const key_type& key)
+{
+    if (position == end() || !compare_keys(position.key(), key)) {
+        iterator prev = position;
+        if (position == begin() || !compare_keys(key, (--prev).key())) {
+            // prev.key() <= key <= position.key()
+            return position;
+        }
+    } else {
+        iterator next = position;
+        ++next;
+        if (next == end() || !compare_keys(next.key(), key)) {
+            // position.key() < key <= next.key()
+            return next;
+        }
+    }
+}
+
+
+template <typename P>
+typename btree<P>::iterator
+btree<P>::insert_multi_hint(iterator position, const value_type& v)
 {
     if (!empty()) {
-        const key_type& key = params_type::key(v);
-        if (position == end() || !compare_keys(position.key(), key)) {
-            iterator prev = position;
-            if (position == begin() || !compare_keys(key, (--prev).key())) {
-                // prev.key() <= key <= position.key()
-                return internal_insert(position, v);
-            }
-        } else {
-            iterator next = position;
-            ++next;
-            if (next == end() || !compare_keys(next.key(), key)) {
-                // position.key() < key <= next.key()
-                return internal_insert(next, v);
-            }
-        }
+        position = find_insert_multi_hint(position, params_type::key(v));
+        return internal_insert(position, v);
     }
     return insert_multi(v);
 }
 
 
+template <typename P>
+template <typename ... Ts>
+typename btree<P>::iterator
+btree<P>::emplace_multi_hint(iterator position, Ts&&... ts)
+{
+    if (!empty()) {
+        mutable_value_type v(std::forward<Ts>(ts)...);
+        position = find_insert_multi_hint(position, params_type::key(v));
+        return internal_insert(position, std::move(v));
+    }
+    return insert_multi(std::forward<Ts>(ts)...);
+}
+
+
 template <typename P> template <typename InputIterator>
-void btree<P>::insert_multi(InputIterator b, InputIterator e)
+void btree<P>::insert_multi_range(InputIterator b, InputIterator e)
 {
     for (; b != e; ++b) {
         insert_multi(end(), *b);
@@ -3037,8 +3369,9 @@ inline IterType btree<P>::internal_last(IterType iter)
 
 
 template <typename P>
+template <typename ... Ts>
 inline typename btree<P>::iterator
-btree<P>::internal_insert(iterator iter, const value_type& v)
+btree<P>::internal_insert(iterator iter, Ts&&... ts)
 {
     if (!iter.node->leaf()) {
         // We can't insert on an internal node. Instead, we'll insert
@@ -3065,7 +3398,7 @@ btree<P>::internal_insert(iterator iter, const value_type& v)
     } else if (!root()->leaf()) {
         ++*mutable_size();
     }
-    iter.node->insert_value(iter.position, v);
+    iter.node->insert_value(iter.position, std::forward<Ts>(ts)...);
     return iter;
 }
 

@@ -15,7 +15,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/memory.h>
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -26,7 +26,6 @@
 #include <exception>
 #include <iterator>
 #include <limits>
-#include <memory>
 #include <ratio>
 #include <stdexcept>
 #include <tuple>
@@ -635,7 +634,7 @@ private:
 
     using bucket_entry_type = bucket_entry<value_type, STORE_HASH>;
     using distance_type = typename bucket_entry_type::distance_type;
-    using buckets_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<bucket_entry_type>;
+    using buckets_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<bucket_entry_type>;
     using buckets_container_type = std::vector<bucket_entry_type, buckets_allocator>;
 
 public:

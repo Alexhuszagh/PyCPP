@@ -417,7 +417,7 @@ any make_any(Ts&&... ts)
 }
 
 
-template <typename T, typename U, typename ...Ts>
+template <typename T, typename U, typename ... Ts>
 any make_any(std::initializer_list<U> list, Ts&&... ts)
 {
     return any(in_place_type_t<T>(), list, std::forward<Ts>(ts)...);

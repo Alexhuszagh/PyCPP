@@ -9,7 +9,9 @@
 #pragma once
 
 #include <pycpp/collections/btree.h>
-#include <memory>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/utility.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -19,8 +21,8 @@ PYCPP_BEGIN_NAMESPACE
 // The btree_set class is needed mainly for its constructors.
 template <
     typename Key,
-    typename Compare = std::less<Key>,
-    typename Alloc = std::allocator<Key>,
+    typename Compare = less<Key>,
+    typename Alloc = allocator<Key>,
     int TargetNodeSize = 256
 >
 class btree_set: public btree_detail::btree_unique_container<
@@ -33,10 +35,15 @@ class btree_set: public btree_detail::btree_unique_container<
     using super_type = btree_detail::btree_unique_container<btree_type>;
 
 public:
+    using value_type = typename btree_type::value_type;
     using key_compare = typename btree_type::key_compare;
     using allocator_type = typename btree_type::allocator_type;
 
     // Default constructor.
+    btree_set(const allocator_type& alloc):
+        super_type(alloc)
+    {}
+
     btree_set(const key_compare& comp = key_compare(),
               const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -47,6 +54,19 @@ public:
         super_type(x)
     {}
 
+    btree_set(const self_type& x, const allocator_type& alloc):
+        super_type(x, alloc)
+    {}
+
+    // Move constructor
+    btree_set(self_type&& x):
+        super_type(std::forward<self_type>(x))
+    {}
+
+    btree_set(self_type&& x, const allocator_type& alloc):
+        super_type(std::forward<self_type>(x), alloc)
+    {}
+
     // Range constructor.
     template <typename InputIterator>
     btree_set(InputIterator b, InputIterator e,
@@ -54,6 +74,28 @@ public:
               const allocator_type& alloc = allocator_type()):
         super_type(b, e, comp, alloc)
     {}
+
+    template <typename InputIterator>
+    btree_set(InputIterator b, InputIterator e,
+              const allocator_type& alloc = allocator_type()):
+        super_type(b, e, alloc)
+    {}
+
+    // Initializer list constructor
+    btree_set(std::initializer_list<value_type> list,
+              const key_compare& comp = key_compare(),
+              const allocator_type& alloc = allocator_type()):
+        super_type(comp, alloc)
+    {
+        this->insert(list.begin(), list.end());
+    }
+
+    btree_set(std::initializer_list<value_type> list,
+              const allocator_type& alloc = allocator_type()):
+        super_type(alloc)
+    {
+        this->insert(list.begin(), list.end());
+    }
 };
 
 
@@ -66,8 +108,8 @@ inline void swap(btree_set<K, C, A, N>& x, btree_set<K, C, A, N>& y)
 // The btree_multiset class is needed mainly for its constructors.
 template <
     typename Key,
-    typename Compare = std::less<Key>,
-    typename Alloc = std::allocator<Key>,
+    typename Compare = less<Key>,
+    typename Alloc = allocator<Key>,
     int TargetNodeSize = 256
 >
 class btree_multiset: public btree_detail::btree_multi_container<
@@ -81,10 +123,15 @@ class btree_multiset: public btree_detail::btree_multi_container<
     using super_type = btree_detail::btree_multi_container<btree_type>;
 
 public:
+    using value_type = typename btree_type::value_type;
     using key_compare = typename btree_type::key_compare;
     using allocator_type = typename btree_type::allocator_type;
 
     // Default constructor.
+    btree_multiset(const allocator_type& alloc):
+        super_type(alloc)
+    {}
+
     btree_multiset(const key_compare& comp = key_compare(),
                    const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -95,6 +142,19 @@ public:
         super_type(x)
     {}
 
+    btree_multiset(const self_type& x, const allocator_type& alloc):
+        super_type(x, alloc)
+    {}
+
+    // Move constructor
+    btree_multiset(self_type&& x):
+        super_type(std::forward<self_type>(x))
+    {}
+
+    btree_multiset(self_type&& x, const allocator_type& alloc):
+        super_type(std::forward<self_type>(x), alloc)
+    {}
+
     // Range constructor.
     template <typename InputIterator>
     btree_multiset(InputIterator b, InputIterator e,
@@ -102,6 +162,28 @@ public:
                    const allocator_type& alloc = allocator_type()):
         super_type(b, e, comp, alloc)
     {}
+
+    template <typename InputIterator>
+    btree_multiset(InputIterator b, InputIterator e,
+                   const allocator_type& alloc = allocator_type()):
+        super_type(b, e, alloc)
+    {}
+
+    // Initializer list constructor
+    btree_multiset(std::initializer_list<value_type> list,
+                   const key_compare& comp = key_compare(),
+                   const allocator_type& alloc = allocator_type()):
+        super_type(comp, alloc)
+    {
+        this->insert(list.begin(), list.end());
+    }
+
+    btree_multiset(std::initializer_list<value_type> list,
+                   const allocator_type& alloc = allocator_type()):
+        super_type(alloc)
+    {
+        this->insert(list.begin(), list.end());
+    }
 };
 
 template <typename K, typename C, typename A, int N>

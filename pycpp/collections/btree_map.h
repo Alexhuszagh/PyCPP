@@ -9,7 +9,9 @@
 #pragma once
 
 #include <pycpp/collections/btree.h>
-#include <memory>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/utility.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -20,8 +22,8 @@ PYCPP_BEGIN_NAMESPACE
 template <
     typename Key,
     typename Value,
-    typename Compare = std::less<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, Value>>,
+    typename Compare = less<Key>,
+    typename Alloc = allocator<pair<const Key, Value>>,
     int TargetNodeSize = 256
 >
 class btree_map: public btree_detail::btree_map_container<
@@ -35,10 +37,15 @@ class btree_map: public btree_detail::btree_map_container<
     using super_type = btree_detail::btree_map_container<btree_type>;
 
 public:
+    using value_type = typename btree_type::value_type;
     using key_compare = typename btree_type::key_compare;
     using allocator_type = typename btree_type::allocator_type;
 
     // Default constructor.
+    btree_map(const allocator_type& alloc):
+        super_type(alloc)
+    {}
+
     btree_map(const key_compare& comp = key_compare(),
               const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -49,6 +56,19 @@ public:
         super_type(x)
     {}
 
+    btree_map(const self_type& x, const allocator_type& alloc):
+        super_type(x, alloc)
+    {}
+
+    // Move constructor.
+    btree_map(self_type&& x):
+        super_type(std::forward<self_type>(x))
+    {}
+
+    btree_map(self_type&& x, const allocator_type& alloc):
+        super_type(std::forward<self_type>(x), alloc)
+    {}
+
     // Range constructor.
     template <typename InputIterator>
     btree_map(InputIterator b, InputIterator e,
@@ -56,6 +76,28 @@ public:
               const allocator_type& alloc = allocator_type()):
         super_type(b, e, comp, alloc)
     {}
+
+    template <typename InputIterator>
+    btree_map(InputIterator b, InputIterator e,
+              const allocator_type& alloc = allocator_type()):
+        super_type(b, e, alloc)
+    {}
+
+    // Initializer list constructor
+    btree_map(std::initializer_list<value_type> list,
+              const key_compare& comp = key_compare(),
+              const allocator_type& alloc = allocator_type()):
+        super_type(comp, alloc)
+    {
+        this->insert(list.begin(), list.end());
+    }
+
+    btree_map(std::initializer_list<value_type> list,
+              const allocator_type& alloc = allocator_type()):
+        super_type(alloc)
+    {
+        this->insert(list.begin(), list.end());
+    }
 };
 
 
@@ -69,8 +111,8 @@ inline void swap(btree_map<K, V, C, A, N>& x, btree_map<K, V, C, A, N>& y)
 template <
     typename Key,
     typename Value,
-    typename Compare = std::less<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, Value> >,
+    typename Compare = less<Key>,
+    typename Alloc = allocator<pair<const Key, Value> >,
     int TargetNodeSize = 256
 >
 class btree_multimap: public btree_detail::btree_multi_container<
@@ -84,12 +126,17 @@ class btree_multimap: public btree_detail::btree_multi_container<
     using super_type = btree_detail::btree_multi_container<btree_type>;
 
 public:
+    using value_type = typename btree_type::value_type;
     using key_compare = typename btree_type::key_compare;
     using allocator_type = typename btree_type::allocator_type;
     using data_type = typename btree_type::data_type;
     using mapped_type = typename btree_type::mapped_type;
 
     // Default constructor.
+    btree_multimap(const allocator_type& alloc):
+        super_type(alloc)
+    {}
+
     btree_multimap(const key_compare& comp = key_compare(),
                    const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -100,6 +147,19 @@ public:
         super_type(x)
     {}
 
+    btree_multimap(const self_type& x, const allocator_type& alloc):
+        super_type(x, alloc)
+    {}
+
+    // Move constructor
+    btree_multimap(self_type&& x):
+        super_type(std::forward<self_type>(x))
+    {}
+
+    btree_multimap(self_type&& x, const allocator_type& alloc):
+        super_type(std::forward<self_type>(x), alloc)
+    {}
+
     // Range constructor.
     template <typename InputIterator>
     btree_multimap(InputIterator b, InputIterator e,
@@ -107,6 +167,28 @@ public:
                    const allocator_type& alloc = allocator_type()):
         super_type(b, e, comp, alloc)
     {}
+
+    template <typename InputIterator>
+    btree_multimap(InputIterator b, InputIterator e,
+                   const allocator_type& alloc = allocator_type()):
+        super_type(b, e, alloc)
+    {}
+
+    // Initializer list constructor
+    btree_multimap(std::initializer_list<value_type> list,
+                   const key_compare& comp = key_compare(),
+                   const allocator_type& alloc = allocator_type()):
+        super_type(comp, alloc)
+    {
+        this->insert(list.begin(), list.end());
+    }
+
+    btree_multimap(std::initializer_list<value_type> list,
+                   const allocator_type& alloc = allocator_type()):
+        super_type(alloc)
+    {
+        this->insert(list.begin(), list.end());
+    }
 };
 
 

@@ -60,7 +60,7 @@ template <typename lru>
 using cref_key = std::reference_wrapper<const typename lru::key_type>;
 
 template <typename allocator_type, typename T>
-using rebind_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<T>;
+using rebind_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<T>;
 
 template <typename lru>
 using map_allocator = rebind_allocator<

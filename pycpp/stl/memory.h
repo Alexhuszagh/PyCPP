@@ -16,6 +16,9 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
+template <typename Allocator>
+using allocator_traits = std::allocator_traits<Allocator>;
+
 #if USE_POLYMORPHIC_ALLOCATOR           // POLYMOPRHIC
 
 template <typename T>

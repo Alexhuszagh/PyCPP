@@ -10,6 +10,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/stl/memory.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -20,7 +21,6 @@
 #include <initializer_list>
 #include <iterator>
 #include <limits>
-#include <memory>
 #include <stdexcept>
 #include <tuple>
 #include <type_traits>
@@ -323,7 +323,7 @@ private:
     };
 
 
-    using buckets_container_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<bucket_entry>;
+    using buckets_container_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<bucket_entry>;
     using buckets_container_type = std::vector<bucket_entry, buckets_container_allocator>;
 
 public:
