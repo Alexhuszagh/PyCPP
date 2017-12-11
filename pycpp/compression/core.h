@@ -8,10 +8,10 @@
 #pragma once
 
 #include <pycpp/compression/exception.h>
+#include <pycpp/misc/safe_stdlib.h>
+#include <pycpp/stl/type_traits.h>
 #include <pycpp/string/string.h>
-#include <pycpp/safe/stdlib.h>
 #include <cstdlib>
-#include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
 

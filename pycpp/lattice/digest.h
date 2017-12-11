@@ -13,9 +13,9 @@
 
 #include <pycpp/lattice/auth.h>
 #include <pycpp/lattice/crypto.h>
+#include <pycpp/stl/unordered_map.h>
+#include <pycpp/stl/vector.h>
 #include <pycpp/string/string.h>
-#include <unordered_map>
-#include <vector>
 
 PYCPP_BEGIN_NAMESPACE
 

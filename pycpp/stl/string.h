@@ -9,10 +9,10 @@
 
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/string.h>
 #if defined(USE_XXHASH) || defined(USE_POLYMORPHIC_ALLOCATOR)
 #   include <pycpp/stl/detail/xxhash.h>
 #endif
-#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 

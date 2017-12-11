@@ -8,10 +8,10 @@
 #pragma once
 
 #include <pycpp/iterator/range.h>
+#include <pycpp/stl/map.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/vector.h>
 #include <pycpp/string/string.h>
-#include <map>
-#include <memory>
-#include <vector>
 
 PYCPP_BEGIN_NAMESPACE
 

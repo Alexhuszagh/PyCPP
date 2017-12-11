@@ -2,8 +2,8 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/json/dom.h>
-#include <sstream>
-#include <stdexcept>
+#include <pycpp/stl/sstream.h>
+#include <pycpp/stl/stdexcept.h>
 
 PYCPP_BEGIN_NAMESPACE
 

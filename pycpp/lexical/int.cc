@@ -4,7 +4,7 @@
 #include <pycpp/lexical/atoi.h>
 #include <pycpp/lexical/int.h>
 #include <pycpp/lexical/itoa.h>
-#include <limits>
+#include <pycpp/stl/limits.h>
 
 PYCPP_BEGIN_NAMESPACE
 

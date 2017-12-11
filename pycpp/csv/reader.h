@@ -9,10 +9,10 @@
 
 #include <pycpp/csv/punct.h>
 #include <pycpp/iterator/input_iterator_facade.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/sstream.h>
 #include <pycpp/stream/fstream.h>
 #include <pycpp/string/string.h>
-#include <memory>
-#include <sstream>
 
 PYCPP_BEGIN_NAMESPACE
 

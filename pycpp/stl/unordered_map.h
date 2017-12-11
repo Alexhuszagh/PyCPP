@@ -11,6 +11,7 @@
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/utility.h>
+#include <pycpp/stl/utility.h>
 #include <unordered_map>
 
 PYCPP_BEGIN_NAMESPACE

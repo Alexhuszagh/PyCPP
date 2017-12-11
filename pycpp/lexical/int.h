@@ -7,9 +7,9 @@
 
 #pragma once
 
+#include <pycpp/stl/limits.h>
 #include <pycpp/stl/string_view.h>
 #include <cstdint>
-#include <limits>
 
 PYCPP_BEGIN_NAMESPACE
 

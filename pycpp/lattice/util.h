@@ -10,8 +10,8 @@
 
 #include <pycpp/sfinae/has_member_function.h>
 #include <pycpp/sfinae/is_specialization.h>
-#include <mutex>
-#include <type_traits>
+#include <pycpp/stl/mutex.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 

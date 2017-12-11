@@ -2,13 +2,13 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/codec.h>
 #include <pycpp/string/unicode.h>
-#include <algorithm>
 #include <cctype>
-#include <iterator>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

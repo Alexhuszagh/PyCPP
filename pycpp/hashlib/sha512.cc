@@ -9,8 +9,8 @@
 #include <pycpp/preprocessor/architecture.h>
 #include <pycpp/preprocessor/byteorder.h>
 #include <pycpp/secure/stdlib.h>
+#include <pycpp/stl/stdexcept.h>
 #include <cstring>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

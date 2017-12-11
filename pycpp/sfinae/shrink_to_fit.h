@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/sfinae/has_member_function.h>
-#include <type_traits>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -42,7 +42,7 @@ struct shrink_to_fit
 // ------
 
 template <typename T>
-constexpr bool shrink_to_fit_v = shrink_to_fit<T>::value;
+constexpr bool has_shrink_to_fit_v = has_shrink_to_fit<T>::value;
 
 #endif
 

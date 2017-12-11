@@ -7,10 +7,8 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-
-#include <string>
-#include <vector>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/vector.h>
 
 PYCPP_BEGIN_NAMESPACE
 

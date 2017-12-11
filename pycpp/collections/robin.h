@@ -15,6 +15,8 @@
 
 #pragma once
 
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/array.h>
 #include <pycpp/stl/exception.h>
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/limits.h>
@@ -25,8 +27,6 @@
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
 #include <pycpp/stl/vector.h>
-#include <algorithm>
-#include <array>
 #include <cassert>
 #include <climits>
 #include <cmath>

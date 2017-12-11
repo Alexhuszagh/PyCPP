@@ -43,10 +43,9 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <cstddef>
-#include <type_traits>
-#include <utility>
 
 PYCPP_BEGIN_NAMESPACE
 

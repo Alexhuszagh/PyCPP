@@ -4,9 +4,9 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/runtime/os.h>
+#include <pycpp/stl/sstream.h>
 #include <pycpp/stl/string_view.h>
 #include <pycpp/stream/fstream.h>
-#include <sstream>
 #if defined(OS_WINDOWS)
 #   include <pycpp/windows/winapi.h>
 #endif

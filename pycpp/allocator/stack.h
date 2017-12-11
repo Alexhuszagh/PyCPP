@@ -12,12 +12,11 @@
 
 #pragma once
 
+#include <pycpp/stl/limits.h>
 #include <pycpp/stl/memory.h>
 #include <cassert>
 #include <cstddef>
 #include <cstring>
-#include <limits>
-#include <memory>
 
 PYCPP_BEGIN_NAMESPACE
 

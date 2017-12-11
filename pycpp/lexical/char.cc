@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lexical/char.h>
-#include <stdexcept>
+#include <pycpp/stl/stdexcept.h>
 
 PYCPP_BEGIN_NAMESPACE
 

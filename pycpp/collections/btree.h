@@ -96,6 +96,7 @@
 #pragma once
 
 #include <pycpp/preprocessor/architecture.h>
+#include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/iostream.h>
@@ -107,7 +108,6 @@
 #include <pycpp/stl/string.h>
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
-#include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>

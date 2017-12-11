@@ -8,11 +8,10 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/type_traits.h>
 #include <warnings/push.h>
 #include <warnings/assign-could-not-be-generated.h>
-#include <algorithm>
-#include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
 

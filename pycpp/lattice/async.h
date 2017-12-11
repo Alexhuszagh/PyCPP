@@ -9,11 +9,11 @@
 
 #include <pycpp/lattice/request.h>
 #include <pycpp/lattice/response.h>
-#include <chrono>
-#include <deque>
-#include <future>
-#include <thread>
-#include <type_traits>
+#include <pycpp/stl/chrono.h>
+#include <pycpp/stl/deque.h>
+#include <pycpp/stl/future.h>
+#include <pycpp/stl/thread.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 

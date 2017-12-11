@@ -24,7 +24,7 @@
 #include <pycpp/lattice/ssl.h>
 #include <pycpp/lattice/timeout.h>
 #include <pycpp/lattice/url.h>
-#include <sstream>
+#include <pycpp/stl/sstream.h>
 
 PYCPP_BEGIN_NAMESPACE
 

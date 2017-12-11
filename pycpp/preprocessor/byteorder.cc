@@ -2,9 +2,9 @@
 //  :license: Public Domain/MIT, see licenses/mit.md for more details.
 
 #include <pycpp/preprocessor/byteorder.h>
+#include <pycpp/stl/stdexcept.h>
 #include <stdint.h>
 #include <string.h>
-#include <stdexcept>
 
 // HELPERS
 // -------

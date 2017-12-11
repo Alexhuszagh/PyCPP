@@ -7,12 +7,11 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/secure/string.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/utility.h>
 #include <pycpp/string/string.h>
-#include <functional>
-#include <string>
-#include <utility>
 
 PYCPP_BEGIN_NAMESPACE
 

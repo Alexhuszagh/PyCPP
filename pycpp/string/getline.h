@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <istream>
+#include <pycpp/stl/istream.h>
 
 PYCPP_BEGIN_NAMESPACE
 

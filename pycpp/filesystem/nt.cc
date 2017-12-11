@@ -19,6 +19,7 @@
 #include <pycpp/filesystem/exception.h>
 #include <pycpp/preprocessor/errno.h>
 #include <pycpp/preprocessor/sysstat.h>
+#include <pycpp/stl/algorithm.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/unicode.h>
 #include <pycpp/windows/error.h>
@@ -26,7 +27,6 @@
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <io.h>
-#include <algorithm>
 #include <cassert>
 
 PYCPP_BEGIN_NAMESPACE

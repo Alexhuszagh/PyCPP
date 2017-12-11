@@ -13,9 +13,8 @@
  *  `std::to_string`.
  */
 
-#include <pycpp/config.h>
+#include <pycpp/stl/string.h>
 #include <cstdint>
-#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 

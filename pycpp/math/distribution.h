@@ -10,8 +10,8 @@
 #include <pycpp/iterator/category.h>
 #include <pycpp/misc/xrange.h>
 #include <pycpp/preprocessor/parallel.h>
-#include <algorithm>
-#include <math.h>
+#include <pycpp/stl/algorithm.h>
+#include <cmath>
 
 PYCPP_BEGIN_NAMESPACE
 

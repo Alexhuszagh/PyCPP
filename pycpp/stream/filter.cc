@@ -2,8 +2,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/stl/algorithm.h>
 #include <pycpp/stream/filter.h>
-#include <algorithm>
 #include <cstring>
 
 PYCPP_BEGIN_NAMESPACE

@@ -495,6 +495,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/enum.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/heap_pimpl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/ordering.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/safe_stdlib.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/stack_pimpl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/xrange.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/composite_key.h"
@@ -530,8 +531,6 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/reference/deque.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/reference/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/runtime/os.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/safe.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/safe/stdlib.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/allocator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/char_traits.h"
@@ -602,12 +601,15 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/any.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/array.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/bitset.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/chrono.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/complex.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/deque.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/exception.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/forward_list.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/fstream.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/functional.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/initializer_list.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/iomanip.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/ios.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/iostream.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/istream.h"
@@ -616,10 +618,12 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/list.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/map.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/memory.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/mutex.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/new.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/numeric.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/optional.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/ostream.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/random.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/ratio.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/set.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/sstream.h"
@@ -662,11 +666,11 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/int.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/itoa.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/null.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/safe_stdlib.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/byteorder.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/random/pseudorandom.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/random/sysrandom.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/runtime/os.cc"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/safe/stdlib.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/stdlib.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/any.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.cc"
@@ -1035,6 +1039,7 @@ set(TEST_FILES
     test/misc/enum.cc
     test/misc/heap_pimpl.cc
     test/misc/ordering.cc
+    test/misc/safe_stdlib.cc
     test/misc/stack_pimpl.cc
     test/misc/xrange.cc
     test/preprocessor/architecture.cc
@@ -1047,7 +1052,6 @@ set(TEST_FILES
     test/reference/deque.cc
     test/reference/vector.cc
     test/runtime/os.cc
-    test/safe/stdlib.cc
     test/secure/allocator.cc
     test/secure/string.cc
     test/secure/stdlib.cc

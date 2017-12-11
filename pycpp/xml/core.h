@@ -7,13 +7,11 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/deque.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/unordered_map.h>
 #include <cstdint>
-#include <deque>
-#include <iterator>
-#include <memory>
-#include <string>
-#include <unordered_map>
 
 PYCPP_BEGIN_NAMESPACE
 

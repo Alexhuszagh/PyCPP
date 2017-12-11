@@ -3,8 +3,8 @@
 
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/null.h>
+#include <pycpp/stl/stdexcept.h>
 #include <cstring>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

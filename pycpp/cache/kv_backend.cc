@@ -3,7 +3,7 @@
 
 #include <leveldb/db.h>
 #include <pycpp/cache/kv_backend.h>
-#include <stdexcept>
+#include <pycpp/stl/stdexcept.h>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -8,9 +8,8 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <map>
-#include <string>
+#include <pycpp/stl/map.h>
+#include <pycpp/stl/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

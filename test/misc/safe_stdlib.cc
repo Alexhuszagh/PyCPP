@@ -5,7 +5,7 @@
  *  \brief Safe stdlib unittests.
  */
 
-#include <pycpp/safe/stdlib.h>
+#include <pycpp/misc/safe_stdlib.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE

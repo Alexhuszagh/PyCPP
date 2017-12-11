@@ -42,9 +42,9 @@
  */
 
 #include <pycpp/iterator/category.h>
-#include <functional>
-#include <memory>
-#include <unordered_set>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/unordered_set.h>
 
 PYCPP_BEGIN_NAMESPACE
 

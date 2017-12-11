@@ -1,9 +1,10 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/safe/stdlib.h>
-#include <new>
-#include <stdexcept>
+#include <pycpp/misc/safe_stdlib.h>
+#include <pycpp/stl/new.h>
+#include <pycpp/stl/stdexcept.h>
+#include <cstdlib>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include <pycpp/stl/sstream.h>
 #include <pycpp/stream/fstream.h>
 #include <pycpp/string/string.h>
 #include <pycpp/xml/core.h>
-#include <sstream>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -7,13 +7,13 @@
 #include <pycpp/lattice/digest.h>
 #include <pycpp/lattice/parameter.h>
 #include <pycpp/lattice/url.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/iomanip.h>
+#include <pycpp/stl/sstream.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/hex.h>
 #include <pycpp/string/string.h>
-#include <algorithm>
 #include <cstring>
-#include <iomanip>
-#include <sstream>
 
 PYCPP_BEGIN_NAMESPACE
 

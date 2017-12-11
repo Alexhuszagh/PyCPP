@@ -6,10 +6,10 @@
 #include <pycpp/compression/blosc.h>
 #include <pycpp/compression/core.h>
 #include <pycpp/preprocessor/architecture.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/thread.h>
 #include <blosc.h>
-#include <algorithm>
 #include <cstring>
-#include <thread>
 
 PYCPP_BEGIN_NAMESPACE
 

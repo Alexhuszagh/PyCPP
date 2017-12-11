@@ -8,6 +8,8 @@
 #include <pycpp/collections/btree_set.h>
 #include <gtest/gtest.h>
 
+PYCPP_USING_NAMESPACE
+
 // TESTS
 // -----
 

@@ -4,12 +4,11 @@
 
 #include <pycpp/lattice/request.h>
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/sstream.h>
 #include <pycpp/string/base64.h>
 #include <pycpp/string/codec.h>
 #include <pycpp/string/unicode.h>
 #include <cstdio>
-#include <fstream>
-#include <sstream>
 
 #if defined(OS_WINDOWS)
 #   include <wincrypt.h>

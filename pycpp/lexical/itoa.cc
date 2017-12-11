@@ -3,11 +3,11 @@
 
 #include <pycpp/lexical/itoa.h>
 #include <pycpp/lexical/table.h>
-#include <algorithm>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/stdexcept.h>
 #include <cassert>
 #include <cmath>
 #include <cstring>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

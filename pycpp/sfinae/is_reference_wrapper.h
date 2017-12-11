@@ -7,10 +7,9 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/preprocessor/os.h>
-#include <functional>
-#include <type_traits>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 

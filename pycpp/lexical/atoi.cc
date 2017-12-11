@@ -4,9 +4,9 @@
 #include <pycpp/lexical/atoi.h>
 #include <pycpp/lexical/precise_float.h>
 #include <pycpp/lexical/table.h>
+#include <pycpp/stl/limits.h>
+#include <pycpp/stl/stdexcept.h>
 #include <cctype>
-#include <limits>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

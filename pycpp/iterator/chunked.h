@@ -30,9 +30,9 @@
 #include <pycpp/iterator/category.h>
 #include <pycpp/sfinae/emplace_back.h>
 #include <pycpp/sfinae/reserve.h>
+#include <pycpp/stl/functional.h>
 #include <pycpp/stl/optional.h>
-#include <functional>
-#include <vector>
+#include <pycpp/stl/vector.h>
 
 PYCPP_BEGIN_NAMESPACE
 

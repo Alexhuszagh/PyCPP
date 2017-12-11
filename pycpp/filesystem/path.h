@@ -8,9 +8,9 @@
 #pragma once
 
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/deque.h>
 #include <pycpp/stl/string_view.h>
 #include <pycpp/string/codec.h>
-#include <deque>
 
 PYCPP_BEGIN_NAMESPACE
 

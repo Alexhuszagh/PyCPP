@@ -13,10 +13,9 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/tuple.h>
 #include <cassert>
-#include <iterator>
-#include <tuple>
 
 PYCPP_BEGIN_NAMESPACE
 

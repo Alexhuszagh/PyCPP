@@ -14,7 +14,7 @@
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/int.h>
 #include <pycpp/lexical/null.h>
-#include <type_traits>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 

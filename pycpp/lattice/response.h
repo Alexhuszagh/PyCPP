@@ -14,8 +14,8 @@
 #include <pycpp/lattice/redirect.h>
 #include <pycpp/lattice/transfer.h>
 #include <pycpp/lattice/url.h>
+#include <pycpp/stl/tuple.h>
 #include <pycpp/string/string.h>
-#include <tuple>
 
 PYCPP_BEGIN_NAMESPACE
 

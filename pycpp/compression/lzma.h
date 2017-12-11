@@ -10,8 +10,8 @@
 #if defined(HAVE_LZMA)
 
 #include <pycpp/compression/exception.h>
+#include <pycpp/stl/memory.h>
 #include <pycpp/string/string.h>
-#include <memory>
 
 PYCPP_BEGIN_NAMESPACE
 

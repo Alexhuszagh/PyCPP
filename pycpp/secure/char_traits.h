@@ -11,8 +11,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <string>
+#include <pycpp/stl/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

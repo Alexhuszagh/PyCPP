@@ -3,8 +3,8 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lattice/header.h>
+#include <pycpp/stl/algorithm.h>
 #include <pycpp/string/casemap.h>
-#include <algorithm>
 #include <cctype>
 
 PYCPP_BEGIN_NAMESPACE

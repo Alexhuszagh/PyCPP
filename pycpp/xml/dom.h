@@ -7,10 +7,10 @@
 
 #pragma once
 
+#include <pycpp/stl/deque.h>
 #include <pycpp/string/string.h>
 #include <pycpp/xml/sax.h>
 #include <pycpp/xml/writer.h>
-#include <deque>
 
 PYCPP_BEGIN_NAMESPACE
 

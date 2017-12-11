@@ -7,7 +7,7 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/string/string.h>
-#include <algorithm>
+#include <pycpp/stl/algorithm.h>
 #if defined(OS_WINDOWS)
 #   include <pycpp/windows/winapi.h>
 #endif

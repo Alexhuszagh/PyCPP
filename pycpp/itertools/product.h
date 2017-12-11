@@ -34,12 +34,11 @@
 
 #pragma once
 
-#include <pycpp/safe/stdlib.h>
+#include <pycpp/misc/safe_stdlib.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/vector.h>
 #include <pycpp/sfinae/is_reference_wrapper.h>
-#include <algorithm>
-#include <iterator>
-#include <type_traits>
-#include <vector>
 
 PYCPP_BEGIN_NAMESPACE
 

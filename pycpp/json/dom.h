@@ -9,8 +9,8 @@
 
 #include <pycpp/json/sax.h>
 #include <pycpp/json/writer.h>
+#include <pycpp/stl/deque.h>
 #include <pycpp/string/string.h>
-#include <deque>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -3,8 +3,8 @@
 
 #include <pycpp/lexical/bool.h>
 #include <pycpp/lexical/format.h>
+#include <pycpp/stl/stdexcept.h>
 #include <cstring>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

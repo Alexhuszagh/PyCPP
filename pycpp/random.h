@@ -9,10 +9,10 @@
 
 #include <pycpp/misc/xrange.h>
 #include <pycpp/reference/vector.h>
-#include <array>
-#include <string>
-#include <type_traits>
-#include <vector>
+#include <pycpp/stl/array.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/vector.h>
 
 PYCPP_BEGIN_NAMESPACE
 

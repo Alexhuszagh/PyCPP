@@ -4,10 +4,10 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/filesystem/exception.h>
 #include <pycpp/preprocessor/errno.h>
-#include <string.h>
-#include <algorithm>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/tuple.h>
 #include <cassert>
-#include <tuple>
+#include <cstring>
 #if defined(OS_WINDOWS)
 #   include <pycpp/windows/winapi.h>
 #else

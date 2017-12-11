@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pycpp/iterator/transform.h>
-#include <functional>
-#include <type_traits>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 

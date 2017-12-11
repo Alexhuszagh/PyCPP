@@ -3,13 +3,13 @@
 
 #include <pycpp/lattice/response.h>
 #include <pycpp/lexical.h>
+#include <pycpp/stl/sstream.h>
+#include <pycpp/stl/string.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/getline.h>
 #include <pycpp/string/string.h>
 #include <cctype>
 #include <cstring>
-#include <sstream>
-#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 

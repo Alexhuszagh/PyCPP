@@ -7,11 +7,11 @@
 #include <pycpp/random.h>
 #include <pycpp/lattice/multipart.h>
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/fstream.h>
+#include <pycpp/stl/sstream.h>
+#include <pycpp/stl/unordered_map.h>
 #include <pycpp/string/unicode.h>
 #include <cassert>
-#include <fstream>
-#include <sstream>
-#include <unordered_map>
 #if BUILD_STREAM
 #   include <pycpp/stream/fstream.h>
 #endif      // BUILD_STREAM

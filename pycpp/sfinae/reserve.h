@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pycpp/sfinae/has_member_function.h>
+#include <pycpp/stl/type_traits.h>
 #include <cstddef>
-#include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
 

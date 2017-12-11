@@ -8,11 +8,10 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <chrono>
+#include <pycpp/stl/chrono.h>
+#include <pycpp/stl/limits.h>
+#include <pycpp/stl/stdexcept.h>
 #include <cstdint>
-#include <limits>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

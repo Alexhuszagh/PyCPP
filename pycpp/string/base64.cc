@@ -1,9 +1,9 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/stl/iterator.h>
 #include <pycpp/string/base64.h>
 #include <cmath>
-#include <iterator>
 
 PYCPP_BEGIN_NAMESPACE
 

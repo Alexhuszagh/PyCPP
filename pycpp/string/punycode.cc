@@ -2,15 +2,14 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Unicode, see licenses/mit.md for more details.
 
-#include <pycpp/config.h>
-#include <pycpp/safe/stdlib.h>
+#include <pycpp/misc/safe_stdlib.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/limits.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/punycode.h>
 #include <pycpp/string/unicode.h>
-#include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <limits>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

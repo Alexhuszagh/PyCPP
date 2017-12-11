@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <stdexcept>
+#include <pycpp/stl/stdexcept.h>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -10,7 +10,7 @@
 #include <pycpp/collections/ordered_map.h>
 #include <pycpp/csv/reader.h>
 #include <pycpp/csv/writer.h>
-#include <unordered_map>
+#include <pycpp/stl/unordered_map.h>
 
 PYCPP_BEGIN_NAMESPACE
 

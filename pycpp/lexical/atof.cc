@@ -6,11 +6,11 @@
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/ftoa.h>
 #include <pycpp/lexical/precise_float.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/limits.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/string.h>
 #include <cmath>
-#include <limits>
-#include <functional>
 
 PYCPP_BEGIN_NAMESPACE
 

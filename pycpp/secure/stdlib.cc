@@ -16,11 +16,11 @@
 #include <pycpp/preprocessor/compiler.h>
 #include <pycpp/preprocessor/errno.h>
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/new.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/secure/string.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <new>
-#include <stdexcept>
 
 #if defined(HAVE_SYS_MMAN_H)
 #   include <sys/mman.h>

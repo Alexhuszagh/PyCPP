@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pycpp/sfinae/is_specialization.h>
-#include <string>
-#include <type_traits>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 

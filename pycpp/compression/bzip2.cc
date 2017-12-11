@@ -6,9 +6,9 @@
 #include <pycpp/compression/bzip2.h>
 #include <pycpp/compression/core.h>
 #include <pycpp/preprocessor/architecture.h>
+#include <pycpp/stl/stdexcept.h>
 #include <bzlib.h>
 #include <string.h>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

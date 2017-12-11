@@ -6,10 +6,9 @@
  *  \brief Check if the type is a complex number.
  */
 
-#include <pycpp/config.h>
 #include <pycpp/preprocessor/os.h>
-#include <complex>
-#include <type_traits>
+#include <pycpp/stl/complex.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 

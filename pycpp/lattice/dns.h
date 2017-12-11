@@ -9,6 +9,9 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/unordered_map.h>
 #include <pycpp/string/string.h>
 
 #if defined(OS_WINDOWS)
@@ -18,10 +21,6 @@
 #else
 #   include <netdb.h>
 #endif
-
-#include <memory>
-#include <string>
-#include <unordered_map>
 
 PYCPP_BEGIN_NAMESPACE
 

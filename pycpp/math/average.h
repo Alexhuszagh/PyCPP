@@ -9,8 +9,8 @@
 
 #include <pycpp/misc/xrange.h>
 #include <pycpp/preprocessor/parallel.h>
-#include <algorithm>
-#include <iterator>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/iterator.h>
 
 PYCPP_BEGIN_NAMESPACE
 

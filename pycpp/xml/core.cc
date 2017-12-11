@@ -7,10 +7,10 @@
 #include <pycpp/multi_index/mem_fun.h>
 #include <pycpp/multi_index/sequenced_index.h>
 #include <pycpp/multi_index/tag.h>
+#include <pycpp/stl/sstream.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/xml/core.h>
 #include <pycpp/xml/dom.h>
-#include <sstream>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

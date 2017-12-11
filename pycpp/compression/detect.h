@@ -8,10 +8,10 @@
 #pragma once
 
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/istream.h>
 #include <pycpp/stl/vector_view.h>
 #include <pycpp/stream/filter.h>
 #include <pycpp/string/string.h>
-#include <istream>
 
 PYCPP_BEGIN_NAMESPACE
 

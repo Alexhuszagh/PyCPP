@@ -9,7 +9,7 @@
 
 #include <pycpp/misc/xrange.h>
 #include <pycpp/preprocessor/parallel.h>
-#include <algorithm>
+#include <pycpp/stl/algorithm.h>
 
 PYCPP_BEGIN_NAMESPACE
 

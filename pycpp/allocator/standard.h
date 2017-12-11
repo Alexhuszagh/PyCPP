@@ -13,7 +13,6 @@
 
 #include <pycpp/stl/memory.h>
 #include <cstddef>
-#include <memory>
 
 PYCPP_BEGIN_NAMESPACE
 

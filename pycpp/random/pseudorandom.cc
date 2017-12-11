@@ -3,14 +3,14 @@
 
 #include <pycpp/random.h>
 #include <pycpp/preprocessor/tls.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/chrono.h>
+#include <pycpp/stl/memory.h>
+#include <pycpp/stl/random.h>
 #include <pycpp/stl/optional.h>
-#include <algorithm>
-#include <chrono>
 #include <cmath>
 #include <cstring>
 #include <ctime>
-#include <memory>
-#include <random>
 
 PYCPP_BEGIN_NAMESPACE
 

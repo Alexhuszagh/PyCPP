@@ -2,9 +2,9 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/sql/sql.h>
-#include <functional>
-#include <string>
-#include <unordered_map>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/unordered_map.h>
 
 PYCPP_BEGIN_NAMESPACE
 

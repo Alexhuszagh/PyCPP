@@ -8,8 +8,7 @@
  *  leixcal formatter represents strings.
  */
 
-#include <pycpp/config.h>
-#include <string>
+#include <pycpp/stl/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

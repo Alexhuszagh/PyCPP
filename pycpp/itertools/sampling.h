@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include <algorithm>
-#include <iterator>
-#include <stdexcept>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/stdexcept.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -35,10 +35,10 @@ PYCPP_BEGIN_NAMESPACE
 template <typename BidirIter>
 void rotate_discontinuous(BidirIter first1,
     BidirIter last1,
-    typename std::iterator_traits<BidirIter>::difference_type d1,
+    typename iterator_traits<BidirIter>::difference_type d1,
     BidirIter first2,
     BidirIter last2,
-    typename std::iterator_traits<BidirIter>::difference_type d2)
+    typename iterator_traits<BidirIter>::difference_type d2)
 {
     if (d1 <= d2) {
         std::rotate(first2, std::swap_ranges(first1, last1, first2), last2);
@@ -62,13 +62,13 @@ void rotate_discontinuous(BidirIter first1,
 template <typename BidirIter>
 void rotate_discontinuous3(BidirIter first1,
     BidirIter last1,
-    typename std::iterator_traits<BidirIter>::difference_type d1,
+    typename iterator_traits<BidirIter>::difference_type d1,
     BidirIter first2,
     BidirIter last2,
-    typename std::iterator_traits<BidirIter>::difference_type d2,
+    typename iterator_traits<BidirIter>::difference_type d2,
     BidirIter first3,
     BidirIter last3,
-    typename std::iterator_traits<BidirIter>::difference_type d3)
+    typename iterator_traits<BidirIter>::difference_type d3)
 {
     rotate_discontinuous(first1, last1, d1, first2, last2, d2);
     if (d1 <= d2) {
@@ -94,14 +94,14 @@ void rotate_discontinuous3(BidirIter first1,
 template <typename BidirIter, typename Function>
 bool combine_discontinuous(BidirIter first1,
     BidirIter last1,
-    typename std::iterator_traits<BidirIter>::difference_type d1,
+    typename iterator_traits<BidirIter>::difference_type d1,
     BidirIter first2,
     BidirIter last2,
-    typename std::iterator_traits<BidirIter>::difference_type d2,
+    typename iterator_traits<BidirIter>::difference_type d2,
     Function &f,
-    typename std::iterator_traits<BidirIter>::difference_type d = 0)
+    typename iterator_traits<BidirIter>::difference_type d = 0)
 {
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
     if (d1 == 0 || d2 == 0) {
         return f();
     } else if (d1 == 1) {
@@ -139,7 +139,7 @@ bool combine_discontinuous(BidirIter first1,
 template <typename Function, typename BidirIter>
 class call_combine_discontinuous
 {
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
     Function f_;
     BidirIter first1_;
     BidirIter last1_;
@@ -179,17 +179,17 @@ template <typename BidirIter, typename Function>
 bool combine_discontinuous3_(
     BidirIter first1,
     BidirIter last1,
-    typename std::iterator_traits<BidirIter>::difference_type d1,
+    typename iterator_traits<BidirIter>::difference_type d1,
     BidirIter first2,
     BidirIter last2,
-    typename std::iterator_traits<BidirIter>::difference_type d2,
+    typename iterator_traits<BidirIter>::difference_type d2,
     BidirIter first3,
     BidirIter last3,
-    typename std::iterator_traits<BidirIter>::difference_type d3,
+    typename iterator_traits<BidirIter>::difference_type d3,
     Function &f,
-    typename std::iterator_traits<BidirIter>::difference_type d = 0)
+    typename iterator_traits<BidirIter>::difference_type d = 0)
 {
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
     if (d1 == 1) {
         for (BidirIter i2 = first2; i2 != last2; ++i2) {
             if (f()) {
@@ -255,13 +255,13 @@ bool combine_discontinuous3_(
 template <typename BidirIter, typename Function>
 bool combine_discontinuous3(BidirIter first1,
     BidirIter last1,
-    typename std::iterator_traits<BidirIter>::difference_type d1,
+    typename iterator_traits<BidirIter>::difference_type d1,
     BidirIter first2,
     BidirIter last2,
-    typename std::iterator_traits<BidirIter>::difference_type d2,
+    typename iterator_traits<BidirIter>::difference_type d2,
     BidirIter first3,
     BidirIter last3,
-    typename std::iterator_traits<BidirIter>::difference_type d3,
+    typename iterator_traits<BidirIter>::difference_type d3,
     Function &f)
 {
     typedef call_combine_discontinuous<Function&, BidirIter> F;
@@ -275,7 +275,7 @@ bool combine_discontinuous3(BidirIter first1,
 template <typename BidirIter, typename Function>
 bool permute_(BidirIter first1,
     BidirIter last1,
-    typename std::iterator_traits<BidirIter>::difference_type d1,
+    typename iterator_traits<BidirIter>::difference_type d1,
     Function &f)
 {
     switch (d1) {
@@ -339,7 +339,7 @@ bool permute_(BidirIter first1,
 template <typename BidirIter, typename Function>
 bool permute(BidirIter first1,
     BidirIter last1,
-    typename std::iterator_traits<BidirIter>::difference_type d1,
+    typename iterator_traits<BidirIter>::difference_type d1,
     Function &f)
 {
     switch (d1) {
@@ -451,7 +451,7 @@ template <typename Function, typename It>
 class call_permute
 {
 protected:
-    typedef typename std::iterator_traits<It>::difference_type D;
+    typedef typename iterator_traits<It>::difference_type D;
     Function f_;
     It first_;
     It last_;
@@ -544,7 +544,7 @@ Function for_each_permutation(BidirIter first,
     BidirIter last,
     Function f)
 {
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
     typedef bound_range<Function&, BidirIter> Wf;
     typedef call_permute<Wf, BidirIter> PF;
 
@@ -593,7 +593,7 @@ template <typename Function, typename BidirIter>
 class circular_permutation
 {
 protected:
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
 
     Function f_;
     D s_;
@@ -705,7 +705,7 @@ template <typename Function, typename BidirIter>
 class rev1
 {
 protected:
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
 
     Function f_;
     BidirIter first1_;
@@ -735,7 +735,7 @@ template <typename Function, typename BidirIter>
 class rev2
 {
 protected:
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
 
     Function f_;
     BidirIter first1_;
@@ -774,7 +774,7 @@ template <typename Function, typename BidirIter>
 class rev3
 {
 protected:
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
 
     Function f_;
     BidirIter first1_;
@@ -818,7 +818,7 @@ template <typename BidirIter>
 bool reversible_permutation<Function, Size>::operator()(BidirIter first,
     BidirIter last)
 {
-    typedef typename std::iterator_traits<BidirIter>::difference_type difference_type;
+    typedef typename iterator_traits<BidirIter>::difference_type difference_type;
     typedef rev2<bound_range<Function&, BidirIter>, BidirIter> F2;
     typedef rev3<bound_range<Function&, BidirIter>, BidirIter> F3;
 
@@ -916,7 +916,7 @@ Function for_each_reversible_permutation(BidirIter first,
     BidirIter last,
     Function f)
 {
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
 
     for_each_combination(first, mid, last, reversible_permutation<Function&, D>(f, std::distance(first, mid)));
     return std::move(f);
@@ -974,7 +974,7 @@ std::uintmax_t count_each_reversible_permutation(BidirIter first, BidirIter mid,
 template <typename Function, typename BidirIter>
 class reverse_circular_permutation
 {
-    typedef typename std::iterator_traits<BidirIter>::difference_type D;
+    typedef typename iterator_traits<BidirIter>::difference_type D;
 
     Function f_;
     D s_;
@@ -993,7 +993,7 @@ public:
         if (s_ == 1) {
             return f_(first, last);
         }
-        typedef typename std::iterator_traits<BidirIter>::difference_type D;
+        typedef typename iterator_traits<BidirIter>::difference_type D;
         typedef bound_range<Function, BidirIter> BoundFunc;
         BoundFunc f(f_, first, last);
         BidirIter n = std::next(first);

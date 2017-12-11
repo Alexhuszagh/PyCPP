@@ -5,11 +5,11 @@
 //  :copyright: (c) Copyright 2001-2011 Joel de Guzman.
 //  :license: Boost, see licenses/boost.md for more details.
 
-#include <pycpp/safe/stdlib.h>
+#include <pycpp/misc/safe_stdlib.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/unicode.h>
-#include <algorithm>
-#include <functional>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

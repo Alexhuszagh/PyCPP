@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/re/match.h>
-#include <map>
+#include <pycpp/stl/map.h>
 
 PYCPP_BEGIN_NAMESPACE
 

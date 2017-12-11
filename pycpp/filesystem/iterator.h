@@ -13,8 +13,8 @@
 #include <pycpp/config.h>
 #include <pycpp/filesystem/path.h>
 #include <pycpp/filesystem/stat.h>
-#include <iterator>
-#include <memory>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/memory.h>
 
 PYCPP_BEGIN_NAMESPACE
 

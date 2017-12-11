@@ -8,9 +8,9 @@
 #pragma once
 
 #include <pycpp/lexical/int.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/type_traits.h>
 #include <cstddef>
-#include <string>
-#include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
 

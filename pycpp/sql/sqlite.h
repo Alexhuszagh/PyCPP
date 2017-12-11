@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/sql/database.h>
-#include <exception>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -7,15 +7,14 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/stl/fstream.h>
 #include <pycpp/stl/string_view.h>
-#include <fstream>
 
 #if defined(HAVE_GCC)
 #   include <pycpp/preprocessor/os.h>
+#   include <pycpp/stl/iostream.h>
 #   include <ext/stdio_filebuf.h>
-#   include <iostream>
 #endif
 
 PYCPP_BEGIN_NAMESPACE
