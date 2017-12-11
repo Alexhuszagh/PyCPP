@@ -5,6 +5,7 @@
  *  \brief LRU cache unittests.
  */
 
+#include <pycpp/allocator/stack.h>
 #include <pycpp/cache/lru.h>
 #include <gtest/gtest.h>
 
@@ -245,4 +246,20 @@ TEST(lru_cache, access)
     EXPECT_EQ(*c2.begin(), 9);
     EXPECT_EQ(*++c1.begin(), 1);
     EXPECT_EQ(*++c2.begin(), 4);
+}
+
+
+TEST(lru_cache, stack)
+{
+    using hash_type = hash<int>;
+    using equal_type = equal_to<int>;
+    using allocator_type = stack_allocator<pair<const int, int>, 200>;
+    using arena_type = typename allocator_type::arena_type;
+    using cache_type = lru_cache<int, int, hash_type, equal_type, allocator_type>;
+
+    arena_type arena;
+    cache_type c1(128, arena);
+    c1.insert(3, 9);
+
+    EXPECT_GE(arena.used(), 2 * sizeof(int));
 }

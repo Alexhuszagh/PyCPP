@@ -4,6 +4,9 @@
 
     - Change the default hash...
 
+    -- Need to modify all my allocators to learn from polymorphic
+        - Stack is the obvious one.
+
     - Look at use woever rope.
 
     - Make allocators non-optional, use a polymorphic allocator by default...

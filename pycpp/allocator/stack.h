@@ -134,15 +134,20 @@ public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using arena_type = stack_allocator_arena<stack_size, alignment>;
+    using propagate_on_container_move_assignment = std::true_type;
 
     // MEMBER FUNCTIONS
     // ----------------
-    stack_allocator();
+    stack_allocator() noexcept;
     stack_allocator(arena_type& arena) noexcept;
-    stack_allocator(const self_t&);
-    template <typename U> stack_allocator(const stack_allocator<U, StackSize, Alignment>&);
-    self_t& operator=(const self_t&);
-    template <typename U> self_t& operator=(const stack_allocator<U, StackSize, Alignment>&);
+    stack_allocator(const self_t&) noexcept;
+    template <typename U> stack_allocator(const stack_allocator<U, StackSize, Alignment>&) noexcept;
+    self_t& operator=(const self_t&) noexcept;
+    template <typename U> self_t& operator=(const stack_allocator<U, StackSize, Alignment>&) noexcept;
+    stack_allocator(self_t&&) noexcept;
+    template <typename U> stack_allocator(stack_allocator<U, StackSize, Alignment>&&) noexcept;
+    self_t& operator=(self_t&&) noexcept;
+    template <typename U> self_t& operator=(stack_allocator<U, StackSize, Alignment>&&) noexcept;
     ~stack_allocator() noexcept;
 
     // ALLOCATOR TRAITS
@@ -279,7 +284,7 @@ const size_t stack_allocator<T, S, A>::stack_size;
 
 
 template <typename T, size_t S, size_t A>
-stack_allocator<T, S, A>::stack_allocator():
+stack_allocator<T, S, A>::stack_allocator() noexcept:
     arena_(nullptr)
 {}
 
@@ -291,20 +296,20 @@ stack_allocator<T, S, A>::stack_allocator(arena_type& arena) noexcept:
 
 
 template <typename T, size_t S, size_t A>
-stack_allocator<T, S, A>::stack_allocator(const self_t& rhs):
+stack_allocator<T, S, A>::stack_allocator(const self_t& rhs) noexcept:
     arena_(rhs.arena_)
 {}
 
 
 template <typename T, size_t S, size_t A>
 template <typename U>
-stack_allocator<T, S, A>::stack_allocator(const stack_allocator<U, S, A>& rhs):
+stack_allocator<T, S, A>::stack_allocator(const stack_allocator<U, S, A>& rhs) noexcept:
     arena_(rhs.arena_)
 {}
 
 
 template <typename T, size_t S, size_t A>
-auto stack_allocator<T, S, A>::operator=(const self_t& rhs) -> self_t&
+auto stack_allocator<T, S, A>::operator=(const self_t& rhs) noexcept -> self_t&
 {
     arena_ = rhs.arena_;
     return *this;
@@ -313,9 +318,41 @@ auto stack_allocator<T, S, A>::operator=(const self_t& rhs) -> self_t&
 
 template <typename T, size_t S, size_t A>
 template <typename U>
-auto stack_allocator<T, S, A>::operator=(const stack_allocator<U, S, A>& rhs) -> self_t&
+auto stack_allocator<T, S, A>::operator=(const stack_allocator<U, S, A>& rhs) noexcept -> self_t&
 {
     arena_ = rhs.arena_;
+    return *this;
+}
+
+
+template <typename T, size_t S, size_t A>
+stack_allocator<T, S, A>::stack_allocator(self_t&& rhs) noexcept
+{
+    std::swap(arena_, rhs.arena_);
+}
+
+
+template <typename T, size_t S, size_t A>
+template <typename U>
+stack_allocator<T, S, A>::stack_allocator(stack_allocator<U, S, A>&& rhs) noexcept
+{
+    std::swap(arena_, rhs.arena_);
+}
+
+
+template <typename T, size_t S, size_t A>
+auto stack_allocator<T, S, A>::operator=(self_t&& rhs) noexcept -> self_t&
+{
+    std::swap(arena_, rhs.arena_);
+    return *this;
+}
+
+
+template <typename T, size_t S, size_t A>
+template <typename U>
+auto stack_allocator<T, S, A>::operator=(stack_allocator<U, S, A>&& rhs) noexcept -> self_t&
+{
+    std::swap(arena_, rhs.arena_);
     return *this;
 }
 
