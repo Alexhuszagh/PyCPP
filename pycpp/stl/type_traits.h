@@ -35,10 +35,19 @@ template <typename T>
 using is_reference = std::is_reference<T>;
 
 template <typename T>
+using is_array = std::is_array<T>;
+
+template <typename T>
+using is_void = std::is_void<T>;
+
+template <typename T>
 using is_lvalue_reference = std::is_lvalue_reference<T>;
 
 template <typename T>
 using is_rvalue_reference = std::is_rvalue_reference<T>;
+
+template <typename ... Ts>
+using common_type = std::common_type<Ts...>;
 
 // Remove qualifiers
 template <typename T>
@@ -71,6 +80,9 @@ using add_lvalue_reference = std::add_lvalue_reference<T>;
 
 template <typename T>
 using add_rvalue_reference = std::add_rvalue_reference<T>;
+
+template <typename T>
+using add_pointer = std::add_pointer<T>;
 
 // Logic
 template <bool B, typename T = void>
@@ -120,9 +132,43 @@ using is_trivially_move_constructible = std::is_trivially_move_constructible<T>;
 template <typename T>
 using is_nothrow_move_constructible = std::is_nothrow_move_constructible<T>;
 
+// Assignable
+template <typename T, typename ... Ts>
+using is_assignable = std::is_assignable<T, Ts...>;
+
+template <typename T, typename ... Ts>
+using is_trivially_assignable = std::is_trivially_assignable<T, Ts...>;
+
+template <typename T, typename ... Ts>
+using is_nothrow_assignable = std::is_nothrow_assignable<T, Ts...>;
+
+template <typename T>
+using is_copy_assignable = std::is_copy_assignable<T>;
+
+template <typename T>
+using is_trivially_copy_assignable = std::is_trivially_copy_assignable<T>;
+
+template <typename T>
+using is_nothrow_copy_assignable = std::is_nothrow_copy_assignable<T>;
+
+template <typename T>
+using is_move_assignable = std::is_move_assignable<T>;
+
+template <typename T>
+using is_trivially_move_assignable = std::is_trivially_move_assignable<T>;
+
+template <typename T>
+using is_nothrow_move_assignable = std::is_nothrow_move_assignable<T>;
+
 // Destructable
 template <typename T>
+using is_destructible = std::is_destructible<T>;
+
+template <typename T>
 using is_trivially_destructible = std::is_trivially_destructible<T>;
+
+template <typename T>
+using is_nothrow_destructible = std::is_nothrow_destructible<T>;
 
 // Memory
 template <size_t Len, size_t Align>

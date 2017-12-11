@@ -135,40 +135,6 @@ auto make_optional(Ts&&... ts) -> decltype(std::make_optional<T>(std::forward<Ts
 #   define TR2_OPTIONAL_ASSERTED_EXPRESSION(CHECK, EXPR) ((CHECK) ? (EXPR) : ([]{assert(!#CHECK);}(), (EXPR)))
 #endif
 
-// ALIAS
-// -----
-
-template <typename T, typename U>
-struct is_assignable
-{
-    template <typename X, typename Y>
-    constexpr static bool has_assign(...) { return false; }
-
-    template <typename X, typename Y, size_t S = sizeof((std::declval<X>() = std::declval<Y>(), true)) >
-    constexpr static bool has_assign(bool) { return true; }
-
-    constexpr static bool value = has_assign<T, U>(true);
-};
-
-
-template <typename T>
-struct is_nothrow_move_assignable
-{
-    template <typename X, bool has_any_move_assign>
-    struct has_nothrow_move_assign
-    {
-      constexpr static bool value = false;
-    };
-
-    template <typename X>
-    struct has_nothrow_move_assign<X, true>
-    {
-        constexpr static bool value = noexcept( std::declval<X&>() = std::declval<X&&>() );
-    };
-
-    constexpr static bool value = has_nothrow_move_assign<T, is_assignable<T&, T&&>::value>::value;
-};
-
 // FORWARD
 // -------
 

@@ -81,7 +81,7 @@ constexpr size_t variant_size_v = variant_size<T>::value;
 #define PYCPP_AUTO_REFREF auto
 #define PYCPP_AUTO_REFREF_RETURN(...) -> decltype((__VA_ARGS__))                \
     {                                                                           \
-      static_assert(std::is_reference<decltype((__VA_ARGS__))>::value, "");     \
+      static_assert(is_reference<decltype((__VA_ARGS__))>::value, "");     \
       return __VA_ARGS__;                                                       \
     }
 
@@ -113,37 +113,37 @@ template <typename... Ts>
 using void_t = typename voider<Ts...>::type;
 
 template <size_t N>
-using size_constant = std::integral_constant<size_t, N>;
+using size_constant = integral_constant<size_t, N>;
 
 template <bool B>
-using bool_constant = std::integral_constant<bool, B>;
+using bool_constant = integral_constant<bool, B>;
 
 template <bool B, typename T = void>
-using enable_if_t = typename std::enable_if<B, T>::type;
+using enable_if_t = typename enable_if<B, T>::type;
 
 template <typename T>
-using remove_const_t = typename std::remove_const<T>::type;
+using remove_const_t = typename remove_const<T>::type;
 
 template <typename T>
-using decay_t = typename std::decay<T>::type;
+using decay_t = typename decay<T>::type;
 
 template <typename... Ts>
-using common_type_t = typename std::common_type<Ts...>::type;
+using common_type_t = typename common_type<Ts...>::type;
 
 template <typename T>
-using add_pointer_t = typename std::add_pointer<T>::type;
+using add_pointer_t = typename add_pointer<T>::type;
 
 template <typename T>
-using is_trivially_copy_constructible = std::is_trivially_copy_constructible<T>;
+using is_trivially_copy_constructible = is_trivially_copy_constructible<T>;
 
 template <typename T>
-using is_trivially_move_constructible = std::is_trivially_move_constructible<T>;
+using is_trivially_move_constructible = is_trivially_move_constructible<T>;
 
 template <typename T>
-using is_trivially_copy_assignable = std::is_trivially_copy_assignable<T>;
+using is_trivially_copy_assignable = is_trivially_copy_assignable<T>;
 
 template <typename T>
-using is_trivially_move_assignable = std::is_trivially_move_assignable<T>;
+using is_trivially_move_assignable = is_trivially_move_assignable<T>;
 
 template <size_t I, typename T>
 struct indexed_type: size_constant<I>,
@@ -199,7 +199,7 @@ template <bool... Bs>
 using bool_sequence = integer_sequence<bool, Bs...>;
 
 template <bool... Bs>
-using all_ = std::is_same<bool_sequence<true, Bs...>, bool_sequence<Bs..., true>>;
+using all_ = is_same<bool_sequence<true, Bs...>, bool_sequence<Bs..., true>>;
 
 template <size_t I, typename... Ts>
 struct type_pack_element_impl
@@ -212,9 +212,9 @@ private:
     {};
 
     template <typename T>
-    inline static std::enable_if<true, T> impl(indexed_type<I, T>);
+    inline static enable_if<true, T> impl(indexed_type<I, T>);
 
-    inline static std::enable_if<false> impl(...);
+    inline static enable_if<false> impl(...);
 
 public:
     using type = decltype(impl(set<index_sequence_for<Ts...>>{}));
@@ -307,19 +307,20 @@ namespace invocable
 // ---------
 
 template <typename Void, typename, typename...>
-struct is_invocable: std::false_type
+struct is_invocable: false_type
 {};
 
 template <typename F, typename... Args>
-struct is_invocable<void_t<invoke_result_t<F, Args...>>, F, Args...>: std::true_type
+struct is_invocable<void_t<invoke_result_t<F, Args...>>, F, Args...>: true_type
 {};
 
 template <typename Void, typename, typename, typename...>
-struct is_invocable_r: std::false_type {};
+struct is_invocable_r: false_type
+{};
 
 template <typename R, typename F, typename... Args>
 struct is_invocable_r<void_t<invoke_result_t<F, Args...>>, R, F, Args...>:
-    std::is_convertible<invoke_result_t<F, Args...>, R>
+    is_convertible<invoke_result_t<F, Args...>, R>
 {};
 
 }   /* invocable */
@@ -335,10 +336,10 @@ struct is_swappable_impl
 {
     private:
     template <typename U, typename = decltype(std::swap(std::declval<U&>(), std::declval<U&>()))>
-    inline static std::true_type test(int);
+    inline static true_type test(int);
 
     template <typename U>
-    inline static std::false_type test(...);
+    inline static false_type test(...);
 
 public:
     using type = decltype(test<T>(0));
@@ -354,7 +355,7 @@ struct is_nothrow_swappable
 };
 
 template <typename T>
-struct is_nothrow_swappable<T, false>: std::false_type
+struct is_nothrow_swappable<T, false>: false_type
 {};
 
 struct equal_to
@@ -445,7 +446,7 @@ inline constexpr size_t find_index_impl(size_t result, size_t idx, bool b, Bs...
 template <typename T, typename... Ts>
 inline constexpr size_t find_index()
 {
-    return find_index_impl(not_found, 0, std::is_same<T, Ts>::value...);
+    return find_index_impl(not_found, 0, is_same<T, Ts>::value...);
 }
 
 template <size_t I>
@@ -509,15 +510,15 @@ inline constexpr Trait common_trait(Traits... ts)
 template <typename... Ts>
 struct traits
 {
-    static constexpr Trait copy_constructible_trait = common_trait(trait<Ts, is_trivially_copy_constructible, std::is_copy_constructible>()...);
+    static constexpr Trait copy_constructible_trait = common_trait(trait<Ts, is_trivially_copy_constructible, is_copy_constructible>()...);
 
-    static constexpr Trait move_constructible_trait = common_trait(trait<Ts, is_trivially_move_constructible, std::is_move_constructible>()...);
+    static constexpr Trait move_constructible_trait = common_trait(trait<Ts, is_trivially_move_constructible, is_move_constructible>()...);
 
-    static constexpr Trait copy_assignable_trait = common_trait(copy_constructible_trait, trait<Ts, is_trivially_copy_assignable, std::is_copy_assignable>()...);
+    static constexpr Trait copy_assignable_trait = common_trait(copy_constructible_trait, trait<Ts, is_trivially_copy_assignable, is_copy_assignable>()...);
 
-    static constexpr Trait move_assignable_trait = common_trait(move_constructible_trait, trait<Ts, is_trivially_move_assignable, std::is_move_assignable>()...);
+    static constexpr Trait move_assignable_trait = common_trait(move_constructible_trait, trait<Ts, is_trivially_move_assignable, is_move_assignable>()...);
 
-    static constexpr Trait destructible_trait = common_trait(trait<Ts, std::is_trivially_destructible, std::is_destructible>()...);
+    static constexpr Trait destructible_trait = common_trait(trait<Ts, is_trivially_destructible, is_destructible>()...);
 };
 
 namespace access
@@ -588,7 +589,7 @@ private:
     template <typename F, typename... Fs>
     inline static constexpr int visit_visitor_return_type_check()
     {
-        static_assert(all(std::is_same<F, Fs>::value...), "`mpark::visit` requires the visitor to have a single return type.");
+        static_assert(all(is_same<F, Fs>::value...), "`mpark::visit` requires the visitor to have a single return type.");
         return 0;
     }
 
@@ -632,7 +633,7 @@ private:
     }
 
 #if defined(HAVE_MSVC)
-    template <typename F, typename... Vs, std::size_t... Is>
+    template <typename F, typename... Vs, size_t... Is>
     inline static constexpr auto make_fmatrix_impl(
         index_sequence<Is...> is) {
       return make_dispatch<F, Vs...>(is);
@@ -640,8 +641,8 @@ private:
 
     template <typename F,
               typename... Vs,
-              std::size_t... Is,
-              std::size_t... Js,
+              size_t... Is,
+              size_t... Js,
               typename... Ls>
     inline static constexpr auto make_fmatrix_impl(
         index_sequence<Is...>, index_sequence<Js...>, Ls... ls) {
@@ -855,15 +856,15 @@ template <size_t I, typename T>
 using variant_alternative_t = typename variant_alternative<I, T>::type;
 
 template <size_t I, typename T>
-struct variant_alternative<I, const T>: std::add_const<variant_alternative_t<I, T>>
+struct variant_alternative<I, const T>: add_const<variant_alternative_t<I, T>>
 {};
 
 template <size_t I, typename T>
-struct variant_alternative<I, volatile T>: std::add_volatile<variant_alternative_t<I, T>>
+struct variant_alternative<I, volatile T>: add_volatile<variant_alternative_t<I, T>>
 {};
 
 template <size_t I, typename T>
-struct variant_alternative<I, const volatile T>: std::add_cv<variant_alternative_t<I, T>>
+struct variant_alternative<I, const volatile T>: add_cv<variant_alternative_t<I, T>>
 {};
 
 template <size_t I, typename... Ts>
@@ -1104,7 +1105,7 @@ VARIANT_MOVE_CONSTRUCTOR(
 
 VARIANT_MOVE_CONSTRUCTOR(
     Trait::Available,
-    move_constructor(move_constructor &&that) noexcept(all(std::is_nothrow_move_constructible<Ts>::value...)):
+    move_constructor(move_constructor &&that) noexcept(all(is_nothrow_move_constructible<Ts>::value...)):
         move_constructor(valueless_t{})
     {
         this->generic_construct(*this, std::move(that));
@@ -1212,7 +1213,7 @@ protected:
                 Arg &&arg_;
           } impl {this, std::forward<Arg>(arg)};
 
-          impl(bool_constant<std::is_nothrow_constructible<T, Arg>::value || !std::is_nothrow_move_constructible<T>::value>{});
+          impl(bool_constant<is_nothrow_constructible<T, Arg>::value || !is_nothrow_move_constructible<T>::value>{});
         }
 #include <warnings/pop.h>
     }
@@ -1260,8 +1261,8 @@ VARIANT_MOVE_ASSIGNMENT(
     Trait::Available,
     move_assignment&
     operator=(move_assignment &&that) noexcept(
-        all((std::is_nothrow_move_constructible<Ts>::value &&
-             std::is_nothrow_move_assignable<Ts>::value)...))
+        all((is_nothrow_move_constructible<Ts>::value &&
+             is_nothrow_move_assignable<Ts>::value)...))
     {
         this->generic_assign(std::move(that));
         return *this;
@@ -1326,7 +1327,7 @@ public:
     INHERITING_CTOR(impl, super)
     using super::operator=;
 
-    template <std::size_t I, typename Arg>
+    template <size_t I, typename Arg>
     inline void assign(Arg&& arg)
     {
         this->assign_alt(access::base::get_alt<I>(*this), std::forward<Arg>(arg));
@@ -1373,7 +1374,7 @@ private:
     inline constexpr bool move_nothrow() const
     {
         return this->valueless_by_exception() || array<bool, sizeof...(Ts)>{
-            {std::is_nothrow_move_constructible<Ts>::value...}
+            {is_nothrow_move_constructible<Ts>::value...}
         }[this->index()];
     }
 };
@@ -1402,19 +1403,19 @@ template <typename T, typename... Ts>
 using best_match_t = typename invoke_result_t<overload<Ts...>, T&&>::type;
 
 template <typename T>
-struct is_in_place_index: std::false_type
+struct is_in_place_index: false_type
 {};
 
-template <std::size_t I>
-struct is_in_place_index<in_place_index_t<I>>: std::true_type
-{};
-
-template <typename T>
-struct is_in_place_type: std::false_type
+template <size_t I>
+struct is_in_place_index<in_place_index_t<I>>: true_type
 {};
 
 template <typename T>
-struct is_in_place_type<in_place_type_t<T>>: std::true_type
+struct is_in_place_type: false_type
+{};
+
+template <typename T>
+struct is_in_place_type<in_place_type_t<T>>: true_type
 {};
 
 }   /* var_detail */
@@ -1423,16 +1424,16 @@ template <typename... Ts>
 class variant
 {
     static_assert(0 < sizeof...(Ts), "variant must consist of at least one alternative.");
-    static_assert(var_detail::all_<!std::is_array<Ts>::value...>::value, "variant can not have an array type as an alternative.");
-    static_assert(var_detail::all_<!std::is_reference<Ts>::value...>::value, "variant can not have a reference type as an alternative.");
-    static_assert(var_detail::all_<!std::is_void<Ts>::value...>::value, "variant can not have a void type as an alternative.");
+    static_assert(var_detail::all_<!is_array<Ts>::value...>::value, "variant can not have an array type as an alternative.");
+    static_assert(var_detail::all_<!is_reference<Ts>::value...>::value, "variant can not have a reference type as an alternative.");
+    static_assert(var_detail::all_<!is_void<Ts>::value...>::value, "variant can not have a void type as an alternative.");
 
 public:
     template <
         typename Front = var_detail::type_pack_element_t<0, Ts...>,
-        var_detail::enable_if_t<std::is_default_constructible<Front>::value, int> = 0
+        var_detail::enable_if_t<is_default_constructible<Front>::value, int> = 0
     >
-    inline constexpr variant() noexcept(std::is_nothrow_default_constructible<Front>::value):
+    inline constexpr variant() noexcept(is_nothrow_default_constructible<Front>::value):
         impl_(in_place_index_t<0>{})
     {}
 
@@ -1442,14 +1443,14 @@ public:
     template <
         typename Arg,
         typename Decayed = var_detail::decay_t<Arg>,
-        var_detail::enable_if_t<!std::is_same<Decayed, variant>::value, int> = 0,
+        var_detail::enable_if_t<!is_same<Decayed, variant>::value, int> = 0,
         var_detail::enable_if_t<!var_detail::is_in_place_index<Decayed>::value, int> = 0,
         var_detail::enable_if_t<!var_detail::is_in_place_type<Decayed>::value, int> = 0,
         typename T = var_detail::best_match_t<Arg, Ts...>,
         size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
-        var_detail::enable_if_t<std::is_constructible<T, Arg>::value, int> = 0
+        var_detail::enable_if_t<is_constructible<T, Arg>::value, int> = 0
     >
-    inline constexpr variant(Arg&& arg) noexcept(std::is_nothrow_constructible<T, Arg>::value):
+    inline constexpr variant(Arg&& arg) noexcept(is_nothrow_constructible<T, Arg>::value):
         impl_(in_place_index_t<I>{}, std::forward<Arg>(arg))
     {}
 
@@ -1457,10 +1458,10 @@ public:
         size_t I,
         typename... Args,
         typename T = var_detail::type_pack_element_t<I, Ts...>,
-        var_detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
+        var_detail::enable_if_t<is_constructible<T, Args...>::value, int> = 0
     >
     inline explicit constexpr variant(in_place_index_t<I>, Args&&... args)
-    noexcept(std::is_nothrow_constructible<T, Args...>::value):
+    noexcept(is_nothrow_constructible<T, Args...>::value):
         impl_(in_place_index_t<I>{}, std::forward<Args>(args)...)
     {}
 
@@ -1469,10 +1470,10 @@ public:
         typename U,
         typename... Args,
         typename T = var_detail::type_pack_element_t<I, Ts...>,
-        var_detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
+        var_detail::enable_if_t<is_constructible<T, initializer_list<U>&, Args...>::value, int> = 0
     >
-    inline explicit constexpr variant(in_place_index_t<I>, std::initializer_list<U> list, Args&&... args)
-    noexcept(std::is_nothrow_constructible<T, std::initializer_list<U>&, Args...>::value):
+    inline explicit constexpr variant(in_place_index_t<I>, initializer_list<U> list, Args&&... args)
+    noexcept(is_nothrow_constructible<T, initializer_list<U>&, Args...>::value):
         impl_(in_place_index_t<I>{}, list, std::forward<Args>(args)...)
     {}
 
@@ -1480,10 +1481,10 @@ public:
         typename T,
         typename... Args,
         size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
-        var_detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
+        var_detail::enable_if_t<is_constructible<T, Args...>::value, int> = 0
     >
     inline explicit constexpr variant(in_place_type_t<T>, Args&&... args)
-    noexcept(std::is_nothrow_constructible<T, Args...>::value):
+    noexcept(is_nothrow_constructible<T, Args...>::value):
         impl_(in_place_index_t<I>{}, std::forward<Args>(args)...)
     {}
 
@@ -1492,10 +1493,10 @@ public:
         typename U,
         typename... Args,
         size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
-        var_detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
+        var_detail::enable_if_t<is_constructible<T, initializer_list<U>&, Args...>::value, int> = 0
     >
-    inline explicit constexpr variant(in_place_type_t<T>, std::initializer_list<U> list, Args&&... args)
-    noexcept(std::is_nothrow_constructible<T, std::initializer_list<U>&, Args...>::value):
+    inline explicit constexpr variant(in_place_type_t<T>, initializer_list<U> list, Args&&... args)
+    noexcept(is_nothrow_constructible<T, initializer_list<U>&, Args...>::value):
         impl_(in_place_index_t<I>{}, list, std::forward<Args>(args)...)
     {}
 
@@ -1506,12 +1507,12 @@ public:
 
     template <
         typename Arg,
-        var_detail::enable_if_t<!std::is_same<var_detail::decay_t<Arg>, variant>::value, int> = 0,
+        var_detail::enable_if_t<!is_same<var_detail::decay_t<Arg>, variant>::value, int> = 0,
         typename T = var_detail::best_match_t<Arg, Ts...>,
         size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
-        var_detail::enable_if_t<(std::is_assignable<T &, Arg>::value && std::is_constructible<T, Arg>::value), int> = 0
+        var_detail::enable_if_t<(is_assignable<T &, Arg>::value && is_constructible<T, Arg>::value), int> = 0
     >
-    inline variant& operator=(Arg&& arg) noexcept((std::is_nothrow_assignable<T&, Arg>::value && std::is_nothrow_constructible<T, Arg>::value))
+    inline variant& operator=(Arg&& arg) noexcept((is_nothrow_assignable<T&, Arg>::value && is_nothrow_constructible<T, Arg>::value))
     {
         impl_.template assign<I>(std::forward<Arg>(arg));
         return *this;
@@ -1521,7 +1522,7 @@ public:
         size_t I,
         typename... Args,
         typename T = var_detail::type_pack_element_t<I, Ts...>,
-        var_detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
+        var_detail::enable_if_t<is_constructible<T, Args...>::value, int> = 0
     >
     inline T& emplace(Args &&... args)
     {
@@ -1533,9 +1534,9 @@ public:
         typename U,
         typename... Args,
         typename T = var_detail::type_pack_element_t<I, Ts...>,
-        var_detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
+        var_detail::enable_if_t<is_constructible<T, initializer_list<U>&, Args...>::value, int> = 0
     >
-    inline T& emplace(std::initializer_list<U> list, Args &&... args)
+    inline T& emplace(initializer_list<U> list, Args &&... args)
     {
         return impl_.template emplace<I>(list, std::forward<Args>(args)...);
     }
@@ -1544,7 +1545,7 @@ public:
         typename T,
         typename... Args,
         size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
-        var_detail::enable_if_t<std::is_constructible<T, Args...>::value, int> = 0
+        var_detail::enable_if_t<is_constructible<T, Args...>::value, int> = 0
     >
     inline T& emplace(Args &&... args)
     {
@@ -1556,9 +1557,9 @@ public:
         typename U,
         typename... Args,
         size_t I = var_detail::find_index_sfinae<T, Ts...>::value,
-        var_detail::enable_if_t<std::is_constructible<T, std::initializer_list<U>&, Args...>::value, int> = 0
+        var_detail::enable_if_t<is_constructible<T, initializer_list<U>&, Args...>::value, int> = 0
     >
-    inline T& emplace(std::initializer_list<U> list, Args&&... args)
+    inline T& emplace(initializer_list<U> list, Args&&... args)
     {
         return impl_.template emplace<I>(list, std::forward<Args>(args)...);
     }
@@ -1575,9 +1576,9 @@ public:
 
     template <
         bool Dummy = true,
-        var_detail::enable_if_t<var_detail::all_<Dummy, (std::is_move_constructible<Ts>::value && var_detail::is_swappable<Ts>::value)...>::value, int> = 0
+        var_detail::enable_if_t<var_detail::all_<Dummy, (is_move_constructible<Ts>::value && var_detail::is_swappable<Ts>::value)...>::value, int> = 0
     >
-    inline void swap(variant &that) noexcept(var_detail::all_<(std::is_nothrow_move_constructible<Ts>::value && var_detail::is_nothrow_swappable<Ts>::value)...>::value)
+    inline void swap(variant &that) noexcept(var_detail::all_<(is_nothrow_move_constructible<Ts>::value && var_detail::is_nothrow_swappable<Ts>::value)...>::value)
     {
         impl_.swap(that.impl_);
     }
@@ -1826,19 +1827,19 @@ namespace hash
 template <typename H, typename K>
 constexpr bool meets_requirements()
 {
-    return std::is_copy_constructible<H>::value &&
-        std::is_move_constructible<H>::value &&
+    return is_copy_constructible<H>::value &&
+        is_move_constructible<H>::value &&
         is_invocable_r<size_t, H, const K &>::value;
 }
 
 template <typename K>
 constexpr bool is_enabled()
 {
-    using H = std::hash<K>;
+    using H = PYCPP_NAMESPACE::hash<K>;
     return meets_requirements<H, K>() &&
-        std::is_default_constructible<H>::value &&
-        std::is_copy_assignable<H>::value &&
-        std::is_move_assignable<H>::value;
+        is_default_constructible<H>::value &&
+        is_copy_assignable<H>::value &&
+        is_move_assignable<H>::value;
 }
 
 }   /* hash */

@@ -35,11 +35,11 @@
 
 #include <pycpp/iterator/category.h>
 #include <pycpp/sfinae/reserve.h>
-#include <algorithm>
-#include <functional>
-#include <initializer_list>
-#include <utility>
-#include <vector>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -48,9 +48,9 @@ PYCPP_BEGIN_NAMESPACE
 
 template <
     typename T,
-    typename Compare = std::less<T>,
-    typename Alloc = std::allocator<T>,
-    template <typename, typename> class Container = std::vector
+    typename Compare = less<T>,
+    typename Alloc = allocator<T>,
+    template <typename, typename> class Container = vector
 >
 struct sorted_sequence
 {
@@ -64,7 +64,7 @@ struct sorted_sequence
     using value_compare = Compare;
     using allocator_type = Alloc;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -81,11 +81,11 @@ struct sorted_sequence
     template <typename Iter> sorted_sequence(Iter first, Iter last, const allocator_type& = allocator_type());
     sorted_sequence(const self_t&, const allocator_type& = allocator_type());
     sorted_sequence(self_t&&, const allocator_type& = allocator_type());
-    sorted_sequence(std::initializer_list<value_type>);
-    sorted_sequence(std::initializer_list<value_type>, const allocator_type&);
+    sorted_sequence(initializer_list<value_type>);
+    sorted_sequence(initializer_list<value_type>, const allocator_type&);
     self_t& operator=(const self_t&);
     self_t& operator=(self_t&&);
-    self_t& operator=(std::initializer_list<value_type>);
+    self_t& operator=(initializer_list<value_type>);
 
     // ITERATORS
     const_iterator begin() const;
@@ -113,23 +113,23 @@ struct sorted_sequence
     size_type count(const key_type&) const;
     const_iterator lower_bound(const key_type&) const;
     const_iterator upper_bound(const key_type&) const;
-    std::pair<const_iterator, const_iterator> equal_range(const key_type&) const;
+    pair<const_iterator, const_iterator> equal_range(const key_type&) const;
 
     // MODIFIERS
     template <typename Iter> void assign(Iter first, Iter last);
-    void assign(std::initializer_list<value_type>);
-    std::pair<iterator,bool> insert(const key_type&);
-    template <typename U> std::pair<iterator,bool> insert(U&&);
+    void assign(initializer_list<value_type>);
+    pair<iterator,bool> insert(const key_type&);
+    template <typename U> pair<iterator,bool> insert(U&&);
     iterator insert(const_iterator, const key_type&);
     template <typename U> iterator insert(const_iterator, U&&);
     template <typename Iter> void insert(Iter first, Iter last);
-    void insert(std::initializer_list<value_type>);
+    void insert(initializer_list<value_type>);
     iterator erase(const_iterator position);
     size_type erase(const key_type&);
     iterator erase(const_iterator first, const_iterator last);
     void swap(self_t& rhs);
     void clear();
-    template <typename... Ts> std::pair<iterator, bool> emplace(Ts&&...);
+    template <typename... Ts> pair<iterator, bool> emplace(Ts&&...);
     template <typename... Ts> iterator emplace_hint(const_iterator, Ts&&...);
 
     // OBSERVERS
@@ -198,14 +198,14 @@ sorted_sequence<T, C, A, _>::sorted_sequence(self_t&& rhs, const allocator_type&
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-sorted_sequence<T, C, A, _>::sorted_sequence(std::initializer_list<value_type> list)
+sorted_sequence<T, C, A, _>::sorted_sequence(initializer_list<value_type> list)
 {
     assign(list.begin(), list.end());
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-sorted_sequence<T, C, A, _>::sorted_sequence(std::initializer_list<value_type> list, const allocator_type& alloc):
+sorted_sequence<T, C, A, _>::sorted_sequence(initializer_list<value_type> list, const allocator_type& alloc):
     container_(alloc)
 {
     assign(list.begin(), list.end());
@@ -229,7 +229,7 @@ auto sorted_sequence<T, C, A, _>::operator=(self_t&& rhs) -> self_t&
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::operator=(std::initializer_list<value_type> list) -> self_t&
+auto sorted_sequence<T, C, A, _>::operator=(initializer_list<value_type> list) -> self_t&
 {
     assign(list.begin(), list.end());
     return *this;
@@ -377,7 +377,7 @@ auto sorted_sequence<T, C, A, _>::upper_bound(const key_type& key) const -> cons
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::equal_range(const key_type& key) const -> std::pair<const_iterator, const_iterator>
+auto sorted_sequence<T, C, A, _>::equal_range(const key_type& key) const -> pair<const_iterator, const_iterator>
 {
     return std::make_pair(lower_bound(key), upper_bound(key));
 }
@@ -393,14 +393,14 @@ void sorted_sequence<T, C, A, _>::assign(Iter first, Iter last)
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-void sorted_sequence<T, C, A, _>::assign(std::initializer_list<value_type> list)
+void sorted_sequence<T, C, A, _>::assign(initializer_list<value_type> list)
 {
     assign(list.begin(), list.end());
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::insert(const key_type& key) -> std::pair<iterator,bool>
+auto sorted_sequence<T, C, A, _>::insert(const key_type& key) -> pair<iterator,bool>
 {
     const_iterator it = lower_bound(key);
     if (it == end() || key_comp()(key, *it)) {
@@ -415,7 +415,7 @@ auto sorted_sequence<T, C, A, _>::insert(const key_type& key) -> std::pair<itera
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename U>
-auto sorted_sequence<T, C, A, _>::insert(U&& k) -> std::pair<iterator,bool>
+auto sorted_sequence<T, C, A, _>::insert(U&& k) -> pair<iterator,bool>
 {
     key_type key(std::forward<U>(k));
     const_iterator it = lower_bound(key);
@@ -521,7 +521,7 @@ void sorted_sequence<T, C, A, _>::insert(Iter first, Iter last)
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-void sorted_sequence<T, C, A, _>::insert(std::initializer_list<value_type> list)
+void sorted_sequence<T, C, A, _>::insert(initializer_list<value_type> list)
 {
     insert(list.begin(), list.end());
 }
@@ -569,7 +569,7 @@ void sorted_sequence<T, C, A, _>::clear()
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename... Ts>
-auto sorted_sequence<T, C, A, _>::emplace(Ts&&... ts) -> std::pair<iterator, bool>
+auto sorted_sequence<T, C, A, _>::emplace(Ts&&... ts) -> pair<iterator, bool>
 {
     return insert(key_type(std::forward<Ts>(ts)...));
 }

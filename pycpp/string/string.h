@@ -12,10 +12,11 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/string_view.h>
 #include <pycpp/stl/vector.h>
 #include <pycpp/string/whitespace.h>
-#include <functional>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -177,7 +178,7 @@ string_list_t rsplit(const string_wrapper& str, const string_wrapper& sep, size_
 /**
  *  \brief Convert tabs to spaces, using the tabsize.
  */
-string_t join(std::initializer_list<string_wrapper> list, const string_wrapper& sep = SPACE);
+string_t join(initializer_list<string_wrapper> list, const string_wrapper& sep = SPACE);
 string_t join(const string_list_t& list, const string_wrapper& sep = SPACE);
 string_t join(const string_wrapper_list_t& list, const string_wrapper& sep = SPACE);
 

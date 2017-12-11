@@ -104,10 +104,10 @@ static size_t split_impl(Iter first, Iter last, size_t maxsplit, IsSplit is_spli
 template <typename Iter, typename IsSplit, typename StoreCb>
 static size_t rsplit_impl(Iter first, Iter last, size_t maxsplit, IsSplit is_split, StoreCb store_cb)
 {
-    typedef std::reverse_iterator<Iter> RIter;
+    using riter = reverse_iterator<Iter>;
 
-    RIter rlast(first);
-    RIter rfirst(last);
+    riter rlast(first);
+    riter rfirst(last);
 
     size_t length = 0;
     auto interval = rfirst;
@@ -404,7 +404,7 @@ string_list_t rsplit(const string_wrapper& str, const string_wrapper& sep, size_
 }
 
 
-string_t join(std::initializer_list<string_wrapper> list, const string_wrapper& sep)
+string_t join(initializer_list<string_wrapper> list, const string_wrapper& sep)
 {
     string_wrapper_list_t l(list.begin(), list.end());
     return string_wrapper(sep).join(l);

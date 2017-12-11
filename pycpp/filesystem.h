@@ -21,7 +21,6 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/filesystem/access.h>
 #include <pycpp/filesystem/fd.h>
 #include <pycpp/filesystem/home.h>
@@ -30,8 +29,8 @@
 #include <pycpp/filesystem/stat.h>
 #include <pycpp/filesystem/tmp.h>
 #include <pycpp/iterator/range.h>
-#include <initializer_list>
-#include <ios>
+#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/ios.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -81,7 +80,7 @@ path_t getcwd();
  *  \param paths            Paths to join
  *  \return                 Joined paths
  */
-path_t join_path(std::initializer_list<path_view_t> paths);
+path_t join_path(initializer_list<path_view_t> paths);
 path_t join_path(const path_list_t &paths);
 path_t join_path(const path_view_list_t &paths);
 
@@ -387,27 +386,27 @@ bool remove_path(const path_view_t& path, bool recursive = true);
 /**
  *  \brief Open descriptor to file, as if by POSIX `open()`.
  */
-fd_t fd_open(const path_view_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP, io_access_pattern access = access_normal);
+fd_t fd_open(const path_view_t& path, ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP, io_access_pattern access = access_normal);
 
 /**
  *  \brief Read from descriptor, as if by POSIX `read()`.
  */
-std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count);
+streamsize fd_read(fd_t fd, void* buf, streamsize count);
 
 /**
  *  \brief Write to descriptor, as if by POSIX `write()`.
  */
-std::streamsize fd_write(fd_t fd, const void* buf, std::streamsize count);
+streamsize fd_write(fd_t fd, const void* buf, streamsize count);
 
 /**
  *  \brief Seek position in stream, as if by POSIX `lseek()`.
  */
-std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way = std::ios_base::beg);
+streampos fd_seek(fd_t fd, streamoff off, ios_base::seekdir way = ios_base::beg);
 
 /**
  *  \brief Tell current position in stream, as if by POSIX `lseek()`.
  */
-std::streampos fd_tell(fd_t fd);
+streampos fd_tell(fd_t fd);
 
 /**
  *  \brief Close descriptor, as if by POSIX `close()`.
@@ -425,12 +424,12 @@ int fd_chmod(fd_t fd, mode_t permissions);
 /**
  *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
  */
-int fd_allocate(fd_t fd, std::streamsize size);
+int fd_allocate(fd_t fd, streamsize size);
 
 /**
  *  \brief Truncate file size to `size` (n bytes).
  */
-int fd_truncate(fd_t fd, std::streamsize size);
+int fd_truncate(fd_t fd, streamsize size);
 
 /**
  *  \brief Change file permissions, as if by `fchmod()`.
@@ -440,18 +439,18 @@ int fd_chmod(const path_view_t& path, mode_t permissions);
 /**
  *  \brief Allocate file size to `size` (n bytes), as if by posix_fallocate.
  */
-int fd_allocate(const path_view_t& path, std::streamsize size);
+int fd_allocate(const path_view_t& path, streamsize size);
 
 /**
  *  \brief Truncate file size to `size` (n bytes).
  */
-int fd_truncate(const path_view_t& path, std::streamsize size);
+int fd_truncate(const path_view_t& path, streamsize size);
 
 #if defined(OS_WINDOWS)          // BACKUP PATH
 
 // RUNTIME
 
-backup_path_t join_path(std::initializer_list<backup_path_view_t> paths);
+backup_path_t join_path(initializer_list<backup_path_view_t> paths);
 backup_path_t join_path(const backup_path_list_t &paths);
 backup_path_t join_path(const backup_path_view_list_t &paths);
 
@@ -518,10 +517,10 @@ bool remove_path(const backup_path_view_t& path, bool recursive = true);
 
 // FILE UTILS
 
-fd_t fd_open(const backup_path_view_t& path, std::ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP, io_access_pattern access = access_normal);
+fd_t fd_open(const backup_path_view_t& path, ios_base::openmode openmode, mode_t permission = S_IWR_USR_GRP, io_access_pattern access = access_normal);
 int fd_chmod(const backup_path_view_t& path, mode_t permissions);
-int fd_allocate(const backup_path_view_t& path, std::streamsize size);
-int fd_truncate(const backup_path_view_t& path, std::streamsize size);
+int fd_allocate(const backup_path_view_t& path, streamsize size);
+int fd_truncate(const backup_path_view_t& path, streamsize size);
 
 #endif
 

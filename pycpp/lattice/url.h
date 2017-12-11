@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/string/string.h>
-#include <initializer_list>
+#include <pycpp/stl/initializer_list.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -63,7 +63,7 @@ struct punycode_idna_t: url_impl_t
 
     punycode_idna_t(const char*, size_t);
     punycode_idna_t(const string_wrapper&);
-    punycode_idna_t(std::initializer_list<char> list);
+    punycode_idna_t(initializer_list<char> list);
 
     // SETTERS
     void set_service(const string_wrapper& service);
@@ -89,7 +89,7 @@ struct unicode_idna_t: url_impl_t
 
     unicode_idna_t(const char*, size_t);
     unicode_idna_t(const string_wrapper&);
-    unicode_idna_t(std::initializer_list<char> list);
+    unicode_idna_t(initializer_list<char> list);
 
     // SETTERS
     void set_service(const string_wrapper& service);

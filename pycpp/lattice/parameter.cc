@@ -28,7 +28,7 @@ parameter_t::parameter_t(const string_wrapper& key, const string_wrapper& value)
 {}
 
 
-parameters_t::parameters_t(std::initializer_list<parameter_t> list)
+parameters_t::parameters_t(initializer_list<parameter_t> list)
 {
     for (auto it = list.begin(); it != list.end(); ++it) {
         add(*it);

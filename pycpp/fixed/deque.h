@@ -12,8 +12,8 @@
 #pragma once
 
 #include <pycpp/fixed/arena.h>
-#include <initializer_list>
-#include <deque>
+#include <pycpp/stl/deque.h>
+#include <pycpp/stl/initializer_list.h>
 
 
 PYCPP_BEGIN_NAMESPACE
@@ -30,7 +30,7 @@ PYCPP_BEGIN_NAMESPACE
 template <
     typename T,
     size_t StackSize = 4096,
-    template <typename, typename> class Container = std::deque
+    template <typename, typename> class Container = deque
 >
 struct fixed_deque:
     fixed_arena<T, StackSize>,
@@ -52,10 +52,10 @@ public:
     fixed_deque(self_t&&) = delete;
     fixed_deque(size_t n, const value_type& value = value_type());
     template <typename Iter> fixed_deque(Iter first, Iter last);
-    fixed_deque(std::initializer_list<value_type> list);
+    fixed_deque(initializer_list<value_type> list);
     self_t& operator=(const self_t&);
     self_t& operator=(self_t&&) = delete;
-    self_t& operator=(std::initializer_list<value_type> list);
+    self_t& operator=(initializer_list<value_type> list);
 
 private:
     void reset();
@@ -90,7 +90,7 @@ fixed_deque<T, StackSize, _>::fixed_deque(Iter first, Iter last):
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
-fixed_deque<T, StackSize, _>::fixed_deque(std::initializer_list<value_type> list):
+fixed_deque<T, StackSize, _>::fixed_deque(initializer_list<value_type> list):
     container_type(list.begin(), list.end(), allocator_type(this->arena_))
 {}
 
@@ -107,7 +107,7 @@ auto fixed_deque<T, StackSize, _>::operator=(const self_t& rhs) -> self_t&
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>
-auto fixed_deque<T, StackSize, _>::operator=(std::initializer_list<value_type> list) -> self_t&
+auto fixed_deque<T, StackSize, _>::operator=(initializer_list<value_type> list) -> self_t&
 {
     reset();
     this->assign(list.begin(), list.end());

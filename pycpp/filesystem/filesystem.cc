@@ -90,7 +90,7 @@ struct listdir_impl
 // ---------
 
 
-path_t join_path(std::initializer_list<path_view_t> paths)
+path_t join_path(initializer_list<path_view_t> paths)
 {
     path_view_list_t list(paths.begin(), paths.end());
     return join_path(list);
@@ -135,15 +135,15 @@ path_list_t listdir(const path_view_t& path)
 }
 
 
-std::streampos fd_tell(fd_t fd)
+streampos fd_tell(fd_t fd)
 {
-    return fd_seek(fd, 0, std::ios_base::cur);
+    return fd_seek(fd, 0, ios_base::cur);
 }
 
 #if defined(OS_WINDOWS)          // BACKUP PATH
 
 
-backup_path_t join_path(std::initializer_list<backup_path_view_t> paths)
+backup_path_t join_path(initializer_list<backup_path_view_t> paths)
 {
     backup_path_view_list_t list(paths.begin(), paths.end());
     return join_path(list);

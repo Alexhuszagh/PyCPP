@@ -26,8 +26,10 @@
 #include <pycpp/secure/char_traits.h>
 #include <pycpp/secure/stdlib.h>
 #include <pycpp/stl/functional.h>
+#include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/string_view.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -38,7 +40,7 @@ namespace string_detail
 
 // Slow route for input iterators
 template <typename String, typename ConstIter, typename Iter>
-typename std::enable_if<is_input_iterator<Iter>::value, String&>::type
+typename enable_if<is_input_iterator<Iter>::value, String&>::type
 replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
 {
     std::string str(first, last);
@@ -48,7 +50,7 @@ replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
 
 // Optimization for forward iterable iterables
 template <typename String, typename ConstIter, typename Iter>
-typename std::enable_if<is_forward_iterable<Iter>::value, String&>::type
+typename enable_if<is_forward_iterable<Iter>::value, String&>::type
 replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
 {
     ConstIter it = string.erase(p1, p2);
@@ -59,7 +61,7 @@ replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
 
 // Slow route for input iterators
 template <typename String, typename ConstIter, typename Iter>
-typename std::enable_if<is_input_iterator<Iter>::value, typename String::iterator>::type
+typename enable_if<is_input_iterator<Iter>::value, typename String::iterator>::type
 insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
 {
     size_t pos = p - string.begin();
@@ -72,7 +74,7 @@ insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
 
 // Optimization for forward iterable iterables
 template <typename String, typename ConstIter, typename Iter>
-typename std::enable_if<is_forward_iterable<Iter>::value, typename String::iterator>::type
+typename enable_if<is_forward_iterable<Iter>::value, typename String::iterator>::type
 insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
 {
     using traits_type = typename String::traits_type;
@@ -131,8 +133,8 @@ public:
     using const_pointer = typename allocator_type::const_pointer;
     using iterator = pointer;
     using const_iterator = const_pointer;
-    using reverse_iterator = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
 
     // MEMBER VARIABLES
     // ----------------
@@ -155,7 +157,7 @@ public:
     secure_basic_string(const_pointer s, size_t n, const allocator_type& alloc = allocator_type());
     secure_basic_string(size_t n, value_type c, const allocator_type& alloc = allocator_type());
     template <typename Iter> secure_basic_string(Iter first, Iter last, const allocator_type& alloc = allocator_type());
-    secure_basic_string(std::initializer_list<value_type> list, const allocator_type& alloc = allocator_type());
+    secure_basic_string(initializer_list<value_type> list, const allocator_type& alloc = allocator_type());
 
     // MEMORY
     void noaccess();
@@ -203,7 +205,7 @@ public:
     self_t& operator+=(const view_type& str);
     self_t& operator+=(const_pointer s);
     self_t& operator+=(value_type c);
-    self_t& operator+=(std::initializer_list<value_type> list);
+    self_t& operator+=(initializer_list<value_type> list);
     self_t& append(const self_t& str);
     self_t& append(const view_type& str);
     self_t& append(const self_t& str, size_t subpos, size_t sublen);
@@ -211,7 +213,7 @@ public:
     self_t& append(const_pointer s, size_t n);
     self_t& append(size_t n, char c);
     template <typename Iter> self_t& append(Iter first, Iter last);
-    self_t& append(std::initializer_list<value_type> list);
+    self_t& append(initializer_list<value_type> list);
     void push_back(value_type c);
     self_t& assign(const self_t& str);
     self_t& assign(const view_type& str);
@@ -220,7 +222,7 @@ public:
     self_t& assign(const_pointer s, size_t n);
     self_t& assign(size_t n, value_type c);
     template <typename Iter> self_t& assign(Iter first, Iter last);
-    self_t& assign(std::initializer_list<value_type> list);
+    self_t& assign(initializer_list<value_type> list);
     self_t& assign(self_t&& str) noexcept;
     self_t& insert(size_t pos, const basic_string_view<Char, Traits>& str);
     self_t& insert(size_t pos, const basic_string_view<Char, Traits>& str, size_t subpos, size_t sublen);
@@ -231,7 +233,7 @@ public:
     iterator insert(const_iterator p, char c);
     template <typename Iter> iterator insert(iterator p, Iter first, Iter last);
     template <typename Iter> iterator insert(const_iterator p, Iter first, Iter last);
-    self_t& insert(const_iterator p, std::initializer_list<char> list);
+    self_t& insert(const_iterator p, initializer_list<char> list);
     self_t& erase(size_t pos = 0, size_t len = npos);
     const_iterator erase(const_iterator p);
     const_iterator erase(const_iterator first, const_iterator last);
@@ -241,7 +243,7 @@ public:
     self_t& replace(size_t pos, size_t len, size_t n, char c);
     self_t& replace(const_iterator p1, const_iterator p2, size_t n, char c);
     template <typename Iter> self_t& replace(const_iterator p1, const_iterator p2, Iter first, Iter last);
-    self_t& replace(const_iterator p1, const_iterator p2, std::initializer_list<char> list);
+    self_t& replace(const_iterator p1, const_iterator p2, initializer_list<char> list);
     void pop_back();
     void swap(self_t& other);
 
@@ -1019,7 +1021,7 @@ secure_basic_string<C, T, A>::secure_basic_string(Iter first, Iter last, const a
 
 
 template <typename C, typename T, typename A>
-secure_basic_string<C, T, A>::secure_basic_string(std::initializer_list<value_type> list, const allocator_type& alloc):
+secure_basic_string<C, T, A>::secure_basic_string(initializer_list<value_type> list, const allocator_type& alloc):
     data_(alloc)
 {
     length_ = list.size();
@@ -1312,7 +1314,7 @@ auto secure_basic_string<C, T, A>::operator+=(value_type c) -> self_t&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator+=(std::initializer_list<value_type> list) -> self_t&
+auto secure_basic_string<C, T, A>::operator+=(initializer_list<value_type> list) -> self_t&
 {
     return append(list);
 }
@@ -1398,7 +1400,7 @@ auto secure_basic_string<C, T, A>::append(Iter first, Iter last) -> self_t&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::append(std::initializer_list<value_type> list) -> self_t&
+auto secure_basic_string<C, T, A>::append(initializer_list<value_type> list) -> self_t&
 {
     return append(list.begin(), list.size());
 }
@@ -1491,7 +1493,7 @@ auto secure_basic_string<C, T, A>::assign(Iter first, Iter last) -> self_t&
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::assign(std::initializer_list<value_type> list) -> self_t&
+auto secure_basic_string<C, T, A>::assign(initializer_list<value_type> list) -> self_t&
 {
     return assign(list.begin(), list.size());
 }
@@ -1601,7 +1603,7 @@ auto secure_basic_string<C, T, A>::insert(const_iterator p, Iter first, Iter las
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::insert(const_iterator p, std::initializer_list<char> list) -> self_t&
+auto secure_basic_string<C, T, A>::insert(const_iterator p, initializer_list<char> list) -> self_t&
 {
     insert(p, list.begin(), list.end());
     return *this;
@@ -1704,7 +1706,7 @@ auto secure_basic_string<C, T, A>::replace(const_iterator p1, const_iterator p2,
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::replace(const_iterator p1, const_iterator p2, std::initializer_list<char> list) -> self_t&
+auto secure_basic_string<C, T, A>::replace(const_iterator p1, const_iterator p2, initializer_list<char> list) -> self_t&
 {
     return replace(p1, p2, list.begin(), list.end());
 }

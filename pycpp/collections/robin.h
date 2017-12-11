@@ -15,7 +15,16 @@
 
 #pragma once
 
+#include <pycpp/stl/exception.h>
+#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/limits.h>
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/ratio.h>
+#include <pycpp/stl/stdexcept.h>
+#include <pycpp/stl/tuple.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -23,15 +32,6 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <exception>
-#include <iterator>
-#include <limits>
-#include <ratio>
-#include <stdexcept>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
 
 PYCPP_BEGIN_NAMESPACE
 
