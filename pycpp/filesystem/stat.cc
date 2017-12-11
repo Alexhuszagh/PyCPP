@@ -271,7 +271,7 @@ static HANDLE get_handle(Pointer path, bool use_lstat, Function function)
 
 static HANDLE get_handle(const path_view_t& path, bool use_lstat)
 {
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     return get_handle(data, use_lstat, CreateFileW);
@@ -284,7 +284,7 @@ static HANDLE get_handle(const backup_path_view_t& path, bool use_lstat)
         return get_handle(backup_path_to_path(path), use_lstat);
     }
 
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     auto data = reinterpret_cast<const char*>(path.data());
     return get_handle(data, use_lstat, CreateFileA);
@@ -481,7 +481,7 @@ static void copy_native(const struct stat& src, stat_t& dst)
 
 stat_t stat(const path_view_t& path)
 {
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     struct stat sb;
     stat_t data;
@@ -497,7 +497,7 @@ stat_t stat(const path_view_t& path)
 
 stat_t lstat(const path_view_t& path)
 {
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     struct stat sb;
     stat_t data;
@@ -513,7 +513,7 @@ stat_t lstat(const path_view_t& path)
 
 path_t read_link(const path_view_t& path)
 {
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     typedef typename path_view_t::value_type value_type;
 
@@ -774,8 +774,8 @@ bool samestat(const stat_t& s1, const stat_t& s2)
 
 bool copystat(const path_view_t& src, const path_view_t& dst)
 {
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return copystat_impl(src, dst);
 }
@@ -846,8 +846,8 @@ bool samefile(const backup_path_view_t& p1, const backup_path_view_t& p2)
 
 bool copystat(const backup_path_view_t& src, const backup_path_view_t& dst)
 {
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return copystat_impl(src, dst);
 }

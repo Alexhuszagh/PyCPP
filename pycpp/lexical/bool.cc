@@ -61,9 +61,9 @@ lexical_bool_formatter::operator string_view() const
 
 lexical_bool_extractor::lexical_bool_extractor(const string_view &string)
 {
-    if (string == TRUE_STRING) {
+    if (string == string_view(TRUE_STRING)) {
         data_ = true;
-    } else if (string == FALSE_STRING) {
+    } else if (string == string_view(FALSE_STRING)) {
         data_ = false;
     } else {
         throw std::runtime_error("String is not boolean.");

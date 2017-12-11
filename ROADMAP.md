@@ -3,45 +3,13 @@
 **Short-Term**
 
     - Change the default hash...
-    - Change everything that uses `string_view` to use `string_wrapper`
-        - Working on it....
-            - algorithm -- DONE
-            - allocator -- DONE
-            - cipher -- DONE
-            - collections -- DONE
-            - compression -- DONE
-            - csv -- DONE
-            - filesystem -- DONE
-            - fixed -- DONE
-            - hashlib -- DONE
-            - iterator -- DONE
-            - itertools -- DONE
-            - json -- DONE
-            - lattice -- DONE
-            - math -- DONE
-            - memmap -- DONE
-            - misc -- DONE
-            - multi_index -- DONE
-            - preprocessor -- DONE
-            - random -- DONE
-            - re -- DONE
-            - reference -- DONE 
-            - runtime -- DONE
-            - safe -- DONE
-            - secure
-            - sql -- DONE
-            - stl -- DONE
-            - stream -- DONE
-            - string
-            - view -- DONE
-            - windows -- DONE
-            - xml -- DONE
 
     - Move `string_view` and `vector_view` to `stl` and make them STL-compatible
         - vector_view -- DONE
-        - string_view -- LOLS FUCK
+        - string_view -- DONE
 
     - Make `string_wrapper` have all the non-standard shit `string_view` did...
+        -- DONE
 
     - Look at use fatal rope and tokenizer, maybe some other tools
         - Importing code is great: easier to test, fast.

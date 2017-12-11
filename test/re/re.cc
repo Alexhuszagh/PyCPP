@@ -22,7 +22,7 @@ TEST(re, re_search)
     ASSERT_TRUE(bool(m));
     EXPECT_EQ(m.start(), 0);
     EXPECT_EQ(m.end(), 5);
-    EXPECT_EQ(m.group(), "These");
+    EXPECT_EQ(m.group(), string_view("These"));
     EXPECT_EQ(m.lastindex(), 0);
 
     data = "...~/.'' Words";
@@ -30,7 +30,7 @@ TEST(re, re_search)
     ASSERT_TRUE(bool(m));
     EXPECT_EQ(m.start(), 9);
     EXPECT_EQ(m.end(), 14);
-    EXPECT_EQ(m.group(), "Words");
+    EXPECT_EQ(m.group(), string_view("Words"));
     EXPECT_EQ(m.lastindex(), 0);
 }
 
@@ -41,7 +41,7 @@ TEST(re, re_match)
     auto m = re_match("\\w+", data);
     EXPECT_EQ(m.start(), 0);
     EXPECT_EQ(m.end(), 5);
-    EXPECT_EQ(m.group(), "These");
+    EXPECT_EQ(m.group(), string_view("These"));
     EXPECT_EQ(m.lastindex(), 0);
 
     data = "...~/.'' Words";
@@ -69,7 +69,7 @@ TEST(re, re_findall)
     std::string data = "These are a bunch of words";
     auto words = re_findall("\\w+", data);
     EXPECT_EQ(words.size(), 6);
-    EXPECT_EQ(words.front(), "These");
+    EXPECT_EQ(words.front(), string_view("These"));
 }
 
 
@@ -99,13 +99,13 @@ TEST(re, re_split)
     // first example
     auto whitespace = re_split("\\w+", data);
     ASSERT_EQ(whitespace.size(), 7);
-    EXPECT_EQ(whitespace[0], "");
-    EXPECT_EQ(whitespace[1], " ");
-    EXPECT_EQ(whitespace[2], " ");
-    EXPECT_EQ(whitespace[3], " ");
-    EXPECT_EQ(whitespace[4], " ");
-    EXPECT_EQ(whitespace[5], " ");
-    EXPECT_EQ(whitespace[6], "");
+    EXPECT_EQ(whitespace[0], string_view(""));
+    EXPECT_EQ(whitespace[1], string_view(" "));
+    EXPECT_EQ(whitespace[2], string_view(" "));
+    EXPECT_EQ(whitespace[3], string_view(" "));
+    EXPECT_EQ(whitespace[4], string_view(" "));
+    EXPECT_EQ(whitespace[5], string_view(" "));
+    EXPECT_EQ(whitespace[6], string_view(""));
 }
 
 

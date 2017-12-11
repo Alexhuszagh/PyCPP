@@ -122,7 +122,7 @@ static std::string read_fstream(const string_wrapper& filename)
  */
 static std::string read_narrow(const string_wrapper& filename)
 {
-    assert(filename.is_null_terminated());
+    assert(is_null_terminated(filename));
 
     auto *name = filename.data();
     std::ifstream file(name, std::ios_base::in | std::ios_base::binary);

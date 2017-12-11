@@ -26,9 +26,14 @@ PYCPP_BEGIN_NAMESPACE
 
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 
+// ALIAS
+// -----
+
 using any = std::any;
 using bad_any_cast = std::bad_any_cast;
 
+// FUNCTIONS
+// ---------
 
 template <typename T, typename... Ts>
 auto any_cast(Ts&&... ts) -> decltype(std::any_cast<T>(std::forward<Ts>(ts)...))

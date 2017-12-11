@@ -172,15 +172,15 @@ path_t temporary_directory(const path_view_t& dir, const path_view_t& prefix)
 }
 
 
-path_t gettempdir()
+path_view_t gettempdir()
 {
-    return tempdir;
+    return path_view_t(tempdir);
 }
 
 
-path_t gettempprefix()
+path_view_t gettempprefix()
 {
-    return tempprefix;
+    return path_view_t(tempprefix);
 }
 
 
@@ -188,13 +188,13 @@ path_t gettempnam(const path_view_t& dir, const path_view_t& prefix)
 {
     path_list_t paths;
     if (prefix.empty() && dir.empty()) {
-        paths = {gettempdir(), gettempprefix() + gettempsuffix()};
+        paths = {path_t(gettempdir()), path_t(gettempprefix()) + path_t(gettempsuffix())};
     } else if (dir.empty()) {
-        paths = {gettempdir(), prefix + gettempsuffix()};
+        paths = {path_t(gettempdir()), path_t(prefix) + path_t(gettempsuffix())};
     } else if (prefix.empty()) {
-        paths = {path_t(dir), gettempprefix() + gettempsuffix()};
+        paths = {path_t(dir), path_t(gettempprefix()) + path_t(gettempsuffix())};
     } else {
-        paths = {path_t(dir), prefix + gettempsuffix()};
+        paths = {path_t(dir), path_t(prefix) + path_t(gettempsuffix())};
     }
     return join_path(paths);
 }
@@ -213,13 +213,13 @@ path_t temporary_directoryw(const path_view_t& dir, const path_view_t& prefix)
 }
 
 
-path_t gettempdirw()
+path_view_t gettempdirw()
 {
     return gettempdir();
 }
 
 
-path_t gettempprefixw()
+path_view_t gettempprefixw()
 {
     return gettempprefix();
 }
@@ -237,19 +237,19 @@ fd_stream temporary_filea(const backup_path_view_t& dir, const backup_path_view_
 }
 
 
-backup_path_t temporary_directorya(const backup_path_t& dir, const backup_path_t& prefix)
+backup_path_t temporary_directorya(const backup_path_view_t& dir, const backup_path_view_t& prefix)
 {
     return path_to_backup_path(temporary_directory(backup_path_to_path(dir), backup_path_to_path(prefix)));
 }
 
 
-backup_path_t gettempdira()
+backup_path_view_t gettempdira()
 {
     return path_to_backup_path(gettempdirw());
 }
 
 
-backup_path_t gettempprefixa()
+backup_path_view_t gettempprefixa()
 {
     return path_to_backup_path(gettempprefixw());
 }

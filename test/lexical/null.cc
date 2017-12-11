@@ -27,12 +27,12 @@ static std::vector<std::pair<std::nullptr_t, std::reference_wrapper<const std::s
 
 TEST(lexical_null_formatter, lexical_null_formatter)
 {
-    auto TEST_NULL  = [](std::nullptr_t b, const std::string &expected) {
+    auto TEST_NULL  = [](std::nullptr_t b, const string_view& expected) {
         EXPECT_EQ(lexical_null_formatter(b).string(), expected);
     };
 
     for (const auto& pair: DATA) {
-        TEST_NULL(pair.first, pair.second);
+        TEST_NULL(pair.first, pair.second.get());
     }
 }
 

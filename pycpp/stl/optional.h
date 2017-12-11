@@ -30,11 +30,16 @@ PYCPP_BEGIN_NAMESPACE
 
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 
+// ALIAS
+// -----
+
 template <typename T> using optional = std::optional<T>;
 using nullopt_t = std::nullopt_t;
 using nullopt = std::nullopt;
 using bad_optional_access = std::bad_optional_access;
 
+// FUNCTIONS
+// ---------
 
 template <typename T, typename... Ts>
 auto make_optional(Ts&&... ts) -> decltype(std::make_optional<T>(std::forward<Ts>(ts)...))

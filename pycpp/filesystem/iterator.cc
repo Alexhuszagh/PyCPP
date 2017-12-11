@@ -453,7 +453,7 @@ path_t directory_data_impl::basename() const
 
 void directory_data_impl::open(DIR*& dir, const path_view_t& path)
 {
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     dir = opendir(path.data());
     if (dir == nullptr) {

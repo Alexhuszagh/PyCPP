@@ -114,8 +114,8 @@ address_t::operator addrinfo() const
 
 dns_lookup_t::dns_lookup_t(const string_wrapper& host, const string_wrapper& service)
 {
-    assert(host.is_null_terminated());
-    assert(service.is_null_terminated());
+    assert(is_null_terminated(host));
+    assert(is_null_terminated(service));
 
     // initialize our hints
     struct addrinfo hints, *result;

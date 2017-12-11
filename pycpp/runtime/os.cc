@@ -77,7 +77,7 @@ static bool read_pid1()
     size_t end = view.find(",", start);
     if (start == view.npos || end == view.npos) {
         return false;
-    } else if (view.substr(start, end) == "1") {
+    } else if (view.substr(start, end) == string_view("1")) {
         return true;
     }
 

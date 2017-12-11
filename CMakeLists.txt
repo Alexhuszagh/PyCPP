@@ -618,8 +618,6 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector_view.h"
-    # TODO: remove
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/view/string.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/error.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/mman.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/winapi.h"

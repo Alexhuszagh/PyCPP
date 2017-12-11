@@ -57,7 +57,7 @@ lexical_null_formatter::operator string_view() const
 
 lexical_null_extractor::lexical_null_extractor(const string_view &string)
 {
-    if (string != NULL_STRING) {
+    if (string != string_view(NULL_STRING)) {
         throw std::runtime_error("String is not null.");
     }
 }

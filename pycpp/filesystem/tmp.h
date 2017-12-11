@@ -72,12 +72,12 @@ path_t temporary_directory(const path_view_t& dir = path_view_t(), const path_vi
 /**
  * \brief Get path to temp directory.
  */
-path_t gettempdir();
+path_view_t gettempdir();
 
 /**
  * \brief Get the prefix used for named temporary files.
  */
-path_t gettempprefix();
+path_view_t gettempprefix();
 
 /**
  *  \brief Create a temporary filepath, similar to `tempnam`.
@@ -93,13 +93,13 @@ path_t gettempnam(const path_view_t& dir = path_view_t(), const path_view_t& pre
 
 fd_stream temporary_filew(const path_view_t& dir = path_view_t(), const path_view_t& prefix = path_view_t());
 path_t temporary_directoryw(const path_view_t& dir = path_view_t(), const path_view_t& prefix = path_view_t());
-path_t gettempdirw();
-path_t gettempprefixw();
+path_view_t gettempdirw();
+path_view_t gettempprefixw();
 path_t gettempnamw(const path_view_t& dir = path_view_t(), const path_view_t& prefix = path_view_t());
 fd_stream temporary_filea(const backup_path_t& dir = backup_path_t(), const backup_path_t& prefix = backup_path_t());
 backup_path_t temporary_directorya(const backup_path_view_t& dir = backup_path_view_t(), const backup_path_view_t& prefix = backup_path_view_t());
-backup_path_t gettempdira();
-backup_path_t gettempprefixa();
+backup_path_view_t gettempdira();
+backup_path_view_t gettempprefixa();
 backup_path_t gettempnama(const backup_path_view_t& dir = backup_path_view_t(), const backup_path_view_t& prefix = backup_path_view_t());
 
 #endif

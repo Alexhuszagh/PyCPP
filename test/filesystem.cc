@@ -264,65 +264,65 @@ TEST(directory, listdir)
 
 TEST(path, path_split)
 {
-    EXPECT_EQ(path_split("test").front(), "");
-    EXPECT_EQ(path_split("test").back(), "test");
-    EXPECT_EQ(path_split("test/").front(), "test");
-    EXPECT_EQ(path_split("test/").back(), "");
-    EXPECT_EQ(path_split("test/files").front(), "test");
-    EXPECT_EQ(path_split("test/files").back(), "files");
-    EXPECT_EQ(path_split("/usr/lib").front(), "/usr");
-    EXPECT_EQ(path_split("/usr/lib").back(), "lib");
+    EXPECT_EQ(path_split("test").front(), string_view(""));
+    EXPECT_EQ(path_split("test").back(), string_view("test"));
+    EXPECT_EQ(path_split("test/").front(), string_view("test"));
+    EXPECT_EQ(path_split("test/").back(), string_view(""));
+    EXPECT_EQ(path_split("test/files").front(), string_view("test"));
+    EXPECT_EQ(path_split("test/files").back(), string_view("files"));
+    EXPECT_EQ(path_split("/usr/lib").front(), string_view("/usr"));
+    EXPECT_EQ(path_split("/usr/lib").back(), string_view("lib"));
 }
 
 
 TEST(path, path_splitdrive)
 {
-    EXPECT_EQ(path_splitdrive("test/files").front(), "");
-    EXPECT_EQ(path_splitdrive("test/files").back(), "test/files");
-    EXPECT_EQ(path_splitdrive("/usr/lib").front(), "");
-    EXPECT_EQ(path_splitdrive("/usr/lib").back(), "/usr/lib");
+    EXPECT_EQ(path_splitdrive("test/files").front(), string_view(""));
+    EXPECT_EQ(path_splitdrive("test/files").back(), string_view("test/files"));
+    EXPECT_EQ(path_splitdrive("/usr/lib").front(), string_view(""));
+    EXPECT_EQ(path_splitdrive("/usr/lib").back(), string_view("/usr/lib"));
 
 #if defined(OS_WINDOWS)
-    EXPECT_EQ(path_splitdrive("c:/users").front(), "c:");
-    EXPECT_EQ(path_splitdrive("c:/users").back(), "/users");
-    EXPECT_EQ(path_splitdrive("c:..").front(), "c:");
-    EXPECT_EQ(path_splitdrive("c:..").back(), "..");
-    EXPECT_EQ(path_splitdrive("\\\\localhost").front(), "");
-    EXPECT_EQ(path_splitdrive("\\\\localhost").back(), "\\\\localhost");
-    EXPECT_EQ(path_splitdrive("\\\\localhost\\x").front(), "\\\\localhost\\x");
-    EXPECT_EQ(path_splitdrive("\\\\localhost\\x").back(), "");
+    EXPECT_EQ(path_splitdrive("c:/users").front(), string_view("c:"));
+    EXPECT_EQ(path_splitdrive("c:/users").back(), string_view("/users"));
+    EXPECT_EQ(path_splitdrive("c:..").front(), string_view("c:"));
+    EXPECT_EQ(path_splitdrive("c:..").back(), string_view(".."));
+    EXPECT_EQ(path_splitdrive("\\\\localhost").front(), string_view(""));
+    EXPECT_EQ(path_splitdrive("\\\\localhost").back(), string_view("\\\\localhost"));
+    EXPECT_EQ(path_splitdrive("\\\\localhost\\x").front(), string_view("\\\\localhost\\x"));
+    EXPECT_EQ(path_splitdrive("\\\\localhost\\x").back(), string_view(""));
 #endif
 }
 
 
 TEST(path, path_splitext)
 {
-    EXPECT_EQ(path_splitext(".").front(), ".");
-    EXPECT_EQ(path_splitext(".").back(), "");
-    EXPECT_EQ(path_splitext(".dat").front(), ".dat");
-    EXPECT_EQ(path_splitext(".dat").back(), "");
-    EXPECT_EQ(path_splitext("file.").front(), "file");
-    EXPECT_EQ(path_splitext("file.").back(), ".");
-    EXPECT_EQ(path_splitext("test/files").front(), "test/files");
-    EXPECT_EQ(path_splitext("test/files").back(), "");
-    EXPECT_EQ(path_splitext("/usr/lib").front(), "/usr/lib");
-    EXPECT_EQ(path_splitext("/usr/lib").back(), "");
-    EXPECT_EQ(path_splitext("test/files.dat").front(), "test/files");
-    EXPECT_EQ(path_splitext("test/files.dat").back(), ".dat");
-    EXPECT_EQ(path_splitext("test/.dat").front(), "test/.dat");
-    EXPECT_EQ(path_splitext("test/.dat").back(), "");
+    EXPECT_EQ(path_splitext(".").front(), string_view("."));
+    EXPECT_EQ(path_splitext(".").back(), string_view(""));
+    EXPECT_EQ(path_splitext(".dat").front(), string_view(".dat"));
+    EXPECT_EQ(path_splitext(".dat").back(), string_view(""));
+    EXPECT_EQ(path_splitext("file.").front(), string_view("file"));
+    EXPECT_EQ(path_splitext("file.").back(), string_view("."));
+    EXPECT_EQ(path_splitext("test/files").front(), string_view("test/files"));
+    EXPECT_EQ(path_splitext("test/files").back(), string_view(""));
+    EXPECT_EQ(path_splitext("/usr/lib").front(), string_view("/usr/lib"));
+    EXPECT_EQ(path_splitext("/usr/lib").back(), string_view(""));
+    EXPECT_EQ(path_splitext("test/files.dat").front(), string_view("test/files"));
+    EXPECT_EQ(path_splitext("test/files.dat").back(), string_view(".dat"));
+    EXPECT_EQ(path_splitext("test/.dat").front(), string_view("test/.dat"));
+    EXPECT_EQ(path_splitext("test/.dat").back(), string_view(""));
 }
 
 
 TEST(path, path_splitunc)
 {
 #if defined(OS_WINDOWS)
-    EXPECT_EQ(path_splitunc("c:/users").front(), "");
-    EXPECT_EQ(path_splitunc("c:/users").back(), "c:/users");
-    EXPECT_EQ(path_splitunc("\\\\localhost").front(), "");
-    EXPECT_EQ(path_splitunc("\\\\localhost").back(), "\\\\localhost");
-    EXPECT_EQ(path_splitunc("\\\\localhost\\x").front(), "\\\\localhost\\x");
-    EXPECT_EQ(path_splitunc("\\\\localhost\\x").back(), "");
+    EXPECT_EQ(path_splitunc("c:/users").front(), string_view(""));
+    EXPECT_EQ(path_splitunc("c:/users").back(), string_view("c:/users"));
+    EXPECT_EQ(path_splitunc("\\\\localhost").front(), string_view(""));
+    EXPECT_EQ(path_splitunc("\\\\localhost").back(), string_view("\\\\localhost"));
+    EXPECT_EQ(path_splitunc("\\\\localhost\\x").front(), string_view("\\\\localhost\\x"));
+    EXPECT_EQ(path_splitunc("\\\\localhost\\x").back(), string_view(""));
 #endif
 }
 
@@ -336,17 +336,17 @@ TEST(path, abspath)
 
 TEST(path, base_name)
 {
-    EXPECT_EQ(base_name("/usr/lib"), "lib");
-    EXPECT_EQ(base_name("/usr/lib.dat"), "lib.dat");
-    EXPECT_EQ(base_name("/usr/lib/"), "");
+    EXPECT_EQ(base_name("/usr/lib"), string_view("lib"));
+    EXPECT_EQ(base_name("/usr/lib.dat"), string_view("lib.dat"));
+    EXPECT_EQ(base_name("/usr/lib/"), string_view(""));
 }
 
 
 TEST(path, dir_name)
 {
-    EXPECT_EQ(dir_name("/usr/lib"), "/usr");
-    EXPECT_EQ(dir_name("/usr/lib.dat"), "/usr");
-    EXPECT_EQ(dir_name("/usr/lib/"), "/usr/lib");
+    EXPECT_EQ(dir_name("/usr/lib"), string_view("/usr"));
+    EXPECT_EQ(dir_name("/usr/lib.dat"), string_view("/usr"));
+    EXPECT_EQ(dir_name("/usr/lib/"), string_view("/usr/lib"));
 }
 
 
@@ -422,18 +422,18 @@ TEST(path, gethomedir)
 TEST(path, gettempdir)
 {
     EXPECT_GE(gettempdir().size(), 1);
-    EXPECT_EQ(gettempdir(), tempdir);
+    EXPECT_EQ(gettempdir(), path_view_t(tempdir));
     tempdir = path_prefix("/tmp");
-    EXPECT_EQ(gettempdir(), tempdir);
+    EXPECT_EQ(gettempdir(), path_view_t(tempdir));
 }
 
 
 TEST(path, gettempprefix)
 {
     EXPECT_GE(gettempprefix().size(), 1);
-    EXPECT_EQ(gettempprefix(), tempprefix);
+    EXPECT_EQ(gettempprefix(), path_view_t(tempprefix));
     tempprefix = path_prefix("tmp");
-    EXPECT_EQ(gettempprefix(), tempprefix);
+    EXPECT_EQ(gettempprefix(), path_view_t(tempprefix));
 }
 
 

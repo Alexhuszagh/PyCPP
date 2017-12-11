@@ -88,7 +88,7 @@ std::string c_ios_mode(std::ios_base::openmode mode)
  */
 FILE * get_c_file(const string_view& narrow, std::ios_base::openmode mode)
 {
-    assert(narrow.is_null_terminated());
+    assert(is_null_terminated(narrow));
 
     auto str = c_ios_mode(mode);
     if (str.size()) {
@@ -106,7 +106,7 @@ FILE * get_c_file(const string_view& narrow, std::ios_base::openmode mode)
  */
 FILE * get_c_file(const u16string_view& wide, const std::ios_base::openmode mode)
 {
-    assert(wide.is_null_terminated());
+    assert(is_null_terminated(wide));
 
     auto str = c_ios_mode(mode);
     if (str.size()) {
@@ -529,7 +529,7 @@ void fstream::open(const string_view& name, std::ios_base::openmode mode)
     }
 #endif      // HAVE_WFOPEN
 
-    assert(name.is_null_terminated());
+    assert(is_null_terminated(name));
     std::fstream::open(name.data(), mode);
 }
 
@@ -544,7 +544,7 @@ fstream::fstream(const wstring_view& name, std::ios_base::openmode mode)
 
 void fstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
-    assert(name.is_null_terminated());
+    assert(is_null_terminated(name));
     std::fstream::open(name.data(), mode);
 }
 
@@ -557,7 +557,7 @@ fstream::fstream(const u16string_view& name, std::ios_base::openmode mode)
 
 void fstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
-    assert(name.is_null_terminated());
+    assert(is_null_terminated(name));
     std::fstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
 
@@ -602,7 +602,7 @@ void ifstream::open(const string_view& name, std::ios_base::openmode mode)
     }
 #endif      // HAVE_WFOPEN
 
-    assert(name.is_null_terminated());
+    assert(is_null_terminated(name));
     std::ifstream::open(name.data(), mode);
 }
 
@@ -617,7 +617,7 @@ ifstream::ifstream(const wstring_view& name, std::ios_base::openmode mode)
 
 void ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
-    assert(name.is_null_terminated());
+    assert(is_null_terminated(name));
     std::ifstream::open(name.data(), mode);
 }
 
@@ -630,7 +630,7 @@ ifstream::ifstream(const u16string_view& name, std::ios_base::openmode mode)
 
 void ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
-    assert(name.is_null_terminated());
+    assert(is_null_terminated(name));
     std::ifstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
 
@@ -676,7 +676,7 @@ void ofstream::open(const string_view& name, std::ios_base::openmode mode)
     }
 #endif      // HAVE_WFOPEN
 
-    assert(name.is_null_terminated());
+    assert(is_null_terminated(name));
     std::ofstream::open(name.data(), mode);
 }
 
@@ -691,7 +691,7 @@ ofstream::ofstream(const wstring_view& name, std::ios_base::openmode mode)
 
 void ofstream::open(const wstring_view& name, std::ios_base::openmode mode)
 {
-    assert(name.is_null_terminated());
+    assert(is_null_terminated(name));
     std::ofstream::open(name.data(), mode);
 }
 
@@ -704,7 +704,7 @@ ofstream::ofstream(const u16string_view& name, std::ios_base::openmode mode)
 
 void ofstream::open(const u16string_view& name, std::ios_base::openmode mode)
 {
-    assert(name.is_null_terminated());
+    assert(is_null_terminated(name));
     std::ofstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
 }
 

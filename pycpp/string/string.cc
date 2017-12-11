@@ -499,12 +499,12 @@ string_wrapper::string_wrapper(const string_view& str):
 
 
 string_wrapper::string_wrapper(const string_wrapper& str, size_type pos, size_type len):
-    string_view(str, pos, len)
+    string_view(string_view(str).substr(pos, len))
 {}
 
 
 string_wrapper::string_wrapper(const string_t& str, size_type pos, size_type len):
-    string_view(str, pos, len)
+    string_view(string_view(str).substr(pos, len))
 {}
 
 
@@ -519,7 +519,7 @@ string_wrapper::string_wrapper(const_pointer str, size_type n):
 
 
 string_wrapper::string_wrapper(const_pointer first, const_pointer last):
-    string_view(first, last)
+    string_view(first, std::distance(first, last))
 {}
 
 

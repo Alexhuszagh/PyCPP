@@ -28,24 +28,24 @@ static std::vector<std::pair<bool, std::reference_wrapper<const std::string>>> D
 
 TEST(lexical_bool_formatter, lexical_bool_formatter)
 {
-    auto TEST_BOOL  = [](bool b, const std::string &expected) {
+    auto TEST_BOOL  = [](bool b, const string_view& expected) {
         EXPECT_EQ(lexical_bool_formatter(b).string(), expected);
     };
-    auto TEST_CONST_BOOL  = [](const bool b, const std::string &expected) {
+    auto TEST_CONST_BOOL  = [](const bool b, const string_view& expected) {
         EXPECT_EQ(lexical_bool_formatter(b).string(), expected);
     };
-    auto TEST_VOLATILE_BOOL  = [](volatile bool b, const std::string &expected) {
+    auto TEST_VOLATILE_BOOL  = [](volatile bool b, const string_view& expected) {
         EXPECT_EQ(lexical_bool_formatter(b).string(), expected);
     };
-    auto TEST_CV_BOOL  = [](volatile bool b, const std::string &expected) {
+    auto TEST_CV_BOOL  = [](volatile bool b, const string_view& expected) {
         EXPECT_EQ(lexical_bool_formatter(b).string(), expected);
     };
 
     for (const auto& pair: DATA) {
-        TEST_BOOL(pair.first, pair.second);
-        TEST_CONST_BOOL(pair.first, pair.second);
-        TEST_VOLATILE_BOOL(pair.first, pair.second);
-        TEST_CV_BOOL(pair.first, pair.second);
+        TEST_BOOL(pair.first, pair.second.get());
+        TEST_CONST_BOOL(pair.first, pair.second.get());
+        TEST_VOLATILE_BOOL(pair.first, pair.second.get());
+        TEST_CV_BOOL(pair.first, pair.second.get());
     }
 }
 

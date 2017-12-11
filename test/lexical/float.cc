@@ -17,8 +17,8 @@ PYCPP_USING_NAMESPACE
 
 TEST(lexical_float_formatter, lexical_float_formatter)
 {
-    EXPECT_EQ(lexical_float_formatter(1.).string(), "1");
-    EXPECT_EQ(lexical_float_formatter(-1.).string(), "-1");
+    EXPECT_EQ(lexical_float_formatter(1.).string(), string_view("1"));
+    EXPECT_EQ(lexical_float_formatter(-1.).string(), string_view("-1"));
 }
 
 

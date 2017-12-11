@@ -24,14 +24,14 @@ TEST(regex, search)
     ASSERT_TRUE(bool(m));
     EXPECT_EQ(m.start(), 0);
     EXPECT_EQ(m.end(), 5);
-    EXPECT_EQ(m.group(), "These");
+    EXPECT_EQ(m.group(), string_view("These"));
     EXPECT_EQ(m.lastindex(), 0);
 
     m = regex.search(data, m.end());
     ASSERT_TRUE(bool(m));
     EXPECT_EQ(m.start(), 6);
     EXPECT_EQ(m.end(), 9);
-    EXPECT_EQ(m.group(), "are");
+    EXPECT_EQ(m.group(), string_view("are"));
     EXPECT_EQ(m.lastindex(), 0);
 }
 
@@ -46,7 +46,7 @@ TEST(regex, match)
     ASSERT_TRUE(bool(m));
     EXPECT_EQ(m.start(), 0);
     EXPECT_EQ(m.end(), 5);
-    EXPECT_EQ(m.group(), "These");
+    EXPECT_EQ(m.group(), string_view("These"));
     EXPECT_EQ(m.lastindex(), 0);
 
     m = regex.match(data, m.end());
@@ -62,19 +62,19 @@ TEST(regex, split)
     // first example
     auto whitespace = regex.split(data);
     ASSERT_EQ(whitespace.size(), 7);
-    EXPECT_EQ(whitespace[0], "");
-    EXPECT_EQ(whitespace[1], " ");
-    EXPECT_EQ(whitespace[2], " ");
-    EXPECT_EQ(whitespace[3], " ");
-    EXPECT_EQ(whitespace[4], " ");
-    EXPECT_EQ(whitespace[5], " ");
-    EXPECT_EQ(whitespace[6], "");
+    EXPECT_EQ(whitespace[0], string_view(""));
+    EXPECT_EQ(whitespace[1], string_view(" "));
+    EXPECT_EQ(whitespace[2], string_view(" "));
+    EXPECT_EQ(whitespace[3], string_view(" "));
+    EXPECT_EQ(whitespace[4], string_view(" "));
+    EXPECT_EQ(whitespace[5], string_view(" "));
+    EXPECT_EQ(whitespace[6], string_view(""));
 
     // limit split
     whitespace = regex.split(data, 1);
     ASSERT_EQ(whitespace.size(), 2);
-    EXPECT_EQ(whitespace[0], "");
-    EXPECT_EQ(whitespace[1], " are a bunch of words");
+    EXPECT_EQ(whitespace[0], string_view(""));
+    EXPECT_EQ(whitespace[1], string_view(" are a bunch of words"));
 }
 
 

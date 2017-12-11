@@ -221,7 +221,6 @@ public:
     template <typename Iter> self_t& assign(Iter first, Iter last);
     self_t& assign(std::initializer_list<value_type> list);
     self_t& assign(self_t&& str) noexcept;
-    // TODO: no correct insert??
     self_t& insert(size_t pos, const basic_string_view<Char, Traits>& str);
     self_t& insert(size_t pos, const basic_string_view<Char, Traits>& str, size_t subpos, size_t sublen);
     self_t& insert(size_t pos, const char* s);
@@ -274,25 +273,25 @@ public:
     size_type find_first_not_of(value_type c, size_type pos = 0) const noexcept;
 
     // RFIND
-    size_type rfind(const self_t& str, size_type pos = 0) const noexcept;
-    size_type rfind(const view_type& str, size_type pos = 0) const noexcept;
-    size_type rfind(const_pointer array, size_type pos = 0) const;
+    size_type rfind(const self_t& str, size_type pos = npos) const noexcept;
+    size_type rfind(const view_type& str, size_type pos = npos) const noexcept;
+    size_type rfind(const_pointer array, size_type pos = npos) const;
     size_type rfind(const_pointer cstring, size_type pos, size_type length) const;
-    size_type rfind(value_type c, size_type pos = 0) const noexcept;
+    size_type rfind(value_type c, size_type pos = npos) const noexcept;
 
     // FIND LAST OF
-    size_type find_last_of(const self_t& str, size_type pos = 0) const noexcept;
-    size_type find_last_of(const view_type& str, size_type pos = 0) const noexcept;
-    size_type find_last_of(const_pointer array, size_type pos = 0) const;
+    size_type find_last_of(const self_t& str, size_type pos = npos) const noexcept;
+    size_type find_last_of(const view_type& str, size_type pos = npos) const noexcept;
+    size_type find_last_of(const_pointer array, size_type pos = npos) const;
     size_type find_last_of(const_pointer cstring, size_type pos, size_type length) const;
-    size_type find_last_of(value_type c, size_type pos = 0) const noexcept;
+    size_type find_last_of(value_type c, size_type pos = npos) const noexcept;
 
     // FIND LAST NOT OF
-    size_type find_last_not_of(const self_t& str, size_type pos = 0) const noexcept;
-    size_type find_last_not_of(const view_type& str, size_type pos = 0) const noexcept;
-    size_type find_last_not_of(const_pointer array, size_type pos = 0) const;
+    size_type find_last_not_of(const self_t& str, size_type pos = npos) const noexcept;
+    size_type find_last_not_of(const view_type& str, size_type pos = npos) const noexcept;
+    size_type find_last_not_of(const_pointer array, size_type pos = npos) const;
     size_type find_last_not_of(const_pointer cstring, size_type pos, size_type length) const;
-    size_type find_last_not_of(value_type c, size_type pos = 0) const noexcept;
+    size_type find_last_not_of(value_type c, size_type pos = npos) const noexcept;
 
     // COMPARE
     int compare(const self_t& str) const noexcept;
@@ -1772,252 +1771,210 @@ size_t secure_basic_string<C, T, A>::copy(pointer s, size_t len, size_t pos) con
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find(const self_t& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_find(data()+pos, size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return find(view_type(str), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find(const view_type& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_find(data()+pos, size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return view_type(*this).find(str, pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find(const_pointer array, size_type pos) const -> size_type
+auto secure_basic_string<C, T, A>::find(const_pointer s, size_type pos) const -> size_type
 {
-    const_pointer first = array;
-    size_type length = traits_type::length(array);
-    auto found = string_find(data()+pos, size()-pos, first, length);
-    return found ? found - data() : npos;
+    return find(view_type(s), pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find(const_pointer array, size_type pos, size_type length) const -> size_type
+auto secure_basic_string<C, T, A>::find(const_pointer s, size_type pos, size_type n) const -> size_type
 {
-    auto found = string_find(data()+pos, size()-pos, array, length);
-    return found ? found - data() : npos;
+    return find(view_type(s, n), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = string_find(data()+pos, size()-pos, &c, 1);
-    return found ? found - data() : npos;
+    return find(view_type(&c, 1), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_first_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_find_of(data()+pos, size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return find_first_of(view_type(str), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_first_of(const view_type& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_find_of(data()+pos, size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return view_type(*this).find_first_of(str, pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_first_of(const_pointer array, size_type pos) const -> size_type
+auto secure_basic_string<C, T, A>::find_first_of(const_pointer s, size_type pos) const -> size_type
 {
-    const_pointer first = array;
-    size_type length = traits_type::length(array);
-    auto found = string_find_of(data()+pos, size()-pos, first, length);
-    return found ? found - data() : npos;
+    return find_first_of(view_type(s), pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_first_of(const_pointer array, size_type pos, size_type length) const -> size_type
+auto secure_basic_string<C, T, A>::find_first_of(const_pointer s, size_type pos, size_type n) const -> size_type
 {
-    auto found = string_find_of(data()+pos, size()-pos, array, length);
-    return found ? found - data() : npos;
+    return find_first_of(view_type(s, n), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_first_of(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = string_find_of(data()+pos, size()-pos, &c, 1);
-    return found ? found - data() : npos;
+    return find_first_of(view_type(&c, 1), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_first_not_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_find_not_of(data()+pos, size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return find_first_not_of(view_type(str), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_first_not_of(const view_type& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_find_not_of(data()+pos, size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return view_type(*this).find_first_not_of(str, pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_first_not_of(const_pointer array, size_type pos) const -> size_type
+auto secure_basic_string<C, T, A>::find_first_not_of(const_pointer s, size_type pos) const -> size_type
 {
-    const_pointer first = array;
-    size_type length = traits_type::length(array);
-    auto found = string_find_not_of(data()+pos, size()-pos, first, length);
-    return found ? found - data() : npos;
+    return find_first_not_of(view_type(s), pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_first_not_of(const_pointer array, size_type pos, size_type length) const -> size_type
+auto secure_basic_string<C, T, A>::find_first_not_of(const_pointer s, size_type pos, size_type n) const -> size_type
 {
-    auto found = string_find_not_of(data()+pos, size()-pos, array, length);
-    return found ? found - data() : npos;
+    return find_first_not_of(view_type(s, n), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_first_not_of(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = string_find_not_of(data()+pos, size()-pos, &c, 1);
-    return found ? found - data() : npos;
+    return find_first_not_of(view_type(&c, 1), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::rfind(const self_t& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_rfind(end(), size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return rfind(view_type(str), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::rfind(const view_type& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_rfind(end(), size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return view_type(*this).rfind(str, pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::rfind(const_pointer array, size_type pos) const -> size_type
+auto secure_basic_string<C, T, A>::rfind(const_pointer s, size_type pos) const -> size_type
 {
-    const_pointer first = array;
-    size_type length = traits_type::length(array);
-    auto found = string_rfind(end(), size()-pos, first, length);
-    return found ? found - data() : npos;
+    return rfind(view_type(s), pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::rfind(const_pointer array, size_type pos, size_type length) const -> size_type
+auto secure_basic_string<C, T, A>::rfind(const_pointer s, size_type pos, size_type n) const -> size_type
 {
-    auto found = string_rfind(end(), size()-pos, array, length);
-    return found ? found - data() : npos;
+    return rfind(view_type(s, n), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::rfind(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = string_rfind(end(), size()-pos, &c, 1);
-    return found ? found - data() : npos;
+    return rfind(view_type(&c, 1), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_last_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_rfind_of(end(), size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return find_last_of(view_type(str), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_last_of(const view_type& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_rfind_of(end(), size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return view_type(*this).find_last_of(str, pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_last_of(const_pointer array, size_type pos) const -> size_type
+auto secure_basic_string<C, T, A>::find_last_of(const_pointer s, size_type pos) const -> size_type
 {
-    const_pointer first = array;
-    size_type length = traits_type::length(array);
-    auto found = string_rfind_of(end(), size()-pos, first, length);
-    return found ? found - data() : npos;
+    return find_last_of(view_type(s), pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_last_of(const_pointer array, size_type pos, size_type length) const -> size_type
+auto secure_basic_string<C, T, A>::find_last_of(const_pointer s, size_type pos, size_type n) const -> size_type
 {
-    auto found = string_rfind_of(end(), size()-pos, array, length);
-    return found ? found - data() : npos;
+    return find_last_of(view_type(s, n), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_last_of(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = string_rfind_of(end(), size()-pos, &c, 1);
-    return found ? found - data() : npos;
+    return find_last_of(view_type(&c, 1), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_last_not_of(const self_t& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_rfind_not_of(end(), size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return find_last_not_of(view_type(str), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_last_not_of(const view_type& str, size_type pos) const noexcept -> size_type
 {
-    auto found = string_rfind_not_of(end(), size()-pos, str.data(), str.size());
-    return found ? found - data() : npos;
+    return view_type(*this).find_last_not_of(str, pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_last_not_of(const_pointer array, size_type pos) const -> size_type
+auto secure_basic_string<C, T, A>::find_last_not_of(const_pointer s, size_type pos) const -> size_type
 {
-    const_pointer first = array;
-    size_type length = traits_type::length(array);
-    auto found = string_rfind_not_of(end(), size()-pos, first, length);
-    return found ? found - data() : npos;
+    return find_last_not_of(view_type(s), pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::find_last_not_of(const_pointer array, size_type pos, size_type length) const -> size_type
+auto secure_basic_string<C, T, A>::find_last_not_of(const_pointer s, size_type pos, size_type n) const -> size_type
 {
-    auto found = string_rfind_not_of(end(), size()-pos, array, length);
-    return found ? found - data() : npos;
+    return find_last_not_of(view_type(s, n), pos);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::find_last_not_of(value_type c, size_type pos) const noexcept -> size_type
 {
-    auto found = string_rfind_not_of(end(), size()-pos, &c, 1);
-    return found ? found - data() : npos;
+    return find_last_not_of(view_type(&c, 1), pos);
 }
 
 

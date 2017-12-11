@@ -128,13 +128,13 @@ static std::deque<Path> split_impl(const Path& path)
     auto list = path_splitdrive(path);
     Path &tail = list.back();
     auto it = stem_impl(tail);
-    Path basename(it, tail.cend());
-    Path dir(tail.cbegin(), it);
+    Path basename(it, std::distance(it, tail.cend()));
+    Path dir(tail.cbegin(), std::distance(tail.cbegin(), it));
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
         dir = dir.substr(0, dir.length() - 1);
     }
 
-    return {Path(path.begin(), dir.end()), basename};
+    return {Path(path.begin(), std::distance(path.begin(), dir.end())), basename};
 }
 
 
@@ -207,7 +207,8 @@ template <typename Path>
 static Path base_name_impl(const Path& path)
 {
     auto tail = path_splitdrive(path).back();
-    return Path(stem_impl(tail), tail.cend());
+    auto it = stem_impl(tail);
+    return Path(it, std::distance(it, tail.cend()));
 }
 
 
@@ -216,7 +217,7 @@ static Path dir_name_impl(const Path& path)
 {
     auto tail = path_splitdrive(path).back();
     auto it = stem_impl(tail);
-    Path dir(tail.cbegin(), it);
+    Path dir(tail.cbegin(), std::distance(tail.cbegin(), it));
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
         dir = dir.substr(0, dir.length() - 1);
     }
@@ -235,10 +236,10 @@ struct expanduser_impl
             case 0:
                 return Path(path);
             case 1:
-                return path[0] == '~' ? homefunc() : Path(path);
+                return path[0] == '~' ? Path(homefunc()) : Path(path);
             default: {
                 if (path[0] == '~' && path_separators.find(path[1]) != path_separators.npos) {
-                    return homefunc() + path.substr(1);
+                    return Path(homefunc()) + Path(path.substr(1));
                 }
                 return Path(path);
             }
@@ -401,8 +402,8 @@ static bool copy_file_impl(const Path& src, const Path& dst, bool replace, CopyF
 
 static bool copy_dir_shallow_impl(const path_view_t&src, const path_view_t& dst)
 {
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     auto s = reinterpret_cast<const wchar_t*>(src.data());
     auto d = reinterpret_cast<const wchar_t*>(dst.data());
@@ -412,8 +413,8 @@ static bool copy_dir_shallow_impl(const path_view_t&src, const path_view_t& dst)
 
 static bool copy_dir_shallow_impl(const backup_path_view_t&src, const backup_path_view_t& dst)
 {
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return CreateDirectoryExA(src.data(), dst.data(), 0);
 }
@@ -490,7 +491,7 @@ static bool remove_link_impl(const Path& path)
 
 static bool remove_dir_shallow_impl(const path_view_t& path)
 {
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     auto p = reinterpret_cast<const wchar_t*>(path.data());
     return RemoveDirectoryW(p);
@@ -503,7 +504,7 @@ static bool remove_dir_shallow_impl(const backup_path_view_t& path)
         return remove_dir_shallow_impl(backup_path_to_path(path));
     }
 
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     return RemoveDirectoryA(path.data());
 }
@@ -737,7 +738,7 @@ path_t expandvars(const path_view_t& path)
         return path_t(reinterpret_cast<char16_t*>(str), l);
     };
 
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     return expandvars_impl<path_t, wchar_t>()(path, topath, ExpandEnvironmentStringsW);
 }
@@ -762,8 +763,8 @@ bool move_link(const path_view_t& src, const path_view_t& dst, bool replace)
 
 bool move_file(const path_view_t& src, const path_view_t& dst, bool replace)
 {
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return move_file_impl(src, dst, replace, [](const path_view_t& src, const path_view_t& dst, DWORD f) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
@@ -775,8 +776,8 @@ bool move_file(const path_view_t& src, const path_view_t& dst, bool replace)
 
 bool move_dir(const path_view_t& src, const path_view_t& dst, bool replace)
 {
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return move_dir_impl(src, dst, replace, [](const path_view_t& src, const path_view_t& dst) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
@@ -788,8 +789,8 @@ bool move_dir(const path_view_t& src, const path_view_t& dst, bool replace)
 
 bool mklink(const path_view_t& target, const path_view_t& dst, bool replace)
 {
-    assert(target.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(target));
+    assert(is_null_terminated(dst));
 
     return mklink_impl(target, dst, replace, [](const path_view_t& tar, const path_view_t& dst, DWORD f) {
         auto t = reinterpret_cast<const wchar_t*>(tar.data());
@@ -801,8 +802,8 @@ bool mklink(const path_view_t& target, const path_view_t& dst, bool replace)
 
 bool copy_file(const path_view_t& src, const path_view_t& dst, bool replace)
 {
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return copy_file_impl(src, dst, replace, [](const path_view_t& src, const path_view_t& dst, bool replace) {
         auto s = reinterpret_cast<const wchar_t*>(src.data());
@@ -814,8 +815,8 @@ bool copy_file(const path_view_t& src, const path_view_t& dst, bool replace)
 
 bool copy_dir(const path_view_t& src, const path_view_t& dst, bool recursive, bool replace)
 {
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return copy_dir_impl(src, dst, recursive, replace);
 }
@@ -829,7 +830,7 @@ bool remove_link(const path_view_t& path)
 
 bool remove_file(const path_view_t& path)
 {
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     return DeleteFileW(reinterpret_cast<const wchar_t*>(path.data()));
 }
@@ -843,7 +844,7 @@ bool remove_dir(const path_view_t& path, bool recursive)
 
 bool mkdir(const path_view_t& path, int mode)
 {
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     auto data = reinterpret_cast<const wchar_t*>(path.data());
     if (CreateDirectoryW(data, nullptr)) {
@@ -877,7 +878,7 @@ bool makedirs(const path_view_t& path, int mode)
 
 fd_t fd_open(const path_view_t& path, std::ios_base::openmode mode, mode_t permission, io_access_pattern access)
 {
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     const wchar_t* p = (const wchar_t*) path.data();
     fd_t fd = fd_open_impl(p, mode, permission, access, CreateFileW);
@@ -1084,7 +1085,7 @@ backup_path_t expandvars(const backup_path_view_t& path)
         return backup_path_t(str, l);
     };
 
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     return expandvars_impl<backup_path_t, char>()(path, topath, ExpandEnvironmentStringsA);
 }
@@ -1112,8 +1113,8 @@ bool move_file(const backup_path_view_t& src, const backup_path_view_t& dst, boo
         return move_file(backup_path_to_path(src), backup_path_to_path(dst), replace);
     }
 
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return move_file_impl(src, dst, replace, [](const backup_path_view_t& src, const backup_path_view_t& dst, DWORD f) {
         return MoveFileExA(src.data(), dst.data(), f);
@@ -1127,8 +1128,8 @@ bool move_dir(const backup_path_view_t& src, const backup_path_view_t& dst, bool
         return move_dir(backup_path_to_path(src), backup_path_to_path(dst), replace);
     }
 
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return move_dir_impl(src, dst, replace, [](const backup_path_view_t& src, const backup_path_view_t& dst) {
         return MoveFileA(src.data(), dst.data());
@@ -1142,8 +1143,8 @@ bool mklink(const backup_path_view_t& target, const backup_path_view_t& dst, boo
         return mklink(backup_path_to_path(target), backup_path_to_path(dst), replace);
     }
 
-    assert(target.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(target));
+    assert(is_null_terminated(dst));
 
     return mklink_impl(target, dst, replace, [](const backup_path_view_t& t, const backup_path_view_t& d, DWORD f) {
         return CreateSymbolicLinkA(d.data(), t.data(), f);
@@ -1157,8 +1158,8 @@ bool copy_file(const backup_path_view_t& src, const backup_path_view_t& dst, boo
         return copy_file(backup_path_to_path(src), backup_path_to_path(dst), replace);
     }
 
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return copy_file_impl(src, dst, replace, [](const backup_path_view_t& src, const backup_path_view_t& dst, bool replace) {
         return CopyFileA(src.data(), dst.data(), replace);
@@ -1168,8 +1169,8 @@ bool copy_file(const backup_path_view_t& src, const backup_path_view_t& dst, boo
 
 bool copy_dir(const backup_path_view_t& src, const backup_path_view_t& dst, bool recursive, bool replace)
 {
-    assert(src.is_null_terminated());
-    assert(dst.is_null_terminated());
+    assert(is_null_terminated(src));
+    assert(is_null_terminated(dst));
 
     return copy_dir_impl(src, dst, recursive, replace);
 }
@@ -1187,7 +1188,7 @@ bool remove_file(const backup_path_view_t& path)
         return remove_file(backup_path_to_path(path));
     }
 
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     return DeleteFileA(path.data());
 }
@@ -1205,7 +1206,7 @@ bool mkdir(const backup_path_view_t& path, int mode)
         return mkdir(backup_path_to_path(path), mode);
     }
 
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     if (CreateDirectoryA(path.data(), nullptr)) {
         int mask = 0;
@@ -1241,7 +1242,7 @@ fd_t fd_open(const backup_path_view_t& path, std::ios_base::openmode mode, mode_
         return fd_open(backup_path_to_path(path), mode, permission, access);
     }
 
-    assert(path.is_null_terminated());
+    assert(is_null_terminated(path));
 
     fd_t fd = fd_open_impl(path.data(), mode, permission, access, CreateFileA);
     if (fd == INVALID_HANDLE_VALUE) {
