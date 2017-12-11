@@ -33,33 +33,34 @@
     - Implement more reference (intrusive) containers.
         - vector -- DONE
         - deque -- DONE
-
-        - Rest of the STL?
+        - forward_list
+        - list
+        - set
+        - multiset
+        - map
+        - multimap
+        - unordered_set
+        - unordered_multiset
+        - unordered_map
+        - unordered_multimap
 
     - Implement fixed containers
         - Add to CMakeLists
-        - Vector -- DONE
-        - Deque -- DONE
-            - 
+        - vector -- DONE
+        - deque -- DONE
+        - forward_list -- DONE
+        - list -- DONE
+        - set
+        - multiset
+        - map
+        - multimap
+        - unordered_set
+        - unordered_multiset
+        - unordered_map
+        - unordered_multimap
 
-
-        - ForwardList
-        - List
-        - Map
-        - MultiMap
-        - UnorderedMap
-        - UnorderedMultiMap
-        - Set
-        - MultiSet
-        - UnorderedSet
-        - UnorderedMultiSet
-
-    - Implement a sorted vector
-        - unittests
     - Ordered set unittests
     - Add tests for robin-hood hash into the project
-    - Add tests from btree-cpp into the project
-        - Need to add support for C++11 stuff...
 
     - Add custom memory allocators
         - https://github.com/mtrebi/memory-allocators

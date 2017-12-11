@@ -25,7 +25,7 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Fixed-sized deque that preallocates memory on the stack.
  *
  *  By default, the deque preallocates ~4096 bytes, which can hold
- *  rouhgly `4096 / (sizeof(T) + 8)` elements.
+ *  roughly `4096 / (sizeof(T) + sizeof(uintrptr_t))` elements.
  */
 template <
     typename T,

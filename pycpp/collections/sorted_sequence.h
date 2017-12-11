@@ -487,11 +487,10 @@ auto sorted_sequence<T, C, A, _>::insert(const_iterator position, U&& k) -> iter
     // insert item
     if (it == end() || key_comp()(key, *it)) {
         // item not found, inserting value.
-        it = container_.insert(it, std::move(key));
-        return std::make_pair(it, true);
+        return container_.insert(it, std::move(key));
     }
     // item found, returning equivalent value.
-    return std::make_pair(it, false);
+    return it;
 }
 
 

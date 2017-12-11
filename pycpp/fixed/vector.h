@@ -24,7 +24,7 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Fixed-sized vector that preallocates memory on the stack.
  *
  *  By default, the vector preallocates ~4096 bytes, which can hold
- *  rouhgly `4096 / sizeof(T)` elements.
+ *  roughly `4096 / sizeof(T)` elements.
  */
 template <
     typename T,

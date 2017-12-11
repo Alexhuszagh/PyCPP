@@ -16,13 +16,13 @@ PYCPP_USING_NAMESPACE
 
 TEST(fixed_deque, ctor)
 {
-    using deque = fixed_deque<int>;
+    using deque_type = fixed_deque<int>;
 
     // check type properties
-    EXPECT_GE(sizeof(deque), deque::stack_size());
+    EXPECT_GE(sizeof(deque_type), deque_type::stack_size());
 
     // check basic deque properties
-    deque d1, d2;
+    deque_type d1, d2;
     EXPECT_EQ(d1, d2);
 
     d1.emplace_back(1);

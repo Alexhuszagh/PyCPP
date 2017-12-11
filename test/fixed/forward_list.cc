@@ -16,13 +16,13 @@ PYCPP_USING_NAMESPACE
 
 TEST(fixed_forward_list, ctor)
 {
-    using forward_list = fixed_forward_list<int>;
+    using forward_list_type = fixed_forward_list<int>;
 
     // check type properties
-    EXPECT_GE(sizeof(forward_list), forward_list::stack_size());
+    EXPECT_GE(sizeof(forward_list_type), forward_list_type::stack_size());
 
     // check basic forward_list properties
-    forward_list d1, d2;
+    forward_list_type d1, d2;
     EXPECT_EQ(d1, d2);
 
     d1.emplace_front(1);

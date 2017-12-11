@@ -16,13 +16,13 @@ PYCPP_USING_NAMESPACE
 
 TEST(fixed_vector, ctor)
 {
-    using vector = fixed_vector<int>;
+    using vector_type = fixed_vector<int>;
 
     // check type properties
-    EXPECT_GE(sizeof(vector), vector::stack_size());
+    EXPECT_GE(sizeof(vector_type), vector_type::stack_size());
 
     // check basic vector properties
-    vector v1, v2;
+    vector_type v1, v2;
     EXPECT_EQ(v1, v2);
 
     v1.emplace_back(1);
