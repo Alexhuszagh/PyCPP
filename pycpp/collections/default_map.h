@@ -7,11 +7,10 @@
 
  #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/map.h>
+#include <pycpp/stl/unordered_map.h>
 #include <cassert>
-#include <functional>
-#include <map>
-#include <unordered_map>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -19,7 +18,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 template <typename T>
-using default_map_callback = std::function<T()>;
+using default_map_callback = function<T()>;
 
 // DECLARATION
 // -----------
@@ -36,9 +35,9 @@ T default_constructor();
 template <
     typename Key,
     typename T,
-    typename Compare = std::less<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, T>>,
-    template <typename, typename, typename, typename> class Map = std::map
+    typename Compare = less<Key>,
+    typename Alloc = allocator<pair<const Key, T>>,
+    template <typename, typename, typename, typename> class Map = map
 >
 struct default_map
 {
@@ -67,7 +66,7 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     default_map(callback_type callback = default_constructor<mapped_type>);
-    default_map(std::initializer_list<value_type>, callback_type callback = default_constructor<mapped_type>);
+    default_map(initializer_list<value_type>, callback_type callback = default_constructor<mapped_type>);
     template <typename Iter> default_map(Iter first, Iter last, callback_type callback = default_constructor<mapped_type>);
     default_map(const self_t&);
     self_t& operator=(const self_t&);
@@ -107,18 +106,18 @@ public:
     const_iterator lower_bound(const key_type& k) const;
     iterator upper_bound(const key_type& k);
     const_iterator upper_bound(const key_type& k) const;
-    std::pair<iterator, iterator> equal_range(const key_type& k);
-    std::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
+    pair<iterator, iterator> equal_range(const key_type& k);
+    pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
 
     // MODIFIERS
-    template <typename... Ts> std::pair<iterator, bool> emplace(Ts&&... ts);
+    template <typename... Ts> pair<iterator, bool> emplace(Ts&&... ts);
     template <typename... Ts> iterator emplace_hint(const_iterator position, Ts&&... ts);
-    std::pair<iterator, bool> insert(const value_type& val);
-    template <typename U> std::pair<iterator, bool> insert(U&& val);
+    pair<iterator, bool> insert(const value_type& val);
+    template <typename U> pair<iterator, bool> insert(U&& val);
     iterator insert(const_iterator position, const value_type& val);
     template <typename U> iterator insert(const_iterator position, U&& val);
     template <typename Iter> void insert(Iter first, Iter last);
-    void insert(std::initializer_list<value_type> list);
+    void insert(initializer_list<value_type> list);
     iterator erase(const_iterator position);
     size_type erase(const key_type& k);
     iterator erase(const_iterator first, const_iterator last);
@@ -150,10 +149,10 @@ private:
 template <
     typename Key,
     typename T,
-    typename Hash = std::hash<Key>,
-    typename Pred = std::equal_to<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, T>>,
-    template <typename, typename, typename, typename, typename> class Map = std::unordered_map
+    typename Hash = hash<Key>,
+    typename Pred = equal_to<Key>,
+    typename Alloc = allocator<pair<const Key, T>>,
+    template <typename, typename, typename, typename, typename> class Map = unordered_map
 >
 struct default_unordered_map
 {
@@ -183,7 +182,7 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     default_unordered_map(callback_type callback = default_constructor<mapped_type>);
-    default_unordered_map(std::initializer_list<value_type>, callback_type callback = default_constructor<mapped_type>);
+    default_unordered_map(initializer_list<value_type>, callback_type callback = default_constructor<mapped_type>);
     template <typename Iter> default_unordered_map(Iter first, Iter last, callback_type callback = default_constructor<mapped_type>);
     default_unordered_map(const self_t&);
     self_t& operator=(const self_t&);
@@ -219,18 +218,18 @@ public:
     iterator find(const key_type& k);
     const_iterator find(const key_type& k) const;
     size_type count(const key_type& k) const;
-    std::pair<iterator, iterator> equal_range(const key_type& k);
-    std::pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
+    pair<iterator, iterator> equal_range(const key_type& k);
+    pair<const_iterator, const_iterator> equal_range(const key_type& k) const;
 
     // MODIFIERS
-    template <typename... Ts> std::pair<iterator, bool> emplace(Ts&&... ts);
+    template <typename... Ts> pair<iterator, bool> emplace(Ts&&... ts);
     template <typename... Ts> iterator emplace_hint(const_iterator position, Ts&&... ts);
-    std::pair<iterator, bool> insert(const value_type& val);
-    template <typename U> std::pair<iterator, bool> insert(U&& val);
+    pair<iterator, bool> insert(const value_type& val);
+    template <typename U> pair<iterator, bool> insert(U&& val);
     iterator insert(const_iterator position, const value_type& val);
     template <typename U> iterator insert(const_iterator position, U&& val);
     template <typename Iter> void insert(Iter first, Iter last);
-    void insert(std::initializer_list<value_type> list);
+    void insert(initializer_list<value_type> list);
     iterator erase(const_iterator position);
     size_type erase(const key_type& k);
     iterator erase(const_iterator first, const_iterator last);
@@ -290,7 +289,7 @@ default_map<K, T, C, A, M>::default_map(callback_type callback):
 
 
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
-default_map<K, T, C, A, M>::default_map(std::initializer_list<value_type> list, callback_type callback):
+default_map<K, T, C, A, M>::default_map(initializer_list<value_type> list, callback_type callback):
     map_(list.begin(), list.end()),
     callback_(callback)
 {
@@ -530,14 +529,14 @@ auto default_map<K, T, C, A, M>::upper_bound(const key_type& k) const -> const_i
 
 
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
-auto default_map<K, T, C, A, M>::equal_range(const key_type& k) -> std::pair<iterator, iterator>
+auto default_map<K, T, C, A, M>::equal_range(const key_type& k) -> pair<iterator, iterator>
 {
     return map_.equal_range(k);
 }
 
 
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
-auto default_map<K, T, C, A, M>::equal_range(const key_type& k) const -> std::pair<const_iterator, const_iterator>
+auto default_map<K, T, C, A, M>::equal_range(const key_type& k) const -> pair<const_iterator, const_iterator>
 {
     return map_.equal_range(k);
 }
@@ -545,7 +544,7 @@ auto default_map<K, T, C, A, M>::equal_range(const key_type& k) const -> std::pa
 
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
 template <typename... Ts>
-auto default_map<K, T, C, A, M>::emplace(Ts&&... ts) -> std::pair<iterator, bool>
+auto default_map<K, T, C, A, M>::emplace(Ts&&... ts) -> pair<iterator, bool>
 {
     return map_.emplace(std::forward<Ts>(ts)...);
 }
@@ -560,7 +559,7 @@ auto default_map<K, T, C, A, M>::emplace_hint(const_iterator position, Ts&&... t
 
 
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
-auto default_map<K, T, C, A, M>::insert(const value_type& val) -> std::pair<iterator, bool>
+auto default_map<K, T, C, A, M>::insert(const value_type& val) -> pair<iterator, bool>
 {
     return map_.insert(val);
 }
@@ -568,7 +567,7 @@ auto default_map<K, T, C, A, M>::insert(const value_type& val) -> std::pair<iter
 
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
 template <typename U>
-auto default_map<K, T, C, A, M>::insert(U&& val) -> std::pair<iterator, bool>
+auto default_map<K, T, C, A, M>::insert(U&& val) -> pair<iterator, bool>
 {
     return map_.insert(std::forward<U>(val));
 }
@@ -598,7 +597,7 @@ void default_map<K, T, C, A, M>::insert(Iter first, Iter last)
 
 
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
-void default_map<K, T, C, A, M>::insert(std::initializer_list<value_type> list)
+void default_map<K, T, C, A, M>::insert(initializer_list<value_type> list)
 {
     map_.insert(list);
 }
@@ -692,7 +691,7 @@ default_unordered_map<K, T, H, P, A, M>::default_unordered_map(callback_type cal
 
 
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-default_unordered_map<K, T, H, P, A, M>::default_unordered_map(std::initializer_list<value_type> list, callback_type callback):
+default_unordered_map<K, T, H, P, A, M>::default_unordered_map(initializer_list<value_type> list, callback_type callback):
     map_(list.begin(), list.end()),
     callback_(callback)
 {
@@ -904,14 +903,14 @@ auto default_unordered_map<K, T, H, P, A, M>::count(const key_type& k) const -> 
 
 
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto default_unordered_map<K, T, H, P, A, M>::equal_range(const key_type& k) -> std::pair<iterator, iterator>
+auto default_unordered_map<K, T, H, P, A, M>::equal_range(const key_type& k) -> pair<iterator, iterator>
 {
     return map_.equal_range(k);
 }
 
 
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto default_unordered_map<K, T, H, P, A, M>::equal_range(const key_type& k) const -> std::pair<const_iterator, const_iterator>
+auto default_unordered_map<K, T, H, P, A, M>::equal_range(const key_type& k) const -> pair<const_iterator, const_iterator>
 {
     return map_.equal_range(k);
 }
@@ -919,7 +918,7 @@ auto default_unordered_map<K, T, H, P, A, M>::equal_range(const key_type& k) con
 
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 template <typename... Ts>
-auto default_unordered_map<K, T, H, P, A, M>::emplace(Ts&&... ts) -> std::pair<iterator, bool>
+auto default_unordered_map<K, T, H, P, A, M>::emplace(Ts&&... ts) -> pair<iterator, bool>
 {
     return map_.emplace(std::forward<Ts>(ts)...);
 }
@@ -934,7 +933,7 @@ auto default_unordered_map<K, T, H, P, A, M>::emplace_hint(const_iterator positi
 
 
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto default_unordered_map<K, T, H, P, A, M>::insert(const value_type& val) -> std::pair<iterator, bool>
+auto default_unordered_map<K, T, H, P, A, M>::insert(const value_type& val) -> pair<iterator, bool>
 {
     return map_.insert(val);
 }
@@ -942,7 +941,7 @@ auto default_unordered_map<K, T, H, P, A, M>::insert(const value_type& val) -> s
 
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 template <typename U>
-auto default_unordered_map<K, T, H, P, A, M>::insert(U&& val) -> std::pair<iterator, bool>
+auto default_unordered_map<K, T, H, P, A, M>::insert(U&& val) -> pair<iterator, bool>
 {
     return map_.insert(std::forward<U>(val));
 }
@@ -972,7 +971,7 @@ void default_unordered_map<K, T, H, P, A, M>::insert(Iter first, Iter last)
 
 
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void default_unordered_map<K, T, H, P, A, M>::insert(std::initializer_list<value_type> list)
+void default_unordered_map<K, T, H, P, A, M>::insert(initializer_list<value_type> list)
 {
     map_.insert(list);
 }

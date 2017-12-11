@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/iterator.h>
 #include <array>
 
 PYCPP_BEGIN_NAMESPACE

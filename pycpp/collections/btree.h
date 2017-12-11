@@ -96,25 +96,23 @@
 #pragma once
 
 #include <pycpp/preprocessor/architecture.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/iostream.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/limits.h>
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/new.h>
+#include <pycpp/stl/ostream.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <algorithm>
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
-#include <functional>
-#include <initializer_list>
-#include <iostream>
-#include <iterator>
-#include <limits>
-#include <new>
-#include <ostream>
-#include <string>
-#include <type_traits>
-#include <utility>
 #include <sys/types.h>
-
-// TODO: need to add emplace, emplace_hint
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -124,7 +122,7 @@ namespace btree_detail
 // ------
 
 // We need a cross-platform ssize_t, which should be the same
-// size as size_t. Don't use `std::ptrdiff_t`, since it
+// size as size_t. Don't use `ptrdiff_t`, since it
 // may be too large on segmented memory models.
 #if MEMORY_ARCHITECTURE == 16
     using btree_ssize_t = int16_t;
@@ -177,7 +175,7 @@ struct btree_key_compare_to_tag
 // A helper class that indicates if the Compare parameter is derived from
 // btree_key_compare_to_tag.
 template <typename Compare>
-struct btree_is_key_compare_to: public std::is_convertible<Compare, btree_key_compare_to_tag>
+struct btree_is_key_compare_to: public is_convertible<Compare, btree_key_compare_to_tag>
 {};
 
 // A helper class to convert a boolean comparison into a three-way
@@ -205,15 +203,15 @@ struct btree_key_compare_to_adapter: Compare
 
 
 template <>
-struct btree_key_compare_to_adapter<std::less<std::string>>: public btree_key_compare_to_tag
+struct btree_key_compare_to_adapter<less<std::string>>: public btree_key_compare_to_tag
 {
     btree_key_compare_to_adapter()
     {}
 
-    btree_key_compare_to_adapter(const std::less<std::string>&)
+    btree_key_compare_to_adapter(const less<std::string>&)
     {}
 
-    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<std::less<std::string>>&)
+    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<less<std::string>>&)
     {}
 
     int operator()(const std::string& a, const std::string& b) const
@@ -224,15 +222,15 @@ struct btree_key_compare_to_adapter<std::less<std::string>>: public btree_key_co
 
 
 template <>
-struct btree_key_compare_to_adapter<std::greater<std::string>>: public btree_key_compare_to_tag
+struct btree_key_compare_to_adapter<greater<std::string>>: public btree_key_compare_to_tag
 {
     btree_key_compare_to_adapter()
     {}
 
-    btree_key_compare_to_adapter(const std::greater<std::string>&)
+    btree_key_compare_to_adapter(const greater<std::string>&)
     {}
 
-    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<std::greater<std::string>>&)
+    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<greater<std::string>>&)
     {}
 
     int operator()(const std::string& a, const std::string& b) const
@@ -321,7 +319,7 @@ struct btree_common_params
     // it as the key_compare type. Otherwise, use
     // btree_key_compare_to_adapter<> which will fall-back to
     // Compare if we don't have an appropriate specialization.
-    using key_compare = typename std::conditional<
+    using key_compare = typename conditional<
         btree_is_key_compare_to<Compare>::value,
         Compare,
         btree_key_compare_to_adapter<Compare>
@@ -344,7 +342,7 @@ struct btree_common_params
 
     // This is an integral type large enough to hold as many
     // ValueSize-values as will fit a node of TargetNodeSize bytes.
-    using node_count_type = typename std::conditional<
+    using node_count_type = typename conditional<
         (node_value_soace / ValueSize) >= 256,
         uint16_t,
         uint8_t
@@ -364,8 +362,8 @@ struct btree_map_params: public btree_common_params<Key, Compare, Alloc, TargetN
 {
     using data_type = Data;
     using mapped_type = Data;
-    using value_type = std::pair<const Key, data_type>;
-    using mutable_value_type = std::pair<Key, data_type>;
+    using value_type = pair<const Key, data_type>;
+    using mutable_value_type = pair<Key, data_type>;
     using pointer = value_type*;
     using const_pointer = const value_type*;
     using reference = value_type&;
@@ -398,8 +396,8 @@ struct btree_map_params: public btree_common_params<Key, Compare, Alloc, TargetN
 template <typename Key, typename Compare, typename Alloc, int TargetNodeSize>
 struct btree_set_params: public btree_common_params<Key, Compare, Alloc, TargetNodeSize,sizeof(Key)>
 {
-    using data_type = std::false_type;
-    using mapped_type = std::false_type;
+    using data_type = false_type;
+    using mapped_type = false_type;
     using value_type = Key;
     using mutable_value_type = value_type;
     using pointer = value_type*;
@@ -545,7 +543,7 @@ public:
     // If we have a valid key-compare-to type, use
     // linear_search_compare_to, otherwise use
     // linear_search_plain_compare.
-    using linear_search_type = typename std::conditional<
+    using linear_search_type = typename conditional<
         Params::is_key_compare_to::value,
         linear_search_compare_to_type,
         linear_search_plain_compare_type
@@ -553,7 +551,7 @@ public:
     // If we have a valid key-compare-to type, use
     // binary_search_compare_to, otherwise use
     // binary_search_plain_compare.
-    using binary_search_type = typename std::conditional<
+    using binary_search_type = typename conditional<
         Params::is_key_compare_to::value,
         binary_search_compare_to_type,
         binary_search_plain_compare_type
@@ -562,8 +560,8 @@ public:
     // search which is faster than binary search for such types.
     // Might be wise to also configure linear search based on
     // node-size.
-    using search_type = typename std::conditional<
-        std::is_integral<key_type>::value || std::is_floating_point<key_type>::value,
+    using search_type = typename conditional<
+        is_integral<key_type>::value || is_floating_point<key_type>::value,
         linear_search_type,
         binary_search_type
     >::type;
@@ -921,7 +919,7 @@ struct btree_iterator
     using params_type = typename Node::params_type;
 
     using node_type = Node;
-    using normal_node = typename std::remove_const<Node>::type;
+    using normal_node = typename remove_const<Node>::type;
     using const_node = const Node;
     using value_type = typename params_type::value_type;
     using normal_pointer = typename params_type::pointer;
@@ -931,7 +929,7 @@ struct btree_iterator
 
     using pointer = Pointer;
     using reference = Reference;
-    using iterator_category = std::bidirectional_iterator_tag;
+    using iterator_category = bidirectional_iterator_tag;
 
     using iterator = btree_iterator<normal_node, normal_reference, normal_pointer>;
     using const_iterator = btree_iterator<const_node, const_reference, const_pointer>;
@@ -1038,7 +1036,7 @@ struct btree_iterator
 struct btree_internal_locate_plain_compare
 {
     template <typename K, typename T, typename Iter>
-    static std::pair<Iter, int> dispatch(const K& k, const T& t, Iter iter)
+    static pair<Iter, int> dispatch(const K& k, const T& t, Iter iter)
     {
         return t.internal_locate_plain_compare(k, iter);
     }
@@ -1049,7 +1047,7 @@ struct btree_internal_locate_plain_compare
 struct btree_internal_locate_compare_to
 {
     template <typename K, typename T, typename Iter>
-    static std::pair<Iter, int> dispatch(const K& k, const T& t, Iter iter)
+    static pair<Iter, int> dispatch(const K& k, const T& t, Iter iter)
     {
         return t.internal_locate_compare_to(k, iter);
     }
@@ -1070,7 +1068,7 @@ class btree : public Params::key_compare
     friend class btree_internal_locate_plain_compare;
     friend class btree_internal_locate_compare_to;
 
-    using internal_locate_type = typename std::conditional<
+    using internal_locate_type = typename conditional<
         is_key_compare_to::value,
         btree_internal_locate_compare_to,
         btree_internal_locate_plain_compare
@@ -1136,8 +1134,8 @@ public:
     using difference_type = typename Params::difference_type;
     using iterator = btree_iterator<node_type, reference, pointer>;
     using const_iterator = typename iterator::const_iterator;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-    using reverse_iterator = std::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
 
     using allocator_type = typename Params::allocator_type;
     using internal_allocator_type = typename allocator_traits<allocator_type>::template rebind_alloc<char>;
@@ -1226,12 +1224,12 @@ public:
     // Finds the range of values which compare equal to key. The first
     // member of the returned pair is equal to lower_bound(key). The
     // second member pair of the pair is equal to upper_bound(key).
-    std::pair<iterator, iterator> equal_range(const key_type& key)
+    pair<iterator, iterator> equal_range(const key_type& key)
     {
         return std::make_pair(lower_bound(key), upper_bound(key));
     }
 
-    std::pair<const_iterator, const_iterator> equal_range(const key_type& key) const
+    pair<const_iterator, const_iterator> equal_range(const key_type& key) const
     {
         return std::make_pair(lower_bound(key), upper_bound(key));
     }
@@ -1241,7 +1239,7 @@ public:
     // iterator if the boolean is false is the position
     // of the value in the map, otherwise, it is the position
     // to insert.
-    std::pair<iterator, bool> find_insert_unique(const key_type& key);
+    pair<iterator, bool> find_insert_unique(const key_type& key);
 
     // Inserts a value into the btree only if it does not already
     // exist. The boolean return value indicates whether insertion
@@ -1250,22 +1248,22 @@ public:
     // Value is not dereferenced if the key already exists in
     // the btree. See btree_map::operator[].
     template <typename ValuePointer>
-    std::pair<iterator, bool> insert_unique(const key_type& key, ValuePointer value);
+    pair<iterator, bool> insert_unique(const key_type& key, ValuePointer value);
 
     // Inserts a value into the btree only if it does not already
     // exist. The boolean return value indicates whether insertion
     // succeeded or failed.
-    std::pair<iterator,bool> insert_unique(const value_type& v)
+    pair<iterator,bool> insert_unique(const value_type& v)
     {
         return insert_unique(params_type::key(v), &v);
     }
 
     // Construct value in-place as if by insert_unique
     template <typename ... Ts>
-    std::pair<iterator, bool> emplace_unique(Ts&&... ts);
+    pair<iterator, bool> emplace_unique(Ts&&... ts);
 
     // Find insertion position and insert condition with hint.
-    std::pair<iterator, bool> find_insert_unique_hint(iterator position, const key_type& key);
+    pair<iterator, bool> find_insert_unique_hint(iterator position, const key_type& key);
 
     // Insert with hint. Check to see if the value should be placed
     // immediately before position in the tree. If it does, then the
@@ -1435,7 +1433,7 @@ public:
 
     size_type max_size() const
     {
-        return std::numeric_limits<size_type>::max();
+        return numeric_limits<size_type>::max();
     }
 
     bool empty() const
@@ -1679,13 +1677,13 @@ private:
     // caller to avoid a subsequent comparison to determine if an exact
     // match was made, speeding up string keys.
     template <typename IterType>
-    std::pair<IterType, int> internal_locate(const key_type& key, IterType iter) const;
+    pair<IterType, int> internal_locate(const key_type& key, IterType iter) const;
 
     template <typename IterType>
-    std::pair<IterType, int> internal_locate_plain_compare(const key_type& key, IterType iter) const;
+    pair<IterType, int> internal_locate_plain_compare(const key_type& key, IterType iter) const;
 
     template <typename IterType>
-    std::pair<IterType, int> internal_locate_compare_to(const key_type& key, IterType iter) const;
+    pair<IterType, int> internal_locate_compare_to(const key_type& key, IterType iter) const;
 
     // Internal routine which implements lower_bound().
     template <typename IterType>
@@ -1733,11 +1731,11 @@ private:
     // have a key-compare-to functor or if R is bool and small_
     // otherwise.
     template <typename R>
-    static typename std::conditional<
-        std::conditional<
+    static typename conditional<
+        conditional<
             is_key_compare_to::value,
-            std::is_same<R, int>,
-            std::is_same<R, bool>
+            is_same<R, int>,
+            is_same<R, bool>
         >::type::value,
         big_,
         small_
@@ -1888,12 +1886,12 @@ public:
         return tree_.upper_bound(key);
     }
 
-    std::pair<iterator,iterator> equal_range(const key_type& key)
+    pair<iterator,iterator> equal_range(const key_type& key)
     {
         return tree_.equal_range(key);
     }
 
-    std::pair<const_iterator,const_iterator> equal_range(const key_type& key) const
+    pair<const_iterator,const_iterator> equal_range(const key_type& key) const
     {
         return tree_.equal_range(key);
     }
@@ -2061,7 +2059,7 @@ public:
     }
 
     // Initializer list constructor
-    btree_unique_container(std::initializer_list<value_type> list,
+    btree_unique_container(initializer_list<value_type> list,
                            const key_compare& comp = key_compare(),
                            const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -2069,7 +2067,7 @@ public:
         insert(list.begin(), list.end());
     }
 
-    btree_unique_container(std::initializer_list<value_type> list,
+    btree_unique_container(initializer_list<value_type> list,
                            const allocator_type& alloc = allocator_type()):
         super_type(alloc)
     {
@@ -2094,7 +2092,7 @@ public:
 
     // Emplace routines
     template <typename... Ts>
-    std::pair<iterator,bool> emplace(Ts&&... ts)
+    pair<iterator,bool> emplace(Ts&&... ts)
     {
         return this->tree_.emplace_unique(std::forward<Ts>(ts)...);
     }
@@ -2106,7 +2104,7 @@ public:
     }
 
     // Insertion routines.
-    std::pair<iterator,bool> insert(const value_type &x)
+    pair<iterator,bool> insert(const value_type &x)
     {
         return this->tree_.insert_unique(x);
     }
@@ -2221,13 +2219,13 @@ public:
     {}
 
     // Initalizer list constructor
-    btree_map_container(std::initializer_list<value_type> list,
+    btree_map_container(initializer_list<value_type> list,
                         const key_compare& comp = key_compare(),
                         const allocator_type& alloc = allocator_type()):
         super_type(list.begin(), list.end(), comp, alloc)
     {}
 
-    btree_map_container(std::initializer_list<value_type> list,
+    btree_map_container(initializer_list<value_type> list,
                         const allocator_type& alloc = allocator_type()):
         super_type(list.begin(), list.end(), alloc)
     {}
@@ -2303,7 +2301,7 @@ public:
     }
 
     // Initializer list constructor
-    btree_multi_container(std::initializer_list<value_type> list,
+    btree_multi_container(initializer_list<value_type> list,
                           const key_compare& comp = key_compare(),
                           const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -2311,7 +2309,7 @@ public:
         insert(list.begin(), list.end());
     }
 
-    btree_multi_container(std::initializer_list<value_type> list,
+    btree_multi_container(initializer_list<value_type> list,
                           const allocator_type& alloc = allocator_type()):
         super_type(alloc)
     {
@@ -2770,14 +2768,14 @@ btree<P>::btree(self_type&& x, const allocator_type& alloc):
 
 
 template <typename P>
-std::pair<typename btree<P>::iterator, bool>
+pair<typename btree<P>::iterator, bool>
 btree<P>::find_insert_unique(const key_type& key)
 {
     if (empty()) {
         *mutable_root() = new_leaf_root_node(1);
     }
 
-    std::pair<iterator, int> res = internal_locate(key, iterator(root(), 0));
+    pair<iterator, int> res = internal_locate(key, iterator(root(), 0));
     iterator &iter = res.first;
     if (res.second == exact_match) {
         // The key already exists in the tree, do nothing.
@@ -2795,10 +2793,10 @@ btree<P>::find_insert_unique(const key_type& key)
 
 
 template <typename P> template <typename ValuePointer>
-std::pair<typename btree<P>::iterator, bool>
+pair<typename btree<P>::iterator, bool>
 btree<P>::insert_unique(const key_type& key, ValuePointer value)
 {
-    std::pair<iterator, bool> p = find_insert_unique(key);
+    pair<iterator, bool> p = find_insert_unique(key);
     if (p.second) {
         return std::make_pair(internal_insert(p.first, *value), p.second);
     }
@@ -2808,13 +2806,13 @@ btree<P>::insert_unique(const key_type& key, ValuePointer value)
 
 template <typename P>
 template <typename ... Ts>
-std::pair<typename btree<P>::iterator, bool>
+pair<typename btree<P>::iterator, bool>
 btree<P>::emplace_unique(Ts&&... ts)
 {
     mutable_value_type v(std::forward<Ts>(ts)...);
     const auto& key = params_type::key(v);
 
-    std::pair<iterator, bool> p = find_insert_unique(key);
+    pair<iterator, bool> p = find_insert_unique(key);
     if (p.second) {
         return std::make_pair(internal_insert(p.first, std::move(v)), p.second);
     }
@@ -2823,7 +2821,7 @@ btree<P>::emplace_unique(Ts&&... ts)
 
 
 template <typename P>
-inline std::pair<typename btree<P>::iterator, bool>
+inline pair<typename btree<P>::iterator, bool>
 btree<P>::find_insert_unique_hint(iterator position, const key_type& key)
 {
     if (position == end() || compare_keys(key, position.key())) {
@@ -3404,14 +3402,14 @@ btree<P>::internal_insert(iterator iter, Ts&&... ts)
 
 
 template <typename P> template <typename IterType>
-inline std::pair<IterType, int> btree<P>::internal_locate(const key_type& key, IterType iter) const
+inline pair<IterType, int> btree<P>::internal_locate(const key_type& key, IterType iter) const
 {
     return internal_locate_type::dispatch(key, *this, iter);
 }
 
 
 template <typename P> template <typename IterType>
-inline std::pair<IterType, int> btree<P>::internal_locate_plain_compare(const key_type& key, IterType iter) const
+inline pair<IterType, int> btree<P>::internal_locate_plain_compare(const key_type& key, IterType iter) const
 {
     for (;;) {
         iter.position = iter.node->lower_bound(key, key_comp());
@@ -3425,7 +3423,7 @@ inline std::pair<IterType, int> btree<P>::internal_locate_plain_compare(const ke
 
 
 template <typename P> template <typename IterType>
-inline std::pair<IterType, int> btree<P>::internal_locate_compare_to(const key_type& key, IterType iter) const
+inline pair<IterType, int> btree<P>::internal_locate_compare_to(const key_type& key, IterType iter) const
 {
     for (;;) {
         int res = iter.node->lower_bound(key, key_comp());
@@ -3480,7 +3478,7 @@ template <typename P> template <typename IterType>
 IterType btree<P>::internal_find_unique(const key_type& key, IterType iter) const
 {
     if (iter.node) {
-        std::pair<IterType, int> res = internal_locate(key, iter);
+        pair<IterType, int> res = internal_locate(key, iter);
         if (res.second == exact_match) {
             return res.first;
         }
@@ -3530,8 +3528,7 @@ void btree<P>::internal_clear(node_type* node)
 
 
 template <typename P>
-void btree<P>::internal_dump(
-    std::ostream &os, const node_type* node, int level) const
+void btree<P>::internal_dump(std::ostream &os, const node_type* node, int level) const
 {
     for (int i = 0; i < node->count(); ++i) {
         if (!node->leaf()) {

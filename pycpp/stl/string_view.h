@@ -10,11 +10,11 @@
 
 #include <pycpp/preprocessor/compiler.h>
 #include <pycpp/stl/functional.h>
+#include <pycpp/stl/string.h>
 
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <string_view>
 #else                               // !HAVE_CPP17
-#   include <pycpp/stl/string.h>
 #   include <algorithm>
 #   include <cassert>
 #   include <iterator>

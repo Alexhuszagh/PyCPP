@@ -2,10 +2,10 @@
 
 **Short-Term**
 
+    - Ordered map and ordered set need new constructors and move operators
+        - Need to revert `std::allocator` to `allocator` after.
+        
     - Change the default hash...
-
-    -- Need to modify all my allocators to learn from polymorphic
-        - Stack is the obvious one.
 
     - Look at use woever rope.
 

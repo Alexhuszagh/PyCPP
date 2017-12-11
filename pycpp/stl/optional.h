@@ -15,15 +15,12 @@
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <optional>
 #else                               // !HAVE_CPP17
+#   include <pycpp/stl/initializer_list.h>
+#   include <pycpp/stl/stdexcept.h>
+#   include <pycpp/stl/string.h>
+#   include <pycpp/stl/type_traits.h>
 #   include <pycpp/stl/utility.h>
-#   include <utility>
-#   include <type_traits>
-#   include <initializer_list>
 #   include <cassert>
-#   include <functional>
-#   include <string>
-#   include <stdexcept>
-#   include <type_traits>
 #endif                              // HAVE_CPP17
 
 PYCPP_BEGIN_NAMESPACE
@@ -141,16 +138,6 @@ auto make_optional(Ts&&... ts) -> decltype(std::make_optional<T>(std::forward<Ts
 // ALIAS
 // -----
 
-template <typename T>
-using is_trivially_destructible = std::is_trivially_destructible<T>;
-
-template <typename T>
-struct is_nothrow_move_constructible
-{
-    constexpr static bool value = std::is_nothrow_constructible<T, T&&>::value;
-};
-
-
 template <typename T, typename U>
 struct is_assignable
 {
@@ -197,22 +184,22 @@ class optional<T&>;
 // Forwarding for constexpr not working.
 
 template <typename T>
-inline constexpr T&& constexpr_forward(typename std::remove_reference<T>::type& t) noexcept
+inline constexpr T&& constexpr_forward(typename remove_reference<T>::type& t) noexcept
 {
     return static_cast<T&&>(t);
 }
 
 template <typename T>
-inline constexpr T&& constexpr_forward(typename std::remove_reference<T>::type&& t) noexcept
+inline constexpr T&& constexpr_forward(typename remove_reference<T>::type&& t) noexcept
 {
-    static_assert(!std::is_lvalue_reference<T>::value, "!!");
+    static_assert(!is_lvalue_reference<T>::value, "!!");
     return static_cast<T&&>(t);
 }
 
 template <typename T>
-inline constexpr typename std::remove_reference<T>::type&& constexpr_move(T&& t) noexcept
+inline constexpr typename remove_reference<T>::type&& constexpr_move(T&& t) noexcept
 {
-    return static_cast<typename std::remove_reference<T>::type&&>(t);
+    return static_cast<typename remove_reference<T>::type&&>(t);
 }
 
 
@@ -350,8 +337,8 @@ struct optional_base
         storage_(constexpr_forward<Args>(args)...)
     {}
 
-    template <typename U, typename... Args, TR2_OPTIONAL_REQUIRES(std::is_constructible<T, std::initializer_list<U>>)>
-    explicit optional_base(in_place_t, std::initializer_list<U> il, Args&&... args):
+    template <typename U, typename... Args, TR2_OPTIONAL_REQUIRES(is_constructible<T, initializer_list<U>>)>
+    explicit optional_base(in_place_t, initializer_list<U> il, Args&&... args):
         init_(true),
         storage_(il, std::forward<Args>(args)...)
     {}
@@ -390,8 +377,8 @@ struct constexpr_optional_base
         storage_(constexpr_forward<Args>(args)...)
     {}
 
-    template <typename U, typename... Args, TR2_OPTIONAL_REQUIRES(std::is_constructible<T, std::initializer_list<U>>)>
-    OPTIONAL_CONSTEXPR_INIT_LIST explicit constexpr_optional_base(in_place_t, std::initializer_list<U> il, Args&&... args):
+    template <typename U, typename... Args, TR2_OPTIONAL_REQUIRES(is_constructible<T, initializer_list<U>>)>
+    OPTIONAL_CONSTEXPR_INIT_LIST explicit constexpr_optional_base(in_place_t, initializer_list<U> il, Args&&... args):
         init_(true),
         storage_(il, std::forward<Args>(args)...)
     {}
@@ -400,25 +387,25 @@ struct constexpr_optional_base
 };
 
 template <typename T>
-using optional_base_t = typename std::conditional<
+using optional_base_t = typename conditional<
     is_trivially_destructible<T>::value,                          // if possible
-    constexpr_optional_base<typename std::remove_const<T>::type>, // use base with trivial destructor
-    optional_base<typename std::remove_const<T>::type>
+    constexpr_optional_base<typename remove_const<T>::type>, // use base with trivial destructor
+    optional_base<typename remove_const<T>::type>
 >::type;
 
 
 template <typename T>
 class optional : private optional_base_t<T>
 {
-    static_assert( !std::is_same<typename std::decay<T>::type, nullopt_t>::value, "bad T" );
-    static_assert( !std::is_same<typename std::decay<T>::type, in_place_t>::value, "bad T" );
+    static_assert( !is_same<typename decay<T>::type, nullopt_t>::value, "bad T" );
+    static_assert( !is_same<typename decay<T>::type, in_place_t>::value, "bad T" );
 
     constexpr bool initialized() const noexcept
     {
         return optional_base_t<T>::init_;
     }
 
-    typename std::remove_const<T>::type* dataptr()
+    typename remove_const<T>::type* dataptr()
     {
         return std::addressof(optional_base_t<T>::storage_.value_);
     }
@@ -492,7 +479,7 @@ class optional : private optional_base_t<T>
     }
 
     template <typename U, typename... Args>
-    void initialize(std::initializer_list<U> il, Args&&... args) noexcept(noexcept(T(il, std::forward<Args>(args)...)))
+    void initialize(initializer_list<U> il, Args&&... args) noexcept(noexcept(T(il, std::forward<Args>(args)...)))
     {
         assert(!optional_base_t<T>::init_);
         ::new (static_cast<void*>(dataptr())) T(il, std::forward<Args>(args)...);
@@ -537,8 +524,8 @@ public:
         optional_base_t<T>(in_place_t{}, constexpr_forward<Args>(args)...)
     {}
 
-    template <typename U, typename... Args, TR2_OPTIONAL_REQUIRES(std::is_constructible<T, std::initializer_list<U>>)>
-    OPTIONAL_CONSTEXPR_INIT_LIST explicit optional(in_place_t, std::initializer_list<U> il, Args&&... args):
+    template <typename U, typename... Args, TR2_OPTIONAL_REQUIRES(is_constructible<T, initializer_list<U>>)>
+    OPTIONAL_CONSTEXPR_INIT_LIST explicit optional(in_place_t, initializer_list<U> il, Args&&... args):
         optional_base_t<T>(in_place_t{}, il, constexpr_forward<Args>(args)...)
     {}
 
@@ -578,8 +565,8 @@ public:
     }
 
     template <typename U>
-    auto operator=(U&& v) -> typename std::enable_if<
-        std::is_same<typename std::decay<U>::type, T>::value,
+    auto operator=(U&& v) -> typename enable_if<
+        is_same<typename decay<U>::type, T>::value,
         optional&
     >::type
     {
@@ -599,7 +586,7 @@ public:
     }
 
     template <typename U, typename... Args>
-    void emplace(std::initializer_list<U> il, Args&&... args)
+    void emplace(initializer_list<U> il, Args&&... args)
     {
         clear();
         initialize<U, Args...>(il, std::forward<Args>(args)...);
@@ -760,8 +747,8 @@ public:
 template <class T>
 class optional<T&>
 {
-    static_assert(!std::is_same<T, nullopt_t>::value, "bad T");
-    static_assert(!std::is_same<T, in_place_t>::value, "bad T");
+    static_assert(!is_same<T, nullopt_t>::value, "bad T");
+    static_assert(!is_same<T, in_place_t>::value, "bad T");
     T* ref;
 
 public:
@@ -801,8 +788,8 @@ public:
     }
 
     template <typename U>
-    auto operator=(U&& rhs) noexcept -> typename std::enable_if<
-        std::is_same<typename std::decay<U>::type, optional<T&>>::value,
+    auto operator=(U&& rhs) noexcept -> typename enable_if<
+        is_same<typename decay<U>::type, optional<T&>>::value,
         optional&
     >::type
     {
@@ -811,8 +798,8 @@ public:
     }
 
     template <typename U>
-    auto operator=(U&& rhs) noexcept -> typename std::enable_if<
-        !std::is_same<typename std::decay<U>::type, optional<T&>>::value,
+    auto operator=(U&& rhs) noexcept -> typename enable_if<
+        !is_same<typename decay<U>::type, optional<T&>>::value,
         optional&
     >::type = delete;
 
@@ -854,9 +841,9 @@ public:
     }
 
     template <typename V>
-    constexpr typename std::decay<T>::type value_or(V&& v) const
+    constexpr typename decay<T>::type value_or(V&& v) const
     {
-        return *this ? **this : detail::convert<typename std::decay<T>::type>(constexpr_forward<V>(v));
+        return *this ? **this : detail::convert<typename decay<T>::type>(constexpr_forward<V>(v));
     }
 
     // x.x.x.x, modifiers
@@ -1171,13 +1158,13 @@ void swap(optional<T>& x, optional<T>& y) noexcept(noexcept(x.swap(y)))
 
 
 template <typename T>
-constexpr optional<typename std::decay<T>::type> make_optional(T&& v)
+constexpr optional<typename decay<T>::type> make_optional(T&& v)
 {
-    return optional<typename std::decay<T>::type>(constexpr_forward<T>(v));
+    return optional<typename decay<T>::type>(constexpr_forward<T>(v));
 }
 
 template <typename X>
-constexpr optional<X&> make_optional(std::reference_wrapper<X> v)
+constexpr optional<X&> make_optional(reference_wrapper<X> v)
 {
     return optional<X&>(v.get());
 }

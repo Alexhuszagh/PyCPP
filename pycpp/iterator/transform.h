@@ -9,8 +9,8 @@
 
 #include <pycpp/iterator/category.h>
 #include <pycpp/misc/ordering.h>
-#include <tuple>
-#include <type_traits>
+#include <pycpp/stl/tuple.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -122,19 +122,19 @@ public:
     template <typename It, typename F>
     typename std::enable_if<rebind<It, F>::has_total, bool>::type operator<=(const rebind<It, F>& other) const
     {
-        return less_equal(*this, other);
+        return ordering::less_equal(*this, other);
     }
 
     template <typename It, typename F>
     typename std::enable_if<rebind<It, F>::has_total, bool>::type operator>(const rebind<It, F>& other) const
     {
-        return greater(*this, other);
+        return ordering::greater(*this, other);
     }
 
     template <typename It, typename F>
     typename std::enable_if<rebind<It, F>::has_total, bool>::type operator>=(const rebind<It, F>& other) const
     {
-        return greater_equal(*this, other);
+        return ordering::greater_equal(*this, other);
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
@@ -257,7 +257,7 @@ bool transform_iterator<It, F>::operator==(const self_t& other) const
 template <typename It, typename F>
 bool transform_iterator<It, F>::operator!=(const self_t& other) const
 {
-    return not_equal_to(*this, other);
+    return ordering::not_equal_to(*this, other);
 }
 
 

@@ -7,9 +7,8 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/functional.h>
 #include <bitset>
-#include <functional>
 
 PYCPP_BEGIN_NAMESPACE
 

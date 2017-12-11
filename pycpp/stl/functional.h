@@ -22,6 +22,21 @@ using equal_to = std::equal_to<T>;
 template <typename T = void>
 using less = std::less<T>;
 
+template <typename T = void>
+using less_equal = std::less_equal<T>;
+
+template <typename T = void>
+using greater = std::greater<T>;
+
+template <typename T = void>
+using greater_equal = std::greater_equal<T>;
+
+template <typename R, typename ... Ts>
+using function = std::function<R, Ts...>;
+
+template <typename T>
+using reference_wrapper = std::reference_wrapper<T>;
+
 #if USE_XXHASH                          // XXHASH
 
 template <typename Key>

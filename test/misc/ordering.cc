@@ -16,30 +16,30 @@ PYCPP_USING_NAMESPACE
 
 TEST(ordering, not_equal_to)
 {
-    EXPECT_TRUE(not_equal_to(1, 3));
-    EXPECT_FALSE(not_equal_to(1, 1));
+    EXPECT_TRUE(ordering::not_equal_to(1, 3));
+    EXPECT_FALSE(ordering::not_equal_to(1, 1));
 }
 
 
 TEST(ordering, less_equal)
 {
-    EXPECT_TRUE(less_equal(1, 3));
-    EXPECT_TRUE(less_equal(1, 1));
-    EXPECT_FALSE(less_equal(1, 0));
+    EXPECT_TRUE(ordering::less_equal(1, 3));
+    EXPECT_TRUE(ordering::less_equal(1, 1));
+    EXPECT_FALSE(ordering::less_equal(1, 0));
 }
 
 
 TEST(ordering, greater)
 {
-    EXPECT_FALSE(greater(1, 3));
-    EXPECT_FALSE(greater(1, 1));
-    EXPECT_TRUE(greater(1, 0));
+    EXPECT_FALSE(ordering::greater(1, 3));
+    EXPECT_FALSE(ordering::greater(1, 1));
+    EXPECT_TRUE(ordering::greater(1, 0));
 }
 
 
 TEST(ordering, greater_equal)
 {
-    EXPECT_FALSE(greater_equal(1, 3));
-    EXPECT_TRUE(greater_equal(1, 1));
-    EXPECT_TRUE(greater_equal(1, 0));
+    EXPECT_FALSE(ordering::greater_equal(1, 3));
+    EXPECT_TRUE(ordering::greater_equal(1, 1));
+    EXPECT_TRUE(ordering::greater_equal(1, 0));
 }

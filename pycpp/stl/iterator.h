@@ -27,6 +27,9 @@ using iterator = std::iterator<Category, T, Distance, Pointer, Reference>;
 template <typename Iterator>
 using iterator_traits = std::iterator_traits<Iterator>;
 
+template <typename Iterator>
+using reverse_iterator = std::reverse_iterator<Iterator>;
+
 using input_iterator_tag = std::input_iterator_tag;
 using output_iterator_tag = std::output_iterator_tag;
 using forward_iterator_tag = std::forward_iterator_tag;

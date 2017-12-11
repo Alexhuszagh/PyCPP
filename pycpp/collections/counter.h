@@ -18,12 +18,14 @@
 
 #include <pycpp/collections/counter_fwd.h>
 #include <pycpp/sfinae/is_pair.h>
-#include <algorithm>
-#include <functional>
-#include <initializer_list>
-#include <numeric>
-#include <unordered_set>
-#include <vector>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/numeric.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/unordered_set.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -33,19 +35,51 @@ namespace counter_detail
 // ------
 
 template <typename T>
-using iterator_value_type = typename std::iterator_traits<T>::value_type;
+using iterator_value_type = typename iterator_traits<T>::value_type;
 
 template <typename T>
 using is_pair_iterator = is_pair<iterator_value_type<T>>;
 
 template <typename T, typename Iter>
-using enable_if_pair = std::enable_if<is_pair_iterator<Iter>::value, T>;
+using enable_if_pair = enable_if<is_pair_iterator<Iter>::value, T>;
 
 template <typename T, typename Iter>
-using enable_if_not_pair = std::enable_if<!is_pair_iterator<Iter>::value, T>;
+using enable_if_not_pair = enable_if<!is_pair_iterator<Iter>::value, T>;
+
+template <typename allocator_type, typename T>
+using rebind_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<T>;
 
 template <typename Map>
-using pair_list = std::vector<std::pair<typename Map::key_type, typename Map::mapped_type>>;
+using mutable_pair_type = pair<typename Map::key_type, typename Map::mapped_type>;
+
+template <typename Map>
+using mutable_pair_list = vector<
+    mutable_pair_type<Map>,
+    rebind_allocator<typename Map::allocator_type, mutable_pair_type<Map>>
+>;
+
+template <typename Map>
+using pair_list = vector<
+    typename Map::value_type,
+    rebind_allocator<typename Map::allocator_type, typename Map::value_type>
+>;
+
+template <typename Map>
+using key_list = vector<
+    typename Map::key_type,
+    rebind_allocator<typename Map::allocator_type, typename Map::key_type>
+>;
+
+template <typename Map>
+using memo_value_type = reference_wrapper<const typename Map::key_type>;
+
+template <typename Map>
+using memo_type = unordered_set<
+    memo_value_type<Map>,
+    typename Map::hasher,
+    typename Map::key_equal,
+    rebind_allocator<typename Map::allocator_type, memo_value_type<Map>>
+>;
 
 // FUNCTIONS
 // ---------
@@ -73,12 +107,13 @@ update(Map& map, Iter first, Iter last)
 
 
 template <typename Map>
-pair_list<Map> most_common(const Map& map, size_t n)
+mutable_pair_list<Map> most_common(const Map& map, size_t n)
 {
-    using value_type = typename pair_list<Map>::value_type;
+    using list_type = mutable_pair_list<Map>;
+    using value_type = typename mutable_pair_list<Map>::value_type;
 
     // create values
-    std::vector<value_type> values;
+    list_type values;
     values.reserve(map.size());
     for (const auto& pair: map) {
         values.emplace_back(std::make_pair(pair.first, pair.second));
@@ -99,8 +134,9 @@ pair_list<Map> most_common(const Map& map, size_t n)
 
 
 template <typename Map>
-std::vector<typename Map::key_type> elements(const Map& map)
+key_list<Map> elements(const Map& map)
 {
+    using list_type = key_list<Map>;
     using value_type = typename Map::value_type;
 
     // create values
@@ -108,7 +144,7 @@ std::vector<typename Map::key_type> elements(const Map& map)
         count_t r = rhs.second;
         return r > 0 ? l + r : l;
     });
-    std::vector<typename Map::key_type> values;
+    list_type values;
     values.reserve(count);
 
     // add items
@@ -137,7 +173,7 @@ public:
     using map_type = Map<Key, count_t, Hash, Pred, Alloc>;
     using key_type = Key;
     using mapped_type = count_t;
-    using value_type = std::pair<const key_type, mapped_type>;
+    using value_type = pair<const key_type, mapped_type>;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -146,7 +182,7 @@ public:
     using key_equal = Pred;
     using allocator_type = Alloc;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using iterator = typename map_type::iterator;
     using const_iterator = typename map_type::const_iterator;
 
@@ -164,10 +200,10 @@ public:
     self& operator=(map_type&&);
     template <typename Iter> counter(Iter, Iter, const allocator_type& alloc = allocator_type());
     template <typename Iter> counter(Iter, Iter, size_type, const allocator_type& alloc = allocator_type());
-    counter(std::initializer_list<value_type>, const allocator_type& alloc = allocator_type());
-    counter(std::initializer_list<value_type>, size_type, const allocator_type& alloc = allocator_type());
-    counter(std::initializer_list<key_type>, const allocator_type& alloc = allocator_type());
-    counter(std::initializer_list<key_type>, size_type, const allocator_type& alloc = allocator_type());
+    counter(initializer_list<value_type>, const allocator_type& alloc = allocator_type());
+    counter(initializer_list<value_type>, size_type, const allocator_type& alloc = allocator_type());
+    counter(initializer_list<key_type>, const allocator_type& alloc = allocator_type());
+    counter(initializer_list<key_type>, size_type, const allocator_type& alloc = allocator_type());
 
     // CAPACITY
     size_type size() const;
@@ -212,8 +248,8 @@ public:
     self operator&(const self&) const;
 
     // CONVENIENCE
-    counter_detail::pair_list<self> most_common(size_t n = -1) const;
-    std::vector<key_type> elements() const;
+    counter_detail::mutable_pair_list<self> most_common(size_t n = -1) const;
+    counter_detail::key_list<self> elements() const;
 
     // BUCKET
     size_type bucket_count() const noexcept;
@@ -335,7 +371,7 @@ counter<K, H, P, A, M>::counter(Iter first, Iter last, size_type n, const alloca
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(std::initializer_list<value_type> list, const allocator_type& alloc):
+counter<K, H, P, A, M>::counter(initializer_list<value_type> list, const allocator_type& alloc):
     map_(alloc)
 {
     update(list.begin(), list.end());
@@ -343,7 +379,7 @@ counter<K, H, P, A, M>::counter(std::initializer_list<value_type> list, const al
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(std::initializer_list<value_type> list, size_type n, const allocator_type& alloc):
+counter<K, H, P, A, M>::counter(initializer_list<value_type> list, size_type n, const allocator_type& alloc):
     map_(n, alloc)
 {
     update(list.begin(), list.end());
@@ -351,7 +387,7 @@ counter<K, H, P, A, M>::counter(std::initializer_list<value_type> list, size_typ
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(std::initializer_list<key_type> list, const allocator_type& alloc):
+counter<K, H, P, A, M>::counter(initializer_list<key_type> list, const allocator_type& alloc):
     map_(alloc)
 {
     update(list.begin(), list.end());
@@ -359,7 +395,7 @@ counter<K, H, P, A, M>::counter(std::initializer_list<key_type> list, const allo
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(std::initializer_list<key_type> list, size_type n, const allocator_type& alloc):
+counter<K, H, P, A, M>::counter(initializer_list<key_type> list, size_type n, const allocator_type& alloc):
     map_(n, alloc)
 {
     update(list.begin(), list.end());
@@ -601,7 +637,7 @@ template <typename K, typename H, typename P, typename A, template <typename, ty
 auto counter<K, H, P, A, M>::operator|=(const self& rhs) -> self&
 {
     // get key list
-    std::unordered_set<std::reference_wrapper<const key_type>, std::hash<key_type>> s;
+    counter_detail::memo_type<self> s;
     for (const value_type& pair: map_) {
         s.emplace(pair.first);
     }
@@ -641,7 +677,7 @@ auto counter<K, H, P, A, M>::operator&(const self& rhs) const -> self
     self copy;
 
     // get key list
-    std::unordered_set<std::reference_wrapper<const key_type>, std::hash<key_type>> s;
+    counter_detail::memo_type<self> s;
     for (const value_type& pair: map_) {
         if (rhs.map_.find(pair.first) != rhs.map_.end()) {
             s.emplace(pair.first);
@@ -658,14 +694,14 @@ auto counter<K, H, P, A, M>::operator&(const self& rhs) const -> self
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::most_common(size_t n) const -> counter_detail::pair_list<self>
+auto counter<K, H, P, A, M>::most_common(size_t n) const -> counter_detail::mutable_pair_list<self>
 {
     return counter_detail::most_common(map_, n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::elements() const -> std::vector<key_type>
+auto counter<K, H, P, A, M>::elements() const -> counter_detail::key_list<self>
 {
     return counter_detail::elements(map_);
 }

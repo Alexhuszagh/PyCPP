@@ -15,14 +15,13 @@
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <variant>
 #else                               // !HAVE_CPP17
+#   include <pycpp/stl/exception.h>
+#   include <pycpp/stl/initializer_list.h>
+#   include <pycpp/stl/memory.h>
+#   include <pycpp/stl/new.h>
+#   include <pycpp/stl/type_traits.h>
 #   include <pycpp/stl/utility.h>
 #   include <cstddef>
-#   include <exception>
-#   include <initializer_list>
-#   include <memory>
-#   include <new>
-#   include <type_traits>
-#   include <utility>
 #endif                              // HAVE_CPP17
 
 PYCPP_BEGIN_NAMESPACE

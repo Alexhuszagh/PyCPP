@@ -8,11 +8,11 @@
 
 #pragma once
 
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/stl/vector.h>
-#include <algorithm>
 #include <cassert>
 #include <cstring>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 

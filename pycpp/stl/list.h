@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/stl/iterator.h>
 #include <pycpp/stl/memory.h>
 #include <list>
 

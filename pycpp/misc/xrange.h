@@ -9,8 +9,8 @@
 
 #include <pycpp/iterator/range.h>
 #include <pycpp/misc/ordering.h>
+#include <pycpp/stl/stdexcept.h>
 #include <cmath>
-#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -97,7 +97,7 @@ bool xrange_iterator<T>::operator==(const self& rhs) const
 template <typename T>
 bool xrange_iterator<T>::operator!=(const self& rhs) const
 {
-    return not_equal_to(*this, rhs);
+    return ordering::not_equal_to(*this, rhs);
 }
 
 
@@ -111,21 +111,21 @@ bool xrange_iterator<T>::operator<(const self& rhs) const
 template <typename T>
 bool xrange_iterator<T>::operator<=(const self& rhs) const
 {
-    return less_equal(*this, rhs);
+    return ordering::less_equal(*this, rhs);
 }
 
 
 template <typename T>
 bool xrange_iterator<T>::operator>(const self& rhs) const
 {
-    return greater(*this, rhs);
+    return ordering::greater(*this, rhs);
 }
 
 
 template <typename T>
 bool xrange_iterator<T>::operator>=(const self& rhs) const
 {
-    return greater_equal(*this, rhs);
+    return ordering::greater_equal(*this, rhs);
 }
 
 

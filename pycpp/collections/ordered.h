@@ -10,22 +10,22 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/deque.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/limits.h>
 #include <pycpp/stl/memory.h>
-#include <algorithm>
+#include <pycpp/stl/stdexcept.h>
+#include <pycpp/stl/tuple.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 #include <cassert>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
-#include <deque>
-#include <functional>
-#include <initializer_list>
-#include <iterator>
-#include <limits>
-#include <stdexcept>
-#include <tuple>
-#include <type_traits>
-#include <utility>
-#include <vector>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -51,24 +51,24 @@ struct make_void
 
 
 template <typename T, typename = void>
-struct has_is_transparent: std::false_type
+struct has_is_transparent: false_type
 {};
 
 
 template <typename T>
-struct has_is_transparent<T, typename make_void<typename T::is_transparent>::type>: std::true_type
+struct has_is_transparent<T, typename make_void<typename T::is_transparent>::type>: true_type
 {};
 
 
 template <typename T, typename = void>
-struct is_vector: std::false_type
+struct is_vector: false_type
 {};
 
 
 template <typename T>
-struct is_vector<T, typename std::enable_if<
-    std::is_same<T, std::vector<typename T::value_type, typename T::allocator_type>>::value
-    >::type>: std::true_type
+struct is_vector<T, typename enable_if<
+    is_same<T, vector<typename T::value_type, typename T::allocator_type>>::value
+    >::type>: true_type
 {};
 
 
@@ -77,9 +77,9 @@ template <typename ValueType, typename KeySelect, typename ValueSelect, typename
 class ordered_hash
 {
 private:
-    static_assert(std::is_same<typename ValueTypeContainer::value_type, ValueType>::value,
+    static_assert(is_same<typename ValueTypeContainer::value_type, ValueType>::value,
                   "ValueTypeContainer::value_type != ValueType.");
-    static_assert(std::is_same<typename ValueTypeContainer::allocator_type, Allocator>::value,
+    static_assert(is_same<typename ValueTypeContainer::allocator_type, Allocator>::value,
                   "ValueTypeContainer::allocator_type != Allocator.");
 
     using Key = typename KeySelect::key_type;
@@ -90,8 +90,8 @@ public:
 
     using key_type = Key;
     using value_type = ValueType;
-    using size_type = std::size_t;
-    using difference_type = std::ptrdiff_t;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
     using hasher = Hash;
     using key_equal = KeyEqual;
     using allocator_type = Allocator;
@@ -101,8 +101,8 @@ public:
     using const_pointer = const value_type*;
     using iterator = ordered_iterator<false>;
     using const_iterator = ordered_iterator<true>;
-    using reverse_iterator = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
 
     using values_container_type = ValueTypeContainer;
 
@@ -112,7 +112,7 @@ public:
     {
         friend class ordered_hash;
     private:
-        using iterator = typename std::conditional<
+        using iterator = typename conditional<
             is_const,
             typename values_container_type::const_iterator,
             typename values_container_type::iterator
@@ -123,7 +123,7 @@ public:
         {}
 
     public:
-        using iterator_category = std::random_access_iterator_tag;
+        using iterator_category = random_access_iterator_tag;
         using value_type = const typename ordered_hash::value_type;
         using difference_type = typename iterator::difference_type;
         using reference = value_type&;
@@ -141,8 +141,8 @@ public:
             return KeySelect()(*m_iterator);
         }
 
-        template <typename U = ValueSelect, typename std::enable_if<!std::is_same<U, void>::value>::type* = nullptr>
-        typename std::conditional<is_const, const typename U::value_type&, typename U::value_type&>::type value() const
+        template <typename U = ValueSelect, typename enable_if<!is_same<U, void>::value>::type* = nullptr>
+        typename conditional<is_const, const typename U::value_type&, typename U::value_type&>::type value() const
         {
             return m_iterator->second;
         }
@@ -256,8 +256,8 @@ private:
     class bucket_entry
     {
     public:
-        using index_type = std::uint32_t;
-        using truncated_hash_type = std::uint32_t;
+        using index_type = uint32_t;
+        using truncated_hash_type = uint32_t;
 
         bucket_entry() noexcept:
             m_index(0),
@@ -293,30 +293,30 @@ private:
             return m_hash;
         }
 
-        void set_index(std::size_t index) noexcept
+        void set_index(size_t index) noexcept
         {
             assert(index <= max_size());
             m_index = static_cast<index_type>(index & 0xFFFFFFFF);
         }
 
-        void set_hash(std::size_t hash) noexcept
+        void set_hash(size_t hash) noexcept
         {
             m_hash = truncate_hash(hash);
         }
 
-        static truncated_hash_type truncate_hash(std::size_t hash)
+        static truncated_hash_type truncate_hash(size_t hash)
         {
             return static_cast<truncated_hash_type>(hash & 0xFFFFFFFF);
         }
 
-        static std::size_t max_size()
+        static size_t max_size()
         {
-            return std::numeric_limits<index_type>::max() - nb_reserved_indexes;
+            return numeric_limits<index_type>::max() - nb_reserved_indexes;
         }
 
     private:
-        static const index_type empty_index = std::numeric_limits<index_type>::max();
-        static const std::size_t nb_reserved_indexes = 1;
+        static const index_type empty_index = numeric_limits<index_type>::max();
+        static const size_t nb_reserved_indexes = 1;
 
         index_type m_index;
         truncated_hash_type m_hash;
@@ -324,7 +324,7 @@ private:
 
 
     using buckets_container_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<bucket_entry>;
-    using buckets_container_type = std::vector<bucket_entry, buckets_container_allocator>;
+    using buckets_container_type = vector<bucket_entry, buckets_container_allocator>;
 
 public:
     ordered_hash(size_type bucket_count,
@@ -440,7 +440,7 @@ public:
     }
 
     template <typename P>
-    std::pair<iterator, bool> insert(P&& value)
+    pair<iterator, bool> insert(P&& value)
     {
         return insert_impl(KeySelect()(value), m_hash(KeySelect()(value)), std::forward<P>(value));
     }
@@ -448,12 +448,12 @@ public:
     template <typename InputIt>
     void insert(InputIt first, InputIt last)
     {
-        if (std::is_base_of<std::forward_iterator_tag, typename std::iterator_traits<InputIt>::iterator_category>::value)
+        if (is_base_of<forward_iterator_tag, typename iterator_traits<InputIt>::iterator_category>::value)
         {
             const auto nb_elements_insert = std::distance(first, last);
-            const std::size_t nb_free_buckets = bucket_count() - size();
+            const size_t nb_free_buckets = bucket_count() - size();
 
-            if (nb_elements_insert > 0 && nb_free_buckets < static_cast<std::size_t>(nb_elements_insert)) {
+            if (nb_elements_insert > 0 && nb_free_buckets < static_cast<size_t>(nb_elements_insert)) {
                 reserve(size() + (nb_elements_insert - nb_free_buckets));
             }
         }
@@ -464,7 +464,7 @@ public:
     }
 
     template <typename... Args>
-    std::pair<iterator,bool> emplace(Args&&... args)
+    pair<iterator,bool> emplace(Args&&... args)
     {
         return insert(value_type(std::forward<Args>(args)...));
     }
@@ -478,7 +478,7 @@ public:
     {
         assert(pos != cend());
 
-        const std::size_t index_erase = iterator_to_index(pos);
+        const size_t index_erase = iterator_to_index(pos);
 
         auto it_bucket = find_key(pos.key(), m_hash(pos.key()));
         assert(it_bucket != m_buckets.end());
@@ -498,9 +498,9 @@ public:
         }
 
         assert(std::distance(first, last) > 0 && std::distance(cbegin(), first) >= 0);
-        const std::size_t start_index = static_cast<std::size_t>(std::distance(cbegin(), first));
-        const std::size_t nb_values = static_cast<std::size_t>(std::distance(first, last));
-        const std::size_t end_index = start_index + nb_values;
+        const size_t start_index = static_cast<size_t>(std::distance(cbegin(), first));
+        const size_t nb_values = static_cast<size_t>(std::distance(first, last));
+        const size_t end_index = start_index + nb_values;
 
         // Delete all values
 #ifdef TSL_NO_CONTAINER_ERASE_CONST_ITERATOR
@@ -517,7 +517,7 @@ public:
          *  values on the right of last.m_iterator.
          *  Adapt the indexes for these values.
          */
-        for (std::size_t ibucket = 0; ibucket < m_buckets.size(); ibucket++) {
+        for (size_t ibucket = 0; ibucket < m_buckets.size(); ibucket++) {
             if (!m_buckets[ibucket].has_index()) {
                 continue;
             }
@@ -526,7 +526,7 @@ public:
                 m_buckets[ibucket].set_empty();
                 backward_shift(ibucket);
             } else if (m_buckets[ibucket].index() >= end_index) {
-                m_buckets[ibucket].set_index(m_buckets[ibucket].index() - static_cast<std::size_t>(nb_values));
+                m_buckets[ibucket].set_index(m_buckets[ibucket].index() - static_cast<size_t>(nb_values));
             }
         }
 
@@ -588,14 +588,14 @@ public:
     }
 
     template <typename K>
-    std::pair<iterator, iterator> equal_range(const K& key)
+    pair<iterator, iterator> equal_range(const K& key)
     {
         iterator it = find(key);
         return std::make_pair(it, it);
     }
 
     template <typename K>
-    std::pair<const_iterator, const_iterator> equal_range(const K& key) const
+    pair<const_iterator, const_iterator> equal_range(const K& key) const
     {
         const_iterator it = find(key);
         return std::make_pair(it, it);
@@ -663,13 +663,13 @@ public:
         return begin() + iterator_to_index(pos);
     }
 
-    template <typename K, typename U = ValueSelect, typename std::enable_if<!std::is_same<U, void>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, typename enable_if<!is_same<U, void>::value>::type* = nullptr>
     typename U::value_type& at(const K& key)
     {
         return const_cast<typename U::value_type&>(static_cast<const ordered_hash*>(this)->at(key));
     }
 
-    template <typename K, typename U = ValueSelect, typename std::enable_if<!std::is_same<U, void>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, typename enable_if<!is_same<U, void>::value>::type* = nullptr>
     const typename U::value_type& at(const K& key) const
     {
         auto it = find(key);
@@ -682,7 +682,7 @@ public:
     }
 
 
-    template <typename K, typename U = ValueSelect, typename std::enable_if<!std::is_same<U, void>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, typename enable_if<!is_same<U, void>::value>::type* = nullptr>
     typename U::value_type& operator[](K&& key)
     {
         using T = typename U::value_type;
@@ -706,7 +706,7 @@ public:
         return m_values.back();
     }
 
-    template <typename U = values_container_type, typename std::enable_if<is_vector<U>::value>::type* = nullptr>
+    template <typename U = values_container_type, typename enable_if<is_vector<U>::value>::type* = nullptr>
     const typename values_container_type::value_type* data() const noexcept
     {
         return m_values.data();
@@ -717,7 +717,7 @@ public:
         return m_values;
     }
 
-    template <typename U = values_container_type, typename std::enable_if<is_vector<U>::value>::type* = nullptr>
+    template <typename U = values_container_type, typename enable_if<is_vector<U>::value>::type* = nullptr>
     size_type capacity() const noexcept
     {
         return m_values.capacity();
@@ -745,7 +745,7 @@ public:
 
     iterator unordered_erase(const_iterator pos)
     {
-        const std::size_t index_erase = iterator_to_index(pos);
+        const size_t index_erase = iterator_to_index(pos);
         unordered_erase(pos.key());
 
         // One element was deleted, index_erase now point to the
@@ -773,7 +773,7 @@ public:
 
         std::swap(m_values[it_bucket_key->index()], m_values[it_bucket_last_elem->index()]);
 
-        const std::size_t tmp_index = it_bucket_key->index();
+        const size_t tmp_index = it_bucket_key->index();
         it_bucket_key->set_index(it_bucket_last_elem->index());
         it_bucket_last_elem->set_index(tmp_index);
 
@@ -814,7 +814,7 @@ public:
 
 private:
     template <typename K>
-    typename buckets_container_type::iterator find_key(const K& key, std::size_t hash)
+    typename buckets_container_type::iterator find_key(const K& key, size_t hash)
     {
         auto it = static_cast<const ordered_hash*>(this)->find_key(key, hash);
         return m_buckets.begin() + std::distance(m_buckets.cbegin(), it);
@@ -824,12 +824,12 @@ private:
      *  Return bucket which has the key 'key' or m_buckets.end() if none.
      */
     template <typename K>
-    typename buckets_container_type::const_iterator find_key(const K& key, std::size_t hash) const
+    typename buckets_container_type::const_iterator find_key(const K& key, size_t hash) const
     {
         assert(size() < m_buckets.size());
         const auto truncated_hash = bucket_entry::truncate_hash(hash);
 
-        for (std::size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
+        for (size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
             if (m_buckets[ibucket].empty()) {
                 return m_buckets.end();
             } else if (m_buckets[ibucket].truncated_hash() == truncated_hash &&
@@ -863,7 +863,7 @@ private:
             const auto insert_hash = old_bucket.truncated_hash();
             const auto insert_index = old_bucket.index();
 
-            for (std::size_t ibucket = bucket_for_hash(insert_hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
+            for (size_t ibucket = bucket_for_hash(insert_hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
                 if (m_buckets[ibucket].empty()) {
                     m_buckets[ibucket].set_index(insert_index);
                     m_buckets[ibucket].set_hash(insert_hash);
@@ -871,7 +871,7 @@ private:
                 }
 
                 assert(m_buckets[ibucket].has_index());
-                const std::size_t distance = dist_from_initial_bucket(ibucket);
+                const size_t distance = dist_from_initial_bucket(ibucket);
 
                 if (iprobe > distance) {
                     const auto tmp_index = m_buckets[ibucket].index();
@@ -887,13 +887,13 @@ private:
         }
     }
 
-    template <typename T = values_container_type, typename std::enable_if<is_vector<T>::value>::type* = nullptr>
+    template <typename T = values_container_type, typename enable_if<is_vector<T>::value>::type* = nullptr>
     void reserve_space_for_values(size_type count)
     {
         m_values.reserve(count);
     }
 
-    template <typename T = values_container_type, typename std::enable_if<!is_vector<T>::value>::type* = nullptr>
+    template <typename T = values_container_type, typename enable_if<!is_vector<T>::value>::type* = nullptr>
     void reserve_space_for_values(size_type /*count*/)
     {}
 
@@ -902,12 +902,12 @@ private:
      *  cross another empty bucket or if the other bucket has a
      *  dist_from_initial_bucket == 0.
      */
-    void backward_shift(std::size_t empty_ibucket)
+    void backward_shift(size_t empty_ibucket)
     {
         assert(m_buckets[empty_ibucket].empty());
 
-        std::size_t previous_ibucket = empty_ibucket;
-        for (std::size_t current_ibucket = next_probe(previous_ibucket);
+        size_t previous_ibucket = empty_ibucket;
+        for (size_t current_ibucket = next_probe(previous_ibucket);
             !m_buckets[current_ibucket].empty() && dist_from_initial_bucket(current_ibucket) > 0;
             previous_ibucket = current_ibucket, current_ibucket = next_probe(current_ibucket))
         {
@@ -921,7 +921,7 @@ private:
 
         m_values.erase(m_values.begin() + it_bucket->index());
 
-        const std::size_t index_deleted = it_bucket->index();
+        const size_t index_deleted = it_bucket->index();
 
         // m_values.erase shifted all the values on the right of the
         // erased value, shift the indexes except if it was the last
@@ -937,7 +937,7 @@ private:
         // Mark the bucket as empty and do a backward shift of the
         // values on the right
         it_bucket->set_empty();
-        backward_shift(static_cast<std::size_t>(std::distance(m_buckets.begin(), it_bucket)));
+        backward_shift(static_cast<size_t>(std::distance(m_buckets.begin(), it_bucket)));
     }
 
     template <typename K>
@@ -967,7 +967,7 @@ private:
      *  bucket to store this new index and hash while continuing the
      *  swapping process.
      */
-    void insert_with_robin_hood_swap(std::size_t ibucket, std::size_t iprobe,
+    void insert_with_robin_hood_swap(size_t ibucket, size_t iprobe,
         typename bucket_entry::index_type insert_index,
         typename bucket_entry::truncated_hash_type insert_hash)
     {
@@ -980,7 +980,7 @@ private:
             }
 
             assert(m_buckets[ibucket].has_index());
-            const std::size_t distance = dist_from_initial_bucket(ibucket);
+            const size_t distance = dist_from_initial_bucket(ibucket);
             if (iprobe > distance) {
                 const auto tmp_index = m_buckets[ibucket].index();
                 const auto tmp_hash = m_buckets[ibucket].truncated_hash();
@@ -999,9 +999,9 @@ private:
         }
     }
 
-    std::size_t dist_from_initial_bucket(std::size_t ibucket) const
+    size_t dist_from_initial_bucket(size_t ibucket) const
     {
-        const std::size_t initial_bucket = bucket_for_hash(m_buckets[ibucket].truncated_hash());
+        const size_t initial_bucket = bucket_for_hash(m_buckets[ibucket].truncated_hash());
 
         // If the bucket is smaller than the initial bucket for the
         // value, there was a wrapping at the end of the bucket array
@@ -1015,11 +1015,11 @@ private:
 
 
     template <typename K, typename P>
-    std::pair<iterator, bool> insert_impl(const K& key, std::size_t hash, P&& value)
+    pair<iterator, bool> insert_impl(const K& key, size_t hash, P&& value)
     {
         resize_if_needed(1);
 
-        for (std::size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
+        for (size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
             if (m_buckets[ibucket].empty()) {
                 m_values.emplace_back(std::forward<P>(value));
                 m_buckets[ibucket].set_index(m_values.size() - 1);
@@ -1032,7 +1032,7 @@ private:
             } else if (rehash_on_high_nb_probes(iprobe)) {
                 return insert_impl(key, hash, std::forward<P>(value));
             } else {
-                const std::size_t distance = dist_from_initial_bucket(ibucket);
+                const size_t distance = dist_from_initial_bucket(ibucket);
 
                 if (iprobe > distance) {
                     m_values.emplace_back(std::forward<P>(value));
@@ -1053,7 +1053,7 @@ private:
     }
 
 
-    void resize_if_needed(std::size_t delta)
+    void resize_if_needed(size_t delta)
     {
         if (size() + delta >= m_load_threshold) {
             rehash_impl(m_buckets.size() * REHASH_SIZE_MULTIPLICATION_FACTOR);
@@ -1061,27 +1061,27 @@ private:
     }
 
 
-    std::size_t next_probe(std::size_t index) const
+    size_t next_probe(size_t index) const
     {
         return (index + 1) & m_mask;
     }
 
-    std::size_t bucket_for_hash(std::size_t hash) const
+    size_t bucket_for_hash(size_t hash) const
     {
         return hash & m_mask;
     }
 
-    std::size_t iterator_to_index(const_iterator it) const
+    size_t iterator_to_index(const_iterator it) const
     {
         const auto dist = std::distance(cbegin(), it);
         assert(dist >= 0);
 
-        return static_cast<std::size_t>(dist);
+        return static_cast<size_t>(dist);
     }
 
-    static std::size_t round_up_to_power_of_two(std::size_t value)
+    static size_t round_up_to_power_of_two(size_t value)
     {
-        std::size_t power = 1;
+        size_t power = 1;
         while (power < value) {
             power <<= 1;
         }
@@ -1097,7 +1097,7 @@ public:
     static const size_type REHASH_ON_HIGH_NB_PROBES__NPROBES = 8;
     static constexpr float REHASH_ON_HIGH_NB_PROBES__MIN_LOAD_FACTOR = 0.5f;
 
-    bool rehash_on_high_nb_probes(std::size_t nb_probes)
+    bool rehash_on_high_nb_probes(size_t nb_probes)
     {
         if (nb_probes == REHASH_ON_HIGH_NB_PROBES__NPROBES && load_factor() >= REHASH_ON_HIGH_NB_PROBES__MIN_LOAD_FACTOR) {
             rehash_impl(m_buckets.size() * REHASH_SIZE_MULTIPLICATION_FACTOR);
@@ -1111,7 +1111,7 @@ private:
     buckets_container_type m_buckets;
     values_container_type m_values;
 
-    std::size_t m_mask;
+    size_t m_mask;
 
     float m_max_load_factor;
     size_type m_load_threshold;

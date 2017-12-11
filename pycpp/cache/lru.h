@@ -20,7 +20,6 @@
 
 #pragma once
 
-#include <pycpp/allocator/standard.h>       // TODO: remove
 #include <pycpp/reference/core.h>
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/iterator.h>
@@ -42,7 +41,7 @@ template <typename it>
 using iterator_transform = typename iterator_value_type<it>::second_type&;
 
 template <typename it>
-using cache_transform = std::function<iterator_transform<it>(iterator_value_type<it>&)>;
+using cache_transform = function<iterator_transform<it>(iterator_value_type<it>&)>;
 
 template <typename it>
 using iterator = transform_iterator<it, cache_transform<it>>;
@@ -51,13 +50,13 @@ template <typename it>
 using iterator_const_transform = const typename iterator_value_type<it>::second_type&;
 
 template <typename it>
-using cache_const_transform = std::function<iterator_const_transform<it>(const iterator_value_type<it>&)>;
+using cache_const_transform = function<iterator_const_transform<it>(const iterator_value_type<it>&)>;
 
 template <typename it>
 using const_iterator = transform_iterator<it, cache_const_transform<it>>;
 
 template <typename lru>
-using cref_key = std::reference_wrapper<const typename lru::key_type>;
+using cref_key = reference_wrapper<const typename lru::key_type>;
 
 template <typename allocator_type, typename T>
 using rebind_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<T>;

@@ -6,6 +6,7 @@
  */
 
 #include <pycpp/collections/ordered_map.h>
+#include <pycpp/stl/string.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE

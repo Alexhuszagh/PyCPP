@@ -96,7 +96,7 @@ public:
     using map_type = Map<Key, count_t, Hash, Pred, Alloc>;
     using key_type = Key;
     using mapped_type = count_t;
-    using value_type = std::pair<const key_type, mapped_type>;
+    using value_type = pair<const key_type, mapped_type>;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -105,7 +105,7 @@ public:
     using key_equal = Pred;
     using allocator_type = Alloc;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using iterator = typename map_type::iterator;
     using const_iterator = typename map_type::const_iterator;
 
@@ -125,8 +125,8 @@ public:
     threshold_counter(map_type&&, float = 0.01, const allocator_type& alloc = allocator_type());
     self& operator=(map_type&&);
     template <typename Iter> threshold_counter(Iter, Iter, float = 0.01, const allocator_type& alloc = allocator_type());
-    threshold_counter(std::initializer_list<value_type>, float = 0.01, const allocator_type& alloc = allocator_type());
-    threshold_counter(std::initializer_list<key_type>, float = 0.01, const allocator_type& alloc = allocator_type());
+    threshold_counter(initializer_list<value_type>, float = 0.01, const allocator_type& alloc = allocator_type());
+    threshold_counter(initializer_list<key_type>, float = 0.01, const allocator_type& alloc = allocator_type());
 
     // CAPACITY
     size_type size() const;
@@ -151,8 +151,8 @@ public:
     void swap(self&);
 
     // CONVENIENCE
-    counter_detail::pair_list<self> most_common(size_t n = -1) const;
-    std::vector<key_type> elements() const;
+    counter_detail::mutable_pair_list<self> most_common(size_t n = -1) const;
+    counter_detail::key_list<self> elements() const;
     count_t get_common_count() const;
     count_t get_uncommon_count() const;
     double get_commonality() const;
@@ -334,7 +334,7 @@ threshold_counter<K, H, P, A, M>::threshold_counter(Iter first, Iter last, float
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(std::initializer_list<value_type> list, float threshold, const allocator_type& alloc):
+threshold_counter<K, H, P, A, M>::threshold_counter(initializer_list<value_type> list, float threshold, const allocator_type& alloc):
     map_(alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
@@ -346,7 +346,7 @@ threshold_counter<K, H, P, A, M>::threshold_counter(std::initializer_list<value_
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(std::initializer_list<key_type> list, float threshold, const allocator_type& alloc):
+threshold_counter<K, H, P, A, M>::threshold_counter(initializer_list<key_type> list, float threshold, const allocator_type& alloc):
     map_(alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
@@ -474,14 +474,14 @@ void threshold_counter<K, H, P, A, M>::swap(self& rhs)
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::most_common(size_t n) const -> counter_detail::pair_list<self>
+auto threshold_counter<K, H, P, A, M>::most_common(size_t n) const -> counter_detail::mutable_pair_list<self>
 {
     return counter_detail::most_common(map_, n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::elements() const -> std::vector<key_type>
+auto threshold_counter<K, H, P, A, M>::elements() const -> counter_detail::key_list<self>
 {
     return counter_detail::elements(map_);
 }

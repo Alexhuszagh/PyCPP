@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/collections/threshold_counter.h>
+#include <pycpp/stl/map.h>
 #include <gtest/gtest.h>
 #include <cmath>
-#include <map>
 
 PYCPP_USING_NAMESPACE
 
@@ -24,7 +24,7 @@ TEST(threshold_counter, ctor)
     t t1;
 
     // map
-    std::unordered_map<int, count_t> um = {
+    unordered_map<int, count_t> um = {
         {1, 1},
         {2, 4},
     };
@@ -33,7 +33,7 @@ TEST(threshold_counter, ctor)
     EXPECT_EQ(t2.size(), 2);
 
     // iter -- map
-    std::map<int, count_t> m = {
+    map<int, count_t> m = {
         {1, 1},
         {2, 4},
     };
@@ -41,7 +41,7 @@ TEST(threshold_counter, ctor)
     EXPECT_EQ(t3.size(), 2);
 
     // iter -- key
-    std::vector<int> v = {1, 2, 2, 2, 2};
+    vector<int> v = {1, 2, 2, 2, 2};
     t t4(v.begin(), v.end());
     EXPECT_EQ(t4.size(), 2);
 
@@ -160,7 +160,7 @@ TEST(threshold_counter, modifiers)
     EXPECT_EQ(t1.get(4, 0), 2);
 
     // update -- key
-    std::vector<int> v = {5, 5, 6};
+    vector<int> v = {5, 5, 6};
     EXPECT_EQ(t1.get(5, 0), 0);
     EXPECT_EQ(t1.get(6, 0), 0);
     t1.update(v.begin(), v.end());
@@ -168,7 +168,7 @@ TEST(threshold_counter, modifiers)
     EXPECT_EQ(t1.get(6, 0), 1);
 
     // update -- value
-    std::map<int, count_t> m = {
+    map<int, count_t> m = {
         {7, 2},
         {8, 1},
     };
@@ -224,7 +224,7 @@ TEST(threshold_counter, convenience)
     EXPECT_EQ(mc3[2].first, 1);
 
     // elements
-    std::vector<int> expected = {1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3};
+    vector<int> expected = {1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3};
     auto result = t1.elements();
     std::sort(result.begin(), result.end());
     EXPECT_EQ(result, expected);

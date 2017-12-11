@@ -15,7 +15,8 @@
 
 #include <pycpp/misc/ordering.h>
 #include <pycpp/reference/core.h>
-#include <vector>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/vector.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -51,7 +52,7 @@ namespace sequence_detail
 template <
     typename T,
     typename Alloc = std::allocator<T*>,
-    template <typename, typename> class Container = std::vector
+    template <typename, typename> class Container = vector
 >
 struct reference_vector_base
 {
@@ -68,8 +69,8 @@ struct reference_vector_base
     using size_type = size_t;
     using iterator = sequence_iterator_impl<typename container_type::iterator>;
     using const_iterator = sequence_const_iterator_impl<typename container_type::const_iterator>;
-    using reverse_iterator = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -424,7 +425,7 @@ bool reference_vector_base<T, A, _>::operator==(const self_t& rhs) const
 template <typename T, typename A, template <typename, typename> class _>
 bool reference_vector_base<T, A, _>::operator!=(const self_t& rhs) const
 {
-    return not_equal_to(*this, rhs);
+    return ordering::not_equal_to(*this, rhs);
 }
 
 
@@ -438,21 +439,21 @@ bool reference_vector_base<T, A, _>::operator<(const self_t& rhs) const
 template <typename T, typename A, template <typename, typename> class _>
 bool reference_vector_base<T, A, _>::operator<=(const self_t& rhs) const
 {
-    return less_equal(*this, rhs);
+    return ordering::less_equal(*this, rhs);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
 bool reference_vector_base<T, A, _>::operator>(const self_t& rhs) const
 {
-    return greater(*this, rhs);
+    return ordering::greater(*this, rhs);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
 bool reference_vector_base<T, A, _>::operator>=(const self_t& rhs) const
 {
-    return greater_equal(*this, rhs);
+    return ordering::greater_equal(*this, rhs);
 }
 
 // CLEANUP
@@ -472,7 +473,7 @@ bool reference_vector_base<T, A, _>::operator>=(const self_t& rhs) const
 template <
     typename T,
     typename Alloc = std::allocator<T*>,
-    template <typename, typename> class Container = std::vector
+    template <typename, typename> class Container = vector
 >
 using reference_vector = sequence_detail::reference_vector_base<T, Alloc, Container>;
 

@@ -7,34 +7,33 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <unordered_map>
+#include <pycpp/stl/unordered_map.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
 
-using count_t = std::ptrdiff_t;
+using count_t = ptrdiff_t;
 
 // FORWARD
 // -------
 
 template <
     typename Key,
-    typename Hash = std::hash<Key>,
-    typename Pred = std::equal_to<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, count_t>>,
-    template <typename, typename, typename, typename, typename> class Map = std::unordered_map
+    typename Hash = hash<Key>,
+    typename Pred = equal_to<Key>,
+    typename Alloc = allocator<pair<const Key, count_t>>,
+    template <typename, typename, typename, typename, typename> class Map = unordered_map
 >
 struct counter;
 
 template <
     typename Key,
-    typename Hash = std::hash<Key>,
-    typename Pred = std::equal_to<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, count_t>>,
-    template <typename, typename, typename, typename, typename> class Map = std::unordered_map
+    typename Hash = hash<Key>,
+    typename Pred = equal_to<Key>,
+    typename Alloc = allocator<pair<const Key, count_t>>,
+    template <typename, typename, typename, typename, typename> class Map = unordered_map
 >
 struct threshold_counter;
 

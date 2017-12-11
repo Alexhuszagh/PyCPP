@@ -8,7 +8,9 @@
 #pragma once
 
 #include <pycpp/stl/functional.h>
+#include <pycpp/stl/iterator.h>
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/utility.h>
 #include <unordered_set>
 
 PYCPP_BEGIN_NAMESPACE

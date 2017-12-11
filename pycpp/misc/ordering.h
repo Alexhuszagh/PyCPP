@@ -11,6 +11,8 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+namespace ordering
+{
 
 // FUNCTIONS
 // ---------
@@ -19,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief `!=` implemented as `==`.
  */
 template <typename T>
-bool not_equal_to(const T& left, const T& right)
+static bool not_equal_to(const T& left, const T& right)
 {
     return !(left == right);
 }
@@ -29,7 +31,7 @@ bool not_equal_to(const T& left, const T& right)
  *  \brief `<=` implemented as `<`.
  */
 template <typename T>
-bool less_equal(const T& left, const T& right)
+static bool less_equal(const T& left, const T& right)
 {
     return !(right < left);
 }
@@ -39,7 +41,7 @@ bool less_equal(const T& left, const T& right)
  *  \brief `>` implemented as `<`.
  */
 template <typename T>
-bool greater(const T& left, const T& right)
+static bool greater(const T& left, const T& right)
 {
     return right < left;
 }
@@ -49,9 +51,11 @@ bool greater(const T& left, const T& right)
  *  \brief `>=` implemented as `<`.
  */
 template <typename T>
-bool greater_equal(const T& left, const T& right)
+static bool greater_equal(const T& left, const T& right)
 {
     return !(left < right);
 }
+
+}   /* ordering */
 
 PYCPP_END_NAMESPACE

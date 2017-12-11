@@ -9,6 +9,7 @@
 
 #include <pycpp/cache/kv_backend.h>
 #include <pycpp/stl/functional.h>
+#include <pycpp/stl/iterator.h>
 #include <pycpp/stl/string_view.h>
 #include <pycpp/stl/utility.h>
 #include <cstddef>
@@ -85,8 +86,8 @@ public:
     using const_pointer = const value_type*;
     using iterator = kv_iterator<value_type>;
     using const_iterator = kv_iterator<const value_type>;
-    using reverse_iterator = std::reverse_iterator<iterator>;
-    using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
 
     // MEMBER FUNCTIONS
     // ----------------

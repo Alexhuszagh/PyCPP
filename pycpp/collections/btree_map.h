@@ -9,9 +9,6 @@
 #pragma once
 
 #include <pycpp/collections/btree.h>
-#include <pycpp/stl/functional.h>
-#include <pycpp/stl/memory.h>
-#include <pycpp/stl/utility.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -84,7 +81,7 @@ public:
     {}
 
     // Initializer list constructor
-    btree_map(std::initializer_list<value_type> list,
+    btree_map(initializer_list<value_type> list,
               const key_compare& comp = key_compare(),
               const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -92,7 +89,7 @@ public:
         this->insert(list.begin(), list.end());
     }
 
-    btree_map(std::initializer_list<value_type> list,
+    btree_map(initializer_list<value_type> list,
               const allocator_type& alloc = allocator_type()):
         super_type(alloc)
     {
@@ -114,7 +111,7 @@ public:
     }
 
     // Initializer list assignment
-    self_type& operator=(std::initializer_list<value_type> list)
+    self_type& operator=(initializer_list<value_type> list)
     {
         this->insert(list.begin(), list.end());
         return *this;
@@ -196,7 +193,7 @@ public:
     {}
 
     // Initializer list constructor
-    btree_multimap(std::initializer_list<value_type> list,
+    btree_multimap(initializer_list<value_type> list,
                    const key_compare& comp = key_compare(),
                    const allocator_type& alloc = allocator_type()):
         super_type(comp, alloc)
@@ -204,7 +201,7 @@ public:
         this->insert(list.begin(), list.end());
     }
 
-    btree_multimap(std::initializer_list<value_type> list,
+    btree_multimap(initializer_list<value_type> list,
                    const allocator_type& alloc = allocator_type()):
         super_type(alloc)
     {
@@ -226,7 +223,7 @@ public:
     }
 
     // Initializer list assignment
-    self_type& operator=(std::initializer_list<value_type> list)
+    self_type& operator=(initializer_list<value_type> list)
     {
         this->insert(list.begin(), list.end());
         return *this;

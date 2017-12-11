@@ -14,12 +14,12 @@
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <any>
 #else                               // !HAVE_CPP17
+#   include <pycpp/stl/initializer_list.h>
+#   include <pycpp/stl/memory.h>
+#   include <pycpp/stl/stdexcept.h>
+#   include <pycpp/stl/typeinfo.h>
+#   include <pycpp/stl/type_traits.h>
 #   include <pycpp/stl/utility.h>
-#   include <initializer_list>
-#   include <memory>
-#   include <typeinfo>
-#   include <type_traits>
-#   include <stdexcept>
 #endif                              // HAVE_CPP17
 
 PYCPP_BEGIN_NAMESPACE
@@ -60,7 +60,7 @@ namespace detail
  */
 union storage_union
 {
-    using stack_storage_t = typename std::aligned_storage<2 * sizeof(void*), std::alignment_of<void*>::value>::type;
+    using stack_storage_t = typename aligned_storage<2 * sizeof(void*), alignment_of<void*>::value>::type;
 
     void* dynamic;
     stack_storage_t stack;
@@ -75,7 +75,7 @@ struct vtable_type
     // such as destroy() and/or move().
 
     /// The type of the object this vtable is for.
-    const std::type_info& (*type)() noexcept;
+    const type_info& (*type)() noexcept;
 
     /// Destroys the object in the union.
     /// The state of the union after this call is unspecified, caller must ensure not to use src anymore.
@@ -100,7 +100,7 @@ struct vtable_type
 template <typename T>
 struct vtable_dynamic
 {
-    static const std::type_info& type() noexcept
+    static const type_info& type() noexcept
     {
         return typeid(T);
     }
@@ -133,7 +133,7 @@ struct vtable_dynamic
 template <typename T>
 struct vtable_stack
 {
-    static const std::type_info& type() noexcept
+    static const type_info& type() noexcept
     {
         return typeid(T);
     }
@@ -167,10 +167,10 @@ struct vtable_stack
  */
 template <typename T>
 struct requires_allocation :
-    std::integral_constant<bool,
-            !(std::is_nothrow_move_constructible<T>::value      // N4562 §6.3/3 [any.class]
-              && sizeof(T) <= sizeof(storage_union::stack)
-              && std::alignment_of<T>::value <= std::alignment_of<storage_union::stack_storage_t>::value)>
+    integral_constant<bool,
+        !(is_nothrow_move_constructible<T>::value &&    // N4562 §6.3/3 [any.class]
+          sizeof(T) <= sizeof(storage_union::stack) &&
+          alignment_of<T>::value <= alignment_of<storage_union::stack_storage_t>::value)>
 {};
 
 /**
@@ -179,7 +179,7 @@ struct requires_allocation :
 template <typename T>
 static vtable_type* vtable_for_type()
 {
-    using type = typename std::conditional<requires_allocation<T>::value, vtable_dynamic<T>, vtable_stack<T>>::type;
+    using type = typename conditional<requires_allocation<T>::value, vtable_dynamic<T>, vtable_stack<T>>::type;
     static vtable_type table = {
         type::type, type::destroy,
         type::copy, type::move,
@@ -189,13 +189,13 @@ static vtable_type* vtable_for_type()
 }
 
 template <typename V>
-inline V any_cast_move_if_true(typename std::remove_reference<V>::type* p, std::true_type)
+inline V any_cast_move_if_true(typename remove_reference<V>::type* p, true_type)
 {
     return std::move(*p);
 }
 
 template <typename V>
-inline V any_cast_move_if_true(typename std::remove_reference<V>::type* p, std::false_type)
+inline V any_cast_move_if_true(typename remove_reference<V>::type* p, false_type)
 {
     return *p;
 }
@@ -205,7 +205,7 @@ inline V any_cast_move_if_true(typename std::remove_reference<V>::type* p, std::
 // OBJECTS
 // -------
 
-struct bad_any_cast: public std::bad_cast
+struct bad_any_cast: public bad_cast
 {
     virtual const char* what() const noexcept override;
 };
@@ -220,18 +220,18 @@ public:
     any& operator=(any&&) noexcept;
     ~any();
 
-    template<typename V, typename = typename std::enable_if<!std::is_same<typename std::decay<V>::type, any>::value>::type>
+    template<typename V, typename = typename enable_if<!is_same<typename decay<V>::type, any>::value>::type>
     any(V&& value)
     {
-        static_assert(std::is_copy_constructible<typename std::decay<V>::type>::value,
+        static_assert(is_copy_constructible<typename decay<V>::type>::value,
             "T shall satisfy the CopyConstructible requirements.");
         construct(std::forward<V>(value));
     }
 
-    template<typename V, typename = typename std::enable_if<!std::is_same<typename std::decay<V>::type, any>::value>::type>
+    template<typename V, typename = typename enable_if<!is_same<typename decay<V>::type, any>::value>::type>
     any& operator=(V&& value)
     {
-        static_assert(std::is_copy_constructible<typename std::decay<V>::type>::value,
+        static_assert(is_copy_constructible<typename decay<V>::type>::value,
             "T shall satisfy the CopyConstructible requirements.");
         any(std::forward<V>(value)).swap(*this);
         return *this;
@@ -244,7 +244,7 @@ public:
     }
 
     template <typename V, typename U, typename... Ts>
-    explicit any(in_place_type_t<V>, std::initializer_list<U> list, Ts&&... ts)
+    explicit any(in_place_type_t<V>, initializer_list<U> list, Ts&&... ts)
     {
         construct(std::forward<V>(list, ts...));
     }
@@ -253,10 +253,10 @@ public:
     template <
         typename V,
         typename... Ts,
-        typename T = typename std::decay<V>::type,
-        typename = typename std::enable_if<
-            std::is_constructible<T, Ts...>::value &&
-            std::is_copy_constructible<T>::value
+        typename T = typename decay<V>::type,
+        typename = typename enable_if<
+            is_constructible<T, Ts...>::value &&
+            is_copy_constructible<T>::value
         >::type
     >
     T& emplace(Ts&&... ts)
@@ -269,13 +269,13 @@ public:
         typename V,
         typename U,
         typename... Ts,
-        typename T = typename std::decay<V>::type,
-        typename = typename std::enable_if<
-            std::is_constructible<T, std::initializer_list<U>&, Ts...>::value &&
-            std::is_copy_constructible<T>::value
+        typename T = typename decay<V>::type,
+        typename = typename enable_if<
+            is_constructible<T, initializer_list<U>&, Ts...>::value &&
+            is_copy_constructible<T>::value
         >::type
     >
-    T& emplace(std::initializer_list<U> list, Ts&&... ts)
+    T& emplace(initializer_list<U> list, Ts&&... ts)
     {
         reset();
         return construct(std::forward<V>(list, ts...));
@@ -286,7 +286,7 @@ public:
 
     // OBSERVERS
     bool has_value() const noexcept;
-    const std::type_info& type() const noexcept;
+    const type_info& type() const noexcept;
 
 protected:
     detail::storage_union storage;
@@ -298,13 +298,13 @@ protected:
     template <typename T>
     friend T* any_cast(any*) noexcept;
 
-    bool is_typed(const std::type_info& t) const;
-    static bool is_same(const std::type_info&, const std::type_info&);
+    bool is_typed(const type_info& t) const;
+    static bool is_same(const type_info&, const type_info&);
 
     template <typename T>
     const T* cast() const noexcept
     {
-        return detail::requires_allocation<typename std::decay<T>::type>::value?
+        return detail::requires_allocation<typename decay<T>::type>::value?
             reinterpret_cast<const T*>(storage.dynamic) :
             reinterpret_cast<const T*>(&storage.stack);
     }
@@ -312,13 +312,13 @@ protected:
     template <typename T>
     T* cast() noexcept
     {
-        return detail::requires_allocation<typename std::decay<T>::type>::value?
+        return detail::requires_allocation<typename decay<T>::type>::value?
             reinterpret_cast<T*>(storage.dynamic) :
             reinterpret_cast<T*>(&storage.stack);
     }
 
     template <typename V, typename T>
-    typename std::enable_if<detail::requires_allocation<T>::value, T&>::type
+    typename enable_if<detail::requires_allocation<T>::value, T&>::type
     do_construct(V&& value)
     {
         storage.dynamic = new T(std::forward<V>(value));
@@ -326,7 +326,7 @@ protected:
     }
 
     template <typename V, typename T>
-    typename std::enable_if<!detail::requires_allocation<T>::value, T&>::type
+    typename enable_if<!detail::requires_allocation<T>::value, T&>::type
     do_construct(V&& value)
     {
         new (&storage.stack) T(std::forward<V>(value));
@@ -337,7 +337,7 @@ protected:
      *  Chooses between stack and dynamic allocation for the type decay_t<ValueType>,
      *  assigns the correct vtable, and constructs the object on our storage.
      */
-    template <typename V, typename T = typename std::decay<V>::type>
+    template <typename V, typename T = typename decay<V>::type>
     T& construct(V&& value)
     {
         this->vtable = detail::vtable_for_type<T>();
@@ -353,7 +353,7 @@ protected:
 template <typename V>
 inline V any_cast(const any& operand)
 {
-    auto p = any_cast<typename std::add_const<typename std::remove_reference<V>::type>::type>(&operand);
+    auto p = any_cast<typename add_const<typename remove_reference<V>::type>::type>(&operand);
     if(p == nullptr) {
         throw bad_any_cast();
     }
@@ -364,7 +364,7 @@ inline V any_cast(const any& operand)
 template <typename V>
 inline V any_cast(any& operand)
 {
-    auto p = any_cast<typename std::remove_reference<V>::type>(&operand);
+    auto p = any_cast<typename remove_reference<V>::type>(&operand);
     if(p == nullptr) {
         throw bad_any_cast();
     }
@@ -375,12 +375,12 @@ inline V any_cast(any& operand)
 template <typename V>
 inline V any_cast(any&& operand)
 {
-    using can_move = std::integral_constant<bool,
-        std::is_move_constructible<V>::value
-        && !std::is_lvalue_reference<V>::value
+    using can_move = integral_constant<bool,
+        is_move_constructible<V>::value
+        && !is_lvalue_reference<V>::value
     >;
 
-    auto p = any_cast<typename std::remove_reference<V>::type>(&operand);
+    auto p = any_cast<typename remove_reference<V>::type>(&operand);
     if(p == nullptr) {
         throw bad_any_cast();
     }
@@ -418,7 +418,7 @@ any make_any(Ts&&... ts)
 
 
 template <typename T, typename U, typename ... Ts>
-any make_any(std::initializer_list<U> list, Ts&&... ts)
+any make_any(initializer_list<U> list, Ts&&... ts)
 {
     return any(in_place_type_t<T>(), list, std::forward<Ts>(ts)...);
 }
