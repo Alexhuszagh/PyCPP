@@ -1,7 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/allocator/polymorphic.h>
+#include <pycpp/stl/detail/polymorphic_allocator.h>
 #include <gtest/gtest.h>
 #include <vector>
 

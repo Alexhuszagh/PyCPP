@@ -9,7 +9,7 @@
 #pragma once
 
 #include <pycpp/preprocessor/compiler.h>
-#include <pycpp/stl/hash.h>
+#include <pycpp/stl/functional.h>
 
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <string_view>

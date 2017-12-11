@@ -1,5 +1,8 @@
 # STL
 
+// TODO: Right now this only includes things from the STL I'm using.
+// Later I need to export everything.
+
 **Table of Contents**
 
 - [Introduction](#introduction)

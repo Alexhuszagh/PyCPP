@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include <pycpp/hashlib/specialize.h>
-#include <pycpp/hashlib/xxhash_c.h>
 #include <pycpp/preprocessor/architecture.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/stl/detail/hash_specialize.h>
+#include <pycpp/stl/detail/xxhash_c.h>
 #include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
@@ -57,20 +57,20 @@ inline hash_result_t xxhash_string(const void* buffer, size_t size)
 /**
  *  Specialize hashes for string types.
  */
-#define PYCPP_SPECIALIZE_HASH_STRING(name, type)                            \
-    template <typename T> struct name;                                      \
-                                                                            \
-    template <>                                                             \
-    struct name<type>                                                       \
-    {                                                                       \
-        using argument_type = type;                                         \
-        using result_type = size_t;                                         \
-                                                                            \
-        inline size_t operator()(const argument_type& x) const              \
-        {                                                                   \
-            using value_type = typename argument_type::value_type;          \
-            return xxhash_string(x.data(), x.size() * sizeof(value_type));  \
-        }                                                                   \
+#define PYCPP_SPECIALIZE_HASH_STRING(name, type)                                            \
+    template <typename T> struct name;                                                      \
+                                                                                            \
+    template <>                                                                             \
+    struct name<type>                                                                       \
+    {                                                                                       \
+        using argument_type = type;                                                         \
+        using result_type = size_t;                                                         \
+                                                                                            \
+        inline size_t operator()(const argument_type& x) const                              \
+        {                                                                                   \
+            using value_type = typename argument_type::value_type;                          \
+            return PYCPP_NAMESPACE::xxhash_string(x.data(), x.size() * sizeof(value_type)); \
+        }                                                                                   \
     }
 
 // OBJECTS

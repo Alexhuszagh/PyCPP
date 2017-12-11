@@ -71,6 +71,9 @@ option(BUILD_TESTS "Build pycpp library tests" OFF)
 SET(CXX_STANDARD "11" CACHE STRING "Minimum C++ standard to support.")
 SET(PYCPP_NAMESPACE "pycpp" CACHE STRING "Name for PyCPP namespace (empty for no namespace).")
 
+# The following options are only for program developers.
+option(USE_LIBCXX "Force the use of libcxx" OFF)
+
 if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_MYSQL OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
     set(BUILD_CIPHER ${WITH_CIPHER})
     set(BUILD_COLLECTIONS ${WITH_COLLECTIONS})
@@ -105,6 +108,9 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -std=c++${CXX_STANDARD}")
 elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -std=c++${CXX_STANDARD}")
+    if(USE_LIBCXX)
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
+    endif()
 elseif(MSVC)
     list(APPEND PYCPP_COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -WX -wd4018 /std:c++${CXX_STANDARD}")
@@ -453,7 +459,6 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm/interpolation_search.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/polymorphic.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/stack.h"
@@ -466,9 +471,6 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/unordered_map.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/unordered_set.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/vector.h"
-    # Include xxHash even if the rest of hashlib is disabled.
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/xxhash.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/xxhash_c.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/category.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/chunked.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/input_iterator_facade.h"
@@ -595,13 +597,12 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/unicode.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/url.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/whitespace.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/allocator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/any.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/array.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/bitset.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/deque.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/forward_list.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/hash.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/functional.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/list.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/map.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/memory.h"
@@ -619,18 +620,19 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector_view.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/hash_specialize.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/polymorphic_allocator.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash_c.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/error.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/mman.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/winapi.h"
 )
 
 set(SOURCE_FILES
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/polymorphic.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.cc"
-    # Include xxHash even if the rest of hashlib is disabled.
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/hashlib/xxhash_c.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atof.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/atoi.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/lexical/bool.cc"
@@ -649,6 +651,8 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/stdlib.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/any.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/polymorphic_allocator.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash_c.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base16.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base32.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base64.cc"
@@ -983,7 +987,6 @@ list(APPEND PYCPP_LIBRARIES pycpp)
 set(TEST_FILES
     test/main.cc
     test/algorithm/interpolation_search.cc
-    test/allocator/polymorphic.cc
     test/allocator/pool.cc
     test/allocator/secure.cc
     test/allocator/stack.cc
@@ -1076,13 +1079,12 @@ set(TEST_FILES
     test/sfinae/push_front.cc
     test/sfinae/reserve.cc
     test/sfinae/shrink_to_fit.cc
-    test/stl/allocator.cc
     test/stl/any.cc
     test/stl/array.cc
     test/stl/bitset.cc
     test/stl/deque.cc
     test/stl/forward_list.cc
-    test/stl/hash.cc
+    test/stl/functional.cc
     test/stl/list.cc
     test/stl/map.cc
     test/stl/memory.cc
@@ -1098,6 +1100,7 @@ set(TEST_FILES
     test/stl/variant.cc
     test/stl/vector.cc
     test/stl/vector_view.cc
+    test/stl/detail/polymorphic_allocator.cc
     test/string/base16.cc
     test/string/base32.cc
     test/string/base64.cc

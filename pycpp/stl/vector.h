@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/stl/allocator.h>
+#include <pycpp/stl/memory.h>
 #include <functional>
 #include <vector>
 

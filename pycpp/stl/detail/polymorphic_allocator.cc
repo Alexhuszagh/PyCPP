@@ -2,15 +2,13 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: Boost, see licenses/boost.md for more details.
 
-#include <pycpp/allocator/polymorphic.h>
+#include <pycpp/stl/detail/polymorphic_allocator.h>
 #if !defined(HAVE_CPP17)
 #   include <limits>
 #endif
 
 
 PYCPP_BEGIN_NAMESPACE
-
-#if defined(HAVE_CPP17)             // HAVE_CPP17
 
 // FUNCTIONS
 // ---------
@@ -25,6 +23,12 @@ bool operator!=(const memory_resource& lhs, const memory_resource& rhs)
 {
     return !(lhs == rhs);
 }
+
+
+#if defined(HAVE_CPP17)             // HAVE_CPP17
+
+// FUNCTIONS
+// ---------
 
 
 memory_resource* new_delete_resource() noexcept

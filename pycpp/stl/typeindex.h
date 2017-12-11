@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/hashlib/specialize.h>
+#include <pycpp/stl/detail/hash_specialize.h>
 #include <typeindex>
 
 PYCPP_BEGIN_NAMESPACE

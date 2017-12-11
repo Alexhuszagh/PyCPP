@@ -2,10 +2,10 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief STL allocator alias unittests.
+ *  \brief STL functional alias unittests.
  */
 
-#include <pycpp/stl/allocator.h>
+#include <pycpp/stl/functional.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -13,8 +13,8 @@ PYCPP_USING_NAMESPACE
 // TESTS
 // -----
 
-TEST(allocator, allocator)
+TEST(hash, hash)
 {
-    using allocator_type = allocator<int>;
-    allocator_type alloc;
+    using hash_type = hash<int>;
+    hash_type hsh;
 }

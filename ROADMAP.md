@@ -4,15 +4,7 @@
 
     - Change the default hash...
 
-    - Move `string_view` and `vector_view` to `stl` and make them STL-compatible
-        - vector_view -- DONE
-        - string_view -- DONE
-
-    - Make `string_wrapper` have all the non-standard shit `string_view` did...
-        -- DONE
-
-    - Look at use fatal rope and tokenizer, maybe some other tools
-        - Importing code is great: easier to test, fast.
+    - Look at use woever rope.
 
     - Make allocators non-optional, use a polymorphic allocator by default...
     - Allow a CMake flag to use polymorphic or the standard allocator by default 

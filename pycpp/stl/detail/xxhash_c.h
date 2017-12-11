@@ -281,7 +281,7 @@ struct XXH64_state_s {
 #endif
 
 #ifdef XXH_PRIVATE_API
-#  include <pycpp/hashlib/xxhash_c.c>   /* include xxhash function bodies as `static`, for inlining */
+#  include <pycpp/stl/detail/xxhash_c.c>   /* include xxhash function bodies as `static`, for inlining */
 #endif
 
 #endif /* XXH_STATIC_LINKING_ONLY */

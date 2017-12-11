@@ -5,7 +5,7 @@
  *  \brief STL basic_string alias unittests.
  */
 
-#include <pycpp/stl/hash.h>
+#include <pycpp/stl/functional.h>
 #include <pycpp/stl/string.h>
 #include <gtest/gtest.h>
 #include <type_traits>

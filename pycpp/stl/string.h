@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <pycpp/stl/allocator.h>
+#include <pycpp/stl/memory.h>
 #if defined(USE_XXHASH) || defined(USE_POLYMORPHIC_ALLOCATOR)
-#   include <pycpp/hashlib/xxhash.h>
+#   include <pycpp/stl/detail/xxhash.h>
 #endif
 #include <string>
 

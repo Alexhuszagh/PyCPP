@@ -7,10 +7,26 @@
 
 #pragma once
 
-#include <pycpp/stl/hash.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/detail/polymorphic_allocator.h>
 #include <memory>
 
 PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+#if USE_POLYMORPHIC_ALLOCATOR           // POLYMOPRHIC
+
+template <typename T>
+using allocator = polymorphic_allocator<T>;
+
+#else                                   // !POLYMOPRHIC
+
+template <typename T>
+using allocator = std::allocator<T>;
+
+#endif                                  // POLYMOPRHIC
 
 // FORWARD
 // -------

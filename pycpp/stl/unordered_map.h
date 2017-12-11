@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pycpp/stl/allocator.h>
-#include <pycpp/stl/hash.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/memory.h>
 #include <unordered_map>
 
 PYCPP_BEGIN_NAMESPACE

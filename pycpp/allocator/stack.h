@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <pycpp/allocator/polymorphic.h>
+#include <pycpp/stl/memory.h>
 #include <cassert>
 #include <cstddef>
 #include <cstring>
@@ -26,14 +26,14 @@ PYCPP_BEGIN_NAMESPACE
 
 template <
     size_t StackSize,
-    size_t Alignment = alignof(std::max_align_t)
+    size_t Alignment = alignof(max_align_t)
 >
 class stack_allocator_arena;
 
 template <
     typename T,
     size_t StackSize,
-    size_t Alignment = alignof(std::max_align_t)
+    size_t Alignment = alignof(max_align_t)
 >
 class stack_allocator;
 
@@ -132,7 +132,7 @@ public:
     using reference = T&;
     using const_reference = const T&;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using arena_type = stack_allocator_arena<stack_size, alignment>;
 
     // MEMBER FUNCTIONS
@@ -167,7 +167,7 @@ private:
 
 template <
     size_t StackSize,
-    size_t Alignment = alignof(std::max_align_t)
+    size_t Alignment = alignof(max_align_t)
 >
 using stack_resource = resource_adaptor<
     stack_allocator<char, StackSize, Alignment>
@@ -212,8 +212,8 @@ char* stack_allocator_arena<S, A>::allocate(size_t n)
     }
 
     static_assert(
-        alignment <= alignof(std::max_align_t),
-        "Alignment is larger than alignof(std::max_align_t), and cannot be guaranteed by new."
+        alignment <= alignof(max_align_t),
+        "Alignment is larger than alignof(max_align_t), and cannot be guaranteed by new."
     );
     return static_cast<char*>(operator new(n));
 }

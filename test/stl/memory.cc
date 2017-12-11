@@ -14,6 +14,13 @@ PYCPP_USING_NAMESPACE
 // TESTS
 // -----
 
+TEST(allocator, allocator)
+{
+    using allocator_type = allocator<int>;
+    allocator_type alloc;
+}
+
+
 TEST(unique_ptr, hash)
 {
     using unique_ptr = std::unique_ptr<int>;

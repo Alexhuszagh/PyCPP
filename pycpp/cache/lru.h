@@ -20,10 +20,13 @@
 
 #pragma once
 
+#include <pycpp/allocator/standard.h>       // TODO: remove
 #include <pycpp/reference/core.h>
-#include <functional>
-#include <list>
-#include <unordered_map>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/list.h>
+#include <pycpp/stl/unordered_map.h>
+#include <pycpp/stl/utility.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -33,7 +36,7 @@ namespace lru_detail
 // -----------
 
 template <typename it>
-using iterator_value_type = typename std::iterator_traits<it>::value_type;
+using iterator_value_type = typename iterator_traits<it>::value_type;
 
 template <typename it>
 using iterator_transform = typename iterator_value_type<it>::second_type&;
@@ -56,13 +59,14 @@ using const_iterator = transform_iterator<it, cache_const_transform<it>>;
 template <typename lru>
 using cref_key = std::reference_wrapper<const typename lru::key_type>;
 
+template <typename allocator_type, typename T>
+using rebind_allocator = typename std::allocator_traits<allocator_type>::template rebind_alloc<T>;
+
 template <typename lru>
-using map_allocator = typename lru::allocator_type::template rebind<
-    std::pair<
-        const cref_key<lru>,
-        typename lru::list_type::iterator
-    >
->::other;
+using map_allocator = rebind_allocator<
+    typename lru::allocator_type,
+    pair<const cref_key<lru>, typename lru::list_type::iterator>
+>;
 
 template <typename lru, template <typename, typename, typename, typename, typename> class Map>
 using map = Map<
@@ -105,11 +109,11 @@ using map = Map<
 template <
     typename Key,
     typename Value,
-    typename Hash = std::hash<Key>,
-    typename Pred = std::equal_to<Key>,
-    typename Alloc = std::allocator<std::pair<const Key, Value>>,
-    template <typename, typename> class List = std::list,
-    template <typename, typename, typename, typename, typename> class Map = std::unordered_map
+    typename Hash = hash<Key>,
+    typename Pred = equal_to<Key>,
+    typename Alloc = allocator<pair<const Key, Value>>,
+    template <typename, typename> class List = list,
+    template <typename, typename, typename, typename, typename> class Map = unordered_map
 >
 struct lru_cache
 {
@@ -119,7 +123,7 @@ public:
     using self = lru_cache<Key, Value, Hash, Pred, Alloc, List, Map>;
     using key_type = Key;
     using mapped_type = Value;
-    using value_type = std::pair<const key_type, mapped_type>;
+    using value_type = pair<const key_type, mapped_type>;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -128,7 +132,7 @@ public:
     using key_equal = Pred;
     using allocator_type = Alloc;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using list_type = List<value_type, allocator_type>;
     using map_type = lru_detail::map<self, Map>;
     using iterator = lru_detail::iterator<typename list_type::iterator>;
@@ -166,13 +170,13 @@ public:
     iterator find(const key_type&);
     const_iterator find(const key_type&) const;
     size_type count(const key_type&) const;
-    std::pair<iterator, iterator> equal_range(const key_type&);
-    std::pair<const_iterator, const_iterator> equal_range(const key_type&) const;
+   pair<iterator, iterator> equal_range(const key_type&);
+   pair<const_iterator, const_iterator> equal_range(const key_type&) const;
 
     // MODIFIERS
-    std::pair<iterator, bool> insert(const key_type&, const mapped_type&);
-    std::pair<iterator, bool> insert(const key_type&, mapped_type&&);
-    std::pair<iterator, bool> insert(key_type&&, mapped_type&&);
+   pair<iterator, bool> insert(const key_type&, const mapped_type&);
+   pair<iterator, bool> insert(const key_type&, mapped_type&&);
+   pair<iterator, bool> insert(key_type&&, mapped_type&&);
     iterator erase(const_iterator);
     size_type erase(const key_type&);
     iterator erase(const_iterator, const_iterator);
@@ -419,7 +423,7 @@ auto lru_cache<K, V, H, P, A, L, M>::count(const key_type& key) const -> size_ty
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::equal_range(const key_type& key) -> std::pair<iterator, iterator>
+auto lru_cache<K, V, H, P, A, L, M>::equal_range(const key_type& key) ->pair<iterator, iterator>
 {
     auto pair = map_.equal_range(key);
     if (pair.first == map_.end()) {
@@ -433,7 +437,7 @@ auto lru_cache<K, V, H, P, A, L, M>::equal_range(const key_type& key) -> std::pa
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::equal_range(const key_type& key) const -> std::pair<const_iterator, const_iterator>
+auto lru_cache<K, V, H, P, A, L, M>::equal_range(const key_type& key) const ->pair<const_iterator, const_iterator>
 {
     auto pair = map_.equal_range(key);
     if (pair.first == map_.cend()) {
@@ -447,7 +451,7 @@ auto lru_cache<K, V, H, P, A, L, M>::equal_range(const key_type& key) const -> s
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::insert(const key_type& key, const mapped_type& value) -> std::pair<iterator, bool>
+auto lru_cache<K, V, H, P, A, L, M>::insert(const key_type& key, const mapped_type& value) ->pair<iterator, bool>
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
@@ -459,7 +463,7 @@ auto lru_cache<K, V, H, P, A, L, M>::insert(const key_type& key, const mapped_ty
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::insert(const key_type& key, mapped_type&& value) -> std::pair<iterator, bool>
+auto lru_cache<K, V, H, P, A, L, M>::insert(const key_type& key, mapped_type&& value) ->pair<iterator, bool>
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
@@ -471,7 +475,7 @@ auto lru_cache<K, V, H, P, A, L, M>::insert(const key_type& key, mapped_type&& v
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::insert(key_type&& key, mapped_type&& value) -> std::pair<iterator, bool>
+auto lru_cache<K, V, H, P, A, L, M>::insert(key_type&& key, mapped_type&& value) ->pair<iterator, bool>
 {
     auto it = map_.find(key);
     if (it == map_.end()) {

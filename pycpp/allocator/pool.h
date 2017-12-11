@@ -39,7 +39,7 @@ PYCPP_BEGIN_NAMESPACE
 template <
     typename T,
     size_t N,
-    size_t Alignment = alignof(std::max_align_t)
+    size_t Alignment = alignof(max_align_t)
 >
 class pool_allocator
 {
@@ -62,7 +62,7 @@ public:
     using reference = T&;
     using const_reference = const T&;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
 // TODO: here
 
     // MEMBER FUNCTIONS

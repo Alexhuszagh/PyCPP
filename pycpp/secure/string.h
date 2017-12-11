@@ -25,7 +25,7 @@
 #include <pycpp/secure/allocator.h>
 #include <pycpp/secure/char_traits.h>
 #include <pycpp/secure/stdlib.h>
-#include <pycpp/stl/hash.h>
+#include <pycpp/stl/functional.h>
 #include <pycpp/stl/string_view.h>
 
 PYCPP_BEGIN_NAMESPACE

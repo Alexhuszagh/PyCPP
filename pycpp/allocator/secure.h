@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <pycpp/allocator/polymorphic.h>
+#include <pycpp/stl/memory.h>
 #include <cstddef>
 
 PYCPP_BEGIN_NAMESPACE
@@ -50,7 +50,7 @@ struct secure_allocator: private secure_allocator_base
     using reference = T&;
     using const_reference = const T&;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
 
     // MEMBER FUNCTIONS
     // ----------------

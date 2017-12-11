@@ -10,14 +10,20 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <utility>
 
-#if defined(HAVE_CPP17)             // HAVE_CPP17
-#   include <utility>
-#else                               // !HAVE_CPP17
+#if !defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <cstdlib>
+#else                               // !HAVE_CPP17
 #endif                              // HAVE_CPP17
 
 PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+template <typename T, typename U>
+using pair = std::pair<T, U>;
 
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 

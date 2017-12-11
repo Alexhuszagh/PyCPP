@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
-#include <iterator>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -19,36 +19,36 @@ PYCPP_BEGIN_NAMESPACE
 // TYPE
 
 template <typename T>
-using is_input_iterator = std::is_same<typename std::iterator_traits<T>::iterator_category, std::input_iterator_tag>;
+using is_input_iterator = is_same<typename iterator_traits<T>::iterator_category, input_iterator_tag>;
 
 template <typename T>
-using is_output_iterator = std::is_same<typename std::iterator_traits<T>::iterator_category, std::output_iterator_tag>;
+using is_output_iterator = is_same<typename iterator_traits<T>::iterator_category, output_iterator_tag>;
 
 template <typename T>
-using is_forward_iterator = std::is_same<typename std::iterator_traits<T>::iterator_category, std::forward_iterator_tag>;
+using is_forward_iterator = is_same<typename iterator_traits<T>::iterator_category, forward_iterator_tag>;
 
 template <typename T>
-using is_bidirectional_iterator = std::is_same<typename std::iterator_traits<T>::iterator_category, std::bidirectional_iterator_tag>;
+using is_bidirectional_iterator = is_same<typename iterator_traits<T>::iterator_category, bidirectional_iterator_tag>;
 
 template <typename T>
-using is_random_access_iterator = std::is_same<typename std::iterator_traits<T>::iterator_category, std::random_access_iterator_tag>;
+using is_random_access_iterator = is_same<typename iterator_traits<T>::iterator_category, random_access_iterator_tag>;
 
 // CONCEPTS
 
 template <typename T>
-using is_input_iterable = std::is_base_of<std::input_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
+using is_input_iterable = is_base_of<input_iterator_tag, typename iterator_traits<T>::iterator_category>;
 
 template <typename T>
-using is_output_iterable = std::is_base_of<std::output_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
+using is_output_iterable = is_base_of<output_iterator_tag, typename iterator_traits<T>::iterator_category>;
 
 template <typename T>
-using is_forward_iterable = std::is_base_of<std::forward_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
+using is_forward_iterable = is_base_of<forward_iterator_tag, typename iterator_traits<T>::iterator_category>;
 
 template <typename T>
-using is_bidirectional_iterable = std::is_base_of<std::bidirectional_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
+using is_bidirectional_iterable = is_base_of<bidirectional_iterator_tag, typename iterator_traits<T>::iterator_category>;
 
 template <typename T>
-using is_random_access_iterable = std::is_base_of<std::random_access_iterator_tag, typename std::iterator_traits<T>::iterator_category>;
+using is_random_access_iterable = is_base_of<random_access_iterator_tag, typename iterator_traits<T>::iterator_category>;
 
 #ifdef HAVE_CPP14
 

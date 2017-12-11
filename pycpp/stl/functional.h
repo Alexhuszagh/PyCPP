@@ -8,15 +8,19 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <pycpp/hashlib/xxhash.h>
-#if !defined(USE_XXHASH)
-#   include <functional>
-#endif
+#include <pycpp/stl/detail/xxhash.h>
+#include <functional>
 
 PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
+
+template <typename T = void>
+using equal_to = std::equal_to<T>;
+
+template <typename T = void>
+using less = std::less<T>;
 
 #if USE_XXHASH                          // XXHASH
 

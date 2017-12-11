@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/stl/allocator.h>
+#include <pycpp/stl/memory.h>
 #include <forward_list>
 
 PYCPP_BEGIN_NAMESPACE

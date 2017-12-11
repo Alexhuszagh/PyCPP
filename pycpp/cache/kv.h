@@ -8,7 +8,9 @@
 #pragma once
 
 #include <pycpp/cache/kv_backend.h>
-#include <pycpp/string/view.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/string_view.h>
+#include <pycpp/stl/utility.h>
 #include <cstddef>
 
 PYCPP_BEGIN_NAMESPACE
@@ -31,12 +33,12 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief STL-like wrapper around a key-value database iterator.
  */
 template <typename T>
-struct kv_iterator: std::iterator<std::input_iterator_tag, T>
+struct kv_iterator: iterator<input_iterator_tag, T>
 {
 public:
     // MEMBER TYPES
     // ------------
-    typedef std::iterator<std::input_iterator_tag, T> base_t;
+    typedef iterator<input_iterator_tag, T> base_t;
     typedef kv_iterator self_t;
     using typename base_t::value_type;
     using reference = value_type&;
@@ -65,7 +67,7 @@ private:
 template <
     typename Key,
     typename T,
-    typename Compare = std::less<Key>
+    typename Compare = less<Key>
 >
 struct kv_cache
 {
@@ -74,9 +76,9 @@ public:
     // ------------
     using key_type = Key;
     using mapped_type = T;
-    using value_type = std::pair<const Key, T>;
+    using value_type = pair<const Key, T>;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;

@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <iterator>
-#include <type_traits>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -42,9 +42,9 @@ PYCPP_BEGIN_NAMESPACE
 //template <typename Iter, typename T, typename Compare>
 //Iter lower_interpolation_bound(Iter first, Iter last, const T& value, Compare comp)
 //{
-//    using value_type = typename std::iterator_traits<Iter>::value_type;
-//    using diff_t = typename std::iterator_traits<Iter>::difference_type;
-//    static_assert(std::is_arithmetic<value_type>::value, "Interpolation search must use numeric values.");
+//    using value_type = typename iterator_traits<Iter>::value_type;
+//    using diff_t = typename iterator_traits<Iter>::difference_type;
+//    static_assert(is_arithmetic<value_type>::value, "Interpolation search must use numeric values.");
 //
 //    // Empty range, no input.
 //    // Return last to signify bound not found
@@ -60,7 +60,7 @@ PYCPP_BEGIN_NAMESPACE
 //template <typename Iter, typename T, typename Compare>
 //Iter lower_interpolation_bound(Iter first, Iter last, const T& value)
 //{
-//    return lower_interpolation_bound(first, last, value, std::less<T>());
+//    return lower_interpolation_bound(first, last, value, less<T>());
 //}
 //
 //
@@ -70,9 +70,9 @@ PYCPP_BEGIN_NAMESPACE
 //template <typename Iter, typename T, typename Compare>
 //Iter upper_interpolation_bound(Iter first, Iter last, const T& value, Compare comp)
 //{
-//    using value_type = typename std::iterator_traits<Iter>::value_type;
-//    using diff_t = typename std::iterator_traits<Iter>::difference_type;
-//    static_assert(std::is_arithmetic<value_type>::value, "Interpolation search must use numeric values.");
+//    using value_type = typename iterator_traits<Iter>::value_type;
+//    using diff_t = typename iterator_traits<Iter>::difference_type;
+//    static_assert(is_arithmetic<value_type>::value, "Interpolation search must use numeric values.");
 //
 //    // Empty range, no input.
 //    // Return last to signify bound not found
@@ -122,7 +122,7 @@ PYCPP_BEGIN_NAMESPACE
 //template <typename Iter, typename T, typename Compare>
 //Iter upper_interpolation_bound(Iter first, Iter last, const T& value)
 //{
-//    return upper_interpolation_bound(first, last, value, std::less<T>());
+//    return upper_interpolation_bound(first, last, value, less<T>());
 //}
 
 
@@ -142,7 +142,7 @@ PYCPP_END_NAMESPACE
 //bool InterpolationSearch(Iter begin, Iter end,
 //                                   Element elem) {
 //  /* Get a type holding the distance between iterators in the range. */
-//  typedef typename std::iterator_traits<Iter>::difference_type diff_t;
+//  typedef typename iterator_traits<Iter>::difference_type diff_t;
 //
 //  /* Edge-case: If there is no input, the element can't exist. */
 //  if (begin == end) return false;
