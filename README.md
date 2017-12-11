@@ -425,4 +425,4 @@ PyCPP is continually built with the following compiler and compiler versions:
 
 ## License
 
-MIT, see [license](LICENSE.md).
+Permissive, mostly MIT, see [license](LICENSE.md).
