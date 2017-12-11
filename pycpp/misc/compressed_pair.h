@@ -71,9 +71,9 @@ template <typename T1, typename T2>
 using compressed_switch = compressed_pair_switch_helper<
     T1,
     T2,
-    std::is_same<typename std::remove_cv<T1>::type, typename std::remove_cv<T2>::type>::value,
-    std::is_empty<T1>::value,
-    std::is_empty<T2>::value
+    is_same<typename remove_cv<T1>::type, typename remove_cv<T2>::type>::value,
+    is_empty<T1>::value,
+    is_empty<T2>::value
 >;
 
 template <typename T1, typename T2, int Version>
@@ -120,7 +120,7 @@ private:
 
 // 1    derive from T1
 template <typename T1, typename T2>
-class compressed_pair_impl<T1, T2, 1>: protected std::remove_cv<T1>::type
+class compressed_pair_impl<T1, T2, 1>: protected remove_cv<T1>::type
 {
 public:
     // MEMBER TYPES
@@ -158,7 +158,7 @@ private:
 
 // 2    derive from T2
 template <typename T1, typename T2>
-class compressed_pair_impl<T1, T2, 2>: protected std::remove_cv<T2>::type
+class compressed_pair_impl<T1, T2, 2>: protected remove_cv<T2>::type
 {
 public:
     // MEMBER TYPES
@@ -197,8 +197,8 @@ private:
 // 3    derive from T1 and T2
 template <typename T1, typename T2>
 class compressed_pair_impl<T1, T2, 3>:
-    protected std::remove_cv<T1>::type,
-    protected std::remove_cv<T2>::type
+    protected remove_cv<T1>::type,
+    protected remove_cv<T2>::type
 {
 public:
     // MEMBER TYPES
@@ -238,7 +238,7 @@ public:
 //  instance of T2 just in case the user is relying on first() and
 //  second() returning different objects (albeit both empty).
 template <typename T1, typename T2>
-class compressed_pair_impl<T1, T2, 4>: protected std::remove_cv<T1>::type
+class compressed_pair_impl<T1, T2, 4>: protected remove_cv<T1>::type
 {
 public:
     // MEMBER TYPES

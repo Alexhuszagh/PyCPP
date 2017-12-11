@@ -38,25 +38,24 @@ struct lexical_enum_extractor: protected lexical_int_extractor
     explicit operator Enum() const;
 };
 
-
 // DEFINITIONS
 // -----------
 
 
 template <typename Enum>
 lexical_enum_formatter::lexical_enum_formatter(const Enum value):
-    lexical_int_formatter(static_cast<typename std::underlying_type<Enum>::type>(value))
+    lexical_int_formatter(static_cast<typename underlying_type<Enum>::type>(value))
 {
-    static_assert(std::is_enum<Enum>::value, "Type must be an enumeration.");
+    static_assert(is_enum<Enum>::value, "Type must be an enumeration.");
 }
 
 
 template <typename Enum>
 lexical_enum_extractor::operator Enum() const
 {
-    static_assert(std::is_enum<Enum>::value, "Type must be an enumeration.");
+    static_assert(is_enum<Enum>::value, "Type must be an enumeration.");
 
-    using int_t = typename std::underlying_type<Enum>::type;
+    using int_t = typename underlying_type<Enum>::type;
     return static_cast<Enum>(int_t(*this));
 }
 

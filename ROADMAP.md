@@ -13,7 +13,7 @@
     - Allow a CMake flag to use polymorphic or the standard allocator by default 
             -- DONE
         - Implement the polymorphic allocator
-            -- DONE (msotly)
+            -- DONE (mostly)
             - Need to finish pool options, etc...
 
         - Implement all other allocators as a resource
@@ -40,8 +40,7 @@
         - Add to CMakeLists
         - Vector -- DONE
         - Deque -- DONE
-            - Bug, the allocators need to support a generic type in the constructor....
-                - Need a generic T
+            - 
 
 
         - ForwardList

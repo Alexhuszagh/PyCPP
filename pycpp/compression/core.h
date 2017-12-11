@@ -34,8 +34,8 @@ static constexpr int BUFFER_SIZE = 8092;
 template <typename Stream>
 struct filter_impl
 {
-    using in_type = typename std::remove_reference<decltype(std::declval<Stream>().next_in)>::type;
-    using out_type = typename std::remove_reference<decltype(std::declval<Stream>().next_out)>::type;
+    using in_type = typename remove_reference<decltype(std::declval<Stream>().next_in)>::type;
+    using out_type = typename remove_reference<decltype(std::declval<Stream>().next_out)>::type;
 
     int status;
     Stream stream;

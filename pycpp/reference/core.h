@@ -25,16 +25,16 @@ template <typename P>
 using double_deref = deref<deref<P>>;
 
 template <typename P>
-using double_deref_value = typename std::remove_reference<double_deref<P>>::type;
+using double_deref_value = typename remove_reference<double_deref<P>>::type;
 
 template <typename P>
 using const_double_deref = const double_deref_value<P>&;
 
 template <typename P>
-using sequence_iterator_impl = transform_iterator<P, std::function<double_deref<P>(deref<P>)>>;
+using sequence_iterator_impl = transform_iterator<P, function<double_deref<P>(deref<P>)>>;
 
 template <typename P>
-using sequence_const_iterator_impl = transform_iterator<P, std::function<const_double_deref<P>(deref<P>)>>;
+using sequence_const_iterator_impl = transform_iterator<P, function<const_double_deref<P>(deref<P>)>>;
 
 }   /* sequence_detail */
 

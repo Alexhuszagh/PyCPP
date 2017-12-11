@@ -47,8 +47,22 @@ using is_lvalue_reference = std::is_lvalue_reference<T>;
 template <typename T>
 using is_rvalue_reference = std::is_rvalue_reference<T>;
 
+template <typename T>
+using is_enum = std::is_enum<T>;
+
+template <typename T>
+using is_empty = std::is_empty<T>;
+
 template <typename ... Ts>
 using common_type = std::common_type<Ts...>;
+
+// Conversion
+template <typename Enum>
+using underlying_type = std::underlying_type<Enum>;
+
+// Functions
+template <typename F, typename ... Ts>
+using result_of = std::result_of<F, Ts...>;
 
 // Remove qualifiers
 template <typename T>

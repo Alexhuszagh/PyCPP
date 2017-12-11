@@ -42,20 +42,22 @@ public:
     using self_t = fixed_forward_list<T, StackSize, Container>;
     using container_type = Container<T, stack_allocator<T, StackSize>>;
     using value_type = typename container_type::value_type;
+    using size_type = typename container_type::size_type;
     using allocator_type = typename container_type::allocator_type;
     using arena_type = typename allocator_type::arena_type;
 
     // MEMBER FUNCTIONS
     // ----------------
-//    fixed_forward_list();
-//    fixed_forward_list(const self_t&);
-//    fixed_forward_list(self_t&&) = delete;
-//    fixed_forward_list(size_t n, const value_type& value = value_type());
-//    template <typename Iter> fixed_forward_list(Iter first, Iter last);
-//    fixed_forward_list(initializer_list<value_type> list);
-//    self_t& operator=(const self_t&);
-//    self_t& operator=(self_t&&) = delete;
-//    self_t& operator=(initializer_list<value_type> list);
+    fixed_forward_list();
+    explicit fixed_forward_list(size_type count);
+    fixed_forward_list(size_type count, const value_type& value);
+    template <typename Iter> fixed_forward_list(Iter first, Iter last);
+    fixed_forward_list(const fixed_forward_list&);
+    fixed_forward_list(fixed_forward_list&&) = delete;
+    fixed_forward_list(std::initializer_list<value_type> list);
+    fixed_forward_list& operator=(const fixed_forward_list&);
+    fixed_forward_list& operator=(fixed_forward_list&&) = delete;
+    fixed_forward_list& operator=(std::initializer_list<value_type> list);
 
 private:
     void reset();
@@ -64,55 +66,61 @@ private:
 // IMPLEMENTATION
 // --------------
 
-//template <typename T, size_t StackSize, template <typename, typename> class _>
-//fixed_forward_list<T, StackSize, _>::fixed_forward_list():
-//    container_type(allocator_type(this->arena_))
-//{}
-//
-//
-//template <typename T, size_t StackSize, template <typename, typename> class _>
-//fixed_forward_list<T, StackSize, _>::fixed_forward_list(const self_t& rhs):
-//    container_type(rhs, allocator_type(this->arena_))
-//{}
-//
-//
-//template <typename T, size_t StackSize, template <typename, typename> class _>
-//fixed_forward_list<T, StackSize, _>::fixed_forward_list(size_t n, const value_type& value):
-//    container_type(n, value, allocator_type(this->arena_))
-//{}
-//
-//
-//template <typename T, size_t StackSize, template <typename, typename> class _>
-//template <typename Iter>
-//fixed_forward_list<T, StackSize, _>::fixed_forward_list(Iter first, Iter last):
-//    container_type(first, last, allocator_type(this->arena_))
-//{}
-//
-//
-//template <typename T, size_t StackSize, template <typename, typename> class _>
-//fixed_forward_list<T, StackSize, _>::fixed_forward_list(initializer_list<value_type> list):
-//    container_type(list.begin(), list.end(), allocator_type(this->arena_))
-//{}
-//
-//
-//template <typename T, size_t StackSize, template <typename, typename> class _>
-//auto fixed_forward_list<T, StackSize, _>::operator=(const self_t& rhs) -> self_t&
-//{
-//    if (this != &rhs) {
-//        reset();
-//        this->assign(rhs.begin(), rhs.end());
-//    }
-//    return *this;
-//}
-//
-//
-//template <typename T, size_t StackSize, template <typename, typename> class _>
-//auto fixed_forward_list<T, StackSize, _>::operator=(initializer_list<value_type> list) -> self_t&
-//{
-//    reset();
-//    this->assign(list.begin(), list.end());
-//    return *this;
-//}
+template <typename T, size_t StackSize, template <typename, typename> class _>
+fixed_forward_list<T, StackSize, _>::fixed_forward_list():
+    container_type(allocator_type(this->arena_))
+{}
+
+
+template <typename T, size_t StackSize, template <typename, typename> class _>
+fixed_forward_list<T, StackSize, _>::fixed_forward_list(size_type count):
+    container_type(count, allocator_type(this->arena_))
+{}
+
+
+template <typename T, size_t StackSize, template <typename, typename> class _>
+fixed_forward_list<T, StackSize, _>::fixed_forward_list(size_type count, const value_type& value):
+    container_type(count, value, allocator_type(this->arena_))
+{}
+
+
+template <typename T, size_t StackSize, template <typename, typename> class _>
+fixed_forward_list<T, StackSize, _>::fixed_forward_list(const self_t& rhs):
+    container_type(rhs, allocator_type(this->arena_))
+{}
+
+
+template <typename T, size_t StackSize, template <typename, typename> class _>
+template <typename Iter>
+fixed_forward_list<T, StackSize, _>::fixed_forward_list(Iter first, Iter last):
+    container_type(first, last, allocator_type(this->arena_))
+{}
+
+
+template <typename T, size_t StackSize, template <typename, typename> class _>
+fixed_forward_list<T, StackSize, _>::fixed_forward_list(initializer_list<value_type> list):
+    container_type(list.begin(), list.end(), allocator_type(this->arena_))
+{}
+
+
+template <typename T, size_t StackSize, template <typename, typename> class _>
+auto fixed_forward_list<T, StackSize, _>::operator=(const self_t& rhs) -> self_t&
+{
+    if (this != &rhs) {
+        reset();
+        this->assign(rhs.begin(), rhs.end());
+    }
+    return *this;
+}
+
+
+template <typename T, size_t StackSize, template <typename, typename> class _>
+auto fixed_forward_list<T, StackSize, _>::operator=(initializer_list<value_type> list) -> self_t&
+{
+    reset();
+    this->assign(list.begin(), list.end());
+    return *this;
+}
 
 
 template <typename T, size_t StackSize, template <typename, typename> class _>

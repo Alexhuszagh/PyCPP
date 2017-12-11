@@ -25,12 +25,12 @@ struct traits_impl
 {
     // MEMBER TYPES
     // ------------
-    typedef std::iterator_traits<Iterator> traits_type;
-    typedef typename std::result_of<const UnaryFunction(typename traits_type::reference)>::type value_type;
+    typedef iterator_traits<Iterator> traits_type;
+    typedef typename result_of<const UnaryFunction(typename traits_type::reference)>::type value_type;
     typedef typename traits_type::iterator_category iterator_category;
     typedef typename traits_type::difference_type difference_type;
     typedef value_type& reference;
-    typedef typename std::remove_reference<value_type>::type* pointer;
+    typedef typename remove_reference<value_type>::type* pointer;
 };
 
 
@@ -39,7 +39,7 @@ struct traits_impl
  */
 template <typename Iterator, typename UnaryFunction>
 struct transform_iterator_base:
-    std::iterator<
+    iterator<
         typename traits_impl<Iterator, UnaryFunction>::iterator_category,
         typename traits_impl<Iterator, UnaryFunction>::value_type,
         typename traits_impl<Iterator, UnaryFunction>::difference_type,
@@ -114,38 +114,38 @@ public:
     // CONDITIONAL OPERATORS
 
     template <typename It, typename F>
-    typename std::enable_if<rebind<It, F>::has_total, bool>::type operator<(const rebind<It, F>& other) const
+    typename enable_if<rebind<It, F>::has_total, bool>::type operator<(const rebind<It, F>& other) const
     {
         return it < other.it;
     }
 
     template <typename It, typename F>
-    typename std::enable_if<rebind<It, F>::has_total, bool>::type operator<=(const rebind<It, F>& other) const
+    typename enable_if<rebind<It, F>::has_total, bool>::type operator<=(const rebind<It, F>& other) const
     {
         return ordering::less_equal(*this, other);
     }
 
     template <typename It, typename F>
-    typename std::enable_if<rebind<It, F>::has_total, bool>::type operator>(const rebind<It, F>& other) const
+    typename enable_if<rebind<It, F>::has_total, bool>::type operator>(const rebind<It, F>& other) const
     {
         return ordering::greater(*this, other);
     }
 
     template <typename It, typename F>
-    typename std::enable_if<rebind<It, F>::has_total, bool>::type operator>=(const rebind<It, F>& other) const
+    typename enable_if<rebind<It, F>::has_total, bool>::type operator>=(const rebind<It, F>& other) const
     {
         return ordering::greater_equal(*this, other);
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    typename std::enable_if<rebind<It, F>::has_decrement, rebind<It, F>&>::type operator--()
+    typename enable_if<rebind<It, F>::has_decrement, rebind<It, F>&>::type operator--()
     {
         --it;
         return *this;
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    typename std::enable_if<rebind<It, F>::has_decrement, rebind<It, F>>::type operator--(int)
+    typename enable_if<rebind<It, F>::has_decrement, rebind<It, F>>::type operator--(int)
     {
         self_t copy(*this);
         operator--();
@@ -153,27 +153,27 @@ public:
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    typename std::enable_if<rebind<It, F>::has_indexing, typename rebind<It, F>::value_type>::type operator[](size_t pos) const
+    typename enable_if<rebind<It, F>::has_indexing, typename rebind<It, F>::value_type>::type operator[](size_t pos) const
     {
         return function(it[pos]);
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    typename std::enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>&>::type operator+=(difference_type n)
+    typename enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>&>::type operator+=(difference_type n)
     {
         it += n;
         return *this;
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    typename std::enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>&>::type operator-=(difference_type n)
+    typename enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>&>::type operator-=(difference_type n)
     {
         it -= n;
         return *this;
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    typename std::enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>>::type operator+(difference_type n) const
+    typename enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>>::type operator+(difference_type n) const
     {
         self_t copy(*this);
         copy += n;
@@ -181,7 +181,7 @@ public:
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    typename std::enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>>::type operator-(difference_type n) const
+    typename enable_if<rebind<It, F>::has_arithmetic, rebind<It, F>>::type operator-(difference_type n) const
     {
         self_t copy(*this);
         copy -= n;
@@ -189,7 +189,7 @@ public:
     }
 
     template <typename It = Iterator, typename F = UnaryFunction>
-    typename std::enable_if<rebind<It, F>::has_arithmetic, difference_type>::type operator-(const rebind<It, F>& rhs) const
+    typename enable_if<rebind<It, F>::has_arithmetic, difference_type>::type operator-(const rebind<It, F>& rhs) const
     {
         return it - rhs.it;
     }

@@ -19,7 +19,7 @@ namespace str_detail
 // ------
 
 template <typename CharP, typename T>
-using is_char_t = std::is_same<CharP, typename std::remove_cv<typename std::decay<T>::type>::type>;
+using is_char_t = is_same<CharP, typename remove_cv<typename decay<T>::type>::type>;
 
 }   /* str_detail */
 
@@ -61,12 +61,12 @@ using is_const_char32p = str_detail::is_char_t<const char32_t*, T>;
 // STL
 
 template <typename T>
-using is_stl_string = is_specialization<T, std::basic_string>;
+using is_stl_string = is_specialization<T, basic_string>;
 
 // GENERAL
 
 template <typename T>
-using is_string = std::integral_constant<
+using is_string = integral_constant<
     bool,
     is_charp<T>::value   || is_const_charp<T>::value   ||
     is_wcharp<T>::value  || is_const_wcharp<T>::value  ||

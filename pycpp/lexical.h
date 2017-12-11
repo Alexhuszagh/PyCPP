@@ -22,7 +22,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 template <typename T, typename U>
-using lexical_is_same = std::is_same<typename std::remove_cv<T>::type, U>;
+using lexical_is_same = is_same<typename remove_cv<T>::type, U>;
 
 // MACROS
 // ------
@@ -32,14 +32,14 @@ using lexical_is_same = std::is_same<typename std::remove_cv<T>::type, U>;
  */
 #define PYCPP_LEXICAL_FORMATTER(type_, formatter)                                   \
     template <typename T>                                                           \
-    typename std::enable_if<lexical_is_same<T, type_>::value, std::string>::type    \
+    typename enable_if<lexical_is_same<T, type_>::value, std::string>::type         \
     lexical(const T& value)                                                         \
     {                                                                               \
         return std::string(formatter(value).string());                              \
     }                                                                               \
                                                                                     \
     template <typename T>                                                           \
-    typename std::enable_if<lexical_is_same<T, type_>::value, std::string>::type    \
+    typename enable_if<lexical_is_same<T, type_>::value, std::string>::type         \
     format(const T& value)                                                          \
     {                                                                               \
         return std::string(formatter(value).string());                              \
@@ -50,14 +50,14 @@ using lexical_is_same = std::is_same<typename std::remove_cv<T>::type, U>;
  */
 #define PYCPP_LEXICAL_EXTRACTOR(type_, extractor)                                   \
     template <typename T>                                                           \
-    typename std::enable_if<lexical_is_same<T, type_>::value, T>::type              \
+    typename enable_if<lexical_is_same<T, type_>::value, T>::type                   \
     lexical(const string_view& value)                                               \
     {                                                                               \
         return (type_)(extractor(value));                                           \
     }                                                                               \
                                                                                     \
     template <typename T>                                                           \
-    typename std::enable_if<lexical_is_same<T, type_>::value, T>::type              \
+    typename enable_if<lexical_is_same<T, type_>::value, T>::type                   \
     extract(const string_view& value)                                               \
     {                                                                               \
         return (type_)(extractor(value));                                           \
@@ -86,14 +86,14 @@ PYCPP_LEXICAL_FORMATTER(float, lexical_float_formatter)
 PYCPP_LEXICAL_FORMATTER(double, lexical_float_formatter)
 
 template <typename T>
-typename std::enable_if<std::is_enum<T>::value, std::string>::type
+typename enable_if<is_enum<T>::value, std::string>::type
 lexical(const T& value)
 {
     return std::string(lexical_enum_formatter(value).string());
 }
 
 template <typename T>
-typename std::enable_if<std::is_enum<T>::value, std::string>::type
+typename enable_if<is_enum<T>::value, std::string>::type
 format(const T& value)
 {
     return std::string(lexical_enum_formatter(value).string());
@@ -105,14 +105,14 @@ format(const T& value)
 // is provided to avoid the cast.
 
 template <typename T>
-typename std::enable_if<lexical_is_same<T, std::nullptr_t>::value, T>::type
+typename enable_if<lexical_is_same<T, std::nullptr_t>::value, T>::type
 lexical(const string_view& value)
 {
     return lexical_null_extractor(value).value();
 }
 
 template <typename T>
-typename std::enable_if<lexical_is_same<T, std::nullptr_t>::value, std::string>::type
+typename enable_if<lexical_is_same<T, std::nullptr_t>::value, std::string>::type
 extract(const string_view& value)
 {
     return lexical_null_extractor(value).value();
@@ -134,14 +134,14 @@ PYCPP_LEXICAL_EXTRACTOR(double, lexical_float_extractor)
 
 
 template <typename T>
-typename std::enable_if<std::is_enum<T>::value, T>::type
+typename enable_if<is_enum<T>::value, T>::type
 lexical(const string_view& value)
 {
     return T(lexical_enum_extractor(value));
 }
 
 template <typename T>
-typename std::enable_if<std::is_enum<T>::value, T>::type
+typename enable_if<is_enum<T>::value, T>::type
 extract(const string_view& value)
 {
     return T(lexical_enum_extractor(value));
