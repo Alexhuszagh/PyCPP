@@ -51,7 +51,7 @@ win32_socket_adaptor_t::~win32_socket_adaptor_t()
 {}
 
 
-bool win32_socket_adaptor_t::open(const addrinfo& info, const string_view&)
+bool win32_socket_adaptor_t::open(const addrinfo& info, const string_wrapper&)
 {
     sock = ::socket(info.ai_family, info.ai_socktype, info.ai_protocol);
     if (sock == INVALID_SOCKET) {

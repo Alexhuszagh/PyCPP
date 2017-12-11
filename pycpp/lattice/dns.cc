@@ -112,7 +112,7 @@ address_t::operator addrinfo() const
 }
 
 
-dns_lookup_t::dns_lookup_t(const string_view& host, const string_view& service)
+dns_lookup_t::dns_lookup_t(const string_wrapper& host, const string_wrapper& service)
 {
     assert(host.is_null_terminated());
     assert(service.is_null_terminated());
@@ -124,7 +124,7 @@ dns_lookup_t::dns_lookup_t(const string_view& host, const string_view& service)
     hints.ai_socktype = SOCK_STREAM;
 
     // get our host and port
-    string_view node_string, port_string;
+    string_wrapper node_string, port_string;
     const char *node = host.data();
     const char *port = service.data();
     const size_t index = host.find(":");

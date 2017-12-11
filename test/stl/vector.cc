@@ -18,3 +18,12 @@ TEST(vector, vector)
     using vector_type = vector<char>;
     vector_type vec;
 }
+
+
+TEST(vector, hash)
+{
+    using vector_type = vector<bool>;
+    using hash_type = hash<vector_type>;
+    using result_type = decltype(hash_type()(std::declval<vector_type>()));
+    static_assert(std::is_same<result_type, size_t>::value, "");
+}

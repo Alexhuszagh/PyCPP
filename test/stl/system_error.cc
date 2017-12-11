@@ -22,9 +22,13 @@ TEST(error_code, hash)
 }
 
 
+#if defined(HAVE_CPP17)
+
 TEST(error_condition, hash)
 {
     using hash_type = hash<std::error_condition>;
     using result_type = decltype(hash_type()(std::declval<std::error_condition>()));
     static_assert(std::is_same<result_type, size_t>::value, "");
 }
+
+#endif          // HAVE_CPP17

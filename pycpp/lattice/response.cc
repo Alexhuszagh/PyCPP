@@ -24,7 +24,7 @@ PYCPP_BEGIN_NAMESPACE
  *
  *  [reference] http://www.w3.org/Protocols/rfc2616/rfc2616-sec6.html#sec6
  */
-void response_t::parse_code(const string_view& line)
+void response_t::parse_code(const string_wrapper& line)
 {
     const size_t start = 9;
     size_t end = start;
@@ -36,7 +36,7 @@ void response_t::parse_code(const string_view& line)
 }
 
 
-void response_t::parse_cookie(const string_view& string)
+void response_t::parse_cookie(const string_wrapper& string)
 {
     size_t delimiter = string.find_first_of("=");
     size_t end = string.find_first_of(";", delimiter);
@@ -45,7 +45,7 @@ void response_t::parse_cookie(const string_view& string)
 }
 
 
-void response_t::parse_transfer_encoding(const string_view& string)
+void response_t::parse_transfer_encoding(const string_wrapper& string)
 {
     std::string str = ascii_tolower(string);
     auto encodings = split(str, ",");
@@ -66,7 +66,7 @@ void response_t::parse_transfer_encoding(const string_view& string)
 }
 
 
-void response_t::parse_content_type(const string_view& string)
+void response_t::parse_content_type(const string_wrapper& string)
 {
     std::string str = ascii_tolower(string);
     auto values = split(str, ";");
@@ -89,7 +89,7 @@ void response_t::parse_content_type(const string_view& string)
 }
 
 
-void response_t::parse_type(const string_view& string)
+void response_t::parse_type(const string_wrapper& string)
 {
     if (string.empty()) {
         return;
@@ -119,7 +119,7 @@ void response_t::parse_type(const string_view& string)
         case 'x': {
             // custom token, must store
             std::get<0>(mime) = XTOKEN;
-            string_view token = string.substr(2, string.find("/") - 2);
+            string_wrapper token = string.substr(2, string.find("/") - 2);
             headers_["x-token"].append(token.data(), token.size());
             break;
         }
@@ -132,7 +132,7 @@ void response_t::parse_type(const string_view& string)
 /**
  *  The parsed code must, for HTTP/1.1, start with the status code.
  */
-void response_t::parse_header_line(const string_view& line)
+void response_t::parse_header_line(const string_wrapper& line)
 {
     if (startswith(line, "HTTP/")) {
         // this is valid
@@ -140,7 +140,7 @@ void response_t::parse_header_line(const string_view& line)
     } else {
         // common headers
         size_t colon = line.find_first_of(":");
-        if (colon == string_view::npos) {
+        if (colon == string_wrapper::npos) {
             return;
         }
 
@@ -164,7 +164,7 @@ void response_t::parse_header_line(const string_view& line)
 }
 
 
-void response_t::parse_header(const string_view& lines)
+void response_t::parse_header(const string_wrapper& lines)
 {
     std::istringstream stream = std::istringstream(std::string(lines));
     std::string line;

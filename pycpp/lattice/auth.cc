@@ -12,7 +12,7 @@ PYCPP_BEGIN_NAMESPACE
 
 
 authentication_t::authentication_t(const char* username, const char* password):
-    authentication_t(string_view(username), string_view(password))
+    authentication_t(string_wrapper(username), string_wrapper(password))
 {}
 
 
@@ -22,7 +22,7 @@ authentication_t::authentication_t(std::string &&username, std::string &&passwor
 {}
 
 
-authentication_t::authentication_t(const string_view& username, const string_view& password):
+authentication_t::authentication_t(const string_wrapper& username, const string_wrapper& password):
     username(username),
     password(password)
 {}

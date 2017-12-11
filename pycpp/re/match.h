@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/iterator/range.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <map>
 #include <memory>
 #include <vector>
@@ -26,8 +26,8 @@ struct regexp_t;
 // ALIAS
 // -----
 
-using match_groups = std::vector<string_view>;
-using match_groupdict = std::map<string_view, string_view>;
+using match_groups = std::vector<string_wrapper>;
+using match_groupdict = std::map<string_wrapper, string_wrapper>;
 using match_range = range<match_iterator_t>;
 
 // OBJECTS
@@ -44,7 +44,7 @@ public:
     ~match_t();
 
     // DATA
-    const string_view& group(size_t index = 0) const;
+    const string_wrapper& group(size_t index = 0) const;
     match_groups groups() const;
     match_groupdict groupdict() const;
     size_t start(size_t index = 0) const;
@@ -53,8 +53,8 @@ public:
     size_t pos() const;
     size_t endpos() const;
     size_t lastindex() const;
-    string_view lastgroup() const;
-    const string_view& string() const;
+    string_wrapper lastgroup() const;
+    const string_wrapper& string() const;
 
     bool operator==(const match_t&) const;
     bool operator!=(const match_t&) const;
@@ -65,7 +65,7 @@ private:
     friend struct match_iterator_t;
 
     match_t();
-    match_t(regexp_t&, const string_view&, size_t, size_t);
+    match_t(regexp_t&, const string_wrapper&, size_t, size_t);
 
     std::unique_ptr<match_impl_t> ptr_;
 };
@@ -90,7 +90,7 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     match_iterator_t();
-    match_iterator_t(regexp_t& regex, const string_view& str);
+    match_iterator_t(regexp_t& regex, const string_wrapper& str);
     ~match_iterator_t();
     match_iterator_t(const self&);
     self& operator=(const self&);
@@ -111,7 +111,7 @@ public:
 private:
     std::shared_ptr<match_t> match_;
     regexp_t* regex_ = nullptr;
-    string_view str_;
+    string_wrapper str_;
 };
 
 

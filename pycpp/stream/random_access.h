@@ -13,8 +13,8 @@
 
 #pragma once
 
+#include <pycpp/stl/string_view.h>
 #include <pycpp/stream/fd.h>
-#include <pycpp/view/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -7,11 +7,10 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/hashlib/specialize.h>
 #include <pycpp/hashlib/xxhash_c.h>
 #include <pycpp/preprocessor/architecture.h>
 #include <pycpp/preprocessor/compiler.h>
-#include <functional>
 #include <type_traits>
 
 PYCPP_BEGIN_NAMESPACE
@@ -38,38 +37,6 @@ PYCPP_BEGIN_NAMESPACE
 #   error "Unsupported system architecture."
 #endif
 
-/**
- *  Specialize primitive types by value using std::hash by default.
- */
-#define PYCPP_SPECIALIZE_PRIMITIVE(type)                                \
-    template <>                                                         \
-    struct xxhash<type>                                                 \
-    {                                                                   \
-        using argument_type = type;                                     \
-        using result_type = size_t;                                     \
-                                                                        \
-        inline size_t operator()(type x) const noexcept                 \
-        {                                                               \
-            return std::hash<type>()(x);                                \
-        }                                                               \
-    }
-
-/**
- *  Specialize classes by const reference using std::hash by default.
- */
-#define PYCPP_SPECIALIZE_CLASS(type)                                    \
-    template <>                                                         \
-    struct xxhash<type>                                                 \
-    {                                                                   \
-        using argument_type = type;                                     \
-        using result_type = size_t;                                     \
-                                                                        \
-        inline size_t operator()(const type& x) const                   \
-        {                                                               \
-            return std::hash<type>()(x);                                \
-        }                                                               \
-    }
-
 // FUNCTIONS
 // ---------
 
@@ -84,36 +51,52 @@ inline hash_result_t xxhash_string(const void* buffer, size_t size)
 #endif                                      // Hash size
 }
 
-// FORWARD
-// -------
+// SPECIALIZATION
+// --------------
 
-template <typename T>
-struct xxhash;
+/**
+ *  Specialize hashes for string types.
+ */
+#define PYCPP_SPECIALIZE_HASH_STRING(name, type)                            \
+    template <typename T> struct name;                                      \
+                                                                            \
+    template <>                                                             \
+    struct name<type>                                                       \
+    {                                                                       \
+        using argument_type = type;                                         \
+        using result_type = size_t;                                         \
+                                                                            \
+        inline size_t operator()(const argument_type& x) const              \
+        {                                                                   \
+            using value_type = typename argument_type::value_type;          \
+            return xxhash_string(x.data(), x.size() * sizeof(value_type));  \
+        }                                                                   \
+    }
 
 // OBJECTS
 // -------
 
-PYCPP_SPECIALIZE_PRIMITIVE(bool);
-PYCPP_SPECIALIZE_PRIMITIVE(char);
-PYCPP_SPECIALIZE_PRIMITIVE(signed char);
-PYCPP_SPECIALIZE_PRIMITIVE(unsigned char);
-PYCPP_SPECIALIZE_PRIMITIVE(char16_t);
-PYCPP_SPECIALIZE_PRIMITIVE(char32_t);
-PYCPP_SPECIALIZE_PRIMITIVE(wchar_t);
-PYCPP_SPECIALIZE_PRIMITIVE(short);
-PYCPP_SPECIALIZE_PRIMITIVE(unsigned short);
-PYCPP_SPECIALIZE_PRIMITIVE(int);
-PYCPP_SPECIALIZE_PRIMITIVE(unsigned int);
-PYCPP_SPECIALIZE_PRIMITIVE(long);
-PYCPP_SPECIALIZE_PRIMITIVE(long long);
-PYCPP_SPECIALIZE_PRIMITIVE(unsigned long);
-PYCPP_SPECIALIZE_PRIMITIVE(unsigned long long);
-PYCPP_SPECIALIZE_PRIMITIVE(float);
-PYCPP_SPECIALIZE_PRIMITIVE(double);
-PYCPP_SPECIALIZE_PRIMITIVE(long double);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, bool);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, char);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, signed char);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, unsigned char);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, char16_t);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, char32_t);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, wchar_t);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, short);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, unsigned short);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, int);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, unsigned int);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, long);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, long long);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, unsigned long);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, unsigned long long);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, float);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, double);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, long double);
 
 #if defined(HAVE_CPP17)
-PYCPP_SPECIALIZE_PRIMITIVE(std::nullptr_t);
+PYCPP_SPECIALIZE_HASH_VALUE(xxhash, std::nullptr_t);
 #endif          // HAVE_CPP17
 
 // Pointer
@@ -158,8 +141,6 @@ struct xxhash: public enum_xxhash<T>
 // CLEANUP
 // -------
 
-#undef PYCPP_SPECIALIZE_PRIMITIVE
-#undef PYCPP_SPECIALIZE_CLASS
 #undef PYCPP_USE_HASH32
 #undef PYCPP_USE_HASH64
 

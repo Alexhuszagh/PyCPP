@@ -15,7 +15,7 @@
 #include <pycpp/lattice/util.h>
 #include <pycpp/lexical.h>
 #include <pycpp/lexical/atoi.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
 #include <cstdlib>
@@ -108,7 +108,7 @@ public:
     // REQUESTS
     void open(const url_t& url);
     void close();
-    void write(const string_view& data);
+    void write(const string_wrapper& data);
     void set_cache(const dns_cache_t& cache);
 
     // RESPONSE
@@ -326,7 +326,7 @@ void connection_t<Adapter>::set_cache(const dns_cache_t& cache)
  *  \brief Send data through socket.
  */
 template <typename Adapter>
-void connection_t<Adapter>::write(const string_view& data)
+void connection_t<Adapter>::write(const string_wrapper& data)
 {
     int sent = adaptor.write(data.data(), data.size());
     if (sent != static_cast<int>(data.size())) {

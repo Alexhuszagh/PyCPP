@@ -10,8 +10,7 @@
 #include <pycpp/config.h>
 #include <pycpp/json/core.h>
 #include <pycpp/stream/fstream.h>
-#include <pycpp/view/string.h>
-
+#include <pycpp/string/string.h>
 #include <sstream>
 
 PYCPP_BEGIN_NAMESPACE
@@ -29,11 +28,11 @@ struct json_writer
     virtual void end_object();
     virtual void start_array();
     virtual void end_array();
-    virtual void key(const string_view&);
+    virtual void key(const string_wrapper&);
     virtual void null();
     virtual void boolean(bool);
     virtual void number(double);
-    virtual void string(const string_view&);
+    virtual void string(const string_wrapper&);
     virtual void flush() const;
 };
 
@@ -56,11 +55,11 @@ public:
     virtual void end_object() override;
     virtual void start_array() override;
     virtual void end_array() override;
-    virtual void key(const string_view&) override;
+    virtual void key(const string_wrapper&) override;
     virtual void null() override;
     virtual void boolean(bool) override;
     virtual void number(double) override;
-    virtual void string(const string_view&) override;
+    virtual void string(const string_wrapper&) override;
     virtual void flush() const override;
 
 private:

@@ -27,8 +27,8 @@ public:
     // TODO: move???
 
     // STATEMENTS
-    bool exec(const string_view& statement);
-    bool prepare(const string_view& statement);
+    bool exec(const string_wrapper& statement);
+    bool prepare(const string_wrapper& statement);
     bool exec();
 
 private:

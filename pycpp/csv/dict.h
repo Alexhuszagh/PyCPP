@@ -91,8 +91,8 @@ struct csv_dict_string_reader: csv_dict_stream_reader
 {
 public:
     csv_dict_string_reader(csvpunct_impl* = nullptr);
-    csv_dict_string_reader(const string_view& str, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const string_view& str, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_dict_string_reader(const string_wrapper& str, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const string_wrapper& str, size_t skip = 0, csvpunct_impl* = nullptr);
 
 private:
     std::istringstream sstream_;

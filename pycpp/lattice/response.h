@@ -14,7 +14,7 @@
 #include <pycpp/lattice/redirect.h>
 #include <pycpp/lattice/transfer.h>
 #include <pycpp/lattice/url.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <tuple>
 
 PYCPP_BEGIN_NAMESPACE
@@ -206,13 +206,13 @@ protected:
     std::string charset;
     std::string body_;
 
-    void parse_code(const string_view& line);
-    void parse_cookie(const string_view& string);
-    void parse_transfer_encoding(const string_view& string);
-    void parse_content_type(const string_view& string);
-    void parse_type(const string_view& string);
-    void parse_header_line(const string_view& line);
-    void parse_header(const string_view& lines);
+    void parse_code(const string_wrapper& line);
+    void parse_cookie(const string_wrapper& string);
+    void parse_transfer_encoding(const string_wrapper& string);
+    void parse_content_type(const string_wrapper& string);
+    void parse_type(const string_wrapper& string);
+    void parse_header_line(const string_wrapper& line);
+    void parse_header(const string_wrapper& lines);
 };
 
 

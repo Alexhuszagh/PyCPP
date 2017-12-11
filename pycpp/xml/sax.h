@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/string/string.h>
 #include <pycpp/stream/fstream.h>
-#include <pycpp/view/string.h>
 #include <pycpp/xml/core.h>
 
 #include <sstream>
@@ -31,14 +31,14 @@ public:
     // SAX EVENTS
     virtual void start_document();
     virtual void end_document();
-    virtual void start_element(const string_view&, xml_attr_t&&);
-    virtual void end_element(const string_view&);
-    virtual void characters(const string_view&);
-    virtual void start_element_ns(const string_view&, const string_view&, const string_view&, xml_attr_t&&);
-    virtual void end_element_ns(const string_view&, const string_view&, const string_view&);
-    virtual void ignorable_whitespace(const string_view&);
-    virtual void processing_instruction(const string_view&, const string_view&);
-    virtual void skipped_entity(const string_view&);
+    virtual void start_element(const string_wrapper&, xml_attr_t&&);
+    virtual void end_element(const string_wrapper&);
+    virtual void characters(const string_wrapper&);
+    virtual void start_element_ns(const string_wrapper&, const string_wrapper&, const string_wrapper&, xml_attr_t&&);
+    virtual void end_element_ns(const string_wrapper&, const string_wrapper&, const string_wrapper&);
+    virtual void ignorable_whitespace(const string_wrapper&);
+    virtual void processing_instruction(const string_wrapper&, const string_wrapper&);
+    virtual void skipped_entity(const string_wrapper&);
 
     // PROPERTIES
     bool use_namespaces() const;
@@ -94,8 +94,8 @@ struct xml_string_reader: xml_stream_reader
 {
 public:
     xml_string_reader();
-    xml_string_reader(const string_view& str);
-    void open(const string_view& str);
+    xml_string_reader(const string_wrapper& str);
+    void open(const string_wrapper& str);
 
 private:
     std::istringstream sstream_;

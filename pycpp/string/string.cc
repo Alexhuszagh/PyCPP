@@ -29,13 +29,13 @@ const string_t printable = digits + letters + punctuation + whitespace;
 // -------
 
 
-static bool startswith_impl(const string_view& str, const string_view& sub)
+static bool startswith_impl(const string_wrapper& str, const string_wrapper& sub)
 {
     return str.substr(0, sub.size()) == sub;
 }
 
 
-static bool endswith_impl(const string_view& str, const string_view& sub)
+static bool endswith_impl(const string_wrapper& str, const string_wrapper& sub)
 {
     if (sub.size() > str.size()) {
         return false;
@@ -44,7 +44,7 @@ static bool endswith_impl(const string_view& str, const string_view& sub)
 }
 
 
-static void ltrim_impl(string_t& str, const string_view& characters)
+static void ltrim_impl(string_t& str, const string_wrapper& characters)
 {
     auto* ptr = characters.data();
     size_t num = characters.size();
@@ -56,7 +56,7 @@ static void ltrim_impl(string_t& str, const string_view& characters)
 }
 
 
-static void rtrim_impl(string_t& str, const string_view& characters)
+static void rtrim_impl(string_t& str, const string_wrapper& characters)
 {
     if (str.empty()) {
         return;
@@ -178,7 +178,7 @@ string_list_t quoted_split_impl(Iter first, Iter last, char delimiter, char quot
 
 
 template <typename List>
-static string_t join_impl(const List& list, const string_view& sep)
+static string_t join_impl(const List& list, const string_wrapper& sep)
 {
     string_t string;
     for (const auto &item: list) {
@@ -194,25 +194,25 @@ static string_t join_impl(const List& list, const string_view& sep)
 }
 
 
-static string_t capitalize_impl(const string_view& str)
+static string_t capitalize_impl(const string_wrapper& str)
 {
     return utf8_capitalize(str);
 }
 
 
-static string_t lower_impl(const string_view& str)
+static string_t lower_impl(const string_wrapper& str)
 {
     return utf8_tolower(str);
 }
 
 
-static string_t upper_impl(const string_view& str)
+static string_t upper_impl(const string_wrapper& str)
 {
     return utf8_toupper(str);
 }
 
 
-string_t replace_impl(const string_view& str, const string_view& sub, const string_view& repl, size_t count)
+string_t replace_impl(const string_wrapper& str, const string_wrapper& sub, const string_wrapper& repl, size_t count)
 {
     string_t string;
     string.reserve(str.size());
@@ -231,7 +231,7 @@ string_t replace_impl(const string_view& str, const string_view& sub, const stri
 }
 
 
-string_t expandtabs_impl(const string_view& str, size_t tabsize)
+string_t expandtabs_impl(const string_wrapper& str, size_t tabsize)
 {
     std::string sub("\t");
     std::string repl(tabsize, ' ');
@@ -240,7 +240,7 @@ string_t expandtabs_impl(const string_view& str, size_t tabsize)
 }
 
 
-static size_t find_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
+static size_t find_impl(const string_wrapper& str, const string_wrapper& sub, size_t start, size_t end)
 {
     if (end < start) {
         return -1;
@@ -253,7 +253,7 @@ static size_t find_impl(const string_view& str, const string_view& sub, size_t s
 }
 
 
-static size_t rfind_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
+static size_t rfind_impl(const string_wrapper& str, const string_wrapper& sub, size_t start, size_t end)
 {
     if (end < start) {
         return -1;
@@ -268,7 +268,7 @@ static size_t rfind_impl(const string_view& str, const string_view& sub, size_t 
 }
 
 
-static size_t index_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
+static size_t index_impl(const string_wrapper& str, const string_wrapper& sub, size_t start, size_t end)
 {
     size_t i = find_impl(str, sub, start, end);
     if (i == SIZE_MAX) {
@@ -278,7 +278,7 @@ static size_t index_impl(const string_view& str, const string_view& sub, size_t 
 }
 
 
-static size_t rindex_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
+static size_t rindex_impl(const string_wrapper& str, const string_wrapper& sub, size_t start, size_t end)
 {
     size_t i = rfind_impl(str, sub, start, end);
     if (i == SIZE_MAX) {
@@ -288,9 +288,9 @@ static size_t rindex_impl(const string_view& str, const string_view& sub, size_t
 }
 
 
-static size_t count_impl(const string_view& str, const string_view& sub, size_t start, size_t end)
+static size_t count_impl(const string_wrapper& str, const string_wrapper& sub, size_t start, size_t end)
 {
-    string_view substr;
+    string_wrapper substr;
     if (end < start) {
         return 0;
     } else if (end == SIZE_MAX) {
@@ -319,7 +319,7 @@ static size_t count_impl(const string_view& str, const string_view& sub, size_t 
 // ---------
 
 
-string_t ltrim(const string_view& str, const string_view& characters)
+string_t ltrim(const string_wrapper& str, const string_wrapper& characters)
 {
     string_t copy(str);
     ltrim_impl(copy, characters);
@@ -327,7 +327,7 @@ string_t ltrim(const string_view& str, const string_view& characters)
 }
 
 
-string_t rtrim(const string_view& str, const string_view& characters)
+string_t rtrim(const string_wrapper& str, const string_wrapper& characters)
 {
     string_t copy(str);
     rtrim_impl(copy, characters);
@@ -335,7 +335,7 @@ string_t rtrim(const string_view& str, const string_view& characters)
 }
 
 
-string_t trim(const string_view& str, const string_view& characters)
+string_t trim(const string_wrapper& str, const string_wrapper& characters)
 {
     string_t copy(str);
     ltrim_impl(copy, characters);
@@ -344,20 +344,20 @@ string_t trim(const string_view& str, const string_view& characters)
 }
 
 
-bool startswith(const string_view& str, const string_view& sub)
+bool startswith(const string_wrapper& str, const string_wrapper& sub)
 {
     return startswith_impl(str, sub);
 }
 
-bool endswith(const string_view& str, const string_view& sub)
+bool endswith(const string_wrapper& str, const string_wrapper& sub)
 {
     return endswith_impl(str, sub);
 }
 
 
-string_list_t split(const string_view& str, split_function is_split, size_t maxsplit)
+string_list_t split(const string_wrapper& str, split_function is_split, size_t maxsplit)
 {
-    typedef typename string_view::const_iterator iter;
+    typedef typename string_wrapper::const_iterator iter;
     string_list_t data;
 
     split_impl(str.begin(), str.end(), maxsplit, is_split, [&](iter first, iter second) {
@@ -368,23 +368,23 @@ string_list_t split(const string_view& str, split_function is_split, size_t maxs
 }
 
 
-string_list_t split(const string_view& str, const string_view& sep, size_t maxsplit)
+string_list_t split(const string_wrapper& str, const string_wrapper& sep, size_t maxsplit)
 {
     return split(str, [&](char c) {
-        return sep.find(c) != sep.npos;
+        return sep.view().find(c) != sep.npos;
     }, maxsplit);
 }
 
 
-string_list_t quoted_split(const string_view& str, char delimiter, char quote, char escape)
+string_list_t quoted_split(const string_wrapper& str, char delimiter, char quote, char escape)
 {
     return quoted_split_impl(str.begin(), str.end(), delimiter, quote, escape);
 }
 
 
-string_list_t rsplit(const string_view& str, split_function is_split, size_t maxsplit)
+string_list_t rsplit(const string_wrapper& str, split_function is_split, size_t maxsplit)
 {
-    typedef typename string_view::const_iterator iter;
+    typedef typename string_wrapper::const_iterator iter;
     string_list_t data;
 
     rsplit_impl(str.begin(), str.end(), maxsplit, is_split, [&](iter first, iter second) {
@@ -396,89 +396,89 @@ string_list_t rsplit(const string_view& str, split_function is_split, size_t max
 }
 
 
-string_list_t rsplit(const string_view& str, const string_view& sep, size_t maxsplit)
+string_list_t rsplit(const string_wrapper& str, const string_wrapper& sep, size_t maxsplit)
 {
     return rsplit(str, [&](char c) {
-        return sep.find(c) != sep.npos;
+        return sep.view().find(c) != sep.npos;
     }, maxsplit);
 }
 
 
-string_t join(std::initializer_list<string_view> list, const string_view& sep)
+string_t join(std::initializer_list<string_wrapper> list, const string_wrapper& sep)
 {
     string_wrapper_list_t l(list.begin(), list.end());
     return string_wrapper(sep).join(l);
 }
 
 
-string_t join(const string_list_t& list, const string_view& sep)
+string_t join(const string_list_t& list, const string_wrapper& sep)
 {
     return join_impl(list, sep);
 }
 
 
-string_t join(const string_wrapper_list_t& list, const string_view& sep)
+string_t join(const string_wrapper_list_t& list, const string_wrapper& sep)
 {
     return string_wrapper(sep).join(list);
 }
 
 
 
-string_t capitalize(const string_view& str)
+string_t capitalize(const string_wrapper& str)
 {
     return capitalize_impl(str);
 }
 
 
-size_t find(const string_view&str, const string_view& sub, size_t start, size_t end)
+size_t find(const string_wrapper&str, const string_wrapper& sub, size_t start, size_t end)
 {
     return find_impl(str, sub, start, end);
 }
 
 
-size_t rfind(const string_view&str, const string_view& sub, size_t start, size_t end)
+size_t rfind(const string_wrapper&str, const string_wrapper& sub, size_t start, size_t end)
 {
     return rfind_impl(str, sub, start, end);
 }
 
 
-size_t index(const string_view&str, const string_view& sub, size_t start, size_t end)
+size_t index(const string_wrapper&str, const string_wrapper& sub, size_t start, size_t end)
 {
     return index_impl(str, sub, start, end);
 }
 
 
-size_t rindex(const string_view&str, const string_view& sub, size_t start, size_t end)
+size_t rindex(const string_wrapper&str, const string_wrapper& sub, size_t start, size_t end)
 {
     return rindex_impl(str, sub, start, end);
 }
 
 
-size_t count(const string_view&str, const string_view& sub, size_t start, size_t end)
+size_t count(const string_wrapper&str, const string_wrapper& sub, size_t start, size_t end)
 {
     return count_impl(str, sub, start, end);
 }
 
 
-string_t lower(const string_view& str)
+string_t lower(const string_wrapper& str)
 {
     return lower_impl(str);
 }
 
 
-string_t upper(const string_view& str)
+string_t upper(const string_wrapper& str)
 {
     return upper_impl(str);
 }
 
 
-string_t replace(const string_view& str, const string_view& sub, const string_view& repl, size_t count)
+string_t replace(const string_wrapper& str, const string_wrapper& sub, const string_wrapper& repl, size_t count)
 {
-    return replace_impl(string_view(str), string_view(sub), string_view(repl), count);
+    return replace_impl(str, sub, repl, count);
 }
 
 
-string_t expandtabs(const string_view& str, size_t tabsize)
+string_t expandtabs(const string_wrapper& str, size_t tabsize)
 {
     return expandtabs_impl(str, tabsize);
 }
@@ -488,9 +488,60 @@ string_t expandtabs(const string_view& str, size_t tabsize)
 // -------
 
 
+string_wrapper::string_wrapper(const string_t& str):
+    string_view(str.data(), str.length())
+{}
+
+
 string_wrapper::string_wrapper(const string_view& str):
     string_view(str)
 {}
+
+
+string_wrapper::string_wrapper(const string_wrapper& str, size_type pos, size_type len):
+    string_view(str, pos, len)
+{}
+
+
+string_wrapper::string_wrapper(const string_t& str, size_type pos, size_type len):
+    string_view(str, pos, len)
+{}
+
+
+string_wrapper::string_wrapper(const_pointer str):
+    string_view(str)
+{}
+
+
+string_wrapper::string_wrapper(const_pointer str, size_type n):
+    string_view(str, n)
+{}
+
+
+string_wrapper::string_wrapper(const_pointer first, const_pointer last):
+    string_view(first, last)
+{}
+
+
+string_wrapper& string_wrapper::operator=(const string_t& str)
+{
+    string_view::operator=(str);
+    return *this;
+}
+
+
+string_wrapper& string_wrapper::operator=(const string_view& str)
+{
+    string_view::operator=(str);
+    return *this;
+}
+
+
+string_wrapper& string_wrapper::operator=(const_pointer str)
+{
+    string_view::operator=(str);
+    return *this;
+}
 
 
 string_view& string_wrapper::view()

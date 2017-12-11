@@ -3,18 +3,50 @@
 **Short-Term**
 
     - Change the default hash...
-        - The faster the hash...
-            - Done
-        - SPecialize all classes
-            - Need to specialize string_views
-            - Need to specialize secure_view
-            - Need to specialize vector::bool
+    - Change everything that uses `string_view` to use `string_wrapper`
+        - Working on it....
+            - algorithm -- DONE
+            - allocator -- DONE
+            - cipher -- DONE
+            - collections -- DONE
+            - compression -- DONE
+            - csv -- DONE
+            - filesystem -- DONE
+            - fixed -- DONE
+            - hashlib -- DONE
+            - iterator -- DONE
+            - itertools -- DONE
+            - json -- DONE
+            - lattice -- DONE
+            - math -- DONE
+            - memmap -- DONE
+            - misc -- DONE
+            - multi_index -- DONE
+            - preprocessor -- DONE
+            - random -- DONE
+            - re -- DONE
+            - reference -- DONE 
+            - runtime -- DONE
+            - safe -- DONE
+            - secure
+            - sql -- DONE
+            - stl -- DONE
+            - stream -- DONE
+            - view -- DONE
+            - windows -- DONE
+            - xml -- DONE
+
+    - Move `string_view` and `vector_view` to `stl` and make them STL-compatible
+        - vector_view -- DONE
+        - string_view -- LOLS FUCK
+
+    - Make `string_wrapper` have all the non-standard shit `string_view` did...
 
     - Look at use fatal rope and tokenizer, maybe some other tools
         - Importing code is great: easier to test, fast.
 
     - Make allocators non-optional, use a polymorphic allocator by default...
-        - Allow a CMake flag to use polymorphic or the standard allocator by default 
+    - Allow a CMake flag to use polymorphic or the standard allocator by default 
             -- DONE
         - Implement the polymorphic allocator
             -- DONE (msotly)
@@ -27,6 +59,8 @@
             -- DONE
 
         - Use all default types as aliases of the STL types...
+            - Need to alias basically all public headers....
+            - Lols shit...
 
         - Need a custom stringstream that takes a view or some shit, since that STL stringstream constructor is fucking dumb as shit.
 

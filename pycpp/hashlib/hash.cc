@@ -131,7 +131,7 @@ struct deallocate_hash
  */
 struct update_hash
 {
-    secure_string_view str;
+    string_wrapper str;
 
     template <typename Hash>
     void operator()(Hash& hash)
@@ -271,7 +271,7 @@ static void get_hash(Memory& mem, hash_algorithm algorithm, Function& function)
 // -------
 
 
-hash::hash(hash_algorithm algorithm):
+cryptographic_hash::cryptographic_hash(hash_algorithm algorithm):
     algorithm(algorithm)
 {
     allocate_hash hasher;
@@ -279,7 +279,7 @@ hash::hash(hash_algorithm algorithm):
 }
 
 
-hash::hash(hash_algorithm algorithm, const void* src, size_t srclen):
+cryptographic_hash::cryptographic_hash(hash_algorithm algorithm, const void* src, size_t srclen):
     algorithm(algorithm)
 {
     allocate_hash hasher;
@@ -288,7 +288,7 @@ hash::hash(hash_algorithm algorithm, const void* src, size_t srclen):
 }
 
 
-hash::hash(hash_algorithm algorithm, const secure_string_view& str):
+cryptographic_hash::cryptographic_hash(hash_algorithm algorithm, const string_wrapper& str):
     algorithm(algorithm)
 {
     allocate_hash hasher;
@@ -297,20 +297,20 @@ hash::hash(hash_algorithm algorithm, const secure_string_view& str):
 }
 
 
-hash::~hash()
+cryptographic_hash::~cryptographic_hash()
 {
     deallocate_hash hasher;
     get_hash(mem, algorithm, hasher);
 }
 
 
-hash::hash(const hash& other):
+cryptographic_hash::cryptographic_hash(const cryptographic_hash& other):
     algorithm(other.algorithm),
     mem(other.mem)
 {}
 
 
-hash& hash::operator=(const hash& other)
+cryptographic_hash& cryptographic_hash::operator=(const cryptographic_hash& other)
 {
     algorithm = other.algorithm;
     mem = other.mem;
@@ -318,13 +318,13 @@ hash& hash::operator=(const hash& other)
 }
 
 
-hash::hash(hash&& other):
+cryptographic_hash::cryptographic_hash(cryptographic_hash&& other):
     algorithm(std::move(other.algorithm)),
     mem(std::move(other.mem))
 {}
 
 
-hash& hash::operator=(hash&& other)
+cryptographic_hash& cryptographic_hash::operator=(cryptographic_hash&& other)
 {
     algorithm = std::move(other.algorithm);
     mem = std::move(other.mem);
@@ -332,34 +332,34 @@ hash& hash::operator=(hash&& other)
 }
 
 
-void hash::update(const void* src, size_t srclen)
+void cryptographic_hash::update(const void* src, size_t srclen)
 {
-    update(secure_string_view(reinterpret_cast<const char*>(src), srclen));
+    update(string_wrapper(reinterpret_cast<const char*>(src), srclen));
 }
 
 
-void hash::update(const secure_string_view& str)
+void cryptographic_hash::update(const string_wrapper& str)
 {
     update_hash functor = {str};
     get_hash(mem, algorithm, functor);
 }
 
 
-void hash::digest(void*& dst, size_t dstlen) const
+void cryptographic_hash::digest(void*& dst, size_t dstlen) const
 {
     digest_cstring functor = {dst, dstlen};
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
 }
 
 
-void hash::hexdigest(void*& dst, size_t dstlen) const
+void cryptographic_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     hexdigest_cstring functor = {dst, dstlen};
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
 }
 
 
-secure_string hash::digest() const
+secure_string cryptographic_hash::digest() const
 {
     digest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
@@ -367,7 +367,7 @@ secure_string hash::digest() const
 }
 
 
-secure_string hash::hexdigest() const
+secure_string cryptographic_hash::hexdigest() const
 {
     hexdigest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);

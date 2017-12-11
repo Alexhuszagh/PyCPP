@@ -351,7 +351,7 @@ sha3_224_hash::sha3_224_hash(const void* src, size_t srclen)
 }
 
 
-sha3_224_hash::sha3_224_hash(const secure_string_view& str)
+sha3_224_hash::sha3_224_hash(const string_wrapper& str)
 {
     ctx = new sha3_context;
     sha3_224_init(ctx);
@@ -372,7 +372,7 @@ void sha3_224_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha3_224_hash::update(const secure_string_view& str)
+void sha3_224_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }
@@ -422,7 +422,7 @@ sha3_256_hash::sha3_256_hash(const void* src, size_t srclen)
 }
 
 
-sha3_256_hash::sha3_256_hash(const secure_string_view& str)
+sha3_256_hash::sha3_256_hash(const string_wrapper& str)
 {
     ctx = new sha3_context;
     sha3_256_init(ctx);
@@ -443,7 +443,7 @@ void sha3_256_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha3_256_hash::update(const secure_string_view& str)
+void sha3_256_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }
@@ -493,7 +493,7 @@ sha3_384_hash::sha3_384_hash(const void* src, size_t srclen)
 }
 
 
-sha3_384_hash::sha3_384_hash(const secure_string_view& str)
+sha3_384_hash::sha3_384_hash(const string_wrapper& str)
 {
     ctx = new sha3_context;
     sha3_384_init(ctx);
@@ -514,7 +514,7 @@ void sha3_384_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha3_384_hash::update(const secure_string_view& str)
+void sha3_384_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }
@@ -564,7 +564,7 @@ sha3_512_hash::sha3_512_hash(const void* src, size_t srclen)
 }
 
 
-sha3_512_hash::sha3_512_hash(const secure_string_view& str)
+sha3_512_hash::sha3_512_hash(const string_wrapper& str)
 {
     ctx = new sha3_context;
     sha3_512_init(ctx);
@@ -585,7 +585,7 @@ void sha3_512_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha3_512_hash::update(const secure_string_view& str)
+void sha3_512_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }

@@ -25,7 +25,8 @@
 #include <pycpp/secure/allocator.h>
 #include <pycpp/secure/char_traits.h>
 #include <pycpp/secure/stdlib.h>
-#include <pycpp/view/string.h>
+#include <pycpp/stl/hash.h>
+#include <pycpp/stl/string_view.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -2142,45 +2143,41 @@ void secure_basic_string<C, T, A>::reallocate(size_type n)
 // ALIAS
 // -----
 
-typedef secure_basic_string<char> secure_string;
-typedef secure_basic_string<wchar_t> secure_wstring;
-typedef secure_basic_string<char16_t> secure_u16string;
-typedef secure_basic_string<char32_t> secure_u32string;
-typedef basic_string_view<char, secure_char_traits<char>> secure_string_view;
-typedef basic_string_view<wchar_t, secure_char_traits<wchar_t>> secure_wstring_view;
-typedef basic_string_view<char16_t, secure_char_traits<char16_t>> secure_u16string_view;
-typedef basic_string_view<char32_t, secure_char_traits<char32_t>> secure_u32string_view;
+using secure_string = secure_basic_string<char>;
+using secure_wstring = secure_basic_string<wchar_t>;
+using secure_u16string = secure_basic_string<char16_t>;
+using secure_u32string = secure_basic_string<char32_t>;
 
 PYCPP_END_NAMESPACE
 
-// TODO: need to specialize with my new hash, not std::hash
+
 namespace std
 {
 // SPECIALIZATION
 // --------------
 
-template <>
-struct hash<PYCPP_NAMESPACE::secure_string>;
+PYCPP_USING_NAMESPACE
 
-template <>
-struct hash<PYCPP_NAMESPACE::secure_wstring>;
-
-template <>
-struct hash<PYCPP_NAMESPACE::secure_u16string>;
-
-template <>
-struct hash<PYCPP_NAMESPACE::secure_u32string>;
-
-template <>
-struct hash<PYCPP_NAMESPACE::secure_string_view>;
-
-template <>
-struct hash<PYCPP_NAMESPACE::secure_wstring_view>;
-
-template <>
-struct hash<PYCPP_NAMESPACE::secure_u16string_view>;
-
-template <>
-struct hash<PYCPP_NAMESPACE::secure_u32string_view>;
+PYCPP_SPECIALIZE_HASH_STRING(hash, secure_string);
+PYCPP_SPECIALIZE_HASH_STRING(hash, secure_wstring);
+PYCPP_SPECIALIZE_HASH_STRING(hash, secure_u16string);
+PYCPP_SPECIALIZE_HASH_STRING(hash, secure_u32string);
 
 }   /* std */
+
+
+PYCPP_BEGIN_NAMESPACE
+
+// SPECIALIZATION
+// --------------
+
+#if defined(USE_XXHASH)
+
+PYCPP_SPECIALIZE_HASH_REFERENCE(hash, secure_string);
+PYCPP_SPECIALIZE_HASH_REFERENCE(hash, secure_wstring);
+PYCPP_SPECIALIZE_HASH_REFERENCE(hash, secure_u16string);
+PYCPP_SPECIALIZE_HASH_REFERENCE(hash, secure_u32string);
+
+#endif          // USE_XXHASH
+
+PYCPP_END_NAMESPACE

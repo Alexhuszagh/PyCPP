@@ -10,7 +10,7 @@
 #if defined(HAVE_BZIP2)
 
 #include <pycpp/compression/exception.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <memory>
 
 PYCPP_BEGIN_NAMESPACE
@@ -74,12 +74,12 @@ void bz2_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief BZIP2-compress data.
  */
-std::string bz2_compress(const string_view& str);
+std::string bz2_compress(const string_wrapper& str);
 
 /**
  *  \brief BZIP2-decompress data.
  */
-std::string bz2_decompress(const string_view& str);
+std::string bz2_decompress(const string_wrapper& str);
 
 /**
  *  \brief BZIP2-decompress data.
@@ -93,7 +93,7 @@ void bz2_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, 
  *
  *  \param bound            Known size of decompressed buffer.
  */
-std::string bz2_decompress(const string_view& str, size_t bound);
+std::string bz2_decompress(const string_wrapper& str, size_t bound);
 
 PYCPP_END_NAMESPACE
 

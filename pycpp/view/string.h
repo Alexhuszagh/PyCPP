@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/hash.h>
 #include <algorithm>
 #include <cassert>
 #include <iterator>
@@ -792,7 +792,7 @@ template <typename C, typename T>
 template <typename A>
 basic_string_view<C, T>::basic_string_view(const string<C, T, A>& str, size_type pos, size_type len)
 {
-    operator=(self_t(str), pos, len);
+    operator=(self_t(str, pos, len));
 }
 
 
@@ -1462,32 +1462,41 @@ basic_string_view<C, T>::operator stl_type() const
     return stl_type(data_, length_);
 }
 
-// TYPES
+// ALIAS
 // -----
 
-typedef basic_string_view<char> string_view;
-typedef basic_string_view<wchar_t> wstring_view;
-typedef basic_string_view<char16_t> u16string_view;
-typedef basic_string_view<char32_t> u32string_view;
+using string_view = basic_string_view<char>;
+using wstring_view = basic_string_view<wchar_t>;
+using u16string_view = basic_string_view<char16_t>;
+using u32string_view = basic_string_view<char32_t>;
 
 PYCPP_END_NAMESPACE
 
-// TODO: need to specialize with my new hash, not std::hash...
 namespace std
 {
 // SPECIALIZATION
 // --------------
 
-template <>
-struct hash<PYCPP_NAMESPACE::string_view>;
-
-template <>
-struct hash<PYCPP_NAMESPACE::wstring_view>;
-
-template <>
-struct hash<PYCPP_NAMESPACE::u16string_view>;
-
-template <>
-struct hash<PYCPP_NAMESPACE::u32string_view>;
+PYCPP_SPECIALIZE_HASH_STRING(hash, PYCPP_NAMESPACE::string_view);
+PYCPP_SPECIALIZE_HASH_STRING(hash, PYCPP_NAMESPACE::wstring_view);
+PYCPP_SPECIALIZE_HASH_STRING(hash, PYCPP_NAMESPACE::u16string_view);
+PYCPP_SPECIALIZE_HASH_STRING(hash, PYCPP_NAMESPACE::u32string_view);
 
 }   /* std */
+
+
+PYCPP_BEGIN_NAMESPACE
+
+// SPECIALIZATION
+// --------------
+
+#if defined(USE_XXHASH)
+
+PYCPP_SPECIALIZE_HASH_REFERENCE(hash, string_view);
+PYCPP_SPECIALIZE_HASH_REFERENCE(hash, wstring_view);
+PYCPP_SPECIALIZE_HASH_REFERENCE(hash, u16string_view);
+PYCPP_SPECIALIZE_HASH_REFERENCE(hash, u32string_view);
+
+#endif          // USE_XXHASH
+
+PYCPP_END_NAMESPACE

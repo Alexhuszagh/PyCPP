@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <pycpp/xml/sax.h>
 #include <pycpp/xml/writer.h>
 #include <deque>
@@ -28,9 +27,9 @@ public:
     xml_dom_handler(xml_node_t&);
     virtual void start_document() override;
     virtual void end_document() override;
-    virtual void start_element(const string_view&, xml_attr_t&&) override;
-    virtual void end_element(const string_view&) override;
-    virtual void characters(const string_view&) override;
+    virtual void start_element(const string_wrapper&, xml_attr_t&&) override;
+    virtual void end_element(const string_wrapper&) override;
+    virtual void characters(const string_wrapper&) override;
 
 private:
     xml_node_t* root_ = nullptr;
@@ -43,7 +42,7 @@ private:
  */
 struct xml_document_t: xml_node_t
 {
-    void loads(const string_view&);
+    void loads(const string_wrapper&);
     void load(std::istream&);
     void load(const string_view&);
 #if defined(HAVE_WFOPEN)                        // WINDOWS

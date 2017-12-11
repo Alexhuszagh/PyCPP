@@ -21,7 +21,7 @@ const int sqlite_ok = SQLITE_OK;
 // FUNCTIONS
 // ---------
 
-static int prepare_impl(sqlite3* db, const string_view& query, sqlite3_stmt*& stmt)
+static int prepare_impl(sqlite3* db, const string_wrapper& query, sqlite3_stmt*& stmt)
 {
     return sqlite3_prepare_v3(db, query.data(), query.size(), 0, &stmt, nullptr)
 }
@@ -50,7 +50,7 @@ sqlite_driver::sqlite_driver(sqlite3* db):
 {}
 
 
-bool sqlite_driver::exec(const string_view& query)
+bool sqlite_driver::exec(const string_wrapper& query)
 {
     status_ = prepare_impl(db_, query, stmt_);
     if (status_ != sqlite_ok) {
@@ -63,7 +63,7 @@ bool sqlite_driver::exec(const string_view& query)
 }
 
 
-bool sqlite_driver::prepare(const string_view& query)
+bool sqlite_driver::prepare(const string_wrapper& query)
 {
     // TODO: use the v2 interface...
     // TODO: change
@@ -84,7 +84,7 @@ bool sqlite_driver::exec()
 
 // DATABASE
 
-sqlite_database::sqlite_database(const string_view& file_name, const int flags, const string_view& vfs)
+sqlite_database::sqlite_database(const string_wrapper& file_name, const int flags, const string_wrapper& vfs)
 {
     int status = sqlite3_open_v2(file_name.data(), &db_, flags, vfs.data());
     if (status != sqlite_ok) {

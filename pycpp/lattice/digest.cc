@@ -22,7 +22,7 @@ PYCPP_BEGIN_NAMESPACE
 
 static std::string sha1_hex(const std::string& str)
 {
-    secure_string_view view(str.data(), str.size());
+    string_wrapper view(str.data(), str.size());
     auto hex = sha1_hash(view).hexdigest();
     return std::string(hex.data(), hex.size());
 }
@@ -30,7 +30,7 @@ static std::string sha1_hex(const std::string& str)
 
 static std::string md5_hex(const std::string& str)
 {
-    secure_string_view view(str.data(), str.size());
+    string_wrapper view(str.data(), str.size());
     auto hex = md5_hash(view).hexdigest();
     return std::string(hex.data(), hex.size());
 }
@@ -53,7 +53,7 @@ bool lowercase_equal_to::operator()(const std::string& lhs, const std::string& r
 }
 
 
-quality_of_protection_t::quality_of_protection_t(const string_view& qop)
+quality_of_protection_t::quality_of_protection_t(const string_wrapper& qop)
 {
     auto data = split(qop, ",");
     insert(begin(), data.begin(), data.end());
@@ -85,9 +85,9 @@ quality_of_protection_t::operator bool() const
 }
 
 
-digest_challenge_t::digest_challenge_t(const string_view& string)
+digest_challenge_t::digest_challenge_t(const string_wrapper& str)
 {
-    auto data = quoted_split(string.substr(7), ',', '"', '\\');
+    auto data = quoted_split(str.substr(7), ',', '"', '\\');
     for (auto &value: data) {
         value = trim(value);
         const char *begin = value.data();
@@ -173,8 +173,8 @@ quality_of_protection_t digest_challenge_t::qop() const
 std::string digest_challenge_t::header(const url_t& url,
     const parameters_t& parameters,
     const digest_t& digest,
-    const string_view& body,
-    const string_view& method)
+    const string_wrapper& body,
+    const string_wrapper& method)
 {
     // get string to hash
     auto quality = qop();

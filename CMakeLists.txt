@@ -617,8 +617,9 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/utility.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector_view.h"
+    # TODO: remove
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/view/string.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/view/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/error.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/mman.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/winapi.h"
@@ -1089,6 +1090,7 @@ set(TEST_FILES
     test/stl/optional.cc
     test/stl/set.cc
     test/stl/string.cc
+    test/stl/string_view.cc
     test/stl/system_error.cc
     test/stl/thread.cc
     test/stl/typeindex.cc
@@ -1096,6 +1098,7 @@ set(TEST_FILES
     test/stl/unordered_set.cc
     test/stl/variant.cc
     test/stl/vector.cc
+    test/stl/vector_view.cc
     test/string/base16.cc
     test/string/base32.cc
     test/string/base64.cc
@@ -1107,8 +1110,6 @@ set(TEST_FILES
     test/string/string.cc
     test/string/unicode.cc
     test/string/url.cc
-    test/view/string.cc
-    test/view/vector.cc
     test/iterator.cc
     test/itertools.cc
     test/random.cc

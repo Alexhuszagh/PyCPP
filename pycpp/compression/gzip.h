@@ -10,7 +10,7 @@
 #if defined(HAVE_ZLIB)
 
 #include <pycpp/compression/exception.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <memory>
 
 PYCPP_BEGIN_NAMESPACE
@@ -74,12 +74,12 @@ void gzip_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief GZIP-compress data.
  */
-std::string gzip_compress(const string_view& str);
+std::string gzip_compress(const string_wrapper& str);
 
 /**
  *  \brief GZIP-decompress data.
  */
-std::string gzip_decompress(const string_view& str);
+std::string gzip_decompress(const string_wrapper& str);
 
 /**
  *  \brief GZIP-decompress data. Returns number of bytes converted.
@@ -93,7 +93,7 @@ void gzip_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
  *
  *  \param bound            Known size of decompressed buffer.
  */
-std::string gzip_decompress(const string_view& str, size_t bound);
+std::string gzip_decompress(const string_wrapper& str, size_t bound);
 
 PYCPP_END_NAMESPACE
 

@@ -8,10 +8,11 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/vector.h>
 #include <algorithm>
 #include <cassert>
-#include <vector>
+#include <cstring>
+#include <stdexcept>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -34,39 +35,30 @@ template <typename T>
 class vector_view
 {
 public:
-    // MEMBER TEMPLATES
-    template <typename U>
-    using view = vector_view<U>;
-
-    template <typename U>
-    using vector = std::vector<U>;
-
     // MEMBER TYPES
     // ------------
-    typedef vector_view<T> self;
-    typedef std::vector<T> stl_type;
-    typedef T value_type;
-    typedef T& reference;
-    typedef const T& const_reference;
-    typedef T* pointer;
-    typedef const T* const_pointer;
-    typedef std::ptrdiff_t difference_type;
-    typedef size_t size_type;
-    typedef pointer iterator;
-    typedef const_pointer const_iterator;
-    typedef std::reverse_iterator<pointer> reverse_iterator;
-    typedef std::reverse_iterator<const_pointer> const_reverse_iterator;
+    using value_type = T;
+    using reference = T&;
+    using const_reference = const T&;
+    using pointer = T*;
+    using const_pointer = const T*;
+    using size_type = size_t;
+    using difference_type = std::ptrdiff_t;
+    using iterator = pointer;
+    using const_iterator = const_pointer;
+    using reverse_iterator = std::reverse_iterator<pointer>;
+    using const_reverse_iterator = std::reverse_iterator<const_pointer>;
 
     // MEMBER FUNCTIONS
     // ----------------
     vector_view() = default;
-    vector_view(const self& vec);
-    self& operator=(const self& vec);
-    vector_view(self&& vec);
-    self& operator=(self&& vec);
+    vector_view(const vector_view<T>& vec);
+    vector_view<T>& operator=(const vector_view<T>& vec);
+    vector_view(vector_view<T>&& vec);
+    vector_view<T>& operator=(vector_view<T>&& vec);
 
-    vector_view(const stl_type& vec);
-    self& operator=(const stl_type& vec);
+    template <typename A> vector_view(const vector<T, A>& vec);
+    template <typename A> vector_view<T>& operator=(const vector<T, A>& vec);
     vector_view(pointer t, size_type n);
     vector_view(pointer first, pointer last);
 
@@ -97,11 +89,16 @@ public:
     const_pointer data() const noexcept;
 
     // MODIFIERS
-    void swap(self& other);
+    void swap(vector_view<T>& rhs);
+    void remove_prefix(size_type n);
+    void remove_suffix(size_type n);
+
+    // OPERATIONS
+    size_type copy(value_type* dst, size_type count, size_type pos = 0);
 
     // CONVERSIONS
     explicit operator bool() const;
-    explicit operator stl_type() const;
+    template <typename A> explicit operator vector<T, A>() const;
 
 private:
     const_pointer data_ = nullptr;
@@ -110,64 +107,63 @@ private:
     // NON-MEMBER FUNCTIONS
     // --------------------
     template <typename U>
-    friend void swap(view<U> &lhs, view<U> &right);
+    friend void swap(vector_view<U> &lhs, vector_view<U> &right);
 
     // RELATIONAL OPERATORS
     template <typename U>
-    friend bool operator==(const view<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator==(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator==(const vector<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator==(const vector<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator==(const view<U>& lhs, const vector<U>& right) noexcept;
+    friend bool operator==(const vector_view<U>& lhs, const vector<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator!=(const view<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator!=(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator!=(const vector<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator!=(const vector<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator!=(const view<U>& lhs, const vector<U>& right) noexcept;
+    friend bool operator!=(const vector_view<U>& lhs, const vector<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator<(const view<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator<(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator<(const vector<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator<(const vector<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator<(const view<U>& lhs, const vector<U>& right) noexcept;
+    friend bool operator<(const vector_view<U>& lhs, const vector<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator<=(const view<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator<=(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator<=(const vector<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator<=(const vector<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator<=(const view<U>& lhs, const vector<U>& right) noexcept;
+    friend bool operator<=(const vector_view<U>& lhs, const vector<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator>(const view<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator>(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator>(const vector<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator>(const vector<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator>(const view<U>& lhs, const vector<U>& right) noexcept;
+    friend bool operator>(const vector_view<U>& lhs, const vector<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator>=(const view<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator>=(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator>=(const vector<U>& lhs, const view<U>& right) noexcept;
+    friend bool operator>=(const vector<U>& lhs, const vector_view<U>& right) noexcept;
 
     template <typename U>
-    friend bool operator>=(const view<U>& lhs, const vector<U>& right) noexcept;
+    friend bool operator>=(const vector_view<U>& lhs, const vector<U>& right) noexcept;
 };
-
 
 // IMPLEMENTATION
 // --------------
@@ -307,14 +303,14 @@ bool operator>=(const vector_view<T> &lhs, const std::vector<T> &rhs) noexcept
 
 
 template <typename T>
-vector_view<T>::vector_view(const self& vec):
+vector_view<T>::vector_view(const vector_view<T>& vec):
     data_(vec.data()),
     size_(vec.size())
 {}
 
 
 template <typename T>
-auto vector_view<T>::operator=(const self& vec) -> self&
+auto vector_view<T>::operator=(const vector_view<T>& vec) -> vector_view<T>&
 {
     data_ = vec.data();
     size_ = vec.size();
@@ -323,28 +319,30 @@ auto vector_view<T>::operator=(const self& vec) -> self&
 
 
 template <typename T>
-vector_view<T>::vector_view(self&& vec)
+vector_view<T>::vector_view(vector_view<T>&& vec)
 {
     swap(vec);
 }
 
 
 template <typename T>
-auto vector_view<T>::operator=(self&& vec) -> self&
+auto vector_view<T>::operator=(vector_view<T>&& vec) -> vector_view<T>&
 {
     swap(vec);
     return *this;
 }
 
 template <typename T>
-vector_view<T>::vector_view(const stl_type& vec):
+template <typename A>
+vector_view<T>::vector_view(const vector<T, A>& vec):
     data_(vec.data()),
     size_(vec.size())
 {}
 
 
 template <typename T>
-auto vector_view<T>::operator=(const stl_type& vec) -> self&
+template <typename A>
+auto vector_view<T>::operator=(const vector<T, A>& vec) -> vector_view<T>&
 {
     data_ = vec.data();
     size_ = vec.size();
@@ -513,10 +511,42 @@ auto vector_view<T>::data() const noexcept -> const_pointer
 
 
 template <typename T>
-void vector_view<T>::swap(self& other)
+void vector_view<T>::swap(vector_view<T>& rhs)
 {
-    std::swap(data_, other.data_);
-    std::swap(size_, other.size_);
+    std::swap(data_, rhs.data_);
+    std::swap(size_, rhs.size_);
+}
+
+
+template <typename T>
+void vector_view<T>::remove_prefix(size_type n)
+{
+    assert(n <= size() && "vector_view::remove_prefix greater than size.");
+    data_ += n;
+    size_ -= n;
+}
+
+
+template <typename T>
+void vector_view<T>::remove_suffix(size_type n)
+{
+    assert(n <= size() && "vector_view::remove_suffix greater than size.");
+    size_ -= n;
+}
+
+
+template <typename T>
+auto vector_view<T>::copy(value_type* dst, size_type count, size_type pos) -> size_type
+{
+    if (pos > size()) {
+        throw std::out_of_range("vector_view::copy");
+    }
+
+    size_type length = std::min(count, size() - pos);
+    // can pass 0 to memcpy
+    memcpy(dst, data() + pos, length * sizeof(value_type));
+
+    return length;
 }
 
 
@@ -528,9 +558,10 @@ vector_view<T>::operator bool() const
 
 
 template <typename T>
-vector_view<T>::operator stl_type() const
+template <typename A>
+vector_view<T>::operator vector<T, A>() const
 {
-    return stl_type(begin(), end());
+    return vector<T, A>(begin(), end());
 }
 
 PYCPP_END_NAMESPACE

@@ -9,7 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/os.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 
 #if defined(OS_WINDOWS)
 #   include <winsock2.h>
@@ -129,7 +129,7 @@ public:
     dns_lookup_t& operator=(dns_lookup_t&&) = default;
     ~dns_lookup_t();
 
-    dns_lookup_t(const string_view& host, const string_view& service);
+    dns_lookup_t(const string_wrapper& host, const string_wrapper& service);
 
     // ITERATORS
     address_iterator_t begin() const;

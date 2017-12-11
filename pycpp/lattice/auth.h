@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -33,7 +32,7 @@ struct authentication_t
 
     authentication_t(const char* username, const char* password);
     authentication_t(std::string&& username, std::string&& password);
-    authentication_t(const string_view& username, const string_view& password);
+    authentication_t(const string_wrapper& username, const string_wrapper& password);
 
     const std::string string() const noexcept;
     explicit operator bool() const;

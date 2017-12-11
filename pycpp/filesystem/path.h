@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/string_view.h>
 #include <pycpp/string/codec.h>
-#include <pycpp/view/string.h>
 #include <deque>
 
 PYCPP_BEGIN_NAMESPACE
@@ -18,16 +18,16 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 #if defined(OS_WINDOWS)             // WINDOWS
-   typedef wchar_t native_char_type;
-   typedef char backup_char_type;
-   typedef std::u16string path_t;
-   typedef u16string_view path_view_t;
-   typedef std::string backup_path_t;
-   typedef string_view backup_path_view_t;
-   typedef std::deque<path_t> path_list_t;
-   typedef std::deque<path_view_t> path_view_list_t;
-   typedef std::deque<backup_path_t> backup_path_list_t;
-   typedef std::deque<backup_path_view_t> backup_path_view_list_t;
+   using native_char_type = wchar_t;
+   using backup_char_type = char;
+   using path_t = std::u16string;
+   using path_view_t = u16string_view;
+   using backup_path_t = std::string;
+   using backup_path_view_t = string_view;
+   using path_list_t = std::deque<path_t>;
+   using path_view_list_t = std::deque<path_view_t>;
+   using backup_path_list_t = std::deque<backup_path_t>;
+   using backup_path_view_list_t = std::deque<backup_path_view_t>;
    std::u16string ansi_to_utf16(const string_view&);
    std::string utf16_to_ansi(const u16string_view&);
 #   define path_to_string(s) codec_utf16_utf8(s)
@@ -38,11 +38,11 @@ PYCPP_BEGIN_NAMESPACE
 #   define string_to_backup_path(s) (s)
 #   define path_prefix(p) u##p
 #else                               // POSIX
-   typedef char native_char_type;
-   typedef std::string path_t;
-   typedef string_view path_view_t;
-   typedef std::deque<path_t> path_list_t;
-   typedef std::deque<path_view_t> path_view_list_t;
+   using native_char_type = char;
+   using path_t = std::string;
+   using path_view_t = string_view;
+   using path_list_t = std::deque<path_t>;
+   using path_view_list_t = std::deque<path_view_t>;
 #   define path_to_string(s) (s)
 #   define string_to_path(s) (s)
 #   define path_prefix(p) (p)

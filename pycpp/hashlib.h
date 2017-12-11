@@ -9,6 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/secure/string.h>
+#include <pycpp/string/string.h>
 #include <functional>
 #include <string>
 #include <utility>
@@ -67,11 +68,11 @@ enum hash_algorithm
     public:                                                             \
         name##_hash();                                                  \
         name##_hash(const void* src, size_t srclen);                    \
-        name##_hash(const secure_string_view& str);                     \
+        name##_hash(const string_wrapper& str);                         \
         ~name##_hash();                                                 \
                                                                         \
         void update(const void* src, size_t srclen);                    \
-        void update(const secure_string_view& str);                     \
+        void update(const string_wrapper& str);                         \
         void digest(void*& dst, size_t dstlen) const;                   \
         void hexdigest(void*& dst, size_t dstlen) const;                \
         secure_string digest() const;                                   \
@@ -117,21 +118,21 @@ secure_string hash_hexdigest(void* ctx, size_t hashlen, void (*cb)(void*, void*)
 /**
  *  \brief Generic hash context.
  */
-struct hash
+struct cryptographic_hash
 {
 public:
-    hash(hash_algorithm algorithm);
-    hash(hash_algorithm algorithm, const void* src, size_t srclen);
-    hash(hash_algorithm algorithm, const secure_string_view& str);
-    ~hash();
+    cryptographic_hash(hash_algorithm algorithm);
+    cryptographic_hash(hash_algorithm algorithm, const void* src, size_t srclen);
+    cryptographic_hash(hash_algorithm algorithm, const string_wrapper& str);
+    ~cryptographic_hash();
 
-    hash(const hash&);
-    hash& operator=(const hash&);
-    hash(hash&&);
-    hash& operator=(hash&&);
+    cryptographic_hash(const cryptographic_hash&);
+    cryptographic_hash& operator=(const cryptographic_hash&);
+    cryptographic_hash(cryptographic_hash&&);
+    cryptographic_hash& operator=(cryptographic_hash&&);
 
     void update(const void* src, size_t srclen);
-    void update(const secure_string_view& str);
+    void update(const string_wrapper& str);
     void digest(void*& dst, size_t dstlen) const;
     void hexdigest(void*& dst, size_t dstlen) const;
     secure_string digest() const;

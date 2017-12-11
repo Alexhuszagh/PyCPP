@@ -768,7 +768,7 @@ whirlpool_hash::whirlpool_hash(const void* src, size_t srclen)
 }
 
 
-whirlpool_hash::whirlpool_hash(const secure_string_view& str)
+whirlpool_hash::whirlpool_hash(const string_wrapper& str)
 {
     ctx = new whirlpool_context;
     whirlpool_init(ctx);
@@ -789,7 +789,7 @@ void whirlpool_hash::update(const void* src, size_t srclen)
 }
 
 
-void whirlpool_hash::update(const secure_string_view& str)
+void whirlpool_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }

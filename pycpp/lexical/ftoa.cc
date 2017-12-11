@@ -14,7 +14,7 @@
 #include <pycpp/lexical/ftoa.h>
 #include <pycpp/lexical/table.h>
 #include <pycpp/preprocessor/os.h>
-#include <pycpp/view/string.h>
+#include <pycpp/stl/string_view.h>
 #include <algorithm>
 #include <cassert>
 #include <cmath>

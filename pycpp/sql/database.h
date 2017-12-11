@@ -17,7 +17,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Get the default connection name for a new database.
  */
-string_view default_connection_name();
+string_wrapper default_connection_name();
 
 // DECLARATIONS
 // ------------
@@ -29,12 +29,12 @@ struct sql_database
 {
 public:
     sql_database();
-    sql_database(const string_view& connection_name);
+    sql_database(const string_wrapper& connection_name);
     ~sql_database();
     // TODO: need copy/etc constructors....
 
 // TODO: get open connection by name
-//    static sql_database database(const string_view& connection_name);
+//    static sql_database database(const string_wrapper& connection_name);
     // DRIVERS
     virtual sql_driver& driver() = 0;
 

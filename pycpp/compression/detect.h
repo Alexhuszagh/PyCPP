@@ -8,9 +8,9 @@
 #pragma once
 
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/vector_view.h>
 #include <pycpp/stream/filter.h>
-#include <pycpp/view/string.h>
-#include <pycpp/view/vector.h>
+#include <pycpp/string/string.h>
 #include <istream>
 
 PYCPP_BEGIN_NAMESPACE
@@ -18,7 +18,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using magic_bytes = vector_view<string_view>;
+using magic_bytes = vector_view<string_wrapper>;
 
 // ENUMS
 // -----
@@ -59,7 +59,7 @@ enum compression_format
     struct is_##name                                                    \
     {                                                                   \
         static const magic_bytes& magic();                              \
-        static bool header(const string_view& header);                  \
+        static bool header(const string_wrapper& header);               \
         static bool stream(std::istream& stream);                       \
         DETECT_PATH                                                     \
     }

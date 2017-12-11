@@ -9,7 +9,7 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
-#include <pycpp/view/string.h>
+#include <pycpp/stl/string_view.h>
 #include <fstream>
 
 #if defined(HAVE_GCC)

@@ -23,32 +23,32 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Search for pattern within string.
  */
-match_t search(const string_view& pattern, const string_view& str);
+match_t re_search(const string_wrapper& pattern, const string_wrapper& str);
 
 /**
  *  \brief Match pattern within string.
  */
-match_t match(const string_view& pattern, const string_view& str);
+match_t re_match(const string_wrapper& pattern, const string_wrapper& str);
 
 /**
  *  \brief Split string by pattern.
  */
-match_groups split(const string_view& pattern, const string_view& str, size_t maxsplit = -1);
+match_groups re_split(const string_wrapper& pattern, const string_wrapper& str, size_t maxsplit = -1);
 
 /**
  *  \brief Get all matches from pattern within a string.
  */
-match_groups findall(const string_view& pattern, const string_view& str);
+match_groups re_findall(const string_wrapper& pattern, const string_wrapper& str);
 
 /**
  *  \brief Iteratively find matches within string.
  */
-match_range finditer(const string_view& pattern, const string_view& str);
+match_range re_finditer(const string_wrapper& pattern, const string_wrapper& str);
 
 /**
  *  \brief Replace all matches of pattern in str with repl.
  */
-std::string sub(const string_view& pattern, const string_view& repl, const string_view& str);
+std::string re_sub(const string_wrapper& pattern, const string_wrapper& repl, const string_wrapper& str);
 
 /**
  *  \brief Escape all characters except for ASCII numbers and letters.
@@ -56,11 +56,11 @@ std::string sub(const string_view& pattern, const string_view& repl, const strin
  *  Escapes all ASCII non-alphanumeric characters, assuming
  *  UTF-8 source encoding.
  */
-std::string escape(const string_view& str);
+std::string re_escape(const string_wrapper& str);
 
 /**
  *  \brief Purge the regex cache.
  */
-void purge();
+void re_purge();
 
 PYCPP_END_NAMESPACE

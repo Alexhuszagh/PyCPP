@@ -74,21 +74,21 @@ static void end_document_handler(void* data)
 static void start_element_handler(void* data, const xmlChar* name, const xmlChar** attrs)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    handler->start_element(string_view((char*) name), parse_attributes(attrs));
+    handler->start_element(string_wrapper((char*) name), parse_attributes(attrs));
 }
 
 
 static void end_element_handler(void* data, const xmlChar* name)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    handler->end_element(string_view((char*) name));
+    handler->end_element(string_wrapper((char*) name));
 }
 
 
 static void characters_handler(void* data, const xmlChar* ch, int len)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    handler->characters(string_view((char*) ch, len));
+    handler->characters(string_wrapper((char*) ch, len));
 }
 
 
@@ -99,14 +99,14 @@ static void reference_handler(void* data, const xmlChar* name)
 static void ignorable_whitespace_handler(void* data, const xmlChar* ch, int len)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    handler->ignorable_whitespace(string_view((char*) ch, len));
+    handler->ignorable_whitespace(string_wrapper((char*) ch, len));
 }
 
 
 static void processing_instruction_handler(void* data, const xmlChar* target, const xmlChar* value)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    handler->processing_instruction(string_view((char*) target), string_view((char*) value));
+    handler->processing_instruction(string_wrapper((char*) target), string_wrapper((char*) value));
 }
 
 
@@ -116,7 +116,7 @@ static void skipped_entity_handler(void* data, const xmlChar* name,
                                    const xmlChar* notation_name)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    handler->skipped_entity(string_view((char*) name));
+    handler->skipped_entity(string_wrapper((char*) name));
 }
 
 
@@ -127,7 +127,7 @@ void start_element_ns_handler(void* data, const xmlChar* localname,
                               const xmlChar** attrs)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    handler->start_element_ns(string_view((char*) uri), string_view((char*) prefix), string_view((char*) localname), parse_attributes(attrs));
+    handler->start_element_ns(string_wrapper((char*) uri), string_wrapper((char*) prefix), string_wrapper((char*) localname), parse_attributes(attrs));
 }
 
 
@@ -135,7 +135,7 @@ void end_element_ns_handler(void* data, const xmlChar* localname,
                             const xmlChar* prefix, const xmlChar* uri)
 {
     xml_sax_handler* handler = (xml_sax_handler*) data;
-    handler->end_element_ns(string_view((char*) uri), string_view((char*) prefix), string_view((char*) localname));
+    handler->end_element_ns(string_wrapper((char*) uri), string_wrapper((char*) prefix), string_wrapper((char*) localname));
 }
 
 
@@ -280,35 +280,35 @@ void xml_sax_handler::end_document()
 {}
 
 
-void xml_sax_handler::start_element(const string_view& content, xml_attr_t&& attrs)
+void xml_sax_handler::start_element(const string_wrapper& content, xml_attr_t&& attrs)
 {}
 
 
-void xml_sax_handler::end_element(const string_view& content)
+void xml_sax_handler::end_element(const string_wrapper& content)
 {}
 
 
-void xml_sax_handler::characters(const string_view& content)
+void xml_sax_handler::characters(const string_wrapper& content)
 {}
 
 
-void xml_sax_handler::start_element_ns(const string_view& uri, const string_view& prefix, const string_view& localname, xml_attr_t&& attrs)
+void xml_sax_handler::start_element_ns(const string_wrapper& uri, const string_wrapper& prefix, const string_wrapper& localname, xml_attr_t&& attrs)
 {}
 
 
-void xml_sax_handler::end_element_ns(const string_view& uri, const string_view& prefix, const string_view& localname)
+void xml_sax_handler::end_element_ns(const string_wrapper& uri, const string_wrapper& prefix, const string_wrapper& localname)
 {}
 
 
-void xml_sax_handler::ignorable_whitespace(const string_view& whitespace)
+void xml_sax_handler::ignorable_whitespace(const string_wrapper& whitespace)
 {}
 
 
-void xml_sax_handler::processing_instruction(const string_view& target, const string_view& data)
+void xml_sax_handler::processing_instruction(const string_wrapper& target, const string_wrapper& data)
 {}
 
 
-void xml_sax_handler::skipped_entity(const string_view& name)
+void xml_sax_handler::skipped_entity(const string_wrapper& name)
 {}
 
 
@@ -393,13 +393,13 @@ xml_string_reader::xml_string_reader()
 {}
 
 
-xml_string_reader::xml_string_reader(const string_view& str)
+xml_string_reader::xml_string_reader(const string_wrapper& str)
 {
     open(str);
 }
 
 
-void xml_string_reader::open(const string_view& str)
+void xml_string_reader::open(const string_wrapper& str)
 {
     sstream_ = std::istringstream(std::string(str), std::ios_base::in | std::ios_base::binary);
     xml_stream_reader::open(sstream_);

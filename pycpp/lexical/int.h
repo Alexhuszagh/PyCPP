@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/view/string.h>
+#include <pycpp/stl/string_view.h>
 #include <cstdint>
 #include <limits>
 

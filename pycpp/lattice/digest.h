@@ -13,7 +13,7 @@
 
 #include <pycpp/lattice/auth.h>
 #include <pycpp/lattice/crypto.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <unordered_map>
 #include <vector>
 
@@ -66,7 +66,7 @@ protected:
 
 public:
     using Base::Base;
-    quality_of_protection_t(const string_view& qop);
+    quality_of_protection_t(const string_wrapper& qop);
 
     bool auth() const;
     bool authint() const;
@@ -91,7 +91,7 @@ struct digest_challenge_t: public std::unordered_map<
 public:
     using base = std::unordered_map<std::string, std::string, lowercase_hash, lowercase_equal_to>;
     using base::base;
-    digest_challenge_t(const string_view& string);
+    digest_challenge_t(const string_wrapper&);
 
     // DATA
     const std::string& realm() const;
@@ -103,8 +103,8 @@ public:
     std::string header(const url_t& url,
         const parameters_t& parameters,
         const digest_t& digest,
-        const string_view& body,
-        const string_view& method);
+        const string_wrapper& body,
+        const string_wrapper& method);
 
     explicit operator bool() const;
 

@@ -35,7 +35,7 @@ void json_writer::end_array()
 {}
 
 
-void json_writer::key(const string_view&)
+void json_writer::key(const string_wrapper&)
 {}
 
 
@@ -51,7 +51,7 @@ void json_writer::number(double)
 {}
 
 
-void json_writer::string(const string_view&)
+void json_writer::string(const string_wrapper&)
 {}
 
 
@@ -139,7 +139,7 @@ void json_stream_writer::end_array()
 }
 
 
-void json_stream_writer::key(const string_view& value)
+void json_stream_writer::key(const string_wrapper& value)
 {
     auto w = (rapidjson_prettywriter*) writer_;
     assert(w && "Writer pointer cannot be null.");
@@ -171,7 +171,7 @@ void json_stream_writer::number(double value)
 }
 
 
-void json_stream_writer::string(const string_view& value)
+void json_stream_writer::string(const string_wrapper& value)
 {
     auto w = (rapidjson_prettywriter*) writer_;
     assert(w && "Writer pointer cannot be null.");

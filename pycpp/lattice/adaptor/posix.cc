@@ -30,7 +30,7 @@ posix_socket_adaptor_t::~posix_socket_adaptor_t()
 {}
 
 
-bool posix_socket_adaptor_t::open(const addrinfo& info, const string_view&)
+bool posix_socket_adaptor_t::open(const addrinfo& info, const string_wrapper&)
 {
     sock = ::socket(info.ai_family, info.ai_socktype, info.ai_protocol);
     if (sock < 0) {

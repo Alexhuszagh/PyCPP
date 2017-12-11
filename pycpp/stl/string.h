@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/stl/allocator.h>
-#if defined(USE_XXHASH)
+#if defined(USE_XXHASH) || defined(USE_POLYMORPHIC_ALLOCATOR)
 #   include <pycpp/hashlib/xxhash.h>
 #endif
 #include <string>
@@ -42,114 +42,20 @@ struct hash;
 // Specialize polymorphic hash aliases with default hash function.
 #if USE_POLYMORPHIC_ALLOCATOR
 
-template <>
-struct hash<string>
-{
-    using argument_type = string;
-    using result_type = size_t;
-
-    inline size_t operator()(const string& x) const
-    {
-        using value_type = typename string::value_type;
-        return xxhash_string(x.data(), x.size() * sizeof(value_type));
-    }
-};
-
-template <>
-struct hash<wstring>
-{
-    using argument_type = wstring;
-    using result_type = size_t;
-
-    inline size_t operator()(const wstring& x) const
-    {
-        using value_type = typename wstring::value_type;
-        return xxhash_string(x.data(), x.size() * sizeof(value_type));
-    }
-};
-
-template <>
-struct hash<u16string>
-{
-    using argument_type = u16string;
-    using result_type = size_t;
-
-    inline size_t operator()(const u16string& x) const
-    {
-        using value_type = typename u16string::value_type;
-        return xxhash_string(x.data(), x.size() * sizeof(value_type));
-    }
-};
-
-template <>
-struct hash<u32string>
-{
-    using argument_type = u32string;
-    using result_type = size_t;
-
-    inline size_t operator()(const u32string& x) const
-    {
-        using value_type = typename u32string::value_type;
-        return xxhash_string(x.data(), x.size() * sizeof(value_type));
-    }
-};
+PYCPP_SPECIALIZE_HASH_STRING(hash, string);
+PYCPP_SPECIALIZE_HASH_STRING(hash, wstring);
+PYCPP_SPECIALIZE_HASH_STRING(hash, u16string);
+PYCPP_SPECIALIZE_HASH_STRING(hash, u32string);
 
 #endif          // USE_POLYMORPHIC_ALLOCATOR
 
 // Specialize std::basic_string types for xxhash
 #if USE_XXHASH
 
-template <>
-struct hash<std::string>
-{
-    using argument_type = std::string;
-    using result_type = size_t;
-
-    inline size_t operator()(const std::string& x) const
-    {
-        using value_type = typename std::string::value_type;
-        return xxhash_string(x.data(), x.size() * sizeof(value_type));
-    }
-};
-
-template <>
-struct hash<std::wstring>
-{
-    using argument_type = std::wstring;
-    using result_type = size_t;
-
-    inline size_t operator()(const std::wstring& x) const
-    {
-        using value_type = typename std::wstring::value_type;
-        return xxhash_string(x.data(), x.size() * sizeof(value_type));
-    }
-};
-
-template <>
-struct hash<std::u16string>
-{
-    using argument_type = std::u16string;
-    using result_type = size_t;
-
-    inline size_t operator()(const std::u16string& x) const
-    {
-        using value_type = typename std::u16string::value_type;
-        return xxhash_string(x.data(), x.size() * sizeof(value_type));
-    }
-};
-
-template <>
-struct hash<std::u32string>
-{
-    using argument_type = std::u32string;
-    using result_type = size_t;
-
-    inline size_t operator()(const std::u32string& x) const
-    {
-        using value_type = typename std::u32string::value_type;
-        return xxhash_string(x.data(), x.size() * sizeof(value_type));
-    }
-};
+PYCPP_SPECIALIZE_HASH_STRING(hash, std::string);
+PYCPP_SPECIALIZE_HASH_STRING(hash, std::wstring);
+PYCPP_SPECIALIZE_HASH_STRING(hash, std::u16string);
+PYCPP_SPECIALIZE_HASH_STRING(hash, std::u32string);
 
 #endif          // USE_XXHASH
 

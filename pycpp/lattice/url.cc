@@ -13,31 +13,31 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 
-inline bool is_relative(const string_view& str)
+inline bool is_relative(const string_wrapper& str)
 {
     return str.empty() || str.front() == '/';
 }
 
 
-inline bool is_punycode(const string_view& str)
+inline bool is_punycode(const string_wrapper& str)
 {
     return string_wrapper(str).startswith("xn--");
 }
 
 
-static std::string to_idna(const string_view& str)
+static std::string to_idna(const string_wrapper& str)
 {
     return "xn--" + utf8_to_punycode(str);
 }
 
 
-static std::string from_idna(const string_view& str)
+static std::string from_idna(const string_wrapper& str)
 {
     return punycode_to_utf8(str.substr(4));
 }
 
 
-static void set_service_impl(std::string& url, const string_view& service)
+static void set_service_impl(std::string& url, const string_wrapper& service)
 {
     assert(!is_relative(url));
     size_t index = url.find("://");
@@ -53,7 +53,7 @@ static void set_service_impl(std::string& url, const string_view& service)
 }
 
 
-static void set_host_impl(std::string& url, const string_view& host)
+static void set_host_impl(std::string& url, const string_wrapper& host)
 {
     size_t start = url.find("://");
     if (start == std::string::npos) {
@@ -65,7 +65,7 @@ static void set_host_impl(std::string& url, const string_view& host)
 }
 
 
-static void set_path_impl(std::string& url, const string_view& path)
+static void set_path_impl(std::string& url, const string_wrapper& path)
 {
     if (is_relative(url)) {
         url.assign(path.data(), path.size());
@@ -80,7 +80,7 @@ static void set_path_impl(std::string& url, const string_view& path)
 }
 
 
-static void set_directory_impl(std::string& url, const string_view& directory)
+static void set_directory_impl(std::string& url, const string_wrapper& directory)
 {
     size_t separator, start, end;
     end = url.find_last_of('/');
@@ -97,7 +97,7 @@ static void set_directory_impl(std::string& url, const string_view& directory)
 }
 
 
-static void set_file_impl(std::string& url, const string_view& file)
+static void set_file_impl(std::string& url, const string_wrapper& file)
 {
     size_t index = url.find_last_of('/');
     url.replace(index + 1, std::string::npos, file.data(), file.size());
@@ -230,11 +230,11 @@ url_impl_t::operator bool() const
 
 
 punycode_idna_t::punycode_idna_t(const char* p, size_t s):
-    punycode_idna_t(string_view(p, s))
+    punycode_idna_t(string_wrapper(p, s))
 {}
 
 
-punycode_idna_t::punycode_idna_t(const string_view& string):
+punycode_idna_t::punycode_idna_t(const string_wrapper& string):
     url_impl_t(string.data(), string.size())
 {
     punycode_encode_url(*this);
@@ -248,13 +248,13 @@ punycode_idna_t::punycode_idna_t(std::initializer_list<char> list):
 }
 
 
-void punycode_idna_t::set_service(const string_view& service)
+void punycode_idna_t::set_service(const string_wrapper& service)
 {
     set_service_impl(*this, service);
 }
 
 
-void punycode_idna_t::set_host(const string_view& host)
+void punycode_idna_t::set_host(const string_wrapper& host)
 {
     if (is_unicode(host)) {
         set_host_impl(*this, to_idna(host));
@@ -264,19 +264,19 @@ void punycode_idna_t::set_host(const string_view& host)
 }
 
 
-void punycode_idna_t::set_path(const string_view& path)
+void punycode_idna_t::set_path(const string_wrapper& path)
 {
     set_path_impl(*this, path);
 }
 
 
-void punycode_idna_t::set_directory(const string_view& directory)
+void punycode_idna_t::set_directory(const string_wrapper& directory)
 {
     set_directory_impl(*this, directory);
 }
 
 
-void punycode_idna_t::set_file(const string_view& file)
+void punycode_idna_t::set_file(const string_wrapper& file)
 {
     set_file_impl(*this, file);
 }
@@ -284,16 +284,16 @@ void punycode_idna_t::set_file(const string_view& file)
 
 unicode_idna_t punycode_idna_t::to_unicode() const
 {
-    return unicode_idna_t(string_view(data(), size()));
+    return unicode_idna_t(string_wrapper(data(), size()));
 }
 
 
 unicode_idna_t::unicode_idna_t(const char* p, size_t s):
-    unicode_idna_t(string_view(p, s))
+    unicode_idna_t(string_wrapper(p, s))
 {}
 
 
-unicode_idna_t::unicode_idna_t(const string_view& string):
+unicode_idna_t::unicode_idna_t(const string_wrapper& string):
     url_impl_t(string.data(), string.size())
 {
     unicode_encode_url(*this);
@@ -307,13 +307,13 @@ unicode_idna_t::unicode_idna_t(std::initializer_list<char> list):
 }
 
 
-void unicode_idna_t::set_service(const string_view& service)
+void unicode_idna_t::set_service(const string_wrapper& service)
 {
     set_service_impl(*this, service);
 }
 
 
-void unicode_idna_t::set_host(const string_view& host)
+void unicode_idna_t::set_host(const string_wrapper& host)
 {
     if (is_punycode(host)) {
         set_host_impl(*this, from_idna(host));
@@ -323,19 +323,19 @@ void unicode_idna_t::set_host(const string_view& host)
 }
 
 
-void unicode_idna_t::set_path(const string_view& path)
+void unicode_idna_t::set_path(const string_wrapper& path)
 {
     set_path_impl(*this, path);
 }
 
 
-void unicode_idna_t::set_directory(const string_view& directory)
+void unicode_idna_t::set_directory(const string_wrapper& directory)
 {
     set_directory_impl(*this, directory);
 }
 
 
-void unicode_idna_t::set_file(const string_view& file)
+void unicode_idna_t::set_file(const string_wrapper& file)
 {
     set_file_impl(*this, file);
 }
@@ -343,7 +343,7 @@ void unicode_idna_t::set_file(const string_view& file)
 
 punycode_idna_t unicode_idna_t::to_punycode() const
 {
-    return punycode_idna_t(string_view(data(), size()));
+    return punycode_idna_t(string_wrapper(data(), size()));
 }
 
 PYCPP_END_NAMESPACE

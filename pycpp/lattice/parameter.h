@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -33,7 +32,7 @@ struct parameter_t
 
     parameter_t(const char* username, const char* password);
     parameter_t(std::string&& key, std::string&& value);
-    parameter_t(const string_view& key, const string_view& value);
+    parameter_t(const string_wrapper& key, const string_wrapper& value);
 };
 
 

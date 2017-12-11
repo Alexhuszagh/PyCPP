@@ -142,13 +142,13 @@ csv_dict_string_reader::csv_dict_string_reader(csvpunct_impl* punct):
 {}
 
 
-csv_dict_string_reader::csv_dict_string_reader(const string_view& str, size_t skip, csvpunct_impl* punct)
+csv_dict_string_reader::csv_dict_string_reader(const string_wrapper& str, size_t skip, csvpunct_impl* punct)
 {
     open(str, skip, punct);
 }
 
 
-void csv_dict_string_reader::open(const string_view& str, size_t skip, csvpunct_impl* punct)
+void csv_dict_string_reader::open(const string_wrapper& str, size_t skip, csvpunct_impl* punct)
 {
     sstream_ = std::istringstream(std::string(str), std::ios_base::binary);
     csv_dict_stream_reader::open(sstream_, skip, punct);

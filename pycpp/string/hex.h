@@ -7,8 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <pycpp/view/string.h>
+#include <pycpp/stl/string_view.h>
 #include <functional>
 
 PYCPP_BEGIN_NAMESPACE

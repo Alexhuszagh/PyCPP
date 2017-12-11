@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -23,8 +23,8 @@ public:
     sql_driver(void* db);
 
     // STATEMENTS
-    virtual bool exec(const string_view& statement) = 0;
-    virtual bool prepare(const string_view& statement) = 0;
+    virtual bool exec(const string_wrapper& statement) = 0;
+    virtual bool prepare(const string_wrapper& statement) = 0;
     virtual bool exec() = 0;
 
     // TODO: add a lot of shit...

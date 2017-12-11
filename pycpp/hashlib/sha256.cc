@@ -261,7 +261,7 @@ sha2_224_hash::sha2_224_hash(const void* src, size_t srclen)
 }
 
 
-sha2_224_hash::sha2_224_hash(const secure_string_view& str)
+sha2_224_hash::sha2_224_hash(const string_wrapper& str)
 {
     ctx = new sha2_256_context;
     sha224_init(ctx);
@@ -282,7 +282,7 @@ void sha2_224_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha2_224_hash::update(const secure_string_view& str)
+void sha2_224_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }
@@ -331,7 +331,7 @@ sha2_256_hash::sha2_256_hash(const void* src, size_t srclen)
 }
 
 
-sha2_256_hash::sha2_256_hash(const secure_string_view& str)
+sha2_256_hash::sha2_256_hash(const string_wrapper& str)
 {
     ctx = new sha2_256_context;
     sha256_init(ctx);
@@ -352,7 +352,7 @@ void sha2_256_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha2_256_hash::update(const secure_string_view& str)
+void sha2_256_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }

@@ -13,13 +13,13 @@ sql_query::sql_query(sql_database& db)
 {}
 
 
-bool sql_query::exec(const string_view& statement)
+bool sql_query::exec(const string_wrapper& statement)
 {
     return db_->driver().exec(statement);
 }
 
 
-bool sql_query::prepare(const string_view& statement)
+bool sql_query::prepare(const string_wrapper& statement)
 {
     return db_->driver().prepare(statement);
 }

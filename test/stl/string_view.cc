@@ -5,7 +5,7 @@
  *  \brief string_view unittests.
  */
 
-#include <pycpp/view/string.h>
+#include <pycpp/stl/string_view.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -15,6 +15,16 @@ PYCPP_USING_NAMESPACE
 
 static const std::string STR = {0, 84, 104, 105, 115, 32, 105, 115, 32, 100, 97, 116, 97, 10};
 static const std::string NONNULL = {84, 104, 105, 115, 32, 105, 115, 32, 100, 97, 116, 97, 10};
+
+// HELPERS
+// -------
+
+template <typename T, template <typename> class Hash>
+static void test_hash()
+{
+    using result_type = decltype(Hash<T>()(std::declval<T>()));
+    static_assert(std::is_same<result_type, size_t>::value, "");
+}
 
 // TESTS
 // -----
@@ -303,4 +313,20 @@ TEST(string_view, is_null_terminated)
     EXPECT_TRUE(str1.is_null_terminated());
     EXPECT_TRUE(str2.is_null_terminated());
     EXPECT_FALSE(str3.is_null_terminated());
+}
+
+
+TEST(string_view, hash)
+{
+    // std::hash
+    test_hash<string_view, std::hash>();
+    test_hash<wstring_view, std::hash>();
+    test_hash<u16string_view, std::hash>();
+    test_hash<u32string_view, std::hash>();
+
+    // hash
+    test_hash<string_view, hash>();
+    test_hash<wstring_view, hash>();
+    test_hash<u16string_view, hash>();
+    test_hash<u32string_view, hash>();
 }

@@ -15,10 +15,10 @@ PYCPP_USING_NAMESPACE
 // -----
 
 
-TEST(re, search)
+TEST(re, re_search)
 {
     std::string data = "These are a bunch of words";
-    auto m = search("\\w+", data);
+    auto m = re_search("\\w+", data);
     ASSERT_TRUE(bool(m));
     EXPECT_EQ(m.start(), 0);
     EXPECT_EQ(m.end(), 5);
@@ -26,7 +26,7 @@ TEST(re, search)
     EXPECT_EQ(m.lastindex(), 0);
 
     data = "...~/.'' Words";
-    m = search("\\w+", data);
+    m = re_search("\\w+", data);
     ASSERT_TRUE(bool(m));
     EXPECT_EQ(m.start(), 9);
     EXPECT_EQ(m.end(), 14);
@@ -35,17 +35,17 @@ TEST(re, search)
 }
 
 
-TEST(re, match)
+TEST(re, re_match)
 {
     std::string data = "These are a bunch of words";
-    auto m = match("\\w+", data);
+    auto m = re_match("\\w+", data);
     EXPECT_EQ(m.start(), 0);
     EXPECT_EQ(m.end(), 5);
     EXPECT_EQ(m.group(), "These");
     EXPECT_EQ(m.lastindex(), 0);
 
     data = "...~/.'' Words";
-    m = match("\\w+", data);
+    m = re_match("\\w+", data);
     ASSERT_FALSE(bool(m));
 }
 
@@ -56,24 +56,24 @@ TEST(re, syntax)
     // expression are accurate.
 
     std::string data = "These are a bunch of words";
-    auto m = match("\\w+$", data);
+    auto m = re_match("\\w+$", data);
     ASSERT_FALSE(bool(m));
 
-    m = match("^\\w+", data);
+    m = re_match("^\\w+", data);
     ASSERT_TRUE(bool(m));
 }
 
 
-TEST(re, findall)
+TEST(re, re_findall)
 {
     std::string data = "These are a bunch of words";
-    auto words = findall("\\w+", data);
+    auto words = re_findall("\\w+", data);
     EXPECT_EQ(words.size(), 6);
     EXPECT_EQ(words.front(), "These");
 }
 
 
-TEST(re, finditer)
+TEST(re, re_finditer)
 {
     std::string data = "These are a bunch of words";
     std::deque<std::string> actual;
@@ -85,19 +85,19 @@ TEST(re, finditer)
         "of",
         "words",
     };
-    for (auto &match: finditer("\\w+", data)) {
+    for (auto &match: re_finditer("\\w+", data)) {
         actual.emplace_back(std::string(match.group(0)));
     }
     EXPECT_EQ(actual, expected);
 }
 
 
-TEST(re, split)
+TEST(re, re_split)
 {
     std::string data = "These are a bunch of words";
 
     // first example
-    auto whitespace = split("\\w+", data);
+    auto whitespace = re_split("\\w+", data);
     ASSERT_EQ(whitespace.size(), 7);
     EXPECT_EQ(whitespace[0], "");
     EXPECT_EQ(whitespace[1], " ");
@@ -109,19 +109,19 @@ TEST(re, split)
 }
 
 
-TEST(re, sub)
+TEST(re, re_sub)
 {
-    EXPECT_EQ(sub("(\\w+)", "+\\1", "These are a bunch of words"), "+These +are +a +bunch +of +words");
+    EXPECT_EQ(re_sub("(\\w+)", "+\\1", "These are a bunch of words"), "+These +are +a +bunch +of +words");
 }
 
 
-TEST(re, escape)
+TEST(re, re_escape)
 {
-    EXPECT_EQ(escape(string_view("\0", 1)), std::string("\\\0", 2));
+    EXPECT_EQ(re_escape(string_view("\0", 1)), std::string("\\\0", 2));
 }
 
 
-TEST(re, purge)
+TEST(re, re_purge)
 {
-    purge();
+    re_purge();
 }

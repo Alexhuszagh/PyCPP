@@ -11,14 +11,14 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-static bool detect_header(const string_view& header, const magic_bytes& magic)
+static bool detect_header(const string_wrapper& header, const magic_bytes& magic)
 {
     if (header.size() < magic.front().size()) {
         return false;
     }
 
-    return std::any_of(PARALLEL_EXECUTION magic.begin(), magic.end(), [&header](const string_view& bytes) {
-        return std::equal(bytes.begin(), bytes.end(), header.begin());
+    return std::any_of(PARALLEL_EXECUTION magic.begin(), magic.end(), [&header](const string_wrapper& bytes) {
+        return header.size() >= bytes.size() && std::equal(bytes.begin(), bytes.end(), header.begin());
     });
 }
 
@@ -29,7 +29,7 @@ static bool detect_stream(std::istream& stream, const magic_bytes& magic)
     size_t size = magic.front().size();
     char* str = new char[size];
     stream.read(str, size);
-    bool status = detect_header(string_view(str, size), magic);
+    bool status = detect_header(string_wrapper(str, size), magic);
     delete[] str;
 
     return status;
@@ -69,13 +69,13 @@ static bool detect_path(const u16string_view& path, const magic_bytes& magic)
 const magic_bytes& is_bz2::magic()
 {
     static std::string header("\x42\x5a\x68", 3);
-    static std::vector<string_view> vector = {string_view(header)};
+    static std::vector<string_wrapper> vector = {string_wrapper(header)};
     static magic_bytes view(vector);
     return view;
 }
 
 
-bool is_bz2::header(const string_view& header)
+bool is_bz2::header(const string_wrapper& header)
 {
     return detect_header(header, magic());
 }
@@ -116,18 +116,18 @@ const magic_bytes& is_zlib::magic()
     static std::string level2("\x78\x5E", 2);
     static std::string level6("\x78\x9C", 2);
     static std::string level7("\x78\xDA", 2);
-    static std::vector<string_view> vector = {
-        string_view(level1),
-        string_view(level2),
-        string_view(level6),
-        string_view(level7),
+    static std::vector<string_wrapper> vector = {
+        string_wrapper(level1),
+        string_wrapper(level2),
+        string_wrapper(level6),
+        string_wrapper(level7),
     };
     static magic_bytes view(vector);
     return view;
 }
 
 
-bool is_zlib::header(const string_view& header)
+bool is_zlib::header(const string_wrapper& header)
 {
     return detect_header(header, magic());
 }
@@ -165,13 +165,13 @@ bool is_zlib::path(const u16string_view& path)
 const magic_bytes& is_gzip::magic()
 {
     static std::string header("\x1f\x8b\x08", 3);
-    static std::vector<string_view> vector = {string_view(header)};
+    static std::vector<string_wrapper> vector = {string_wrapper(header)};
     static magic_bytes view(vector);
     return view;
 }
 
 
-bool is_gzip::header(const string_view& header)
+bool is_gzip::header(const string_wrapper& header)
 {
     return detect_header(header, magic());
 }
@@ -209,13 +209,13 @@ bool is_gzip::path(const u16string_view& path)
 const magic_bytes& is_lzma::magic()
 {
     static std::string header("\xFD\x37\x7A\x58\x5A\x00", 6);
-    static std::vector<string_view> vector = {string_view(header)};
+    static std::vector<string_wrapper> vector = {string_wrapper(header)};
     static magic_bytes view(vector);
     return view;
 }
 
 
-bool is_lzma::header(const string_view& header)
+bool is_lzma::header(const string_wrapper& header)
 {
     return detect_header(header, magic());
 }
@@ -262,16 +262,16 @@ const magic_bytes& is_blosc::magic()
 
     static std::string version1("\x01\x01", 2);
     static std::string version2("\x02\x01", 2);
-    static std::vector<string_view> vector = {
-        string_view(version1),
-        string_view(version2),
+    static std::vector<string_wrapper> vector = {
+        string_wrapper(version1),
+        string_wrapper(version2),
     };
     static magic_bytes view(vector);
     return view;
 }
 
 
-bool is_blosc::header(const string_view& header)
+bool is_blosc::header(const string_wrapper& header)
 {
     return detect_header(header, magic());
 }

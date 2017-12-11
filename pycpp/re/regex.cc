@@ -10,7 +10,7 @@ PYCPP_BEGIN_NAMESPACE
 // HELPERS
 // -------
 
-static std::string add_group0(const string_view& view)
+static std::string add_group0(const string_wrapper& view)
 {
     // DESCRIPTION
     // We need to add our "group 0" to the regular expression.
@@ -46,14 +46,14 @@ struct regex_impl_t
     re2::RE2::Arg** argp = nullptr;
     re2::StringPiece* piece = nullptr;
 
-    regex_impl_t(const string_view& view);
+    regex_impl_t(const string_wrapper& view);
     ~regex_impl_t();
     void initialize();
     void clear();
 };
 
 
-regex_impl_t::regex_impl_t(const string_view& view):
+regex_impl_t::regex_impl_t(const string_wrapper& view):
     re2(re2::StringPiece(add_group0(view))),
     sub(re2::StringPiece(view.data(), view.size()))
 {
@@ -95,7 +95,7 @@ void regex_impl_t::clear()
 }
 
 
-regexp_t::regexp_t(const string_view& view):
+regexp_t::regexp_t(const string_wrapper& view):
     ptr_(new regex_impl_t(view))
 {
     if (!ptr_->re2.ok()) {
@@ -120,7 +120,7 @@ regexp_t::~regexp_t()
 {}
 
 
-match_t regexp_t::search(const string_view& str, size_t pos, size_t endpos)
+match_t regexp_t::search(const string_wrapper& str, size_t pos, size_t endpos)
 {
     auto view = str.substr(pos, endpos);
     re2::StringPiece input(view.data(), view.size());
@@ -133,7 +133,7 @@ match_t regexp_t::search(const string_view& str, size_t pos, size_t endpos)
 }
 
 
-match_t regexp_t::match(const string_view& str, size_t pos, size_t endpos)
+match_t regexp_t::match(const string_wrapper& str, size_t pos, size_t endpos)
 {
     auto view = str.substr(pos, endpos);
     re2::StringPiece input(view.data(), view.size());
@@ -146,7 +146,7 @@ match_t regexp_t::match(const string_view& str, size_t pos, size_t endpos)
 }
 
 
-match_groups regexp_t::split(const string_view& str, size_t maxsplit)
+match_groups regexp_t::split(const string_wrapper& str, size_t maxsplit)
 {
     match_groups groups;
     size_t pos = 0;
@@ -165,7 +165,7 @@ match_groups regexp_t::split(const string_view& str, size_t maxsplit)
 }
 
 
-match_groups regexp_t::findall(const string_view& str, size_t pos, size_t endpos)
+match_groups regexp_t::findall(const string_wrapper& str, size_t pos, size_t endpos)
 {
     match_groups groups;
     for (auto& match: finditer(str, pos, endpos)) {
@@ -175,14 +175,14 @@ match_groups regexp_t::findall(const string_view& str, size_t pos, size_t endpos
 }
 
 
-match_range regexp_t::finditer(const string_view& str, size_t pos, size_t endpos)
+match_range regexp_t::finditer(const string_wrapper& str, size_t pos, size_t endpos)
 {
     auto view = str.substr(pos, endpos);
     return match_range(match_iterator_t(*this, view));
 }
 
 
-std::string regexp_t::sub(const string_view& repl, const string_view& str)
+std::string regexp_t::sub(const string_wrapper& repl, const string_wrapper& str)
 {
     std::string data(str);
     re2::StringPiece repl_(repl.data(), repl.size());

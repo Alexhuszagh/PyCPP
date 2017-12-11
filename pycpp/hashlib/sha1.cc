@@ -278,7 +278,7 @@ sha1_hash::sha1_hash(const void* src, size_t srclen)
 }
 
 
-sha1_hash::sha1_hash(const secure_string_view& str)
+sha1_hash::sha1_hash(const string_wrapper& str)
 {
     ctx = new sha1_context;
     sha1_init(ctx);
@@ -299,7 +299,7 @@ void sha1_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha1_hash::update(const secure_string_view& str)
+void sha1_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }

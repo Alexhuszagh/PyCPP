@@ -268,7 +268,7 @@ void lzma_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string lzma_compress(const string_view& str)
+std::string lzma_compress(const string_wrapper& str)
 {
     size_t dstlen = lzma_compress_bound(str.size());
     return compress_bound(str, dstlen, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
@@ -277,7 +277,7 @@ std::string lzma_compress(const string_view& str)
 }
 
 
-std::string lzma_decompress(const string_view& str)
+std::string lzma_decompress(const string_wrapper& str)
 {
     return ctx_decompress<lzma_decompressor>(str);
 }
@@ -302,7 +302,7 @@ void lzma_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
 }
 
 
-std::string lzma_decompress(const string_view& str, size_t bound)
+std::string lzma_decompress(const string_wrapper& str, size_t bound)
 {
     return decompress_bound(str, bound, [](const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound) {
         lzma_decompress(src, srclen, dst, dstlen, bound);

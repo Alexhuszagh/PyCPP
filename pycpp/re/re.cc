@@ -25,7 +25,7 @@ regex_cache REGEX_CACHE(REGEX_CACHE_SIZE);
 /**
  *  Compile regex if not previously present in the cache.
  */
-static regexp_t& compile(const string_view& view)
+static regexp_t& compile(const string_wrapper& view)
 {
     std::string pattern(view);
     auto it = REGEX_CACHE.find(pattern);
@@ -40,43 +40,43 @@ static regexp_t& compile(const string_view& view)
 // ---------
 
 
-match_t search(const string_view& pattern, const string_view& str)
+match_t re_search(const string_wrapper& pattern, const string_wrapper& str)
 {
     return compile(pattern).search(str);
 }
 
 
-match_t match(const string_view& pattern, const string_view& str)
+match_t re_match(const string_wrapper& pattern, const string_wrapper& str)
 {
     return compile(pattern).match(str);
 }
 
 
-match_groups findall(const string_view& pattern, const string_view& str)
+match_groups re_findall(const string_wrapper& pattern, const string_wrapper& str)
 {
     return compile(pattern).findall(str);
 }
 
 
-match_range finditer(const string_view& pattern, const string_view& str)
+match_range re_finditer(const string_wrapper& pattern, const string_wrapper& str)
 {
     return compile(pattern).finditer(str);
 }
 
 
-match_groups split(const string_view& pattern, const string_view& str, size_t maxsplit)
+match_groups re_split(const string_wrapper& pattern, const string_wrapper& str, size_t maxsplit)
 {
     return compile(pattern).split(str);
 }
 
 
-std::string sub(const string_view& pattern, const string_view& repl, const string_view& str)
+std::string re_sub(const string_wrapper& pattern, const string_wrapper& repl, const string_wrapper& str)
 {
     return compile(pattern).sub(repl, str);
 }
 
 
-std::string escape(const string_view& str)
+std::string re_escape(const string_wrapper& str)
 {
     std::string output;
     output.reserve(str.size() * 2 + 1);
@@ -96,7 +96,7 @@ std::string escape(const string_view& str)
 }
 
 
-void purge()
+void re_purge()
 {
     REGEX_CACHE.clear();
 }

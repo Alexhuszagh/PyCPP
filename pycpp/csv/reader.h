@@ -10,7 +10,7 @@
 #include <pycpp/csv/punct.h>
 #include <pycpp/iterator/input_iterator_facade.h>
 #include <pycpp/stream/fstream.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <memory>
 #include <sstream>
 
@@ -90,8 +90,8 @@ struct csv_string_reader: csv_stream_reader
 {
 public:
     csv_string_reader(csvpunct_impl* = nullptr);
-    csv_string_reader(const string_view& str, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(const string_view& str, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_string_reader(const string_wrapper& str, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(const string_wrapper& str, size_t skip = 0, csvpunct_impl* = nullptr);
 
 private:
     std::istringstream sstream_;

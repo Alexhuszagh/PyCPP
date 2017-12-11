@@ -13,8 +13,8 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/stl/string_view.h>
 #include <pycpp/stream/fstream.h>
-#include <pycpp/view/string.h>
 #include <functional>
 #include <iostream>
 #include <sstream>

@@ -93,7 +93,7 @@ bool handler_impl::Double(double value)
 
 bool handler_impl::String(const char* value, rapidjson::SizeType length, bool)
 {
-    handler->string(string_view(value, length));
+    handler->string(string_wrapper(value, length));
     return true;
 }
 
@@ -114,7 +114,7 @@ bool handler_impl::EndObject(rapidjson::SizeType length)
 
 bool handler_impl::Key(const char* value, rapidjson::SizeType length, bool)
 {
-    handler->key(string_view(value, length));
+    handler->key(string_wrapper(value, length));
     return true;
 }
 
@@ -161,7 +161,7 @@ void json_sax_handler::end_array(size_t)
 {}
 
 
-void json_sax_handler::key(const string_view&)
+void json_sax_handler::key(const string_wrapper&)
 {}
 
 
@@ -177,7 +177,7 @@ void json_sax_handler::number(double)
 {}
 
 
-void json_sax_handler::string(const string_view&)
+void json_sax_handler::string(const string_wrapper&)
 {}
 
 
@@ -260,13 +260,13 @@ json_string_reader::json_string_reader()
 {}
 
 
-json_string_reader::json_string_reader(const string_view& str)
+json_string_reader::json_string_reader(const string_wrapper& str)
 {
     open(str);
 }
 
 
-void json_string_reader::open(const string_view& str)
+void json_string_reader::open(const string_wrapper& str)
 {
     sstream_ = std::istringstream(std::string(str), std::ios_base::in | std::ios_base::binary);
     json_stream_reader::open(sstream_);

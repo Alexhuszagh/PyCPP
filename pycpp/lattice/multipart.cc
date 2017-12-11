@@ -90,7 +90,7 @@ std::unordered_map<std::string, std::string> CONTENT_TYPES = {
 std::string get_boundary()
 {
     auto bytes = pseudorandom(8);
-    secure_string_view view(bytes.data(), bytes.size());
+    string_wrapper view(bytes.data(), bytes.size());
     auto hex = sha1_hash(view).hexdigest();
     return std::string(hex.data(), hex.size());
 }
@@ -101,7 +101,7 @@ std::string get_boundary()
 /**
  *  \brief Read file using custom fstream
  */
-static std::string read_fstream(const string_view& filename)
+static std::string read_fstream(const string_wrapper& filename)
 {
     ifstream file(filename, std::ios_base::in | std::ios_base::binary);
     std::ostringstream stream;
@@ -120,7 +120,7 @@ static std::string read_fstream(const string_view& filename)
  *  filename encoding. This is easy, since it's our internal
  *  representation.
  */
-static std::string read_narrow(const string_view& filename)
+static std::string read_narrow(const string_wrapper& filename)
 {
     assert(filename.is_null_terminated());
 
@@ -143,7 +143,7 @@ static std::string read_narrow(const string_view& filename)
  *  overload for std::ifstream, MinGW does not, so the file must
  *  be opened with std::wifstream.
  */
-static std::string read_wide(const string_view& filename)
+static std::string read_wide(const string_wrapper& filename)
 {
     if (!is_unicode(filename)) {
         // ascii only filename, narrow API works.
@@ -168,7 +168,7 @@ static std::string read_wide(const string_view& filename)
 #endif                              // BUILD_STREAM
 
 
-static std::string detect_content_type(const string_view& filename)
+static std::string detect_content_type(const string_wrapper& filename)
 {
     std::string suffix(path_splitext(filename)[1]);
     auto it = CONTENT_TYPES.find(suffix);
@@ -185,7 +185,7 @@ static std::string detect_content_type(const string_view& filename)
 
 
 part_value_t::part_value_t(const char* filename, const char* content_type):
-    part_value_t(string_view(filename), string_view(content_type))
+    part_value_t(string_wrapper(filename), string_wrapper(content_type))
 {}
 
 
@@ -200,7 +200,7 @@ part_value_t::part_value_t(std::string&& filename, std::string&& content_type):
 }
 
 
-part_value_t::part_value_t(const string_view& filename, const string_view& content_type):
+part_value_t::part_value_t(const string_wrapper& filename, const string_wrapper& content_type):
     filename(filename)
 {
     if (content_type.empty()) {
@@ -223,9 +223,9 @@ std::string part_value_t::name() const
 }
 
 
-string_view part_value_t::content_type() const
+string_wrapper part_value_t::content_type() const
 {
-    return string_view(content_type_);
+    return string_wrapper(content_type_);
 }
 
 
@@ -274,7 +274,7 @@ std::string file_value_t::string() const
 buffer_value_t::buffer_value_t(const char* filename,
                                const char* buffer,
                                const char* content_type):
-    buffer_value_t(string_view(filename), string_view(buffer), string_view(content_type))
+    buffer_value_t(string_wrapper(filename), string_wrapper(buffer), string_wrapper(content_type))
 {}
 
 
@@ -286,9 +286,9 @@ buffer_value_t::buffer_value_t(std::string&& filename,
 {}
 
 
-buffer_value_t::buffer_value_t(const string_view& filename,
-                               const string_view& buffer,
-                               const string_view& content_type):
+buffer_value_t::buffer_value_t(const string_wrapper& filename,
+                               const string_wrapper& buffer,
+                               const string_wrapper& content_type):
     part_value_t(filename, content_type),
     buffer_(buffer)
 {}
@@ -311,9 +311,9 @@ std::string buffer_value_t::string() const
 }   /* detail */
 
 
-string_view multipart_t::boundary() const
+string_wrapper multipart_t::boundary() const
 {
-    return string_view(boundary_);
+    return string_wrapper(boundary_);
 }
 
 

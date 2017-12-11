@@ -8,10 +8,9 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/string/string.h>
 #include <deque>
 #include <memory>
-#include <string>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -45,11 +44,11 @@ struct part_value_t
 
     part_value_t(const char* filename, const char* content_type);
     part_value_t(std::string&& filename, std::string&& content_type);
-    part_value_t(const string_view& filename, const string_view& content_type);
+    part_value_t(const string_wrapper& filename, const string_wrapper& content_type);
 
     std::string basename() const;
     std::string name() const;
-    string_view content_type() const;
+    string_wrapper content_type() const;
     virtual std::string string() const;
 };
 
@@ -85,9 +84,9 @@ struct buffer_value_t: part_value_t
     buffer_value_t(std::string&& filename,
                    std::string&& buffer,
                    std::string&& content_type);
-    buffer_value_t(const string_view& filename,
-                   const string_view& buffer,
-                   const string_view& content_type);
+    buffer_value_t(const string_wrapper& filename,
+                   const string_wrapper& buffer,
+                   const string_wrapper& content_type);
 
     std::string buffer() const;
     std::string string() const override;
@@ -137,7 +136,7 @@ public:
 
     void add(const part_ptr_t& part);
     void add(part_ptr_t&& part);
-    string_view boundary() const;
+    string_wrapper boundary() const;
     std::string header() const;
 
     std::string string() const;

@@ -7,11 +7,9 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <pycpp/xml/core.h>
 #include <pycpp/stream/fstream.h>
-#include <pycpp/view/string.h>
-
+#include <pycpp/string/string.h>
+#include <pycpp/xml/core.h>
 #include <sstream>
 
 PYCPP_BEGIN_NAMESPACE
@@ -25,14 +23,14 @@ PYCPP_BEGIN_NAMESPACE
  */
 struct xml_writer
 {
-    virtual void start_element(const string_view&);
+    virtual void start_element(const string_wrapper&);
     virtual void end_element();
-    virtual void write_attribute(const string_view&, const string_view&);
-    virtual void write_text(const string_view&);
-    virtual void write_comment(const string_view&);
-    virtual void start_element_ns(const string_view&, const string_view&, const string_view&);
+    virtual void write_attribute(const string_wrapper&, const string_wrapper&);
+    virtual void write_text(const string_wrapper&);
+    virtual void write_comment(const string_wrapper&);
+    virtual void start_element_ns(const string_wrapper&, const string_wrapper&, const string_wrapper&);
     virtual void end_element_ns();
-    virtual void write_attribute_ns(const string_view&, const string_view&, const string_view&, const string_view&);
+    virtual void write_attribute_ns(const string_wrapper&, const string_wrapper&, const string_wrapper&, const string_wrapper&);
     virtual void flush() const;
 };
 
@@ -50,14 +48,14 @@ public:
     void open(std::ostream&);
     void set_indent(char = ' ', int = 4);
 
-    virtual void start_element(const string_view&) override;
+    virtual void start_element(const string_wrapper&) override;
     virtual void end_element() override;
-    virtual void write_attribute(const string_view&, const string_view&) override;
-    virtual void write_text(const string_view&) override;
-    virtual void write_comment(const string_view&) override;
-    virtual void start_element_ns(const string_view&, const string_view&, const string_view&) override;
+    virtual void write_attribute(const string_wrapper&, const string_wrapper&) override;
+    virtual void write_text(const string_wrapper&) override;
+    virtual void write_comment(const string_wrapper&) override;
+    virtual void start_element_ns(const string_wrapper&, const string_wrapper&, const string_wrapper&) override;
     virtual void end_element_ns() override;
-    virtual void write_attribute_ns(const string_view&, const string_view&, const string_view&, const string_view&) override;
+    virtual void write_attribute_ns(const string_wrapper&, const string_wrapper&, const string_wrapper&, const string_wrapper&) override;
     virtual void flush() const override;
 
 private:

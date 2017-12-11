@@ -9,7 +9,7 @@
 
 #include <pycpp/json/sax.h>
 #include <pycpp/json/writer.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <deque>
 
 PYCPP_BEGIN_NAMESPACE
@@ -32,11 +32,11 @@ public:
     virtual void end_object(size_t) override;
     virtual void start_array() override;
     virtual void end_array(size_t) override;
-    virtual void key(const string_view&) override;
+    virtual void key(const string_wrapper&) override;
     virtual void null() override;
     virtual void boolean(bool) override;
     virtual void number(double) override;
-    virtual void string(const string_view&) override;
+    virtual void string(const string_wrapper&) override;
 
 private:
     json_value_t* root_ = nullptr;
@@ -51,7 +51,7 @@ private:
  */
 struct json_document_t: json_value_t
 {
-    void loads(const string_view&);
+    void loads(const string_wrapper&);
     void load(std::istream&);
     void load(const string_view&);
 #if defined(HAVE_WFOPEN)                        // WINDOWS

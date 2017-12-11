@@ -61,7 +61,7 @@ static void dump_object_impl(const json_object_t& object, json_stream_writer& wr
 {
     writer.start_object();
     for (const auto& pair: object) {
-        writer.key(string_view(pair.first));
+        writer.key(string_wrapper(pair.first));
         dump_impl(pair.second, writer);
     }
     writer.end_object();
@@ -164,7 +164,7 @@ void json_dom_handler::end_array(size_t)
 }
 
 
-void json_dom_handler::key(const string_view& str)
+void json_dom_handler::key(const string_wrapper& str)
 {
     has_key_ = true;
     key_ = json_string_t(str);
@@ -189,13 +189,13 @@ void json_dom_handler::number(double d)
 }
 
 
-void json_dom_handler::string(const string_view& str)
+void json_dom_handler::string(const string_wrapper& str)
 {
     add_value(levels_, has_key_, key_, json_string_t(str));
 }
 
 
-void json_document_t::loads(const string_view& data)
+void json_document_t::loads(const string_wrapper& data)
 {
     std::istringstream stream = std::istringstream(std::string(data));
     load(stream);

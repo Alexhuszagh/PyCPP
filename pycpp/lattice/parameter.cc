@@ -12,7 +12,7 @@ PYCPP_BEGIN_NAMESPACE
 
 
 parameter_t::parameter_t(const char* key, const char* value):
-    parameter_t(string_view(key), string_view(value))
+    parameter_t(string_wrapper(key), string_wrapper(value))
 {}
 
 
@@ -22,7 +22,7 @@ parameter_t::parameter_t(std::string&& key, std::string&& value):
 {}
 
 
-parameter_t::parameter_t(const string_view& key, const string_view& value):
+parameter_t::parameter_t(const string_wrapper& key, const string_wrapper& value):
     key(key),
     value(value)
 {}

@@ -55,8 +55,8 @@ public:
     ~sqlite_driver();
 
     // STATEMENTS
-    virtual bool exec(const string_view& statement) override;
-    virtual bool prepare(const string_view& statement) override;
+    virtual bool exec(const string_wrapper& statement) override;
+    virtual bool prepare(const string_wrapper& statement) override;
     virtual bool exec() override;
     // TODO: step()
 
@@ -74,9 +74,9 @@ private:
 struct sqlite_database: sql_database
 {
 public:
-    sqlite_database(const string_view& file_name,
+    sqlite_database(const string_wrapper& file_name,
                     const int flags = sqlite_open_readonly,
-                    const string_view& vfs = string_view());
+                    const string_wrapper& vfs = string_wrapper());
     ~sqlite_database();
 
     // DRIVERS

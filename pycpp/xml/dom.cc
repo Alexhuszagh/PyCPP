@@ -65,7 +65,7 @@ void xml_dom_handler::end_document()
 }
 
 
-void xml_dom_handler::start_element(const string_view& name, xml_attr_t&& attrs)
+void xml_dom_handler::start_element(const string_wrapper& name, xml_attr_t&& attrs)
 {
     xml_node_t* parent = levels_.back();
     xml_node_list_t& list = parent->get_children();
@@ -80,20 +80,20 @@ void xml_dom_handler::start_element(const string_view& name, xml_attr_t&& attrs)
 }
 
 
-void xml_dom_handler::end_element(const string_view& name)
+void xml_dom_handler::end_element(const string_wrapper& name)
 {
     levels_.pop_back();
 }
 
 
-void xml_dom_handler::characters(const string_view& content)
+void xml_dom_handler::characters(const string_wrapper& content)
 {
     xml_node_t* current = levels_.back();
     current->set_text(current->get_text() + xml_string_t(content));
 }
 
 
-void xml_document_t::loads(const string_view& data)
+void xml_document_t::loads(const string_wrapper& data)
 {
     std::istringstream stream = std::istringstream(std::string(data));
     load(stream);

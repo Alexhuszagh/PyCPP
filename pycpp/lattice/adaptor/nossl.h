@@ -9,7 +9,7 @@
 #include <pycpp/lattice/dns.h>
 #include <pycpp/lattice/ssl.h>
 #include <pycpp/preprocessor/compiler.h>
-#include <pycpp/view/string.h>
+#include <pycpp/string/string.h>
 #include <cassert>
 
 #if defined(HAVE_MSVC)
@@ -37,7 +37,7 @@ struct no_ssl_adaptor_t
     ~no_ssl_adaptor_t();
 
     // REQUESTS
-    bool open(const addrinfo& info, const string_view& host);
+    bool open(const addrinfo& info, const string_wrapper& host);
     void close();
     size_t write(const char *buf, size_t len);
     size_t read(char *buf, size_t count);
@@ -59,7 +59,7 @@ no_ssl_adaptor_t<HttpAdaptor>::~no_ssl_adaptor_t()
 
 
 template <typename HttpAdaptor>
-bool no_ssl_adaptor_t<HttpAdaptor>::open(const addrinfo &info, const string_view &host)
+bool no_ssl_adaptor_t<HttpAdaptor>::open(const addrinfo &info, const string_wrapper &host)
 {
     assert(false);
     return false;

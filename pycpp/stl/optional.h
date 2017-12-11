@@ -1228,12 +1228,6 @@ struct hash<optional<T&>>
 
 PYCPP_BEGIN_NAMESPACE
 
-// FORWARD
-// -------
-
-template <typename Key>
-struct hash;
-
 // SPECIALIZATION
 // --------------
 

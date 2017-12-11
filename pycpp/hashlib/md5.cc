@@ -320,7 +320,7 @@ md5_hash::md5_hash(const void* src, size_t srclen)
 }
 
 
-md5_hash::md5_hash(const secure_string_view& str)
+md5_hash::md5_hash(const string_wrapper& str)
 {
     ctx = new md5_context;
     md5_init(ctx);
@@ -341,7 +341,7 @@ void md5_hash::update(const void* src, size_t srclen)
 }
 
 
-void md5_hash::update(const secure_string_view& str)
+void md5_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }

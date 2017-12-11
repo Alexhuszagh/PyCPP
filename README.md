@@ -34,6 +34,8 @@ Modern C++ development depends on a mix of archaic C-libraries with poorly docum
 
 PyCPP is, in many ways, a spiritual port of Python back to C++. There are idiomatic ways to do certain tasks, and there is a right and a wrong way. "Zero-cost abstractions" don't exist: infinite abstraction leads to unmaintainable complexity. PyCPP also ports Python's [hashlib](https://docs.python.org/3/library/hashlib.html), [os.path](https://docs.python.org/2/library/os.path.html#module-os.path), and [string](https://docs.python.org/2/library/string.html) modules, providing familiar APIs to the Python standard library.
 
+PyCPP is a a platform abstraction library built upon a backport of C++17 to C++11-compatible compilers, providing a single, idiomatic, opinionated way to write code. It provides performant utilities for string manipulation, filesystem operations, simplifying cross-platform development. In addition, PyCPP includes high-performance collections that aim to replace inefficient C++ STL implementations, allowing drop-in replacements with dramatic performance boosts.
+
 ## Getting Started
 
 // TODO: lols document

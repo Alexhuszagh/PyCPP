@@ -291,7 +291,7 @@ md4_hash::md4_hash(const void* src, size_t srclen)
 }
 
 
-md4_hash::md4_hash(const secure_string_view& str)
+md4_hash::md4_hash(const string_wrapper& str)
 {
     ctx = new md4_context;
     md4_init(ctx);
@@ -312,7 +312,7 @@ void md4_hash::update(const void* src, size_t srclen)
 }
 
 
-void md4_hash::update(const secure_string_view& str)
+void md4_hash::update(const string_wrapper& str)
 {
     update(str.data(), str.size());
 }

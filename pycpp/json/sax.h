@@ -9,8 +9,7 @@
 
 #include <pycpp/json/core.h>
 #include <pycpp/stream/fstream.h>
-#include <pycpp/view/string.h>
-
+#include <pycpp/string/string.h>
 #include <sstream>
 
 PYCPP_BEGIN_NAMESPACE
@@ -31,11 +30,11 @@ struct json_sax_handler
     virtual void end_object(size_t);
     virtual void start_array();
     virtual void end_array(size_t);
-    virtual void key(const string_view&);
+    virtual void key(const string_wrapper&);
     virtual void null();
     virtual void boolean(bool);
     virtual void number(double);
-    virtual void string(const string_view&);
+    virtual void string(const string_wrapper&);
 };
 
 
@@ -85,8 +84,8 @@ struct json_string_reader: json_stream_reader
 {
 public:
     json_string_reader();
-    json_string_reader(const string_view& str);
-    void open(const string_view& str);
+    json_string_reader(const string_wrapper& str);
+    void open(const string_wrapper& str);
 
 private:
     std::istringstream sstream_;

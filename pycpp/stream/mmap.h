@@ -43,8 +43,8 @@
 #pragma once
 
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/string_view.h>
 #include <pycpp/stream/fd.h>
-#include <pycpp/view/string.h>
 
 #if defined(HAVE_MMAP) || defined(OS_WINDOWS)           // MMAP
 

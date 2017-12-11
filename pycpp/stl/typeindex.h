@@ -7,34 +7,17 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <functional>
+#include <pycpp/hashlib/specialize.h>
 #include <typeindex>
 
 PYCPP_BEGIN_NAMESPACE
-
-// FORWARD
-// -------
-
-template <typename Key>
-struct hash;
 
 // SPECIALIZATION
 // --------------
 
 #if defined(USE_XXHASH)
 
-template <>
-struct hash<std::type_index>
-{
-    using argument_type = std::type_index;
-    using result_type = size_t;
-
-    inline size_t operator()(argument_type x) const noexcept
-    {
-        return std::hash<argument_type>()(x);
-    }
-};
+PYCPP_SPECIALIZE_HASH_VALUE(hash, std::type_index);
 
 #endif          // USE_XXHASH
 

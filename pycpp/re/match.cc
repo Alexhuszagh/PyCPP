@@ -16,11 +16,11 @@ PYCPP_BEGIN_NAMESPACE
 struct match_impl_t
 {
     re2::RE2* re2 = nullptr;
-    string_view input;
+    string_wrapper input;
     size_t pos;
     size_t endpos;
     size_t argc = 0;
-    string_view *groups = nullptr;
+    string_wrapper *groups = nullptr;
     ~match_impl_t();
 
     bool operator==(const match_impl_t&) const;
@@ -56,7 +56,7 @@ match_t::~match_t()
 {}
 
 
-const string_view& match_t::group(size_t index) const
+const string_wrapper& match_t::group(size_t index) const
 {
     assert(index < ptr_->argc);
     return ptr_->groups[index];
@@ -80,7 +80,7 @@ match_groupdict match_t::groupdict() const
     const auto& names = ptr_->re2->CapturingGroupNames();
     match_groupdict dict;
     for (const auto& pair: names) {
-        dict[group(pair.first)] = string_view(pair.second);
+        dict[group(pair.first)] = string_wrapper(pair.second);
     }
 
     return dict;
@@ -89,14 +89,14 @@ match_groupdict match_t::groupdict() const
 
 size_t match_t::start(size_t index) const
 {
-    const string_view& view = group(index);
+    const string_wrapper& view = group(index);
     return view.data() - ptr_->input.data();
 }
 
 
 size_t match_t::end(size_t index) const
 {
-    const string_view& view = group(index);
+    const string_wrapper& view = group(index);
     return view.data() + view.size() - ptr_->input.data();
 }
 
@@ -126,15 +126,15 @@ size_t match_t::lastindex() const
 }
 
 
-string_view match_t::lastgroup() const
+string_wrapper match_t::lastgroup() const
 {
     const auto& names = ptr_->re2->CapturingGroupNames();
     assert(!names.empty());
-    return string_view(names.rbegin()->second);
+    return string_wrapper(names.rbegin()->second);
 }
 
 
-const string_view& match_t::string() const
+const string_wrapper& match_t::string() const
 {
     return ptr_->input;
 }
@@ -165,7 +165,7 @@ match_t::match_t()
 {}
 
 
-match_t::match_t(regexp_t& regex, const string_view& view, size_t pos, size_t endpos):
+match_t::match_t(regexp_t& regex, const string_wrapper& view, size_t pos, size_t endpos):
     ptr_(new match_impl_t)
 {
     ptr_->re2 = &regex.ptr_->re2;
@@ -173,10 +173,10 @@ match_t::match_t(regexp_t& regex, const string_view& view, size_t pos, size_t en
     ptr_->pos = pos;
     ptr_->endpos = endpos;
     ptr_->argc = regex.ptr_->argc;
-    ptr_->groups = new string_view[ptr_->argc];
+    ptr_->groups = new string_wrapper[ptr_->argc];
     for (size_t i = 0; i < ptr_->argc; ++i) {
         auto piece = regex.ptr_->piece[i];
-        ptr_->groups[i] = string_view(piece.data(), piece.size());
+        ptr_->groups[i] = string_wrapper(piece.data(), piece.size());
     }
 
     // reset our regular expression
@@ -189,7 +189,7 @@ match_iterator_t::match_iterator_t()
 {}
 
 
-match_iterator_t::match_iterator_t(regexp_t& regex, const string_view& str):
+match_iterator_t::match_iterator_t(regexp_t& regex, const string_wrapper& str):
     match_(new match_t(regex.search(str))),
     regex_(&regex),
     str_(str)
@@ -263,7 +263,7 @@ match_iterator_t& match_iterator_t::operator++()
         if (!*match_) {
             match_.reset();
             regex_ = nullptr;
-            str_ = string_view();
+            str_ = string_wrapper();
         }
     }
 

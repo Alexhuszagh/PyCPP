@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pycpp/csv/punct.h>
+#include <pycpp/stl/string_view.h>
 #include <pycpp/stream/fstream.h>
-#include <pycpp/view/string.h>
 #include <memory>
 #include <sstream>
 
