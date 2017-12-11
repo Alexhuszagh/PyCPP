@@ -34,64 +34,64 @@ static constexpr uint16_t CATEGORY_STAGE2[] = {32,32,32,32,32,32,32,32,32,544,54
 
 enum major_category: uint8_t
 {
-    letter,
-    mark,
-    number,
-    separator,
-    other,
-    punctuation,
-    symbol
+    category_letter,
+    category_mark,
+    category_number,
+    category_separator,
+    category_other,
+    category_punctuation,
+    category_symbol
 };
 
 enum category: uint8_t
 {
-    uppercase_letter = 0,   // [Lu] an uppercase letter
-    lowercase_letter,       // [Ll] a lowercase letter
-    titlecase_letter,       // [Lt] a digraphic character, with first part uppercase
-    modifier_letter,        // [Lm] a modifier letter
-    other_letter,           // [Lo] other letters, including syllables and ideographs
+    category_uppercase_letter = 0,   // [Lu] an uppercase letter
+    category_lowercase_letter,       // [Ll] a lowercase letter
+    category_titlecase_letter,       // [Lt] a digraphic character, with first part uppercase
+    category_modifier_letter,        // [Lm] a modifier letter
+    category_other_letter,           // [Lo] other letters, including syllables and ideographs
 
-    nonspacing_mark = 8,    // [Mn] a nonspacing combining mark (zero advance width)
-    enclosing_mark,         // [Me] an enclosing combining mark
-    spacing_mark,           // [Mc] a spacing combining mark (positive advance width)
+    category_nonspacing_mark = 8,    // [Mn] a nonspacing combining mark (zero advance width)
+    category_enclosing_mark,         // [Me] an enclosing combining mark
+    category_spacing_mark,           // [Mc] a spacing combining mark (positive advance width)
 
-    decimal_number = 16,    // [Nd] a decimal digit
-    letter_number,          // [Nl] a letterlike numeric character
-    other_number,           // [No] a numeric character of other type
+    category_decimal_number = 16,    // [Nd] a decimal digit
+    category_letter_number,          // [Nl] a letterlike numeric character
+    category_other_number,           // [No] a numeric character of other type
 
-    space_separator = 24,   // [Zs] a space character (of various non-zero widths)
-    line_separator,         // [Zl] U+2028 LINE SEPARATOR only
-    paragraph_separator,    // [Zp] U+2029 PARAGRAPH SEPARATOR only
+    category_space_separator = 24,   // [Zs] a space character (of various non-zero widths)
+    category_line_separator,         // [Zl] U+2028 LINE SEPARATOR only
+    category_paragraph_separator,    // [Zp] U+2029 PARAGRAPH SEPARATOR only
 
-    control = 32,           // [Cc] a C0 or C1 control code
-    format,                 // [Cf] a format control character
-    private_use,            // [Co] a private-use character
-    surrogate,              // [Cs] a surrogate code point
-    unassigned,             // [Cn] a reserved unassigned code point or a noncharacter
+    category_control = 32,           // [Cc] a C0 or C1 control code
+    category_format,                 // [Cf] a format control character
+    category_private_use,            // [Co] a private-use character
+    category_surrogate,              // [Cs] a surrogate code point
+    category_unassigned,             // [Cn] a reserved unassigned code point or a noncharacter
 
-    dash_punctuation = 40,  // [Pd] a dash or hyphen punctuation mark
-    open_punctuation,       // [Ps] an opening punctuation mark (of a pair)
-    close_punctuation,      // [Pe] a closing punctuation mark (of a pair)
-    connector_punctuation,  // [Pc] a connecting punctuation mark, like a tie
-    other_punctuation,      // [Po] a punctuation mark of other type
-    initial_punctuation,    // [Pi] an initial quotation mark
-    final_punctuation,      // [Pf] a final quotation mark
+    category_dash_punctuation = 40,  // [Pd] a dash or hyphen punctuation mark
+    category_open_punctuation,       // [Ps] an opening punctuation mark (of a pair)
+    category_close_punctuation,      // [Pe] a closing punctuation mark (of a pair)
+    category_connector_punctuation,  // [Pc] a connecting punctuation mark, like a tie
+    category_other_punctuation,      // [Po] a punctuation mark of other type
+    category_initial_punctuation,    // [Pi] an initial quotation mark
+    category_final_punctuation,      // [Pf] a final quotation mark
 
-    math_symbol = 48,       // [Sm] a symbol of primarily mathematical use
-    currency_symbol,        // [Sc] a currency sign
-    modifier_symbol,        // [Sk] a non-letterlike modifier symbol
-    other_symbol            // [So] a symbol of other type
+    category_math_symbol = 48,       // [Sm] a symbol of primarily mathematical use
+    category_currency_symbol,        // [Sc] a currency sign
+    category_modifier_symbol,        // [Sk] a non-letterlike modifier symbol
+    category_other_symbol            // [So] a symbol of other type
 };
 
 enum derived_properties: uint16_t
 {
-    alphabetic = 64,
-    uppercase = 128,
-    lowercase = 256,
-    white_space = 512,
-    hex_digit = 1024,
-    noncharacter_code_point = 2048,
-    default_ignorable_code_point = 4096
+    properties_alphabetic = 64,
+    properties_uppercase = 128,
+    properties_lowercase = 256,
+    properties_white_space = 512,
+    properties_hex_digit = 1024,
+    properties_noncharacter_code_point = 2048,
+    properties_default_ignorable_code_point = 4096
 };
 
 // HELPERS -- CHARACTERS
@@ -620,10 +620,10 @@ size_t utf32_to_utf16_ptr(const uint32_t*& src_first, const uint32_t* src_last,
  *  \brief STL wrapper for narrow to wide conversions.
  */
 template <typename Char1, typename Char2>
-struct to_wide
+struct to_wide_impl
 {
     template <typename Function>
-    std::string operator()(const string_view& str, Function function)
+    std::string operator()(const string_wrapper& str, Function function)
     {
         // types
         constexpr size_t size1 = sizeof(Char1);
@@ -658,10 +658,10 @@ struct to_wide
  *  \brief STL wrapper for wide to narrow conversions.
  */
 template <typename Char1, typename Char2>
-struct to_narrow
+struct to_narrow_impl
 {
     template <typename Function>
-    std::string operator()(const string_view& str, Function function)
+    std::string operator()(const string_wrapper& str, Function function)
     {
         // types
         constexpr size_t size1 = sizeof(Char1);
@@ -717,31 +717,31 @@ bool is_alnum(uint32_t c)
 
 bool is_alpha(uint32_t c)
 {
-    return (category_lookup(c) & alphabetic) != 0;
+    return (category_lookup(c) & properties_alphabetic) != 0;
 }
 
 
 bool is_digit(uint32_t c)
 {
-    return get_category(c) == decimal_number;
+    return get_category(c) == category_decimal_number;
 }
 
 
 bool is_lower(uint32_t c)
 {
-    return (category_lookup(c) & lowercase) != 0;
+    return (category_lookup(c) & properties_lowercase) != 0;
 }
 
 
 bool is_upper(uint32_t c)
 {
-    return (category_lookup(c) & uppercase) != 0;
+    return (category_lookup(c) & properties_uppercase) != 0;
 }
 
 
 bool is_space(uint32_t c)
 {
-    return (category_lookup(c) & white_space) != 0;
+    return (category_lookup(c) & properties_white_space) != 0;
 }
 
 
@@ -754,24 +754,26 @@ bool is_blank(uint32_t c)
         case '\r':
             return false;
         default:
-            return is_space(c) && !(get_category(c) == line_separator || get_category(c) == paragraph_separator);
+            return is_space(c) &&
+                   !(get_category(c) == category_line_separator ||
+                     get_category(c) == category_paragraph_separator);
     }
 }
 
 
 bool is_punctuation(uint32_t c)
 {
-    return get_major_category(c) == punctuation;
+    return get_major_category(c) == category_punctuation;
 }
 
 
-bool is_ascii(const string_view& str)
+bool is_ascii(const string_wrapper& str)
 {
     return !is_unicode(str);
 }
 
 
-bool is_unicode(const string_view& str)
+bool is_unicode(const string_wrapper& str)
 {
     return std::any_of(str.cbegin(), str.cend(), [](char c) {
         return c <= 0;
@@ -798,9 +800,9 @@ void utf8_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_to_utf16(const string_view& str)
+std::string utf8_to_utf16(const string_wrapper& str)
 {
-    return to_wide<uint8_t, uint16_t>()(str, utf8_to_utf16_ptr);
+    return to_wide_impl<uint8_t, uint16_t>()(str, utf8_to_utf16_ptr);
 }
 
 
@@ -821,9 +823,9 @@ void utf8_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_to_utf32(const string_view& str)
+std::string utf8_to_utf32(const string_wrapper& str)
 {
-    return to_wide<uint8_t, uint32_t>()(str, utf8_to_utf32_ptr);
+    return to_wide_impl<uint8_t, uint32_t>()(str, utf8_to_utf32_ptr);
 }
 
 
@@ -844,9 +846,9 @@ void utf16_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf16_to_utf8(const string_view& str)
+std::string utf16_to_utf8(const string_wrapper& str)
 {
-    return to_narrow<uint16_t, uint8_t>()(str, utf16_to_utf8_ptr);
+    return to_narrow_impl<uint16_t, uint8_t>()(str, utf16_to_utf8_ptr);
 }
 
 
@@ -867,9 +869,9 @@ void utf16_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf16_to_utf32(const string_view& str)
+std::string utf16_to_utf32(const string_wrapper& str)
 {
-    return to_wide<uint16_t, uint32_t>()(str, utf16_to_utf32_ptr);
+    return to_wide_impl<uint16_t, uint32_t>()(str, utf16_to_utf32_ptr);
 }
 
 
@@ -890,9 +892,9 @@ void utf32_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf32_to_utf8(const string_view& str)
+std::string utf32_to_utf8(const string_wrapper& str)
 {
-    return to_narrow<uint32_t, uint8_t>()(str, utf32_to_utf8_ptr);
+    return to_narrow_impl<uint32_t, uint8_t>()(str, utf32_to_utf8_ptr);
 }
 
 
@@ -913,9 +915,9 @@ void utf32_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf32_to_utf16(const string_view& str)
+std::string utf32_to_utf16(const string_wrapper& str)
 {
-    return to_narrow<uint32_t, uint16_t>()(str, utf32_to_utf16_ptr);
+    return to_narrow_impl<uint32_t, uint16_t>()(str, utf32_to_utf16_ptr);
 }
 
 PYCPP_END_NAMESPACE

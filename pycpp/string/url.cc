@@ -40,7 +40,7 @@ unsigned char from_hex(unsigned char x)
 /** Pre-allocate upper bound of the encoded-string, that is, ~3x the
  *  size of the original string, and re-allocate string once.
  */
-std::string url_encode(const string_view& string)
+std::string url_encode(const string_wrapper& string)
 {
     std::string result;
     result.reserve(3 * string.size());
@@ -69,7 +69,7 @@ std::string url_encode(const string_view& string)
 /** Pre-allocate upper bound of the encoded-string, that is, roughly the
  *  size of the original string, and re-allocate string once.
  */
-std::string url_decode(const string_view& string)
+std::string url_decode(const string_wrapper& string)
 {
     std::string result;
     result.reserve(string.size());

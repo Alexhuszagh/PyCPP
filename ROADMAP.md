@@ -32,6 +32,7 @@
             - sql -- DONE
             - stl -- DONE
             - stream -- DONE
+            - string
             - view -- DONE
             - windows -- DONE
             - xml -- DONE

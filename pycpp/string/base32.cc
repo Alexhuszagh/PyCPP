@@ -195,7 +195,7 @@ size_t base32_encode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-std::string base32_encode(const string_view& str)
+std::string base32_encode(const string_wrapper& str)
 {
     std::string base32;
     base32.reserve(encoded_size(str.size()));
@@ -225,7 +225,7 @@ size_t base32_decode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-std::string base32_decode(const string_view& str)
+std::string base32_decode(const string_wrapper& str)
 {
     std::string base32;
     base32.reserve(decoded_size(str.size()));

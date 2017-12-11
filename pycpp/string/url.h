@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pycpp/stl/string_view.h>
+#include <pycpp/string/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -22,7 +22,7 @@ PYCPP_BEGIN_NAMESPACE
  *  \param string       String to encode
  *  \return             URL-encoded string
  */
-std::string url_encode(const string_view& string);
+std::string url_encode(const string_wrapper& string);
 
 /**
  *  \brief URL-decode string.
@@ -30,6 +30,6 @@ std::string url_encode(const string_view& string);
  *  \param string       String to encode
  *  \return             URL-decoded string
  */
-std::string url_decode(const string_view& string);
+std::string url_decode(const string_wrapper& string);
 
 PYCPP_END_NAMESPACE

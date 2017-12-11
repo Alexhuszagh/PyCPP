@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/stl/string_view.h>
+#include <pycpp/string/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -22,7 +22,7 @@ size_t base32_encode(const void* src, size_t srclen, void* dst, size_t dstlen);
 /**
  *  \brief Encode string to base32.
  */
-std::string base32_encode(const string_view& str);
+std::string base32_encode(const string_wrapper& str);
 
 /**
  *  \brief Decode buffer from base32. Returns number of bytes converted.
@@ -32,6 +32,6 @@ size_t base32_decode(const void* src, size_t srclen, void* dst, size_t dstlen);
 /**
  *  \brief Decode string from base32.
  */
-std::string base32_decode(const string_view& str);
+std::string base32_decode(const string_wrapper& str);
 
 PYCPP_END_NAMESPACE

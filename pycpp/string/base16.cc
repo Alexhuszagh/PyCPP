@@ -89,7 +89,7 @@ size_t base16_encode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-std::string base16_encode(const string_view& str)
+std::string base16_encode(const string_wrapper& str)
 {
     std::string base16;
     base16.reserve(encoded_size(str.size()));
@@ -119,7 +119,7 @@ size_t base16_decode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-std::string base16_decode(const string_view& str)
+std::string base16_decode(const string_wrapper& str)
 {
     std::string base16;
     base16.reserve(decoded_size(str.size()));

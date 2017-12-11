@@ -188,7 +188,7 @@ size_t base64_encode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-std::string base64_encode(const string_view& str)
+std::string base64_encode(const string_wrapper& str)
 {
     std::string base64;
     base64.reserve(encoded_size(str.size()));
@@ -218,7 +218,7 @@ size_t base64_decode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-std::string base64_decode(const string_view& str)
+std::string base64_decode(const string_wrapper& str)
 {
     std::string base64;
     base64.reserve(decoded_size(str.size()));
