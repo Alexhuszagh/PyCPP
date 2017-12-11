@@ -31,13 +31,11 @@ TEST(btree_set, constructor_null)
     EXPECT_TRUE(s1.find(2) != s1.end());
     EXPECT_TRUE(s2.find(2) == s2.end());
 
-// TODO: need move assignment operators...
-// TODO: need copy assignment operators...
-//    s2 = std::move(s1);
-//    EXPECT_EQ(s1.size(), 0);
-//    EXPECT_EQ(s2.size(), 1);
-//    EXPECT_TRUE(s1.find(1) == s1.end());
-//    EXPECT_TRUE(s2.find(1) != s2.end());
+    s2 = std::move(s1);
+    EXPECT_EQ(s1.size(), 0);
+    EXPECT_EQ(s2.size(), 2);
+    EXPECT_TRUE(s1.find(1) == s1.end());
+    EXPECT_TRUE(s2.find(1) != s2.end());
 }
 
 
@@ -60,11 +58,9 @@ TEST(btree_multiset, constructor_null)
     EXPECT_TRUE(s1.find(2) != s1.end());
     EXPECT_TRUE(s2.find(2) == s2.end());
 
-// TODO: need move assignment operators...
-// TODO: need copy assignment operators...
-//    s2 = std::move(s1);
-//    EXPECT_EQ(s1.size(), 0);
-//    EXPECT_EQ(s2.size(), 1);
-//    EXPECT_TRUE(s1.find(1) == s1.end());
-//    EXPECT_TRUE(s2.find(1) != s2.end());
+    s2 = std::move(s1);
+    EXPECT_EQ(s1.size(), 0);
+    EXPECT_EQ(s2.size(), 2);
+    EXPECT_TRUE(s1.find(1) == s1.end());
+    EXPECT_TRUE(s2.find(1) != s2.end());
 }

@@ -96,6 +96,27 @@ public:
     {
         this->insert(list.begin(), list.end());
     }
+
+    // Copy assignment
+    self_type& operator=(const self_type& x)
+    {
+        this->assign(x);
+        return *this;
+    }
+
+    // Move assignment
+    self_type& operator=(self_type&& x)
+    {
+        this->swap(x);
+        return *this;
+    }
+
+    // Initializer list assignment
+    self_type& operator=(std::initializer_list<value_type> list)
+    {
+        this->insert(list.begin(), list.end());
+        return *this;
+    }
 };
 
 
@@ -183,6 +204,27 @@ public:
         super_type(alloc)
     {
         this->insert(list.begin(), list.end());
+    }
+
+    // Copy assignment
+    self_type& operator=(const self_type& x)
+    {
+        this->assign(x);
+        return *this;
+    }
+
+    // Move assignment
+    self_type& operator=(self_type&& x)
+    {
+        this->swap(x);
+        return *this;
+    }
+
+    // Initializer list assignment
+    self_type& operator=(std::initializer_list<value_type> list)
+    {
+        this->insert(list.begin(), list.end());
+        return *this;
     }
 };
 
