@@ -16,9 +16,6 @@ PYCPP_BEGIN_NAMESPACE
 // DECLARATION
 // -----------
 
-// TODO: how do I implement this?
-struct default_intrusive_tag;
-
 /**
  *  \brief POD base class for a node of an `intrusive_forward_list`.
  *
@@ -34,18 +31,13 @@ struct intrusive_forward_list_node
 /**
  *  \brief Iterator type to wrap nodes.
  */
-template <
-    typename T,
-    typename DifferenceType,
-    typename Pointer,
-    typename Reference
->
-struct intrusive_forward_list_iterator: iterator<forward_iterator_tag, T, DifferenceType, Pointer, Reference>
+template <typename T>
+struct intrusive_forward_list_iterator: iterator<forward_iterator_tag, T>
 {
 public:
     // MEMBER TYPES
     // ------------
-    using self_t = intrusive_forward_list_iterator<T, DifferenceType, Pointer, Reference>;
+    using self_t = intrusive_forward_list_iterator<T>;
     using value_type = T;
     using reference = value_type&;
     using const_reference = const value_type&;
@@ -103,8 +95,8 @@ public:
     using difference_type = ptrdiff_t;
     using size_type = size_t;
     // TODO: need conversion to and from iterators
-    using iterator = intrusive_forward_list_iterator<T, difference_type, pointer, reference>;
-    using const_iterator = intrusive_forward_list_iterator<const T, difference_type, const_pointer, const_reference>;
+    using iterator = intrusive_forward_list_iterator<T>;
+    using const_iterator = intrusive_forward_list_iterator<const T>;
 
     // CONSTRUCTORS
     intrusive_forward_list() noexcept;
@@ -188,21 +180,21 @@ private:
 
 // ITERATOR
 
-template <typename T, typename D, typename P, typename R>
-intrusive_forward_list_iterator<T, D, P, R>::intrusive_forward_list_iterator(T* node):
+template <typename T>
+intrusive_forward_list_iterator<T>::intrusive_forward_list_iterator(T* node):
     node_(node)
 {}
 
 
-template <typename T, typename D, typename P, typename R>
-auto intrusive_forward_list_iterator<T, D, P, R>::operator++() -> self_t&
+template <typename T>
+auto intrusive_forward_list_iterator<T>::operator++() -> self_t&
 {
     node_ = node_->next;
 }
 
 
-template <typename T, typename D, typename P, typename R>
-auto intrusive_forward_list_iterator<T, D, P, R>::operator++(int) -> self_t
+template <typename T>
+auto intrusive_forward_list_iterator<T>::operator++(int) -> self_t
 {
     self_t copy(*this);
     operator++();
@@ -210,29 +202,29 @@ auto intrusive_forward_list_iterator<T, D, P, R>::operator++(int) -> self_t
 }
 
 
-template <typename T, typename D, typename P, typename R>
-auto intrusive_forward_list_iterator<T, D, P, R>::operator->() -> pointer
+template <typename T>
+auto intrusive_forward_list_iterator<T>::operator->() -> pointer
 {
     return std::addressof(operator*());
 }
 
 
-template <typename T, typename D, typename P, typename R>
-auto intrusive_forward_list_iterator<T, D, P, R>::operator->() const -> const_pointer
+template <typename T>
+auto intrusive_forward_list_iterator<T>::operator->() const -> const_pointer
 {
     return std::addressof(operator*());
 }
 
 
-template <typename T, typename D, typename P, typename R>
-auto intrusive_forward_list_iterator<T, D, P, R>::operator*() -> reference
+template <typename T>
+auto intrusive_forward_list_iterator<T>::operator*() -> reference
 {
     return *node_;
 }
 
 
-template <typename T, typename D, typename P, typename R>
-auto intrusive_forward_list_iterator<T, D, P, R>::operator*() const -> const_reference
+template <typename T>
+auto intrusive_forward_list_iterator<T>::operator*() const -> const_reference
 {
     return *node_;
 }
