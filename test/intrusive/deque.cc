@@ -2,10 +2,10 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief Reference deque unittests.
+ *  \brief Semi-intrusive deque unittests.
  */
 
-#include <pycpp/reference/deque.h>
+#include <pycpp/intrusive/deque.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -19,23 +19,23 @@ static std::deque<int> DATA = {1, 2, 3, 4, 5};
 // -----
 
 
-TEST(reference_deque, constructor)
+TEST(intrusive_deque, constructor)
 {
-    using reference = reference_deque<int>;
+    using intrusive = intrusive_deque<int>;
 
-    reference deque;
+    intrusive deque;
     EXPECT_EQ(deque.size(), 0);
 
-    deque = reference(5, DATA[0]);
+    deque = intrusive(5, DATA[0]);
     EXPECT_EQ(deque.size(), 5);
 
-    reference copy(deque);
+    intrusive copy(deque);
     EXPECT_EQ(copy.size(), 5);
 
     copy = deque;
     EXPECT_EQ(copy.size(), 5);
 
-    reference moved(std::move(deque));
+    intrusive moved(std::move(deque));
     EXPECT_EQ(moved.size(), 5);
 
     moved = std::move(copy);
@@ -43,13 +43,13 @@ TEST(reference_deque, constructor)
 }
 
 
-TEST(reference_deque, iterator)
+TEST(intrusive_deque, iterator)
 {
-    using reference = reference_deque<int>;
+    using intrusive = intrusive_deque<int>;
 
     // create deques
-    reference deque;
-    reference reversed;
+    intrusive deque;
+    intrusive reversed;
     for (auto &item: DATA) {
         deque.push_back(item);
         reversed.push_front(item);
@@ -63,10 +63,10 @@ TEST(reference_deque, iterator)
 }
 
 
-TEST(reference_deque, capacity)
+TEST(intrusive_deque, capacity)
 {
-    using reference = reference_deque<int>;
-    reference deque(5, DATA[0]);
+    using intrusive = intrusive_deque<int>;
+    intrusive deque(5, DATA[0]);
 
     EXPECT_EQ(deque.size(), 5);
     EXPECT_GE(deque.max_size(), 5);
@@ -77,11 +77,11 @@ TEST(reference_deque, capacity)
 }
 
 
-TEST(reference_deque, element)
+TEST(intrusive_deque, element)
 {
-    using reference = reference_deque<int>;
+    using intrusive = intrusive_deque<int>;
 
-    reference deque;
+    intrusive deque;
     for (auto &item: DATA) {
         deque.push_back(item);
     }
@@ -95,14 +95,14 @@ TEST(reference_deque, element)
 }
 
 
-TEST(reference_deque, modifiers)
+TEST(intrusive_deque, modifiers)
 {
-    using reference = reference_deque<int>;
+    using intrusive = intrusive_deque<int>;
     std::deque<int> data(DATA);
 
     // push_back
-    reference deque;
-    reference empty;
+    intrusive deque;
+    intrusive empty;
     for (auto &item: data) {
         deque.push_back(item);
     }
@@ -148,14 +148,14 @@ TEST(reference_deque, modifiers)
 }
 
 
-TEST(reference_deque, relational)
+TEST(intrusive_deque, relational)
 {
-    using reference = reference_deque<int>;
+    using intrusive = intrusive_deque<int>;
 
     // create deques
-    reference deque;
-    reference reversed;
-    reference duplicate(5, DATA[0]);
+    intrusive deque;
+    intrusive reversed;
+    intrusive duplicate(5, DATA[0]);
     for (auto &item: DATA) {
         deque.push_back(item);
         reversed.push_front(item);

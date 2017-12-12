@@ -471,6 +471,9 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/unordered_map.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/unordered_set.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/vector.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/intrusive/core.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/intrusive/deque.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/intrusive/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/category.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/chunked.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/input_iterator_facade.h"
@@ -527,9 +530,6 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/sysstat.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/tls.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/random.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/reference/core.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/reference/deque.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/reference/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/runtime/os.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/allocator.h"
@@ -1024,6 +1024,8 @@ set(TEST_FILES
     test/fixed/unordered_map.cc
     test/fixed/unordered_set.cc
     test/fixed/vector.cc
+    test/intrusive/deque.cc
+    test/intrusive/vector.cc
     test/lexical.cc
     test/lexical/atof.cc
     test/lexical/atoi.cc
@@ -1049,8 +1051,6 @@ set(TEST_FILES
     test/preprocessor/processor.cc
     test/preprocessor/os.cc
     test/preprocessor/tls.cc
-    test/reference/deque.cc
-    test/reference/vector.cc
     test/runtime/os.cc
     test/secure/allocator.cc
     test/secure/string.cc

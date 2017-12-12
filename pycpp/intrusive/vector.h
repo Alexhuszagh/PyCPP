@@ -2,21 +2,21 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Reference-wrapper like deque.
+ *  \brief Reference-wrapper like vector.
  *
- *  Stores non-nullable pointers to existing objects, using a deque
+ *  Stores non-nullable pointers to existing objects, using a vector
  *  wrapper as the underlying structure.
  *
- *  This is quite similar to the EASTL's instrusive deque, where
+ *  This is quite similar to the EASTL's instrusive vector, where
  *  the user allocates storage for each node.
  */
 
 #pragma once
 
 #include <pycpp/misc/ordering.h>
-#include <pycpp/reference/core.h>
-#include <pycpp/stl/deque.h>
+#include <pycpp/intrusive/core.h>
 #include <pycpp/stl/iterator.h>
+#include <pycpp/stl/vector.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -28,7 +28,7 @@ namespace sequence_detail
 /**
  *  \brief Macro wrapper to automate iterator construction.
  */
-#define REFERENCE_DEQUE_ITERATOR(it)                                    \
+#define REFERENCE_VECTOR_ITERATOR(it)                                   \
     iterator(it, [](pointer& p) -> reference                            \
     {                                                                   \
         return *p;                                                      \
@@ -37,7 +37,7 @@ namespace sequence_detail
 /**
  *  \brief Macro wrapper to automate const_iterator construction.
  */
-#define REFERENCE_DEQUE_CONST_ITERATOR(it)                              \
+#define REFERENCE_VECTOR_CONST_ITERATOR(it)                             \
     const_iterator(it, [](const_pointer p) -> const_reference           \
     {                                                                   \
         return *p;                                                      \
@@ -47,25 +47,25 @@ namespace sequence_detail
 // -----------
 
 /**
- *  \brief Deque wrapper mapping value pointers to values.
+ *  \brief Vector wrapper mapping value pointers to values.
  */
 template <
     typename T,
     typename Alloc = std::allocator<T*>,
-    template <typename, typename> class Container = deque
+    template <typename, typename> class Container = vector
 >
-struct reference_deque_base
+struct intrusive_vector_base
 {
     // MEMBER TYPES
     // ------------
-    using self_t = reference_deque_base<T, Alloc, Container>;
+    using self_t = intrusive_vector_base<T, Alloc, Container>;
     using container_type = Container<T*, Alloc>;
     using value_type = T;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
     using const_pointer = const value_type*;
-    using difference_type = ptrdiff_t;
+    using difference_type = std::ptrdiff_t;
     using size_type = size_t;
     using iterator = sequence_iterator_impl<typename container_type::iterator>;
     using const_iterator = sequence_const_iterator_impl<typename container_type::const_iterator>;
@@ -76,11 +76,11 @@ struct reference_deque_base
     // ----------------
 
     // CONSTRUCTORS
-    reference_deque_base() = default;
-    reference_deque_base(size_type n, reference);
-    reference_deque_base(const self_t&) = default;
+    intrusive_vector_base() = default;
+    intrusive_vector_base(size_type n, reference);
+    intrusive_vector_base(const self_t&) = default;
     self_t & operator=(const self_t&) = default;
-    reference_deque_base(self_t&&) = default;
+    intrusive_vector_base(self_t&&) = default;
     self_t & operator=(self_t&&) = default;
 
     // ITERATORS
@@ -100,7 +100,9 @@ struct reference_deque_base
     // CAPACITY
     size_type size() const;
     size_type max_size() const;
+    size_type capacity() const;
     bool empty() const noexcept;
+    void reserve(size_type n);
     void shrink_to_fit();
 
     // ELEMENT ACCESS
@@ -115,8 +117,6 @@ struct reference_deque_base
 
     // MODIFIERS
     void assign(size_type n, reference r);
-    void push_front(reference r);
-    void pop_front();
     void push_back(reference r);
     void pop_back();
     iterator insert(const_iterator position, reference r);
@@ -135,230 +135,232 @@ struct reference_deque_base
     bool operator>=(const self_t&) const;
 
 private:
-    container_type deque_;
+    container_type vector_;
 };
+
 
 // IMPLEMENTATION
 // --------------
 
 
 template <typename T, typename A, template <typename, typename> class _>
-reference_deque_base<T, A, _>::reference_deque_base(size_type n, reference r)
+intrusive_vector_base<T, A, _>::intrusive_vector_base(size_type n, reference r)
 {
+    vector_.reserve(n);
     for (size_t i = 0; i < n; ++i) {
-        deque_.emplace_back(std::addressof(r));
+        vector_.emplace_back(std::addressof(r));
     }
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::begin() -> iterator
+auto intrusive_vector_base<T, A, _>::begin() -> iterator
 {
-    return REFERENCE_DEQUE_ITERATOR(deque_.begin());
+    return REFERENCE_VECTOR_ITERATOR(vector_.begin());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::begin() const -> const_iterator
+auto intrusive_vector_base<T, A, _>::begin() const -> const_iterator
 {
-    return REFERENCE_DEQUE_CONST_ITERATOR(deque_.begin());
+    return REFERENCE_VECTOR_CONST_ITERATOR(vector_.begin());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::cbegin() const -> const_iterator
+auto intrusive_vector_base<T, A, _>::cbegin() const -> const_iterator
 {
-    return REFERENCE_DEQUE_CONST_ITERATOR(deque_.begin());
+    return REFERENCE_VECTOR_CONST_ITERATOR(vector_.begin());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::end() -> iterator
+auto intrusive_vector_base<T, A, _>::end() -> iterator
 {
-    return REFERENCE_DEQUE_ITERATOR(deque_.end());
+    return REFERENCE_VECTOR_ITERATOR(vector_.end());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::end() const -> const_iterator
+auto intrusive_vector_base<T, A, _>::end() const -> const_iterator
 {
-    return REFERENCE_DEQUE_CONST_ITERATOR(deque_.end());
+    return REFERENCE_VECTOR_CONST_ITERATOR(vector_.end());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::cend() const -> const_iterator
+auto intrusive_vector_base<T, A, _>::cend() const -> const_iterator
 {
-    return REFERENCE_DEQUE_CONST_ITERATOR(deque_.end());
+    return REFERENCE_VECTOR_CONST_ITERATOR(vector_.end());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::rbegin() -> reverse_iterator
+auto intrusive_vector_base<T, A, _>::rbegin() -> reverse_iterator
 {
     return reverse_iterator(end());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::rbegin() const -> const_reverse_iterator
+auto intrusive_vector_base<T, A, _>::rbegin() const -> const_reverse_iterator
 {
     return const_reverse_iterator(end());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::crbegin() const -> const_reverse_iterator
+auto intrusive_vector_base<T, A, _>::crbegin() const -> const_reverse_iterator
 {
     return const_reverse_iterator(end());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::rend() -> reverse_iterator
+auto intrusive_vector_base<T, A, _>::rend() -> reverse_iterator
 {
     return reverse_iterator(begin());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::rend() const -> const_reverse_iterator
+auto intrusive_vector_base<T, A, _>::rend() const -> const_reverse_iterator
 {
     return const_reverse_iterator(begin());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::crend() const -> const_reverse_iterator
+auto intrusive_vector_base<T, A, _>::crend() const -> const_reverse_iterator
 {
     return const_reverse_iterator(begin());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::size() const -> size_type
+auto intrusive_vector_base<T, A, _>::size() const -> size_type
 {
-    return deque_.size();
+    return vector_.size();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::max_size() const -> size_type
+auto intrusive_vector_base<T, A, _>::max_size() const -> size_type
 {
-    return deque_.max_size();
+    return vector_.max_size();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-bool reference_deque_base<T, A, _>::empty() const noexcept
+auto intrusive_vector_base<T, A, _>::capacity() const -> size_type
 {
-    return deque_.empty();
+    return vector_.capacity();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-void reference_deque_base<T, A, _>::shrink_to_fit()
+bool intrusive_vector_base<T, A, _>::empty() const noexcept
 {
-    deque_.shrink_to_fit();
+    return vector_.empty();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::operator[](size_type n) -> reference
+void intrusive_vector_base<T, A, _>::reserve(size_type n)
 {
-    return *deque_[n];
+    vector_.reserve(n);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::operator[](size_type n) const -> const_reference
+void intrusive_vector_base<T, A, _>::shrink_to_fit()
 {
-    return *deque_[n];
+    vector_.shrink_to_fit();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::at(size_type n) -> reference
+auto intrusive_vector_base<T, A, _>::operator[](size_type n) -> reference
 {
-    return *deque_.at(n);
+    return *vector_[n];
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::at(size_type n) const -> const_reference
+auto intrusive_vector_base<T, A, _>::operator[](size_type n) const -> const_reference
 {
-    return *deque_.at(n);
+    return *vector_[n];
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::front() -> reference
+auto intrusive_vector_base<T, A, _>::at(size_type n) -> reference
 {
-    return *deque_.front();
+    return *vector_.at(n);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::front() const -> const_reference
+auto intrusive_vector_base<T, A, _>::at(size_type n) const -> const_reference
 {
-    return *deque_.front();
+    return *vector_.at(n);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::back() -> reference
+auto intrusive_vector_base<T, A, _>::front() -> reference
 {
-    return *deque_.back();
+    return *vector_.front();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::back() const -> const_reference
+auto intrusive_vector_base<T, A, _>::front() const -> const_reference
 {
-    return *deque_.back();
+    return *vector_.front();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-void reference_deque_base<T, A, _>::assign(size_type n, reference r)
+auto intrusive_vector_base<T, A, _>::back() -> reference
 {
-    deque_.assign(n, std::addressof(r));
+    return *vector_.back();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-void reference_deque_base<T, A, _>::push_front(reference r)
+auto intrusive_vector_base<T, A, _>::back() const -> const_reference
 {
-    deque_.push_front(std::addressof(r));
+    return *vector_.back();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-void reference_deque_base<T, A, _>::pop_front()
+void intrusive_vector_base<T, A, _>::assign(size_type n, reference r)
 {
-    deque_.pop_front();
+    vector_.assign(n, std::addressof(r));
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-void reference_deque_base<T, A, _>::push_back(reference r)
+void intrusive_vector_base<T, A, _>::push_back(reference r)
 {
-    deque_.push_back(std::addressof(r));
+    vector_.push_back(std::addressof(r));
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-void reference_deque_base<T, A, _>::pop_back()
+void intrusive_vector_base<T, A, _>::pop_back()
 {
-    deque_.pop_back();
+    vector_.pop_back();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::insert(const_iterator position, reference r) -> iterator
+auto intrusive_vector_base<T, A, _>::insert(const_iterator position, reference r) -> iterator
 {
     auto distance = std::distance(cbegin(), position);
-    auto it = deque_.insert(deque_.cbegin()+distance, std::addressof(r));
+    auto it = vector_.insert(vector_.cbegin()+distance, std::addressof(r));
     return iterator(it, [](pointer p) -> reference {
         return *p;
     });
@@ -366,10 +368,10 @@ auto reference_deque_base<T, A, _>::insert(const_iterator position, reference r)
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::insert(const_iterator position, size_type n, reference r) -> iterator
+auto intrusive_vector_base<T, A, _>::insert(const_iterator position, size_type n, reference r) -> iterator
 {
     auto distance = std::distance(cbegin(), position);
-    auto it = deque_.insert(deque_.cbegin()+distance, n, std::addressof(r));
+    auto it = vector_.insert(vector_.cbegin()+distance, n, std::addressof(r));
     return iterator(it, [](pointer p) -> reference {
         return *p;
     });
@@ -377,10 +379,10 @@ auto reference_deque_base<T, A, _>::insert(const_iterator position, size_type n,
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::erase(const_iterator position) -> iterator
+auto intrusive_vector_base<T, A, _>::erase(const_iterator position) -> iterator
 {
     auto distance = std::distance(cbegin(), position);
-    auto it = deque_.erase(deque_.cbegin()+distance);
+    auto it = vector_.erase(vector_.cbegin()+distance);
     return iterator(it, [](pointer p) -> reference {
         return *p;
     });
@@ -388,11 +390,11 @@ auto reference_deque_base<T, A, _>::erase(const_iterator position) -> iterator
 
 
 template <typename T, typename A, template <typename, typename> class _>
-auto reference_deque_base<T, A, _>::erase(const_iterator first, const_iterator last) -> iterator
+auto intrusive_vector_base<T, A, _>::erase(const_iterator first, const_iterator last) -> iterator
 {
     auto f = std::distance(cbegin(), first);
     auto l = std::distance(cbegin(), last);
-    auto it = deque_.erase(deque_.cbegin()+f, deque_.cbegin()+l);
+    auto it = vector_.erase(vector_.cbegin()+f, vector_.cbegin()+l);
     return iterator(it, [](pointer p) -> reference {
         return *p;
     });
@@ -400,56 +402,56 @@ auto reference_deque_base<T, A, _>::erase(const_iterator first, const_iterator l
 
 
 template <typename T, typename A, template <typename, typename> class _>
-void reference_deque_base<T, A, _>::clear()
+void intrusive_vector_base<T, A, _>::clear()
 {
-    deque_.clear();
+    vector_.clear();
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-void reference_deque_base<T, A, _>::swap(self_t& rhs)
+void intrusive_vector_base<T, A, _>::swap(self_t& rhs)
 {
-    std::swap(deque_, rhs.deque_);
+    std::swap(vector_, rhs.vector_);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-bool reference_deque_base<T, A, _>::operator==(const self_t& rhs) const
+bool intrusive_vector_base<T, A, _>::operator==(const self_t& rhs) const
 {
     return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-bool reference_deque_base<T, A, _>::operator!=(const self_t& rhs) const
+bool intrusive_vector_base<T, A, _>::operator!=(const self_t& rhs) const
 {
     return ordering::not_equal_to(*this, rhs);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-bool reference_deque_base<T, A, _>::operator<(const self_t& rhs) const
+bool intrusive_vector_base<T, A, _>::operator<(const self_t& rhs) const
 {
     return std::lexicographical_compare(begin(), end(), rhs.begin(), rhs.end());
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-bool reference_deque_base<T, A, _>::operator<=(const self_t& rhs) const
+bool intrusive_vector_base<T, A, _>::operator<=(const self_t& rhs) const
 {
     return ordering::less_equal(*this, rhs);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-bool reference_deque_base<T, A, _>::operator>(const self_t& rhs) const
+bool intrusive_vector_base<T, A, _>::operator>(const self_t& rhs) const
 {
     return ordering::greater(*this, rhs);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
-bool reference_deque_base<T, A, _>::operator>=(const self_t& rhs) const
+bool intrusive_vector_base<T, A, _>::operator>=(const self_t& rhs) const
 {
     return ordering::greater_equal(*this, rhs);
 }
@@ -457,8 +459,8 @@ bool reference_deque_base<T, A, _>::operator>=(const self_t& rhs) const
 // CLEANUP
 // -------
 
-#undef REFERENCE_DEQUE_ITERATOR
-#undef REFERENCE_DEQUE_CONST_ITERATOR
+#undef REFERENCE_VECTOR_ITERATOR
+#undef REFERENCE_VECTOR_CONST_ITERATOR
 
 }   /* sequence_detail */
 
@@ -466,13 +468,14 @@ bool reference_deque_base<T, A, _>::operator>=(const self_t& rhs) const
 // -------
 
 /**
- *  \brief Deque wrapper that handles reference values.
+ *  \brief Vector wrapper that handles reference values.
  */
 template <
     typename T,
-    typename Alloc = std::allocator<T*>,
-    template <typename, typename> class Container = deque
+    typename Alloc = allocator<T*>,
+    template <typename, typename> class Container = vector
 >
-using reference_deque = sequence_detail::reference_deque_base<T, Alloc, Container>;
+using intrusive_vector = sequence_detail::intrusive_vector_base<T, Alloc, Container>;
+
 
 PYCPP_END_NAMESPACE

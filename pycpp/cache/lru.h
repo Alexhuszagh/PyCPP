@@ -20,7 +20,7 @@
 
 #pragma once
 
-#include <pycpp/reference/core.h>
+#include <pycpp/intrusive/core.h>
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/list.h>

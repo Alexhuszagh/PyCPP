@@ -30,19 +30,15 @@
 
     - The robin map needs to use std::pair<const Key, Value> rather than it's bullshit.
 
-    - Implement more reference (intrusive) containers.
+    - Implement more intrusive containers.
         - vector -- DONE
         - deque -- DONE
         - forward_list
         - list
         - set
         - multiset
-        - map
-        - multimap
         - unordered_set
         - unordered_multiset
-        - unordered_map
-        - unordered_multimap
 
     - Implement fixed containers
         - Add to CMakeLists

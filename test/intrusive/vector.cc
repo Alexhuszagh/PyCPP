@@ -2,10 +2,10 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief Reference vector unittests.
+ *  \brief Intrusive vector unittests.
  */
 
-#include <pycpp/reference/vector.h>
+#include <pycpp/intrusive/vector.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -19,23 +19,23 @@ static std::vector<int> DATA = {1, 2, 3, 4, 5};
 // -----
 
 
-TEST(reference_vector, constructor)
+TEST(intrusive_vector, constructor)
 {
-    using reference = reference_vector<int>;
+    using intrusive = intrusive_vector<int>;
 
-    reference vector;
+    intrusive vector;
     EXPECT_EQ(vector.size(), 0);
 
-    vector = reference(5, DATA[0]);
+    vector = intrusive(5, DATA[0]);
     EXPECT_EQ(vector.size(), 5);
 
-    reference copy(vector);
+    intrusive copy(vector);
     EXPECT_EQ(copy.size(), 5);
 
     copy = vector;
     EXPECT_EQ(copy.size(), 5);
 
-    reference moved(std::move(vector));
+    intrusive moved(std::move(vector));
     EXPECT_EQ(moved.size(), 5);
 
     moved = std::move(copy);
@@ -43,13 +43,13 @@ TEST(reference_vector, constructor)
 }
 
 
-TEST(reference_vector, iterator)
+TEST(intrusive_vector, iterator)
 {
-    using reference = reference_vector<int>;
+    using intrusive = intrusive_vector<int>;
 
     // create vectors
-    reference vector;
-    reference reversed;
+    intrusive vector;
+    intrusive reversed;
     for (auto &item: DATA) {
         vector.push_back(item);
     }
@@ -65,10 +65,10 @@ TEST(reference_vector, iterator)
 }
 
 
-TEST(reference_vector, capacity)
+TEST(intrusive_vector, capacity)
 {
-    using reference = reference_vector<int>;
-    reference vector(5, DATA[0]);
+    using intrusive = intrusive_vector<int>;
+    intrusive vector(5, DATA[0]);
 
     EXPECT_EQ(vector.size(), 5);
     EXPECT_GE(vector.capacity(), 5);
@@ -81,11 +81,11 @@ TEST(reference_vector, capacity)
 }
 
 
-TEST(reference_vector, element)
+TEST(intrusive_vector, element)
 {
-    using reference = reference_vector<int>;
+    using intrusive = intrusive_vector<int>;
 
-    reference vector;
+    intrusive vector;
     for (auto &item: DATA) {
         vector.push_back(item);
     }
@@ -99,14 +99,14 @@ TEST(reference_vector, element)
 }
 
 
-TEST(reference_vector, modifiers)
+TEST(intrusive_vector, modifiers)
 {
-    using reference = reference_vector<int>;
+    using intrusive = intrusive_vector<int>;
     std::vector<int> data(DATA);
 
     // push_back
-    reference vector;
-    reference empty;
+    intrusive vector;
+    intrusive empty;
     for (auto &item: data) {
         vector.push_back(item);
     }
@@ -141,14 +141,14 @@ TEST(reference_vector, modifiers)
 }
 
 
-TEST(reference_vector, relational)
+TEST(intrusive_vector, relational)
 {
-    using reference = reference_vector<int>;
+    using intrusive = intrusive_vector<int>;
 
     // create vectors
-    reference vector;
-    reference reversed;
-    reference duplicate(5, DATA[0]);
+    intrusive vector;
+    intrusive reversed;
+    intrusive duplicate(5, DATA[0]);
     for (auto &item: DATA) {
         vector.push_back(item);
     }

@@ -7,8 +7,8 @@
 
 #pragma once
 
+#include <pycpp/intrusive/vector.h>
 #include <pycpp/misc/xrange.h>
-#include <pycpp/reference/vector.h>
 #include <pycpp/stl/array.h>
 #include <pycpp/stl/string.h>
 #include <pycpp/stl/type_traits.h>
@@ -216,7 +216,7 @@ auto choice(Iter first, Iter last) -> decltype(*std::declval<Iter>())
  */
 template <typename Iter>
 auto sample(Iter first, Iter last, size_t k)
-    -> reference_vector<typename std::iterator_traits<Iter>::value_type>
+    -> intrusive_vector<typename std::iterator_traits<Iter>::value_type>
 {
     // parameters
     std::ptrdiff_t distance = std::distance(first, last);
@@ -235,7 +235,7 @@ auto sample(Iter first, Iter last, size_t k)
     }
 
     // fill vector
-    reference_vector<typename std::iterator_traits<Iter>::value_type> vector;
+    intrusive_vector<typename std::iterator_traits<Iter>::value_type> vector;
     vector.reserve(k);
     for (size_t i = 0; i < k; ++i) {
         size_t j = index[i];
