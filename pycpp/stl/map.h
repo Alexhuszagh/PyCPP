@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/stl/functional.h>
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/utility.h>
@@ -20,16 +21,16 @@ PYCPP_BEGIN_NAMESPACE
 template <
     typename Key,
     typename T,
-    typename Compare = std::less<Key>,
-    typename Alloc = allocator<std::pair<const Key, T>>
+    typename Compare = less<Key>,
+    typename Alloc = allocator<pair<const Key, T>>
 >
 using map = std::map<Key, T, Compare, Alloc>;
 
 template <
     typename Key,
     typename T,
-    typename Compare = std::less<Key>,
-    typename Alloc = allocator<std::pair<const Key, T>>
+    typename Compare = less<Key>,
+    typename Alloc = allocator<pair<const Key, T>>
 >
 using multimap = std::multimap<Key, T, Compare, Alloc>;
 

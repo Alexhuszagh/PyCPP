@@ -41,7 +41,7 @@
         - unordered_multiset
 
     - Implement fixed containers
-        - Add to CMakeLists
+        - Have all the skeletons up
         - vector -- DONE
         - deque -- DONE
         - forward_list -- DONE
@@ -67,8 +67,6 @@
     - Need to implement the interpolation search
     - Implement a ranked set maybe?
     - Implement an indexed set maybe?
-    - Implement EASTL fixed containers as an extension of the container + stack allocator
-        - http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2007/n2271.html#intrusive_containers
     - fileutils?
     - ioutils?
 

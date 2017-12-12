@@ -15,7 +15,6 @@
 #include <pycpp/stl/list.h>
 #include <pycpp/stl/initializer_list.h>
 
-
 PYCPP_BEGIN_NAMESPACE
 
 // DECLARATION
