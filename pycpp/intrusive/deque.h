@@ -2,13 +2,10 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Reference-wrapper like deque.
+ *  \brief Semi-intrusive deque.
  *
  *  Stores non-nullable pointers to existing objects, using a deque
  *  wrapper as the underlying structure.
- *
- *  This is quite similar to the EASTL's instrusive deque, where
- *  the user allocates storage for each node.
  */
 
 #pragma once
@@ -51,7 +48,7 @@ namespace sequence_detail
  */
 template <
     typename T,
-    typename Alloc = std::allocator<T*>,
+    typename Alloc = allocator<T*>,
     template <typename, typename> class Container = deque
 >
 struct intrusive_deque_base
@@ -470,7 +467,7 @@ bool intrusive_deque_base<T, A, _>::operator>=(const self_t& rhs) const
  */
 template <
     typename T,
-    typename Alloc = std::allocator<T*>,
+    typename Alloc = allocator<T*>,
     template <typename, typename> class Container = deque
 >
 using intrusive_deque = sequence_detail::intrusive_deque_base<T, Alloc, Container>;

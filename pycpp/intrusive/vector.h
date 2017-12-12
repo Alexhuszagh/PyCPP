@@ -2,13 +2,10 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Reference-wrapper like vector.
+ *  \brief Semi-intrusive vector.
  *
  *  Stores non-nullable pointers to existing objects, using a vector
  *  wrapper as the underlying structure.
- *
- *  This is quite similar to the EASTL's instrusive vector, where
- *  the user allocates storage for each node.
  */
 
 #pragma once
@@ -51,7 +48,7 @@ namespace sequence_detail
  */
 template <
     typename T,
-    typename Alloc = std::allocator<T*>,
+    typename Alloc = allocator<T*>,
     template <typename, typename> class Container = vector
 >
 struct intrusive_vector_base
@@ -65,7 +62,7 @@ struct intrusive_vector_base
     using const_reference = const value_type&;
     using pointer = value_type*;
     using const_pointer = const value_type*;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using size_type = size_t;
     using iterator = sequence_iterator_impl<typename container_type::iterator>;
     using const_iterator = sequence_const_iterator_impl<typename container_type::const_iterator>;

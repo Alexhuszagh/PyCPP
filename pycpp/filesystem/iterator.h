@@ -84,12 +84,12 @@ private:
  *  Internally, a shared_ptr is used to simplify the copy mechanics
  *  required for input iterators.
  */
-struct directory_iterator: std::iterator<std::input_iterator_tag, directory_entry>
+struct directory_iterator: iterator<input_iterator_tag, directory_entry>
 {
 public:
     // MEMBER TYPES
     // ------------
-    typedef std::iterator<std::input_iterator_tag, directory_entry> base_t;
+    typedef iterator<input_iterator_tag, directory_entry> base_t;
     typedef directory_iterator self_t;
     using typename base_t::value_type;
     using reference = value_type&;

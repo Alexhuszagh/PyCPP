@@ -473,6 +473,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/fixed/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/intrusive/core.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/intrusive/deque.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/intrusive/forward_list.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/intrusive/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/category.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/iterator/chunked.h"
@@ -1025,6 +1026,7 @@ set(TEST_FILES
     test/fixed/unordered_set.cc
     test/fixed/vector.cc
     test/intrusive/deque.cc
+    test/intrusive/forward_list.cc
     test/intrusive/vector.cc
     test/lexical.cc
     test/lexical/atof.cc

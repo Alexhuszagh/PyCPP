@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Core helpers for reference-based STL containers.
+ *  \brief Core helpers for semiintrusive STL containers.
  */
 
 #pragma once
