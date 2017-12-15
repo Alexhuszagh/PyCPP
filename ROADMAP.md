@@ -4,13 +4,20 @@
 
     - Ordered map and ordered set need new constructors and move operators
         - Need to revert `std::allocator` to `allocator` after.
-        
+
     - Change the default hash...
 
     - Look at use woever rope.
+    - Implement various useful allocators
+        - Free list
+            - All the allocators from here: https://www.youtube.com/watch?time_continue=1&v=LIb3L4vKZ7U\
+        - Linear -- DONE
+        - Bitmapped block
+        - Pool
+        - Segregator
 
     - Make allocators non-optional, use a polymorphic allocator by default...
-    - Allow a CMake flag to use polymorphic or the standard allocator by default 
+    - Allow a CMake flag to use polymorphic or the standard allocator by default
             -- DONE
         - Implement the polymorphic allocator
             -- DONE (mostly)
@@ -19,7 +26,7 @@
         - Implement all other allocators as a resource
             - DONE
 
-        - Implement top-level types as a typedef of the STL containers using that as the default allocator...   
+        - Implement top-level types as a typedef of the STL containers using that as the default allocator...
             -- DONE
 
         - Use all default types as aliases of the STL types...

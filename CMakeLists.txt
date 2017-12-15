@@ -459,6 +459,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm/interpolation_search.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/linear.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/stack.h"
@@ -1012,6 +1013,7 @@ list(APPEND PYCPP_LIBRARIES pycpp)
 set(TEST_FILES
     test/main.cc
     test/algorithm/interpolation_search.cc
+    test/allocator/linear.cc
     test/allocator/pool.cc
     test/allocator/secure.cc
     test/allocator/stack.cc
