@@ -28,9 +28,9 @@ PYCPP_BEGIN_NAMESPACE
 // SPLIT
 
 template <typename Path>
-static std::deque<Path> splitext_impl(const Path& path)
+static deque<Path> splitext_impl(const Path& path)
 {
-    typedef typename Path::value_type char_type;
+    using char_type = typename Path::value_type;
 
     auto list = path_split(path);
     auto &tail = list.back();
@@ -53,7 +53,7 @@ struct abspath_impl
     template <typename View, typename ToPath>
     Path operator()(const View& path, ToPath topath)
     {
-        typedef typename Path::value_type char_type;
+        using char_type = typename Path::value_type;
         static constexpr char_type separator(path_separator);
 
         if (isabs(path)) {
@@ -105,10 +105,10 @@ struct normpath_impl
         // get directory components
         auto tail_string = frompath(tail);
         auto dirs = split(tail_string, path_to_string(path_separators));
-        std::vector<std::string> buffer;
+        vector<std::string> buffer;
         for (auto it = dirs.begin(); it != dirs.end(); ++it) {
             if (*it == current_directory) {
-                if (root.empty() && buffer.empty() && std::distance(it, dirs.end()) == 1) {
+                if (root.empty() && buffer.empty() && distance(it, dirs.end()) == 1) {
                     buffer.push_back(*it);
                 }
             } else if (*it == parent_directory) {
@@ -161,14 +161,14 @@ struct relpath_impl
     template <typename View>
     Path operator()(const View& path, const View& start)
     {
-        typedef typename Path::value_type char_type;
-        typedef typename Path::iterator iterator;
+        using char_type = typename Path::value_type;
+        using iterator = typename Path::iterator;
 
-        auto length = std::min(path.size(), start.size());
+        auto length = min(path.size(), start.size());
         auto f1 = path.begin();
         auto l1 = f1 + length;
         auto f2 = start.begin();
-        auto it = std::mismatch(f1, l1, f2).first;
+        auto it = mismatch(f1, l1, f2).first;
 
         if (it == path.end()) {
             return Path();
@@ -207,7 +207,7 @@ std::u16string ansi_to_utf16(const string_view& ansi)
     auto length = MultiByteToWideChar(CP_ACP, 0, src, srclen, dst, dstlen);
     if (length == 0) {
         delete[] dst;
-        throw std::runtime_error("Cannot convert ansi to UTF-16.");
+        throw runtime_error("Cannot convert ansi to UTF-16.");
     }
 
     // create output
@@ -230,7 +230,7 @@ std::string utf16_to_ansi(const u16string_view& u16)
     auto length = WideCharToMultiByte(CP_ACP, 0, src, srclen, dst, dstlen, nullptr, nullptr);
     if (length == 0) {
         delete[] dst;
-        throw std::runtime_error("Cannot convert UTF-16 to ANSI.");
+        throw runtime_error("Cannot convert UTF-16 to ANSI.");
     }
 
     // create output

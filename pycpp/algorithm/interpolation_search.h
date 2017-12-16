@@ -142,7 +142,7 @@ PYCPP_END_NAMESPACE
 //bool InterpolationSearch(Iter begin, Iter end,
 //                                   Element elem) {
 //  /* Get a type holding the distance between iterators in the range. */
-//  typedef typename iterator_traits<Iter>::difference_type diff_t;
+//  using diff_t = typename iterator_traits<Iter>::difference_type;
 //
 //  /* Edge-case: If there is no input, the element can't exist. */
 //  if (begin == end) return false;

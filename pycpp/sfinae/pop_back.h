@@ -26,14 +26,14 @@ PYCPP_HAS_MEMBER_FUNCTION(pop_back, has_pop_back, void (C::*)());
 struct pop_back
 {
     template <typename T>
-    typename std::enable_if<has_pop_back<T>::value, void>::type
+    enable_if_t<has_pop_back<T>::value, void>
     operator()(T &t)
     {
         t.pop_back();
     }
 
     template <typename T>
-    typename std::enable_if<!has_pop_back<T>::value, void>::type
+    enable_if_t<!has_pop_back<T>::value, void>
     operator()(T &t)
     {
         t.erase(--t.end());

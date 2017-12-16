@@ -49,7 +49,7 @@ enum compression_status
 /**
  *  \brief Base exception class for compression errors.
  */
-class compression_error: std::exception
+class compression_error: exception
 {
 public:
     compression_error(compression_code code);

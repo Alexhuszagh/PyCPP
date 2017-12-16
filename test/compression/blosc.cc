@@ -8,8 +8,8 @@
 #if defined(HAVE_BLOSC)
 
 #include <pycpp/compression/blosc.h>
+#include <pycpp/stl/sstream.h>
 #include <gtest/gtest.h>
-#include <sstream>
 
 PYCPP_USING_NAMESPACE
 

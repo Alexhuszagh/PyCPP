@@ -6,11 +6,13 @@
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/ftoa.h>
 #include <pycpp/lexical/precise_float.h>
+#include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/functional.h>
+#include <pycpp/stl/iterator.h>
 #include <pycpp/stl/limits.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/string.h>
-#include <cmath>
+#include <math.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -18,7 +20,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 template <typename Int>
-using atoi_function = std::function<Int(const char*, const char*&, uint8_t)>;
+using atoi_function = function<Int(const char*, const char*&, uint8_t)>;
 
 // EXTERN
 // ------
@@ -32,7 +34,7 @@ extern bool is_valid_digit(char c, uint8_t base);
 template <typename Float, typename Int, int Significand>
 Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<Int> function)
 {
-    static_assert(std::numeric_limits<Float>::is_iec559, "Must support IEC 559/IEEE 754 standard.");
+    static_assert(numeric_limits<Float>::is_iec559, "Must support IEC 559/IEEE 754 standard.");
 
     // declare variables
     precise_float_t integer, fraction, value;
@@ -41,15 +43,15 @@ Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<In
     string_wrapper view(first, last);
     if (view.startswith(NAN_STRING)) {
         last = first + NAN_STRING.size() + 1;
-        return std::numeric_limits<Float>::quiet_NaN();
+        return numeric_limits<Float>::quiet_NaN();
     } else if (view.startswith(INFINITY_STRING)) {
         last = first + INFINITY_STRING.size() + 1;
-        return std::numeric_limits<Float>::infinity();
+        return numeric_limits<Float>::infinity();
     } else if (view.size() >= 1 && view[0] == '-') {
         view = string_wrapper(first+1, last);
         if (view.startswith(INFINITY_STRING)) {
             last = first + INFINITY_STRING.size() + 2;
-            return -std::numeric_limits<Float>::infinity();
+            return -numeric_limits<Float>::infinity();
         }
     }
 
@@ -66,23 +68,23 @@ Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<In
         ++tmp_last;
         do {
             tmp_first = tmp_last;
-            tmp_last = std::min(last, tmp_first + Significand);
+            tmp_last = min(last, tmp_first + Significand);
             tmp_frac = function(tmp_first, tmp_last, base);
-            digits += std::distance(tmp_first, tmp_last);
-            fraction += (tmp_frac / std::pow<double>(base, digits));
+            digits += distance(tmp_first, tmp_last);
+            fraction += (tmp_frac / pow<double>(base, digits));
         } while (tmp_last != last && is_valid_digit(*tmp_last, base));
     }
     value = integer + fraction;
 
     // calculate the exponential portion, if
     // we have an `e[+-]?\d+`.
-    size_t distance = std::distance(tmp_last, last);
-    if (distance > 1 && ascii_tolower(*tmp_last) == e_notation_char(base)) {
+    size_t dist = distance(tmp_last, last);
+    if (dist > 1 && ascii_tolower(*tmp_last) == e_notation_char(base)) {
         ++tmp_last;
         tmp_first = tmp_last;
         tmp_last = last;
         Int exponent = function(tmp_first, tmp_last, base);
-        value *= std::pow(base, exponent);
+        value *= pow(base, exponent);
     }
 
     return value;

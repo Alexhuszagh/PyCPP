@@ -8,8 +8,8 @@
 #if defined(HAVE_ZLIB)
 
 #include <pycpp/compression/zlib.h>
+#include <pycpp/stl/sstream.h>
 #include <gtest/gtest.h>
-#include <sstream>
 
 PYCPP_USING_NAMESPACE
 

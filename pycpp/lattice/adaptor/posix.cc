@@ -73,13 +73,13 @@ void posix_socket_adaptor_t::set_reuse_address()
     char *option = reinterpret_cast<char*>(&reuse);
     int size = sizeof(reuse);
     if (::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, option, size)) {
-        throw std::runtime_error("Unable to set socket option via setsockopt().");
+        throw runtime_error("Unable to set socket option via setsockopt().");
     }
 
     #ifdef SO_REUSEPORT
         // use reuseport if available
         if (::setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, option, size)) {
-            throw std::runtime_error("Unable to set socket option via setsockopt().");
+            throw runtime_error("Unable to set socket option via setsockopt().");
         }
     #endif
 }
@@ -100,10 +100,10 @@ void posix_socket_adaptor_t::set_timeout(const timeout_t& timeout)
     char *option = reinterpret_cast<char*>(&value);
     socklen_t size = sizeof(timeval);
     if (::setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, option, size)) {
-        throw std::runtime_error("Unable to set socket option via setsockopt().");
+        throw runtime_error("Unable to set socket option via setsockopt().");
     }
     if (::setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, option, size)) {
-        throw std::runtime_error("Unable to set socket option via setsockopt().");
+        throw runtime_error("Unable to set socket option via setsockopt().");
     }
 }
 

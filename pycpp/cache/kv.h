@@ -12,7 +12,7 @@
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/string_view.h>
 #include <pycpp/stl/utility.h>
-#include <cstddef>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -39,8 +39,8 @@ struct kv_iterator: iterator<input_iterator_tag, T>
 public:
     // MEMBER TYPES
     // ------------
-    typedef iterator<input_iterator_tag, T> base_t;
-    typedef kv_iterator self_t;
+    using base_t = iterator<input_iterator_tag, T>;
+    using self_t = kv_iterator;
     using typename base_t::value_type;
     using reference = value_type&;
     using const_reference = const value_type&;

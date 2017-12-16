@@ -46,11 +46,11 @@ struct json_stream_reader
 public:
     json_stream_reader();
 
-    void open(std::istream&);
+    void open(istream&);
     void set_handler(json_sax_handler&);
 
 private:
-    std::istream* stream_ = nullptr;
+    istream* stream_ = nullptr;
     json_sax_handler* handler_ = nullptr;
 };
 
@@ -88,7 +88,7 @@ public:
     void open(const string_wrapper& str);
 
 private:
-    std::istringstream sstream_;
+    istringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

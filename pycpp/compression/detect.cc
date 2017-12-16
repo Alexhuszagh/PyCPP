@@ -17,13 +17,13 @@ static bool detect_header(const string_wrapper& header, const magic_bytes& magic
         return false;
     }
 
-    return std::any_of(PARALLEL_EXECUTION magic.begin(), magic.end(), [&header](const string_wrapper& bytes) {
-        return header.size() >= bytes.size() && std::equal(bytes.begin(), bytes.end(), header.begin());
+    return any_of(PARALLEL_EXECUTION magic.begin(), magic.end(), [&header](const string_wrapper& bytes) {
+        return header.size() >= bytes.size() && equal(bytes.begin(), bytes.end(), header.begin());
     });
 }
 
 
-static bool detect_stream(std::istream& stream, const magic_bytes& magic)
+static bool detect_stream(istream& stream, const magic_bytes& magic)
 {
     // all magic bytes **must** have the same length
     size_t size = magic.front().size();
@@ -38,7 +38,7 @@ static bool detect_stream(std::istream& stream, const magic_bytes& magic)
 
 static bool detect_path(const string_view& path, const magic_bytes& magic)
 {
-    ifstream stream(path, std::ios_base::in | std::ios_base::binary);
+    ifstream stream(path, ios_base::in | ios_base::binary);
     return detect_stream(stream, magic);
 }
 
@@ -47,14 +47,14 @@ static bool detect_path(const string_view& path, const magic_bytes& magic)
 
 static bool detect_path(const wstring_view& path, const magic_bytes& magic)
 {
-    ifstream stream(path, std::ios_base::in | std::ios_base::binary);
+    ifstream stream(path, ios_base::in | ios_base::binary);
     return detect_stream(stream, magic);
 }
 
 
 static bool detect_path(const u16string_view& path, const magic_bytes& magic)
 {
-    ifstream stream(path, std::ios_base::in | std::ios_base::binary);
+    ifstream stream(path, ios_base::in | ios_base::binary);
     return detect_stream(stream, magic);
 }
 
@@ -68,8 +68,8 @@ static bool detect_path(const u16string_view& path, const magic_bytes& magic)
 
 const magic_bytes& is_bz2::magic()
 {
-    static std::string header("\x42\x5a\x68", 3);
-    static std::vector<string_wrapper> vector = {string_wrapper(header)};
+    static string header("\x42\x5a\x68", 3);
+    static vector<string_wrapper> vector = {string_wrapper(header)};
     static magic_bytes view(vector);
     return view;
 }
@@ -81,7 +81,7 @@ bool is_bz2::header(const string_wrapper& header)
 }
 
 
-bool is_bz2::stream(std::istream& stream)
+bool is_bz2::stream(istream& stream)
 {
     return detect_stream(stream, magic());
 }
@@ -112,11 +112,11 @@ bool is_bz2::path(const u16string_view& path)
 
 const magic_bytes& is_zlib::magic()
 {
-    static std::string level1("\x78\x01", 2);
-    static std::string level2("\x78\x5E", 2);
-    static std::string level6("\x78\x9C", 2);
-    static std::string level7("\x78\xDA", 2);
-    static std::vector<string_wrapper> vector = {
+    static string level1("\x78\x01", 2);
+    static string level2("\x78\x5E", 2);
+    static string level6("\x78\x9C", 2);
+    static string level7("\x78\xDA", 2);
+    static vector<string_wrapper> vector = {
         string_wrapper(level1),
         string_wrapper(level2),
         string_wrapper(level6),
@@ -133,7 +133,7 @@ bool is_zlib::header(const string_wrapper& header)
 }
 
 
-bool is_zlib::stream(std::istream& stream)
+bool is_zlib::stream(istream& stream)
 {
     return detect_stream(stream, magic());
 }
@@ -164,8 +164,8 @@ bool is_zlib::path(const u16string_view& path)
 
 const magic_bytes& is_gzip::magic()
 {
-    static std::string header("\x1f\x8b\x08", 3);
-    static std::vector<string_wrapper> vector = {string_wrapper(header)};
+    static string header("\x1f\x8b\x08", 3);
+    static vector<string_wrapper> vector = {string_wrapper(header)};
     static magic_bytes view(vector);
     return view;
 }
@@ -177,7 +177,7 @@ bool is_gzip::header(const string_wrapper& header)
 }
 
 
-bool is_gzip::stream(std::istream& stream)
+bool is_gzip::stream(istream& stream)
 {
     return detect_stream(stream, magic());
 }
@@ -208,8 +208,8 @@ bool is_gzip::path(const u16string_view& path)
 
 const magic_bytes& is_lzma::magic()
 {
-    static std::string header("\xFD\x37\x7A\x58\x5A\x00", 6);
-    static std::vector<string_wrapper> vector = {string_wrapper(header)};
+    static string header("\xFD\x37\x7A\x58\x5A\x00", 6);
+    static vector<string_wrapper> vector = {string_wrapper(header)};
     static magic_bytes view(vector);
     return view;
 }
@@ -221,7 +221,7 @@ bool is_lzma::header(const string_wrapper& header)
 }
 
 
-bool is_lzma::stream(std::istream& stream)
+bool is_lzma::stream(istream& stream)
 {
     return detect_stream(stream, magic());
 }
@@ -260,9 +260,9 @@ const magic_bytes& is_blosc::magic()
     // The next byte is currently always '\x01', for the
     // BLOSC_${ALGORITHM}_VERSION_FORMAT.
 
-    static std::string version1("\x01\x01", 2);
-    static std::string version2("\x02\x01", 2);
-    static std::vector<string_wrapper> vector = {
+    static string version1("\x01\x01", 2);
+    static string version2("\x02\x01", 2);
+    static vector<string_wrapper> vector = {
         string_wrapper(version1),
         string_wrapper(version2),
     };
@@ -277,7 +277,7 @@ bool is_blosc::header(const string_wrapper& header)
 }
 
 
-bool is_blosc::stream(std::istream& stream)
+bool is_blosc::stream(istream& stream)
 {
     return detect_stream(stream, magic());
 }

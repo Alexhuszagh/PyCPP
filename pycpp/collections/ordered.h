@@ -22,10 +22,10 @@
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
 #include <pycpp/stl/vector.h>
-#include <cassert>
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
+#include <assert.h>
+#include <math.h>
+#include <stddef.h>
+#include <stdint.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -49,6 +49,9 @@ struct make_void
     using type = void;
 };
 
+template <typename T>
+using make_void_t = typename make_void<T>::type;
+
 
 template <typename T, typename = void>
 struct has_is_transparent: false_type
@@ -56,7 +59,7 @@ struct has_is_transparent: false_type
 
 
 template <typename T>
-struct has_is_transparent<T, typename make_void<typename T::is_transparent>::type>: true_type
+struct has_is_transparent<T, make_void_t<typename T::is_transparent>>: true_type
 {};
 
 
@@ -66,9 +69,9 @@ struct is_vector: false_type
 
 
 template <typename T>
-struct is_vector<T, typename enable_if<
+struct is_vector<T, enable_if_t<
     is_same<T, vector<typename T::value_type, typename T::allocator_type>>::value
-    >::type>: true_type
+    >>: true_type
 {};
 
 
@@ -112,11 +115,11 @@ public:
     {
         friend class ordered_hash;
     private:
-        using iterator = typename conditional<
+        using iterator = conditional_t<
             is_const,
             typename values_container_type::const_iterator,
             typename values_container_type::iterator
-        >::type;
+        >;
 
         ordered_iterator(iterator it) noexcept:
             m_iterator(it)
@@ -141,8 +144,8 @@ public:
             return KeySelect()(*m_iterator);
         }
 
-        template <typename U = ValueSelect, typename enable_if<!is_same<U, void>::value>::type* = nullptr>
-        typename conditional<is_const, const typename U::value_type&, typename U::value_type&>::type value() const
+        template <typename U = ValueSelect, enable_if_t<!is_same<U, void>::value>* = nullptr>
+        conditional_t<is_const, const typename U::value_type&, typename U::value_type&> value() const
         {
             return m_iterator->second;
         }
@@ -428,7 +431,7 @@ public:
 
     size_type max_size() const noexcept
     {
-        return std::min(bucket_entry::max_size(), std::min(m_values.max_size(), m_buckets.max_size()));
+        return min(bucket_entry::max_size(), min(m_values.max_size(), m_buckets.max_size()));
     }
 
     // MODIFIERS
@@ -442,7 +445,7 @@ public:
     template <typename P>
     pair<iterator, bool> insert(P&& value)
     {
-        return insert_impl(KeySelect()(value), m_hash(KeySelect()(value)), std::forward<P>(value));
+        return insert_impl(KeySelect()(value), m_hash(KeySelect()(value)), forward<P>(value));
     }
 
     template <typename InputIt>
@@ -450,7 +453,7 @@ public:
     {
         if (is_base_of<forward_iterator_tag, typename iterator_traits<InputIt>::iterator_category>::value)
         {
-            const auto nb_elements_insert = std::distance(first, last);
+            const auto nb_elements_insert = distance(first, last);
             const size_t nb_free_buckets = bucket_count() - size();
 
             if (nb_elements_insert > 0 && nb_free_buckets < static_cast<size_t>(nb_elements_insert)) {
@@ -466,7 +469,7 @@ public:
     template <typename... Args>
     pair<iterator,bool> emplace(Args&&... args)
     {
-        return insert(value_type(std::forward<Args>(args)...));
+        return insert(value_type(forward<Args>(args)...));
     }
 
     iterator erase(iterator pos)
@@ -497,9 +500,9 @@ public:
             return get_mutable_iterator(first);
         }
 
-        assert(std::distance(first, last) > 0 && std::distance(cbegin(), first) >= 0);
-        const size_t start_index = static_cast<size_t>(std::distance(cbegin(), first));
-        const size_t nb_values = static_cast<size_t>(std::distance(first, last));
+        assert(distance(first, last) > 0 && distance(cbegin(), first) >= 0);
+        const size_t start_index = static_cast<size_t>(distance(cbegin(), first));
+        const size_t nb_values = static_cast<size_t>(distance(first, last));
         const size_t end_index = start_index + nb_values;
 
         // Delete all values
@@ -541,7 +544,7 @@ public:
 
     void swap(ordered_hash& other)
     {
-        using std::swap;
+        using PYCPP_NAMESPACE::swap;
 
         swap(m_buckets, other.m_buckets);
         swap(m_values, other.m_values);
@@ -591,14 +594,14 @@ public:
     pair<iterator, iterator> equal_range(const K& key)
     {
         iterator it = find(key);
-        return std::make_pair(it, it);
+        return make_pair(it, it);
     }
 
     template <typename K>
     pair<const_iterator, const_iterator> equal_range(const K& key) const
     {
         const_iterator it = find(key);
-        return std::make_pair(it, it);
+        return make_pair(it, it);
     }
 
     // BUCKETS
@@ -633,13 +636,13 @@ public:
 
     void rehash(size_type count)
     {
-        count = std::max(count, static_cast<size_type>(std::ceil(static_cast<float>(size())/max_load_factor())));
+        count = max(count, static_cast<size_type>(ceil(static_cast<float>(size())/max_load_factor())));
         rehash_impl(count);
     }
 
     void reserve(size_type count)
     {
-        count = static_cast<size_type>(std::ceil(static_cast<float>(count)/max_load_factor()));
+        count = static_cast<size_type>(ceil(static_cast<float>(count)/max_load_factor()));
         reserve_space_for_values(count);
         rehash(count);
     }
@@ -663,13 +666,13 @@ public:
         return begin() + iterator_to_index(pos);
     }
 
-    template <typename K, typename U = ValueSelect, typename enable_if<!is_same<U, void>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, enable_if_t<!is_same<U, void>::value>* = nullptr>
     typename U::value_type& at(const K& key)
     {
         return const_cast<typename U::value_type&>(static_cast<const ordered_hash*>(this)->at(key));
     }
 
-    template <typename K, typename U = ValueSelect, typename enable_if<!is_same<U, void>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, enable_if_t<!is_same<U, void>::value>* = nullptr>
     const typename U::value_type& at(const K& key) const
     {
         auto it = find(key);
@@ -677,12 +680,11 @@ public:
             return it.value();
         }
         else {
-            throw std::out_of_range("Couldn't find the key.");
+            throw out_of_range("Couldn't find the key.");
         }
     }
 
-
-    template <typename K, typename U = ValueSelect, typename enable_if<!is_same<U, void>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, enable_if_t<!is_same<U, void>::value>* = nullptr>
     typename U::value_type& operator[](K&& key)
     {
         using T = typename U::value_type;
@@ -692,7 +694,7 @@ public:
             return it.value();
         }
         else {
-            return insert(std::make_pair(std::forward<K>(key), T())).first.value();
+            return insert(make_pair(forward<K>(key), T())).first.value();
         }
     }
 
@@ -706,7 +708,7 @@ public:
         return m_values.back();
     }
 
-    template <typename U = values_container_type, typename enable_if<is_vector<U>::value>::type* = nullptr>
+    template <typename U = values_container_type, enable_if_t<is_vector<U>::value>* = nullptr>
     const typename values_container_type::value_type* data() const noexcept
     {
         return m_values.data();
@@ -717,7 +719,7 @@ public:
         return m_values;
     }
 
-    template <typename U = values_container_type, typename enable_if<is_vector<U>::value>::type* = nullptr>
+    template <typename U = values_container_type, enable_if_t<is_vector<U>::value>* = nullptr>
     size_type capacity() const noexcept
     {
         return m_values.capacity();
@@ -734,9 +736,8 @@ public:
             return;
         }
 
-        erase(std::prev(end()));
+        erase(prev(end()));
     }
-
 
     iterator unordered_erase(iterator pos)
     {
@@ -771,7 +772,7 @@ public:
         assert(it_bucket_last_elem->index() == m_values.size() - 1);
 
 
-        std::swap(m_values[it_bucket_key->index()], m_values[it_bucket_last_elem->index()]);
+        PYCPP_NAMESPACE::swap(m_values[it_bucket_key->index()], m_values[it_bucket_last_elem->index()]);
 
         const size_t tmp_index = it_bucket_key->index();
         it_bucket_key->set_index(it_bucket_last_elem->index());
@@ -817,7 +818,7 @@ private:
     typename buckets_container_type::iterator find_key(const K& key, size_t hash)
     {
         auto it = static_cast<const ordered_hash*>(this)->find_key(key, hash);
-        return m_buckets.begin() + std::distance(m_buckets.cbegin(), it);
+        return m_buckets.begin() + distance(m_buckets.cbegin(), it);
     }
 
     /**
@@ -845,7 +846,7 @@ private:
     {
         count = round_up_to_power_of_two(count);
         if (count > max_size()) {
-            throw std::length_error("The map exceed its maxmimum size.");
+            throw length_error("The map exceed its maxmimum size.");
         }
 
         buckets_container_type old_buckets(count);
@@ -887,13 +888,13 @@ private:
         }
     }
 
-    template <typename T = values_container_type, typename enable_if<is_vector<T>::value>::type* = nullptr>
+    template <typename T = values_container_type, enable_if_t<is_vector<T>::value>* = nullptr>
     void reserve_space_for_values(size_type count)
     {
         m_values.reserve(count);
     }
 
-    template <typename T = values_container_type, typename enable_if<!is_vector<T>::value>::type* = nullptr>
+    template <typename T = values_container_type, enable_if_t<!is_vector<T>::value>* = nullptr>
     void reserve_space_for_values(size_type /*count*/)
     {}
 
@@ -911,7 +912,7 @@ private:
             !m_buckets[current_ibucket].empty() && dist_from_initial_bucket(current_ibucket) > 0;
             previous_ibucket = current_ibucket, current_ibucket = next_probe(current_ibucket))
         {
-            std::swap(m_buckets[current_ibucket], m_buckets[previous_ibucket]);
+            PYCPP_NAMESPACE::swap(m_buckets[current_ibucket], m_buckets[previous_ibucket]);
         }
     }
 
@@ -937,7 +938,7 @@ private:
         // Mark the bucket as empty and do a backward shift of the
         // values on the right
         it_bucket->set_empty();
-        backward_shift(static_cast<size_t>(std::distance(m_buckets.begin(), it_bucket)));
+        backward_shift(static_cast<size_t>(distance(m_buckets.begin(), it_bucket)));
     }
 
     template <typename K>
@@ -1021,21 +1022,21 @@ private:
 
         for (size_t ibucket = bucket_for_hash(hash), iprobe = 0; ; ibucket = next_probe(ibucket), ++iprobe) {
             if (m_buckets[ibucket].empty()) {
-                m_values.emplace_back(std::forward<P>(value));
+                m_values.emplace_back(forward<P>(value));
                 m_buckets[ibucket].set_index(m_values.size() - 1);
                 m_buckets[ibucket].set_hash(hash);
 
-                return std::make_pair(std::prev(end()), true);
+                return make_pair(prev(end()), true);
             } else if (m_buckets[ibucket].truncated_hash() == bucket_entry::truncate_hash(hash) &&
                     m_key_equal(key, KeySelect()(m_values[m_buckets[ibucket].index()]))) {
-                return std::make_pair(begin() + m_buckets[ibucket].index(), false);
+                return make_pair(begin() + m_buckets[ibucket].index(), false);
             } else if (rehash_on_high_nb_probes(iprobe)) {
-                return insert_impl(key, hash, std::forward<P>(value));
+                return insert_impl(key, hash, forward<P>(value));
             } else {
                 const size_t distance = dist_from_initial_bucket(ibucket);
 
                 if (iprobe > distance) {
-                    m_values.emplace_back(std::forward<P>(value));
+                    m_values.emplace_back(forward<P>(value));
 
                     // Propagate the index and the hash of the current
                     // bucket to a more far away bucket. Clear the current
@@ -1046,7 +1047,7 @@ private:
                     m_buckets[ibucket].set_index(m_values.size() - 1);
                     m_buckets[ibucket].set_hash(hash);
 
-                    return std::make_pair(std::prev(end()), true);
+                    return make_pair(prev(end()), true);
                 }
             }
         }
@@ -1073,7 +1074,7 @@ private:
 
     size_t iterator_to_index(const_iterator it) const
     {
-        const auto dist = std::distance(cbegin(), it);
+        const auto dist = distance(cbegin(), it);
         assert(dist >= 0);
 
         return static_cast<size_t>(dist);

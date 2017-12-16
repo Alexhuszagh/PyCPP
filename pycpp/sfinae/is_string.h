@@ -19,7 +19,7 @@ namespace str_detail
 // ------
 
 template <typename CharP, typename T>
-using is_char_t = is_same<CharP, typename remove_cv<typename decay<T>::type>::type>;
+using is_char_t = is_same<CharP, remove_cv_t<decay_t<T>>>;
 
 }   /* str_detail */
 

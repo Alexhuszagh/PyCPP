@@ -67,13 +67,13 @@ int_wrapper& int_wrapper::operator=(const int_wrapper& rhs)
 
 int_wrapper::int_wrapper(int_wrapper&& rhs)
 {
-    std::swap(x_, rhs.x_);
+    swap(x_, rhs.x_);
 }
 
 
 int_wrapper& int_wrapper::operator=(int_wrapper&& rhs)
 {
-    std::swap(x_, rhs.x_);
+    swap(x_, rhs.x_);
     return *this;
 }
 
@@ -109,7 +109,7 @@ TEST(stack_pimpl, integer)
     EXPECT_EQ(x, 5);
     EXPECT_EQ(y, 2);
 
-    std::swap(x, y);
+    swap(x, y);
     EXPECT_EQ(x, 2);
     EXPECT_EQ(y, 5);
 }
@@ -132,7 +132,7 @@ TEST(stack_pimpl, structure)
     EXPECT_EQ(a->x, 5);
     EXPECT_EQ(b->x, 2);
 
-    std::swap(a, b);
+    swap(a, b);
     EXPECT_EQ(a->x, 2);
     EXPECT_EQ(b->x, 5);
 }

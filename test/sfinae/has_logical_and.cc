@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/sfinae/has_logical_and.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <utility>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,12 +17,12 @@ PYCPP_USING_NAMESPACE
 
 TEST(has_logical_and, has_logical_and)
 {
-    using pair = std::pair<int, int>;
+    using p1 = pair<int, int>;
 
     static_assert(has_logical_and<int>::value, "");
     static_assert(has_logical_and<int, int>::value, "");
-    static_assert(!has_logical_and<pair>::value, "");
-    static_assert(!has_logical_and<pair, pair>::value, "");
-    static_assert(!has_logical_and<pair, int>::value, "");
-    static_assert(!has_logical_and<int, pair>::value, "");
+    static_assert(!has_logical_and<p1>::value, "");
+    static_assert(!has_logical_and<p1, p1>::value, "");
+    static_assert(!has_logical_and<p1, int>::value, "");
+    static_assert(!has_logical_and<int, p1>::value, "");
 }

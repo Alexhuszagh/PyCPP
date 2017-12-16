@@ -10,7 +10,7 @@
 #include <pycpp/lexical/int.h>
 #include <pycpp/stl/string.h>
 #include <pycpp/stl/type_traits.h>
-#include <cstddef>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -44,7 +44,7 @@ struct lexical_enum_extractor: protected lexical_int_extractor
 
 template <typename Enum>
 lexical_enum_formatter::lexical_enum_formatter(const Enum value):
-    lexical_int_formatter(static_cast<typename underlying_type<Enum>::type>(value))
+    lexical_int_formatter(static_cast<underlying_type_t<Enum>>(value))
 {
     static_assert(is_enum<Enum>::value, "Type must be an enumeration.");
 }
@@ -55,7 +55,7 @@ lexical_enum_extractor::operator Enum() const
 {
     static_assert(is_enum<Enum>::value, "Type must be an enumeration.");
 
-    using int_t = typename underlying_type<Enum>::type;
+    using int_t = underlying_type_t<Enum>;
     return static_cast<Enum>(int_t(*this));
 }
 

@@ -24,14 +24,14 @@ PYCPP_HAS_MEMBER_FUNCTION(push_back, has_push_back, void (C::*)(typename C::cons
 struct push_back
 {
     template <typename T>
-    typename std::enable_if<has_push_back<T>::value, void>::type
+    enable_if_t<has_push_back<T>::value, void>
     operator()(T &t, typename T::const_reference v)
     {
         t.push_back(v);
     }
 
     template <typename T>
-    typename std::enable_if<!has_push_back<T>::value, void>::type
+    enable_if_t<!has_push_back<T>::value, void>
     operator()(T &t, typename T::const_reference v)
     {
         t.insert(t.end(), v);

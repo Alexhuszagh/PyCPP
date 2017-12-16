@@ -27,9 +27,9 @@ template <typename Iter>
 double trapz(Iter first, Iter last, double dx = 1)
 {
     double integral = 0;
-    size_t distance = std::distance(first, last);
-    auto r = xrange<size_t>(0, distance-1, 1);
-    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+    size_t dist = distance(first, last);
+    auto r = xrange<size_t>(0, dist-1, 1);
+    for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double yi = first[i];
         double yj = first[i+1];
         integral += 0.5 * dx * (yj + yi);
@@ -57,9 +57,9 @@ double trapz(YIter y_first,
     XIter x_last)
 {
     double integral = 0;
-    size_t distance = std::min(std::distance(y_first, y_last), std::distance(x_first, x_last));
-    auto r = xrange<size_t>(0, distance-1, 1);
-    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+    size_t dist = min(distance(y_first, y_last), distance(x_first, x_last));
+    auto r = xrange<size_t>(0, dist-1, 1);
+    for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double xi = x_first[i];
         double xj = x_first[i+1];
         double yi = y_first[i];
@@ -88,9 +88,9 @@ double trapz(Iter first,
     Fun fun)
 {
     double integral = 0;
-    size_t distance = std::distance(first, last);
-    auto r = xrange<size_t>(0, distance-1, 1);
-    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+    size_t dist = distance(first, last);
+    auto r = xrange<size_t>(0, dist-1, 1);
+    for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double yi = fun(first[i]);
         double yj = fun(first[i+1]);
         integral += 0.5 * dx * (yj + yi);
@@ -125,9 +125,9 @@ double trapz(YIter y_first,
     XFun x_fun)
 {
     double integral = 0;
-    size_t distance = std::min(std::distance(y_first, y_last), std::distance(x_first, x_last));
-    auto r = xrange<size_t>(0, distance-1, 1);
-    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+    size_t dist = min(distance(y_first, y_last), distance(x_first, x_last));
+    auto r = xrange<size_t>(0, dist-1, 1);
+    for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double xi = x_fun(x_first[i]);
         double xj = x_fun(x_first[i+1]);
         double yi = y_fun(y_first[i]);

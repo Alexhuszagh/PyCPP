@@ -10,7 +10,7 @@
 #include <pycpp/lattice/ssl.h>
 #include <pycpp/preprocessor/compiler.h>
 #include <pycpp/string/string.h>
-#include <cassert>
+#include <assert.h>
 
 #if defined(HAVE_MSVC)
 #   pragma warning(push)
@@ -29,7 +29,7 @@ PYCPP_BEGIN_NAMESPACE
 template <typename HttpAdaptor>
 struct no_ssl_adaptor_t
 {
-    typedef no_ssl_adaptor_t<HttpAdaptor> self;
+    using self = no_ssl_adaptor_t<HttpAdaptor>;
 
     no_ssl_adaptor_t();
     no_ssl_adaptor_t(const self&) = delete;

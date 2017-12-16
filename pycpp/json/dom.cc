@@ -19,21 +19,21 @@ static void add_value(Levels &levels, bool& has_key, json_string_t& key, Ts... t
     parent = levels.back();
     if (levels.size() == 1 && parent->has_null()) {
         // root element
-        json_value_t value(std::forward<Ts>(ts)...);
-        std::swap(*parent, value);
+        json_value_t value(forward<Ts>(ts)...);
+        swap(*parent, value);
         levels.push_back(parent);
         return;
     } else if (has_key) {
         // adding to object
         auto &object = parent->get_object();
-        object.emplace(key, json_value_t(std::forward<Ts>(ts)...));
+        object.emplace(key, json_value_t(forward<Ts>(ts)...));
         value = &object.at(key);
         key.clear();
         has_key = false;
     } else {
         // add to array
         auto &array = parent->get_array();
-        array.push_back(json_value_t(std::forward<Ts>(ts)...));
+        array.push_back(json_value_t(forward<Ts>(ts)...));
         value = &array.back();
     }
 
@@ -114,7 +114,7 @@ static void dump_impl(const json_value_t& value, json_stream_writer& writer)
             dump_object_impl(value.get_object(), writer);
             break;
         default:
-            throw std::runtime_error("Unexpected JSON value type.");
+            throw runtime_error("Unexpected JSON value type.");
     }
 }
 
@@ -197,12 +197,12 @@ void json_dom_handler::string(const string_wrapper& str)
 
 void json_document_t::loads(const string_wrapper& data)
 {
-    std::istringstream stream = std::istringstream(std::string(data));
+    istringstream stream = istringstream(std::string(data));
     load(stream);
 }
 
 
-void json_document_t::load(std::istream& stream)
+void json_document_t::load(istream& stream)
 {
     json_stream_reader reader;
     json_dom_handler handler(*this);
@@ -238,13 +238,13 @@ void json_document_t::load(const u16string_view& path)
 
 std::string json_document_t::dumps(char c, int width)
 {
-    std::ostringstream stream;
+    ostringstream stream;
     dump(stream, c, width);
     return stream.str();
 }
 
 
-void json_document_t::dump(std::ostream& stream, char c, int width)
+void json_document_t::dump(ostream& stream, char c, int width)
 {
     json_stream_writer writer(stream, c, width);
     dump_impl(*this, writer);

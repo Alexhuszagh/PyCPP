@@ -7,13 +7,14 @@
 #include <pycpp/lattice/digest.h>
 #include <pycpp/lattice/parameter.h>
 #include <pycpp/lattice/url.h>
+#include <pycpp/lexical/itoa.h>
 #include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/iomanip.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/hex.h>
 #include <pycpp/string/string.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -41,13 +42,13 @@ static std::string md5_hex(const std::string& str)
 
 size_t lowercase_hash::operator()(const std::string& str) const
 {
-    return std::hash<std::string>()(ascii_tolower(str));
+    return hash<std::string>()(ascii_tolower(str));
 }
 
 
 bool lowercase_equal_to::operator()(const std::string& lhs, const std::string& rhs) const
 {
-    return lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin(), [](char l, char r) {
+    return lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin(), [](char l, char r) {
         return ascii_tolower(l) == ascii_tolower(r);
     });
 }
@@ -65,7 +66,7 @@ quality_of_protection_t::quality_of_protection_t(const string_wrapper& qop)
 
 bool quality_of_protection_t::auth() const
 {
-    return std::any_of(begin(), end(), [](const value_type& data) {
+    return any_of(begin(), end(), [](const value_type& data) {
         return data == "auth";
     });
 }
@@ -73,7 +74,7 @@ bool quality_of_protection_t::auth() const
 
 bool quality_of_protection_t::authint() const
 {
-    return std::any_of(begin(), end(), [](const value_type& data) {
+    return any_of(begin(), end(), [](const value_type& data) {
         return data == "auth-int";
     });
 }
@@ -132,10 +133,10 @@ const std::string & digest_challenge_t::cnonce()
 
 std::string digest_challenge_t::nc() const
 {
-    std::ostringstream stream;
-    stream << std::setfill('0') << std::setw(8) << std::hex << nonce_counter;
+    std::string str = u64toa(nonce_counter, 8);
+    str.insert(str.begin(), static_cast<size_t>(8 - str.size()), '0');
 
-    return stream.str();
+    return str;
 }
 
 
@@ -156,7 +157,7 @@ digest_algorithm_t digest_challenge_t::algorithm() const
         return sha1_digest_algorithm;
     }
 
-    throw std::runtime_error("Unknown hashing algorithm for digest authentication.");
+    throw runtime_error("Unknown hashing algorithm for digest authentication.");
 }
 
 

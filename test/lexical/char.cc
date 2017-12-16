@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/lexical/char.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <utility>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 

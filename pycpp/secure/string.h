@@ -40,7 +40,7 @@ namespace string_detail
 
 // Slow route for input iterators
 template <typename String, typename ConstIter, typename Iter>
-typename enable_if<is_input_iterator<Iter>::value, String&>::type
+enable_if_t<is_input_iterator<Iter>::value, String&>
 replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
 {
     std::string str(first, last);
@@ -50,7 +50,7 @@ replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
 
 // Optimization for forward iterable iterables
 template <typename String, typename ConstIter, typename Iter>
-typename enable_if<is_forward_iterable<Iter>::value, String&>::type
+enable_if_t<is_forward_iterable<Iter>::value, String&>
 replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
 {
     ConstIter it = string.erase(p1, p2);
@@ -61,7 +61,7 @@ replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
 
 // Slow route for input iterators
 template <typename String, typename ConstIter, typename Iter>
-typename enable_if<is_input_iterator<Iter>::value, typename String::iterator>::type
+enable_if_t<is_input_iterator<Iter>::value, typename String::iterator>
 insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
 {
     size_t pos = p - string.begin();
@@ -74,7 +74,7 @@ insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
 
 // Optimization for forward iterable iterables
 template <typename String, typename ConstIter, typename Iter>
-typename enable_if<is_forward_iterable<Iter>::value, typename String::iterator>::type
+enable_if_t<is_forward_iterable<Iter>::value, typename String::iterator>
 insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
 {
     using traits_type = typename String::traits_type;
@@ -494,7 +494,7 @@ void swap(secure_basic_string<C, T, A>& lhs, secure_basic_string<C, T, A>& rhs)
 template <typename C, typename T, typename A>
 std::basic_istream<C, T> & operator>>(std::basic_istream<C, T> &stream, secure_basic_string<C, T, A>& str)
 {
-    return stream.read(const_cast<char*>(str.data_.first()), str.length_);
+    return stream.read(const_cast<char*>(get<0>(str.data_)), str.length_);
 }
 
 
@@ -865,7 +865,7 @@ secure_basic_string<C, T, A>::secure_basic_string():
     capacity_(15),
     length_(0)
 {
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), 15);
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), 15);
 }
 
 
@@ -875,7 +875,7 @@ secure_basic_string<C, T, A>::secure_basic_string(const allocator_type& alloc):
     length_(0),
     data_(alloc)
 {
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), 15);
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), 15);
 }
 
 
@@ -884,8 +884,8 @@ secure_basic_string<C, T, A>::secure_basic_string(const self_t& str):
     capacity_(str.capacity_),
     length_(str.length_)
 {
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), str.capacity_);
-    traits_type::copy(data_.first(), str.data_.first(), capacity_);
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), str.capacity_);
+    traits_type::copy(get<0>(data_), get<0>(str.data_), capacity_);
 }
 
 
@@ -895,8 +895,8 @@ secure_basic_string<C, T, A>::secure_basic_string(const self_t& str, const alloc
     length_(str.length_),
     data_(alloc)
 {
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), str.capacity_);
-    traits_type::copy(data_.first(), str.data_.first(), capacity_);
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), str.capacity_);
+    traits_type::copy(get<0>(data_), get<0>(str.data_), capacity_);
 }
 
 
@@ -907,8 +907,8 @@ auto secure_basic_string<C, T, A>::operator=(const self_t& str) -> self_t&
         reset();
         capacity_ = str.capacity_;
         length_ = str.length_;
-        data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), str.capacity_);
-        traits_type::copy(data_.first(), str.data_.first(), capacity_);
+        get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), str.capacity_);
+        traits_type::copy(get<0>(data_), get<0>(str.data_), capacity_);
     }
 
     return *this;
@@ -920,7 +920,7 @@ secure_basic_string<C, T, A>::secure_basic_string(self_t&& str):
     capacity_(15),
     length_(0)
 {
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), 15);
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), 15);
     swap(str);
 }
 
@@ -931,7 +931,7 @@ secure_basic_string<C, T, A>::secure_basic_string(self_t&& str, const allocator_
     length_(0),
     data_(alloc)
 {
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), 15);
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), 15);
     swap(str);
 }
 
@@ -962,8 +962,8 @@ secure_basic_string<C, T, A>::secure_basic_string(const self_t& str, size_t pos,
 
     length_ = std::min(len, n - pos);
     capacity_ = length_ + 1;
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), capacity_);
-    traits_type::copy(data_.first(), str.data() + pos, length_);
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), capacity_);
+    traits_type::copy(get<0>(data_), str.data() + pos, length_);
 }
 
 
@@ -973,9 +973,9 @@ secure_basic_string<C, T, A>::secure_basic_string(const_pointer s, const allocat
 {
     length_ = traits_type::length(s);
     capacity_ = length_ + 1;
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), capacity_);
-    traits_type::copy(data_.first(), s, length_);
-    data_.first()[length_] = value_type();
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), capacity_);
+    traits_type::copy(get<0>(data_), s, length_);
+    get<0>(data_)[length_] = value_type();
 }
 
 
@@ -985,9 +985,9 @@ secure_basic_string<C, T, A>::secure_basic_string(const_pointer s, size_t n, con
 {
     length_ = n;
     capacity_ = length_ + 1;
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), capacity_);
-    traits_type::copy(data_.first(), s, n);
-    data_.first()[length_] = value_type();
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), capacity_);
+    traits_type::copy(get<0>(data_), s, n);
+    get<0>(data_)[length_] = value_type();
 }
 
 
@@ -997,9 +997,9 @@ secure_basic_string<C, T, A>::secure_basic_string(size_t n, value_type c, const 
 {
     length_ = n;
     capacity_ = length_ + 1;
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), capacity_);
-    traits_type::assign(data_.first(), n, c);
-    data_.first()[n] = value_type();
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), capacity_);
+    traits_type::assign(get<0>(data_), n, c);
+    get<0>(data_)[n] = value_type();
 }
 
 
@@ -1010,13 +1010,13 @@ secure_basic_string<C, T, A>::secure_basic_string(Iter first, Iter last, const a
 {
     length_ = std::distance(first, last);
     capacity_ = length_ + 1;
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), capacity_);
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), capacity_);
 
     size_t n = 0;
     for (; first != last; ++first) {
-        data_.first()[n++] = *first;
+        get<0>(data_)[n++] = *first;
     }
-    data_.first()[length_] = value_type();
+    get<0>(data_)[length_] = value_type();
 }
 
 
@@ -1026,51 +1026,51 @@ secure_basic_string<C, T, A>::secure_basic_string(initializer_list<value_type> l
 {
     length_ = list.size();
     capacity_ = length_ + 1;
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), capacity_);
-    traits_type::copy(data_.first(), list.begin(), length_);
-    data_.first()[length_] = value_type();
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), capacity_);
+    traits_type::copy(get<0>(data_), list.begin(), length_);
+    get<0>(data_)[length_] = value_type();
 }
 
 
 template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::noaccess()
 {
-    secure_mprotect_noaccess(data_.first());
+    secure_mprotect_noaccess(get<0>(data_));
 }
 
 
 template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::readonly()
 {
-    secure_mprotect_readonly(data_.first());
+    secure_mprotect_readonly(get<0>(data_));
 }
 
 
 template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::readwrite()
 {
-    secure_mprotect_readwrite(data_.first());
+    secure_mprotect_readwrite(get<0>(data_));
 }
 
 
 template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::mlock()
 {
-    secure_mlock(data_.first(), capacity_ * sizeof(value_type));
+    secure_mlock(get<0>(data_), capacity_ * sizeof(value_type));
 }
 
 
 template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::munlock()
 {
-    secure_munlock(data_.first(), capacity_ * sizeof(value_type));
+    secure_munlock(get<0>(data_), capacity_ * sizeof(value_type));
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::begin() -> iterator
 {
-    return const_cast<iterator>(data_.first());
+    return const_cast<iterator>(get<0>(data_));
 }
 
 
@@ -1084,14 +1084,14 @@ auto secure_basic_string<C, T, A>::end() -> iterator
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::begin() const -> const_iterator
 {
-    return data_.first();
+    return get<0>(data_);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::end() const -> const_iterator
 {
-    return data_.first() + length_;
+    return get<0>(data_) + length_;
 }
 
 
@@ -1168,7 +1168,7 @@ bool secure_basic_string<C, T, A>::empty() const noexcept
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::max_size() const noexcept -> size_type
 {
-    return allocator_traits<allocator_type>::max_size(data_.second());
+    return allocator_traits<allocator_type>::max_size(get<1>(data_));
 }
 
 
@@ -1217,7 +1217,7 @@ void secure_basic_string<C, T, A>::resize(size_type n, value_type c)
         append(n - length(), c);
     } else {
         length_ = n;
-        data_.first()[n] = value_type();
+        get<0>(data_)[n] = value_type();
     }
 }
 
@@ -1226,7 +1226,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::operator[](size_type pos) -> reference
 {
     assert(pos <= size() && "string index out of bounds");
-    return *(data_.first() + pos);
+    return *(get<0>(data_) + pos);
 }
 
 
@@ -1234,7 +1234,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::operator[](size_type pos) const -> const_reference
 {
     assert(pos <= size() && "string index out of bounds");
-    return *(data_.first() + pos);
+    return *(get<0>(data_) + pos);
 }
 
 
@@ -1256,7 +1256,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::front() -> reference
 {
     assert(!empty() && "string::front(): string is empty");
-    return *(data_.first());
+    return *(get<0>(data_));
 }
 
 
@@ -1264,7 +1264,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::front() const -> const_reference
 {
     assert(!empty() && "string::front(): string is empty");
-    return *data_.first();
+    return *get<0>(data_);
 }
 
 
@@ -1272,7 +1272,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::back() -> reference
 {
     assert(!empty() && "string::back(): string is empty");
-    return *(data_.first() + length_ - 1);
+    return *(get<0>(data_) + length_ - 1);
 }
 
 
@@ -1280,7 +1280,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::back() const -> const_reference
 {
     assert(!empty() && "string::back(): string is empty");
-    return *(data_.first() + length_ - 1);
+    return *(get<0>(data_) + length_ - 1);
 }
 
 
@@ -1336,7 +1336,7 @@ auto secure_basic_string<C, T, A>::append(const view_type& str) -> self_t&
         reallocate(std::max(r+1, 2 * capacity()));
     }
 
-    traits_type::copy(data_.first() + length(), str.data(), n);
+    traits_type::copy(get<0>(data_) + length(), str.data(), n);
     length_ += n;
     return *this;
 }
@@ -1372,9 +1372,9 @@ auto secure_basic_string<C, T, A>::append(size_t n, char c) -> self_t&
     }
 
     while (n--) {
-        data_.first()[length_++] = c;
+        get<0>(data_)[length_++] = c;
     }
-    data_.first()[length_] = value_type();
+    get<0>(data_)[length_] = value_type();
 
     return *this;
 }
@@ -1391,9 +1391,9 @@ auto secure_basic_string<C, T, A>::append(Iter first, Iter last) -> self_t&
     }
 
     for (; first != last; ++first) {
-        data_.first()[length_++] = *first;
+        get<0>(data_)[length_++] = *first;
     }
-    data_.first()[length_] = value_type();
+    get<0>(data_)[length_] = value_type();
 
     return *this;
 }
@@ -1416,8 +1416,8 @@ void secure_basic_string<C, T, A>::push_back(value_type c)
     }
 
     // assign
-    data_.first()[length_++] = c;
-    data_.first()[length_] = value_type();
+    get<0>(data_)[length_++] = c;
+    get<0>(data_)[length_] = value_type();
 }
 
 
@@ -1438,8 +1438,8 @@ auto secure_basic_string<C, T, A>::assign(const view_type& str) -> self_t&
     }
 
     length_ = n;
-    traits_type::copy(data_.first(), str.data(), n);
-    data_.first()[n] = value_type();
+    traits_type::copy(get<0>(data_), str.data(), n);
+    get<0>(data_)[n] = value_type();
 
     return *this;
 }
@@ -1477,8 +1477,8 @@ auto secure_basic_string<C, T, A>::assign(size_t n, value_type c) -> self_t&
     }
 
     length_ = n;
-    traits_type::assign(data_.first(), n, c);
-    data_.first()[n] = value_type();
+    traits_type::assign(get<0>(data_), n, c);
+    get<0>(data_)[n] = value_type();
 
     return *this;
 }
@@ -1566,7 +1566,7 @@ auto secure_basic_string<C, T, A>::insert(const_iterator p, size_t n, char c) ->
     }
 
     // move
-    char* src = data_.first() + pos;
+    char* src = get<0>(data_) + pos;
     char* dst = src + n;
     traits_type::move(dst, src, move);
 
@@ -1619,10 +1619,10 @@ auto secure_basic_string<C, T, A>::erase(size_t pos, size_t len) -> self_t&
 
     size_type move = size() - pos - len;
     if (move != 0) {
-        traits_type::move(data_.first() + pos, data_.first() + pos + len, move);
+        traits_type::move(get<0>(data_) + pos, get<0>(data_) + pos + len, move);
     }
     length_ -= len;
-    data_.first()[length_] = value_type();
+    get<0>(data_)[length_] = value_type();
 
     return *this;
 }
@@ -1717,7 +1717,7 @@ void secure_basic_string<C, T, A>::pop_back()
 {
     assert(!empty() && "string::pop_back(): string is empty");
     --length_;
-    data_.first()[length_] = value_type();
+    get<0>(data_)[length_] = value_type();
 }
 
 
@@ -1733,14 +1733,14 @@ void secure_basic_string<C, T, A>::swap(self_t& other)
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::c_str() const noexcept -> const_pointer
 {
-    return data_.first();
+    return get<0>(data_);
 }
 
 
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::data() const noexcept -> const_pointer
 {
-    return data_.first();
+    return get<0>(data_);
 }
 
 
@@ -2064,7 +2064,7 @@ secure_basic_string<C, T, A>::operator bool() const
 template <typename C, typename T, typename A>
 secure_basic_string<C, T, A>::operator view_type() const
 {
-    return view_type(data_.first(), length_);
+    return view_type(get<0>(data_), length_);
 }
 
 
@@ -2073,14 +2073,14 @@ void secure_basic_string<C, T, A>::init()
 {
     capacity_ = 15;
     length_ = 0;
-    data_.first() = allocator_traits<allocator_type>::allocate(data_.second(), 15);
+    get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), 15);
 }
 
 
 template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::reset()
 {
-    allocator_traits<allocator_type>::deallocate(data_.second(), data_.first(), capacity_);
+    allocator_traits<allocator_type>::deallocate(get<1>(data_), get<0>(data_), capacity_);
     capacity_ = length_ = 0;
 }
 
@@ -2089,15 +2089,15 @@ template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::reallocate(size_type n)
 {
     // create new buffer
-    pointer buf = allocator_traits<allocator_type>::allocate(data_.second(), n+1, data_.first());
-    traits_type::copy(buf, data_.first(), length_+1);
+    pointer buf = allocator_traits<allocator_type>::allocate(get<1>(data_), n+1, get<0>(data_));
+    traits_type::copy(buf, get<0>(data_), length_+1);
 
     // clear existing buffer
-    allocator_traits<allocator_type>::deallocate(data_.second(), data_.first(), capacity_);
+    allocator_traits<allocator_type>::deallocate(get<1>(data_), get<0>(data_), capacity_);
 
     // store data
     capacity_ = n;
-    data_.first() = buf;
+    get<0>(data_) = buf;
 }
 
 // ALIAS

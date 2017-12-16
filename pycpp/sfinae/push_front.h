@@ -24,14 +24,14 @@ PYCPP_HAS_MEMBER_FUNCTION(push_front, has_push_front, void (C::*)(typename C::co
 struct push_front
 {
     template <typename T>
-    typename std::enable_if<has_push_front<T>::value, void>::type
+    enable_if_t<has_push_front<T>::value, void>
     operator()(T &t, typename T::const_reference v)
     {
         t.push_front(v);
     }
 
     template <typename T>
-    typename std::enable_if<!has_push_front<T>::value, void>::type
+    enable_if_t<!has_push_front<T>::value, void>
     operator()(T &t, typename T::const_reference v)
     {
         t.insert(t.begin(), v);

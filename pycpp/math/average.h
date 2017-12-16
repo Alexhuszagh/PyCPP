@@ -29,13 +29,13 @@ PYCPP_BEGIN_NAMESPACE
 template <typename Iter>
 double average(Iter first, Iter last)
 {
-    using value_type = typename std::iterator_traits<Iter>::value_type;
+    using value_type = typename iterator_traits<Iter>::value_type;
     double sum = 0;
-    std::for_each(PARALLEL_EXECUTION first, last, [&sum](const value_type& value) {
+    for_each(PARALLEL_EXECUTION first, last, [&sum](const value_type& value) {
         sum += value;
     });
 
-    return sum / std::distance(first, last);
+    return sum / distance(first, last);
 }
 
 
@@ -57,13 +57,13 @@ double average(Iter first,
     Iter last,
     Summer summer)
 {
-    using value_type = typename std::iterator_traits<Iter>::value_type;
+    using value_type = typename iterator_traits<Iter>::value_type;
     double sum = 0;
-    std::for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
+    for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
         sum += summer(value);
     });
 
-    return sum / std::distance(first, last);
+    return sum / distance(first, last);
 }
 
 
@@ -89,9 +89,9 @@ double average(ValueIter value_first,
 {
     double sum = 0;
     double weight = 0;
-    size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
-    auto r = xrange<size_t>(0, distance, 1);
-    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+    size_t dist = min(distance(value_first, value_last), distance(weight_first, weight_last));
+    auto r = xrange<size_t>(0, dist, 1);
+    for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double w = weight_first[i];
         sum += value_first[i] * w;
         weight += w;
@@ -129,9 +129,9 @@ double average(ValueIter value_first,
 {
     double sum = 0;
     double weight = 0;
-    size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
-    auto r = xrange<size_t>(0, distance, 1);
-    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+    size_t dist = min(distance(value_first, value_last), distance(weight_first, weight_last));
+    auto r = xrange<size_t>(0, dist, 1);
+    for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double w = weighter(weight_first[i]);
         sum += summer(value_first[i]) * w;
         weight += w;

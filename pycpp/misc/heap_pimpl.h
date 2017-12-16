@@ -35,7 +35,8 @@
 #pragma once
 
 #include <pycpp/stl/memory.h>
-#include <cstddef>
+#include <pycpp/stl/utility.h>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -86,7 +87,7 @@ public:
     void swap(self_t&);
 
 private:
-    std::unique_ptr<T> t_ = nullptr;
+    unique_ptr<T> t_ = nullptr;
 };
 
 // SHARED
@@ -133,7 +134,7 @@ public:
     void swap(self_t&);
 
 private:
-    std::shared_ptr<T> t_ = nullptr;
+    shared_ptr<T> t_ = nullptr;
 };
 
 // IMPLEMENTATION
@@ -143,13 +144,13 @@ private:
 
 template <typename T>
 unique_heap_pimpl<T>::unique_heap_pimpl():
-    t_(std::make_unique<value_type>())
+    t_(make_unique<value_type>())
 {}
 
 
 template <typename T>
 unique_heap_pimpl<T>::unique_heap_pimpl(const self_t& rhs):
-    t_(std::make_unique<value_type>(rhs.get()))
+    t_(make_unique<value_type>(rhs.get()))
 {}
 
 
@@ -157,7 +158,7 @@ template <typename T>
 auto unique_heap_pimpl<T>::operator=(const self_t& rhs) -> self_t&
 {
     if (this != &rhs) {
-        t_ = std::make_unique<value_type>(rhs.get());
+        t_ = make_unique<value_type>(rhs.get());
     }
     return *this;
 }
@@ -165,7 +166,7 @@ auto unique_heap_pimpl<T>::operator=(const self_t& rhs) -> self_t&
 
 template <typename T>
 unique_heap_pimpl<T>::unique_heap_pimpl(self_t&& rhs):
-    t_(std::move(rhs.t_))
+    t_(move(rhs.t_))
 {}
 
 
@@ -173,7 +174,7 @@ template <typename T>
 auto unique_heap_pimpl<T>::operator=(self_t&& rhs) -> self_t&
 {
     if (this != &rhs) {
-        t_ = std::move(rhs.t_);
+        t_ = move(rhs.t_);
     }
     return *this;
 }
@@ -181,7 +182,7 @@ auto unique_heap_pimpl<T>::operator=(self_t&& rhs) -> self_t&
 
 template <typename T>
 unique_heap_pimpl<T>::unique_heap_pimpl(const value_type& rhs):
-    t_(std::make_unique<value_type>(rhs))
+    t_(make_unique<value_type>(rhs))
 {}
 
 
@@ -195,14 +196,14 @@ auto unique_heap_pimpl<T>::operator=(const value_type& rhs) -> self_t&
 
 template <typename T>
 unique_heap_pimpl<T>::unique_heap_pimpl(value_type&& rhs):
-    t_(std::make_unique<value_type>(std::move(rhs)))
+    t_(make_unique<value_type>(move(rhs)))
 {}
 
 
 template <typename T>
 auto unique_heap_pimpl<T>::operator=(value_type&& rhs) -> self_t&
 {
-    *t_ = std::move(rhs);
+    *t_ = move(rhs);
     return *this;
 }
 
@@ -265,20 +266,20 @@ auto unique_heap_pimpl<T>::get() const noexcept -> const_reference
 template <typename T>
 void unique_heap_pimpl<T>::swap(self_t& rhs)
 {
-    std::swap(t_, rhs.t_);
+    swap(t_, rhs.t_);
 }
 
 // SHARED
 
 template <typename T>
 shared_heap_pimpl<T>::shared_heap_pimpl():
-    t_(std::make_shared<value_type>())
+    t_(make_shared<value_type>())
 {}
 
 
 template <typename T>
 shared_heap_pimpl<T>::shared_heap_pimpl(const value_type& rhs):
-    t_(std::make_shared<value_type>(rhs))
+    t_(make_shared<value_type>(rhs))
 {}
 
 
@@ -292,14 +293,14 @@ auto shared_heap_pimpl<T>::operator=(const value_type& rhs) -> self_t&
 
 template <typename T>
 shared_heap_pimpl<T>::shared_heap_pimpl(value_type&& rhs):
-    t_(std::make_shared<value_type>(std::move(rhs)))
+    t_(make_shared<value_type>(move(rhs)))
 {}
 
 
 template <typename T>
 auto shared_heap_pimpl<T>::operator=(value_type&& rhs) -> self_t&
 {
-    *t_ = std::move(rhs);
+    *t_ = move(rhs);
     return *this;
 }
 
@@ -362,7 +363,7 @@ auto shared_heap_pimpl<T>::get() const noexcept -> const_reference
 template <typename T>
 void shared_heap_pimpl<T>::swap(self_t& rhs)
 {
-    std::swap(t_, rhs.t_);
+    swap(t_, rhs.t_);
 }
 
 PYCPP_END_NAMESPACE

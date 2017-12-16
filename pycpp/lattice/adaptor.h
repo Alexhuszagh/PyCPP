@@ -28,16 +28,16 @@ PYCPP_BEGIN_NAMESPACE
 
 // HTTP ADAPTERS
 #if defined(OS_WINDOWS)
-    typedef win32_socket_adaptor_t http_adaptor_t;
+    using http_adaptor_t = win32_socket_adaptor_t;
 #else
-    typedef posix_socket_adaptor_t http_adaptor_t;
+    using http_adaptor_t = posix_socket_adaptor_t;
 #endif
 
 // HTTPS ADAPTERS
 #if defined(PYCPP_HAVE_SSL) && defined(PYCPP_HAVE_OPENSSL)
-    typedef open_ssl_adaptor_t<http_adaptor_t> ssl_adaptor_t;
+    using ssl_adaptor_t = open_ssl_adaptor_t<http_adaptor_t>;
 #else
-    typedef no_ssl_adaptor_t<http_adaptor_t> ssl_adaptor_t;
+    using ssl_adaptor_t = no_ssl_adaptor_t<http_adaptor_t>;
 #endif
 
 PYCPP_END_NAMESPACE

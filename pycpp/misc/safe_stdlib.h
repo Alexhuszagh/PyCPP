@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <cstddef>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -16,22 +16,22 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 /**
- *  \brief Throws std::bad_alloc if memory cannot be allocated.
+ *  \brief Throws bad_alloc if memory cannot be allocated.
  */
 void* safe_malloc(size_t size);
 
 /**
- *  \brief Throws std::bad_alloc if memory cannot be allocated.
+ *  \brief Throws bad_alloc if memory cannot be allocated.
  */
 void* safe_realloc(void* ptr, size_t size);
 
 /**
- *  \brief Throws std::bad_alloc if memory cannot be allocated.
+ *  \brief Throws bad_alloc if memory cannot be allocated.
  */
 void* safe_calloc(size_t num, size_t size);
 
 /**
- *  \brief Throws std::bad_alloc if memory cannot be allocated.
+ *  \brief Throws bad_alloc if memory cannot be allocated.
  */
 void safe_free(void* ptr);
 

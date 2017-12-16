@@ -17,12 +17,12 @@ PYCPP_USING_NAMESPACE
 
 TEST(has_multiplies_assign, has_multiplies_assign)
 {
-    using pair = std::pair<int, int>;
+    using p1 = pair<int, int>;
 
     static_assert(has_multiplies_assign<int>::value, "");
     static_assert(has_multiplies_assign<int, int>::value, "");
-    static_assert(!has_multiplies_assign<pair>::value, "");
-    static_assert(!has_multiplies_assign<pair, pair>::value, "");
-    static_assert(!has_multiplies_assign<pair, int>::value, "");
-    static_assert(!has_multiplies_assign<int, pair>::value, "");
+    static_assert(!has_multiplies_assign<p1>::value, "");
+    static_assert(!has_multiplies_assign<p1, p1>::value, "");
+    static_assert(!has_multiplies_assign<p1, int>::value, "");
+    static_assert(!has_multiplies_assign<int, p1>::value, "");
 }

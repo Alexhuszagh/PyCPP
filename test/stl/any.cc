@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/stl/any.h>
+#include <pycpp/stl/tuple.h>
 #include <gtest/gtest.h>
-#include <tuple>
 
 PYCPP_USING_NAMESPACE
 
@@ -114,8 +114,8 @@ TEST(any, any_cast)
 
 TEST(any, reference_count)
 {
-    std::shared_ptr<int> ptr_count(new int);
-    std::weak_ptr<int> weak = ptr_count;
+    shared_ptr<int> ptr_count(new int);
+    weak_ptr<int> weak = ptr_count;
     any p0 = 0;
 
     EXPECT_EQ(weak.use_count(), 1);
@@ -127,7 +127,7 @@ TEST(any, reference_count)
     EXPECT_EQ(weak.use_count(), 4);
     p0 = 0;
     EXPECT_EQ(weak.use_count(), 3);
-    p0 = std::move(p1);
+    p0 = move(p1);
     EXPECT_EQ(weak.use_count(), 3);
     p0.swap(p1);
     EXPECT_EQ(weak.use_count(), 3);

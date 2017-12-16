@@ -10,7 +10,7 @@
 #include <pycpp/stl/string.h>
 #include <pycpp/stl/unordered_map.h>
 #include <pycpp/stl/vector.h>
-#include <cstdint>
+#include <stdint.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -39,14 +39,13 @@ struct json_value_t;
 // ALIAS
 // -----
 
-typedef uint_fast64_t json_pointer_t;
-typedef std::nullptr_t json_null_t;
-typedef bool json_boolean_t;
-typedef double json_number_t;
-typedef std::string json_string_t;
-typedef std::vector<json_value_t> json_array_t;
-typedef std::unordered_map<json_string_t, json_value_t> json_object_t;
-
+using json_pointer_t = uint_fast64_t;
+using json_null_t = std::nullptr_t;
+using json_boolean_t = bool;
+using json_number_t = double;
+using json_string_t = std::string;
+using json_array_t = vector<json_value_t>;
+using json_object_t = unordered_map<json_string_t, json_value_t>;
 
 // OBJECTS
 // -------

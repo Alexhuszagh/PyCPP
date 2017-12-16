@@ -261,7 +261,7 @@ public:
 
     pair<iterator, bool> insert(value_type&& value)
     {
-        return m_ht.insert(std::move(value));
+        return m_ht.insert(move(value));
     }
 
     iterator insert(const_iterator hint, const value_type& value)
@@ -271,7 +271,7 @@ public:
 
     iterator insert(const_iterator hint, value_type&& value)
     {
-        return m_ht.insert(hint, std::move(value));
+        return m_ht.insert(hint, move(value));
     }
 
     template <typename InputIt>
@@ -288,21 +288,21 @@ public:
     /**
      *  Due to the way elements are stored, emplace will need to move
      *  or copy the key-value once. The method is equivalent to
-     *  insert(value_type(std::forward<Args>(args)...));
+     *  insert(value_type(forward<Args>(args)...));
      *
-     *  Mainly here for compatibility with the std::unordered_map
+     *  Mainly here for compatibility with the unordered_map
      *  interface.
      */
     template <typename... Args>
     pair<iterator, bool> emplace(Args&&... args)
     {
-        return m_ht.emplace(std::forward<Args>(args)...);
+        return m_ht.emplace(forward<Args>(args)...);
     }
 
     /**
      *  Due to the way elements are stored, emplace_hint will need to
      *  move or copy the key-value once. The method is equivalent to
-     *  insert(hint, value_type(std::forward<Args>(args)...));
+     *  insert(hint, value_type(forward<Args>(args)...));
      *
      *  Mainly here for compatibility with the unordered_map
      *  interface.
@@ -310,7 +310,7 @@ public:
     template <class... Args>
     iterator emplace_hint(const_iterator hint, Args&&... args)
     {
-        return m_ht.emplace_hint(hint, std::forward<Args>(args)...);
+        return m_ht.emplace_hint(hint, forward<Args>(args)...);
     }
 
     iterator erase(iterator pos)
@@ -349,7 +349,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists.
      *  If so, K must be hashable and comparable to Key.
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     size_type erase(const K& key)
     {
         return m_ht.erase(key);
@@ -363,7 +363,7 @@ public:
      *  Useful to speed-up the lookup to the value if you already have
      *  the hash.
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     size_type erase(const K& key, size_t precalculated_hash)
     {
         return m_ht.erase(key, precalculated_hash);
@@ -396,7 +396,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists.
      *  If so, K must be hashable and comparable to Key.
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     size_type count(const K& key) const { return m_ht.count(key); }
 
     /**
@@ -406,7 +406,7 @@ public:
      *  key. The hash value should be the same as hash_function()(key).
      *  Useful to speed-up the lookup if you already have the hash.
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     size_type count(const K& key, size_t precalculated_hash) const
     {
         return m_ht.count(key, precalculated_hash);
@@ -445,7 +445,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists.
      *  If so, K must be hashable and comparable to Key.
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     iterator find(const K& key)
     {
         return m_ht.find(key);
@@ -458,7 +458,7 @@ public:
      *  key. The hash value should be the same as hash_function()(key).
      *  Useful to speed-up the lookup if you already have the hash.
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     iterator find(const K& key, size_t precalculated_hash)
     {
         return m_ht.find(key, precalculated_hash);
@@ -467,7 +467,7 @@ public:
     /**
      *  @copydoc find(const K& key)
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     const_iterator find(const K& key) const
     {
         return m_ht.find(key);
@@ -480,7 +480,7 @@ public:
      *  key. The hash value should be the same as hash_function()(key).
      *  Useful to speed-up the lookup if you already have the hash.
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     const_iterator find(const K& key, size_t precalculated_hash) const
     {
         return m_ht.find(key, precalculated_hash);
@@ -519,7 +519,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists.
      *  If so, K must be hashable and comparable to Key.
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     pair<iterator, iterator> equal_range(const K& key)
     {
         return m_ht.equal_range(key);
@@ -532,7 +532,7 @@ public:
      *  key. The hash value should be the same as hash_function()(key).
      *  Useful to speed-up the lookup if you already have the hash.
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     pair<iterator, iterator> equal_range(const K& key, size_t precalculated_hash)
     {
         return m_ht.equal_range(key, precalculated_hash);
@@ -541,7 +541,7 @@ public:
     /**
      *  @copydoc equal_range(const K& key)
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     pair<const_iterator, const_iterator> equal_range(const K& key) const
     {
         return m_ht.equal_range(key);
@@ -550,7 +550,7 @@ public:
     /**
      *  @copydoc equal_range(const K& key, size_t precalculated_hash)
      */
-    template <class K, class KE = KeyEqual, typename enable_if<has_is_transparent<KE>::value>::type* = nullptr>
+    template <class K, class KE = KeyEqual, enable_if_t<has_is_transparent<KE>::value>* = nullptr>
     pair<const_iterator, const_iterator> equal_range(const K& key, size_t precalculated_hash) const
     {
         return m_ht.equal_range(key, precalculated_hash);

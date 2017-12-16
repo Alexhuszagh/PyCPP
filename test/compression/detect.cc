@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/compression/detect.h>
+#include <pycpp/stl/sstream.h>
 #include <gtest/gtest.h>
-#include <sstream>
 
 PYCPP_USING_NAMESPACE
 

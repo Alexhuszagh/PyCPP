@@ -22,7 +22,7 @@ void kv_open(void* db, const path_view_t& path, kv_options options, comparator_c
     // TODO: maybe see if there's a more efficient way???
     auto status = leveldb::DB::Open(opts, path_to_string(path), (leveldb::DB**) &db);
     if (!status.ok()) {
-        throw std::runtime_error(status.ToString().data());
+        throw runtime_error(status.ToString().data());
     }
 }
 

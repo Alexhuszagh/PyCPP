@@ -4,7 +4,7 @@
 #include <pycpp/preprocessor/byteorder.h>
 #include <pycpp/string/base16.h>
 #include <pycpp/string/hex.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

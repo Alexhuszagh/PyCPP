@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/math/std.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,9 +17,9 @@ PYCPP_USING_NAMESPACE
 
 TEST(math, variance)
 {
-    std::vector<double> x = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
-    std::vector<double> y = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
-    std::vector<double> y0 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    vector<double> x = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+    vector<double> y = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
+    vector<double> y0 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     EXPECT_NEAR(variance(x.begin(), x.end()), 8.25, 0.001);
     EXPECT_NEAR(variance(x.begin(), x.end(), y0.begin(), y0.end()), 8.25, 0.001);
 
@@ -40,9 +40,9 @@ TEST(math, variance)
 
 TEST(math, std)
 {
-    std::vector<double> x = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
-    std::vector<double> y = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
-    std::vector<double> y0 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+    vector<double> x = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+    vector<double> y = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
+    vector<double> y0 = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
     EXPECT_NEAR(stdev(x.begin(), x.end()), 2.87228, 0.001);
     EXPECT_NEAR(stdev(x.begin(), x.end(), y0.begin(), y0.end()), 2.87228, 0.001);
 

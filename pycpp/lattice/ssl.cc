@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lattice/ssl.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/casemap.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -34,7 +35,7 @@ certificate_format_t certificate_file_t::format() const
     } else if (data == "p12") {
         return PKCS12;
     }
-    throw std::runtime_error("Unrecognized certificate format.");
+    throw runtime_error("Unrecognized certificate format.");
 }
 
 

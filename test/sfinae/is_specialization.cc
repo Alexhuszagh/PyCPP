@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/sfinae/is_specialization.h>
+#include <pycpp/stl/tuple.h>
 #include <gtest/gtest.h>
-#include <tuple>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,17 +17,17 @@ PYCPP_USING_NAMESPACE
 
 TEST(is_specialization, is_specialization)
 {
-    using pair = std::pair<int, int>;
-    using t1 = std::tuple<int>;
-    using t2 = std::tuple<int, int>;
-    using t3 = std::tuple<int, int, int>;
+    using p1 = pair<int, int>;
+    using t1 = tuple<int>;
+    using t2 = tuple<int, int>;
+    using t3 = tuple<int, int, int>;
 
-    static_assert(is_specialization<pair, std::pair>::value, "");
-    static_assert(is_specialization<t1, std::tuple>::value, "");
-    static_assert(is_specialization<t2, std::tuple>::value, "");
-    static_assert(is_specialization<t3, std::tuple>::value, "");
-    static_assert(!is_specialization<pair, std::tuple>::value, "");
-    static_assert(!is_specialization<t1, std::pair>::value, "");
-    static_assert(!is_specialization<t2, std::pair>::value, "");
-    static_assert(!is_specialization<t3, std::pair>::value, "");
+    static_assert(is_specialization<p1, pair>::value, "");
+    static_assert(is_specialization<t1, tuple>::value, "");
+    static_assert(is_specialization<t2, tuple>::value, "");
+    static_assert(is_specialization<t3, tuple>::value, "");
+    static_assert(!is_specialization<p1, tuple>::value, "");
+    static_assert(!is_specialization<t1, pair>::value, "");
+    static_assert(!is_specialization<t2, pair>::value, "");
+    static_assert(!is_specialization<t3, pair>::value, "");
 }

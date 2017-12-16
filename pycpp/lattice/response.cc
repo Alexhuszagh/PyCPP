@@ -8,8 +8,8 @@
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/getline.h>
 #include <pycpp/string/string.h>
-#include <cctype>
-#include <cstring>
+#include <ctype.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -74,7 +74,7 @@ void response_t::parse_content_type(const string_wrapper& string)
         // get type, subtype
         auto &front = values.front();
         parse_type(front);
-        std::get<1>(mime) = front.substr(front.find("/") + 1);
+        get<1>(mime) = front.substr(front.find("/") + 1);
 
         // get parameters
         for (auto it = values.begin() + 1; it != values.end(); ++it) {
@@ -97,28 +97,28 @@ void response_t::parse_type(const string_wrapper& string)
 
     switch (string.front()) {
         case 'a': {
-            std::get<0>(mime) = string[1] == 'p' ? APPLICATION : AUDIO;
+            get<0>(mime) = string[1] == 'p' ? APPLICATION : AUDIO;
             break;
         }
         case 'i': {
-            std::get<0>(mime) = IMAGE;
+            get<0>(mime) = IMAGE;
             break;
         }
         case 'm': {
-            std::get<0>(mime) = string[1] == 'e' ? MESSAGE : MULTIPART;
+            get<0>(mime) = string[1] == 'e' ? MESSAGE : MULTIPART;
             break;
         }
         case 't': {
-            std::get<0>(mime) = TEXT;
+            get<0>(mime) = TEXT;
             break;
         }
         case 'v': {
-            std::get<0>(mime) = VIDEO;
+            get<0>(mime) = VIDEO;
             break;
         }
         case 'x': {
             // custom token, must store
-            std::get<0>(mime) = XTOKEN;
+            get<0>(mime) = XTOKEN;
             string_wrapper token = string.substr(2, string.find("/") - 2);
             headers_["x-token"].append(token.data(), token.size());
             break;
@@ -166,7 +166,7 @@ void response_t::parse_header_line(const string_wrapper& line)
 
 void response_t::parse_header(const string_wrapper& lines)
 {
-    std::istringstream stream = std::istringstream(std::string(lines));
+    istringstream stream = istringstream(std::string(lines));
     std::string line;
     while (getline(stream, line)) {
         if (!line.empty()) {
@@ -242,7 +242,7 @@ bool response_t::compressed() const
     }
 
     // check if the mime type is a known compressed format
-    auto &format = std::get<1>(mime);
+    auto &format = get<1>(mime);
     return (
         format == "x-compress" ||
         format == "x-gzip" ||
@@ -261,7 +261,7 @@ bool response_t::compressed() const
  */
 bool response_t::compress() const
 {
-    if (!!(transfer & COMPRESS) || std::get<1>(mime) == "x-compress") {
+    if (!!(transfer & COMPRESS) || get<1>(mime) == "x-compress") {
         return true;
     }
 
@@ -283,7 +283,7 @@ bool response_t::deflate() const
 
 bool response_t::exi() const
 {
-    if (std::get<1>(mime) == "exi") {
+    if (get<1>(mime) == "exi") {
         return true;
     }
 
@@ -298,7 +298,7 @@ bool response_t::exi() const
  */
 bool response_t::gzip() const
 {
-    if (!!(transfer & GZIP) || std::get<1>(mime) == "x-gzip") {
+    if (!!(transfer & GZIP) || get<1>(mime) == "x-gzip") {
         return true;
     }
 
@@ -323,13 +323,13 @@ bool response_t::br() const
 
 bool response_t::bzip() const
 {
-    return std::get<1>(mime) == "x-bzip";
+    return get<1>(mime) == "x-bzip";
 }
 
 
 bool response_t::bzip2() const
 {
-    if (std::get<1>(mime) == "x-bzip2") {
+    if (get<1>(mime) == "x-bzip2") {
         return true;
     }
 
@@ -368,19 +368,19 @@ bool response_t::xz() const
 
 bool response_t::_7z() const
 {
-    return std::get<1>(mime) == "x-7z-compressed";
+    return get<1>(mime) == "x-7z-compressed";
 }
 
 
 bool response_t::ace() const
 {
-    return std::get<1>(mime) == "x-ace-compressed";
+    return get<1>(mime) == "x-ace-compressed";
 }
 
 
 bool response_t::rar() const
 {
-    return std::get<1>(mime) == "x-rar-compressed";
+    return get<1>(mime) == "x-rar-compressed";
 }
 
 
@@ -392,60 +392,60 @@ auto response_t::type() const -> const mime_t&
 
 bool response_t::application() const
 {
-    return std::get<0>(mime) == APPLICATION;
+    return get<0>(mime) == APPLICATION;
 }
 
 
 bool response_t::audio() const
 {
-    return std::get<0>(mime) == AUDIO;
+    return get<0>(mime) == AUDIO;
 }
 
 
 bool response_t::image() const
 {
-    return std::get<0>(mime) == IMAGE;
+    return get<0>(mime) == IMAGE;
 }
 
 
 bool response_t::message() const
 {
-    return std::get<0>(mime) == MESSAGE;
+    return get<0>(mime) == MESSAGE;
 }
 
 
 bool response_t::multipart() const
 {
-    return std::get<0>(mime) == MULTIPART;
+    return get<0>(mime) == MULTIPART;
 }
 
 
 bool response_t::text() const
 {
-    return std::get<0>(mime) == TEXT;
+    return get<0>(mime) == TEXT;
 }
 
 bool response_t::video() const
 {
-    return std::get<0>(mime) == VIDEO;
+    return get<0>(mime) == VIDEO;
 }
 
 
 bool response_t::xtoken() const
 {
-    return std::get<0>(mime) == XTOKEN;
+    return get<0>(mime) == XTOKEN;
 }
 
 
 bool response_t::json() const
 {
-    return application() && std::get<1>(mime) == "json";
+    return application() && get<1>(mime) == "json";
 }
 
 
 bool response_t::xml() const
 {
-    return application() && std::get<1>(mime) == "xml";
+    return application() && get<1>(mime) == "xml";
 }
 
 

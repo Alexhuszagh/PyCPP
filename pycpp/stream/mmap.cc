@@ -5,7 +5,7 @@
 #include <pycpp/filesystem/exception.h>
 #include <pycpp/preprocessor/architecture.h>
 #include <pycpp/stream/mmap.h>
-#include <cassert>
+#include <assert.h>
 
 #if defined(HAVE_MMAP) || defined(OS_WINDOWS)           // MMAP
 

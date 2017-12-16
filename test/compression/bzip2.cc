@@ -8,8 +8,8 @@
 #if defined(HAVE_BZIP2)
 
 #include <pycpp/compression/bzip2.h>
+#include <pycpp/stl/sstream.h>
 #include <gtest/gtest.h>
-#include <sstream>
 
 PYCPP_USING_NAMESPACE
 

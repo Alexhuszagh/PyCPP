@@ -50,11 +50,11 @@ public:
     response_list_t perform();
 
     template <typename Duration>
-    typename std::enable_if<std::is_integral<Duration>::value, response_t>::type
+    enable_if_t<std::is_integral<Duration>::value, response_t>
     next(Duration seconds = 1);
 
     template <typename Duration>
-    typename std::enable_if<is_specialization<Duration, std::chrono::duration>::value, response_t>::type
+    enable_if_t<is_specialization<Duration, std::chrono::duration>::value, response_t>
     next(const Duration& duration = std::chrono::seconds(1));
 
     explicit operator bool() const;
@@ -184,7 +184,7 @@ void pool_t::trace(Ts&&... ts)
  *  \brief Block until next query is ready (using a seconds overload).
  */
 template <typename Duration>
-typename std::enable_if<std::is_integral<Duration>::value, response_t>::type
+enable_if_t<std::is_integral<Duration>::value, response_t>
 pool_t::next(Duration seconds)
 {
     return next(std::chrono::seconds(seconds));
@@ -195,7 +195,7 @@ pool_t::next(Duration seconds)
  *  \brief Block until next query is ready.
  */
 template <typename Duration>
-typename std::enable_if<is_specialization<Duration, std::chrono::duration>::value, response_t>::type
+enable_if_t<is_specialization<Duration, std::chrono::duration>::value, response_t>
 pool_t::next(const Duration& duration)
 {
     // set our starting timepoint

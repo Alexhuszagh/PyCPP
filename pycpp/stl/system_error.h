@@ -13,14 +13,23 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// ALIAS
+// -----
+
+using error_category = std::error_category;
+using error_condition = std::error_condition;
+using errc = std::errc;
+using error_code = std::error_code;
+using system_error = std::system_error;
+
 // SPECIALIZATION
 // --------------
 
 #if defined(USE_XXHASH)
 
-PYCPP_SPECIALIZE_HASH_VALUE(hash, std::error_code);
+PYCPP_SPECIALIZE_HASH_VALUE(hash, error_code);
 #if defined(HAVE_CPP17)
-PYCPP_SPECIALIZE_HASH_VALUE(hash, std::error_condition);
+PYCPP_SPECIALIZE_HASH_VALUE(hash, error_condition);
 #endif          // HAVE_CPP17
 
 #endif          // USE_XXHASH

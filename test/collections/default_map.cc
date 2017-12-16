@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/collections/default_map.h>
+#include <pycpp/stl/memory.h>
 #include <gtest/gtest.h>
-#include <memory>
 
 PYCPP_USING_NAMESPACE
 

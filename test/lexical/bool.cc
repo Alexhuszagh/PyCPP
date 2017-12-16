@@ -7,10 +7,10 @@
 
 #include <pycpp/lexical/bool.h>
 #include <pycpp/lexical/format.h>
+#include <pycpp/stl/functional.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <functional>
-#include <utility>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 

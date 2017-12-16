@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/stl/functional.h>
+#include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/memory.h>
 #include <vector>
@@ -16,6 +17,8 @@ PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
+
+using std::swap;
 
 template <
     typename T,

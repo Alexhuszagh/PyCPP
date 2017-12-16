@@ -19,10 +19,10 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 #if defined(OS_WINDOWS)             // WINDOWS
-    typedef HANDLE fd_t;
+    using fd_t = HANDLE;
     #define INVALID_FD_VALUE INVALID_HANDLE_VALUE
 #else                               // POSIX
-    typedef int fd_t;
+    using fd_t = int;
     #define INVALID_FD_VALUE -1
 #endif
 

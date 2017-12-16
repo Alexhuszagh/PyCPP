@@ -45,7 +45,7 @@ static path_t gethomedir_impl()
 
 static path_t gethomedir_impl()
 {
-    char *dir = std::getenv("HOME");
+    char *dir = getenv("HOME");
     if (dir != nullptr) {
         return path_t(dir);
     } else {

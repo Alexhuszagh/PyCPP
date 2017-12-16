@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/allocator/standard.h>
-#include <cstdlib>
+#include <stdlib.h>
 
 PYCPP_BEGIN_NAMESPACE
 

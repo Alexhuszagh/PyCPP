@@ -8,21 +8,21 @@
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/random.h>
 #include <pycpp/stl/optional.h>
-#include <cmath>
-#include <cstring>
-#include <ctime>
+#include <math.h>
+#include <string.h>
+#include <time.h>
 
 PYCPP_BEGIN_NAMESPACE
-
+\
 // ALIAS
 // -----
 
-typedef std::chrono::high_resolution_clock highres_clock_t;
-typedef std::mt19937_64 mersene_twister;
-typedef std::default_random_engine default_random;
+using highres_clock_t = chrono::high_resolution_clock;
+using mersene_twister = mt19937_64;
+using default_random = default_random_engine;
 
 template <typename T>
-using memory_type = typename std::aligned_storage<sizeof(T)>::type;
+using memory_type = aligned_storage_t<sizeof(T)>;
 
 // GLOBALS
 // -------
@@ -83,11 +83,11 @@ static auto random_value(Distribution& distribution) -> typename Distribution::r
 
 
 template <typename Distribution>
-static auto random_list(Distribution& distribution, size_t n) -> std::vector<typename Distribution::result_type>
+static auto random_list(Distribution& distribution, size_t n) -> vector<typename Distribution::result_type>
 {
     auto &generator = get_default_random();
 
-    std::vector<typename Distribution::result_type> list;
+    vector<typename Distribution::result_type> list;
     list.reserve(n);
     while (n--) {
         list.emplace_back(distribution(generator));
@@ -142,70 +142,70 @@ std::string pseudorandom(size_t length, bool deterministic)
 
 random_t gammavariate(random_t alpha, random_t beta)
 {
-    std::gamma_distribution<random_t> distribution(alpha, beta);
+    gamma_distribution<random_t> distribution(alpha, beta);
     return random_value(distribution);
 }
 
 
 random_list_t gammavariate(random_t alpha, random_t beta, size_t n)
 {
-    std::gamma_distribution<random_t> distribution(alpha, beta);
+    gamma_distribution<random_t> distribution(alpha, beta);
     return random_list(distribution, n);
 }
 
 
 random_t lognormvariate(random_t mu, random_t sigma)
 {
-    std::lognormal_distribution<random_t> distribution(mu, sigma);
+    lognormal_distribution<random_t> distribution(mu, sigma);
     return random_value(distribution);
 }
 
 
 random_list_t lognormvariate(random_t mu, random_t sigma, size_t n)
 {
-    std::lognormal_distribution<random_t> distribution(mu, sigma);
+    lognormal_distribution<random_t> distribution(mu, sigma);
     return random_list(distribution, n);
 }
 
 
 random_t expovariate(random_t lambda)
 {
-    std::exponential_distribution<random_t> distribution(lambda);
+    exponential_distribution<random_t> distribution(lambda);
     return random_value(distribution);
 }
 
 
 random_list_t expovariate(random_t lambda, size_t n)
 {
-    std::exponential_distribution<random_t> distribution(lambda);
+    exponential_distribution<random_t> distribution(lambda);
     return random_list(distribution, n);
 }
 
 
 random_t normalvariate(random_t mu, random_t sigma)
 {
-    std::normal_distribution<random_t> distribution(mu, sigma);
+    normal_distribution<random_t> distribution(mu, sigma);
     return random_value(distribution);
 }
 
 
 random_list_t normalvariate(random_t mu, random_t sigma, size_t n)
 {
-    std::normal_distribution<random_t> distribution(mu, sigma);
+    normal_distribution<random_t> distribution(mu, sigma);
     return random_list(distribution, n);
 }
 
 
 random_t weibullvariate(random_t alpha, random_t beta)
 {
-    std::weibull_distribution<random_t> distribution(alpha, beta);
+    weibull_distribution<random_t> distribution(alpha, beta);
     return random_value(distribution);
 }
 
 
 random_list_t weibullvariate(random_t alpha, random_t beta, size_t n)
 {
-    std::weibull_distribution<random_t> distribution(alpha, beta);
+    weibull_distribution<random_t> distribution(alpha, beta);
     return random_list(distribution, n);
 }
 
@@ -213,11 +213,11 @@ random_list_t weibullvariate(random_t alpha, random_t beta, size_t n)
 random_int_t randrange(random_int_t start, random_int_t stop, size_t step)
 {
     if (stop < start) {
-        throw std::runtime_error("Cannot check negative range.");
+        throw runtime_error("Cannot check negative range.");
     }
 
     auto distance = (stop - start) / step;
-    std::uniform_int_distribution<random_int_t> distribution(0, distance);
+    uniform_int_distribution<random_int_t> distribution(0, distance);
     return (random_value(distribution) * step) + start;
 }
 
@@ -225,13 +225,13 @@ random_int_t randrange(random_int_t start, random_int_t stop, size_t step)
 random_int_list_t randrange(random_int_t start, random_int_t stop, size_t step, size_t n)
 {
     if (stop < start) {
-        throw std::runtime_error("Cannot check negative range.");
+        throw runtime_error("Cannot check negative range.");
     }
 
     auto distance = (stop - start) / step;
-    std::uniform_int_distribution<random_int_t> distribution(0, distance);
+    uniform_int_distribution<random_int_t> distribution(0, distance);
     auto list = random_list(distribution, n);
-    std::for_each(list.begin(), list.end(), [&start, &step](random_int_t& r) {
+    for_each(list.begin(), list.end(), [&start, &step](random_int_t& r) {
         r *= step;
         r += start;
     });
@@ -264,13 +264,13 @@ random_list_t randnum(size_t n)
 
 random_t uniform(random_t a, random_t b)
 {
-    std::uniform_real_distribution<random_t> distribution(a, b);
+    uniform_real_distribution<random_t> distribution(a, b);
     return random_value(distribution);
 }
 
 random_list_t uniform(random_t a, random_t b, size_t n)
 {
-    std::uniform_real_distribution<random_t> distribution(a, b);
+    uniform_real_distribution<random_t> distribution(a, b);
     return random_list(distribution, n);
 }
 

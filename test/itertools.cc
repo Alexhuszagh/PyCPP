@@ -7,9 +7,9 @@
  */
 
 #include <pycpp/itertools.h>
+#include <pycpp/stl/map.h>
+#include <pycpp/stl/numeric.h>
 #include <gtest/gtest.h>
-#include <map>
-#include <numeric>
 
 PYCPP_USING_NAMESPACE
 using namespace prod_detail;

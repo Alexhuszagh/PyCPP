@@ -9,6 +9,7 @@
 
 #include <pycpp/csv/punct.h>
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/ostream.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/stl/string_view.h>
 #include <pycpp/stream/fstream.h>
@@ -43,8 +44,8 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     csv_stream_writer(csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    csv_stream_writer(std::ostream&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    void open(std::ostream&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_stream_writer(ostream&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(ostream&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
     void quoting(csv_quoting);
@@ -54,9 +55,9 @@ public:
     void operator()(const value_type& row);
 
 private:
-    std::ostream* stream_ = nullptr;
+    ostream* stream_ = nullptr;
     csv_quoting quoting_ = CSV_QUOTE_MINIMAL;
-    std::shared_ptr<csvpunct_impl> punct_;
+    shared_ptr<csvpunct_impl> punct_;
 };
 
 
@@ -92,7 +93,7 @@ public:
     std::string str() const;
 
 private:
-    std::ostringstream sstream_;
+    ostringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

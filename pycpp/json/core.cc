@@ -57,19 +57,19 @@ json_value_t::json_value_t(double value):
 
 json_value_t::json_value_t(json_string_t&& value):
     type_(json_string_type),
-    data_(reinterpret_cast<json_pointer_t>(new json_string_t(std::move(value))))
+    data_(reinterpret_cast<json_pointer_t>(new json_string_t(move(value))))
 {}
 
 
 json_value_t::json_value_t(json_array_t&& value):
     type_(json_array_type),
-    data_(reinterpret_cast<json_pointer_t>(new json_array_t(std::move(value))))
+    data_(reinterpret_cast<json_pointer_t>(new json_array_t(move(value))))
 {}
 
 
 json_value_t::json_value_t(json_object_t&& value):
     type_(json_object_type),
-    data_(reinterpret_cast<json_pointer_t>(new json_object_t(std::move(value))))
+    data_(reinterpret_cast<json_pointer_t>(new json_object_t(move(value))))
 {}
 
 
@@ -81,8 +81,8 @@ json_value_t::~json_value_t()
 
 void json_value_t::swap(json_value_t& other)
 {
-    std::swap(type_, other.type_);
-    std::swap(data_, other.data_);
+    PYCPP_NAMESPACE::swap(type_, other.type_);
+    PYCPP_NAMESPACE::swap(data_, other.data_);
 }
 
 
@@ -131,7 +131,7 @@ bool json_value_t::has_object() const
 json_null_t json_value_t::get_null() const
 {
     if (type_ != json_null_type) {
-        throw std::runtime_error("Type is not null.");
+        throw runtime_error("Type is not null.");
     }
     return nullptr;
 }
@@ -140,7 +140,7 @@ json_null_t json_value_t::get_null() const
 json_boolean_t json_value_t::get_boolean() const
 {
     if (type_ != json_boolean_type) {
-        throw std::runtime_error("Type is not boolean.");
+        throw runtime_error("Type is not boolean.");
     }
     return *reinterpret_cast<json_boolean_t*>(data_);
 }
@@ -149,7 +149,7 @@ json_boolean_t json_value_t::get_boolean() const
 json_number_t json_value_t::get_number() const
 {
     if (type_ != json_number_type) {
-        throw std::runtime_error("Type is not a number.");
+        throw runtime_error("Type is not a number.");
     }
 
     return *reinterpret_cast<json_number_t*>(data_);
@@ -159,10 +159,10 @@ json_number_t json_value_t::get_number() const
 json_string_t& json_value_t::get_string() const
 {
     if (type_ != json_string_type) {
-        throw std::runtime_error("Type is not a string.");
+        throw runtime_error("Type is not a string.");
     }
     if (!data_) {
-        throw std::runtime_error("Value is null.");
+        throw runtime_error("Value is null.");
     }
     return *reinterpret_cast<json_string_t*>(data_);
 }
@@ -171,10 +171,10 @@ json_string_t& json_value_t::get_string() const
 json_array_t& json_value_t::get_array() const
 {
     if (type_ != json_array_type) {
-        throw std::runtime_error("Type is not an array.");
+        throw runtime_error("Type is not an array.");
     }
     if (!data_) {
-        throw std::runtime_error("Value is null.");
+        throw runtime_error("Value is null.");
     }
     return *reinterpret_cast<json_array_t*>(data_);
 }
@@ -183,10 +183,10 @@ json_array_t& json_value_t::get_array() const
 json_object_t& json_value_t::get_object() const
 {
     if (type_ != json_object_type) {
-        throw std::runtime_error("Type is not an object.");
+        throw runtime_error("Type is not an object.");
     }
     if (!data_) {
-        throw std::runtime_error("Value is null.");
+        throw runtime_error("Value is null.");
     }
     return *reinterpret_cast<json_object_t*>(data_);
 }
@@ -219,7 +219,7 @@ void json_value_t::set_number(json_number_t value)
 void json_value_t::set_string(json_string_t&& value)
 {
     reset();
-    data_ = reinterpret_cast<json_pointer_t>(new json_string_t(std::move(value)));
+    data_ = reinterpret_cast<json_pointer_t>(new json_string_t(move(value)));
     type_ = json_string_type;
 }
 
@@ -227,7 +227,7 @@ void json_value_t::set_string(json_string_t&& value)
 void json_value_t::set_array(json_array_t&& value)
 {
     reset();
-    data_ = reinterpret_cast<json_pointer_t>(new json_array_t(std::move(value)));
+    data_ = reinterpret_cast<json_pointer_t>(new json_array_t(move(value)));
     type_ = json_array_type;
 }
 
@@ -235,7 +235,7 @@ void json_value_t::set_array(json_array_t&& value)
 void json_value_t::set_object(json_object_t&& value)
 {
     reset();
-    data_ = reinterpret_cast<json_pointer_t>(new json_object_t(std::move(value)));
+    data_ = reinterpret_cast<json_pointer_t>(new json_object_t(move(value)));
     type_ = json_object_type;
 }
 
@@ -260,19 +260,19 @@ void json_value_t::set(json_number_t value)
 
 void json_value_t::set(json_string_t&& value)
 {
-    set_string(std::forward<json_string_t>(value));
+    set_string(forward<json_string_t>(value));
 }
 
 
 void json_value_t::set(json_array_t&& value)
 {
-    set_array(std::forward<json_array_t>(value));
+    set_array(forward<json_array_t>(value));
 }
 
 
 void json_value_t::set(json_object_t&& value)
 {
-    set_object(std::forward<json_object_t>(value));
+    set_object(forward<json_object_t>(value));
 }
 
 
@@ -327,7 +327,7 @@ void json_value_t::reset()
             delete (json_object_t*) data_;
             break;
         default:
-            throw std::runtime_error("Unexpected JSON value type.");
+            throw runtime_error("Unexpected JSON value type.");
     }
 
     type_ = json_null_type;

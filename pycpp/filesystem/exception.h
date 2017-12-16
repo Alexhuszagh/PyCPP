@@ -44,7 +44,7 @@ enum filesystem_code
 /**
  *  \brief Base exception class for filesystem errors.
  */
-class filesystem_error: std::exception
+class filesystem_error: exception
 {
 public:
     filesystem_error(filesystem_code code);

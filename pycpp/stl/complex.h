@@ -9,3 +9,13 @@
 
 #include <pycpp/config.h>
 #include <complex>
+
+PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+template <typename T>
+using complex = std::complex<T>;
+
+PYCPP_END_NAMESPACE

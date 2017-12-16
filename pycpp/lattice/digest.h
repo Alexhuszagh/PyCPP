@@ -109,7 +109,7 @@ public:
     explicit operator bool() const;
 
 protected:
-    uint64_t nonce_counter = 0;
+    uint32_t nonce_counter = 0;
     std::string client_nonce;
 };
 

@@ -43,56 +43,56 @@ PYCPP_BEGIN_NAMESPACE
 
 #   define WIDE_PATH_IFSTREAM(name)                                                                             \
                                                                                                                 \
-        name##_ifstream::name##_ifstream(const wstring_view& name, std::ios_base::openmode mode)                \
+        name##_ifstream::name##_ifstream(const wstring_view& name, ios_base::openmode mode)                     \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        void name##_ifstream::open(const wstring_view& name, std::ios_base::openmode mode)                      \
+        void name##_ifstream::open(const wstring_view& name, ios_base::openmode mode)                           \
         {                                                                                                       \
             filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                                             \
         }                                                                                                       \
                                                                                                                 \
-        name##_ifstream::name##_ifstream(const u16string_view& name, std::ios_base::openmode mode)              \
+        name##_ifstream::name##_ifstream(const u16string_view& name, ios_base::openmode mode)                   \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        void name##_ifstream::open(const u16string_view& name, std::ios_base::openmode mode)                    \
+        void name##_ifstream::open(const u16string_view& name, ios_base::openmode mode)                         \
         {                                                                                                       \
             filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                                             \
         }
 
 #   define WIDE_PATH_OFSTREAM(name)                                                                             \
                                                                                                                 \
-        name##_ofstream::name##_ofstream(const wstring_view& name, std::ios_base::openmode mode)                \
+        name##_ofstream::name##_ofstream(const wstring_view& name, ios_base::openmode mode)                     \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        name##_ofstream::name##_ofstream(const wstring_view& name, int level, std::ios_base::openmode mode):    \
+        name##_ofstream::name##_ofstream(const wstring_view& name, int level, ios_base::openmode mode):         \
             ctx(level)                                                                                          \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        void name##_ofstream::open(const wstring_view& name, std::ios_base::openmode mode)                      \
+        void name##_ofstream::open(const wstring_view& name, ios_base::openmode mode)                           \
         {                                                                                                       \
             filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                               \
         }                                                                                                       \
                                                                                                                 \
-        name##_ofstream::name##_ofstream(const u16string_view& name, std::ios_base::openmode mode)              \
+        name##_ofstream::name##_ofstream(const u16string_view& name, ios_base::openmode mode)                   \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        name##_ofstream::name##_ofstream(const u16string_view& name, int level, std::ios_base::openmode mode):  \
+        name##_ofstream::name##_ofstream(const u16string_view& name, int level, ios_base::openmode mode):       \
             ctx(level)                                                                                          \
         {                                                                                                       \
             open(name, mode);                                                                                   \
         }                                                                                                       \
                                                                                                                 \
-        void name##_ofstream::open(const u16string_view& name, std::ios_base::openmode mode)                    \
+        void name##_ofstream::open(const u16string_view& name, ios_base::openmode mode)                         \
         {                                                                                                       \
             filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                               \
         }
@@ -112,7 +112,7 @@ PYCPP_BEGIN_NAMESPACE
     name##_istream::name##_istream()                                                                            \
     {}                                                                                                          \
                                                                                                                 \
-    name##_istream::name##_istream(std::istream& stream)                                                        \
+    name##_istream::name##_istream(istream& stream)                                                             \
     {                                                                                                           \
         open(stream);                                                                                           \
     }                                                                                                           \
@@ -124,20 +124,20 @@ PYCPP_BEGIN_NAMESPACE
         ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
-    void name##_istream::open(std::istream& stream)                                                             \
+    void name##_istream::open(istream& stream)                                                                  \
     {                                                                                                           \
         filter_istream::open(stream, DECOMPRESS_CALLBACK);                                                      \
     }                                                                                                           \
                                                                                                                 \
     name##_istream::name##_istream(name##_istream&& rhs):                                                       \
-        ctx(std::move(rhs.ctx)),                                                                                \
-        filter_istream(std::move(rhs))                                                                          \
+        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                                    \
+        filter_istream(PYCPP_NAMESPACE::move(rhs))                                                              \
     {}                                                                                                          \
                                                                                                                 \
     name##_istream & name##_istream::operator=(name##_istream&& rhs)                                            \
     {                                                                                                           \
-        ctx = std::move(rhs.ctx);                                                                               \
-        filter_istream::operator=(std::move(rhs));                                                              \
+        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                                   \
+        filter_istream::operator=(PYCPP_NAMESPACE::move(rhs));                                                  \
         return *this;                                                                                           \
     }
 
@@ -153,12 +153,12 @@ PYCPP_BEGIN_NAMESPACE
         ctx(level)                                                                                              \
     {}                                                                                                          \
                                                                                                                 \
-    name##_ostream::name##_ostream(std::ostream& stream)                                                        \
+    name##_ostream::name##_ostream(ostream& stream)                                                             \
     {                                                                                                           \
         open(stream);                                                                                           \
     }                                                                                                           \
                                                                                                                 \
-    name##_ostream::name##_ostream(std::ostream& stream, int level):                                            \
+    name##_ostream::name##_ostream(ostream& stream, int level):                                                 \
         ctx(level)                                                                                              \
     {                                                                                                           \
         open(stream);                                                                                           \
@@ -171,20 +171,20 @@ PYCPP_BEGIN_NAMESPACE
         ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
-    void name##_ostream::open(std::ostream& stream)                                                             \
+    void name##_ostream::open(ostream& stream)                                                                  \
     {                                                                                                           \
         filter_ostream::open(stream, COMPRESS_CALLBACK);                                                        \
     }                                                                                                           \
                                                                                                                 \
     name##_ostream::name##_ostream(name##_ostream&& rhs):                                                       \
-        ctx(std::move(rhs.ctx)),                                                                                \
-        filter_ostream(std::move(rhs))                                                                          \
+        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                                    \
+        filter_ostream(PYCPP_NAMESPACE::move(rhs))                                                              \
     {}                                                                                                          \
                                                                                                                 \
     name##_ostream & name##_ostream::operator=(name##_ostream&& rhs)                                            \
     {                                                                                                           \
-        ctx = std::move(rhs.ctx);                                                                               \
-        filter_ostream::operator=(std::move(rhs));                                                              \
+        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                                   \
+        filter_ostream::operator=(PYCPP_NAMESPACE::move(rhs));                                                  \
         return *this;                                                                                           \
     }
 
@@ -197,14 +197,14 @@ PYCPP_BEGIN_NAMESPACE
     {}                                                                                                          \
                                                                                                                 \
     name##_ifstream::name##_ifstream(name##_ifstream&& rhs):                                                    \
-        ctx(std::move(rhs.ctx)),                                                                                \
-        filter_ifstream(std::move(rhs))                                                                         \
+        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                                    \
+        filter_ifstream(PYCPP_NAMESPACE::move(rhs))                                                             \
     {}                                                                                                          \
                                                                                                                 \
     name##_ifstream & name##_ifstream::operator=(name##_ifstream&& rhs)                                         \
     {                                                                                                           \
-        ctx = std::move(rhs.ctx);                                                                               \
-        filter_ifstream::operator=(std::move(rhs));                                                             \
+        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                                   \
+        filter_ifstream::operator=(PYCPP_NAMESPACE::move(rhs));                                                 \
         return *this;                                                                                           \
     }                                                                                                           \
                                                                                                                 \
@@ -215,12 +215,12 @@ PYCPP_BEGIN_NAMESPACE
         ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
-    name##_ifstream::name##_ifstream(const string_view& name, std::ios_base::openmode mode)                     \
+    name##_ifstream::name##_ifstream(const string_view& name, ios_base::openmode mode)                          \
     {                                                                                                           \
         open(name, mode);                                                                                       \
     }                                                                                                           \
                                                                                                                 \
-    void name##_ifstream::open(const string_view& name, std::ios_base::openmode mode)                           \
+    void name##_ifstream::open(const string_view& name, ios_base::openmode mode)                                \
     {                                                                                                           \
         filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                                                 \
     }                                                                                                           \
@@ -240,14 +240,14 @@ PYCPP_BEGIN_NAMESPACE
     {}                                                                                                          \
                                                                                                                 \
     name##_ofstream::name##_ofstream(name##_ofstream&& rhs):                                                    \
-        ctx(std::move(rhs.ctx)),                                                                                \
-        filter_ofstream(std::move(rhs))                                                                         \
+        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                                    \
+        filter_ofstream(PYCPP_NAMESPACE::move(rhs))                                                             \
     {}                                                                                                          \
                                                                                                                 \
     name##_ofstream & name##_ofstream::operator=(name##_ofstream&& rhs)                                         \
     {                                                                                                           \
-        ctx = std::move(rhs.ctx);                                                                               \
-        filter_ofstream::operator=(std::move(rhs));                                                             \
+        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                                   \
+        filter_ofstream::operator=(PYCPP_NAMESPACE::move(rhs));                                                 \
         return *this;                                                                                           \
     }                                                                                                           \
                                                                                                                 \
@@ -258,18 +258,18 @@ PYCPP_BEGIN_NAMESPACE
         ctx.close();                                                                                            \
     }                                                                                                           \
                                                                                                                 \
-    name##_ofstream::name##_ofstream(const string_view& name, std::ios_base::openmode mode)                     \
+    name##_ofstream::name##_ofstream(const string_view& name, ios_base::openmode mode)                          \
     {                                                                                                           \
         open(name, mode);                                                                                       \
     }                                                                                                           \
                                                                                                                 \
-    name##_ofstream::name##_ofstream(const string_view& name, int level, std::ios_base::openmode mode):         \
+    name##_ofstream::name##_ofstream(const string_view& name, int level, ios_base::openmode mode):              \
         ctx(level)                                                                                              \
     {                                                                                                           \
         open(name, mode);                                                                                       \
     }                                                                                                           \
                                                                                                                 \
-    void name##_ofstream::open(const string_view& name, std::ios_base::openmode mode)                           \
+    void name##_ofstream::open(const string_view& name, ios_base::openmode mode)                                \
     {                                                                                                           \
         filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                                   \
     }                                                                                                           \
@@ -381,7 +381,7 @@ static void new_decompressor(Stream& stream, char c, compression_format& format,
 
 
 template <typename Stream, typename Path>
-typename std::enable_if<!std::is_arithmetic<Path>::value, void>::type
+enable_if_t<!is_arithmetic<Path>::value, void>
 static new_decompressor(Stream& stream, const Path& path, compression_format& format, void*& ctx)
 {
 #if defined(HAVE_BZIP2)
@@ -468,13 +468,13 @@ decompressing_istream::~decompressing_istream()
 }
 
 
-decompressing_istream::decompressing_istream(std::istream& stream)
+decompressing_istream::decompressing_istream(istream& stream)
 {
     open(stream);
 }
 
 
-void decompressing_istream::open(std::istream& stream)
+void decompressing_istream::open(istream& stream)
 {
     char c = stream.peek();
     filter_istream::open(stream);
@@ -484,16 +484,16 @@ void decompressing_istream::open(std::istream& stream)
 
 decompressing_istream::decompressing_istream(decompressing_istream&& rhs)
 {
-    std::swap(format, rhs.format);
-    std::swap(ctx, rhs.ctx);
+    PYCPP_NAMESPACE::swap(format, rhs.format);
+    PYCPP_NAMESPACE::swap(ctx, rhs.ctx);
     filter_istream::swap(rhs);
 }
 
 
 decompressing_istream & decompressing_istream::operator=(decompressing_istream&& rhs)
 {
-    std::swap(format, rhs.format);
-    std::swap(ctx, rhs.ctx);
+    PYCPP_NAMESPACE::swap(format, rhs.format);
+    PYCPP_NAMESPACE::swap(ctx, rhs.ctx);
     filter_istream::swap(rhs);
     return *this;
 }
@@ -505,16 +505,16 @@ decompressing_ifstream::decompressing_ifstream()
 
 decompressing_ifstream::decompressing_ifstream(decompressing_ifstream&& rhs)
 {
-    std::swap(format, rhs.format);
-    std::swap(ctx, rhs.ctx);
+    PYCPP_NAMESPACE::swap(format, rhs.format);
+    PYCPP_NAMESPACE::swap(ctx, rhs.ctx);
     filter_istream::swap(rhs);
 }
 
 
-decompressing_ifstream & decompressing_ifstream::operator=(decompressing_ifstream&& rhs)
+decompressing_ifstream& decompressing_ifstream::operator=(decompressing_ifstream&& rhs)
 {
-    std::swap(format, rhs.format);
-    std::swap(ctx, rhs.ctx);
+    PYCPP_NAMESPACE::swap(format, rhs.format);
+    PYCPP_NAMESPACE::swap(ctx, rhs.ctx);
     filter_istream::swap(rhs);
     return *this;
 }
@@ -528,12 +528,12 @@ decompressing_ifstream::~decompressing_ifstream()
 }
 
 
-decompressing_ifstream::decompressing_ifstream(const string_view& name, std::ios_base::openmode mode)
+decompressing_ifstream::decompressing_ifstream(const string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void decompressing_ifstream::open(const string_view& name, std::ios_base::openmode mode)
+void decompressing_ifstream::open(const string_view& name, ios_base::openmode mode)
 {
     filter_ifstream::open(name, mode);
     new_decompressor(*this, name, format, ctx);
@@ -541,25 +541,25 @@ void decompressing_ifstream::open(const string_view& name, std::ios_base::openmo
 
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-decompressing_ifstream::decompressing_ifstream(const wstring_view& name, std::ios_base::openmode mode)
+decompressing_ifstream::decompressing_ifstream(const wstring_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void decompressing_ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void decompressing_ifstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     filter_ifstream::open(name, mode);
     new_decompressor(*this, name, format, ctx);
 }
 
 
-decompressing_ifstream::decompressing_ifstream(const u16string_view& name, std::ios_base::openmode mode)
+decompressing_ifstream::decompressing_ifstream(const u16string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void decompressing_ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void decompressing_ifstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     filter_ifstream::open(name, mode);
     new_decompressor(*this, name, format, ctx);

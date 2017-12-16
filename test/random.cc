@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/random.h>
+#include <pycpp/stl/numeric.h>
 #include <gtest/gtest.h>
-#include <numeric>
 
 PYCPP_USING_NAMESPACE
 
@@ -29,9 +29,9 @@ static bool check_range(const N& value, const N& min, const N& max)
 
 
 template <typename N>
-static bool check_range(const std::vector<N>& value, const N& min, const N& max)
+static bool check_range(const vector<N>& value, const N& min, const N& max)
 {
-    return std::all_of(value.begin(), value.end(), [&](N n) {
+    return all_of(value.begin(), value.end(), [&](N n) {
         return check_range(n, min, max);
     });
 }
@@ -171,10 +171,10 @@ TEST(random, sample)
 {
     random_list_t list = uniform(0, 1, 500);
     random_list_t copy(list);
-    auto total = std::accumulate(list.begin(), list.end(), 0.);
+    auto total = accumulate(list.begin(), list.end(), 0.);
     for (size_t i = 0; i < 499; ++i) {
         auto value = sample(list.begin(), list.end(), i);
-        auto sum = std::accumulate(value.begin(), value.end(), 0.);
+        auto sum = accumulate(value.begin(), value.end(), 0.);
         EXPECT_EQ(value.size(), i);
         EXPECT_TRUE(sum < total);
         EXPECT_TRUE(i > 50 ? sum > 0 : true);

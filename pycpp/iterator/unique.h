@@ -19,7 +19,7 @@
  *  supporting multi-passes would require the duplication of an
  *  `unordered_set` with the first item, a similarly costly task. Since
  *  many STL algorithms optimize for forward iterators by using
- *  `std::distance`, ensure we disable this optimization by disabling
+ *  `distance`, ensure we disable this optimization by disabling
  *  multi-pass iteration.
  *
  *  Copying the range is like copying an individual iterator: it does
@@ -32,7 +32,7 @@
  *  full unique range.
  *
  *  \code
- *      using vector = std::vector<int>;
+ *      using vector = vector<int>;
  *      using range = unique_range<typename vector::const_iterator>;
  *      vector v = {1, 2, 3, 1, 4, 2, 5};
  *      range r1(v.begin(), v.end());       // all unique values
@@ -53,13 +53,13 @@ PYCPP_BEGIN_NAMESPACE
 
 template <
     typename Iterator,
-    typename Hash = std::hash<typename std::iterator_traits<Iterator>::value_type>
+    typename Hash = hash<typename iterator_traits<Iterator>::value_type>
 >
 struct unique_iterator;
 
 template <
     typename Iterator,
-    typename Hash = std::hash<typename std::iterator_traits<Iterator>::value_type>
+    typename Hash = hash<typename iterator_traits<Iterator>::value_type>
 >
 struct unique_range;
 
@@ -69,17 +69,17 @@ namespace unique_detail
 // -----
 
 template <typename Iterator>
-using iterator_value_type = typename std::iterator_traits<Iterator>::value_type;
+using iterator_value_type = typename iterator_traits<Iterator>::value_type;
 
 template <typename Iterator>
-using range_key_type = typename std::conditional<
+using range_key_type = conditional_t<
     is_input_iterator<Iterator>::value,
     iterator_value_type<Iterator>,
-    std::reference_wrapper<const iterator_value_type<Iterator>>
->::type;
+    reference_wrapper<const iterator_value_type<Iterator>>
+>;
 
 template <typename Iterator, typename Hash>
-using memo_type = std::unordered_set<range_key_type<Iterator>, Hash>;
+using memo_type = unordered_set<range_key_type<Iterator>, Hash>;
 
 }   /* unique_detail */
 
@@ -94,12 +94,12 @@ using memo_type = std::unordered_set<range_key_type<Iterator>, Hash>;
  */
 template <typename Iterator, typename Hash>
 struct unique_iterator:
-    std::iterator<
-        std::input_iterator_tag,
-        typename std::iterator_traits<Iterator>::value_type,
-        typename std::iterator_traits<Iterator>::difference_type,
-        typename std::iterator_traits<Iterator>::pointer,
-        typename std::iterator_traits<Iterator>::reference
+    iterator<
+        input_iterator_tag,
+        typename iterator_traits<Iterator>::value_type,
+        typename iterator_traits<Iterator>::difference_type,
+        typename iterator_traits<Iterator>::pointer,
+        typename iterator_traits<Iterator>::reference
     >
 {
     static_assert(!is_output_iterator<Iterator>::value, "Cannot have output iterator.");
@@ -108,12 +108,12 @@ public:
     // MEMBER TYPES
     // ------------
     using self_t = unique_iterator<Iterator, Hash>;
-    using base_t = std::iterator<
-        std::input_iterator_tag,
-        typename std::iterator_traits<Iterator>::value_type,
-        typename std::iterator_traits<Iterator>::difference_type,
-        typename std::iterator_traits<Iterator>::pointer,
-        typename std::iterator_traits<Iterator>::reference
+    using base_t = iterator<
+        input_iterator_tag,
+        typename iterator_traits<Iterator>::value_type,
+        typename iterator_traits<Iterator>::difference_type,
+        typename iterator_traits<Iterator>::pointer,
+        typename iterator_traits<Iterator>::reference
     >;
     using range_t = unique_range<Iterator, Hash>;
     using memo_t = unique_detail::memo_type<Iterator, Hash>;
@@ -153,7 +153,7 @@ private:
 
     range_t* range_;
     Iterator it_;
-    std::shared_ptr<memo_t> memo_;
+    shared_ptr<memo_t> memo_;
     memo_iterator mit_;
 };
 
@@ -252,10 +252,10 @@ auto unique_iterator<Iterator, Hash>::operator*() const -> const_reference
 template <typename Iterator, typename Hash>
 void unique_iterator<Iterator, Hash>::swap(self_t& rhs)
 {
-    std::swap(range_, rhs.range_);
-    std::swap(it_, rhs.it_);
-    std::swap(memo_, rhs.memo_);
-    std::swap(mit_, rhs.mit_);
+    PYCPP_NAMESPACE::swap(range_, rhs.range_);
+    PYCPP_NAMESPACE::swap(it_, rhs.it_);
+    PYCPP_NAMESPACE::swap(memo_, rhs.memo_);
+    PYCPP_NAMESPACE::swap(mit_, rhs.mit_);
 }
 
 
@@ -300,8 +300,8 @@ auto unique_range<Iterator, Hash>::end() -> iterator
 template <typename Iterator, typename Hash>
 void unique_range<Iterator, Hash>::swap(self_t& rhs)
 {
-    std::swap(first_, rhs.first_);
-    std::swap(last_, rhs.last_);
+    PYCPP_NAMESPACE::swap(first_, rhs.first_);
+    PYCPP_NAMESPACE::swap(last_, rhs.last_);
 }
 
 

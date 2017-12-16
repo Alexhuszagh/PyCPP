@@ -60,7 +60,7 @@ enum compression_format
     {                                                                   \
         static const magic_bytes& magic();                              \
         static bool header(const string_wrapper& header);               \
-        static bool stream(std::istream& stream);                       \
+        static bool stream(istream& stream);                            \
         DETECT_PATH                                                     \
     }
 

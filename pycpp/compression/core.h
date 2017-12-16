@@ -10,15 +10,16 @@
 #include <pycpp/compression/exception.h>
 #include <pycpp/misc/safe_stdlib.h>
 #include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <pycpp/string/string.h>
-#include <cstdlib>
+#include <stdlib.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // MACROS
 // ------
 
-#define CHECK(EX) (void)((EX) >= 0 || (throw std::runtime_error(#EX), 0))
+#define CHECK(EX) (void)((EX) >= 0 || (throw runtime_error(#EX), 0))
 
 // CONSTANTS
 // ---------
@@ -34,8 +35,8 @@ static constexpr int BUFFER_SIZE = 8092;
 template <typename Stream>
 struct filter_impl
 {
-    using in_type = typename remove_reference<decltype(std::declval<Stream>().next_in)>::type;
-    using out_type = typename remove_reference<decltype(std::declval<Stream>().next_out)>::type;
+    using in_type = remove_reference_t<decltype(declval<Stream>().next_in)>;
+    using out_type = remove_reference_t<decltype(declval<Stream>().next_out)>;
 
     int status;
     Stream stream;
@@ -185,13 +186,13 @@ std::string ctx_decompress(const string_wrapper& str)
             buffer = (char*) safe_realloc(buffer, dstlen);
             dst = (void*) (buffer + dst_pos);
             status = ctx.decompress(src, srclen - src_pos, dst, dstlen - dst_pos);
-            dst_pos = std::distance(buffer, (char*) dst);
-            src_pos = std::distance(str.data(), (const char*) src);
+            dst_pos = distance(buffer, (char*) dst);
+            src_pos = distance(str.data(), (const char*) src);
         }
 
         // flush remaining buffer
         ctx.flush(dst, dstlen - dst_pos);
-        dst_pos = std::distance(buffer, (char*) dst);
+        dst_pos = distance(buffer, (char*) dst);
 
     } catch (...) {
         safe_free(dst);
@@ -199,7 +200,7 @@ std::string ctx_decompress(const string_wrapper& str)
     }
 
     // create our output string
-    size_t out = std::distance(buffer, (char*) dst);
+    size_t out = distance(buffer, (char*) dst);
     std::string output(buffer, out);
     safe_free(buffer);
 
@@ -217,11 +218,11 @@ std::string compress_bound(const string_wrapper& str, size_t dstlen, Function fu
 
     try {
         function(src_first, str.size(), dst_first, dstlen);
-    } catch (std::exception&) {
+    } catch (exception&) {
         safe_free(dst);
         throw;
     }
-    size_t length = std::distance(dst, (char*) dst_first);
+    size_t length = distance(dst, (char*) dst_first);
     std::string output(dst, length);
     safe_free(dst);
 
@@ -239,11 +240,11 @@ std::string decompress_bound(const string_wrapper& str, size_t bound, Function f
 
     try {
         function(src_first, str.size(), dst_first, bound, bound);
-    } catch (std::exception&) {
+    } catch (exception&) {
         safe_free(dst);
         throw;
     }
-    size_t length = std::distance(dst, (char*) dst_first);
+    size_t length = distance(dst, (char*) dst_first);
     std::string output(dst, length);
     safe_free(dst);
 

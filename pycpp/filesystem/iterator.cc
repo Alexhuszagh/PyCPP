@@ -6,8 +6,8 @@
 #include <pycpp/preprocessor/errno.h>
 #include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/tuple.h>
-#include <cassert>
-#include <cstring>
+#include <assert.h>
+#include <string.h>
 #if defined(OS_WINDOWS)
 #   include <pycpp/windows/winapi.h>
 #else
@@ -99,7 +99,7 @@ static int get_error_code()
 
 static bool has_wildcards(const path_view_t& path)
 {
-    return std::any_of(path.begin(), path.end(), [](native_char_type c) {
+    return any_of(path.begin(), path.end(), [](native_char_type c) {
         return c == path_prefix('*') || c == path_prefix('?');
     });
 }
@@ -107,7 +107,7 @@ static bool has_wildcards(const path_view_t& path)
 
 static bool has_wildcards(const backup_path_view_t& path)
 {
-    return std::any_of(path.begin(), path.end(), [](backup_char_type c) {
+    return any_of(path.begin(), path.end(), [](backup_char_type c) {
         return c == '*' || c == '?';
     });
 }
@@ -160,7 +160,7 @@ void directory_data_impl::open(HANDLE& handle, WIN32_FIND_DATAW*& data, const pa
 {
     // don't allow wildcards in the search
     if (has_wildcards(path)) {
-        throw std::runtime_error("Cannot use wildcards in search.");
+        throw runtime_error("Cannot use wildcards in search.");
     }
 
     // get data
@@ -276,7 +276,7 @@ directory_data& directory_data::operator++()
 
 bool directory_data::operator==(const directory_data& rhs) const
 {
-    return std::tie(handle, path, data) == std::tie(rhs.handle, rhs.path, rhs.data);
+    return tie(handle, path, data) == tie(rhs.handle, rhs.path, rhs.data);
 }
 
 
@@ -291,9 +291,9 @@ directory_data::operator bool() const
  */
 struct recursive_directory_data: directory_data_impl
 {
-    std::deque<HANDLE> handle_list;
+    deque<HANDLE> handle_list;
     path_list_t path_list;
-    std::deque<WIN32_FIND_DATAW*> data_list;
+    deque<WIN32_FIND_DATAW*> data_list;
     bool initialized = false;
 
     ~recursive_directory_data();
@@ -313,10 +313,10 @@ struct recursive_directory_data: directory_data_impl
 
 recursive_directory_data::~recursive_directory_data()
 {
-    std::for_each(handle_list.begin(), handle_list.end(), [](HANDLE handle) {
+    for_each(handle_list.begin(), handle_list.end(), [](HANDLE handle) {
         FindClose(handle);
     });
-    std::for_each(data_list.begin(), data_list.end(), [](WIN32_FIND_DATAW* data) {
+    for_each(data_list.begin(), data_list.end(), [](WIN32_FIND_DATAW* data) {
         delete data;
     });
 }
@@ -372,7 +372,7 @@ recursive_directory_data& recursive_directory_data::operator++()
 
 bool recursive_directory_data::operator==(const recursive_directory_data& rhs) const
 {
-    return std::tie(handle_list, path_list, data_list) == std::tie(rhs.handle_list, rhs.path_list, rhs.data_list);
+    return tie(handle_list, path_list, data_list) == tie(rhs.handle_list, rhs.path_list, rhs.data_list);
 }
 
 
@@ -537,7 +537,7 @@ directory_data& directory_data::operator++()
 
 bool directory_data::operator==(const directory_data& rhs) const
 {
-    return directory_data_impl::operator==(rhs) && std::tie(dir, path) == std::tie(rhs.dir, rhs.path);
+    return directory_data_impl::operator==(rhs) && tie(dir, path) == tie(rhs.dir, rhs.path);
 }
 
 
@@ -546,7 +546,7 @@ bool directory_data::operator==(const directory_data& rhs) const
  */
 struct recursive_directory_data: directory_data_impl
 {
-    std::deque<DIR*> dir_list;
+    deque<DIR*> dir_list;
     path_list_t path_list;
 
     ~recursive_directory_data();
@@ -563,7 +563,7 @@ struct recursive_directory_data: directory_data_impl
 
 recursive_directory_data::~recursive_directory_data()
 {
-    std::for_each(dir_list.begin(), dir_list.end(), [](DIR* dir) {
+    for_each(dir_list.begin(), dir_list.end(), [](DIR* dir) {
         closedir(dir);
     });
 }
@@ -606,7 +606,7 @@ recursive_directory_data& recursive_directory_data::operator++()
 
 bool recursive_directory_data::operator==(const recursive_directory_data& rhs) const
 {
-    return directory_data_impl::operator==(rhs) && std::tie(dir_list, path_list) == std::tie(rhs.dir_list, rhs.path_list);
+    return directory_data_impl::operator==(rhs) && tie(dir_list, path_list) == tie(rhs.dir_list, rhs.path_list);
 }
 
 
@@ -719,7 +719,7 @@ bool directory_entry::exists() const
 
 void directory_entry::swap(self_t& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    PYCPP_NAMESPACE::swap(ptr_, rhs.ptr_);
 }
 
 
@@ -786,7 +786,7 @@ auto directory_iterator::operator*() const -> const_reference
 
 void directory_iterator::swap(self_t& rhs)
 {
-    std::swap(entry_, rhs.entry_);
+    PYCPP_NAMESPACE::swap(entry_, rhs.entry_);
 }
 
 
@@ -879,7 +879,7 @@ bool recursive_directory_entry::exists() const
 
 void recursive_directory_entry::swap(self_t& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    PYCPP_NAMESPACE::swap(ptr_, rhs.ptr_);
 }
 
 
@@ -946,7 +946,7 @@ auto recursive_directory_iterator::operator*() const -> const_reference
 
 void recursive_directory_iterator::swap(self_t& rhs)
 {
-    std::swap(entry_, rhs.entry_);
+    PYCPP_NAMESPACE::swap(entry_, rhs.entry_);
 }
 
 

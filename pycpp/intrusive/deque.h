@@ -143,7 +143,7 @@ template <typename T, typename A, template <typename, typename> class _>
 intrusive_deque_base<T, A, _>::intrusive_deque_base(size_type n, reference r)
 {
     for (size_t i = 0; i < n; ++i) {
-        deque_.emplace_back(std::addressof(r));
+        deque_.emplace_back(addressof(r));
     }
 }
 
@@ -319,14 +319,14 @@ auto intrusive_deque_base<T, A, _>::back() const -> const_reference
 template <typename T, typename A, template <typename, typename> class _>
 void intrusive_deque_base<T, A, _>::assign(size_type n, reference r)
 {
-    deque_.assign(n, std::addressof(r));
+    deque_.assign(n, addressof(r));
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
 void intrusive_deque_base<T, A, _>::push_front(reference r)
 {
-    deque_.push_front(std::addressof(r));
+    deque_.push_front(addressof(r));
 }
 
 
@@ -340,7 +340,7 @@ void intrusive_deque_base<T, A, _>::pop_front()
 template <typename T, typename A, template <typename, typename> class _>
 void intrusive_deque_base<T, A, _>::push_back(reference r)
 {
-    deque_.push_back(std::addressof(r));
+    deque_.push_back(addressof(r));
 }
 
 
@@ -354,8 +354,8 @@ void intrusive_deque_base<T, A, _>::pop_back()
 template <typename T, typename A, template <typename, typename> class _>
 auto intrusive_deque_base<T, A, _>::insert(const_iterator position, reference r) -> iterator
 {
-    auto distance = std::distance(cbegin(), position);
-    auto it = deque_.insert(deque_.cbegin()+distance, std::addressof(r));
+    auto dist = distance(cbegin(), position);
+    auto it = deque_.insert(deque_.cbegin()+dist, addressof(r));
     return iterator(it, [](pointer p) -> reference {
         return *p;
     });
@@ -365,8 +365,8 @@ auto intrusive_deque_base<T, A, _>::insert(const_iterator position, reference r)
 template <typename T, typename A, template <typename, typename> class _>
 auto intrusive_deque_base<T, A, _>::insert(const_iterator position, size_type n, reference r) -> iterator
 {
-    auto distance = std::distance(cbegin(), position);
-    auto it = deque_.insert(deque_.cbegin()+distance, n, std::addressof(r));
+    auto dist = distance(cbegin(), position);
+    auto it = deque_.insert(deque_.cbegin()+dist, n, addressof(r));
     return iterator(it, [](pointer p) -> reference {
         return *p;
     });
@@ -376,8 +376,8 @@ auto intrusive_deque_base<T, A, _>::insert(const_iterator position, size_type n,
 template <typename T, typename A, template <typename, typename> class _>
 auto intrusive_deque_base<T, A, _>::erase(const_iterator position) -> iterator
 {
-    auto distance = std::distance(cbegin(), position);
-    auto it = deque_.erase(deque_.cbegin()+distance);
+    auto dist = distance(cbegin(), position);
+    auto it = deque_.erase(deque_.cbegin()+dist);
     return iterator(it, [](pointer p) -> reference {
         return *p;
     });
@@ -387,8 +387,8 @@ auto intrusive_deque_base<T, A, _>::erase(const_iterator position) -> iterator
 template <typename T, typename A, template <typename, typename> class _>
 auto intrusive_deque_base<T, A, _>::erase(const_iterator first, const_iterator last) -> iterator
 {
-    auto f = std::distance(cbegin(), first);
-    auto l = std::distance(cbegin(), last);
+    auto f = distance(cbegin(), first);
+    auto l = distance(cbegin(), last);
     auto it = deque_.erase(deque_.cbegin()+f, deque_.cbegin()+l);
     return iterator(it, [](pointer p) -> reference {
         return *p;
@@ -406,14 +406,14 @@ void intrusive_deque_base<T, A, _>::clear()
 template <typename T, typename A, template <typename, typename> class _>
 void intrusive_deque_base<T, A, _>::swap(self_t& rhs)
 {
-    std::swap(deque_, rhs.deque_);
+    PYCPP_NAMESPACE::swap(deque_, rhs.deque_);
 }
 
 
 template <typename T, typename A, template <typename, typename> class _>
 bool intrusive_deque_base<T, A, _>::operator==(const self_t& rhs) const
 {
-    return size() == rhs.size() && std::equal(begin(), end(), rhs.begin());
+    return size() == rhs.size() && equal(begin(), end(), rhs.begin());
 }
 
 
@@ -427,7 +427,7 @@ bool intrusive_deque_base<T, A, _>::operator!=(const self_t& rhs) const
 template <typename T, typename A, template <typename, typename> class _>
 bool intrusive_deque_base<T, A, _>::operator<(const self_t& rhs) const
 {
-    return std::lexicographical_compare(begin(), end(), rhs.begin(), rhs.end());
+    return lexicographical_compare(begin(), end(), rhs.begin(), rhs.end());
 }
 
 

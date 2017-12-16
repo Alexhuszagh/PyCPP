@@ -12,7 +12,7 @@
 #pragma once
 
 #include <pycpp/stl/memory.h>
-#include <cstddef>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -3,6 +3,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lattice/parameter.h>
+#include <pycpp/stl/utility.h>
 #include <pycpp/string/url.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -17,8 +18,8 @@ parameter_t::parameter_t(const char* key, const char* value):
 
 
 parameter_t::parameter_t(std::string&& key, std::string&& value):
-    key(std::forward<std::string>(key)),
-    value(std::forward<std::string>(value))
+    key(forward<std::string>(key)),
+    value(forward<std::string>(value))
 {}
 
 

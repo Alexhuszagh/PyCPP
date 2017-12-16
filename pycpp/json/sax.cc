@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/json/sax.h>
+#include <pycpp/stl/stdexcept.h>
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/reader.h>
 
@@ -185,11 +186,11 @@ json_stream_reader::json_stream_reader()
 {}
 
 
-void json_stream_reader::open(std::istream& s)
+void json_stream_reader::open(istream& s)
 {
     stream_ = &s;
     if (!handler_) {
-        throw std::runtime_error("Must assign handler prior parsing.");
+        throw runtime_error("Must assign handler prior parsing.");
     }
 
     // parse stream
@@ -220,7 +221,7 @@ json_file_reader::json_file_reader(const string_view& name)
 
 void json_file_reader::open(const string_view& name)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     json_stream_reader::open(file_);
 }
 
@@ -236,7 +237,7 @@ json_file_reader::json_file_reader(const wstring_view& name)
 
 void json_file_reader::open(const wstring_view& name)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     json_stream_reader::open(file_);
 }
 
@@ -249,7 +250,7 @@ json_file_reader::json_file_reader(const u16string_view& name)
 
 void json_file_reader::open(const u16string_view& name)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     json_stream_reader::open(file_);
 }
 
@@ -268,7 +269,7 @@ json_string_reader::json_string_reader(const string_wrapper& str)
 
 void json_string_reader::open(const string_wrapper& str)
 {
-    sstream_ = std::istringstream(std::string(str), std::ios_base::in | std::ios_base::binary);
+    sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
     json_stream_reader::open(sstream_);
 }
 

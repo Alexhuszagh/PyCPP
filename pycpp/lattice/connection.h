@@ -18,8 +18,8 @@
 #include <pycpp/string/string.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
-#include <cstdlib>
-#include <cstring>
+#include <stdlib.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -46,7 +46,7 @@ void open_connection(Adapter& adaptor, const std::string& host, const std::strin
     }
 
     // no suitable addresses found
-    throw std::runtime_error("Unable to establish a connection.");
+    throw runtime_error("Unable to establish a connection.");
 }
 
 
@@ -75,7 +75,7 @@ void open_connection(Adapter& adaptor,
         }
     }
 
-    throw std::runtime_error("Unable to establish a connection.");
+    throw runtime_error("Unable to establish a connection.");
 }
 
 
@@ -119,43 +119,43 @@ public:
 
     // OPTIONAL
     template <typename T = Adapter>
-    typename std::enable_if<(has_set_timeout<T>::value), void>::type
+    enable_if_t<(has_set_timeout<T>::value), void>
     set_timeout(const timeout_t& timeout);
 
     template <typename T = Adapter>
-    typename std::enable_if<(!has_set_timeout<T>::value), void>::type
+    enable_if_t<(!has_set_timeout<T>::value), void>
     set_timeout(const timeout_t& timeout);
 
     template <typename T = Adapter>
-    typename std::enable_if<(has_set_certificate_file<T>::value), void>::type
+    enable_if_t<(has_set_certificate_file<T>::value), void>
     set_certificate_file(const certificate_file_t& certificate);
 
     template <typename T = Adapter>
-    typename std::enable_if<(!has_set_certificate_file<T>::value), void>::type
+    enable_if_t<(!has_set_certificate_file<T>::value), void>
     set_certificate_file(const certificate_file_t& certificate);
 
     template <typename T = Adapter>
-    typename std::enable_if<(has_set_revocation_lists<T>::value), void>::type
+    enable_if_t<(has_set_revocation_lists<T>::value), void>
     set_revocation_lists(const revocation_lists_t& revoke);
 
     template <typename T = Adapter>
-    typename std::enable_if<(!has_set_revocation_lists<T>::value), void>::type
+    enable_if_t<(!has_set_revocation_lists<T>::value), void>
     set_revocation_lists(const revocation_lists_t& revoke);
 
     template <typename T = Adapter>
-    typename std::enable_if<(has_set_ssl_protocol<T>::value), void>::type
+    enable_if_t<(has_set_ssl_protocol<T>::value), void>
     set_ssl_protocol(ssl_protocol_t ssl);
 
     template <typename T = Adapter>
-    typename std::enable_if<(!has_set_ssl_protocol<T>::value), void>::type
+    enable_if_t<(!has_set_ssl_protocol<T>::value), void>
     set_ssl_protocol(ssl_protocol_t ssl);
 
     template <typename T = Adapter>
-    typename std::enable_if<(has_set_verify_peer<T>::value), void>::type
+    enable_if_t<(has_set_verify_peer<T>::value), void>
     set_verify_peer(const verify_peer_t& peer);
 
     template <typename T = Adapter>
-    typename std::enable_if<(!has_set_verify_peer<T>::value), void>::type
+    enable_if_t<(!has_set_verify_peer<T>::value), void>
     set_verify_peer(const verify_peer_t& peer);
 };
 
@@ -219,7 +219,7 @@ void connection_t<Adapter>::close()
 
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(has_set_timeout<T>::value), void>::type
+enable_if_t<(has_set_timeout<T>::value), void>
 connection_t<Adapter>::set_timeout(const timeout_t& timeout)
 {
     adaptor.set_timeout(timeout);
@@ -228,14 +228,14 @@ connection_t<Adapter>::set_timeout(const timeout_t& timeout)
 
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(!has_set_timeout<T>::value), void>::type
+enable_if_t<(!has_set_timeout<T>::value), void>
 connection_t<Adapter>::set_timeout(const timeout_t& timeout)
 {}
 
 
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(has_set_certificate_file<T>::value), void>::type
+enable_if_t<(has_set_certificate_file<T>::value), void>
 connection_t<Adapter>::set_certificate_file(const certificate_file_t& certificate)
 {
     adaptor.set_certificate_file(certificate);
@@ -244,14 +244,14 @@ connection_t<Adapter>::set_certificate_file(const certificate_file_t& certificat
 
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(!has_set_certificate_file<T>::value), void>::type
+enable_if_t<(!has_set_certificate_file<T>::value), void>
 connection_t<Adapter>::set_certificate_file(const certificate_file_t& certificate)
 {}
 
 
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(has_set_revocation_lists<T>::value), void>::type
+enable_if_t<(has_set_revocation_lists<T>::value), void>
 connection_t<Adapter>::set_revocation_lists(const revocation_lists_t& revoke)
 {
     adaptor.set_revocation_lists(revoke);
@@ -263,7 +263,7 @@ connection_t<Adapter>::set_revocation_lists(const revocation_lists_t& revoke)
  */
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(!has_set_revocation_lists<T>::value), void>::type
+enable_if_t<(!has_set_revocation_lists<T>::value), void>
 connection_t<Adapter>::set_revocation_lists(const revocation_lists_t& revoke)
 {}
 
@@ -273,7 +273,7 @@ connection_t<Adapter>::set_revocation_lists(const revocation_lists_t& revoke)
  */
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(has_set_ssl_protocol<T>::value), void>::type
+enable_if_t<(has_set_ssl_protocol<T>::value), void>
 connection_t<Adapter>::set_ssl_protocol(ssl_protocol_t ssl)
 {
     adaptor.set_ssl_protocol(ssl);
@@ -285,7 +285,7 @@ connection_t<Adapter>::set_ssl_protocol(ssl_protocol_t ssl)
  */
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(!has_set_ssl_protocol<T>::value), void>::type
+enable_if_t<(!has_set_ssl_protocol<T>::value), void>
 connection_t<Adapter>::set_ssl_protocol(ssl_protocol_t ssl)
 {}
 
@@ -295,7 +295,7 @@ connection_t<Adapter>::set_ssl_protocol(ssl_protocol_t ssl)
  */
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(has_set_verify_peer<T>::value), void>::type
+enable_if_t<(has_set_verify_peer<T>::value), void>
 connection_t<Adapter>::set_verify_peer(const verify_peer_t& peer)
 {
     adaptor.set_verify_peer(peer);
@@ -307,7 +307,7 @@ connection_t<Adapter>::set_verify_peer(const verify_peer_t& peer)
  */
 template <typename Adapter>
 template <typename T>
-typename std::enable_if<(!has_set_verify_peer<T>::value), void>::type
+enable_if_t<(!has_set_verify_peer<T>::value), void>
 connection_t<Adapter>::set_verify_peer(const verify_peer_t& peer)
 {}
 
@@ -330,7 +330,7 @@ void connection_t<Adapter>::write(const string_wrapper& data)
 {
     int sent = adaptor.write(data.data(), data.size());
     if (sent != static_cast<int>(data.size())) {
-        throw std::runtime_error("Unable to make request, sent " + lexical(sent) + " bytes.");
+        throw runtime_error("Unable to make request, sent " + lexical(sent) + " bytes.");
     }
 }
 
@@ -416,7 +416,7 @@ std::string connection_t<Adapter>::body(long length)
         string.resize(length);
         adaptor.read(const_cast<char*>(&string[0]), length);
     } else if (length) {
-        throw std::runtime_error("Asked to read negative bytes.");
+        throw runtime_error("Asked to read negative bytes.");
     }
 
     return string;

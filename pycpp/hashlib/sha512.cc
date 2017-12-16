@@ -10,7 +10,7 @@
 #include <pycpp/preprocessor/byteorder.h>
 #include <pycpp/secure/stdlib.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

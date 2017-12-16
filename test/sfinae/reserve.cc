@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/sfinae/reserve.h>
+#include <pycpp/stl/deque.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <deque>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,8 +17,8 @@ PYCPP_USING_NAMESPACE
 
 TEST(reserve, reserve)
 {
-    std::deque<int> deq;
-    std::vector<int> vec;
+    deque<int> deq;
+    vector<int> vec;
 
     reserve()(deq, 10);
     reserve()(vec, 10);
@@ -27,9 +27,9 @@ TEST(reserve, reserve)
 
 TEST(reserve, has_reserve)
 {
-    using deq = std::deque<int>;
-    using vec = std::vector<int>;
+    using deque_type = deque<int>;
+    using vector_type = vector<int>;
 
-    static_assert(!has_reserve<deq>::value, "");
-    static_assert(has_reserve<vec>::value, "");
+    static_assert(!has_reserve<deque_type>::value, "");
+    static_assert(has_reserve<vector_type>::value, "");
 }

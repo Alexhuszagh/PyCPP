@@ -15,7 +15,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using csv_row = std::vector<std::string>;
+using csv_row = vector<std::string>;
 
 // ENUMS
 // -----

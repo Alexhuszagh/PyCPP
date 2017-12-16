@@ -8,8 +8,8 @@
 #include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/punycode.h>
 #include <pycpp/string/unicode.h>
-#include <cmath>
-#include <cstring>
+#include <math.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

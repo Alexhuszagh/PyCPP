@@ -36,9 +36,9 @@ PYCPP_BEGIN_NAMESPACE
 template <typename Path>
 static typename Path::const_iterator stem_impl(const Path& path)
 {
-    typedef typename Path::value_type char_type;
+    using char_type = typename Path::value_type;
 
-    return std::find_if(path.rbegin(), path.rend(), [](char_type c) {
+    return find_if(path.rbegin(), path.rend(), [](char_type c) {
         return path_separators.find(c) != path_separators.npos;
     }).base();
 }
@@ -78,11 +78,11 @@ struct join_impl
 // SPLIT
 
 template <typename Path>
-static std::deque<Path> split_impl(const Path& path)
+static deque<Path> split_impl(const Path& path)
 {
     auto it = stem_impl(path);
-    Path basename(it, std::distance(it, path.cend()));
-    Path dir(path.cbegin(), std::distance(path.cbegin(), it));
+    Path basename(it, distance(it, path.cend()));
+    Path dir(path.cbegin(), distance(path.cbegin(), it));
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
         dir = dir.substr(0, dir.length() - 1);
     }
@@ -92,14 +92,14 @@ static std::deque<Path> split_impl(const Path& path)
 
 
 template <typename Path>
-std::deque<Path> splitdrive_impl(const Path& path)
+deque<Path> splitdrive_impl(const Path& path)
 {
     return {Path(), path};
 }
 
 
 template <typename Path>
-std::deque<Path> splitunc_impl(const Path& path)
+deque<Path> splitunc_impl(const Path& path)
 {
     return {Path(), path};
 }
@@ -111,7 +111,7 @@ template <typename Path>
 static Path base_name_impl(const Path& path)
 {
     auto it = stem_impl(path);
-    return Path(it, std::distance(it, path.cend()));
+    return Path(it, distance(it, path.cend()));
 }
 
 
@@ -119,7 +119,7 @@ template <typename Path>
 static Path dir_name_impl(const Path& path)
 {
     auto it = stem_impl(path);
-    Path dir(path.cbegin(), std::distance(path.cbegin(), it));
+    Path dir(path.cbegin(), distance(path.cbegin(), it));
     if (dir.size() > 1 && path_separators.find(dir.back()) != path_separators.npos) {
         dir = dir.substr(0, dir.length() - 1);
     }
@@ -415,31 +415,31 @@ static bool copy_dir_impl(const Path&src, const Path& dst, bool recursive, bool 
 // FILE UTILS
 
 
-static int convert_openmode(std::ios_base::openmode mode)
+static int convert_openmode(ios_base::openmode mode)
 {
     int flags = 0;
 
     // read/write
-    if ((mode & std::ios_base::in) && (mode & std::ios_base::out)) {
+    if ((mode & ios_base::in) && (mode & ios_base::out)) {
         flags |= O_RDWR;
-    } else if (mode & std::ios_base::in) {
+    } else if (mode & ios_base::in) {
         flags |= O_RDONLY;
-    } else if (mode & std::ios_base::out) {
+    } else if (mode & ios_base::out) {
         flags |= O_WRONLY;
     }
 
     // create file
-    if (mode & std::ios_base::out) {
+    if (mode & ios_base::out) {
         flags |= O_CREAT;
     }
 
     // append
-    if (mode & std::ios_base::app) {
+    if (mode & ios_base::app) {
         flags |= O_APPEND;
     }
 
     // truncate
-    if (mode & std::ios_base::trunc) {
+    if (mode & ios_base::trunc) {
         flags |= O_TRUNC;
     }
 
@@ -450,7 +450,7 @@ static int convert_openmode(std::ios_base::openmode mode)
 template <typename Path>
 static int fd_chmod_impl(const Path& path, mode_t permissions)
 {
-    fd_t fd = fd_open(path, std::ios_base::in | std::ios_base::out);
+    fd_t fd = fd_open(path, ios_base::in | ios_base::out);
     if (fd < 0) {
         return false;
     }
@@ -462,9 +462,9 @@ static int fd_chmod_impl(const Path& path, mode_t permissions)
 
 
 template <typename Path>
-static int fd_allocate_impl(const Path& path, std::streamsize size)
+static int fd_allocate_impl(const Path& path, streamsize size)
 {
-    fd_t fd = fd_open(path, std::ios_base::out);
+    fd_t fd = fd_open(path, ios_base::out);
     if (fd < 0) {
         return false;
     }
@@ -476,9 +476,9 @@ static int fd_allocate_impl(const Path& path, std::streamsize size)
 
 
 template <typename Path>
-static int fd_truncate_impl(const Path& path, std::streamsize size)
+static int fd_truncate_impl(const Path& path, streamsize size)
 {
-    fd_t fd = fd_open(path, std::ios_base::out);
+    fd_t fd = fd_open(path, ios_base::out);
     if (fd < 0) {
         return false;
     }
@@ -569,7 +569,7 @@ static int fadvise_impl(int fd, off_t offset, off_t len, io_access_pattern patte
             arg = 0;                // disable read-ahead
             break;
         default:
-            throw std::invalid_argument("Unrecognized I/O access pattern.");
+            throw invalid_argument("Unrecognized I/O access pattern.");
     }
 
     return fcntl(fd, F_RDAHEAD, arg);
@@ -591,7 +591,7 @@ static int fadvise_impl(int fd, off_t offset, off_t len, io_access_pattern patte
             advice = POSIX_FADV_RANDOM;
             break;
         default:
-            throw std::invalid_argument("Unrecognized I/O access pattern.");
+            throw invalid_argument("Unrecognized I/O access pattern.");
     }
     return posix_fadvise(fd, offset, len, advice);
 }
@@ -851,7 +851,7 @@ bool makedirs(const path_view_t& path, int mode)
 // FILE UTILS
 
 
-fd_t fd_open(const path_view_t& path, std::ios_base::openmode openmode, mode_t permission, io_access_pattern access)
+fd_t fd_open(const path_view_t& path, ios_base::openmode openmode, mode_t permission, io_access_pattern access)
 {
     assert(is_null_terminated(path));
 
@@ -868,33 +868,33 @@ fd_t fd_open(const path_view_t& path, std::ios_base::openmode openmode, mode_t p
 }
 
 
-std::streamsize fd_read(fd_t fd, void* buf, std::streamsize count)
+streamsize fd_read(fd_t fd, void* buf, streamsize count)
 {
     return ::read(fd, buf, count);
 }
 
 
-std::streamsize fd_write(fd_t fd, const void* buf, std::streamsize count)
+streamsize fd_write(fd_t fd, const void* buf, streamsize count)
 {
     return ::write(fd, buf, count);
 }
 
 
-std::streampos fd_seek(fd_t fd, std::streamoff off, std::ios_base::seekdir way)
+streampos fd_seek(fd_t fd, streamoff off, ios_base::seekdir way)
 {
     int whence;
     switch (way) {
-        case std::ios_base::beg:
+        case ios_base::beg:
             whence = SEEK_SET;
             break;
-        case std::ios_base::cur:
+        case ios_base::cur:
             whence = SEEK_CUR;
             break;
-        case std::ios_base::end:
+        case ios_base::end:
             whence = SEEK_END;
             break;
         default:
-            return std::streampos(std::streamoff(-1));
+            return streampos(streamoff(-1));
     }
 
     return ::lseek(fd, off, whence);
@@ -919,25 +919,25 @@ int fd_chmod(const path_view_t& path, mode_t permissions)
 }
 
 
-int fd_allocate(fd_t fd, std::streamsize size)
+int fd_allocate(fd_t fd, streamsize size)
 {
     return fallocate_impl(fd, 0, size);
 }
 
 
-int fd_allocate(const path_view_t& path, std::streamsize size)
+int fd_allocate(const path_view_t& path, streamsize size)
 {
     return fd_allocate_impl(path, size);
 }
 
 
-int fd_truncate(fd_t fd, std::streamsize size)
+int fd_truncate(fd_t fd, streamsize size)
 {
     return ftruncate(fd, size);
 }
 
 
-int fd_truncate(const path_view_t& path, std::streamsize size)
+int fd_truncate(const path_view_t& path, streamsize size)
 {
     return fd_truncate_impl(path, size);
 }

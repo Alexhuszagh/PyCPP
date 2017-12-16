@@ -6,6 +6,7 @@
  */
 
 #include <pycpp/math/average.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -16,8 +17,8 @@ PYCPP_USING_NAMESPACE
 
 TEST(math, average)
 {
-    std::vector<double> x = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
-    std::vector<double> y = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
+    vector<double> x = {5, 6, 7, 8, 9, 10, 11, 12, 13, 14};
+    vector<double> y = {15, 14, 13, 12, 11, 10, 9, 8, 7, 6};
     EXPECT_NEAR(average(x.begin(), x.end()), 9.5, 0.001);
     EXPECT_NEAR(average(x.begin(), x.end(), y.begin(), y.end()), 8.7143, 0.001);
 

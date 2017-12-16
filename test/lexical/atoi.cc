@@ -2,8 +2,8 @@
 //  :license: MIT, see LICENSE.md for more details.
 
 #include <pycpp/lexical/atoi.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 

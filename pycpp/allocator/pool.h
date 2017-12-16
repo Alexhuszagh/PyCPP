@@ -12,7 +12,7 @@
 //// TODO: implement
 //// Pool allocators take advantage of fixed-size allocations
 //// Array allocations make no sense, since they break this.
-//// It will therefore work with std::list, and not std::vector,
+//// It will therefore work with list, and not vector,
 //// since items must be requested 1x1.
 //
 //// Boost has a fast pool allocator, which works like this.
@@ -24,8 +24,8 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <climits>
-#include <cstddef>
+#include <limits.h>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 

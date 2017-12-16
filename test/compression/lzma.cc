@@ -8,8 +8,8 @@
 #if defined(HAVE_LZMA)
 
 #include <pycpp/compression/lzma.h>
+#include <pycpp/stl/sstream.h>
 #include <gtest/gtest.h>
-#include <sstream>
 
 PYCPP_USING_NAMESPACE
 

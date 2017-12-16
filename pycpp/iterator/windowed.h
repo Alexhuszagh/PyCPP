@@ -6,7 +6,7 @@
  *
  *  Creates an input-iterable range from an iterator pair, returning
  *  a window N-sized chunks from the range in a custom container
- *  (by default a `std::deque`). If the underlying iterator pair
+ *  (by default a `deque`). If the underlying iterator pair
  *  is a forward, bidirectional, or random-access iterator, then
  *  no value copies are introduced. If the underlying iterator pair
  *  is an input iterator, then each iterator `value_type` is stored
@@ -25,11 +25,11 @@
  *  whenever possible.
  *
  *  \code
- *      using vector = std::vector<int>;
+ *      using vector = vector<int>;
  *      using range = windowed_range<typename vector::const_iterator>;
  *      vector v = {1, 2, 3, 1, 4, 2, 5};
  *      range r1(v.begin(), v.end());
- *      std::cout << r1.begin()->at(0) << std::endl;        // 1
+ *      cout << r1.begin()->at(0) << endl;        // 1
  */
 
 #pragma once
@@ -49,13 +49,13 @@ PYCPP_BEGIN_NAMESPACE
 
 template <
     typename Iterator,
-    template <typename...> class Container = std::deque
+    template <typename...> class Container = deque
 >
 struct windowed_iterator;
 
 template <
     typename Iterator,
-    template <typename...> class Container = std::deque
+    template <typename...> class Container = deque
 >
 struct windowed_range;
 
@@ -65,16 +65,16 @@ namespace windowed_detail
 // -----
 
 template <typename Iterator>
-using iterator_value_type = typename std::iterator_traits<Iterator>::value_type;
+using iterator_value_type = typename iterator_traits<Iterator>::value_type;
 
 template <typename Iterator>
-using range_key_type = typename std::conditional<
+using range_key_type = conditional_t<
     is_input_iterator<Iterator>::value,
     iterator_value_type<Iterator>,
-    std::reference_wrapper<const iterator_value_type<Iterator>>
->::type;
+    reference_wrapper<const iterator_value_type<Iterator>>
+>;
 
-template <typename Iterator, template <typename...> class Container = std::vector>
+template <typename Iterator, template <typename...> class Container = vector>
 using windowed_type = Container<range_key_type<Iterator>>;
 
 }   /* windowed_detail */
@@ -90,12 +90,12 @@ using windowed_type = Container<range_key_type<Iterator>>;
  */
 template <typename Iterator, template <typename...> class Container>
 struct windowed_iterator:
-    std::iterator<
-        std::input_iterator_tag,
+    iterator<
+        input_iterator_tag,
         windowed_detail::windowed_type<Iterator, Container>,
-        typename std::iterator_traits<Iterator>::difference_type,
-        typename std::iterator_traits<Iterator>::pointer,
-        typename std::iterator_traits<Iterator>::reference
+        typename iterator_traits<Iterator>::difference_type,
+        typename iterator_traits<Iterator>::pointer,
+        typename iterator_traits<Iterator>::reference
     >
 {
     static_assert(!is_output_iterator<Iterator>::value, "Cannot have output iterator.");
@@ -104,12 +104,12 @@ public:
     // MEMBER TYPES
     // ------------
     using self_t = windowed_iterator<Iterator, Container>;
-    using base_t = std::iterator<
-        std::input_iterator_tag,
+    using base_t = iterator<
+        input_iterator_tag,
         windowed_detail::windowed_type<Iterator, Container>,
-        typename std::iterator_traits<Iterator>::difference_type,
-        typename std::iterator_traits<Iterator>::pointer,
-        typename std::iterator_traits<Iterator>::reference
+        typename iterator_traits<Iterator>::difference_type,
+        typename iterator_traits<Iterator>::pointer,
+        typename iterator_traits<Iterator>::reference
     >;
     using range_t = windowed_range<Iterator, Container>;
     using typename base_t::value_type;
@@ -225,7 +225,7 @@ template <typename Iterator, template <typename...> class C>
 windowed_iterator<Iterator, C>::windowed_iterator(range_t* range, Iterator it, optional<value_type>&& value):
     range_(range),
     it_(it),
-    value_(std::forward<optional<value_type>>(value))
+    value_(forward<optional<value_type>>(value))
 {}
 
 
@@ -269,8 +269,8 @@ auto windowed_iterator<Iterator, C>::operator*() const -> const_reference
 template <typename Iterator, template <typename...> class C>
 void windowed_iterator<Iterator, C>::swap(self_t& rhs)
 {
-    std::swap(it_, rhs.it_);
-    std::swap(value_, rhs.value_);
+    PYCPP_NAMESPACE::swap(it_, rhs.it_);
+    PYCPP_NAMESPACE::swap(value_, rhs.value_);
 }
 
 
@@ -318,8 +318,8 @@ auto windowed_range<Iterator, C>::end() -> iterator
 template <typename Iterator, template <typename...> class C>
 void windowed_range<Iterator, C>::swap(self_t& rhs)
 {
-    std::swap(first_, rhs.first_);
-    std::swap(last_, rhs.last_);
+    PYCPP_NAMESPACE::swap(first_, rhs.first_);
+    PYCPP_NAMESPACE::swap(last_, rhs.last_);
 }
 
 

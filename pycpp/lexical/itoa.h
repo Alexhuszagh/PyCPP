@@ -14,7 +14,7 @@
  */
 
 #include <pycpp/stl/string.h>
-#include <cstdint>
+#include <stdint.h>
 
 PYCPP_BEGIN_NAMESPACE
 

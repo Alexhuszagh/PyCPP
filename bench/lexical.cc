@@ -6,15 +6,15 @@
 #include <pycpp/lexical/atoi.h>
 #include <pycpp/lexical/ftoa.h>
 #include <pycpp/lexical/itoa.h>
-#include <string>
-#include <vector>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/vector.h>
 
 PYCPP_USING_NAMESPACE
 
 // BENCHMARKS
 // ----------
 
-std::vector<std::string> FLOAT_STRINGS = {
+vector<std::string> FLOAT_STRINGS = {
     "0",
     "1",
     "1.2",
@@ -37,7 +37,7 @@ std::vector<std::string> FLOAT_STRINGS = {
     "1.234567890123456789",
 };
 
-std::vector<std::string> INTEGER_STRINGS = {
+vector<std::string> INTEGER_STRINGS = {
     "0",
     "1",
     "12",
@@ -62,7 +62,7 @@ std::vector<std::string> INTEGER_STRINGS = {
 };
 
 
-std::vector<uint64_t> INTEGERS = {
+vector<uint64_t> INTEGERS = {
     0ULL,
     1ULL,
     12ULL,
@@ -87,7 +87,7 @@ std::vector<uint64_t> INTEGERS = {
 };
 
 
-std::vector<double> FLOATS = {
+vector<double> FLOATS = {
     0.0,
     1.0,
     1.2,

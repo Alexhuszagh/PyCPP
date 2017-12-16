@@ -11,19 +11,19 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-timeout_t::timeout_t(const std::chrono::milliseconds &timeout):
+timeout_t::timeout_t(const chrono::milliseconds &timeout):
     timeout(timeout)
 {}
 
 
 timeout_t::timeout_t(long ms):
-    timeout(std::chrono::milliseconds(ms))
+    timeout(chrono::milliseconds(ms))
 {}
 
 
 long timeout_t::seconds() const
 {
-    auto seconds = std::chrono::duration_cast<std::chrono::seconds>(timeout);
+    auto seconds = chrono::duration_cast<chrono::seconds>(timeout);
     check_limits(seconds);
 
     return static_cast<long>(seconds.count());
@@ -32,7 +32,7 @@ long timeout_t::seconds() const
 
 long timeout_t::milliseconds() const
 {
-    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(timeout);
+    auto ms = chrono::duration_cast<chrono::milliseconds>(timeout);
     check_limits(ms);
 
     return static_cast<long>(ms.count());
@@ -41,7 +41,7 @@ long timeout_t::milliseconds() const
 
 long timeout_t::microseconds() const
 {
-    auto us = std::chrono::duration_cast<std::chrono::microseconds>(timeout);
+    auto us = chrono::duration_cast<chrono::microseconds>(timeout);
     check_limits(us);
 
     return static_cast<long>(us.count());

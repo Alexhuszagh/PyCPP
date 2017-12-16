@@ -6,9 +6,11 @@
  */
 
 #include <pycpp/preprocessor/tls.h>
+#include <pycpp/stl/thread.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <thread>
-#include <vector>
+
+PYCPP_USING_NAMESPACE
 
 // STORAGE
 // -------
@@ -31,11 +33,11 @@ void test_value()
 
 TEST(thread_local_storage, thread_local_storage)
 {
-    std::vector<std::thread*> threads;
+    vector<thread*> threads;
     threads.reserve(30);
 
     for (size_t i = 0; i < 30; ++i) {
-        threads.emplace_back(new std::thread(test_value));
+        threads.emplace_back(new thread(test_value));
     }
     for (auto *thread: threads) {
         thread->join();

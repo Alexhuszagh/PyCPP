@@ -41,7 +41,7 @@ public:
     bool flush(void*& dst, size_t dstlen);
 
 private:
-    std::unique_ptr<zlib_compressor_impl> ptr_;
+    unique_ptr<zlib_compressor_impl> ptr_;
 };
 
 
@@ -60,7 +60,7 @@ public:
     bool flush(void*& dst, size_t dstlen);
 
 private:
-    std::unique_ptr<zlib_decompressor_impl> ptr_;
+    unique_ptr<zlib_decompressor_impl> ptr_;
 };
 
 // FUNCTIONS

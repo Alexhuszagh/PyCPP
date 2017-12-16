@@ -50,7 +50,7 @@ struct parameters_t: std::string
     parameters_t & operator=(parameters_t&&) = default;
 
     using base::base;
-    parameters_t(std::initializer_list<parameter_t> list);
+    parameters_t(initializer_list<parameter_t> list);
 
     parameters_t& add(const parameter_t& parameter);
 

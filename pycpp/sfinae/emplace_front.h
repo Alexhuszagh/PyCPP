@@ -24,14 +24,14 @@ PYCPP_HAS_MEMBER_FUNCTION(emplace_front, has_emplace_front, void (C::*)(typename
 struct emplace_front
 {
     template <typename T, typename... Ts>
-    typename std::enable_if<has_emplace_front<T>::value, void>::type
+    enable_if_t<has_emplace_front<T>::value, void>
     operator()(T &t, Ts&&... ts)
     {
         t.emplace_front(std::forward<Ts>(ts)...);
     }
 
     template <typename T, typename... Ts>
-    typename std::enable_if<!has_emplace_front<T>::value, void>::type
+    enable_if_t<!has_emplace_front<T>::value, void>
     operator()(T &t, Ts&&... ts)
     {
         t.insert(t.begin(), std::forward<Ts>(ts)...);

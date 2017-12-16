@@ -138,7 +138,7 @@ public:
     secure_string hexdigest() const;
 
 private:
-    typedef typename std::aligned_storage<sizeof(uintptr_t)>::type memory_type;
+    using memory_type = aligned_storage_t<sizeof(uintptr_t)>;
     hash_algorithm algorithm;
     memory_type mem;
 };

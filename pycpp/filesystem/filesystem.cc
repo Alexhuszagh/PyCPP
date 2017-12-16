@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/filesystem.h>
+#include <pycpp/stl/utility.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -74,9 +75,9 @@ template <typename Path>
 struct listdir_impl
 {
     template <typename View, typename ToPath>
-    std::deque<Path> operator()(const View& path, ToPath topath)
+    deque<Path> operator()(const View& path, ToPath topath)
     {
-        std::deque<Path> list;
+        deque<Path> list;
         for (auto entry: iterdir_impl(path)) {
             list.emplace_back(topath(entry.basename()));
         }
@@ -130,7 +131,7 @@ range<directory_iterator> iterdir(const path_view_t& path)
 path_list_t listdir(const path_view_t& path)
 {
     return listdir_impl<path_t>()(path, [](path_t&& path) {
-        return std::forward<path_t>(path);
+        return forward<path_t>(path);
     });
 }
 

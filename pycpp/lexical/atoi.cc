@@ -6,7 +6,7 @@
 #include <pycpp/lexical/table.h>
 #include <pycpp/stl/limits.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cctype>
+#include <ctype.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -88,7 +88,7 @@ template <typename Int>
 static Int atoi_impl(const char* first, const char*& last, uint8_t base)
 {
     if (base < 2 || base > 36) {
-        throw std::invalid_argument("Numerical base must be from 2-36");
+        throw invalid_argument("Numerical base must be from 2-36");
     } else if (base <= 10) {
         return atoi_num<Int>(first, last, base);
     } else {

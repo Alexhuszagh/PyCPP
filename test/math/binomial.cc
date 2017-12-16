@@ -24,7 +24,7 @@ TEST(math, binomial)
 
     try {
         binomial(-1, 3);
-    } catch (std::exception) {
+    } catch (exception) {
         return;
     }
 

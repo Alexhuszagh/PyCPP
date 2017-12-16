@@ -16,10 +16,10 @@
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/string_view.h>
-#include <cassert>
-#include <cmath>
-#include <cstdint>
-#include <cstring>
+#include <assert.h>
+#include <math.h>
+#include <stdint.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -576,30 +576,30 @@ static double v8_modulo(double x, double y)
     // Workaround MS fmod bugs. ECMA-262 says:
     // dividend is finite and divisor is an infinity => result equals dividend
     // dividend is a zero and divisor is nonzero finite => result equals dividend
-    if (!(std::isfinite(x) && (!std::isfinite(y) && !std::isnan(y))) &&
-        !(x == 0 && (y != 0 && std::isfinite(y)))) {
+    if (!(isfinite(x) && (!isfinite(y) && !isnan(y))) &&
+        !(x == 0 && (y != 0 && isfinite(y)))) {
         x = fmod(x, y);
     }
     return x;
 #elif defined(OS_AIX)
     // AIX raises an underflow exception for (Number.MIN_VALUE % Number.MAX_VALUE)
     feclearexcept(FE_ALL_EXCEPT);
-    double result = std::fmod(x, y);
+    double result = fmod(x, y);
     int exception = fetestexcept(FE_UNDERFLOW);
     return (exception ? x : result);
 #else
-    return std::fmod(x, y);
+    return fmod(x, y);
 #endif
 }
 
 
 static int naive_exponent(double d, uint8_t base)
 {
-    // std::floor returns the minimal value, which is our
+    // floor returns the minimal value, which is our
     // desired exponent
     // log(1.1e-5) -> -4.95 -> -5
     // log(1.1e5) -> -5.04 -> 5
-    return static_cast<int>(std::floor(std::log(d) / std::log(base)));
+    return static_cast<int>(floor(log(d) / log(base)));
 }
 
 
@@ -615,7 +615,7 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
     }
 
     // assert no special cases remain
-    assert(std::isfinite(d));
+    assert(isfinite(d));
     assert(d != 0.0);
 
     /**
@@ -651,12 +651,12 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
     size_t fraction_cursor = initial_position;
 
     // Split the value into an integer part and a fractional part.
-    double integer = std::floor(d);
+    double integer = floor(d);
     double fraction = d - integer;
 
     // We only compute fractional digits up to the input double's precision.
     double delta = 0.5 * (v8_next_double(d) - d);
-    delta = std::max(v8_next_double(0.0), delta);
+    delta = max(v8_next_double(0.0), delta);
     assert(delta > 0.0);
 
     if (fraction > delta) {
@@ -725,10 +725,10 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
         size_t buf_start, buf_end;
         if (d <= 1e-5) {
             buf_start = initial_position - exponent - 1;
-            buf_end = std::min(fraction_cursor, buf_start + max_digit_length + 1);
+            buf_end = min(fraction_cursor, buf_start + max_digit_length + 1);
         } else {
             buf_start = integer_cursor;
-            buf_end = std::min(fraction_cursor, buf_start + max_digit_length + 1);
+            buf_end = min(fraction_cursor, buf_start + max_digit_length + 1);
         }
         string_view buf_view(buffer + buf_start, buf_end - buf_start);
 
@@ -751,7 +751,7 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
         last = first;
         // get component lengths
         size_t integer_length = initial_position - integer_cursor;
-        size_t fraction_length = std::min(fraction_cursor - initial_position, max_digit_length - integer_length);
+        size_t fraction_length = min(fraction_cursor - initial_position, max_digit_length - integer_length);
 
         // write integer component123450000000
         memcpy(first, buffer + integer_cursor, integer_length);
@@ -814,11 +814,11 @@ void ftoa_(double value, char* first, char*& last, uint8_t base)
     assert(first <= last);
 
     // check to use a temporary buffer
-    size_t distance = std::distance(first, last);
-    if (distance == 0) {
+    size_t dist = distance(first, last);
+    if (dist == 0) {
         // cannot write null terminator
         return;
-    } if (distance < BUFFER_SIZE) {
+    } if (dist < BUFFER_SIZE) {
         // use a temporary buffer and write number to buffer
         char buffer[BUFFER_SIZE];
         char* first_ = buffer;
@@ -827,7 +827,7 @@ void ftoa_(double value, char* first, char*& last, uint8_t base)
 
         // copy as many bytes as possible except the trailing null byte
         // then, write null-byte so the string is always terminated
-        size_t length = std::min<size_t>(std::distance(first_, last_), distance) - 1;
+        size_t length = min<size_t>(distance(first_, last_), dist) - 1;
         memcpy(first, first_, length);
         last = first + length;
         *last = '\0';

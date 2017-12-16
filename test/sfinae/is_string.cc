@@ -6,8 +6,9 @@
  */
 
 #include <pycpp/sfinae/is_string.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <string>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,7 +18,7 @@ PYCPP_USING_NAMESPACE
 
 TEST(is_string, is_string)
 {
-    using pair = std::pair<int, int>;
+    using p1 = pair<int, int>;
 
     // char*
     static_assert(is_charp<char*>::value, "");
@@ -28,7 +29,7 @@ TEST(is_string, is_string)
     static_assert(!is_charp<wchar_t*>::value, "");
     static_assert(!is_charp<char16_t*>::value, "");
     static_assert(!is_charp<char32_t*>::value, "");
-    static_assert(!is_charp<pair>::value, "");
+    static_assert(!is_charp<p1>::value, "");
 
     // const char*
     static_assert(is_const_charp<const char*>::value, "");
@@ -39,7 +40,7 @@ TEST(is_string, is_string)
     static_assert(!is_const_charp<const wchar_t*>::value, "");
     static_assert(!is_const_charp<const char16_t*>::value, "");
     static_assert(!is_const_charp<const char32_t*>::value, "");
-    static_assert(!is_const_charp<pair>::value, "");
+    static_assert(!is_const_charp<p1>::value, "");
 
     // wchar_t*
     static_assert(is_wcharp<wchar_t*>::value, "");
@@ -50,7 +51,7 @@ TEST(is_string, is_string)
     static_assert(!is_wcharp<char*>::value, "");
     static_assert(!is_wcharp<char16_t*>::value, "");
     static_assert(!is_wcharp<char32_t*>::value, "");
-    static_assert(!is_wcharp<pair>::value, "");
+    static_assert(!is_wcharp<p1>::value, "");
 
     // const wchar_t*
     static_assert(is_const_wcharp<const wchar_t*>::value, "");
@@ -61,7 +62,7 @@ TEST(is_string, is_string)
     static_assert(!is_const_wcharp<const char*>::value, "");
     static_assert(!is_const_wcharp<const char16_t*>::value, "");
     static_assert(!is_const_wcharp<const char32_t*>::value, "");
-    static_assert(!is_const_wcharp<pair>::value, "");
+    static_assert(!is_const_wcharp<p1>::value, "");
 
     // char16_t*
     static_assert(is_char16p<char16_t*>::value, "");
@@ -72,7 +73,7 @@ TEST(is_string, is_string)
     static_assert(!is_char16p<char*>::value, "");
     static_assert(!is_char16p<wchar_t*>::value, "");
     static_assert(!is_char16p<char32_t*>::value, "");
-    static_assert(!is_char16p<pair>::value, "");
+    static_assert(!is_char16p<p1>::value, "");
 
     // const char16_t*
     static_assert(is_const_char16p<const char16_t*>::value, "");
@@ -83,7 +84,7 @@ TEST(is_string, is_string)
     static_assert(!is_const_char16p<const char*>::value, "");
     static_assert(!is_const_char16p<const wchar_t*>::value, "");
     static_assert(!is_const_char16p<const char32_t*>::value, "");
-    static_assert(!is_const_char16p<pair>::value, "");
+    static_assert(!is_const_char16p<p1>::value, "");
 
     // char32_t*
     static_assert(is_char32p<char32_t*>::value, "");
@@ -94,7 +95,7 @@ TEST(is_string, is_string)
     static_assert(!is_char32p<char*>::value, "");
     static_assert(!is_char32p<wchar_t*>::value, "");
     static_assert(!is_char32p<char16_t*>::value, "");
-    static_assert(!is_char32p<pair>::value, "");
+    static_assert(!is_char32p<p1>::value, "");
 
     // const char32_t*
     static_assert(is_const_char32p<const char32_t*>::value, "");
@@ -105,18 +106,18 @@ TEST(is_string, is_string)
     static_assert(!is_const_char32p<const char*>::value, "");
     static_assert(!is_const_char32p<const wchar_t*>::value, "");
     static_assert(!is_const_char32p<const char16_t*>::value, "");
-    static_assert(!is_const_char32p<pair>::value, "");
+    static_assert(!is_const_char32p<p1>::value, "");
 
     // basic_string
-    static_assert(is_stl_string<std::string>::value, "");
-    static_assert(is_stl_string<std::wstring>::value, "");
-    static_assert(is_stl_string<std::u16string>::value, "");
-    static_assert(is_stl_string<std::u32string>::value, "");
+    static_assert(is_stl_string<string>::value, "");
+    static_assert(is_stl_string<wstring>::value, "");
+    static_assert(is_stl_string<u16string>::value, "");
+    static_assert(is_stl_string<u32string>::value, "");
     static_assert(!is_stl_string<char*>::value, "");
     static_assert(!is_stl_string<wchar_t*>::value, "");
     static_assert(!is_stl_string<char16_t*>::value, "");
     static_assert(!is_stl_string<char32_t*>::value, "");
-    static_assert(!is_stl_string<pair>::value, "");
+    static_assert(!is_stl_string<p1>::value, "");
 
     // general
     static_assert(is_string<char*>::value, "");
@@ -127,9 +128,9 @@ TEST(is_string, is_string)
     static_assert(is_string<const wchar_t*>::value, "");
     static_assert(is_string<const char16_t*>::value, "");
     static_assert(is_string<const char32_t*>::value, "");
-    static_assert(is_string<std::string>::value, "");
-    static_assert(is_string<std::wstring>::value, "");
-    static_assert(is_string<std::u16string>::value, "");
-    static_assert(is_string<std::u32string>::value, "");
-    static_assert(!is_string<pair>::value, "");
+    static_assert(is_string<string>::value, "");
+    static_assert(is_string<wstring>::value, "");
+    static_assert(is_string<u16string>::value, "");
+    static_assert(is_string<u32string>::value, "");
+    static_assert(!is_string<p1>::value, "");
 }

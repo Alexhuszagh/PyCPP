@@ -55,7 +55,7 @@ any& any::operator=(const any& rhs)
 
 any& any::operator=(any&& rhs) noexcept
 {
-    any(std::move(rhs)).swap(*this);
+    any(move(rhs)).swap(*this);
     return *this;
 }
 
@@ -75,7 +75,7 @@ bool any::has_value() const noexcept
 }
 
 
-const std::type_info& any::type() const noexcept
+const type_info& any::type() const noexcept
 {
     return has_value() ? vtable->type() : typeid(void);
 }
@@ -84,7 +84,7 @@ const std::type_info& any::type() const noexcept
 void any::swap(any& rhs) noexcept
 {
     if(vtable != rhs.vtable) {
-        any tmp(std::move(rhs));
+        any tmp(move(rhs));
         rhs.vtable = vtable;
         if(vtable != nullptr) {
             vtable->move(storage, rhs.storage);
@@ -102,13 +102,13 @@ void any::swap(any& rhs) noexcept
     }
 }
 
-bool any::is_typed(const std::type_info& t) const
+bool any::is_typed(const type_info& t) const
 {
     return is_same(type(), t);
 }
 
 
-bool any::is_same(const std::type_info& a, const std::type_info& b)
+bool any::is_same(const type_info& a, const type_info& b)
 {
     return a == b;
 }

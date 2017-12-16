@@ -8,7 +8,7 @@
 #include <pycpp/string/base64.h>
 #include <pycpp/string/codec.h>
 #include <pycpp/string/unicode.h>
-#include <cstdio>
+#include <stdio.h>
 
 #if defined(OS_WINDOWS)
 #   include <wincrypt.h>
@@ -50,14 +50,14 @@ std::string request_t::method_name() const
         case CONNECT:
             return "CONNECT";
         default:
-            throw std::out_of_range("HTTP request method unknown.\n");
+            throw out_of_range("HTTP request method unknown.\n");
     }
 }
 
 
-std::stringstream request_t::method_header() const
+stringstream request_t::method_header() const
 {
-    std::stringstream data;
+    stringstream data;
     data << header.string();
     if (!header.host() && url.absolute()) {
         // specify a default host
@@ -91,7 +91,7 @@ std::stringstream request_t::method_header() const
 /**
  *  Currently used only for digest authentication.
  */
-std::stringstream request_t::method_header(const response_t& response) const
+stringstream request_t::method_header(const response_t& response) const
 {
     auto data = method_header();
     if (digest) {
@@ -99,7 +99,7 @@ std::stringstream request_t::method_header(const response_t& response) const
             auto string = response.headers().at("www-authenticate");
             digest_challenge_t challenge(string);
             data << challenge.header(url, parameters, digest, response.body(), method_name());
-        } catch(std::exception) {
+        } catch(exception) {
         }
     }
 
@@ -121,16 +121,16 @@ void request_t::set_url(const url_t& url)
 {
     this->url = url;
     if (this->url .relative()) {
-        throw std::runtime_error("Cannot establish connection with relative URL.");
+        throw runtime_error("Cannot establish connection with relative URL.");
     }
 }
 
 
 void request_t::set_url(url_t&& url)
 {
-    this->url = std::move(url);
+    this->url = move(url);
     if (this->url .relative()) {
-        throw std::runtime_error("Cannot establish connection with relative URL.");
+        throw runtime_error("Cannot establish connection with relative URL.");
     }
 }
 
@@ -143,7 +143,7 @@ void request_t::set_parameters(const parameters_t& parameters)
 
 void request_t::set_parameters(parameters_t&& parameters)
 {
-    this->parameters = std::move(parameters);
+    this->parameters = move(parameters);
 }
 
 
@@ -179,7 +179,7 @@ void request_t::set_proxy(const proxy_t& proxy)
 
 void request_t::set_proxy(proxy_t&& proxy)
 {
-    this->proxy = std::move(proxy);
+    this->proxy = move(proxy);
 }
 
 
@@ -194,7 +194,7 @@ void request_t::set_multipart(const multipart_t& multipart)
 
 void request_t::set_multipart(multipart_t&& multipart)
 {
-    this->multipart = std::move(multipart);
+    this->multipart = move(multipart);
     if (this->multipart) {
         header["Content-Type"] = this->multipart.header();
     }
@@ -210,7 +210,7 @@ void request_t::set_body(const body_t& body)
 
 void request_t::set_body(body_t&& body)
 {
-    this->parameters = std::move(static_cast<parameters_t>(body));
+    this->parameters = move(static_cast<parameters_t>(body));
     method = POST;
 }
 
@@ -224,7 +224,7 @@ void request_t::set_payload(const payload_t& payload)
 
 void request_t::set_payload(payload_t&& payload)
 {
-    this->parameters = std::move(static_cast<parameters_t>(payload));
+    this->parameters = move(static_cast<parameters_t>(payload));
     method = POST;
 }
 
@@ -247,9 +247,10 @@ void request_t::set_certificate_file(const certificate_file_t& certificate)
     this->certificate = certificate;
 }
 
+
 void request_t::set_certificate_file(certificate_file_t&& certificate)
 {
-    this->certificate = std::move(certificate);
+    this->certificate = move(certificate);
 }
 
 
@@ -261,7 +262,7 @@ void request_t::set_revocation_lists(const revocation_lists_t& revoke)
 
 void request_t::set_revocation_lists(revocation_lists_t&& revoke)
 {
-    this->revoke = std::move(revoke);
+    this->revoke = move(revoke);
 }
 
 
@@ -303,7 +304,7 @@ void request_t::set_option(const url_t& url)
 
 void request_t::set_option(url_t&& url)
 {
-    set_url(std::forward<url_t>(url));
+    set_url(forward<url_t>(url));
 }
 
 
@@ -315,7 +316,7 @@ void request_t::set_option(const parameters_t& parameters)
 
 void request_t::set_option(parameters_t&& parameters)
 {
-    this->parameters = std::move(parameters);
+    this->parameters = move(parameters);
 }
 
 
@@ -351,7 +352,7 @@ void request_t::set_option(const proxy_t& proxy)
 
 void request_t::set_option(proxy_t&& proxy)
 {
-    this->proxy = std::move(proxy);
+    this->proxy = move(proxy);
 }
 
 
@@ -363,7 +364,7 @@ void request_t::set_option(const multipart_t& multipart)
 
 void request_t::set_option(multipart_t&& multipart)
 {
-    set_multipart(std::forward<multipart_t>(multipart));
+    set_multipart(forward<multipart_t>(multipart));
 }
 
 
@@ -375,7 +376,7 @@ void request_t::set_option(const body_t& body)
 
 void request_t::set_option(body_t&& body)
 {
-    set_body(std::forward<body_t>(body));
+    set_body(forward<body_t>(body));
 }
 
 
@@ -387,7 +388,7 @@ void request_t::set_option(const payload_t& payload)
 
 void request_t::set_option(payload_t&& payload)
 {
-    set_payload(std::forward<payload_t>(payload));
+    set_payload(forward<payload_t>(payload));
 }
 
 
@@ -411,7 +412,7 @@ void request_t::set_option(const certificate_file_t& certificate)
 
 void request_t::set_option(certificate_file_t&& certificate)
 {
-    this->certificate = std::move(certificate);
+    this->certificate = move(certificate);
 }
 
 
@@ -423,7 +424,7 @@ void request_t::set_option(const revocation_lists_t& revoke)
 
 void request_t::set_option(revocation_lists_t&& revoke)
 {
-    this->revoke = std::move(revoke);
+    this->revoke = move(revoke);
 }
 
 

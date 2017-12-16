@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/preprocessor/compiler.h>
 #include <pycpp/stl/detail/xxhash.h>
 #include <functional>
 
@@ -15,6 +16,16 @@ PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
+
+using std::bind;
+using std::ref;
+using std::cref;
+
+#if defined(HAVE_CPP17)
+
+using std::invoke;
+
+#endif          // HAVE_CPP17
 
 template <typename T = void>
 using equal_to = std::equal_to<T>;

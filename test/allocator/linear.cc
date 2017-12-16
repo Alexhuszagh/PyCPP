@@ -2,8 +2,8 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/allocator/linear.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -22,7 +22,7 @@ TEST(linear_allocator, linear_allocator)
     allocator.deallocate(ptr, 50);
 
     // allocate larger than buffer
-    EXPECT_THROW(allocator.allocate(250), std::bad_alloc);
+    EXPECT_THROW(allocator.allocate(250), bad_alloc);
 }
 
 
@@ -30,7 +30,7 @@ TEST(linear_allocator, vector)
 {
     using allocator_type = linear_allocator<int, 200>;
     using arena_type = typename allocator_type::arena_type;
-    using vector = std::vector<int, allocator_type>;
+    using vector = vector<int, allocator_type>;
 
     arena_type arena;
     vector v1(arena);
@@ -43,7 +43,7 @@ TEST(linear_allocator, polymorphic)
     using allocator_type = polymorphic_allocator<int>;
     using resource_type = linear_resource<200>;
     using arena_type = typename resource_type::allocator_type::arena_type;
-    using vector = std::vector<int, allocator_type>;
+    using vector = vector<int, allocator_type>;
 
     arena_type arena;
     resource_type resource(arena);

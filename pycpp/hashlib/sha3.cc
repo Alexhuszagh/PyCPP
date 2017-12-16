@@ -10,8 +10,8 @@
 #include <pycpp/preprocessor/byteorder.h>
 #include <pycpp/secure/stdlib.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cassert>
-#include <cstring>
+#include <assert.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

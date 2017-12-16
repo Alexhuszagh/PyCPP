@@ -54,10 +54,10 @@ public:
     template <typename Iter> fixed_forward_list(Iter first, Iter last);
     fixed_forward_list(const fixed_forward_list&);
     fixed_forward_list(fixed_forward_list&&) = delete;
-    fixed_forward_list(std::initializer_list<value_type> list);
+    fixed_forward_list(initializer_list<value_type> list);
     fixed_forward_list& operator=(const fixed_forward_list&);
     fixed_forward_list& operator=(fixed_forward_list&&) = delete;
-    fixed_forward_list& operator=(std::initializer_list<value_type> list);
+    fixed_forward_list& operator=(initializer_list<value_type> list);
 
 private:
     void reset();

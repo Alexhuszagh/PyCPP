@@ -63,7 +63,7 @@ lexical_char_formatter::operator string_view() const
 lexical_char_extractor::lexical_char_extractor(const string_view &string)
 {
     if (string.size() != 1) {
-        throw std::runtime_error("String is not a single character.");
+        throw runtime_error("String is not a single character.");
     } else {
         c = string.front();
     }

@@ -11,7 +11,7 @@
 #include <pycpp/preprocessor/processor.h>
 #include <pycpp/secure/stdlib.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

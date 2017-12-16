@@ -2,8 +2,8 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/allocator/secure.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 

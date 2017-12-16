@@ -37,7 +37,7 @@
  *  PIMPL implementation:
  *      https://probablydance.com/2013/10/05/type-safe-pimpl-implementation-without-overhead/
  *
- *  For the pitfalls on `std::aligned_storage`, read:
+ *  For the pitfalls on `aligned_storage`, read:
  *      https://whereswalden.com/tag/stdaligned_storage/
  */
 
@@ -45,7 +45,7 @@
 
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
-#include <cstddef>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -91,7 +91,7 @@ struct storage_asserter
 template <
     typename T,
     size_t Size = sizeof(T),
-    size_t Alignment = alignof(std::max_align_t)
+    size_t Alignment = alignof(max_align_t)
 >
 class stack_pimpl
 {
@@ -137,7 +137,7 @@ public:
     void swap(self_t&);
 
 private:
-    typedef typename std::aligned_storage<Size, Alignment>::type memory_type;
+    using memory_type = aligned_storage_t<Size, Alignment>;
 
     memory_type mem_;
 };
@@ -179,7 +179,7 @@ auto stack_pimpl<T, Size, Alignment>::operator=(const self_t& rhs) -> self_t&
 template <typename T, size_t Size, size_t Alignment>
 stack_pimpl<T, Size, Alignment>::stack_pimpl(self_t&& rhs)
 {
-    new (&get()) value_type(std::move(rhs.get()));
+    new (&get()) value_type(move(rhs.get()));
 }
 
 
@@ -187,7 +187,7 @@ template <typename T, size_t Size, size_t Alignment>
 auto stack_pimpl<T, Size, Alignment>::operator=(self_t&& rhs) -> self_t&
 {
     if (this != &rhs) {
-        get() = std::move(rhs.get());
+        get() = move(rhs.get());
     }
     return *this;
 }
@@ -211,14 +211,14 @@ auto stack_pimpl<T, Size, Alignment>::operator=(const value_type& rhs) -> self_t
 template <typename T, size_t Size, size_t Alignment>
 stack_pimpl<T, Size, Alignment>::stack_pimpl(value_type&& rhs)
 {
-    new (&get()) value_type(std::move(rhs));
+    new (&get()) value_type(move(rhs));
 }
 
 
 template <typename T, size_t Size, size_t Alignment>
 auto stack_pimpl<T, Size, Alignment>::operator=(value_type&& rhs) -> self_t&
 {
-    get() = std::move(rhs);
+    get() = move(rhs);
     return *this;
 }
 
@@ -289,7 +289,7 @@ auto stack_pimpl<T, Size, Alignment>::get() const noexcept -> const_reference
 template <typename T, size_t Size, size_t Alignment>
 void stack_pimpl<T, Size, Alignment>::swap(self_t& rhs)
 {
-    std::swap(get(), rhs.get());
+    PYCPP_NAMESPACE::swap(get(), rhs.get());
 }
 
 PYCPP_END_NAMESPACE

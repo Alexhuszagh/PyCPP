@@ -7,8 +7,9 @@
 
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/string.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <type_traits>
 
 PYCPP_USING_NAMESPACE
 
@@ -26,6 +27,6 @@ TEST(basic_string, hash)
 {
     using basic_string_type = basic_string<char>;
     using hash_type = hash<basic_string_type>;
-    using result_type = decltype(hash_type()(std::declval<basic_string_type>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using result_type = decltype(hash_type()(declval<basic_string_type>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }

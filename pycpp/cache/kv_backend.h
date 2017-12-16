@@ -43,7 +43,7 @@ enum kv_options
 // ALIAS
 // -----
 
-using comparator_callback = std::function<void(
+using comparator_callback = function<void(
     const void*& s1, size_t s1len,
     const void*& s2, size_t s2len)
 >;

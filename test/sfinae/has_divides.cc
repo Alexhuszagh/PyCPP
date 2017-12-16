@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/sfinae/has_divides.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <utility>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,12 +17,12 @@ PYCPP_USING_NAMESPACE
 
 TEST(has_divides, has_divides)
 {
-    using pair = std::pair<int, int>;
+    using p1 = pair<int, int>;
 
     static_assert(has_divides<int>::value, "");
     static_assert(has_divides<int, int>::value, "");
-    static_assert(!has_divides<pair>::value, "");
-    static_assert(!has_divides<pair, pair>::value, "");
-    static_assert(!has_divides<pair, int>::value, "");
-    static_assert(!has_divides<int, pair>::value, "");
+    static_assert(!has_divides<p1>::value, "");
+    static_assert(!has_divides<p1, p1>::value, "");
+    static_assert(!has_divides<p1, int>::value, "");
+    static_assert(!has_divides<int, p1>::value, "");
 }

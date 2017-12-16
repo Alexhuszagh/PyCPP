@@ -4,7 +4,7 @@
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/null.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -58,7 +58,7 @@ lexical_null_formatter::operator string_view() const
 lexical_null_extractor::lexical_null_extractor(const string_view &string)
 {
     if (string != string_view(NULL_STRING)) {
-        throw std::runtime_error("String is not null.");
+        throw runtime_error("String is not null.");
     }
 }
 

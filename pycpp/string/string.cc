@@ -5,7 +5,7 @@
 #include <pycpp/string/string.h>
 #include <pycpp/string/unicode.h>
 #include <pycpp/string/whitespace.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

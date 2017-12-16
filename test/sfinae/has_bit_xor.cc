@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/sfinae/has_bit_xor.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <utility>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,12 +17,12 @@ PYCPP_USING_NAMESPACE
 
 TEST(has_bit_xor, has_bit_xor)
 {
-    using pair = std::pair<int, int>;
+    using p1 = pair<int, int>;
 
     static_assert(has_bit_xor<int>::value, "");
     static_assert(has_bit_xor<int, int>::value, "");
-    static_assert(!has_bit_xor<pair>::value, "");
-    static_assert(!has_bit_xor<pair, pair>::value, "");
-    static_assert(!has_bit_xor<pair, int>::value, "");
-    static_assert(!has_bit_xor<int, pair>::value, "");
+    static_assert(!has_bit_xor<p1>::value, "");
+    static_assert(!has_bit_xor<p1, p1>::value, "");
+    static_assert(!has_bit_xor<p1, int>::value, "");
+    static_assert(!has_bit_xor<int, p1>::value, "");
 }

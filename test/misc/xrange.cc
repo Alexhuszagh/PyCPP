@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/misc/xrange.h>
+#include <pycpp/stl/numeric.h>
 #include <gtest/gtest.h>
-#include <numeric>
 
 PYCPP_USING_NAMESPACE
 
@@ -18,10 +18,10 @@ PYCPP_USING_NAMESPACE
 TEST(xrange, xrange)
 {
     auto r = xrange(10);
-    EXPECT_EQ(std::accumulate(r.begin(), r.end(), 0), 45);
+    EXPECT_EQ(accumulate(r.begin(), r.end(), 0), 45);
 
     r = xrange(0, 10, 1);
-    EXPECT_EQ(std::accumulate(r.begin(), r.end(), 0), 45);
+    EXPECT_EQ(accumulate(r.begin(), r.end(), 0), 45);
 }
 
 
@@ -29,13 +29,13 @@ TEST(xrange, xrange_mismatch)
 {
     // Here we're trying to break xrange.
     auto r = xrange(10, 5, -1);
-    EXPECT_EQ(std::accumulate(r.begin(), r.end(), 0), 40);
+    EXPECT_EQ(accumulate(r.begin(), r.end(), 0), 40);
 
     r = xrange(10, 5, 1);
-    EXPECT_EQ(std::accumulate(r.begin(), r.end(), 0), 0);
+    EXPECT_EQ(accumulate(r.begin(), r.end(), 0), 0);
 
     r = xrange(5, 10, 2);
-    EXPECT_EQ(std::accumulate(r.begin(), r.end(), 0), 21);
+    EXPECT_EQ(accumulate(r.begin(), r.end(), 0), 21);
 
     try {
         r = xrange(5, 10, 0);

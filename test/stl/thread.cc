@@ -6,8 +6,9 @@
  */
 
 #include <pycpp/stl/thread.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <type_traits>
 
 PYCPP_USING_NAMESPACE
 
@@ -16,7 +17,7 @@ PYCPP_USING_NAMESPACE
 
 TEST(thread, hash)
 {
-    using hash_type = hash<std::thread::id>;
-    using result_type = decltype(hash_type()(std::declval<std::thread::id>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using hash_type = hash<thread::id>;
+    using result_type = decltype(hash_type()(declval<thread::id>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }

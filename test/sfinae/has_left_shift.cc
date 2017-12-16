@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/sfinae/has_left_shift.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <utility>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,12 +17,12 @@ PYCPP_USING_NAMESPACE
 
 TEST(has_left_shift, has_left_shift)
 {
-    using pair = std::pair<int, int>;
+    using p1 = pair<int, int>;
 
     static_assert(has_left_shift<int>::value, "");
     static_assert(has_left_shift<int, int>::value, "");
-    static_assert(!has_left_shift<pair>::value, "");
-    static_assert(!has_left_shift<pair, pair>::value, "");
-    static_assert(!has_left_shift<pair, int>::value, "");
-    static_assert(!has_left_shift<int, pair>::value, "");
+    static_assert(!has_left_shift<p1>::value, "");
+    static_assert(!has_left_shift<p1, p1>::value, "");
+    static_assert(!has_left_shift<p1, int>::value, "");
+    static_assert(!has_left_shift<int, p1>::value, "");
 }

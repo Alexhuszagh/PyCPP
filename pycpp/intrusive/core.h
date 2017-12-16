@@ -10,6 +10,7 @@
 #include <pycpp/iterator/transform.h>
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -19,13 +20,13 @@ namespace sequence_detail
 // -----------
 
 template <typename P>
-using deref = decltype(*std::declval<P>());
+using deref = decltype(*declval<P>());
 
 template <typename P>
 using double_deref = deref<deref<P>>;
 
 template <typename P>
-using double_deref_value = typename remove_reference<double_deref<P>>::type;
+using double_deref_value = remove_reference_t<double_deref<P>>;
 
 template <typename P>
 using const_double_deref = const double_deref_value<P>&;

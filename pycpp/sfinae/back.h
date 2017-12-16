@@ -46,28 +46,28 @@ PYCPP_HAS_MEMBER_FUNCTION(back, has_back, typename C::reference (C::*)());
 struct back
 {
     template <typename T>
-    typename std::enable_if<has_back<T>::value && !back_detail::is_const<T>::value, typename T::reference>::type
+    enable_if_t<has_back<T>::value && !back_detail::is_const<T>::value, typename T::reference>
     operator()(T &t)
     {
         return t.back();
     }
 
     template <typename T>
-    typename std::enable_if<!has_back<T>::value && !back_detail::is_const<T>::value, typename T::reference>::type
+    enable_if_t<!has_back<T>::value && !back_detail::is_const<T>::value, typename T::reference>
     operator()(T &t)
     {
         return *t.rbegin();
     }
 
     template <typename T>
-    typename std::enable_if<has_back<T>::value, typename T::const_reference>::type
+    enable_if_t<has_back<T>::value, typename T::const_reference>
     operator()(const T &t) const
     {
         return t.back();
     }
 
     template <typename T>
-    typename std::enable_if<!has_back<T>::value, typename T::const_reference>::type
+    enable_if_t<!has_back<T>::value, typename T::const_reference>
     operator()(const T &t) const
     {
         return *t.rbegin();

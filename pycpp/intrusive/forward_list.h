@@ -9,6 +9,7 @@
 
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/limits.h>
+#include <pycpp/stl/memory.h>
 // TODO:
 
 PYCPP_BEGIN_NAMESPACE
@@ -50,7 +51,7 @@ public:
     intrusive_forward_list_iterator(const self_t&) = default;
     self_t& operator=(const self_t&) = default;
 //    template <typename U>
-//    enable_if<is_same<T, add_const<U>::type>::value, self_t&>
+//    enable_if_t<is_same<T, add_const_t<U>>::value, self_t&>
 //    operator=(const intrusive_forward_list_iterator<U, DifferenceType, Pointer, Reference>&);
 
     // OPERATORS
@@ -205,14 +206,14 @@ auto intrusive_forward_list_iterator<T>::operator++(int) -> self_t
 template <typename T>
 auto intrusive_forward_list_iterator<T>::operator->() -> pointer
 {
-    return std::addressof(operator*());
+    return addressof(operator*());
 }
 
 
 template <typename T>
 auto intrusive_forward_list_iterator<T>::operator->() const -> const_pointer
 {
-    return std::addressof(operator*());
+    return addressof(operator*());
 }
 
 
@@ -316,7 +317,7 @@ bool intrusive_forward_list<T>::empty() const noexcept
 template <typename T>
 auto intrusive_forward_list<T>::size() const noexcept -> size_type
 {
-    return std::distance(begin(), end());
+    return distance(begin(), end());
 }
 
 

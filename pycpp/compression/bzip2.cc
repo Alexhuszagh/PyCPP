@@ -20,7 +20,7 @@ static constexpr int BZ2_BLOCK_SIZE = 9;
 static constexpr int BZ2_VERBOSITY = 0;
 static constexpr int BZ2_WORK_FACTOR = 30;
 
-// Calculated using `(std::numeric_limits<T>::max() / 1.01) - 600`.
+// Calculated using `(numeric_limits<T>::max() / 1.01) - 600`.
 #if SYSTEM_ARCHITECTURE == 16
     static const uint16_t UNCOMPRESSED_MAX = 0xFB24ULL;
 #elif SYSTEM_ARCHITECTURE == 32
@@ -47,7 +47,7 @@ static constexpr int BZ2_WORK_FACTOR = 30;
 static size_t bz2_compress_bound(size_t size)
 {
     if (size > UNCOMPRESSED_MAX) {
-        throw std::overflow_error("Maximum compressed size would overflow size_t.");
+        throw overflow_error("Maximum compressed size would overflow size_t.");
     }
 
     return static_cast<size_t>((1.01 * size) + 600);
@@ -213,13 +213,13 @@ bz2_compressor::bz2_compressor(int compress_level):
 
 
 bz2_compressor::bz2_compressor(bz2_compressor&& rhs):
-    ptr_(std::move(rhs.ptr_))
+    ptr_(move(rhs.ptr_))
 {}
 
 
 bz2_compressor & bz2_compressor::operator=(bz2_compressor&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 
@@ -252,13 +252,13 @@ bz2_decompressor::bz2_decompressor():
 
 
 bz2_decompressor::bz2_decompressor(bz2_decompressor&& rhs):
-    ptr_(std::move(rhs.ptr_))
+    ptr_(move(rhs.ptr_))
 {}
 
 
 bz2_decompressor & bz2_decompressor::operator=(bz2_decompressor&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 

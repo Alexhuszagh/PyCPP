@@ -148,8 +148,8 @@ protected:
     verify_peer_t verifypeer;
     dns_cache_t cache = nullptr;
 
-    std::stringstream method_header() const;
-    std::stringstream method_header(const response_t&) const;
+    stringstream method_header() const;
+    stringstream method_header(const response_t&) const;
 };
 
 
@@ -160,15 +160,15 @@ protected:
 template <typename T>
 void set_option(request_t& request, T&& t)
 {
-    request.set_option(std::forward<T>(t));
+    request.set_option(forward<T>(t));
 }
 
 
 template <typename T, typename... Ts>
 void set_option(request_t& request, T&& t, Ts&&... ts)
 {
-    set_option(request, std::forward<T>(t));
-    set_option(request, std::forward<Ts>(ts)...);
+    set_option(request, forward<T>(t));
+    set_option(request, forward<Ts>(ts)...);
 }
 
 
@@ -176,7 +176,7 @@ template <typename... Ts>
 response_t Delete(Ts&&... ts)
 {
     request_t request;
-    set_option(request, DELETE, std::forward<Ts>(ts)...);
+    set_option(request, DELETE, forward<Ts>(ts)...);
 
     return request.exec();
 }
@@ -186,7 +186,7 @@ template <typename... Ts>
 response_t Get(Ts&&... ts)
 {
     request_t request;
-    set_option(request, GET, std::forward<Ts>(ts)...);
+    set_option(request, GET, forward<Ts>(ts)...);
 
     return request.exec();
 }
@@ -196,7 +196,7 @@ template <typename... Ts>
 response_t Head(Ts&&... ts)
 {
     request_t request;
-    set_option(request, HEAD, std::forward<Ts>(ts)...);
+    set_option(request, HEAD, forward<Ts>(ts)...);
 
     return request.exec();
 }
@@ -206,7 +206,7 @@ template <typename... Ts>
 response_t Options(Ts&&... ts)
 {
     request_t request;
-    set_option(request, OPTIONS, std::forward<Ts>(ts)...);
+    set_option(request, OPTIONS, forward<Ts>(ts)...);
 
     return request.exec();
 }
@@ -216,7 +216,7 @@ template <typename... Ts>
 response_t Patch(Ts&&... ts)
 {
     request_t request;
-    set_option(request, PATCH, std::forward<Ts>(ts)...);
+    set_option(request, PATCH, forward<Ts>(ts)...);
 
     return request.exec();
 }
@@ -226,7 +226,7 @@ template <typename... Ts>
 response_t Post(Ts&&... ts)
 {
     request_t request;
-    set_option(request, POST, std::forward<Ts>(ts)...);
+    set_option(request, POST, forward<Ts>(ts)...);
 
     return request.exec();
 }
@@ -236,7 +236,7 @@ template <typename... Ts>
 response_t Put(Ts&&... ts)
 {
     request_t request;
-    set_option(request, PUT, std::forward<Ts>(ts)...);
+    set_option(request, PUT, forward<Ts>(ts)...);
 
     return request.exec();
 }
@@ -246,7 +246,7 @@ template <typename... Ts>
 response_t Trace(Ts&&... ts)
 {
     request_t request;
-    set_option(request, TRACE, std::forward<Ts>(ts)...);
+    set_option(request, TRACE, forward<Ts>(ts)...);
 
     return request.exec();
 }
@@ -259,7 +259,7 @@ response_t Trace(Ts&&... ts)
 template <typename... Ts>
 std::string request_t::message(Ts&&... ts) const
 {
-    std::stringstream stream;
+    stringstream stream;
 
     // get our formatted body
     std::string body;
@@ -270,7 +270,7 @@ std::string request_t::message(Ts&&... ts) const
     }
 
     // get formatted headers
-    auto headers = method_header(std::forward<Ts>(ts)...);
+    auto headers = method_header(forward<Ts>(ts)...);
     if (!body.empty()) {
         headers << "Content-Length: " << body.size() << "\r\n";
     }
@@ -314,7 +314,7 @@ inline response_t request_t::exec()
         https_connection_t connection;
         return exec(connection);
     } else {
-        throw std::runtime_error("Network scheme " + service + " is not supported.");
+        throw runtime_error("Network scheme " + service + " is not supported.");
     }
 
     return response_t();

@@ -9,14 +9,14 @@
 
 #include <pycpp/stl/limits.h>
 #include <pycpp/stl/string_view.h>
-#include <cstdint>
+#include <stdint.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
 
-static constexpr int MAX_INTEGER_SIZE = std::numeric_limits<unsigned long long>::digits10 + 3;
+static constexpr int MAX_INTEGER_SIZE = numeric_limits<unsigned long long>::digits10 + 3;
 
 // DECLARATIONS
 // ------------

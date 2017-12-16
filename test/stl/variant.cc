@@ -6,11 +6,11 @@
  *  \brief variant unittests.
  */
 
+#include <pycpp/stl/sstream.h>
 #include <pycpp/stl/string.h>
+#include <pycpp/stl/tuple.h>
 #include <pycpp/stl/variant.h>
 #include <gtest/gtest.h>
-#include <sstream>
-#include <tuple>
 
 PYCPP_USING_NAMESPACE
 

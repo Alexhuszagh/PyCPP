@@ -4,7 +4,7 @@
 #include <pycpp/lexical/bool.h>
 #include <pycpp/lexical/format.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -66,7 +66,7 @@ lexical_bool_extractor::lexical_bool_extractor(const string_view &string)
     } else if (string == string_view(FALSE_STRING)) {
         data_ = false;
     } else {
-        throw std::runtime_error("String is not boolean.");
+        throw runtime_error("String is not boolean.");
     }
 }
 

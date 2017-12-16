@@ -6,8 +6,9 @@
  */
 
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <type_traits>
 
 PYCPP_USING_NAMESPACE
 
@@ -23,17 +24,17 @@ TEST(allocator, allocator)
 
 TEST(unique_ptr, hash)
 {
-    using unique_ptr = std::unique_ptr<int>;
-    using hash_type = hash<unique_ptr>;
-    using result_type = decltype(hash_type()(std::declval<unique_ptr>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using unique_ptr_type = unique_ptr<int>;
+    using hash_type = hash<unique_ptr_type>;
+    using result_type = decltype(hash_type()(declval<unique_ptr_type>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }
 
 
 TEST(shared_ptr, hash)
 {
-    using shared_ptr = std::shared_ptr<int>;
-    using hash_type = hash<shared_ptr>;
-    using result_type = decltype(hash_type()(std::declval<shared_ptr>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using shared_ptr_type = shared_ptr<int>;
+    using hash_type = hash<shared_ptr_type>;
+    using result_type = decltype(hash_type()(declval<shared_ptr_type>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }

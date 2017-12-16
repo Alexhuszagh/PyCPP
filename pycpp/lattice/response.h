@@ -14,6 +14,7 @@
 #include <pycpp/lattice/redirect.h>
 #include <pycpp/lattice/transfer.h>
 #include <pycpp/lattice/url.h>
+#include <pycpp/lexical.h>
 #include <pycpp/stl/tuple.h>
 #include <pycpp/string/string.h>
 
@@ -122,13 +123,13 @@ enum content_t
 };
 
 
-using mime_t = std::tuple<content_t, std::string>;
+using mime_t = tuple<content_t, std::string>;
 
 template <typename T>
-using is_response = std::is_same<T, response_t>;
+using is_response = is_same<T, response_t>;
 
 template <typename T>
-using disable_if_response = typename std::enable_if<!is_response<T>::value>::type;
+using disable_if_response = enable_if_t<!is_response<T>::value>;
 
 
 /**
@@ -237,7 +238,8 @@ response_t::response_t(Connection& connection)
         // connection has the transfer set and is not identity
         body_ = connection.chunked();
     } else if (headers().find("content-length") != headers().end()) {
-        body_ = connection.body(std::stol(headers().at("content-length")));
+        string_view view(headers().at("content-length"));
+        body_ = connection.body(lexical<long>(view));
     } else {
         // no content-length or chunked storage, just read
         body_ = connection.read();

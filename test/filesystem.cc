@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/filesystem.h>
+#include <pycpp/stl/fstream.h>
 #include <gtest/gtest.h>
-#include <fstream>
 
 PYCPP_USING_NAMESPACE
 

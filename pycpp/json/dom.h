@@ -42,7 +42,7 @@ private:
     json_value_t* root_ = nullptr;
     bool has_key_ = false;
     json_string_t key_;
-    std::deque<json_value_t*> levels_;
+    deque<json_value_t*> levels_;
 };
 
 
@@ -52,7 +52,7 @@ private:
 struct json_document_t: json_value_t
 {
     void loads(const string_wrapper&);
-    void load(std::istream&);
+    void load(istream&);
     void load(const string_view&);
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     void load(const wstring_view&);
@@ -60,7 +60,7 @@ struct json_document_t: json_value_t
 #endif                                          // WINDOWS
 
     std::string dumps(char = ' ', int = 4);
-    void dump(std::ostream&, char = ' ', int = 4);
+    void dump(ostream&, char = ' ', int = 4);
     void dump(const string_view&, char = ' ', int = 4);
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     void dump(const wstring_view&, char = ' ', int = 4);

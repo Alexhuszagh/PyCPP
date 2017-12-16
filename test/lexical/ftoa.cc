@@ -4,9 +4,9 @@
 #include <pycpp/lexical/atof.h>
 #include <pycpp/lexical/format.h>
 #include <pycpp/lexical/ftoa.h>
+#include <pycpp/stl/limits.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <limits>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 

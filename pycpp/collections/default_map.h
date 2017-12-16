@@ -10,7 +10,7 @@
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/map.h>
 #include <pycpp/stl/unordered_map.h>
-#include <cassert>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 

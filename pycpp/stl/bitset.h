@@ -18,20 +18,26 @@ PYCPP_BEGIN_NAMESPACE
 template <typename Key>
 struct hash;
 
+// ALIAS
+// -----
+
+template <size_t Size>
+using bitset = std::bitset<Size>;
+
 // SPECIALIZATION
 // --------------
 
 #if USE_XXHASH
 
 template <size_t Size>
-struct hash<std::bitset<Size>>
+struct hash<bitset<Size>>
 {
-    using argument_type = std::bitset<Size>;
+    using argument_type = bitset<Size>;
     using result_type = size_t;
 
-    inline size_t operator()(const std::bitset<Size>& x) const noexcept
+    inline size_t operator()(const bitset<Size>& x) const noexcept
     {
-        return std::hash<std::bitset<Size>>()(x);
+        return std::hash<bitset<Size>>()(x);
     }
 };
 

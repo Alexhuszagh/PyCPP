@@ -10,7 +10,8 @@
 #include <pycpp/iterator/range.h>
 #include <pycpp/misc/ordering.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cmath>
+#include <pycpp/stl/utility.h>
+#include <math.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -21,12 +22,12 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief xrange iterator adaptor.
  */
 template <typename T>
-struct xrange_iterator: std::iterator<std::random_access_iterator_tag, T>
+struct xrange_iterator: iterator<random_access_iterator_tag, T>
 {
     // MEMBER TYPES
     // ------------
     typedef xrange_iterator<T> self;
-    typedef std::iterator<std::random_access_iterator_tag, T> base;
+    typedef iterator<random_access_iterator_tag, T> base;
     using typename base::value_type;
     using typename base::difference_type;
     typedef value_type& reference;
@@ -242,8 +243,8 @@ auto xrange_iterator<T>::operator->() const -> const_pointer
 template <typename T>
 void xrange_iterator<T>::swap(self& rhs)
 {
-    std::swap(value, rhs.value);
-    std::swap(step, rhs.step);
+    PYCPP_NAMESPACE::swap(value, rhs.value);
+    PYCPP_NAMESPACE::swap(step, rhs.step);
 }
 
 
@@ -266,14 +267,14 @@ range<xrange_iterator<T>> xrange(T start, T stop, T step = 1)
     // be unidirectional.
     T distance = stop - start;
     if (step == 0) {
-        throw std::runtime_error("Cannot have a 0-step range.");
+        throw runtime_error("Cannot have a 0-step range.");
     } else if ((step > 0) ^ (distance > 0)) {
         // we have a negative distance, or a negative step, 0 range
         return range_type();
     }
 
     // force exactly step_count steps.
-    T step_count = static_cast<T>(std::ceil(double(distance) / step));
+    T step_count = static_cast<T>(ceil(double(distance) / step));
     stop = start + (step * step_count);
 
     return {iterator(start, step), iterator(stop, step)};

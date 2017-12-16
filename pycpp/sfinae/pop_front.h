@@ -24,14 +24,14 @@ PYCPP_HAS_MEMBER_FUNCTION(pop_front, has_pop_front, void (C::*)());
 struct pop_front
 {
     template <typename T>
-    typename std::enable_if<has_pop_front<T>::value, void>::type
+    enable_if_t<has_pop_front<T>::value, void>
     operator()(T &t)
     {
         t.pop_front();
     }
 
     template <typename T>
-    typename std::enable_if<!has_pop_front<T>::value, void>::type
+    enable_if_t<!has_pop_front<T>::value, void>
     operator()(T &t)
     {
         t.erase(t.begin());

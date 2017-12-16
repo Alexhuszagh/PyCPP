@@ -4,7 +4,7 @@
 
 #include <pycpp/stl/algorithm.h>
 #include <pycpp/stream/filter.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

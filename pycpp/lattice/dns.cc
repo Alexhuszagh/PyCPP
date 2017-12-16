@@ -2,11 +2,12 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lattice/dns.h>
+#include <pycpp/stl/stdexcept.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
-#include <cassert>
-#include <cstdlib>
-#include <cstring>
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -136,7 +137,7 @@ dns_lookup_t::dns_lookup_t(const string_wrapper& host, const string_wrapper& ser
     }
 
     if (getaddrinfo(node, port, &hints, &result)) {
-        throw std::runtime_error("Unable to get address from getaddrinfo(): " + std::string(host) + std::string(service));
+        throw runtime_error("Unable to get address from getaddrinfo(): " + std::string(host) + std::string(service));
     }
 
     info = result;

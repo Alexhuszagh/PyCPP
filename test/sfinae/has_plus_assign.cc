@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/sfinae/has_plus_assign.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <utility>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,12 +17,12 @@ PYCPP_USING_NAMESPACE
 
 TEST(has_plus_assign, has_plus_assign)
 {
-    using pair = std::pair<int, int>;
+    using p1 = pair<int, int>;
 
     static_assert(has_plus_assign<int>::value, "");
     static_assert(has_plus_assign<int, int>::value, "");
-    static_assert(!has_plus_assign<pair>::value, "");
-    static_assert(!has_plus_assign<pair, pair>::value, "");
-    static_assert(!has_plus_assign<pair, int>::value, "");
-    static_assert(!has_plus_assign<int, pair>::value, "");
+    static_assert(!has_plus_assign<p1>::value, "");
+    static_assert(!has_plus_assign<p1, p1>::value, "");
+    static_assert(!has_plus_assign<p1, int>::value, "");
+    static_assert(!has_plus_assign<int, p1>::value, "");
 }

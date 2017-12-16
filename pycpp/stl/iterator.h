@@ -8,12 +8,36 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/preprocessor/compiler.h>
 #include <iterator>
 
 PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
+
+// TODO: more stuff to add...
+
+using std::advance;
+using std::distance;
+using std::next;
+using std::prev;
+using std::begin;
+using std::end;
+using std::front_inserter;
+using std::back_inserter;
+using std::inserter;
+
+#if defined(HAVE_CPP14)
+
+using std::cbegin;
+using std::cend;
+using std::rbegin;
+using std::rend;
+using std::crbegin;
+using std::crend;
+
+#endif          // HAVE_CPP14
 
 template <
     typename Category,

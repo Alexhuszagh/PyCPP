@@ -9,7 +9,9 @@
 #pragma once
 
 #include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/tuple.h>
 #include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <warnings/push.h>
 #include <warnings/assign-could-not-be-generated.h>
 
@@ -20,6 +22,26 @@ PYCPP_BEGIN_NAMESPACE
 
 template <typename T1, typename T2>
 class compressed_pair;
+
+// SPECIALIZATION
+// --------------
+
+template <typename T1, typename T2>
+struct tuple_element<0, compressed_pair<T1, T2>>
+{
+    using type = T1;
+};
+
+
+template <typename T1, typename T2>
+struct tuple_element<1, compressed_pair<T1, T2>>
+{
+    using type = T2;
+};
+
+template <typename T1, typename T2>
+struct tuple_size<compressed_pair<T1, T2>>: integral_constant<size_t, 2>
+{};
 
 namespace compressed_detail
 {
@@ -71,10 +93,13 @@ template <typename T1, typename T2>
 using compressed_switch = compressed_pair_switch_helper<
     T1,
     T2,
-    is_same<typename remove_cv<T1>::type, typename remove_cv<T2>::type>::value,
+    is_same<remove_cv_t<T1>, remove_cv_t<T2>>::value,
     is_empty<T1>::value,
     is_empty<T2>::value
 >;
+
+template <size_t I>
+struct get_pair;
 
 template <typename T1, typename T2, int Version>
 class compressed_pair_impl;
@@ -88,26 +113,22 @@ public:
     // ------------
     using first_type = T1;
     using second_type = T2;
-    using first_reference = first_type&;
-    using first_const_reference = const first_type&;
-    using second_reference = second_type&;
-    using second_const_reference = const second_type&;
 
     // MEMBER FUNCTIONS
     // ----------------
     compressed_pair_impl();
-    compressed_pair_impl(first_const_reference x, second_const_reference y);
-    compressed_pair_impl(first_const_reference x);
-    compressed_pair_impl(second_const_reference y);
+    compressed_pair_impl(const first_type& x, const second_type& y);
+    compressed_pair_impl(const first_type& x);
+    compressed_pair_impl(const second_type& y);
     compressed_pair_impl(first_type&& x, second_type&& y);
     compressed_pair_impl(first_type&& x);
     compressed_pair_impl(second_type&& y);
 
     // ELEMENT ACCESS
-    first_reference first();
-    first_const_reference first() const;
-    second_reference second();
-    second_const_reference second() const;
+    constexpr first_type& first();
+    constexpr const first_type& first() const;
+    constexpr second_type& second();
+    constexpr const second_type& second() const;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -120,33 +141,29 @@ private:
 
 // 1    derive from T1
 template <typename T1, typename T2>
-class compressed_pair_impl<T1, T2, 1>: protected remove_cv<T1>::type
+class compressed_pair_impl<T1, T2, 1>: protected remove_cv_t<T1>
 {
 public:
     // MEMBER TYPES
     // ------------
     using first_type = T1;
     using second_type = T2;
-    using first_reference = first_type&;
-    using first_const_reference = const first_type&;
-    using second_reference = second_type&;
-    using second_const_reference = const second_type&;
 
     // MEMBER FUNCTIONS
     // ----------------
     compressed_pair_impl();
-    compressed_pair_impl(first_const_reference x, second_const_reference y);
-    compressed_pair_impl(first_const_reference x);
-    compressed_pair_impl(second_const_reference y);
+    compressed_pair_impl(const first_type& x, const second_type& y);
+    compressed_pair_impl(const first_type& x);
+    compressed_pair_impl(const second_type& y);
     compressed_pair_impl(first_type&& x, second_type&& y);
     compressed_pair_impl(first_type&& x);
     compressed_pair_impl(second_type&& y);
 
     // ELEMENT ACCESS
-    first_reference first();
-    first_const_reference first() const;
-    second_reference second();
-    second_const_reference second() const;
+    constexpr first_type& first();
+    constexpr const first_type& first() const;
+    constexpr second_type& second();
+    constexpr const second_type& second() const;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -158,33 +175,29 @@ private:
 
 // 2    derive from T2
 template <typename T1, typename T2>
-class compressed_pair_impl<T1, T2, 2>: protected remove_cv<T2>::type
+class compressed_pair_impl<T1, T2, 2>: protected remove_cv_t<T2>
 {
 public:
     // MEMBER TYPES
     // ------------
     using first_type = T1;
     using second_type = T2;
-    using first_reference = first_type&;
-    using first_const_reference = const first_type&;
-    using second_reference = second_type&;
-    using second_const_reference = const second_type&;
 
     // MEMBER FUNCTIONS
     // ----------------
     compressed_pair_impl();
-    compressed_pair_impl(first_const_reference x, second_const_reference y);
-    compressed_pair_impl(first_const_reference x);
-    compressed_pair_impl(second_const_reference y);
+    compressed_pair_impl(const first_type& x, const second_type& y);
+    compressed_pair_impl(const first_type& x);
+    compressed_pair_impl(const second_type& y);
     compressed_pair_impl(first_type&& x, second_type&& y);
     compressed_pair_impl(first_type&& x);
     compressed_pair_impl(second_type&& y);
 
     // ELEMENT ACCESS
-    first_reference first();
-    first_const_reference first() const;
-    second_reference second();
-    second_const_reference second() const;
+    constexpr first_type& first();
+    constexpr const first_type& first() const;
+    constexpr second_type& second();
+    constexpr const second_type& second() const;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -197,34 +210,30 @@ private:
 // 3    derive from T1 and T2
 template <typename T1, typename T2>
 class compressed_pair_impl<T1, T2, 3>:
-    protected remove_cv<T1>::type,
-    protected remove_cv<T2>::type
+    protected remove_cv_t<T1>,
+    protected remove_cv_t<T2>
 {
 public:
     // MEMBER TYPES
     // ------------
     using first_type = T1;
     using second_type = T2;
-    using first_reference = first_type&;
-    using first_const_reference = const first_type&;
-    using second_reference = second_type&;
-    using second_const_reference = const second_type&;
 
     // MEMBER FUNCTIONS
     // ----------------
     compressed_pair_impl();
-    compressed_pair_impl(first_const_reference x, second_const_reference y);
-    compressed_pair_impl(first_const_reference x);
-    compressed_pair_impl(second_const_reference y);
+    compressed_pair_impl(const first_type& x, const second_type& y);
+    compressed_pair_impl(const first_type& x);
+    compressed_pair_impl(const second_type& y);
     compressed_pair_impl(first_type&& x, second_type&& y);
     compressed_pair_impl(first_type&& x);
     compressed_pair_impl(second_type&& y);
 
     // ELEMENT ACCESS
-    first_reference first();
-    first_const_reference first() const;
-    second_reference second();
-    second_const_reference second() const;
+    constexpr first_type& first();
+    constexpr const first_type& first() const;
+    constexpr second_type& second();
+    constexpr const second_type& second() const;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -238,31 +247,27 @@ public:
 //  instance of T2 just in case the user is relying on first() and
 //  second() returning different objects (albeit both empty).
 template <typename T1, typename T2>
-class compressed_pair_impl<T1, T2, 4>: protected remove_cv<T1>::type
+class compressed_pair_impl<T1, T2, 4>: protected remove_cv_t<T1>
 {
 public:
     // MEMBER TYPES
     // ------------
     using first_type = T1;
     using second_type = T2;
-    using first_reference = first_type&;
-    using first_const_reference = const first_type&;
-    using second_reference = second_type&;
-    using second_const_reference = const second_type&;
 
     // MEMBER FUNCTIONS
     // ----------------
     compressed_pair_impl();
-    compressed_pair_impl(first_const_reference x, second_const_reference y);
-    compressed_pair_impl(first_const_reference x);
+    compressed_pair_impl(const first_type& x, const second_type& y);
+    compressed_pair_impl(const first_type& x);
     compressed_pair_impl(first_type&& x, second_type&& y);
     compressed_pair_impl(first_type&& x);
 
     // ELEMENT ACCESS
-    first_reference first();
-    first_const_reference first() const;
-    second_reference second();
-    second_const_reference second() const;
+    constexpr first_type& first();
+    constexpr const first_type& first() const;
+    constexpr second_type& second();
+    constexpr const second_type& second() const;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -280,24 +285,20 @@ public:
     // ------------
     using first_type = T1;
     using second_type = T2;
-    using first_reference = first_type&;
-    using first_const_reference = const first_type&;
-    using second_reference = second_type&;
-    using second_const_reference = const second_type&;
 
     // MEMBER FUNCTIONS
     // ----------------
     compressed_pair_impl();
-    compressed_pair_impl(first_const_reference x, second_const_reference y);
-    compressed_pair_impl(first_const_reference x);
+    compressed_pair_impl(const first_type& x, const second_type& y);
+    compressed_pair_impl(const first_type& x);
     compressed_pair_impl(first_type&& x, second_type&& y);
     compressed_pair_impl(first_type&& x);
 
     // ELEMENT ACCESS
-    first_reference first();
-    first_const_reference first() const;
-    second_reference second();
-    second_const_reference second() const;
+    constexpr first_type& first();
+    constexpr const first_type& first() const;
+    constexpr second_type& second();
+    constexpr const second_type& second() const;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -326,20 +327,20 @@ compressed_pair_impl<T1, T2, 0>::compressed_pair_impl()
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(first_const_reference x, second_const_reference y):
+compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(const first_type& x, const second_type& y):
     first_(x),
     second_(y)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(first_const_reference x):
+compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(const first_type& x):
     first_(x)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(second_const_reference y):
+compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(const second_type& y):
     second_(y)
 {}
 
@@ -364,28 +365,28 @@ compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(second_type&& y):
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 0>::first() -> first_reference
+constexpr auto compressed_pair_impl<T1, T2, 0>::first() -> first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 0>::first() const -> first_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 0>::first() const -> const first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 0>::second() -> second_reference
+constexpr auto compressed_pair_impl<T1, T2, 0>::second() -> second_type&
 {
     return second_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 0>::second() const -> second_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 0>::second() const -> const second_type&
 {
     return second_;
 }
@@ -406,20 +407,20 @@ compressed_pair_impl<T1, T2, 1>::compressed_pair_impl()
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(first_const_reference x, second_const_reference y):
+compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(const first_type& x, const second_type& y):
     first_type(x),
     second_(y)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(first_const_reference x):
+compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(const first_type& x):
     first_type(x)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(second_const_reference y):
+compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(const second_type& y):
     second_(y)
 {}
 
@@ -444,28 +445,28 @@ compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(second_type&& y):
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 1>::first() -> first_reference
+constexpr auto compressed_pair_impl<T1, T2, 1>::first() -> first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 1>::first() const -> first_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 1>::first() const -> const first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 1>::second() -> second_reference
+constexpr auto compressed_pair_impl<T1, T2, 1>::second() -> second_type&
 {
     return second_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 1>::second() const -> second_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 1>::second() const -> const second_type&
 {
     return second_;
 }
@@ -486,20 +487,20 @@ compressed_pair_impl<T1, T2, 2>::compressed_pair_impl()
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(first_const_reference x, second_const_reference y):
+compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(const first_type& x, const second_type& y):
     second_type(y),
     first_(x)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(first_const_reference x):
+compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(const first_type& x):
     first_(x)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(second_const_reference y):
+compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(const second_type& y):
     second_type(y)
 {}
 
@@ -524,28 +525,28 @@ compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(second_type&& y):
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 2>::first() -> first_reference
+constexpr auto compressed_pair_impl<T1, T2, 2>::first() -> first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 2>::first() const -> first_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 2>::first() const -> const first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 2>::second() -> second_reference
+constexpr auto compressed_pair_impl<T1, T2, 2>::second() -> second_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 2>::second() const -> second_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 2>::second() const -> const second_type&
 {
     return *this;
 }
@@ -566,20 +567,20 @@ compressed_pair_impl<T1, T2, 3>::compressed_pair_impl()
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(first_const_reference x, second_const_reference y):
+compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(const first_type& x, const second_type& y):
     first_type(x),
     second_type(y)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(first_const_reference x):
+compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(const first_type& x):
     first_type(x)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(second_const_reference y):
+compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(const second_type& y):
     second_type(y)
 {}
 
@@ -604,28 +605,28 @@ compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(second_type&& y):
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 3>::first() -> first_reference
+constexpr auto compressed_pair_impl<T1, T2, 3>::first() -> first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 3>::first() const -> first_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 3>::first() const -> const first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 3>::second() -> second_reference
+constexpr auto compressed_pair_impl<T1, T2, 3>::second() -> second_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 3>::second() const -> second_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 3>::second() const -> const second_type&
 {
     return *this;
 }
@@ -645,14 +646,14 @@ compressed_pair_impl<T1, T2, 4>::compressed_pair_impl()
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_const_reference x, second_const_reference y):
+compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(const first_type& x, const second_type& y):
     first_type(x),
     second_(y)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_const_reference x):
+compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(const first_type& x):
     first_type(x),
     second_(x)
 {}
@@ -673,28 +674,28 @@ compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_type&& x):
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 4>::first() -> first_reference
+constexpr auto compressed_pair_impl<T1, T2, 4>::first() -> first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 4>::first() const -> first_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 4>::first() const -> const first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 4>::second() -> second_reference
+constexpr auto compressed_pair_impl<T1, T2, 4>::second() -> second_type&
 {
     return second_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 4>::second() const -> second_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 4>::second() const -> const second_type&
 {
     return second_;
 }
@@ -714,14 +715,14 @@ compressed_pair_impl<T1, T2, 5>::compressed_pair_impl()
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_const_reference x, second_const_reference y):
+compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(const first_type& x, const second_type& y):
     first_(x),
     second_(y)
 {}
 
 
 template <typename T1, typename T2>
-compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_const_reference x):
+compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(const first_type& x):
     first_(x),
     second_(x)
 {}
@@ -742,28 +743,28 @@ compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_type&& x):
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 5>::first() -> first_reference
+constexpr auto compressed_pair_impl<T1, T2, 5>::first() -> first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 5>::first() const -> first_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 5>::first() const -> const first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 5>::second() -> second_reference
+constexpr auto compressed_pair_impl<T1, T2, 5>::second() -> second_type&
 {
     return second_;
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair_impl<T1, T2, 5>::second() const -> second_const_reference
+constexpr auto compressed_pair_impl<T1, T2, 5>::second() const -> const second_type&
 {
     return second_;
 }
@@ -805,10 +806,10 @@ public:
     explicit compressed_pair(second_type&& y);
 
     // ELEMENT ACCESS
-   first_reference first();
-   first_const_reference first() const;
-   second_reference second();
-   second_const_reference second() const;
+   constexpr first_reference first();
+   constexpr first_const_reference first() const;
+   constexpr second_reference second();
+   constexpr second_const_reference second() const;
 
     // MODIFIERS
    void swap(compressed_pair& y);
@@ -827,8 +828,12 @@ public:
     using second_type = T;
     using first_reference = first_type&;
     using first_const_reference = const first_type&;
+    using first_move_reference = first_type&&;
+    using first_const_move_reference = const first_type&&;
     using second_reference = second_type&;
     using second_const_reference = const second_type&;
+    using second_move_reference = second_type&&;
+    using second_const_move_reference = const second_type&&;
 
     compressed_pair();
     compressed_pair(first_const_reference x, second_const_reference y);
@@ -837,10 +842,10 @@ public:
     explicit compressed_pair(first_type&& x);
 
     // ELEMENT ACCESS
-   first_reference first();
-   first_const_reference first() const;
-   second_reference second();
-   second_const_reference second() const;
+   constexpr first_reference first();
+   constexpr first_const_reference first() const;
+   constexpr second_reference second();
+   constexpr second_const_reference second() const;
 
     // MODIFIERS
    void swap(compressed_pair& y);
@@ -893,28 +898,28 @@ compressed_pair<T1, T2>::compressed_pair(second_type&& y):
 
 
 template <typename T1, typename T2>
-auto compressed_pair<T1, T2>::first() -> first_reference
+constexpr auto compressed_pair<T1, T2>::first() -> first_reference
 {
     return base_t::first();
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair<T1, T2>::first() const -> first_const_reference
+constexpr auto compressed_pair<T1, T2>::first() const -> first_const_reference
 {
     return base_t::first();
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair<T1, T2>::second() -> second_reference
+constexpr auto compressed_pair<T1, T2>::second() -> second_reference
 {
     return base_t::second();
 }
 
 
 template <typename T1, typename T2>
-auto compressed_pair<T1, T2>::second() const -> second_const_reference
+constexpr auto compressed_pair<T1, T2>::second() const -> second_const_reference
 {
     return base_t::second();
 }
@@ -958,28 +963,28 @@ compressed_pair<T, T>::compressed_pair(first_type&& x):
 
 
 template <typename T>
-auto compressed_pair<T, T>::first() -> first_reference
+constexpr auto compressed_pair<T, T>::first() -> first_reference
 {
     return base_t::first();
 }
 
 
 template <typename T>
-auto compressed_pair<T, T>::first() const -> first_const_reference
+constexpr auto compressed_pair<T, T>::first() const -> first_const_reference
 {
     return base_t::first();
 }
 
 
 template <typename T>
-auto compressed_pair<T, T>::second() -> second_reference
+constexpr auto compressed_pair<T, T>::second() -> second_reference
 {
     return base_t::second();
 }
 
 
 template <typename T>
-auto compressed_pair<T, T>::second() const -> second_const_reference
+constexpr auto compressed_pair<T, T>::second() const -> second_const_reference
 {
     return base_t::second();
 }
@@ -991,11 +996,164 @@ void compressed_pair<T, T>::swap(compressed_pair<T, T>& y)
     base_t::swap(y);
 }
 
+// NON-MEMBER
 
 template <typename T1, typename T2>
 inline void swap(compressed_pair<T1, T2>& x, compressed_pair<T1, T2>& y)
 {
    x.swap(y);
+}
+
+
+namespace compressed_detail
+{
+// SPECIALIZATION
+// --------------
+
+template <>
+struct get_pair<0>
+{
+    template <typename T1, typename T2>
+    inline constexpr T1& operator()(compressed_pair<T1, T2>& p) noexcept
+    {
+        return p.first();
+    }
+
+    template <typename T1, typename T2>
+    inline constexpr const T1& operator()(const compressed_pair<T1, T2>& p) noexcept
+    {
+        return p.first();
+    }
+
+    template <typename T1, typename T2>
+    inline constexpr T1&& operator()(compressed_pair<T1, T2>&& p) noexcept
+    {
+        return std::forward<T1>(p.first());
+    }
+
+    template <typename T1, typename T2>
+    inline constexpr const T1&& operator()(const compressed_pair<T1, T2>&& p) noexcept
+    {
+        return std::forward<const T1>(p.first());
+    }
+};
+
+
+template <>
+struct get_pair<1>
+{
+    template <typename T1, typename T2>
+    inline constexpr T2& operator()(compressed_pair<T1, T2>& p) noexcept
+    {
+        return p.second();
+    }
+
+    template <typename T1, typename T2>
+    inline constexpr const T2& operator()(const compressed_pair<T1, T2>& p) noexcept
+    {
+        return p.second();
+    }
+
+    template <typename T1, typename T2>
+    inline constexpr T2&& operator()(compressed_pair<T1, T2>&& p) noexcept
+    {
+        return std::forward<T2>(p.second());
+    }
+
+    template <typename T1, typename T2>
+    inline constexpr const T2&& operator()(const compressed_pair<T1, T2>&& p) noexcept
+    {
+        return std::forward<const T2>(p.second());
+    }
+};
+
+}   /* compressed_detail */
+
+
+template <size_t I, typename T1, typename T2>
+inline constexpr tuple_element_t<I, compressed_pair<T1, T2>>&
+get(compressed_pair<T1, T2>& p) noexcept
+{
+    return compressed_detail::get_pair<I>()(p);
+}
+
+
+template <size_t I, typename T1, typename T2>
+inline constexpr const tuple_element_t<I, compressed_pair<T1, T2>>&
+get(const compressed_pair<T1, T2>& p) noexcept
+{
+    return compressed_detail::get_pair<I>()(p);
+}
+
+
+template <size_t I, typename T1, typename T2>
+inline constexpr tuple_element_t<I, compressed_pair<T1, T2>>&&
+get(compressed_pair<T1, T2>&& p) noexcept
+{
+    return compressed_detail::get_pair<I>()(std::move(p));
+}
+
+
+template <size_t I, typename T1, typename T2>
+inline constexpr const tuple_element_t<I, compressed_pair<T1, T2>>&&
+get(const compressed_pair<T1, T2>&& p) noexcept
+{
+    return compressed_detail::get_pair<I>()(std::move(p));
+}
+
+
+template <typename T1, typename T2>
+inline constexpr T1& get(compressed_pair<T1, T2>& p) noexcept
+{
+    return compressed_detail::get_pair<0>()(p);
+}
+
+template <typename T1, typename T2>
+inline constexpr const T1& get(const compressed_pair<T1, T2>& p) noexcept
+{
+    return compressed_detail::get_pair<0>()(p);
+}
+
+
+template <typename T1, typename T2>
+inline constexpr T1&& get(compressed_pair<T1, T2>&& p) noexcept
+{
+    return compressed_detail::get_pair<0>()(std::move(p));
+}
+
+
+template <typename T1, typename T2>
+inline constexpr const T1&& get(const compressed_pair<T1, T2>&& p) noexcept
+{
+    return compressed_detail::get_pair<0>()(std::move(p));
+}
+
+
+template <typename T1, typename T2>
+inline constexpr T1& get(compressed_pair<T2, T1>& p) noexcept
+{
+    return compressed_detail::get_pair<1>()(p);
+}
+
+
+template <typename T1, typename T2>
+inline constexpr const T1& get(const compressed_pair<T2, T1>& p) noexcept
+{
+    return compressed_detail::get_pair<1>()(p);
+}
+
+
+template <typename T1, typename T2>
+inline constexpr T1&& get(compressed_pair<T2, T1>&& p) noexcept
+{
+    return compressed_detail::get_pair<1>()(std::move(p));
+}
+
+
+template <typename T1, typename T2>
+inline constexpr const T1&& get(const compressed_pair<T2, T1>&& p) noexcept
+{
+    return compressed_detail::get_pair<1>()(std::move(p));
 }
 
 PYCPP_END_NAMESPACE

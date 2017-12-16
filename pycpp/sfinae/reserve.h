@@ -9,7 +9,7 @@
 
 #include <pycpp/sfinae/has_member_function.h>
 #include <pycpp/stl/type_traits.h>
-#include <cstddef>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -25,14 +25,14 @@ PYCPP_HAS_MEMBER_FUNCTION(reserve, has_reserve, void (C::*)(typename C::size_typ
 struct reserve
 {
     template <typename T>
-    typename std::enable_if<has_reserve<T>::value, void>::type
+    enable_if_t<has_reserve<T>::value, void>
     operator()(T &t, size_t size)
     {
         t.reserve(size);
     }
 
     template <typename T>
-    typename std::enable_if<!has_reserve<T>::value, void>::type
+    enable_if_t<!has_reserve<T>::value, void>
     operator()(T &t, size_t size)
     {}
 };

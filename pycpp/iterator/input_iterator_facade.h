@@ -15,7 +15,7 @@
 
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/tuple.h>
-#include <cassert>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -32,12 +32,12 @@ PYCPP_BEGIN_NAMESPACE
  *  another generator interface, use an adaptor.
  */
 template <typename G, typename V = typename G::value_type>
-struct input_iterator_facade: std::iterator<std::input_iterator_tag, V>
+struct input_iterator_facade: iterator<input_iterator_tag, V>
 {
 public:
     // MEMBER TYPES
     // ------------
-    using base_t = std::iterator<std::input_iterator_tag, V>;
+    using base_t = iterator<input_iterator_tag, V>;
     using self_t = input_iterator_facade<G, V>;
     using typename base_t::value_type;
     using typename base_t::reference;
@@ -84,7 +84,7 @@ input_iterator_facade<G, V>::input_iterator_facade(G& generator):
 template <typename G, typename V>
 bool input_iterator_facade<G, V>::operator==(const self_t &rhs) const
 {
-    return std::tie(generator_, value_) == std::tie(rhs.generator_, rhs.value_);
+    return tie(generator_, value_) == tie(rhs.generator_, rhs.value_);
 }
 
 

@@ -141,22 +141,22 @@ uint8_t lexical_int_extractor::bytes() const
 {
     if (is_signed()) {
         // must be negative
-        if (data_.i >= std::numeric_limits<int8_t>::min()) {
+        if (data_.i >= numeric_limits<int8_t>::min()) {
             return 1;
-        } else if (data_.i >= std::numeric_limits<int16_t>::min()) {
+        } else if (data_.i >= numeric_limits<int16_t>::min()) {
             return 2;
-        } else if (data_.i >= std::numeric_limits<int32_t>::min()) {
+        } else if (data_.i >= numeric_limits<int32_t>::min()) {
             return 4;
         } else {
             return 8;
         }
     } else {
         // must be positive
-        if (data_.u <= std::numeric_limits<uint8_t>::max()) {
+        if (data_.u <= numeric_limits<uint8_t>::max()) {
             return 1;
-        } else if (data_.u <= std::numeric_limits<uint16_t>::max()) {
+        } else if (data_.u <= numeric_limits<uint16_t>::max()) {
             return 2;
-        } else if (data_.u <= std::numeric_limits<uint32_t>::max()) {
+        } else if (data_.u <= numeric_limits<uint32_t>::max()) {
             return 4;
         } else {
             return 8;

@@ -7,6 +7,7 @@
 
 #include <pycpp/hashlib.h>
 #include <pycpp/secure/stdlib.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/hex.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -32,7 +33,7 @@ void hash_update(void* ctx, const void* src, size_t srclen, void (*cb)(void*, co
 void hash_digest(void* ctx, void*& dst, size_t dstlen, size_t hashlen, void (*cb)(void*, void*))
 {
     if (dstlen < hashlen) {
-        throw std::runtime_error("dstlen not large enough to store hash digest.");
+        throw runtime_error("dstlen not large enough to store hash digest.");
     }
 
     cb(ctx, dst);
@@ -52,7 +53,7 @@ secure_string hash_digest(void* ctx, size_t hashlen, void (*cb)(void*, void*))
         secure_free(dst);
         return output;
 
-    } catch (std::exception&) {
+    } catch (exception&) {
         secure_free(dst);
         throw;
     }
@@ -62,7 +63,7 @@ secure_string hash_digest(void* ctx, size_t hashlen, void (*cb)(void*, void*))
 void hash_hexdigest(void* ctx, void*& dst, size_t dstlen, size_t hashlen, void (*cb)(void*, void*))
 {
     if (dstlen < 2 * hashlen) {
-        throw std::runtime_error("dstlen not large enough to store hash hexdigest.");
+        throw runtime_error("dstlen not large enough to store hash hexdigest.");
     }
 
     void* hash = secure_malloc(hashlen);
@@ -73,7 +74,7 @@ void hash_hexdigest(void* ctx, void*& dst, size_t dstlen, size_t hashlen, void (
         hash_digest(ctx, hash_dst, hashlen, hashlen, cb);
         hex_i8(hash_src, hashlen, dst, dstlen);
         secure_free(hash);
-    } catch (std::exception&) {
+    } catch (exception&) {
         secure_free(hash);
         throw;
     }
@@ -93,7 +94,7 @@ secure_string hash_hexdigest(void* ctx, size_t hashlen, void (*cb)(void*, void*)
         secure_free(dst);
         return output;
 
-    } catch (std::exception&) {
+    } catch (exception&) {
         secure_free(dst);
         throw;
     }
@@ -263,7 +264,7 @@ static void get_hash(Memory& mem, hash_algorithm algorithm, Function& function)
             break;
 
         default:
-            throw std::runtime_error("Unrecognized hashing algorithm.");
+            throw runtime_error("Unrecognized hashing algorithm.");
     }
 }
 
@@ -319,15 +320,15 @@ cryptographic_hash& cryptographic_hash::operator=(const cryptographic_hash& othe
 
 
 cryptographic_hash::cryptographic_hash(cryptographic_hash&& other):
-    algorithm(std::move(other.algorithm)),
-    mem(std::move(other.mem))
+    algorithm(move(other.algorithm)),
+    mem(move(other.mem))
 {}
 
 
 cryptographic_hash& cryptographic_hash::operator=(cryptographic_hash&& other)
 {
-    algorithm = std::move(other.algorithm);
-    mem = std::move(other.mem);
+    algorithm = move(other.algorithm);
+    mem = move(other.mem);
     return *this;
 }
 
@@ -363,7 +364,7 @@ secure_string cryptographic_hash::digest() const
 {
     digest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
-    return std::move(functor.str);
+    return move(functor.str);
 }
 
 
@@ -371,7 +372,7 @@ secure_string cryptographic_hash::hexdigest() const
 {
     hexdigest_stl functor;
     get_hash(const_cast<memory_type&>(mem), algorithm, functor);
-    return std::move(functor.str);
+    return move(functor.str);
 }
 
 PYCPP_END_NAMESPACE

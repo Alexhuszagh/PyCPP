@@ -631,6 +631,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/set.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/sstream.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/stdexcept.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/streambuf.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/string.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/string_view.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/system_error.h"

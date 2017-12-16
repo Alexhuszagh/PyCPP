@@ -6,6 +6,7 @@
  */
 
 #include <pycpp/math/trapz.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -16,8 +17,8 @@ PYCPP_USING_NAMESPACE
 
 TEST(math, trapz)
 {
-    std::vector<double> x = {4.5, 6.5, 8.5, 9.3};
-    std::vector<double> y = {0.1, 200.45, 175.6, 12.3};
+    vector<double> x = {4.5, 6.5, 8.5, 9.3};
+    vector<double> y = {0.1, 200.45, 175.6, 12.3};
     EXPECT_NEAR(trapz(y.begin(), y.end(), 1.0), 382.25, 0.001);
     EXPECT_NEAR(trapz(y.begin(), y.end(), x.begin(), x.end()), 651.76, 0.001);
 

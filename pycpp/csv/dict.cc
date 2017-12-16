@@ -12,7 +12,7 @@ static csv_indexes parse_header(const csv_row& header)
 {
     csv_indexes map;
     for (size_t i = 0; i < header.size(); i++) {
-        map.emplace(std::move(header[i]), i);
+        map.emplace(move(header[i]), i);
     }
     return map;
 }
@@ -26,13 +26,13 @@ csv_dict_stream_reader::csv_dict_stream_reader(csvpunct_impl* punct):
 {}
 
 
-csv_dict_stream_reader::csv_dict_stream_reader(std::istream& stream, size_t skip, csvpunct_impl* punct)
+csv_dict_stream_reader::csv_dict_stream_reader(istream& stream, size_t skip, csvpunct_impl* punct)
 {
     open(stream, skip, punct);
 }
 
 
-void csv_dict_stream_reader::open(std::istream& stream, size_t skip, csvpunct_impl* punct)
+void csv_dict_stream_reader::open(istream& stream, size_t skip, csvpunct_impl* punct)
 {
     reader_.open(stream, skip, punct);
     header_ = parse_header(reader_());
@@ -56,7 +56,7 @@ auto csv_dict_stream_reader::operator()() -> value_type
     value_type map;
     csv_row row = reader_();
     for (const auto& pair: header_) {
-        map[pair.first] = std::move(row.at(pair.second));
+        map[pair.first] = move(row.at(pair.second));
     }
 
     return map;
@@ -100,7 +100,7 @@ csv_dict_file_reader::csv_dict_file_reader(const string_view& name, size_t skip,
 
 void csv_dict_file_reader::open(const string_view& name, size_t skip, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     csv_dict_stream_reader::open(file_, skip, punct);
 }
 
@@ -116,7 +116,7 @@ csv_dict_file_reader::csv_dict_file_reader(const wstring_view& name, size_t skip
 
 void csv_dict_file_reader::open(const wstring_view& name, size_t skip, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     csv_dict_stream_reader::open(file_, skip, punct);
 }
 
@@ -130,7 +130,7 @@ csv_dict_file_reader::csv_dict_file_reader(const u16string_view& name, size_t sk
 
 void csv_dict_file_reader::open(const u16string_view& name, size_t skip, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     csv_dict_stream_reader::open(file_, skip, punct);
 }
 
@@ -150,7 +150,7 @@ csv_dict_string_reader::csv_dict_string_reader(const string_wrapper& str, size_t
 
 void csv_dict_string_reader::open(const string_wrapper& str, size_t skip, csvpunct_impl* punct)
 {
-    sstream_ = std::istringstream(std::string(str), std::ios_base::binary);
+    sstream_ = istringstream(std::string(str), ios_base::binary);
     csv_dict_stream_reader::open(sstream_, skip, punct);
 }
 
@@ -160,13 +160,13 @@ csv_dict_stream_writer::csv_dict_stream_writer(csv_quoting quoting, csvpunct_imp
 {}
 
 
-csv_dict_stream_writer::csv_dict_stream_writer(std::ostream& stream, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+csv_dict_stream_writer::csv_dict_stream_writer(ostream& stream, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     open(stream, header, quoting, punct);
 }
 
 
-void csv_dict_stream_writer::open(std::ostream& stream, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
+void csv_dict_stream_writer::open(ostream& stream, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
     writer_.open(stream, quoting, punct);
     header_ = parse_header(header);
@@ -222,7 +222,7 @@ csv_dict_file_writer::csv_dict_file_writer(const string_view& name, const csv_ro
 
 void csv_dict_file_writer::open(const string_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     csv_dict_stream_writer::open(file_, header, quoting, punct);
 }
 
@@ -236,7 +236,7 @@ csv_dict_file_writer::csv_dict_file_writer(const wstring_view& name, const csv_r
 
 void csv_dict_file_writer::open(const wstring_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     csv_dict_stream_writer::open(file_, header, quoting, punct);
 }
 
@@ -249,7 +249,7 @@ csv_dict_file_writer::csv_dict_file_writer(const u16string_view& name, const csv
 
 void csv_dict_file_writer::open(const u16string_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     csv_dict_stream_writer::open(file_, header, quoting, punct);
 }
 
@@ -257,12 +257,12 @@ void csv_dict_file_writer::open(const u16string_view& name, const csv_row& heade
 
 csv_dict_string_writer::csv_dict_string_writer(csv_quoting quoting, csvpunct_impl* punct):
     csv_dict_stream_writer(quoting, punct),
-    sstream_(std::ios_base::out | std::ios_base::binary)
+    sstream_(ios_base::out | ios_base::binary)
 {}
 
 
 csv_dict_string_writer::csv_dict_string_writer(const csv_row& header, csv_quoting quoting, csvpunct_impl* punct):
-    sstream_(std::ios_base::out | std::ios_base::binary)
+    sstream_(ios_base::out | ios_base::binary)
 {
     open(header, quoting, punct);
 }

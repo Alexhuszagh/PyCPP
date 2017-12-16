@@ -8,7 +8,9 @@
     - Change the default hash...
 
     - Look at use woever rope.
+
     - Implement various useful allocators
+        - Need a dummy mutex and locked and unlocked variants of allocators
         - Free list
             - All the allocators from here: https://www.youtube.com/watch?time_continue=1&v=LIb3L4vKZ7U\
         - Linear -- DONE

@@ -5,9 +5,9 @@
 #include <pycpp/lexical/table.h>
 #include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cassert>
-#include <cmath>
-#include <cstring>
+#include <assert.h>
+#include <math.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

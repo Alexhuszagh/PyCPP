@@ -26,7 +26,7 @@
 #pragma once
 
 #include <pycpp/collections/counter.h>
-#include <cassert>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -42,7 +42,7 @@ template <typename Map>
 void update_from_map(const Map& map, size_t& count)
 {
     using value_type = typename Map::value_type;
-    count = std::accumulate(map.begin(), map.end(), 0, [](size_t l, const value_type& rhs) {
+    count = accumulate(map.begin(), map.end(), 0, [](size_t l, const value_type& rhs) {
         count_t r = rhs.second;
         return r > 0 ? l + r : l;
     });
@@ -50,7 +50,7 @@ void update_from_map(const Map& map, size_t& count)
 
 
 template <typename Map, typename Iter>
-typename enable_if_pair<size_t, Iter>::type
+enable_if_pair_t<size_t, Iter>
 update_nonnegative(Map& map, Iter first, Iter last)
 {
     // update mapping from a key-value store
@@ -67,7 +67,7 @@ update_nonnegative(Map& map, Iter first, Iter last)
 
 
 template <typename Map, typename Iter>
-typename enable_if_not_pair<size_t, Iter>::type
+enable_if_not_pair_t<size_t, Iter>
 update_nonnegative(Map& map, Iter first, Iter last)
 {
     // update mapping from list of keys
@@ -260,7 +260,7 @@ auto threshold_counter<K, H, P, A, M>::operator=(const counter_type& rhs) -> sel
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 threshold_counter<K, H, P, A, M>::threshold_counter(counter_type&& rhs, float threshold, const allocator_type& alloc):
-    map_(std::move(rhs.map_), alloc),
+    map_(move(rhs.map_), alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
@@ -273,7 +273,7 @@ threshold_counter<K, H, P, A, M>::threshold_counter(counter_type&& rhs, float th
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 auto threshold_counter<K, H, P, A, M>::operator=(counter_type&& rhs) -> self&
 {
-    map_ = std::move(rhs.map_);
+    map_ = move(rhs.map_);
     counter_detail::update_from_map(map_, count_);
     return *this;
 }
@@ -301,7 +301,7 @@ auto threshold_counter<K, H, P, A, M>::operator=(const map_type& rhs) -> self&
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 threshold_counter<K, H, P, A, M>::threshold_counter(map_type&& rhs, float threshold, const allocator_type& alloc):
-    map_(std::move(rhs), alloc),
+    map_(move(rhs), alloc),
     interval_(static_cast<size_t>(1 / threshold))
 {
     // check the threshold is meaningful, can be counted
@@ -314,7 +314,7 @@ threshold_counter<K, H, P, A, M>::threshold_counter(map_type&& rhs, float thresh
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 auto threshold_counter<K, H, P, A, M>::operator=(map_type&& rhs) -> self&
 {
-    map_ = std::move(rhs);
+    map_ = move(rhs);
     counter_detail::update_from_map(map_, count_);
     return *this;
 }
@@ -436,7 +436,7 @@ void threshold_counter<K, H, P, A, M>::add(const key_type& key)
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 void threshold_counter<K, H, P, A, M>::add(key_type&& key)
 {
-    map_[std::forward<key_type>(key)]++;
+    map_[forward<key_type>(key)]++;
     count_++;
     check_autocompact();
 }
@@ -467,9 +467,9 @@ void threshold_counter<K, H, P, A, M>::clear()
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 void threshold_counter<K, H, P, A, M>::swap(self& rhs)
 {
-    std::swap(map_, rhs.map_);
-    std::swap(interval_, rhs.interval_);
-    std::swap(count_, rhs.count_);
+    PYCPP_NAMESPACE::swap(map_, rhs.map_);
+    PYCPP_NAMESPACE::swap(interval_, rhs.interval_);
+    PYCPP_NAMESPACE::swap(count_, rhs.count_);
 }
 
 
@@ -490,7 +490,7 @@ auto threshold_counter<K, H, P, A, M>::elements() const -> counter_detail::key_l
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 count_t threshold_counter<K, H, P, A, M>::get_common_count() const
 {
-    return std::accumulate(begin(), end(), 0, [](count_t l, const value_type& rhs) {
+    return accumulate(begin(), end(), 0, [](count_t l, const value_type& rhs) {
         count_t r = rhs.second;
         return l + r;
     });
@@ -526,7 +526,7 @@ void threshold_counter<K, H, P, A, M>::autocompact()
     }
 
     // overwrite existing counts
-    map_ = std::move(map);
+    map_ = move(map);
 }
 
 

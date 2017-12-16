@@ -2,15 +2,14 @@
 //  :license: MIT, see LICENSE.md for more details.
 
 #include <pycpp/lattice/util.h>
-
-#include <iostream>
+#include <pycpp/stl/iostream.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // CONSTANTS
 // ---------
 
-std::mutex LATTICE_MUTEX;
+mutex LATTICE_MUTEX;
 
 // OBJECTS
 // -------
@@ -18,10 +17,10 @@ std::mutex LATTICE_MUTEX;
 
 void encryption_warning()
 {
-    std::lock_guard<std::mutex> lock(LATTICE_MUTEX);
-    std::cerr << "Warning: HTTP requests do not support SSL/TLS."
+    lock_guard<mutex> lock(LATTICE_MUTEX);
+    cerr << "Warning: HTTP requests do not support SSL/TLS."
               << "Do NOT send sensitive data without SSL/TLS."
-              << std::endl;
+              << endl;
 }
 
 PYCPP_END_NAMESPACE

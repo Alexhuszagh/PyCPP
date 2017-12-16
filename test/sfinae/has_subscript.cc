@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/sfinae/has_subscript.h>
+#include <pycpp/stl/tuple.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <tuple>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -18,10 +18,10 @@ PYCPP_USING_NAMESPACE
 
 TEST(has_subscript, has_subscript)
 {
-    using vec = std::vector<int>;
-    using t1 = std::tuple<int>;
-    using t2 = std::tuple<int, int>;
-    using t3 = std::tuple<int, int, int>;
+    using vec = vector<int>;
+    using t1 = tuple<int>;
+    using t2 = tuple<int, int>;
+    using t3 = tuple<int, int, int>;
 
     static_assert(has_subscript<vec, size_t>::value, "");
     static_assert(has_subscript<vec, int>::value, "");

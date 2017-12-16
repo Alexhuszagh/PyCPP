@@ -3,22 +3,22 @@
 
 #include <pycpp/csv/reader.h>
 #include <pycpp/string/getline.h>
-
-#include <cassert>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // FUNCTIONS
 // ---------
 
-static std::string readline(std::istream& stream)
+static std::string readline(istream& stream)
 {
     std::string line;
     getline(stream, line);
     return line;
 }
 
-static csv_row parse_csv_row(std::istream& stream, csvpunct_impl& punct, size_t size)
+
+static csv_row parse_csv_row(istream& stream, csvpunct_impl& punct, size_t size)
 {
     csv_row row;
     std::string line = readline(stream);
@@ -26,7 +26,7 @@ static csv_row parse_csv_row(std::istream& stream, csvpunct_impl& punct, size_t 
 
     bool quote = false;
     bool escape = false;
-    std::vector<char> word(line.size());
+    vector<char> word(line.size());
 
     int j = 0;
     int k = 0;
@@ -65,14 +65,14 @@ csv_stream_reader::csv_stream_reader(csvpunct_impl* punct):
 {}
 
 
-csv_stream_reader::csv_stream_reader(std::istream& stream, size_t skip, csvpunct_impl* punct):
+csv_stream_reader::csv_stream_reader(istream& stream, size_t skip, csvpunct_impl* punct):
     punct_(punct ? punct : new csvpunct)
 {
     open(stream, skip, nullptr);
 }
 
 
-void csv_stream_reader::open(std::istream& stream, size_t skip, csvpunct_impl* punct)
+void csv_stream_reader::open(istream& stream, size_t skip, csvpunct_impl* punct)
 {
     // skip lines
     std::string line;
@@ -148,7 +148,7 @@ csv_file_reader::csv_file_reader(const string_view& name, size_t skip, csvpunct_
 
 void csv_file_reader::open(const string_view& name, size_t skip, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     csv_stream_reader::open(file_, skip, punct);
 }
 
@@ -164,7 +164,7 @@ csv_file_reader::csv_file_reader(const wstring_view& name, size_t skip, csvpunct
 
 void csv_file_reader::open(const wstring_view& name, size_t skip, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     csv_stream_reader::open(file_, skip, punct);
 }
 
@@ -177,7 +177,7 @@ csv_file_reader::csv_file_reader(const u16string_view& name, size_t skip, csvpun
 
 void csv_file_reader::open(const u16string_view& name, size_t skip, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     csv_stream_reader::open(file_, skip, punct);
 }
 
@@ -197,7 +197,7 @@ csv_string_reader::csv_string_reader(const string_wrapper& str, size_t skip, csv
 
 void csv_string_reader::open(const string_wrapper& str, size_t skip, csvpunct_impl* punct)
 {
-    sstream_ = std::istringstream(std::string(str), std::ios_base::in | std::ios_base::binary);
+    sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
     csv_stream_reader::open(sstream_, skip, punct);
 }
 

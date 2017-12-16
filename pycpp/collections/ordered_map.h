@@ -288,15 +288,15 @@ public:
         return m_ht.insert(value);
     }
 
-    template <typename P, typename enable_if<is_constructible<value_type, P&&>::value>::type* = nullptr>
+    template <typename P, enable_if_t<is_constructible<value_type, P&&>::value>* = nullptr>
     pair<iterator,bool> insert(P&& value)
     {
-        return m_ht.emplace(std::forward<P>(value));
+        return m_ht.emplace(forward<P>(value));
     }
 
     pair<iterator, bool> insert(value_type&& value)
     {
-        return m_ht.insert(std::move(value));
+        return m_ht.insert(move(value));
     }
 
     iterator insert(const_iterator hint, const value_type& value)
@@ -308,15 +308,15 @@ public:
         return m_ht.insert(value).first;
     }
 
-    template <typename P, typename enable_if<is_constructible<value_type, P&&>::value>::type* = nullptr>
+    template <typename P, enable_if_t<is_constructible<value_type, P&&>::value>* = nullptr>
     iterator insert(const_iterator hint, P&& value)
     {
-        value_type val(std::forward<P>(value));
+        value_type val(forward<P>(value));
         if (hint != cend() && m_ht.key_eq()(KeySelect()(*hint), KeySelect()(val))) {
             return m_ht.get_mutable_iterator(hint);
         }
 
-        return m_ht.insert(std::move(val)).first;
+        return m_ht.insert(move(val)).first;
     }
 
     iterator insert(const_iterator hint, value_type&& value)
@@ -325,7 +325,7 @@ public:
             return m_ht.get_mutable_iterator(hint);
         }
 
-        return m_ht.insert(std::move(value)).first;
+        return m_ht.insert(move(value)).first;
     }
 
     template <typename InputIt>
@@ -342,29 +342,29 @@ public:
     /**
      *  Due to the way elements are stored, emplace will need to move or
      *  copy the key-value once. The method is equivalent to
-     *  insert(value_type(std::forward<Args>(args)...));
+     *  insert(value_type(forward<Args>(args)...));
      *
-     *  Mainly here for compatibility with the std::unordered_map
+     *  Mainly here for compatibility with the unordered_map
      *  interface.
      */
     template <typename... Args>
     pair<iterator,bool> emplace(Args&&... args)
     {
-        return m_ht.emplace(std::forward<Args>(args)...);
+        return m_ht.emplace(forward<Args>(args)...);
     }
 
     /**
      *  Due to the way elements are stored, emplace_hint will need to
      *  move or copy the key-value once. The method is equivalent to
-     *  insert(hint, value_type(std::forward<Args>(args)...));
+     *  insert(hint, value_type(forward<Args>(args)...));
      *
-     *  Mainly here for compatibility with the std::unordered_map
+     *  Mainly here for compatibility with the unordered_map
      *  interface.
      */
     template <typename... Args>
     iterator emplace_hint(const_iterator hint, Args&&... args)
     {
-        return m_ht.insert(hint, value_type(std::forward<Args>(args)...));
+        return m_ht.insert(hint, value_type(forward<Args>(args)...));
     }
 
     /**
@@ -412,7 +412,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists.
      *  If so, K must be hashable and comparable to Key.
      */
-    template <typename K, typename KE = KeyEqual, typename enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
+    template <typename K, typename KE = KeyEqual, enable_if_t<detail_ordered_hash::has_is_transparent<KE>::value>* = nullptr>
     size_type erase(const K& key)
     {
         return m_ht.erase(key);
@@ -440,7 +440,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists.
      *  If so, K must be hashable and comparable to Key.
      */
-    template <typename K, typename KE = KeyEqual, typename enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
+    template <typename K, typename KE = KeyEqual, enable_if_t<detail_ordered_hash::has_is_transparent<KE>::value>* = nullptr>
     T& at(const K& key)
     {
         return m_ht.at(key);
@@ -449,7 +449,7 @@ public:
     /**
      *  @copydoc at(const K& key)
      */
-    template <typename K, typename KE = KeyEqual, typename enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
+    template <typename K, typename KE = KeyEqual, enable_if_t<detail_ordered_hash::has_is_transparent<KE>::value>* = nullptr>
     const T& at(const K& key) const
     {
         return m_ht.at(key);
@@ -462,7 +462,7 @@ public:
 
     T& operator[](Key&& key)
     {
-        return m_ht[std::move(key)];
+        return m_ht[move(key)];
     }
 
     size_type count(const Key& key) const
@@ -475,7 +475,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists. If so, K must be
      *  hashable and comparable to Key.
      */
-    template <typename K, typename KE = KeyEqual, typename enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
+    template <typename K, typename KE = KeyEqual, enable_if_t<detail_ordered_hash::has_is_transparent<KE>::value>* = nullptr>
     size_type count(const K& key) const
     {
         return m_ht.count(key);
@@ -496,7 +496,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists. If so, K must be
      *  hashable and comparable to Key.
      */
-    template <typename K, typename KE = KeyEqual, typename enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
+    template <typename K, typename KE = KeyEqual, enable_if_t<detail_ordered_hash::has_is_transparent<KE>::value>* = nullptr>
     iterator find(const K& key)
     {
         return m_ht.find(key);
@@ -505,7 +505,7 @@ public:
     /**
      *  @copydoc find(const K& key)
      */
-    template <typename K, typename KE = KeyEqual, typename enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
+    template <typename K, typename KE = KeyEqual, enable_if_t<detail_ordered_hash::has_is_transparent<KE>::value>* = nullptr>
     const_iterator find(const K& key) const
     {
         return m_ht.find(key);
@@ -525,7 +525,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists. If so, K must be
      *  hashable and comparable to Key.
      */
-    template <typename K, typename KE = KeyEqual, typename enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
+    template <typename K, typename KE = KeyEqual, enable_if_t<detail_ordered_hash::has_is_transparent<KE>::value>* = nullptr>
     pair<iterator, iterator> equal_range(const K& key)
     {
         return m_ht.equal_range(key);
@@ -534,7 +534,7 @@ public:
     /**
      *  @copydoc equal_range(const K& key)
      */
-    template <typename K, typename KE = KeyEqual, typename enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
+    template <typename K, typename KE = KeyEqual, enable_if_t<detail_ordered_hash::has_is_transparent<KE>::value>* = nullptr>
     pair<const_iterator, const_iterator> equal_range(const K& key) const
     {
         return m_ht.equal_range(key);
@@ -607,7 +607,7 @@ public:
      *  Only available if ValueTypeContainer is an vector. Same as
      *  calling 'values_container().data()'.
      */
-    template <typename U = values_container_type, typename enable_if<detail_ordered_hash::is_vector<U>::value>::type* = nullptr>
+    template <typename U = values_container_type, enable_if_t<detail_ordered_hash::is_vector<U>::value>* = nullptr>
     const typename values_container_type::value_type* data() const noexcept
     {
         return m_ht.data();
@@ -623,7 +623,7 @@ public:
         return m_ht.values_container();
     }
 
-    template <typename U = values_container_type, typename enable_if<detail_ordered_hash::is_vector<U>::value>::type* = nullptr>
+    template <typename U = values_container_type, enable_if_t<detail_ordered_hash::is_vector<U>::value>* = nullptr>
     size_type capacity() const noexcept
     {
         return m_ht.capacity();
@@ -674,7 +674,7 @@ public:
      *  the typedef KeyEqual::is_transparent exists.
      *  If so, K must be hashable and comparable to Key.
      */
-    template <typename K, typename KE = KeyEqual, typename enable_if<detail_ordered_hash::has_is_transparent<KE>::value>::type* = nullptr>
+    template <typename K, typename KE = KeyEqual, enable_if_t<detail_ordered_hash::has_is_transparent<KE>::value>* = nullptr>
     size_type unordered_erase(const K& key)
     {
         return m_ht.unordered_erase(key);

@@ -8,7 +8,7 @@
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/codec.h>
 #include <pycpp/string/unicode.h>
-#include <cctype>
+#include <ctype.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -51,7 +51,7 @@ struct fill_multibyte_impl
 template <typename Char1, typename Char2>
 struct casemap_impl
 {
-    typedef fill_multibyte_impl<Char1, Char2> filler;
+    using filler = fill_multibyte_impl<Char1, Char2>;
 
     /**
      *  \brief Overload when the dst overallocates.
@@ -65,9 +65,9 @@ struct casemap_impl
             filler()(dst, function(*src));
         }
 
-        size_t distance = std::distance(src_first, src_last) * filler::shift;
+        size_t dist = distance(src_first, src_last) * filler::shift;
         src_first = src;
-        return distance;
+        return dist;
     }
 
     /**
@@ -83,9 +83,9 @@ struct casemap_impl
             filler()(dst, function(*src_first));
         }
 
-        size_t distance = std::distance(dst_first, dst);
+        size_t dist = distance(dst_first, dst);
         dst_first = dst;
-        return distance;
+        return dist;
     }
 };
 
@@ -96,7 +96,7 @@ struct casemap_impl
 template <typename Char1, typename Char2>
 struct capitalize_impl
 {
-    typedef fill_multibyte_impl<Char1, Char2> filler;
+    using filler = fill_multibyte_impl<Char1, Char2>;
 
     /**
      *  \brief Overload when the dst overallocates.
@@ -115,9 +115,9 @@ struct capitalize_impl
             filler()(dst, lower(*src));
         }
 
-        size_t distance = std::distance(src_first, src_last) * filler::shift;
+        size_t dist = distance(src_first, src_last) * filler::shift;
         src_first = src;
-        return distance;
+        return dist;
     }
 
     /**
@@ -137,9 +137,9 @@ struct capitalize_impl
             filler()(dst, upper(*src_first));
         }
 
-        size_t distance = std::distance(dst_first, dst);
+        size_t dist = distance(dst_first, dst);
         dst_first = dst;
-        return distance;
+        return dist;
     }
 };
 
@@ -153,7 +153,7 @@ struct capitalize_impl
 template <typename Char1, typename Char2>
 struct title_tokenizer_impl
 {
-    typedef fill_multibyte_impl<Char1, Char2> filler;
+    using filler = fill_multibyte_impl<Char1, Char2>;
 
     template <typename Iter, typename Char, typename ToUpper, typename ToLower, typename IsBoundary>
     void add_byte(Iter& dst, Char c, bool& is_upper,
@@ -188,9 +188,9 @@ struct title_tokenizer_impl
             add_byte(dst, *src, is_upper, to_upper, to_lower, is_boundary);
         }
 
-        size_t distance = std::distance(src_first, src) * filler::shift;
+        size_t dist = distance(src_first, src) * filler::shift;
         src_first = src;
-        return distance;
+        return dist;
     }
 
 
@@ -210,9 +210,9 @@ struct title_tokenizer_impl
             add_byte(dst, *src_first, is_upper, to_upper, to_lower, is_boundary);
         }
 
-        size_t distance = std::distance(dst_first, dst);
+        size_t dist = distance(dst_first, dst);
         dst_first = dst;
-        return distance;
+        return dist;
     }
 };
 
@@ -229,7 +229,7 @@ static void casemap_conversion(const void*& src, size_t srclen, void*& dst, size
     try {
         // convert to UTF32
         cb1(src, srclen, u32_dst, u32_size);
-        u32_size = std::distance(u32, (char*) u32_dst);
+        u32_size = distance(u32, (char*) u32_dst);
 
         // process array
         u32_dst = (void*) u32;
@@ -272,7 +272,7 @@ static bool is_ascii_boundary(char c)
 static uint32_t lowercase_utf32(uint32_t c)
 {
     if (c > 1114112) {
-        throw std::runtime_error("Invalid UTF32 character found, 17th plane.");
+        throw runtime_error("Invalid UTF32 character found, 17th plane.");
     }
     uint32_t block_offset = LOWERCASE_STAGE1[c / 256] * 256;
     uint32_t ch = LOWERCASE_STAGE2[block_offset + c % 256];
@@ -283,7 +283,7 @@ static uint32_t lowercase_utf32(uint32_t c)
 static uint32_t uppercase_utf32(uint32_t c)
 {
     if (c > 1114112) {
-        throw std::runtime_error("Invalid UTF32 character found, 17th plane.");
+        throw runtime_error("Invalid UTF32 character found, 17th plane.");
     }
     uint32_t block_offset = UPPERCASE_STAGE1[c / 256] * 256;
     uint32_t ch = UPPERCASE_STAGE2[block_offset + c % 256];
@@ -328,7 +328,7 @@ uint32_t utf32_toupper(uint32_t c)
 
 void ascii_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    typedef casemap_impl<char, char> functor;
+    using functor = casemap_impl<char, char>;
 
     // get preferred formats
     const char* src_first = (const char*) src;
@@ -351,7 +351,7 @@ void ascii_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 
 void ascii_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    typedef casemap_impl<char, char> functor;
+    using functor = casemap_impl<char, char>;
 
     // get preferred formats
     const char* src_first = (const char*) src;
@@ -374,11 +374,11 @@ void ascii_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 
 std::string ascii_tolower(const string_view& str)
 {
-    typedef casemap_impl<char, char> functor;
+    using functor = casemap_impl<char, char>;
     std::string lower;
     lower.reserve(str.size());
     auto src_first = str.begin();
-    auto dst_first = std::back_inserter(lower);
+    auto dst_first = back_inserter(lower);
     functor()(src_first, str.end(), dst_first, lowercase_ascii);
 
     return lower;
@@ -387,11 +387,11 @@ std::string ascii_tolower(const string_view& str)
 
 std::string ascii_toupper(const string_view& str)
 {
-    typedef casemap_impl<char, char> functor;
+    using functor = casemap_impl<char, char>;
     std::string upper;
     upper.reserve(str.size());
     auto src_first = str.begin();
-    auto dst_first = std::back_inserter(upper);
+    auto dst_first = back_inserter(upper);
     functor()(src_first, str.end(), dst_first, uppercase_ascii);
 
     return upper;
@@ -400,7 +400,7 @@ std::string ascii_toupper(const string_view& str)
 
 void ascii_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    typedef title_tokenizer_impl<char, char> functor;
+    using functor = title_tokenizer_impl<char, char>;
 
     // get preferred formats
     const char* src_first = (const char*) src;
@@ -429,11 +429,11 @@ void ascii_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 
 std::string ascii_totitle(const string_view& str)
 {
-    typedef title_tokenizer_impl<char, char> functor;
+    using functor = title_tokenizer_impl<char, char>;
     std::string title;
     title.reserve(str.size());
     auto src_first = str.begin();
-    auto dst_first = std::back_inserter(title);
+    auto dst_first = back_inserter(title);
     functor()(src_first, str.end(), dst_first,
               uppercase_ascii,
               lowercase_ascii,
@@ -445,7 +445,7 @@ std::string ascii_totitle(const string_view& str)
 
 void ascii_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    typedef capitalize_impl<char, char> functor;
+    using functor = capitalize_impl<char, char>;
 
     // get preferred formats
     const char* src_first = (const char*) src;
@@ -472,11 +472,11 @@ void ascii_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen
 
 std::string ascii_capitalize(const string_view& str)
 {
-    typedef capitalize_impl<char, char> functor;
+    using functor = capitalize_impl<char, char>;
     std::string title;
     title.reserve(str.size());
     auto src_first = str.begin();
-    auto dst_first = std::back_inserter(title);
+    auto dst_first = back_inserter(title);
     functor()(src_first, str.end(), dst_first,
               uppercase_ascii,
               lowercase_ascii);
@@ -730,7 +730,7 @@ std::u16string utf16_capitalize(const std::u16string &str)
 
 void utf32_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    typedef casemap_impl<uint32_t, uint32_t> functor;
+    using functor = casemap_impl<uint32_t, uint32_t>;
 
     // get preferred formats
     const uint32_t* src_first = (const uint32_t*) src;
@@ -753,13 +753,13 @@ void utf32_tolower(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 
 std::string utf32_tolower(const string_view& str)
 {
-    typedef casemap_impl<uint32_t, uint8_t> functor;
+    using functor = casemap_impl<uint32_t, uint8_t>;
     std::string lower;
     lower.reserve(str.size());
 
     const uint32_t* src_first = (const uint32_t*) str.data();
     const uint32_t* src_last = src_first + (str.size() / 4);
-    auto dst = std::back_inserter(lower);
+    auto dst = back_inserter(lower);
     functor()(src_first, src_last, dst, lowercase_utf32);
 
     return lower;
@@ -768,11 +768,11 @@ std::string utf32_tolower(const string_view& str)
 
 std::u32string utf32_tolower(const u32string_view& str)
 {
-    typedef casemap_impl<uint32_t, uint32_t> functor;
+    using functor = casemap_impl<uint32_t, uint32_t>;
     std::u32string lower;
     lower.reserve(str.size());
     auto src_first = str.begin();
-    auto dst_first = std::back_inserter(lower);
+    auto dst_first = back_inserter(lower);
     functor()(src_first, str.end(), dst_first, lowercase_utf32);
 
     return lower;
@@ -781,7 +781,7 @@ std::u32string utf32_tolower(const u32string_view& str)
 
 void utf32_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    typedef casemap_impl<uint32_t, uint32_t> functor;
+    using functor = casemap_impl<uint32_t, uint32_t>;
 
     // get preferred formats
     const uint32_t* src_first = (const uint32_t*) src;
@@ -804,13 +804,13 @@ void utf32_toupper(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 
 std::string utf32_toupper(const string_view& str)
 {
-    typedef casemap_impl<uint32_t, uint8_t> functor;
+    using functor = casemap_impl<uint32_t, uint8_t>;
     std::string upper;
     upper.reserve(static_cast<size_t>(str.size() * 1.5));
 
     const uint32_t* src_first = (const uint32_t*) str.data();
     const uint32_t* src_last = src_first + (str.size() / 4);
-    auto dst_first = std::back_inserter(upper);
+    auto dst_first = back_inserter(upper);
     functor()(src_first, src_last, dst_first, uppercase_utf32);
 
     return upper;
@@ -819,11 +819,11 @@ std::string utf32_toupper(const string_view& str)
 
 std::u32string utf32_toupper(const u32string_view& str)
 {
-    typedef casemap_impl<uint32_t, uint32_t> functor;
+    using functor = casemap_impl<uint32_t, uint32_t>;
     std::u32string upper;
     upper.reserve(static_cast<size_t>(str.size() * 1.5));
     auto src_first = str.begin();
-    auto dst_first = std::back_inserter(upper);
+    auto dst_first = back_inserter(upper);
     functor()(src_first, str.end(), dst_first, uppercase_utf32);
 
     return upper;
@@ -832,7 +832,7 @@ std::u32string utf32_toupper(const u32string_view& str)
 
 void utf32_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    typedef title_tokenizer_impl<uint32_t, uint32_t> functor;
+    using functor = title_tokenizer_impl<uint32_t, uint32_t>;
 
     // get preferred formats
     const uint32_t* src_first = (const uint32_t*) src;
@@ -861,13 +861,13 @@ void utf32_totitle(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 
 std::string utf32_totitle(const string_view& str)
 {
-    typedef title_tokenizer_impl<uint32_t, uint8_t> functor;
+    using functor = title_tokenizer_impl<uint32_t, uint8_t>;
     std::string upper;
     upper.reserve(str.size());
 
     const uint32_t* src_first = (const uint32_t*) str.data();
     const uint32_t* src_last = src_first + (str.size() / 4);
-    auto dst = std::back_inserter(upper);
+    auto dst = back_inserter(upper);
     functor()(src_first, src_last, dst,
               uppercase_utf32,
               lowercase_utf32,
@@ -879,11 +879,11 @@ std::string utf32_totitle(const string_view& str)
 
 std::u32string utf32_totitle(const u32string_view& str)
 {
-    typedef title_tokenizer_impl<uint32_t, uint32_t> functor;
+    using functor = title_tokenizer_impl<uint32_t, uint32_t>;
     std::u32string upper;
     upper.reserve(str.size());
     auto src_first = str.begin();
-    auto dst_first = std::back_inserter(upper);
+    auto dst_first = back_inserter(upper);
     functor()(src_first, str.end(), dst_first,
               uppercase_utf32,
               lowercase_utf32,
@@ -895,7 +895,7 @@ std::u32string utf32_totitle(const u32string_view& str)
 
 void utf32_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
-    typedef capitalize_impl<uint32_t, uint32_t> functor;
+    using functor = capitalize_impl<uint32_t, uint32_t>;
 
     // get preferred formats
     const uint32_t* src_first = (const uint32_t*) src;
@@ -922,13 +922,13 @@ void utf32_capitalize(const void*& src, size_t srclen, void*& dst, size_t dstlen
 
 std::string utf32_capitalize(const string_view& str)
 {
-    typedef capitalize_impl<uint32_t, uint8_t> functor;
+    using functor = capitalize_impl<uint32_t, uint8_t>;
     std::string upper;
     upper.reserve(str.size());
 
     const uint32_t* src_first = (const uint32_t*) str.data();
     const uint32_t* src_last = src_first + (str.size() / 4);
-    auto dst = std::back_inserter(upper);
+    auto dst = back_inserter(upper);
     functor()(src_first, src_last, dst,
               uppercase_utf32,
               lowercase_utf32);
@@ -939,11 +939,11 @@ std::string utf32_capitalize(const string_view& str)
 
 std::u32string utf32_capitalize(const u32string_view& str)
 {
-    typedef capitalize_impl<uint32_t, uint32_t> functor;
+    using functor = capitalize_impl<uint32_t, uint32_t>;
     std::u32string upper;
     upper.reserve(str.size());
     auto src_first = str.begin();
-    auto dst_first = std::back_inserter(upper);
+    auto dst_first = back_inserter(upper);
     functor()(src_first, str.end(), dst_first,
               uppercase_utf32,
               lowercase_utf32);

@@ -43,10 +43,10 @@ struct json_stream_writer: json_writer
 {
 public:
     json_stream_writer(char = ' ', int = 4);
-    json_stream_writer(std::ostream&, char = ' ', int = 4);
+    json_stream_writer(ostream&, char = ' ', int = 4);
     ~json_stream_writer();
 
-    void open(std::ostream&);
+    void open(ostream&);
     void set_indent(char = ' ', int = 4);
     bool is_pretty() const;
 
@@ -101,7 +101,7 @@ public:
     std::string str() const;
 
 private:
-    std::ostringstream sstream_;
+    ostringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

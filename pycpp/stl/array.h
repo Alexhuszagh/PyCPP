@@ -7,13 +7,26 @@
 
 #pragma once
 
+#include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/iterator.h>
 #include <array>
 
 PYCPP_BEGIN_NAMESPACE
 
+// FORWARD
+// -------
+
+template <typename T>
+struct tuple_size;
+
+template <size_t I, typename T>
+struct tuple_element;
+
 // ALIAS
 // -----
+
+using std::get;
+using std::swap;
 
 template <
     typename T,

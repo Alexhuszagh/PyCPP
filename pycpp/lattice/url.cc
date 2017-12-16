@@ -5,7 +5,7 @@
 #include <pycpp/string/punycode.h>
 #include <pycpp/string/string.h>
 #include <pycpp/string/unicode.h>
-#include <cassert>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -241,7 +241,7 @@ punycode_idna_t::punycode_idna_t(const string_wrapper& string):
 }
 
 
-punycode_idna_t::punycode_idna_t(std::initializer_list<char> list):
+punycode_idna_t::punycode_idna_t(initializer_list<char> list):
     url_impl_t(list.begin(), list.size())
 {
     punycode_encode_url(*this);
@@ -300,7 +300,7 @@ unicode_idna_t::unicode_idna_t(const string_wrapper& string):
 }
 
 
-unicode_idna_t::unicode_idna_t(std::initializer_list<char> list):
+unicode_idna_t::unicode_idna_t(initializer_list<char> list):
     url_impl_t(list.begin(), list.size())
 {
     unicode_encode_url(*this);

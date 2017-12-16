@@ -4,16 +4,15 @@
 #include <pycpp/json/writer.h>
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/prettywriter.h>
-
-#include <cassert>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
 
-typedef rapidjson::OStreamWrapper rapidjson_ostream;
-typedef rapidjson::PrettyWriter<rapidjson_ostream> rapidjson_prettywriter;
+using rapidjson_ostream = rapidjson::OStreamWrapper;
+using rapidjson_prettywriter = rapidjson::PrettyWriter<rapidjson_ostream>;
 
 // OBJECTS
 // -------
@@ -65,7 +64,7 @@ json_stream_writer::json_stream_writer(char c, int width)
 }
 
 
-json_stream_writer::json_stream_writer(std::ostream& s, char c, int width)
+json_stream_writer::json_stream_writer(ostream& s, char c, int width)
 {
     set_indent(c, width);
     open(s);
@@ -79,7 +78,7 @@ json_stream_writer::~json_stream_writer()
 }
 
 
-void json_stream_writer::open(std::ostream& s)
+void json_stream_writer::open(ostream& s)
 {
     // cleanup
     delete (rapidjson_ostream*) stream_;
@@ -195,7 +194,7 @@ json_file_writer::json_file_writer(const string_view& name)
 
 void json_file_writer::open(const string_view& name)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     json_stream_writer::open(file_);
 }
 
@@ -210,7 +209,7 @@ json_file_writer::json_file_writer(const wstring_view& name)
 
 void json_file_writer::open(const wstring_view& name)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     json_stream_writer::open(file_);
 }
 
@@ -223,7 +222,7 @@ json_file_writer::json_file_writer(const u16string_view& name)
 
 void json_file_writer::open(const u16string_view& name)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     json_stream_writer::open(file_);
 }
 

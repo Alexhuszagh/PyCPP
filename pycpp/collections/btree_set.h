@@ -57,11 +57,11 @@ public:
 
     // Move constructor
     btree_set(self_type&& x):
-        super_type(std::forward<self_type>(x))
+        super_type(forward<self_type>(x))
     {}
 
     btree_set(self_type&& x, const allocator_type& alloc):
-        super_type(std::forward<self_type>(x), alloc)
+        super_type(forward<self_type>(x), alloc)
     {}
 
     // Range constructor.
@@ -166,11 +166,11 @@ public:
 
     // Move constructor
     btree_multiset(self_type&& x):
-        super_type(std::forward<self_type>(x))
+        super_type(forward<self_type>(x))
     {}
 
     btree_multiset(self_type&& x, const allocator_type& alloc):
-        super_type(std::forward<self_type>(x), alloc)
+        super_type(forward<self_type>(x), alloc)
     {}
 
     // Range constructor.

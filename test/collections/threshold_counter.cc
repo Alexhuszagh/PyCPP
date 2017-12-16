@@ -8,7 +8,7 @@
 #include <pycpp/collections/threshold_counter.h>
 #include <pycpp/stl/map.h>
 #include <gtest/gtest.h>
-#include <cmath>
+#include <math.h>
 
 PYCPP_USING_NAMESPACE
 

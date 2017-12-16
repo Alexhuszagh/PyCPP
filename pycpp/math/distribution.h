@@ -11,7 +11,7 @@
 #include <pycpp/misc/xrange.h>
 #include <pycpp/preprocessor/parallel.h>
 #include <pycpp/stl/algorithm.h>
-#include <cmath>
+#include <math.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -108,7 +108,7 @@ double lorentzian_cdf(double x, double mean, double fwhm);
  *  \param x                Positions for normed PDF.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<!is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
 norm_pdf(SrcIter first, SrcIter last, DstIter dst)
 {
     for (auto it = first; it != last; ++it) {
@@ -126,7 +126,7 @@ norm_pdf(SrcIter first, SrcIter last, DstIter dst)
  *  \param fwhm             Standard deviation of Gaussian.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<!is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
 gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
 {
     for (auto it = first; it != last; ++it) {
@@ -146,7 +146,7 @@ gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst
  *  \param x                Positions for Cauchy PDF.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<!is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
 cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)
 {
     for (auto it = first; it != last; ++it) {
@@ -164,7 +164,7 @@ cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)
  *  \param fwhm             Full-width at half-max of function.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<!is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
 lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
 {
     for (auto it = first; it != last; ++it) {
@@ -182,7 +182,7 @@ lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter ds
  *  \param x                Positions for normed CDF.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<!is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
 norm_cdf(SrcIter first, SrcIter last, DstIter dst)
 {
     for (auto it = first; it != last; ++it) {
@@ -200,7 +200,7 @@ norm_cdf(SrcIter first, SrcIter last, DstIter dst)
  *  \param fwhm             Standard deviation of Gaussian.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<!is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
 gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
 {
     for (auto it = first; it != last; ++it) {
@@ -220,7 +220,7 @@ gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst
  *  \param x                Positions for Cauchy PDF.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<!is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
 cauchy_cdf(SrcIter first, SrcIter last, DstIter dst)
 {
     for (auto it = first; it != last; ++it) {
@@ -238,7 +238,7 @@ cauchy_cdf(SrcIter first, SrcIter last, DstIter dst)
  *  \param fwhm             Full-width at half-max of function.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<!is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
 lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
 {
     for (auto it = first; it != last; ++it) {
@@ -255,7 +255,7 @@ lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter ds
  *  \param x                Positions for normed PDF.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 norm_pdf(SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
@@ -275,7 +275,7 @@ norm_pdf(SrcIter first, SrcIter last, DstIter dst)
  *  \param fwhm             Standard deviation of Gaussian.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
@@ -297,7 +297,7 @@ gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst
  *  \param x                Positions for Cauchy PDF.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
@@ -317,7 +317,7 @@ cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)
  *  \param fwhm             Full-width at half-max of function.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
@@ -337,7 +337,7 @@ lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter ds
  *  \param x                Positions for normed CDF.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 norm_cdf(SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
@@ -357,7 +357,7 @@ norm_cdf(SrcIter first, SrcIter last, DstIter dst)
  *  \param fwhm             Standard deviation of Gaussian.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
@@ -379,7 +379,7 @@ gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst
  *  \param x                Positions for Cauchy PDF.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 cauchy_cdf(SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);
@@ -399,7 +399,7 @@ cauchy_cdf(SrcIter first, SrcIter last, DstIter dst)
  *  \param fwhm             Full-width at half-max of function.
  */
 template <typename SrcIter, typename DstIter>
-typename std::enable_if<is_random_access_iterator<DstIter>::value, size_t>::type
+enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
 lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
 {
     size_t distance = std::distance(first, last);

@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Total ordering implemented via std::less and std::equal_to.
+ *  \brief Total ordering implemented via less and equal_to.
  */
 
 #pragma once

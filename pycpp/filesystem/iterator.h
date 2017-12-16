@@ -31,8 +31,8 @@ struct recursive_directory_iterator;
 // ALIAS
 // -----
 
-using directory_data_ptr = std::shared_ptr<directory_data>;
-using recursive_directory_data_ptr = std::shared_ptr<recursive_directory_data>;
+using directory_data_ptr = shared_ptr<directory_data>;
+using recursive_directory_data_ptr = shared_ptr<recursive_directory_data>;
 
 // OBJECTS
 // -------
@@ -46,7 +46,7 @@ struct directory_entry
 public:
     // MEMBER TYPES
     // ------------
-    typedef directory_entry self_t;
+    using self_t = directory_entry;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -89,8 +89,8 @@ struct directory_iterator: iterator<input_iterator_tag, directory_entry>
 public:
     // MEMBER TYPES
     // ------------
-    typedef iterator<input_iterator_tag, directory_entry> base_t;
-    typedef directory_iterator self_t;
+    using base_t = iterator<input_iterator_tag, directory_entry>;
+    using self_t = directory_iterator;
     using typename base_t::value_type;
     using reference = value_type&;
     using const_reference = const value_type&;
@@ -139,7 +139,7 @@ struct recursive_directory_entry
 public:
     // MEMBER TYPES
     // ------------
-    typedef recursive_directory_entry self_t;
+    using self_t = recursive_directory_entry;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -179,18 +179,18 @@ private:
  *  as directory_iterator while descending into every child directory on
  *  incrementing the iterator.
  */
-struct recursive_directory_iterator: std::iterator<std::input_iterator_tag, recursive_directory_entry>
+struct recursive_directory_iterator: iterator<input_iterator_tag, recursive_directory_entry>
 {
 public:
     // MEMBER TYPES
     // ------------
-    typedef std::iterator<std::input_iterator_tag, recursive_directory_entry> base_t;
-    typedef recursive_directory_iterator self_t;
+    using base_t = iterator<input_iterator_tag, recursive_directory_entry>;
+    using self_t = recursive_directory_iterator;
     using typename base_t::value_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
     // MEMBER FUNCTIONS
     // ----------------

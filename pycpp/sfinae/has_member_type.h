@@ -27,7 +27,7 @@ PYCPP_BEGIN_NAMESPACE
     {                                                                               \
     protected:                                                                      \
         struct U {};                                                                \
-        typedef typename std::conditional<std::is_class<T>::value, T, U>::type V;   \
+        using V = conditional_t<std::is_class<T>::value, T, U>;                     \
                                                                                     \
         struct Fallback                                                             \
         {                                                                           \

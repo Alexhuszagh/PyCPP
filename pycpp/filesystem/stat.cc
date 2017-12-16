@@ -8,12 +8,12 @@
 #include <pycpp/preprocessor/sysstat.h>
 #include <pycpp/string/unicode.h>
 #include <sys/types.h>
-#include <cassert>
+#include <assert.h>
 
 #if defined(OS_WINDOWS)
 #   include <pycpp/windows/winapi.h>
 #   include <winerror.h>
-#   include <tuple>
+#   include <pycpp/stl/tuple.h>
 #else
 #   include <fcntl.h>
 #   include <limits.h>
@@ -350,7 +350,7 @@ static int stat_impl(const Path& path, stat_t* buffer, bool use_lstat)
 
 static path_t read_link_impl(HANDLE handle)
 {
-    typedef typename path_t::value_type Char;
+    using char_type = typename path_t::value_type;
 
     // get our io control code
     auto buf = new REPARSE_DATA_BUFFER;
@@ -370,7 +370,7 @@ static path_t read_link_impl(HANDLE handle)
     auto length = buf->SymbolicLinkReparseBuffer.PrintNameLength / 2;
 
     // create path
-    path_t out(reinterpret_cast<Char*>(link), length);
+    path_t out(reinterpret_cast<char_type*>(link), length);
     delete buf;
 
     return out;
@@ -515,7 +515,7 @@ path_t read_link(const path_view_t& path)
 {
     assert(is_null_terminated(path));
 
-    typedef typename path_view_t::value_type value_type;
+    using value_type = typename path_view_t::value_type;
 
     auto buf = new value_type[PATH_MAX];
     auto length = ::readlink(path.data(), buf, PATH_MAX);

@@ -8,18 +8,21 @@
  *  An allocator that acheives extremely high performance by preallocating
  *  memory and never deallocating through the use of a fixed-size arena.
  *  Great for short-lived obects, preferrably those that never delete items.
- *  The allocator will throw `std::bad_alloc` when the initial buffer is \
+ *  The allocator will throw `bad_alloc` when the initial buffer is
  *  exhausted.
  */
 
 #pragma once
 
+#include <pycpp/misc/compressed_pair.h>
 #include <pycpp/stl/limits.h>
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/mutex.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cassert>
-#include <cstddef>
-#include <cstring>
+#include <pycpp/stl/type_traits.h>
+#include <assert.h>
+#include <stddef.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -28,14 +31,16 @@ PYCPP_BEGIN_NAMESPACE
 
 template <
     size_t StackSize,
-    size_t Alignment = alignof(max_align_t)
+    size_t Alignment = alignof(max_align_t),
+    bool UseLocks = false
 >
 class linear_allocator_arena;
 
 template <
     typename T,
     size_t StackSize,
-    size_t Alignment = alignof(max_align_t)
+    size_t Alignment = alignof(max_align_t),
+    bool UseLocks = false
 >
 class linear_allocator;
 
@@ -52,20 +57,26 @@ class linear_allocator;
  */
 template <
     size_t StackSize,
-    size_t Alignment
+    size_t Alignment,
+    bool UseLocks
 >
 class linear_allocator_arena
 {
 public:
     // MEMBER TEMPLATES
     // ----------------
-    template <size_t S1 = StackSize, size_t A1 = Alignment>
-    struct rebind { using other = linear_allocator_arena<S1, A1>; };
+    template <size_t S1 = StackSize, size_t A1 = Alignment, bool UL1 = UseLocks>
+    struct rebind { using other = linear_allocator_arena<S1, A1, UL1>; };
 
     // STATIC VARIABLES
     // ----------------
     static constexpr size_t alignment = Alignment;
     static constexpr size_t stack_size = StackSize;
+    static constexpr bool use_locks = UseLocks;
+
+    // MEMBER TYPES
+    // ------------
+    using mutex_type = conditional_t<UseLocks, mutex, dummy_mutex>;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -87,7 +98,12 @@ public:
 
 private:
     alignas(Alignment) char buf_[StackSize];
-    char* ptr_;
+    compressed_pair<char*, mutex_type> data_;
+
+    char*& ptr_();
+    char* const& ptr_() const;
+    mutex_type& mutex_();
+    const mutex_type& mutex_() const;
 
     static size_t align_up(size_t n) noexcept;
     bool pointer_in_buffer(char* p) noexcept;
@@ -101,24 +117,26 @@ private:
 template <
     typename T,
     size_t StackSize,
-    size_t Alignment
+    size_t Alignment,
+    bool UseLocks
 >
 class linear_allocator
 {
 public:
     // MEMBER TEMPLATES
     // ----------------
-    template <typename T1 = T, size_t S1 = StackSize, size_t A1 = Alignment>
-    struct rebind { using other = linear_allocator<T1, S1, A1>; };
+    template <typename T1, size_t S1 = StackSize, size_t A1 = Alignment, bool UL1 = UseLocks>
+    struct rebind { using other = linear_allocator<T1, S1, A1, UL1>; };
 
     // STATIC VARIABLES
     // ----------------
     static constexpr size_t alignment = Alignment;
     static constexpr size_t stack_size = StackSize;
+    static constexpr bool use_locks = UseLocks;
 
     // MEMBER TYPES
     // ------------
-    using self_t = linear_allocator<T, StackSize, Alignment>;
+    using self_t = linear_allocator<T, StackSize, Alignment, UseLocks>;
     using value_type = T;
     using pointer = T*;
     using const_pointer = const T*;
@@ -127,20 +145,21 @@ public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using arena_type = linear_allocator_arena<stack_size, alignment>;
-    using propagate_on_container_move_assignment = std::true_type;
+    using mutex_type = typename arena_type::mutex_type;
+    using propagate_on_container_move_assignment = true_type;
 
     // MEMBER FUNCTIONS
     // ----------------
     linear_allocator() noexcept;
     linear_allocator(arena_type& arena) noexcept;
     linear_allocator(const self_t&) noexcept;
-    template <typename T1> linear_allocator(const linear_allocator<T1, StackSize, Alignment>&) noexcept;
+    template <typename T1> linear_allocator(const linear_allocator<T1, StackSize, Alignment, UseLocks>&) noexcept;
     self_t& operator=(const self_t&) noexcept;
-    template <typename T1> self_t& operator=(const linear_allocator<T1, StackSize, Alignment>&) noexcept;
+    template <typename T1> self_t& operator=(const linear_allocator<T1, StackSize, Alignment, UseLocks>&) noexcept;
     linear_allocator(self_t&&) noexcept;
-    template <typename T1> linear_allocator(linear_allocator<T1, StackSize, Alignment>&&) noexcept;
+    template <typename T1> linear_allocator(linear_allocator<T1, StackSize, Alignment, UseLocks>&&) noexcept;
     self_t& operator=(self_t&&) noexcept;
-    template <typename T1> self_t& operator=(linear_allocator<T1, StackSize, Alignment>&&) noexcept;
+    template <typename T1> self_t& operator=(linear_allocator<T1, StackSize, Alignment, UseLocks>&&) noexcept;
     ~linear_allocator() noexcept;
 
     // ALLOCATOR TRAITS
@@ -148,14 +167,14 @@ public:
     void deallocate(pointer, size_type);
 
 private:
-    template <typename T1, size_t S, size_t A>
+    template <typename T1, size_t S, size_t A, bool UL>
     friend class linear_allocator;
 
-    template <typename T1, size_t S1, size_t A1, typename T2, size_t S2, size_t A2>
-    friend bool operator==(const linear_allocator<T1, S1, A1>& lhs, const linear_allocator<T2, S2, A2>& rhs) noexcept;
+    template <typename T1, size_t S1, size_t A1, bool UL1, typename T2, size_t S2, size_t A2, bool UL2>
+    friend bool operator==(const linear_allocator<T1, S1, A1, UL1>& lhs, const linear_allocator<T2, S2, A2, UL2>& rhs) noexcept;
 
-    template <typename T1, size_t S1, size_t A1, typename T2, size_t S2, size_t A2>
-    friend bool operator!=(const linear_allocator<T1, S1, A1>& lhs, const linear_allocator<T2, S2, A2>& rhs) noexcept;
+    template <typename T1, size_t S1, size_t A1, bool UL1, typename T2, size_t S2, size_t A2, bool UL2>
+    friend bool operator!=(const linear_allocator<T1, S1, A1, UL1>& lhs, const linear_allocator<T2, S2, A2, UL2>& rhs) noexcept;
 
     arena_type* arena_ = nullptr;
 };
@@ -165,47 +184,54 @@ private:
 
 template <
     size_t StackSize,
-    size_t Alignment = alignof(max_align_t)
+    size_t Alignment = alignof(max_align_t),
+    bool UseLocks = false
 >
 using linear_resource = resource_adaptor<
-    linear_allocator<char, StackSize, Alignment>
+    linear_allocator<char, StackSize, Alignment, UseLocks>
 >;
+
+// TODO: add locked, unlocked here...
 
 // IMPLEMENTATION
 // --------------
 
 // ARENA
 
-template <size_t S, size_t A>
-const size_t linear_allocator_arena<S, A>::alignment;
+template <size_t S, size_t A, bool UL>
+const size_t linear_allocator_arena<S, A, UL>::alignment;
 
-template <size_t S, size_t A>
-const size_t linear_allocator_arena<S, A>::stack_size;
+template <size_t S, size_t A, bool UL>
+const size_t linear_allocator_arena<S, A, UL>::stack_size;
 
-template <size_t S, size_t A>
-linear_allocator_arena<S, A>::linear_allocator_arena() noexcept:
-    ptr_(buf_)
+template <size_t S, size_t A, bool UL>
+const bool linear_allocator_arena<S, A, UL>::use_locks;
+
+template <size_t S, size_t A, bool UL>
+linear_allocator_arena<S, A, UL>::linear_allocator_arena() noexcept:
+    data_(buf_)
 {}
 
 
-template <size_t S, size_t A>
-linear_allocator_arena<S, A>::~linear_allocator_arena()
+template <size_t S, size_t A, bool UL>
+linear_allocator_arena<S, A, UL>::~linear_allocator_arena()
 {
-    ptr_ = nullptr;
+    ptr_() = nullptr;
 }
 
 
-template <size_t S, size_t A>
+template <size_t S, size_t A, bool UL>
 template <size_t RequiredAlignment>
-char* linear_allocator_arena<S, A>::allocate(size_t n)
+char* linear_allocator_arena<S, A, UL>::allocate(size_t n)
 {
     static_assert(RequiredAlignment <= alignment, "Alignment is too small for this arena");
-    assert(pointer_in_buffer(ptr_) && "Allocator has outlived arena.");
+    assert(pointer_in_buffer(ptr_()) && "Allocator has outlived arena.");
 
+    lock_guard<mutex_type> lock(mutex_());
     size_t aligned_n = align_up(n);
-    if (static_cast<size_t>(buf_ + stack_size - ptr_) >= aligned_n) {
-        char* r = ptr_;
-        ptr_ += aligned_n;
+    if (static_cast<size_t>(buf_ + stack_size - ptr_()) >= aligned_n) {
+        char* r = ptr_();
+        ptr_() += aligned_n;
         return r;
     }
 
@@ -214,165 +240,197 @@ char* linear_allocator_arena<S, A>::allocate(size_t n)
         "Alignment is larger than alignof(max_align_t), and cannot be guaranteed by new."
     );
 
-    throw std::bad_alloc();
+    throw bad_alloc();
 }
 
 
-template <size_t S, size_t A>
-void linear_allocator_arena<S, A>::deallocate(char* p, size_t n) noexcept
+template <size_t S, size_t A, bool UL>
+void linear_allocator_arena<S, A, UL>::deallocate(char* p, size_t n) noexcept
 {
-    assert(pointer_in_buffer(ptr_) && "Allocator has outlived arena.");
+    assert(pointer_in_buffer(ptr_()) && "Allocator has outlived arena.");
 }
 
 
-template <size_t S, size_t A>
-size_t linear_allocator_arena<S, A>::size() noexcept
+template <size_t S, size_t A, bool UL>
+size_t linear_allocator_arena<S, A, UL>::size() noexcept
 {
     return stack_size;
 }
 
 
-template <size_t S, size_t A>
-size_t linear_allocator_arena<S, A>::used() const noexcept
+template <size_t S, size_t A, bool UL>
+size_t linear_allocator_arena<S, A, UL>::used() const noexcept
 {
-    return static_cast<size_t>(ptr_ - buf_);
+    return static_cast<size_t>(ptr_() - buf_);
 }
 
 
-template <size_t S, size_t A>
-void linear_allocator_arena<S, A>::reset() noexcept
+template <size_t S, size_t A, bool UL>
+void linear_allocator_arena<S, A, UL>::reset() noexcept
 {
-    ptr_ = buf_;
+    lock_guard<mutex_type> lock(mutex_());
+    ptr_() = buf_;
 }
 
 
-template <size_t S, size_t A>
-size_t linear_allocator_arena<S, A>::align_up(size_t n) noexcept
+template <size_t S, size_t A, bool UL>
+auto linear_allocator_arena<S, A, UL>::ptr_() -> char*&
+{
+    return get<0>(data_);
+}
+
+
+template <size_t S, size_t A, bool UL>
+auto linear_allocator_arena<S, A, UL>::ptr_() const -> char* const&
+{
+    return get<0>(data_);
+}
+
+
+template <size_t S, size_t A, bool UL>
+auto linear_allocator_arena<S, A, UL>::mutex_() -> mutex_type&
+{
+    return get<1>(data_);
+}
+
+
+template <size_t S, size_t A, bool UL>
+auto linear_allocator_arena<S, A, UL>::mutex_() const -> const mutex_type&
+{
+    return get<1>(data_);
+}
+
+
+template <size_t S, size_t A, bool UL>
+size_t linear_allocator_arena<S, A, UL>::align_up(size_t n) noexcept
 {
     return (n + (alignment-1)) & ~(alignment-1);
 }
 
 
-template <size_t S, size_t A>
-bool linear_allocator_arena<S, A>::pointer_in_buffer(char* p) noexcept
+template <size_t S, size_t A, bool UL>
+bool linear_allocator_arena<S, A, UL>::pointer_in_buffer(char* p) noexcept
 {
     return (buf_ <= p) && (p <= buf_ + stack_size);
 }
 
 // ALLOCATOR
 
-template <typename T, size_t S, size_t A>
-const size_t linear_allocator<T, S, A>::alignment;
+template <typename T, size_t S, size_t A, bool UL>
+const size_t linear_allocator<T, S, A, UL>::alignment;
 
-template <typename T, size_t S, size_t A>
-const size_t linear_allocator<T, S, A>::stack_size;
+template <typename T, size_t S, size_t A, bool UL>
+const size_t linear_allocator<T, S, A, UL>::stack_size;
 
-template <typename T, size_t S, size_t A>
-linear_allocator<T, S, A>::linear_allocator() noexcept:
+template <typename T, size_t S, size_t A, bool UL>
+const bool linear_allocator<T, S, A, UL>::use_locks;
+
+template <typename T, size_t S, size_t A, bool UL>
+linear_allocator<T, S, A, UL>::linear_allocator() noexcept:
     arena_(nullptr)
 {}
 
 
-template <typename T, size_t S, size_t A>
-linear_allocator<T, S, A>::linear_allocator(arena_type& arena) noexcept:
+template <typename T, size_t S, size_t A, bool UL>
+linear_allocator<T, S, A, UL>::linear_allocator(arena_type& arena) noexcept:
     arena_(&arena)
 {}
 
 
-template <typename T, size_t S, size_t A>
-linear_allocator<T, S, A>::linear_allocator(const self_t& rhs) noexcept:
+template <typename T, size_t S, size_t A, bool UL>
+linear_allocator<T, S, A, UL>::linear_allocator(const self_t& rhs) noexcept:
     arena_(rhs.arena_)
 {}
 
 
-template <typename T, size_t S, size_t A>
+template <typename T, size_t S, size_t A, bool UL>
 template <typename T1>
-linear_allocator<T, S, A>::linear_allocator(const linear_allocator<T1, S, A>& rhs) noexcept:
+linear_allocator<T, S, A, UL>::linear_allocator(const linear_allocator<T1, S, A, UL>& rhs) noexcept:
     arena_(rhs.arena_)
 {}
 
 
-template <typename T, size_t S, size_t A>
-auto linear_allocator<T, S, A>::operator=(const self_t& rhs) noexcept -> self_t&
+template <typename T, size_t S, size_t A, bool UL>
+auto linear_allocator<T, S, A, UL>::operator=(const self_t& rhs) noexcept -> self_t&
 {
     arena_ = rhs.arena_;
     return *this;
 }
 
 
-template <typename T, size_t S, size_t A>
+template <typename T, size_t S, size_t A, bool UL>
 template <typename T1>
-auto linear_allocator<T, S, A>::operator=(const linear_allocator<T1, S, A>& rhs) noexcept -> self_t&
+auto linear_allocator<T, S, A, UL>::operator=(const linear_allocator<T1, S, A, UL>& rhs) noexcept -> self_t&
 {
     arena_ = rhs.arena_;
     return *this;
 }
 
 
-template <typename T, size_t S, size_t A>
-linear_allocator<T, S, A>::linear_allocator(self_t&& rhs) noexcept
+template <typename T, size_t S, size_t A, bool UL>
+linear_allocator<T, S, A, UL>::linear_allocator(self_t&& rhs) noexcept
 {
-    std::swap(arena_, rhs.arena_);
+    swap(arena_, rhs.arena_);
 }
 
 
-template <typename T, size_t S, size_t A>
+template <typename T, size_t S, size_t A, bool UL>
 template <typename T1>
-linear_allocator<T, S, A>::linear_allocator(linear_allocator<T1, S, A>&& rhs) noexcept
+linear_allocator<T, S, A, UL>::linear_allocator(linear_allocator<T1, S, A, UL>&& rhs) noexcept
 {
-    std::swap(arena_, rhs.arena_);
+    swap(arena_, rhs.arena_);
 }
 
 
-template <typename T, size_t S, size_t A>
-auto linear_allocator<T, S, A>::operator=(self_t&& rhs) noexcept -> self_t&
+template <typename T, size_t S, size_t A, bool UL>
+auto linear_allocator<T, S, A, UL>::operator=(self_t&& rhs) noexcept -> self_t&
 {
-    std::swap(arena_, rhs.arena_);
+    swap(arena_, rhs.arena_);
     return *this;
 }
 
 
-template <typename T, size_t S, size_t A>
+template <typename T, size_t S, size_t A, bool UL>
 template <typename T1>
-auto linear_allocator<T, S, A>::operator=(linear_allocator<T1, S, A>&& rhs) noexcept -> self_t&
+auto linear_allocator<T, S, A, UL>::operator=(linear_allocator<T1, S, A, UL>&& rhs) noexcept -> self_t&
 {
-    std::swap(arena_, rhs.arena_);
+    swap(arena_, rhs.arena_);
     return *this;
 }
 
 
-template <typename T, size_t S, size_t A>
-linear_allocator<T, S, A>::~linear_allocator() noexcept
+template <typename T, size_t S, size_t A, bool UL>
+linear_allocator<T, S, A, UL>::~linear_allocator() noexcept
 {
     arena_ = nullptr;
 }
 
 
-template <typename T, size_t S, size_t A>
-auto linear_allocator<T, S, A>::allocate(size_type n, const void* hint) -> pointer
+template <typename T, size_t S, size_t A, bool UL>
+auto linear_allocator<T, S, A, UL>::allocate(size_type n, const void* hint) -> pointer
 {
     assert(arena_ && "Arena cannot be null.");
     return reinterpret_cast<T*>(arena_->template allocate<alignof(T)>(sizeof(T) * n));
 }
 
 
-template <typename T, size_t S, size_t A>
-void linear_allocator<T, S, A>::deallocate(pointer p, size_type n)
+template <typename T, size_t S, size_t A, bool UL>
+void linear_allocator<T, S, A, UL>::deallocate(pointer p, size_type n)
 {
     assert(arena_ && "Arena cannot be null.");
     arena_->deallocate(reinterpret_cast<char*>(p), sizeof(T) * n);
 }
 
 
-template <typename T1, size_t S1, size_t A1, typename T2, size_t S2, size_t A2>
-bool operator==(const linear_allocator<T1, S1, A1>& lhs, const linear_allocator<T2, S2, A2>& rhs) noexcept
+template <typename T1, size_t S1, size_t A1, bool UL1, typename T2, size_t S2, size_t A2, bool UL2>
+bool operator==(const linear_allocator<T1, S1, A1, UL1>& lhs, const linear_allocator<T2, S2, A2, UL2>& rhs) noexcept
 {
     return lhs.arena_ == rhs.arena_;
 }
 
 
-template <typename T1, size_t S1, size_t A1, typename T2, size_t S2, size_t A2>
-bool operator!=(const linear_allocator<T1, S1, A1>& lhs, const linear_allocator<T2, S2, A2>& rhs) noexcept
+template <typename T1, size_t S1, size_t A1, bool UL1, typename T2, size_t S2, size_t A2, bool UL2>
+bool operator!=(const linear_allocator<T1, S1, A1, UL1>& lhs, const linear_allocator<T2, S2, A2, UL2>& rhs) noexcept
 {
     return !(lhs == rhs);
 }

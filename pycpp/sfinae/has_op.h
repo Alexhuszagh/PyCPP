@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -21,7 +22,7 @@ PYCPP_BEGIN_NAMESPACE
  *  reference.
  */
 template <typename T>
-typename std::add_lvalue_reference<T>::type decl_lvalue() noexcept;
+add_lvalue_reference_t<T> decl_lvalue() noexcept;
 
 // MACROS
 // ------
@@ -35,7 +36,7 @@ typename std::add_lvalue_reference<T>::type decl_lvalue() noexcept;
     {                                                                           \
     protected:                                                                  \
         template <typename T1 = T, typename U1 = U>                             \
-        static char &test(decltype(decl_lvalue<T1>() op std::declval<U1>()));  \
+        static char &test(decltype(decl_lvalue<T1>() op declval<U1>()));        \
                                                                                 \
         template <typename T1 = T, typename U1 = U>                             \
         static long &test(...);                                                 \

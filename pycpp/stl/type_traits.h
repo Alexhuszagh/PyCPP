@@ -8,8 +8,9 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/preprocessor/compiler.h>
 #include <type_traits>
-#include <cstddef>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -76,6 +77,9 @@ using remove_cv = std::remove_cv<T>;
 
 template <typename T>
 using remove_reference = std::remove_reference<T>;
+
+template <typename T>
+using remove_extent = std::remove_extent<T>;
 
 template <typename T>
 using decay = std::decay<T>;
@@ -186,19 +190,209 @@ template <typename T>
 using is_nothrow_destructible = std::is_nothrow_destructible<T>;
 
 // Memory
-template <size_t Len, size_t Align>
+template <
+    size_t Len,
+    size_t Align = alignof(typename std::aligned_storage<Len>::type)
+>
 using aligned_storage = std::aligned_storage<Len, Align>;
 
 template <typename T>
 using alignment_of = std::alignment_of<T>;
 
+// Void
+template <typename...>
+using void_t = void;
+
 // Integral Constant
 template <typename T, T v>
 using integral_constant = std::integral_constant<T, v>;
 
+template <bool B>
+using bool_constant = integral_constant<bool, B>;
+
+template <size_t N>
+using size_constant = integral_constant<size_t, N>;
+
 using true_type = std::true_type;
 using false_type = std::false_type;
 
-// TODO: need C++14 overloads
+// CONVENIENCE
+// -----------
+
+template <typename ... Ts>
+using common_type_t = typename std::common_type<Ts...>::type;
+
+template <typename Enum>
+using underlying_type_t = typename std::underlying_type<Enum>::type;
+
+template <typename F, typename ... Ts>
+using result_of_t = typename std::result_of<F, Ts...>::type;
+
+template <typename T>
+using remove_const_t = typename std::remove_const<T>::type;
+
+template <typename T>
+using remove_volatile_t = typename std::remove_volatile<T>::type;
+
+template <typename T>
+using remove_cv_t = typename std::remove_cv<T>::type;
+
+template <typename T>
+using remove_reference_t = typename std::remove_reference<T>::type;
+
+template <typename T>
+using remove_extent_t = typename std::remove_extent<T>::type;
+
+template <typename T>
+using decay_t = typename std::decay<T>::type;
+
+template <typename T>
+using add_cv_t = typename std::add_cv<T>::type;
+
+template <typename T>
+using add_const_t = typename std::add_const<T>::type;
+
+template <typename T>
+using add_volatile_t = typename std::add_volatile<T>::type;
+
+template <typename T>
+using add_lvalue_reference_t = typename std::add_lvalue_reference<T>::type;
+
+template <typename T>
+using add_rvalue_reference_t = typename std::add_rvalue_reference<T>::type;
+
+template <typename T>
+using add_pointer_t = typename std::add_pointer<T>::type;
+
+template <bool B, typename T = void>
+using enable_if_t = typename std::enable_if<B, T>::type;
+
+template <bool B, typename T, typename F>
+using conditional_t = typename std::conditional<B, T, F>::type;
+
+template <
+    size_t Len,
+    size_t Align = alignof(typename std::aligned_storage<Len>::type)
+>
+using aligned_storage_t = typename std::aligned_storage<Len, Align>::type;
+// TODO:
+
+#if defined(HAVE_CPP14)
+
+template <typename T>
+constexpr bool is_arithmetic_v = std::is_arithmetic<T>::value;
+
+template <typename T>
+constexpr bool is_integral_v = std::is_integral<T>::value;
+
+template <typename T>
+constexpr bool is_floating_point_v = std::is_floating_point<T>::value;
+
+template <typename T, typename U>
+constexpr bool is_same_v = std::is_same<T, U>::value;
+
+template <typename T, typename U>
+constexpr bool is_base_of_v = std::is_base_of<T, U>::value;
+
+template <typename T>
+constexpr bool is_reference_v = std::is_reference<T>::value;
+
+template <typename T>
+constexpr bool is_array_v = std::is_array<T>::value;
+
+template <typename T>
+constexpr bool is_void_v = std::is_void<T>::value;
+
+template <typename T>
+constexpr bool is_lvalue_reference_v = std::is_lvalue_reference<T>::value;
+
+template <typename T>
+constexpr bool is_rvalue_reference_v = std::is_rvalue_reference<T>::value;
+
+template <typename T>
+constexpr bool is_enum_v = std::is_enum<T>::value;
+
+template <typename T>
+constexpr bool is_empty_v = std::is_empty<T>::value;
+
+template <typename From, typename To>
+constexpr bool is_convertible_v = std::is_convertible<From, To>::value;
+
+template <typename T, typename ... Ts>
+constexpr bool is_constructible_v = std::is_constructible<T, Ts...>::value;
+
+template <typename T, typename ... Ts>
+constexpr bool is_trivially_constructible_v = std::is_trivially_constructible<T, Ts...>::value;
+
+template <typename T, typename ... Ts>
+constexpr bool is_nothrow_constructible_v = std::is_nothrow_constructible<T, Ts...>::value;
+
+template <typename T>
+constexpr bool is_default_constructible_v = std::is_default_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_default_constructible_v = std::is_trivially_default_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_nothrow_default_constructible_v = std::is_nothrow_default_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_copy_constructible_v = std::is_copy_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_copy_constructible_v = std::is_trivially_copy_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_nothrow_copy_constructible_v = std::is_nothrow_copy_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_move_constructible_v = std::is_move_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_move_constructible_v = std::is_trivially_move_constructible<T>::value;
+
+template <typename T>
+constexpr bool is_nothrow_move_constructible_v = std::is_nothrow_move_constructible<T>::value;
+
+template <typename T, typename ... Ts>
+constexpr bool is_assignable_v = std::is_assignable<T, Ts...>::value;
+
+template <typename T, typename ... Ts>
+constexpr bool is_trivially_assignable_v = std::is_trivially_assignable<T, Ts...>::value;
+
+template <typename T, typename ... Ts>
+constexpr bool is_nothrow_assignable_v = std::is_nothrow_assignable<T, Ts...>::value;
+
+template <typename T>
+constexpr bool is_copy_assignable_v = std::is_copy_assignable<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_copy_assignable_v = std::is_trivially_copy_assignable<T>::value;
+
+template <typename T>
+constexpr bool is_nothrow_copy_assignable_v = std::is_nothrow_copy_assignable<T>::value;
+
+template <typename T>
+constexpr bool is_move_assignable_v = std::is_move_assignable<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_move_assignable_v = std::is_trivially_move_assignable<T>::value;
+
+template <typename T>
+constexpr bool is_nothrow_move_assignable_v = std::is_nothrow_move_assignable<T>::value;
+
+template <typename T>
+constexpr bool is_destructible_v = std::is_destructible<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_destructible_v = std::is_trivially_destructible<T>::value;
+
+template <typename T>
+constexpr bool is_nothrow_destructible_v = std::is_nothrow_destructible<T>::value;
+
+template <typename T>
+constexpr size_t alignment_of_v = std::alignment_of<T>::value;
+
+#endif          // HAVE_CPP14
 
 PYCPP_END_NAMESPACE

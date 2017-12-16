@@ -28,7 +28,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 struct address_cache_t;
-typedef std::shared_ptr<address_cache_t> dns_cache_t;
+typedef shared_ptr<address_cache_t> dns_cache_t;
 
 // OBJECTS
 // -------
@@ -37,17 +37,17 @@ typedef std::shared_ptr<address_cache_t> dns_cache_t;
 /**
  *  \brief Iterator over addresses.
  */
-struct address_iterator_t: std::iterator<std::forward_iterator_tag, addrinfo>
+struct address_iterator_t: iterator<forward_iterator_tag, addrinfo>
 {
     // MEMBER TYPES
     // ------------
-    typedef address_iterator_t self;
-    typedef std::iterator<std::forward_iterator_tag, addrinfo> base;
+    using self = address_iterator_t;
+    using base = iterator<forward_iterator_tag, addrinfo>;
     using typename base::value_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -101,8 +101,8 @@ struct address_t
  */
 struct address_cache_t: std::unordered_multimap<std::string, address_t>
 {
-    typedef std::unordered_multimap<std::string, address_t> base;
-    using base::base;
+    using base_t = std::unordered_multimap<std::string, address_t>;
+    using base_t::base_t;
 
     template <typename ...Args>
     friend dns_cache_t create_dns_cache(Args&& ...args);
@@ -117,9 +117,6 @@ struct address_cache_t: std::unordered_multimap<std::string, address_t>
  */
 class dns_lookup_t
 {
-protected:
-    addrinfo* info = nullptr;
-
 public:
     dns_lookup_t() = default;
     dns_lookup_t(const dns_lookup_t&) = delete;
@@ -133,6 +130,9 @@ public:
     // ITERATORS
     address_iterator_t begin() const;
     address_iterator_t end() const;
+
+protected:
+    addrinfo* info = nullptr;
 };
 
 // IMPLEMENTATION
@@ -148,7 +148,7 @@ public:
 template <typename... Ts>
 dns_cache_t create_dns_cache(Ts&& ...ts)
 {
-    return std::make_shared<address_cache_t>(std::forward<Ts>(ts)...);
+    return make_shared<address_cache_t>(forward<Ts>(ts)...);
 }
 
 PYCPP_END_NAMESPACE

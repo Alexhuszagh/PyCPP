@@ -5,7 +5,7 @@
 #include <pycpp/lattice/header.h>
 #include <pycpp/stl/algorithm.h>
 #include <pycpp/string/casemap.h>
-#include <cctype>
+#include <ctype.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -15,7 +15,7 @@ PYCPP_BEGIN_NAMESPACE
 
 bool lowercase_less::operator()(const std::string &lhs, const std::string &rhs) const noexcept
 {
-    return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), [](unsigned char l, unsigned char r) {
+    return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), [](unsigned char l, unsigned char r) {
             return ascii_tolower(l) < ascii_tolower(r);
     });
 }
@@ -94,7 +94,7 @@ bool header_t::content_type() const
 }
 
 
-std::ostream & operator<<(std::ostream &os, const header_t &header)
+ostream & operator<<(ostream &os, const header_t &header)
 {
     os << header.string();
     return os;

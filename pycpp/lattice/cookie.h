@@ -22,8 +22,8 @@ PYCPP_BEGIN_NAMESPACE
  */
 struct cookies_t: std::map<std::string, std::string>
 {
-    typedef std::map<std::string, std::string> base;
-    using base::base;
+    using base_t = std::map<std::string, std::string>;
+    using base_t::base_t;
 
     std::string encode() const;
     explicit operator bool() const;

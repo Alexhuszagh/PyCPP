@@ -101,9 +101,9 @@ using part_value_t = detail::part_value_t;
 using file_value_t = detail::file_value_t;
 using buffer_value_t = detail::buffer_value_t;
 
-using part_ptr_t = std::shared_ptr<part_value_t>;
-using file_ptr_t = std::shared_ptr<file_value_t>;
-using buffer_ptr_t = std::shared_ptr<buffer_value_t>;
+using part_ptr_t = shared_ptr<part_value_t>;
+using file_ptr_t = shared_ptr<file_value_t>;
+using buffer_ptr_t = shared_ptr<buffer_value_t>;
 
 // HELPERS
 // -------
@@ -111,14 +111,14 @@ using buffer_ptr_t = std::shared_ptr<buffer_value_t>;
 template <typename... Ts>
 file_ptr_t create_file(Ts&&... ts)
 {
-    return std::make_shared<file_value_t>(std::forward<Ts>(ts)...);
+    return make_shared<file_value_t>(forward<Ts>(ts)...);
 }
 
 
 template <typename... Ts>
 buffer_ptr_t create_buffer(Ts&&... ts)
 {
-    return std::make_shared<buffer_value_t>(std::forward<Ts>(ts)...);
+    return make_shared<buffer_value_t>(forward<Ts>(ts)...);
 }
 
 // OBJECTS

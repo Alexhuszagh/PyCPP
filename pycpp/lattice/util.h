@@ -18,7 +18,7 @@ PYCPP_BEGIN_NAMESPACE
 // CONSTANTS
 // ---------
 
-extern std::mutex LATTICE_MUTEX;
+extern mutex LATTICE_MUTEX;
 
 // FUNCTIONS
 // ---------

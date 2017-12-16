@@ -4,7 +4,7 @@
 #include <pycpp/lexical/atof.h>
 #include <pycpp/lexical/format.h>
 #include <gtest/gtest.h>
-#include <cmath>
+#include <math.h>
 
 PYCPP_USING_NAMESPACE
 

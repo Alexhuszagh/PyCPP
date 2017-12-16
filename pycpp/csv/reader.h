@@ -39,8 +39,8 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     csv_stream_reader(csvpunct_impl* = nullptr);
-    csv_stream_reader(std::istream&, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(std::istream&, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_stream_reader(istream&, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(istream&, size_t skip = 0, csvpunct_impl* = nullptr);
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
 
@@ -54,9 +54,9 @@ public:
     iterator end();
 
 private:
-    std::istream* stream_ = nullptr;
+    istream* stream_ = nullptr;
     size_t row_length_ = 0;
-    std::shared_ptr<csvpunct_impl> punct_;
+    shared_ptr<csvpunct_impl> punct_;
 };
 
 
@@ -94,7 +94,7 @@ public:
     void open(const string_wrapper& str, size_t skip = 0, csvpunct_impl* = nullptr);
 
 private:
-    std::istringstream sstream_;
+    istringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

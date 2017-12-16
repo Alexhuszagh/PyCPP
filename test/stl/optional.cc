@@ -7,6 +7,7 @@
  */
 
 #include <pycpp/stl/optional.h>
+#include <pycpp/stl/tuple.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -376,9 +377,9 @@ TEST(optional, example_optional_arg)
 };
 
 
-static std::tuple<date, date, date> get_triplet()
+static tuple<date, date, date> get_triplet()
 {
-    return std::tuple<date, date, date>{date{1}, date{2}, date{3}};
+    return tuple<date, date, date>{date{1}, date{2}, date{3}};
 }
 
 
@@ -390,7 +391,7 @@ TEST(optional, example_date)
 {
     optional<date> start, mid, end;
 
-    std::tie(start, mid, end) = get_triplet();
+    tie(start, mid, end) = get_triplet();
     run_triplet(*start, *mid, *end);
 };
 
@@ -541,6 +542,6 @@ TEST(optional, hash)
     using rt1 = decltype(hash<on1>()(std::declval<on1>()));
     using rt2 = decltype(hash<on2>()(std::declval<on2>()));
 
-    static_assert(std::is_same<rt1, size_t>::value, "");
-    static_assert(std::is_same<rt2, size_t>::value, "");
+    static_assert(is_same<rt1, size_t>::value, "");
+    static_assert(is_same<rt2, size_t>::value, "");
 }

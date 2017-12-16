@@ -6,8 +6,9 @@
  */
 
 #include <pycpp/stl/system_error.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <type_traits>
 
 PYCPP_USING_NAMESPACE
 
@@ -16,9 +17,9 @@ PYCPP_USING_NAMESPACE
 
 TEST(error_code, hash)
 {
-    using hash_type = hash<std::error_code>;
-    using result_type = decltype(hash_type()(std::declval<std::error_code>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using hash_type = hash<error_code>;
+    using result_type = decltype(hash_type()(declval<error_code>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }
 
 
@@ -26,9 +27,9 @@ TEST(error_code, hash)
 
 TEST(error_condition, hash)
 {
-    using hash_type = hash<std::error_condition>;
-    using result_type = decltype(hash_type()(std::declval<std::error_condition>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using hash_type = hash<error_condition>;
+    using result_type = decltype(hash_type()(declval<error_condition>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }
 
 #endif          // HAVE_CPP17

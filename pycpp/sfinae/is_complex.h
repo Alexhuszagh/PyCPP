@@ -16,7 +16,7 @@ PYCPP_BEGIN_NAMESPACE
 // ------
 
 template <typename T>
-struct is_complex: std::false_type
+struct is_complex: false_type
 {};
 
 template <typename T>
@@ -32,7 +32,7 @@ struct is_complex<volatile T>: is_complex<T>
 {};
 
 template <typename T>
-struct is_complex<std::complex<T>>: std::true_type
+struct is_complex<complex<T>>: true_type
 {};
 
 #ifdef HAVE_CPP14

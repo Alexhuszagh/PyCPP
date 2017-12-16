@@ -175,13 +175,13 @@ lzma_compressor::lzma_compressor(int level):
 
 
 lzma_compressor::lzma_compressor(lzma_compressor&& rhs):
-    ptr_(std::move(rhs.ptr_))
+    ptr_(move(rhs.ptr_))
 {}
 
 
 lzma_compressor & lzma_compressor::operator=(lzma_compressor&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 
@@ -213,13 +213,13 @@ lzma_decompressor::lzma_decompressor():
 
 
 lzma_decompressor::lzma_decompressor(lzma_decompressor&& rhs):
-    ptr_(std::move(rhs.ptr_))
+    ptr_(move(rhs.ptr_))
 {}
 
 
 lzma_decompressor & lzma_decompressor::operator=(lzma_decompressor&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 

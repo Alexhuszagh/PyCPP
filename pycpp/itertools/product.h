@@ -10,13 +10,13 @@
  *
  *  The code can be used as follows:
  *
- *      std::vector<std::vector<int>> aa = {{1, 2, 3}, {4, 5, 6}};
+ *      vector<vector<int>> aa = {{1, 2, 3}, {4, 5, 6}};
  *      product(aa, [](const auto &i) {
- *          std::cout << "[";
+ *          cout << "[";
  *          for (auto j : i) {
- *              std::cout << j << ", ";
+ *              cout << j << ", ";
  *          }
- *          std::cout << "]" << std::endl;
+ *          cout << "]" << endl;
  *          return false;
  *      });
  *
@@ -47,9 +47,6 @@ namespace prod_detail
 // ALIAS
 // -----
 
-template <typename...>
-using void_t = void;
-
 /**
  *  \brief Helper demangle and product reference types.
  *
@@ -64,16 +61,16 @@ using void_t = void;
 template <typename T>
 struct iterator_reference
 {
-    typedef typename std::conditional<is_reference_wrapper<T>::value, T, std::reference_wrapper<const T>>::type type;
-    typedef typename type::type container_type;
-    typedef typename container_type::value_type value_type;
-    typedef typename container_type::const_iterator iterator;
+    using type = conditional_t<is_reference_wrapper<T>::value, T, reference_wrapper<const T>>;
+    using container_type = typename type::type;
+    using value_type = typename container_type::value_type;
+    using iterator = typename container_type::const_iterator;
 
-    typedef typename std::conditional<
+    using reference_type = conditional_t<
         is_reference_wrapper<value_type>::value,
         value_type,
-        std::reference_wrapper<const value_type>
-    >::type reference_type;
+        reference_wrapper<const value_type>
+    >;
 
     static iterator begin(const container_type &t)
     {
@@ -93,15 +90,15 @@ struct iterator_reference
 template < typename BidirIter, typename F>
 void product_(BidirIter first, BidirIter last, F &f)
 {
-    typedef std::iterator_traits<BidirIter> traits_type;
-    typedef typename traits_type::value_type value_type;
-    typedef iterator_reference<value_type> helper;
-    typedef typename helper::iterator iterator_type;
-    typedef typename helper::reference_type reference_type;
+    using traits_type = iterator_traits<BidirIter>;
+    using value_type = typename traits_type::value_type;
+    using helper = iterator_reference<value_type>;
+    using iterator_type = typename helper::iterator;
+    using reference_type = typename helper::reference_type;
 
     size_t size, k;
-    std::vector<iterator_type> buf;
-    std::vector<reference_type> val;
+    vector<iterator_type> buf;
+    vector<reference_type> val;
 
     // sanity check
     if (first == last) {
@@ -109,12 +106,12 @@ void product_(BidirIter first, BidirIter last, F &f)
     }
 
     // fill vector for function calls
-    size = std::distance(first, last);
+    size = distance(first, last);
     k = 0;
     buf.reserve(size);
     val.reserve(size);
 
-    std::for_each(first, last, [&](const value_type& value) {
+    for_each(first, last, [&](const value_type& value) {
         buf.emplace_back(--helper::begin(value));
         val.emplace_back(*helper::begin(value));
         ++k;
@@ -151,11 +148,11 @@ void product_(BidirIter first, BidirIter last, F &f)
 template <typename T>
 struct list_list_product
 {
-    typedef typename T::value_type first_type;
-    typedef typename first_type::value_type second_type;
-    typedef std::reference_wrapper<const second_type> reference_type;
-    typedef std::vector<reference_type> list_type;
-    typedef std::vector<list_type> matrix_type;
+    using first_type = typename T::value_type;
+    using second_type = typename first_type::value_type;
+    using reference_type = reference_wrapper<const second_type>;
+    using list_type = vector<reference_type>;
+    using matrix_type = vector<list_type>;
 };
 
 
@@ -165,9 +162,9 @@ struct list_list_product
 template <typename T, typename F>
 void list_list(const T& t, F &f)
 {
-    typedef list_list_product<T> helper;
-    typedef typename helper::list_type list_type;
-    typedef typename helper::matrix_type matrix_type;
+    using helper = list_list_product<T>;
+    using list_type = typename helper::list_type;
+    using matrix_type = typename helper::matrix_type;
 
     matrix_type matrix;
     matrix.reserve(t.size());
@@ -177,7 +174,7 @@ void list_list(const T& t, F &f)
         for (const auto &inner: outer) {
             list.emplace_back(inner);
         }
-        matrix.emplace_back(std::move(list));
+        matrix.emplace_back(move(list));
     }
 
     product_(matrix.begin(), matrix.end(), f);
@@ -193,11 +190,11 @@ void list_list(const T& t, F &f)
 template <typename T>
 struct list_map_product
 {
-    typedef typename T::value_type first_type;
-    typedef typename first_type::value_type second_type;
-    typedef std::reference_wrapper<const second_type> reference_type;
-    typedef std::vector<reference_type> list_type;
-    typedef std::vector<list_type> matrix_type;
+    using first_type = typename T::value_type;
+    using second_type = typename first_type::value_type;
+    using reference_type = reference_wrapper<const second_type>;
+    using list_type = vector<reference_type>;
+    using matrix_type = vector<list_type>;
 };
 
 
@@ -207,9 +204,9 @@ struct list_map_product
 template <typename T, typename F>
 void list_map(const T& t, F &f)
 {
-    typedef list_map_product<T> helper;
-    typedef typename helper::list_type list_type;
-    typedef typename helper::matrix_type matrix_type;
+    using helper = list_map_product<T>;
+    using list_type = typename helper::list_type;
+    using matrix_type = typename helper::matrix_type;
 
     matrix_type matrix;
     matrix.reserve(t.size());
@@ -219,7 +216,7 @@ void list_map(const T& t, F &f)
         for (const auto &inner: outer) {
             list.emplace_back(inner);
         }
-        matrix.emplace_back(std::move(list));
+        matrix.emplace_back(move(list));
     }
 
     product_(matrix.begin(), matrix.end(), f);
@@ -236,11 +233,11 @@ void list_map(const T& t, F &f)
 template <typename T>
 struct map_list_product
 {
-    typedef typename T::mapped_type first_type;
-    typedef typename first_type::value_type second_type;
-    typedef std::reference_wrapper<const second_type> reference_type;
-    typedef std::vector<reference_type> list_type;
-    typedef std::vector<list_type> matrix_type;
+    using first_type = typename T::mapped_type;
+    using second_type = typename first_type::value_type;
+    using reference_type = reference_wrapper<const second_type>;
+    using list_type = vector<reference_type>;
+    using matrix_type = vector<list_type>;
 };
 
 
@@ -250,9 +247,9 @@ struct map_list_product
 template <typename T, typename F>
 void map_list(const T& t, F &f)
 {
-    typedef map_list_product<T> helper;
-    typedef typename helper::list_type list_type;
-    typedef typename helper::matrix_type matrix_type;
+    using helper = map_list_product<T>;
+    using list_type = typename helper::list_type;
+    using matrix_type = typename helper::matrix_type;
 
     matrix_type matrix;
     matrix.reserve(t.size());
@@ -262,7 +259,7 @@ void map_list(const T& t, F &f)
         for (const auto &inner: outer.second) {
             list.emplace_back(inner);
         }
-        matrix.emplace_back(std::move(list));
+        matrix.emplace_back(move(list));
     }
 
     product_(matrix.begin(), matrix.end(), f);
@@ -279,11 +276,11 @@ void map_list(const T& t, F &f)
 template <typename T>
 struct map_map_product
 {
-    typedef typename T::mapped_type first_type;
-    typedef typename first_type::value_type second_type;
-    typedef std::reference_wrapper<const second_type> reference_type;
-    typedef std::vector<reference_type> list_type;
-    typedef std::vector<list_type> matrix_type;
+    using first_type = typename T::mapped_type;
+    using second_type = typename first_type::value_type;
+    using reference_type = reference_wrapper<const second_type>;
+    using list_type = vector<reference_type>;
+    using matrix_type = vector<list_type>;
 };
 
 
@@ -293,9 +290,9 @@ struct map_map_product
 template <typename T, typename F>
 void map_map(const T& t, F &f)
 {
-    typedef map_map_product<T> helper;
-    typedef typename helper::list_type list_type;
-    typedef typename helper::matrix_type matrix_type;
+    using helper = map_map_product<T>;
+    using list_type = typename helper::list_type;
+    using matrix_type = typename helper::matrix_type;
 
     matrix_type matrix;
     matrix.reserve(t.size());
@@ -305,7 +302,7 @@ void map_map(const T& t, F &f)
         for (const auto &inner: outer.second) {
             list.emplace_back(inner);
         }
-        matrix.emplace_back(std::move(list));
+        matrix.emplace_back(move(list));
     }
 
     product_(matrix.begin(), matrix.end(), f);
@@ -316,11 +313,11 @@ void map_map(const T& t, F &f)
 
 
 template<typename, template <typename> class, typename = void>
-struct is_detected: std::false_type
+struct is_detected: false_type
 {};
 
 template<typename T, template <typename> class F>
-struct is_detected<T, F, void_t<F<T>>>: std::true_type
+struct is_detected<T, F, void_t<F<T>>>: true_type
 {};
 
 template <typename T>
@@ -330,9 +327,9 @@ using mapped_t = typename T::mapped_type;
 template <typename T>
 struct map_type
 {
-    typedef typename T::value_type first_type;
-    typedef typename T::value_type value_type;
-    typedef typename T::value_type mapped_type;
+    using first_type = typename T::value_type;
+    using value_type = typename T::value_type;
+    using mapped_type = typename T::value_type;
 };
 
 
@@ -340,7 +337,7 @@ template <typename T>
 struct is_map
 {
     static constexpr bool outer = is_detected<T, mapped_t>::value;
-    typedef mapped_t<typename std::conditional<outer, T, map_type<T>>::type> U;
+    using U = mapped_t<conditional_t<outer, T, map_type<T>>>;
     static constexpr bool inner = is_detected<U, mapped_t>::value;
 };
 
@@ -383,25 +380,25 @@ struct is_map_map
 struct cartesian_product
 {
     template <typename T, typename F>
-    typename std::enable_if<is_list_list<T>::value, void>::type operator()(const T& t, F &f)
+    enable_if_t<is_list_list<T>::value, void> operator()(const T& t, F &f)
     {
         list_list(t, f);
     }
 
     template <typename T, typename F>
-    typename std::enable_if<is_list_map<T>::value, void>::type operator()(const T& t, F &f)
+    enable_if_t<is_list_map<T>::value, void> operator()(const T& t, F &f)
     {
         list_map(t, f);
     }
 
     template <typename T, typename F>
-    typename std::enable_if<is_map_list<T>::value, void>::type operator()(const T& t, F &f)
+    enable_if_t<is_map_list<T>::value, void> operator()(const T& t, F &f)
     {
         map_list(t, f);
     }
 
     template <typename T, typename F>
-    typename std::enable_if<is_map_map<T>::value, void>::type operator()(const T& t, F &f)
+    enable_if_t<is_map_map<T>::value, void> operator()(const T& t, F &f)
     {
         map_map(t, f);
     }

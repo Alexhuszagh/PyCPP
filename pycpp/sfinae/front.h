@@ -23,28 +23,28 @@ PYCPP_HAS_MEMBER_FUNCTION(front, has_front, typename C::reference (C::*)());
 struct front
 {
     template <typename T>
-    typename std::enable_if<has_front<T>::value && !back_detail::is_const<T>::value, typename T::reference>::type
+    enable_if_t<has_front<T>::value && !back_detail::is_const<T>::value, typename T::reference>
     operator()(T &t)
     {
         return t.front();
     }
 
     template <typename T>
-    typename std::enable_if<!has_front<T>::value && !back_detail::is_const<T>::value, typename T::reference>::type
+    enable_if_t<!has_front<T>::value && !back_detail::is_const<T>::value, typename T::reference>
     operator()(T &t)
     {
         return *t.begin();
     }
 
     template <typename T>
-    typename std::enable_if<has_front<T>::value, typename T::const_reference>::type
+    enable_if_t<has_front<T>::value, typename T::const_reference>
     operator()(const T &t) const
     {
         return t.front();
     }
 
     template <typename T>
-    typename std::enable_if<!has_front<T>::value, typename T::const_reference>::type
+    enable_if_t<!has_front<T>::value, typename T::const_reference>
     operator()(const T &t) const
     {
         return *t.begin();

@@ -24,13 +24,13 @@ public:
     // MEMBER TYPES
     // ------------
     using iterator = Iterator;
-    using reverse_iterator = std::reverse_iterator<iterator>;
-    using value_type = typename std::iterator_traits<iterator>::value_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
-    using difference_type = typename std::iterator_traits<iterator>::difference_type;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
+    using value_type = typename iterator_traits<iterator>::value_type;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using difference_type = typename iterator_traits<iterator>::difference_type;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -43,7 +43,7 @@ public:
     size_t distance() const;
 
     template <typename It>
-    typename std::enable_if<is_random_access_iterator<It>::value, reference>::type
+    enable_if_t<is_random_access_iterator<It>::value, reference>
     operator[](difference_type n) const
     {
         return first_[n];
@@ -103,7 +103,7 @@ bool range<Iterator>::empty() const
 template <typename Iterator>
 size_t range<Iterator>::distance() const
 {
-    return std::distance(first_, last_);
+    return PYCPP_NAMESPACE::distance(first_, last_);
 }
 
 PYCPP_END_NAMESPACE

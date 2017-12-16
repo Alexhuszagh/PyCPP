@@ -2,12 +2,12 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief `std::reference_wrapper` SFINAE-detection unittests.
+ *  \brief `reference_wrapper` SFINAE-detection unittests.
  */
 
 #include <pycpp/sfinae/is_reference_wrapper.h>
+#include <pycpp/stl/tuple.h>
 #include <gtest/gtest.h>
-#include <tuple>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,10 +17,10 @@ PYCPP_USING_NAMESPACE
 
 TEST(is_reference_wrapper, is_reference_wrapper)
 {
-    using ref = std::reference_wrapper<int>;
-    using t1 = std::tuple<int>;
-    using t2 = std::tuple<int, int>;
-    using t3 = std::tuple<int, int, int>;
+    using ref = reference_wrapper<int>;
+    using t1 = tuple<int>;
+    using t2 = tuple<int, int>;
+    using t3 = tuple<int, int, int>;
 
     static_assert(is_reference_wrapper<ref>::value, "");
     static_assert(!is_reference_wrapper<t1>::value, "");

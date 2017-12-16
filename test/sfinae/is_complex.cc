@@ -2,12 +2,13 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief `std::complex` SFINAE-detection unittests.
+ *  \brief `complex` SFINAE-detection unittests.
  */
 
 #include <pycpp/sfinae/is_complex.h>
+#include <pycpp/stl/complex.h>
+#include <pycpp/stl/tuple.h>
 #include <gtest/gtest.h>
-#include <tuple>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,10 +18,10 @@ PYCPP_USING_NAMESPACE
 
 TEST(is_complex, is_complex)
 {
-    using num = std::complex<int>;
-    using t1 = std::tuple<int>;
-    using t2 = std::tuple<int, int>;
-    using t3 = std::tuple<int, int, int>;
+    using num = complex<int>;
+    using t1 = tuple<int>;
+    using t2 = tuple<int, int>;
+    using t3 = tuple<int, int, int>;
 
     static_assert(is_complex<num>::value, "");
     static_assert(!is_complex<t1>::value, "");

@@ -34,22 +34,14 @@ template <typename T> using optional = std::optional<T>;
 using nullopt_t = std::nullopt_t;
 using nullopt = std::nullopt;
 using bad_optional_access = std::bad_optional_access;
-
-// FUNCTIONS
-// ---------
-
-template <typename T, typename... Ts>
-auto make_optional(Ts&&... ts) -> decltype(std::make_optional<T>(std::forward<Ts>(ts)...))
-{
-  return std::make_optional<T>(std::forward<Ts>(ts)...);
-}
+using make_optional = std::make_optional;
 
 #else                               // !HAVE_CPP17
 
 // MACROS
 // ------
 
-#define TR2_OPTIONAL_REQUIRES(...) typename std::enable_if<__VA_ARGS__::value, bool>::type = false
+#define TR2_OPTIONAL_REQUIRES(...) enable_if_t<__VA_ARGS__::value, bool> = false
 
 #if defined(HAVE_GNUC)
 #   if (GNUC_MAJOR_VERSION == 4) && (GNUC_MINOR_VERSION >= 8)
@@ -150,22 +142,22 @@ class optional<T&>;
 // Forwarding for constexpr not working.
 
 template <typename T>
-inline constexpr T&& constexpr_forward(typename remove_reference<T>::type& t) noexcept
+inline constexpr T&& constexpr_forward(remove_reference_t<T>& t) noexcept
 {
     return static_cast<T&&>(t);
 }
 
 template <typename T>
-inline constexpr T&& constexpr_forward(typename remove_reference<T>::type&& t) noexcept
+inline constexpr T&& constexpr_forward(remove_reference_t<T>&& t) noexcept
 {
     static_assert(!is_lvalue_reference<T>::value, "!!");
     return static_cast<T&&>(t);
 }
 
 template <typename T>
-inline constexpr typename remove_reference<T>::type&& constexpr_move(T&& t) noexcept
+inline constexpr remove_reference_t<T>&& constexpr_move(T&& t) noexcept
 {
-    return static_cast<typename remove_reference<T>::type&&>(t);
+    return static_cast<remove_reference_t<T>&&>(t);
 }
 
 
@@ -183,7 +175,7 @@ struct has_overloaded_addressof
     template <typename X>
     constexpr static bool has_overload(...) { return false; }
 
-    template <typename X, size_t S = sizeof(std::declval<X&>().operator&()) >
+    template <typename X, size_t S = sizeof(declval<X&>().operator&()) >
     constexpr static bool has_overload(bool) { return true; }
 
     constexpr static bool value = has_overload<T>(true);
@@ -198,7 +190,7 @@ constexpr T* static_addressof(T& ref)
 template <typename T, TR2_OPTIONAL_REQUIRES(has_overloaded_addressof<T>)>
 T* static_addressof(T& ref)
 {
-    return std::addressof(ref);
+    return addressof(ref);
 }
 
 // the call to convert<A>(b) has return type A and converts b to type A iff
@@ -226,14 +218,15 @@ constexpr nullopt_t nullopt{nullopt_t::init()};
 
 
 // 20.5.8, class bad_optional_access
-class bad_optional_access : public std::logic_error {
+class bad_optional_access : public logic_error
+{
 public:
     explicit bad_optional_access(const std::string& what_arg):
-        std::logic_error{what_arg}
+        logic_error{what_arg}
     {}
 
     explicit bad_optional_access(const char* what_arg):
-        std::logic_error{what_arg}
+        logic_error{what_arg}
     {}
 };
 
@@ -306,7 +299,7 @@ struct optional_base
     template <typename U, typename... Args, TR2_OPTIONAL_REQUIRES(is_constructible<T, initializer_list<U>>)>
     explicit optional_base(in_place_t, initializer_list<U> il, Args&&... args):
         init_(true),
-        storage_(il, std::forward<Args>(args)...)
+        storage_(il, forward<Args>(args)...)
     {}
 
     ~optional_base()
@@ -346,34 +339,34 @@ struct constexpr_optional_base
     template <typename U, typename... Args, TR2_OPTIONAL_REQUIRES(is_constructible<T, initializer_list<U>>)>
     OPTIONAL_CONSTEXPR_INIT_LIST explicit constexpr_optional_base(in_place_t, initializer_list<U> il, Args&&... args):
         init_(true),
-        storage_(il, std::forward<Args>(args)...)
+        storage_(il, forward<Args>(args)...)
     {}
 
     ~constexpr_optional_base() = default;
 };
 
 template <typename T>
-using optional_base_t = typename conditional<
+using optional_base_t = conditional_t<
     is_trivially_destructible<T>::value,                          // if possible
-    constexpr_optional_base<typename remove_const<T>::type>, // use base with trivial destructor
-    optional_base<typename remove_const<T>::type>
->::type;
+    constexpr_optional_base<remove_const_t<T>>,                   // use base with trivial destructor
+    optional_base<remove_const_t<T>>
+>;
 
 
 template <typename T>
 class optional : private optional_base_t<T>
 {
-    static_assert( !is_same<typename decay<T>::type, nullopt_t>::value, "bad T" );
-    static_assert( !is_same<typename decay<T>::type, in_place_t>::value, "bad T" );
+    static_assert(!is_same<decay_t<T>, nullopt_t>::value, "bad T");
+    static_assert(!is_same<decay_t<T>, in_place_t>::value, "bad T");
 
     constexpr bool initialized() const noexcept
     {
         return optional_base_t<T>::init_;
     }
 
-    typename remove_const<T>::type* dataptr()
+    remove_const_t<T>* dataptr()
     {
-        return std::addressof(optional_base_t<T>::storage_.value_);
+        return addressof(optional_base_t<T>::storage_.value_);
     }
 
     constexpr const T* dataptr() const
@@ -392,7 +385,7 @@ class optional : private optional_base_t<T>
 
     OPTIONAL_MUTABLE_CONSTEXPR T&& contained_val() &&
     {
-        return std::move(optional_base_t<T>::storage_.value_);
+        return move(optional_base_t<T>::storage_.value_);
     }
 
     OPTIONAL_MUTABLE_CONSTEXPR T& contained_val() &
@@ -409,7 +402,7 @@ class optional : private optional_base_t<T>
 
     T&& contained_val() &&
     {
-        return std::move(optional_base_t<T>::storage_.value_);
+        return move(optional_base_t<T>::storage_.value_);
     }
 
 #   endif
@@ -437,18 +430,18 @@ class optional : private optional_base_t<T>
     }
 
     template <typename... Args>
-    void initialize(Args&&... args) noexcept(noexcept(T(std::forward<Args>(args)...)))
+    void initialize(Args&&... args) noexcept(noexcept(T(forward<Args>(args)...)))
     {
         assert(!optional_base_t<T>::init_);
-        ::new (static_cast<void*>(dataptr())) T(std::forward<Args>(args)...);
+        ::new (static_cast<void*>(dataptr())) T(forward<Args>(args)...);
         optional_base_t<T>::init_ = true;
     }
 
     template <typename U, typename... Args>
-    void initialize(initializer_list<U> il, Args&&... args) noexcept(noexcept(T(il, std::forward<Args>(args)...)))
+    void initialize(initializer_list<U> il, Args&&... args) noexcept(noexcept(T(il, forward<Args>(args)...)))
     {
         assert(!optional_base_t<T>::init_);
-        ::new (static_cast<void*>(dataptr())) T(il, std::forward<Args>(args)...);
+        ::new (static_cast<void*>(dataptr())) T(il, forward<Args>(args)...);
         optional_base_t<T>::init_ = true;
     }
 
@@ -472,7 +465,7 @@ public:
         optional_base_t<T>()
     {
         if (rhs.initialized()) {
-            ::new (static_cast<void*>(dataptr())) T(std::move(*rhs));
+            ::new (static_cast<void*>(dataptr())) T(move(*rhs));
             optional_base_t<T>::init_ = true;
         }
     }
@@ -523,23 +516,23 @@ public:
         if (initialized() == true  && rhs.initialized() == false) {
             clear();
         } else if (initialized() == false && rhs.initialized() == true) {
-            initialize(std::move(*rhs));
+            initialize(move(*rhs));
         } else if (initialized() == true  && rhs.initialized() == true) {
-            contained_val() = std::move(*rhs);
+            contained_val() = move(*rhs);
         }
         return *this;
     }
 
     template <typename U>
-    auto operator=(U&& v) -> typename enable_if<
-        is_same<typename decay<U>::type, T>::value,
+    auto operator=(U&& v) -> enable_if_t<
+        is_same<decay_t<U>, T>::value,
         optional&
-    >::type
+    >
     {
         if (initialized()) {
-            contained_val() = std::forward<U>(v);
+            contained_val() = forward<U>(v);
         } else {
-            initialize(std::forward<U>(v));
+            initialize(forward<U>(v));
         }
         return *this;
     }
@@ -548,27 +541,27 @@ public:
     void emplace(Args&&... args)
     {
         clear();
-        initialize(std::forward<Args>(args)...);
+        initialize(forward<Args>(args)...);
     }
 
     template <typename U, typename... Args>
     void emplace(initializer_list<U> il, Args&&... args)
     {
         clear();
-        initialize<U, Args...>(il, std::forward<Args>(args)...);
+        initialize<U, Args...>(il, forward<Args>(args)...);
     }
 
     // 20.5.4.4, Swap
-    void swap(optional<T>& rhs) noexcept(is_nothrow_move_constructible<T>::value && noexcept(std::swap(std::declval<T&>(), std::declval<T&>())))
+    void swap(optional<T>& rhs) noexcept(is_nothrow_move_constructible<T>::value && noexcept(PYCPP_NAMESPACE::swap(declval<T&>(), declval<T&>())))
     {
         if (initialized() == true  && rhs.initialized() == false) {
-            rhs.initialize(std::move(**this));
+            rhs.initialize(move(**this));
             clear();
         } else if (initialized() == false && rhs.initialized() == true) {
-            initialize(std::move(*rhs));
+            initialize(move(*rhs));
             rhs.clear();
         } else if (initialized() == true  && rhs.initialized() == true) {
-            std::swap(**this, *rhs);
+            PYCPP_NAMESPACE::swap(**this, *rhs);
         }
     }
 
@@ -629,7 +622,7 @@ public:
         if (!initialized()) {
             throw bad_optional_access("bad optional access");
         }
-        return std::move(contained_val());
+        return move(contained_val());
     }
 
 #else
@@ -754,20 +747,20 @@ public:
     }
 
     template <typename U>
-    auto operator=(U&& rhs) noexcept -> typename enable_if<
-        is_same<typename decay<U>::type, optional<T&>>::value,
+    auto operator=(U&& rhs) noexcept -> enable_if_t<
+        is_same<decay_t<U>, optional<T&>>::value,
         optional&
-    >::type
+    >
     {
         ref = rhs.ref;
         return *this;
     }
 
     template <typename U>
-    auto operator=(U&& rhs) noexcept -> typename enable_if<
-        !is_same<typename decay<U>::type, optional<T&>>::value,
+    auto operator=(U&& rhs) noexcept -> enable_if_t<
+        !is_same<decay_t<U>, optional<T&>>::value,
         optional&
-    >::type = delete;
+    > = delete;
 
     void emplace(T& v) noexcept {
         ref = detail::static_addressof(v);
@@ -777,7 +770,7 @@ public:
 
     void swap(optional<T&>& rhs) noexcept
     {
-        std::swap(ref, rhs.ref);
+        PYCPP_NAMESPACE::swap(ref, rhs.ref);
     }
 
     // 20.5.5.3, observers
@@ -807,9 +800,9 @@ public:
     }
 
     template <typename V>
-    constexpr typename decay<T>::type value_or(V&& v) const
+    constexpr decay_t<T> value_or(V&& v) const
     {
-        return *this ? **this : detail::convert<typename decay<T>::type>(constexpr_forward<V>(v));
+        return *this ? **this : detail::convert<decay_t<T>>(constexpr_forward<V>(v));
     }
 
     // x.x.x.x, modifiers
@@ -1124,9 +1117,9 @@ void swap(optional<T>& x, optional<T>& y) noexcept(noexcept(x.swap(y)))
 
 
 template <typename T>
-constexpr optional<typename decay<T>::type> make_optional(T&& v)
+constexpr optional<decay_t<T>> make_optional(T&& v)
 {
-    return optional<typename decay<T>::type>(constexpr_forward<T>(v));
+    return optional<decay_t<T>>(constexpr_forward<T>(v));
 }
 
 template <typename X>

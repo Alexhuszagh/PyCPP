@@ -3,7 +3,8 @@
 
 // Include the source file so the implied declarations can interact.
 #include <pycpp/re/regex.cc>
-#include <cassert>
+#include <pycpp/stl/tuple.h>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -35,19 +36,19 @@ match_impl_t::~match_impl_t()
 
 bool match_impl_t::operator==(const match_impl_t& rhs) const
 {
-    return std::tie(re2, input, pos, endpos, argc, groups) == std::tie(rhs.re2, rhs.input, rhs.pos, rhs.endpos, rhs.argc, rhs.groups);
+    return tie(re2, input, pos, endpos, argc, groups) == tie(rhs.re2, rhs.input, rhs.pos, rhs.endpos, rhs.argc, rhs.groups);
 }
 
 
 match_t::match_t(match_t&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
 }
 
 
 match_t & match_t::operator=(match_t&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 
@@ -101,7 +102,7 @@ size_t match_t::end(size_t index) const
 }
 
 
-std::pair<size_t, size_t> match_t::span(size_t index) const
+pair<size_t, size_t> match_t::span(size_t index) const
 {
     return std::make_pair(start(index), end(index));
 }
@@ -282,7 +283,7 @@ match_iterator_t match_iterator_t::operator++(int)
 bool match_iterator_t::operator==(const match_iterator_t& rhs) const
 {
     if (match_ && rhs.match_) {
-        return std::tie(*match_, regex_, str_) == std::tie(*rhs.match_, rhs.regex_, rhs.str_);
+        return tie(*match_, regex_, str_) == tie(*rhs.match_, rhs.regex_, rhs.str_);
     }
     return match_ == rhs.match_;
 }
@@ -296,9 +297,9 @@ bool match_iterator_t::operator!=(const match_iterator_t& rhs) const
 
 void match_iterator_t::swap(self& rhs)
 {
-    std::swap(match_, rhs.match_);
-    std::swap(regex_, rhs.regex_);
-    std::swap(str_, rhs.str_);
+    PYCPP_NAMESPACE::swap(match_, rhs.match_);
+    PYCPP_NAMESPACE::swap(regex_, rhs.regex_);
+    PYCPP_NAMESPACE::swap(str_, rhs.str_);
 }
 
 PYCPP_END_NAMESPACE

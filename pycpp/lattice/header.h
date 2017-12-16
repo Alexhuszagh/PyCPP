@@ -9,6 +9,7 @@
 #pragma once
 
 #include <pycpp/stl/map.h>
+#include <pycpp/stl/ostream.h>
 #include <pycpp/stl/string.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -45,7 +46,7 @@ struct header_t: std::map<std::string, std::string, lowercase_less>
     bool close_connection() const;
     bool content_type() const;
 
-    friend std::ostream & operator<<(std::ostream& os, const header_t& header);
+    friend ostream & operator<<(ostream& os, const header_t& header);
     explicit operator bool() const;
 };
 

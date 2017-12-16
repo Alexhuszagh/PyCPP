@@ -11,7 +11,7 @@
 #include <pycpp/stl/sstream.h>
 #include <pycpp/stl/unordered_map.h>
 #include <pycpp/string/unicode.h>
-#include <cassert>
+#include <assert.h>
 #if BUILD_STREAM
 #   include <pycpp/stream/fstream.h>
 #endif      // BUILD_STREAM
@@ -26,7 +26,7 @@ namespace detail
 /**
  *  \brief Lookup table for common application types.
  */
-std::unordered_map<std::string, std::string> CONTENT_TYPES = {
+unordered_map<std::string, std::string> CONTENT_TYPES = {
     // TEXT
     {"css", "text/css"},
     {"csv", "text/csv"},
@@ -103,8 +103,8 @@ std::string get_boundary()
  */
 static std::string read_fstream(const string_wrapper& filename)
 {
-    ifstream file(filename, std::ios_base::in | std::ios_base::binary);
-    std::ostringstream stream;
+    ifstream file(filename, ios_base::in | ios_base::binary);
+    ostringstream stream;
     stream << file.rdbuf();
 
     return stream.str();
@@ -125,8 +125,8 @@ static std::string read_narrow(const string_wrapper& filename)
     assert(is_null_terminated(filename));
 
     auto *name = filename.data();
-    std::ifstream file(name, std::ios_base::in | std::ios_base::binary);
-    std::ostringstream stream;
+    std::ifstream file(name, ios_base::in | ios_base::binary);
+    ostringstream stream;
     stream << file.rdbuf();
 
     return stream.str();
@@ -152,8 +152,8 @@ static std::string read_wide(const string_wrapper& filename)
 
     auto utf16 = utf8_to_utf16(filename);
     auto *name = reinterpret_cast<const wchar_t*>(utf16.data());
-    std::wifstream file(filename, std::ios_base::in | std::ios_base::binary);
-    std::wostringstream stream;
+    std::wifstream file(filename, ios_base::in | ios_base::binary);
+    wostringstream stream;
     stream << file.rdbuf();
 
     std::wstring wide = stream.str();
@@ -190,12 +190,12 @@ part_value_t::part_value_t(const char* filename, const char* content_type):
 
 
 part_value_t::part_value_t(std::string&& filename, std::string&& content_type):
-    filename(std::forward<std::string>(filename))
+    filename(forward<std::string>(filename))
 {
     if (content_type.empty()) {
         this->content_type_ = detect_content_type(this->filename);
     } else {
-        this->content_type_ = std::move(content_type);
+        this->content_type_ = move(content_type);
     }
 }
 
@@ -281,8 +281,8 @@ buffer_value_t::buffer_value_t(const char* filename,
 buffer_value_t::buffer_value_t(std::string&& filename,
                                std::string&& buffer,
                                std::string&& content_type):
-    part_value_t(std::forward<std::string>(filename), std::forward<std::string>(content_type)),
-    buffer_(std::forward<std::string>(buffer))
+    part_value_t(forward<std::string>(filename), forward<std::string>(content_type)),
+    buffer_(forward<std::string>(buffer))
 {}
 
 
@@ -325,7 +325,7 @@ void multipart_t::add(const part_ptr_t& part)
 
 void multipart_t::add(part_ptr_t&& part)
 {
-    emplace_back(std::forward<part_ptr_t>(part));
+    emplace_back(forward<part_ptr_t>(part));
 }
 
 

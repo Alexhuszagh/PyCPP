@@ -4,7 +4,7 @@
 #include <pycpp/xml/sax.h>
 #include <libxml/tree.h>
 #include <libxml/xmlreader.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

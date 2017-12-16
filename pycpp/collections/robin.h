@@ -27,11 +27,11 @@
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
 #include <pycpp/stl/vector.h>
-#include <cassert>
-#include <climits>
-#include <cmath>
-#include <cstddef>
-#include <cstdint>
+#include <assert.h>
+#include <limits.h>
+#include <math.h>
+#include <stddef.h>
+#include <stdint.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -61,13 +61,13 @@ public:
     power_of_two_growth_policy(size_t& min_bucket_count_in_out)
     {
         if (min_bucket_count_in_out > max_bucket_count()) {
-            throw std::length_error("The hash table exceeds its maxmimum size.");
+            throw length_error("The hash table exceeds its maxmimum size.");
         }
 
         static_assert(MIN_BUCKETS_SIZE > 0, "MIN_BUCKETS_SIZE must be > 0.");
         size_t min_bucket_count = MIN_BUCKETS_SIZE;
 
-        min_bucket_count_in_out = std::max(min_bucket_count, min_bucket_count_in_out);
+        min_bucket_count_in_out = max(min_bucket_count, min_bucket_count_in_out);
         min_bucket_count_in_out = round_up_to_power_of_two(min_bucket_count_in_out);
         m_mask = min_bucket_count_in_out - 1;
     }
@@ -86,7 +86,7 @@ public:
     size_t next_bucket_count() const
     {
         if ((m_mask + 1) > max_bucket_count() / GrowthFactor) {
-            throw std::length_error("The hash table exceeds its maxmimum size.");
+            throw length_error("The hash table exceeds its maxmimum size.");
         }
 
         return (m_mask + 1) * GrowthFactor;
@@ -98,7 +98,7 @@ public:
     size_t max_bucket_count() const
     {
         // Largest power of two.
-        return (std::numeric_limits<size_t>::max() / 2) + 1;
+        return (numeric_limits<size_t>::max() / 2) + 1;
     }
 
 private:
@@ -138,20 +138,20 @@ protected:
  *  use a modulo to map a hash to a bucket. Slower but it can be useful
  *  if you want a slower growth.
  */
-template <typename GrowthFactor = std::ratio<3, 2>>
+template <typename GrowthFactor = ratio<3, 2>>
 class mod_growth_policy
 {
 public:
     mod_growth_policy(size_t& min_bucket_count_in_out)
     {
         if (min_bucket_count_in_out > max_bucket_count()) {
-            throw std::length_error("The hash table exceeds its maxmimum size.");
+            throw length_error("The hash table exceeds its maxmimum size.");
         }
 
         static_assert(MIN_BUCKETS_SIZE > 0, "MIN_BUCKETS_SIZE must be > 0.");
         size_t min_bucket_count = MIN_BUCKETS_SIZE;
 
-        min_bucket_count_in_out = std::max(min_bucket_count, min_bucket_count_in_out);
+        min_bucket_count_in_out = max(min_bucket_count, min_bucket_count_in_out);
         m_bucket_count = min_bucket_count_in_out;
     }
 
@@ -163,12 +163,12 @@ public:
     size_t next_bucket_count() const
     {
         if (m_bucket_count == max_bucket_count()) {
-            throw std::length_error("The hash table exceeds its maxmimum size.");
+            throw length_error("The hash table exceeds its maxmimum size.");
         }
 
-        double next_bucket_count = std::ceil(double(m_bucket_count) * REHASH_SIZE_MULTIPLICATION_FACTOR);
-        if (!std::isnormal(next_bucket_count)) {
-            throw std::length_error("The hash table exceeds its maxmimum size.");
+        double next_bucket_count = ceil(double(m_bucket_count) * REHASH_SIZE_MULTIPLICATION_FACTOR);
+        if (!isnormal(next_bucket_count)) {
+            throw length_error("The hash table exceeds its maxmimum size.");
         }
 
         if (next_bucket_count > double(max_bucket_count())) {
@@ -185,7 +185,7 @@ public:
 private:
     static const size_t MIN_BUCKETS_SIZE = 2;
     static constexpr double REHASH_SIZE_MULTIPLICATION_FACTOR = 1.0 * GrowthFactor::num / GrowthFactor::den;
-    static const size_t MAX_BUCKET_COUNT = size_t(double(std::numeric_limits<size_t>::max() / REHASH_SIZE_MULTIPLICATION_FACTOR));
+    static const size_t MAX_BUCKET_COUNT = size_t(double(numeric_limits<size_t>::max() / REHASH_SIZE_MULTIPLICATION_FACTOR));
 
     static_assert(REHASH_SIZE_MULTIPLICATION_FACTOR >= 1.1, "Growth factor should be >= 1.1.");
 
@@ -193,7 +193,7 @@ private:
 };
 
 
-static constexpr const std::array<size_t, 39> PRIMES = {{
+static constexpr const array<size_t, 39> PRIMES = {{
     5ul, 17ul, 29ul, 37ul, 53ul, 67ul, 79ul, 97ul, 131ul, 193ul, 257ul, 389ul, 521ul, 769ul, 1031ul, 1543ul, 2053ul,
     3079ul, 6151ul, 12289ul, 24593ul, 49157ul, 98317ul, 196613ul, 393241ul, 786433ul, 1572869ul, 3145739ul,
     6291469ul, 12582917ul, 25165843ul, 50331653ul, 100663319ul, 201326611ul, 402653189ul, 805306457ul,
@@ -209,7 +209,7 @@ static constexpr size_t mod(size_t hash)
 //  MOD_PRIME[iprime](hash) returns hash % PRIMES[iprime]. This table
 //  allows for faster modulo as the compiler can optimize the modulo
 //  code better with a constant known at the compilation.
-static constexpr const std::array<size_t(*)(size_t), 39> MOD_PRIME = {{
+static constexpr const array<size_t(*)(size_t), 39> MOD_PRIME = {{
     &mod<0>, &mod<1>, &mod<2>, &mod<3>, &mod<4>, &mod<5>, &mod<6>, &mod<7>, &mod<8>, &mod<9>, &mod<10>,
     &mod<11>, &mod<12>, &mod<13>, &mod<14>, &mod<15>, &mod<16>, &mod<17>, &mod<18>, &mod<19>, &mod<20>,
     &mod<21>, &mod<22>, &mod<23>, &mod<24>, &mod<25>, &mod<26>, &mod<27>, &mod<28>, &mod<29>, &mod<30>,
@@ -250,12 +250,12 @@ class prime_growth_policy
 public:
     prime_growth_policy(size_t& min_bucket_count_in_out)
     {
-        auto it_prime = std::lower_bound(PRIMES.begin(), PRIMES.end(), min_bucket_count_in_out);
+        auto it_prime = lower_bound(PRIMES.begin(), PRIMES.end(), min_bucket_count_in_out);
         if (it_prime == PRIMES.end()) {
-            throw std::length_error("The hash table exceeds its maxmimum size.");
+            throw length_error("The hash table exceeds its maxmimum size.");
         }
 
-        m_iprime = static_cast<unsigned int>(std::distance(PRIMES.begin(), it_prime));
+        m_iprime = static_cast<unsigned int>(distance(PRIMES.begin(), it_prime));
         min_bucket_count_in_out = *it_prime;
     }
 
@@ -267,7 +267,7 @@ public:
     size_t next_bucket_count() const
     {
         if (m_iprime + 1 >= PRIMES.size()) {
-            throw std::length_error("The hash table exceeds its maxmimum size.");
+            throw length_error("The hash table exceeds its maxmimum size.");
         }
 
         return PRIMES[m_iprime + 1];
@@ -281,7 +281,7 @@ public:
 private:
     unsigned int m_iprime;
 
-    static_assert(std::numeric_limits<decltype(m_iprime)>::max() >= PRIMES.size(),
+    static_assert(numeric_limits<decltype(m_iprime)>::max() >= PRIMES.size(),
                   "The type of m_iprime is not big enough.");
 };
 
@@ -293,23 +293,26 @@ struct make_void
     using type = void;
 };
 
+template <typename T>
+using make_void_t = typename make_void<T>::type;
+
 template <typename T, typename = void>
-struct has_is_transparent: std::false_type
+struct has_is_transparent: false_type
 {};
 
 template <typename T>
-struct has_is_transparent<T, typename make_void<typename T::is_transparent>::type>: std::true_type
+struct has_is_transparent<T, make_void_t<typename T::is_transparent>>: true_type
 {};
 
 template <typename U>
-struct is_power_of_two_policy: std::false_type
+struct is_power_of_two_policy: false_type
 {};
 
 template <size_t GrowthFactor>
-struct is_power_of_two_policy<power_of_two_growth_policy<GrowthFactor>>: std::true_type
+struct is_power_of_two_policy<power_of_two_growth_policy<GrowthFactor>>: true_type
 {};
 
-using truncated_hash_type = std::uint_least32_t;
+using truncated_hash_type = uint_least32_t;
 
 
 /**
@@ -389,7 +392,7 @@ class bucket_entry: public bucket_entry_hash<StoreHash>
 
 public:
     using value_type = ValueType;
-    using distance_type = std::int_least16_t;
+    using distance_type = int_least16_t;
 
     bucket_entry() noexcept:
         bucket_hash(),
@@ -399,41 +402,41 @@ public:
         assert(empty());
     }
 
-    bucket_entry(const bucket_entry& other) noexcept(std::is_nothrow_copy_constructible<value_type>::value):
+    bucket_entry(const bucket_entry& other) noexcept(is_nothrow_copy_constructible<value_type>::value):
         bucket_hash(other),
         m_dist_from_ideal_bucket(EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET),
         m_last_bucket(other.m_last_bucket)
     {
         if (!other.empty()) {
-            ::new (static_cast<void*>(std::addressof(m_value))) value_type(other.value());
+            ::new (static_cast<void*>(addressof(m_value))) value_type(other.value());
             m_dist_from_ideal_bucket = other.m_dist_from_ideal_bucket;
         }
     }
 
     /**
      *  Never really used, but still necessary as we must call resize
-     *  on an empty `std::vector<bucket_entry>`. and we need to support
+     *  on an empty `vector<bucket_entry>`. and we need to support
      *  move-only types. See robin_hash constructor for details.
      */
-    bucket_entry(bucket_entry&& other) noexcept(std::is_nothrow_move_constructible<value_type>::value):
-        bucket_hash(std::move(other)),
+    bucket_entry(bucket_entry&& other) noexcept(is_nothrow_move_constructible<value_type>::value):
+        bucket_hash(move(other)),
         m_dist_from_ideal_bucket(EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET),
         m_last_bucket(other.m_last_bucket)
     {
         if (!other.empty()) {
-            ::new (static_cast<void*>(std::addressof(m_value))) value_type(std::move(other.value()));
+            ::new (static_cast<void*>(addressof(m_value))) value_type(move(other.value()));
             m_dist_from_ideal_bucket = other.m_dist_from_ideal_bucket;
         }
     }
 
-    bucket_entry& operator=(const bucket_entry& other) noexcept(std::is_nothrow_copy_constructible<value_type>::value)
+    bucket_entry& operator=(const bucket_entry& other) noexcept(is_nothrow_copy_constructible<value_type>::value)
     {
         if (this != &other) {
             clear();
 
             bucket_hash::operator=(other);
             if (!other.empty()) {
-                ::new (static_cast<void*>(std::addressof(m_value))) value_type(other.value());
+                ::new (static_cast<void*>(addressof(m_value))) value_type(other.value());
             }
 
             m_dist_from_ideal_bucket = other.m_dist_from_ideal_bucket;
@@ -466,13 +469,13 @@ public:
     value_type& value() noexcept
     {
         assert(!empty());
-        return *reinterpret_cast<value_type*>(std::addressof(m_value));
+        return *reinterpret_cast<value_type*>(addressof(m_value));
     }
 
     const value_type& value() const noexcept
     {
         assert(!empty());
-        return *reinterpret_cast<const value_type*>(std::addressof(m_value));
+        return *reinterpret_cast<const value_type*>(addressof(m_value));
     }
 
     distance_type dist_from_ideal_bucket() const noexcept
@@ -497,7 +500,7 @@ public:
         assert(dist_from_ideal_bucket >= 0);
         assert(empty());
 
-        ::new (static_cast<void*>(std::addressof(m_value))) value_type(std::forward<Args>(value_type_args)...);
+        ::new (static_cast<void*>(addressof(m_value))) value_type(forward<Args>(value_type_args)...);
         this->set_hash(hash);
         m_dist_from_ideal_bucket = dist_from_ideal_bucket;
 
@@ -509,8 +512,8 @@ public:
     {
         assert(!empty());
 
-        std::swap(value, this->value());
-        std::swap(dist_from_ideal_bucket, m_dist_from_ideal_bucket);
+        PYCPP_NAMESPACE::swap(value, this->value());
+        PYCPP_NAMESPACE::swap(dist_from_ideal_bucket, m_dist_from_ideal_bucket);
 
         // Avoid warning of unused variable if StoreHash is false
         (void) hash;
@@ -534,7 +537,7 @@ private:
     }
 
 private:
-    using storage = typename std::aligned_storage<sizeof(value_type), alignof(value_type)>::type;
+    using storage = aligned_storage_t<sizeof(value_type), alignof(value_type)>;
 
     static const distance_type EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET = -1;
 
@@ -547,7 +550,7 @@ private:
 /**
  * Internal common class used by `robin_map` and `robin_set`.
  *
- * ValueType is what will be stored by `robin_hash` (usually `std::pair<Key, T>` for map and `Key` for set).
+ * ValueType is what will be stored by `robin_hash` (usually `pair<Key, T>` for map and `Key` for set).
  *
  * `KeySelect` should be a `FunctionObject` which takes a `ValueType` in parameter and returns a
  *  reference to the key.
@@ -556,7 +559,7 @@ private:
  *  reference to the value. `ValueSelect` should be void if there is no value (in a set for example).
  *
  * The strong exception guarantee only holds if the expression
- * `std::is_nothrow_swappable<ValueType>::value && std::is_nothrow_move_constructible<ValueType>::value` is true.
+ * `is_nothrow_swappable<ValueType>::value && is_nothrow_move_constructible<ValueType>::value` is true.
  *
  * Behaviour is undefined if the destructor of `ValueType` throws.
  */
@@ -574,7 +577,7 @@ class robin_hash: private Hash, private KeyEqual, private GrowthPolicy
 {
 private:
     template <typename U>
-    using has_mapped_type = typename std::integral_constant<bool, !std::is_same<U, void>::value>;
+    using has_mapped_type = integral_constant<bool, !is_same<U, void>::value>;
 
 public:
     template <bool IsConst>
@@ -583,7 +586,7 @@ public:
     using key_type = typename KeySelect::key_type;
     using value_type = ValueType;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using hasher = Hash;
     using key_equal = KeyEqual;
     using allocator_type = Allocator;
@@ -603,7 +606,7 @@ private:
     static constexpr bool STORE_HASH = StoreHash || ((sizeof(bucket_entry<value_type, true>) == sizeof(bucket_entry<value_type, false>)) &&
                                                      (sizeof(size_t) == sizeof(truncated_hash_type) || is_power_of_two_policy<GrowthPolicy>::value) &&
                                                      // Don't store the hash for primitive types with default hash.
-                                                     (!std::is_arithmetic<key_type>::value || !std::is_same<Hash, std::hash<key_type>>::value)
+                                                     (!is_arithmetic<key_type>::value || !is_same<Hash, hash<key_type>>::value)
                                                      );
     /**
      *  Only use the stored hash on lookup if we are explictly asked.
@@ -626,7 +629,7 @@ private:
             return true;
         } else if (STORE_HASH && is_power_of_two_policy<GrowthPolicy>::value) {
             assert(bucket_count > 0);
-            return (bucket_count - 1) <= std::numeric_limits<truncated_hash_type>::max();
+            return (bucket_count - 1) <= numeric_limits<truncated_hash_type>::max();
         } else {
             return false;
         }
@@ -635,7 +638,7 @@ private:
     using bucket_entry_type = bucket_entry<value_type, STORE_HASH>;
     using distance_type = typename bucket_entry_type::distance_type;
     using buckets_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<bucket_entry_type>;
-    using buckets_container_type = std::vector<bucket_entry_type, buckets_allocator>;
+    using buckets_container_type = vector<bucket_entry_type, buckets_allocator>;
 
 public:
     /**
@@ -648,7 +651,7 @@ public:
      *  have to call 'value()'.
      *
      *  The main reason for this is that if we returned a
-     *  `std::pair<Key, T>&` instead of a `const std::pair<Key, T>&`,
+     *  `pair<Key, T>&` instead of a `const pair<Key, T>&`,
      *  the user may modify the key which will put the map in a
      *  undefined state.
      */
@@ -658,20 +661,20 @@ public:
         friend class robin_hash;
 
     private:
-        using iterator_bucket = typename std::conditional<
+        using iterator_bucket = conditional_t<
             IsConst,
             typename buckets_container_type::const_iterator,
             typename buckets_container_type::iterator
-        >::type;
+        >;
 
         robin_iterator(iterator_bucket it) noexcept:
             m_iterator(it)
         {}
 
     public:
-        using iterator_category = std::forward_iterator_tag;
+        using iterator_category = forward_iterator_tag;
         using value_type = const typename robin_hash::value_type;
-        using difference_type = std::ptrdiff_t;
+        using difference_type = ptrdiff_t;
         using reference = value_type&;
         using pointer = value_type*;
 
@@ -687,13 +690,13 @@ public:
             return KeySelect()(m_iterator->value());
         }
 
-        template <typename U = ValueSelect, typename std::enable_if<has_mapped_type<U>::value && IsConst>::type* = nullptr>
+        template <typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value && IsConst>* = nullptr>
         const typename U::value_type& value() const
         {
             return U()(m_iterator->value());
         }
 
-        template <typename U = ValueSelect, typename std::enable_if<has_mapped_type<U>::value && !IsConst>::type* = nullptr>
+        template <typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value && !IsConst>* = nullptr>
         typename U::value_type& value()
         {
             return U()(m_iterator->value());
@@ -706,7 +709,7 @@ public:
 
         pointer operator->() const
         {
-            return std::addressof(m_iterator->value());
+            return addressof(m_iterator->value());
         }
 
         robin_iterator& operator++()
@@ -758,7 +761,7 @@ public:
         m_grow_on_next_insert(false)
     {
         if (bucket_count > max_bucket_count()) {
-            throw std::length_error("The map exceeds its maxmimum size.");
+            throw length_error("The map exceeds its maxmimum size.");
         }
 
         /*
@@ -781,14 +784,14 @@ public:
 
     robin_hash(const robin_hash& other) = default;
 
-    robin_hash(robin_hash&& other) noexcept(std::is_nothrow_move_constructible<Hash>::value &&
-                                            std::is_nothrow_move_constructible<KeyEqual>::value &&
-                                            std::is_nothrow_move_constructible<GrowthPolicy>::value &&
-                                            std::is_nothrow_move_constructible<buckets_container_type>::value):
-        Hash(std::move(static_cast<Hash&>(other))),
-        KeyEqual(std::move(static_cast<KeyEqual&>(other))),
-        GrowthPolicy(std::move(static_cast<GrowthPolicy&>(other))),
-        m_buckets(std::move(other.m_buckets)),
+    robin_hash(robin_hash&& other) noexcept(is_nothrow_move_constructible<Hash>::value &&
+                                            is_nothrow_move_constructible<KeyEqual>::value &&
+                                            is_nothrow_move_constructible<GrowthPolicy>::value &&
+                                            is_nothrow_move_constructible<buckets_container_type>::value):
+        Hash(move(static_cast<Hash&>(other))),
+        KeyEqual(move(static_cast<KeyEqual&>(other))),
+        GrowthPolicy(move(static_cast<GrowthPolicy&>(other))),
+        m_buckets(move(other.m_buckets)),
         m_bucket_count(other.m_bucket_count),
         m_nb_elements(other.m_nb_elements),
         m_load_threshold(other.m_load_threshold),
@@ -884,9 +887,9 @@ public:
     }
 
     template <typename P>
-    std::pair<iterator, bool> insert(P&& value)
+    pair<iterator, bool> insert(P&& value)
     {
-        return insert_impl(KeySelect()(value), std::forward<P>(value));
+        return insert_impl(KeySelect()(value), forward<P>(value));
     }
 
     template <typename P>
@@ -896,14 +899,14 @@ public:
             return mutable_iterator(hint);
         }
 
-        return insert(std::forward<P>(value)).first;
+        return insert(forward<P>(value)).first;
     }
 
     template <typename InputIt>
     void insert(InputIt first, InputIt last)
     {
-        if (std::is_base_of<std::forward_iterator_tag, typename std::iterator_traits<InputIt>::iterator_category>::value) {
-            const auto nb_elements_insert = std::distance(first, last);
+        if (is_base_of<forward_iterator_tag, typename iterator_traits<InputIt>::iterator_category>::value) {
+            const auto nb_elements_insert = distance(first, last);
             const size_type nb_free_buckets = m_load_threshold - size();
             assert(m_load_threshold >= size());
 
@@ -918,11 +921,11 @@ public:
     }
 
     template <typename K, typename M>
-    std::pair<iterator, bool> insert_or_assign(K&& key, M&& obj)
+    pair<iterator, bool> insert_or_assign(K&& key, M&& obj)
     {
-        auto it = try_emplace(std::forward<K>(key), std::forward<M>(obj));
+        auto it = try_emplace(forward<K>(key), forward<M>(obj));
         if (!it.second) {
-            it.first.value() = std::forward<M>(obj);
+            it.first.value() = forward<M>(obj);
         }
 
         return it;
@@ -933,32 +936,32 @@ public:
     {
         if (hint != cend() && compare_keys(KeySelect()(*hint), key)) {
             auto it = mutable_iterator(hint);
-            it.value() = std::forward<M>(obj);
+            it.value() = forward<M>(obj);
 
             return it;
         }
 
-        return insert_or_assign(std::forward<K>(key), std::forward<M>(obj)).first;
+        return insert_or_assign(forward<K>(key), forward<M>(obj)).first;
     }
 
     template <typename... Args>
-    std::pair<iterator, bool> emplace(Args&&... args)
+    pair<iterator, bool> emplace(Args&&... args)
     {
-        return insert(value_type(std::forward<Args>(args)...));
+        return insert(value_type(forward<Args>(args)...));
     }
 
     template <typename... Args>
     iterator emplace_hint(const_iterator hint, Args&&... args)
     {
-        return insert(hint, value_type(std::forward<Args>(args)...));
+        return insert(hint, value_type(forward<Args>(args)...));
     }
 
     template <typename K, typename... Args>
-    std::pair<iterator, bool> try_emplace(K&& key, Args&&... args)
+    pair<iterator, bool> try_emplace(K&& key, Args&&... args)
     {
-        return insert_impl(key, std::piecewise_construct,
-                           std::forward_as_tuple(std::forward<K>(key)),
-                           std::forward_as_tuple(std::forward<Args>(args)...));
+        return insert_impl(key, piecewise_construct,
+                           forward_as_tuple(forward<K>(key)),
+                           forward_as_tuple(forward<Args>(args)...));
     }
 
     template <typename K, typename... Args>
@@ -968,7 +971,7 @@ public:
             return mutable_iterator(hint);
         }
 
-        return try_emplace(std::forward<K>(key), std::forward<Args>(args)...).first;
+        return try_emplace(forward<K>(key), forward<Args>(args)...).first;
     }
 
     /**
@@ -1019,21 +1022,21 @@ public:
          *  Backward shift on the values which come after the deleted values.
          *  We try to move the values closer to their ideal bucket.
          */
-        size_t icloser_bucket = size_t(std::distance(m_buckets.begin(), first_mutable.m_iterator));
-        size_t ito_move_closer_value = size_t(std::distance(m_buckets.begin(), last_mutable.m_iterator));
+        size_t icloser_bucket = size_t(distance(m_buckets.begin(), first_mutable.m_iterator));
+        size_t ito_move_closer_value = size_t(distance(m_buckets.begin(), last_mutable.m_iterator));
         assert(ito_move_closer_value > icloser_bucket);
 
-        const size_t ireturn_bucket = ito_move_closer_value - std::min(ito_move_closer_value - icloser_bucket, size_t(m_buckets[ito_move_closer_value].dist_from_ideal_bucket()));
+        const size_t ireturn_bucket = ito_move_closer_value - min(ito_move_closer_value - icloser_bucket, size_t(m_buckets[ito_move_closer_value].dist_from_ideal_bucket()));
 
         while (ito_move_closer_value < m_buckets.size() && m_buckets[ito_move_closer_value].dist_from_ideal_bucket() > 0) {
-            icloser_bucket = ito_move_closer_value - std::min(ito_move_closer_value - icloser_bucket, size_t(m_buckets[ito_move_closer_value].dist_from_ideal_bucket()));
+            icloser_bucket = ito_move_closer_value - min(ito_move_closer_value - icloser_bucket, size_t(m_buckets[ito_move_closer_value].dist_from_ideal_bucket()));
 
             assert(m_buckets[icloser_bucket].empty());
             const distance_type new_distance = distance_type(m_buckets[ito_move_closer_value].dist_from_ideal_bucket() -
                                                              (ito_move_closer_value - icloser_bucket));
             m_buckets[icloser_bucket].set_value_of_empty_bucket(new_distance,
                                                                 m_buckets[ito_move_closer_value].truncated_hash(),
-                                                                std::move(m_buckets[ito_move_closer_value].value()));
+                                                                move(m_buckets[ito_move_closer_value].value()));
             m_buckets[ito_move_closer_value].clear();
 
             ++icloser_bucket;
@@ -1064,52 +1067,52 @@ public:
 
     void swap(robin_hash& other)
     {
-        std::swap(static_cast<Hash&>(*this), static_cast<Hash&>(other));
-        std::swap(static_cast<KeyEqual&>(*this), static_cast<KeyEqual&>(other));
-        std::swap(static_cast<GrowthPolicy&>(*this), static_cast<GrowthPolicy&>(other));
-        std::swap(m_buckets, other.m_buckets);
-        std::swap(m_bucket_count, other.m_bucket_count);
-        std::swap(m_nb_elements, other.m_nb_elements);
-        std::swap(m_load_threshold, other.m_load_threshold);
-        std::swap(m_max_load_factor, other.m_max_load_factor);
-        std::swap(m_grow_on_next_insert, other.m_grow_on_next_insert);
+        PYCPP_NAMESPACE::swap(static_cast<Hash&>(*this), static_cast<Hash&>(other));
+        PYCPP_NAMESPACE::swap(static_cast<KeyEqual&>(*this), static_cast<KeyEqual&>(other));
+        PYCPP_NAMESPACE::swap(static_cast<GrowthPolicy&>(*this), static_cast<GrowthPolicy&>(other));
+        PYCPP_NAMESPACE::swap(m_buckets, other.m_buckets);
+        PYCPP_NAMESPACE::swap(m_bucket_count, other.m_bucket_count);
+        PYCPP_NAMESPACE::swap(m_nb_elements, other.m_nb_elements);
+        PYCPP_NAMESPACE::swap(m_load_threshold, other.m_load_threshold);
+        PYCPP_NAMESPACE::swap(m_max_load_factor, other.m_max_load_factor);
+        PYCPP_NAMESPACE::swap(m_grow_on_next_insert, other.m_grow_on_next_insert);
     }
 
     // LOOKUP
 
-    template <typename K, typename U = ValueSelect, typename std::enable_if<has_mapped_type<U>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
     typename U::value_type& at(const K& key)
     {
         return at(key, hash_key(key));
     }
 
-    template <typename K, typename U = ValueSelect, typename std::enable_if<has_mapped_type<U>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
     typename U::value_type& at(const K& key, size_t hash)
     {
         return const_cast<typename U::value_type&>(static_cast<const robin_hash*>(this)->at(key, hash));
     }
 
-    template <typename K, typename U = ValueSelect, typename std::enable_if<has_mapped_type<U>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
     const typename U::value_type& at(const K& key) const
     {
         return at(key, hash_key(key));
     }
 
-    template <typename K, typename U = ValueSelect, typename std::enable_if<has_mapped_type<U>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
     const typename U::value_type& at(const K& key, size_t hash) const
     {
         auto it = find(key, hash);
         if (it != cend()) {
             return it.value();
         } else {
-            throw std::out_of_range("Couldn't find key.");
+            throw out_of_range("Couldn't find key.");
         }
     }
 
-    template <typename K, typename U = ValueSelect, typename std::enable_if<has_mapped_type<U>::value>::type* = nullptr>
+    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
     typename U::value_type& operator[](K&& key)
     {
-        return try_emplace(std::forward<K>(key)).first.value();
+        return try_emplace(forward<K>(key)).first.value();
     }
 
     template <typename K>
@@ -1153,29 +1156,29 @@ public:
     }
 
     template <typename K>
-    std::pair<iterator, iterator> equal_range(const K& key)
+    pair<iterator, iterator> equal_range(const K& key)
     {
         return equal_range(key, hash_key(key));
     }
 
     template <typename K>
-    std::pair<iterator, iterator> equal_range(const K& key, size_t hash)
+    pair<iterator, iterator> equal_range(const K& key, size_t hash)
     {
         iterator it = find(key, hash);
-        return std::make_pair(it, (it == end()) ? it : std::next(it));
+        return make_pair(it, (it == end()) ? it : next(it));
     }
 
     template <typename K>
-    std::pair<const_iterator, const_iterator> equal_range(const K& key) const
+    pair<const_iterator, const_iterator> equal_range(const K& key) const
     {
         return equal_range(key, hash_key(key));
     }
 
     template <typename K>
-    std::pair<const_iterator, const_iterator> equal_range(const K& key, size_t hash) const
+    pair<const_iterator, const_iterator> equal_range(const K& key, size_t hash) const
     {
         const_iterator it = find(key, hash);
-        return std::make_pair(it, (it == cend()) ? it : std::next(it));
+        return make_pair(it, (it == cend()) ? it : next(it));
     }
 
     // BUCKET INTERFACE
@@ -1187,7 +1190,7 @@ public:
 
     size_type max_bucket_count() const
     {
-        return std::min(GrowthPolicy::max_bucket_count(), m_buckets.max_size());
+        return min(GrowthPolicy::max_bucket_count(), m_buckets.max_size());
     }
 
     // HASH POLICY
@@ -1204,19 +1207,19 @@ public:
 
     void max_load_factor(float ml)
     {
-        m_max_load_factor = std::max(0.1f, std::min(ml, 0.95f));
+        m_max_load_factor = max(0.1f, min(ml, 0.95f));
         m_load_threshold = size_type(float(bucket_count())*m_max_load_factor);
     }
 
     void rehash(size_type count)
     {
-        count = std::max(count, size_type(std::ceil(float(size()) / max_load_factor())));
+        count = max(count, size_type(ceil(float(size()) / max_load_factor())));
         rehash_impl(count);
     }
 
     void reserve(size_type count)
     {
-        rehash(size_type(std::ceil(float(count) / max_load_factor())));
+        rehash(size_type(ceil(float(count) / max_load_factor())));
     }
 
     // OBSERVERS
@@ -1235,7 +1238,7 @@ public:
 
     iterator mutable_iterator(const_iterator pos)
     {
-        return iterator(m_buckets.begin() + std::distance(m_buckets.cbegin(), pos.m_iterator));
+        return iterator(m_buckets.begin() + distance(m_buckets.cbegin(), pos.m_iterator));
     }
 
 private:
@@ -1256,7 +1259,7 @@ private:
         return GrowthPolicy::bucket_for_hash(hash);
     }
 
-    template <typename U = GrowthPolicy, typename std::enable_if<is_power_of_two_policy<U>::value>::type* = nullptr>
+    template <typename U = GrowthPolicy, enable_if_t<is_power_of_two_policy<U>::value>* = nullptr>
     size_t next_bucket(size_t index) const noexcept
     {
         assert(index < bucket_count());
@@ -1264,7 +1267,7 @@ private:
         return (index + 1) & this->m_mask;
     }
 
-    template <typename U = GrowthPolicy, typename std::enable_if<!is_power_of_two_policy<U>::value>::type* = nullptr>
+    template <typename U = GrowthPolicy, enable_if_t<!is_power_of_two_policy<U>::value>* = nullptr>
     size_t next_bucket(size_t index) const noexcept
     {
         assert(index < bucket_count());
@@ -1312,7 +1315,7 @@ private:
          *
          *  We try to move the values closer to their ideal bucket.
          */
-        size_t previous_ibucket = size_t(std::distance(m_buckets.begin(), pos.m_iterator));
+        size_t previous_ibucket = size_t(distance(m_buckets.begin(), pos.m_iterator));
         size_t ibucket = next_bucket(previous_ibucket);
 
         while (m_buckets[ibucket].dist_from_ideal_bucket() > 0) {
@@ -1320,7 +1323,7 @@ private:
 
             const distance_type new_distance = distance_type(m_buckets[ibucket].dist_from_ideal_bucket() - 1);
             m_buckets[previous_ibucket].set_value_of_empty_bucket(new_distance, m_buckets[ibucket].truncated_hash(),
-                                                                  std::move(m_buckets[ibucket].value()));
+                                                                  move(m_buckets[ibucket].value()));
             m_buckets[ibucket].clear();
 
             previous_ibucket = ibucket;
@@ -1329,7 +1332,7 @@ private:
     }
 
     template <typename K, typename... Args>
-    std::pair<iterator, bool> insert_impl(const K& key, Args&&... value_type_args)
+    pair<iterator, bool> insert_impl(const K& key, Args&&... value_type_args)
     {
         const size_t hash = hash_key(key);
 
@@ -1340,7 +1343,7 @@ private:
             if ((!USE_STORED_HASH_ON_LOOKUP || m_buckets[ibucket].bucket_hash_equal(hash)) &&
                compare_keys(KeySelect()(m_buckets[ibucket].value()), key))
             {
-                return std::make_pair(iterator(m_buckets.begin() + ibucket), false);
+                return make_pair(iterator(m_buckets.begin() + ibucket), false);
             }
 
             ibucket = next_bucket(ibucket);
@@ -1359,10 +1362,10 @@ private:
 
         if (m_buckets[ibucket].empty()) {
             m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket, bucket_entry_type::truncate_hash(hash),
-                                                         std::forward<Args>(value_type_args)...);
+                                                         forward<Args>(value_type_args)...);
         } else {
             insert_value(ibucket, dist_from_ideal_bucket, bucket_entry_type::truncate_hash(hash),
-                         std::forward<Args>(value_type_args)...);
+                         forward<Args>(value_type_args)...);
         }
 
         m_nb_elements++;
@@ -1370,7 +1373,7 @@ private:
          *  The value will be inserted in ibucket in any case, either
          *  because it was empty or by stealing the bucket (robin hood).
          */
-        return std::make_pair(iterator(m_buckets.begin() + ibucket), true);
+        return make_pair(iterator(m_buckets.begin() + ibucket), true);
     }
 
 
@@ -1378,7 +1381,7 @@ private:
     void insert_value(size_t ibucket, distance_type dist_from_ideal_bucket,
                       truncated_hash_type hash, Args&&... value_type_args)
     {
-        insert_value(ibucket, dist_from_ideal_bucket, hash, value_type(std::forward<Args>(value_type_args)...));
+        insert_value(ibucket, dist_from_ideal_bucket, hash, value_type(forward<Args>(value_type_args)...));
     }
 
     void insert_value(size_t ibucket, distance_type dist_from_ideal_bucket,
@@ -1408,7 +1411,7 @@ private:
             dist_from_ideal_bucket++;
         }
 
-        m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket, hash, std::move(value));
+        m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket, hash, move(value));
     }
 
 
@@ -1423,7 +1426,7 @@ private:
             }
 
             const size_t hash = use_stored_hash ? bucket.truncated_hash() : new_table.hash_key(KeySelect()(bucket.value()));
-            new_table.insert_value_on_rehash(new_table.bucket_for_hash(hash), 0, bucket_entry_type::truncate_hash(hash), std::move(bucket.value()));
+            new_table.insert_value_on_rehash(new_table.bucket_for_hash(hash), 0, bucket_entry_type::truncate_hash(hash), move(bucket.value()));
         }
 
         new_table.m_nb_elements = m_nb_elements;
@@ -1436,7 +1439,7 @@ private:
         while (true) {
             if (dist_from_ideal_bucket > m_buckets[ibucket].dist_from_ideal_bucket()) {
                 if (m_buckets[ibucket].empty()) {
-                    m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket, hash, std::move(value));
+                    m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket, hash, move(value));
                     return;
                 } else {
                     m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket, hash, value);

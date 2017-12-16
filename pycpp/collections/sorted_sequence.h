@@ -5,7 +5,7 @@
  *  \brief Self-sorting linear sequence.
  *
  *  Sorted sequences produce faster iteration and lookup times than
- *  a `std::set`, albeit at the cost of asymptotically worse insertion
+ *  a `set`, albeit at the cost of asymptotically worse insertion
  *  times (`O(n)` compared to `O(logn)`). Therefore, when the number
  *  of lookups dramatically exceeds the number of insertions,
  *  using a `sorted_sequence` may produce much better overall
@@ -25,7 +25,7 @@
  *  The container should support a minimal subset of STL methods,
  *  including range, initializer list, copy, and move construction,
  *  and be a random-access container, which is supported by both
- *  `std::vector` and `std::deque` in the STL.
+ *  `vector` and `deque` in the STL.
  *
  *  Implemented based on the following paper by Matt Austern:
  *      lafstern.org/matt/col1.pdf
@@ -193,7 +193,7 @@ sorted_sequence<T, C, A, _>::sorted_sequence(const self_t& rhs, const allocator_
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
 sorted_sequence<T, C, A, _>::sorted_sequence(self_t&& rhs, const allocator_type& alloc):
-    container_(std::move(rhs.container_), alloc)
+    container_(move(rhs.container_), alloc)
 {}
 
 
@@ -223,7 +223,7 @@ auto sorted_sequence<T, C, A, _>::operator=(const self_t& rhs) -> self_t&
 template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::operator=(self_t&& rhs) -> self_t&
 {
-    container_ = std::move(rhs.container_);
+    container_ = move(rhs.container_);
     return *this;
 }
 
@@ -365,21 +365,21 @@ auto sorted_sequence<T, C, A, _>::count(const key_type& key) const -> size_type
 template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::lower_bound(const key_type& key) const -> const_iterator
 {
-    return std::lower_bound(begin(), end(), key, key_comp());
+    return PYCPP_NAMESPACE::lower_bound(begin(), end(), key, key_comp());
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::upper_bound(const key_type& key) const -> const_iterator
 {
-    return std::upper_bound(begin(), end(), key, key_comp());
+    return PYCPP_NAMESPACE::upper_bound(begin(), end(), key, key_comp());
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
 auto sorted_sequence<T, C, A, _>::equal_range(const key_type& key) const -> pair<const_iterator, const_iterator>
 {
-    return std::make_pair(lower_bound(key), upper_bound(key));
+    return make_pair(lower_bound(key), upper_bound(key));
 }
 
 
@@ -388,7 +388,7 @@ template <typename Iter>
 void sorted_sequence<T, C, A, _>::assign(Iter first, Iter last)
 {
     container_.assign(first, last);
-    std::sort(container_.begin(), container_.end(), key_comp());
+    sort(container_.begin(), container_.end(), key_comp());
 }
 
 
@@ -406,10 +406,10 @@ auto sorted_sequence<T, C, A, _>::insert(const key_type& key) -> pair<iterator,b
     if (it == end() || key_comp()(key, *it)) {
         // item not found, inserting value.
         it = container_.insert(it, key);
-        return std::make_pair(it, true);
+        return make_pair(it, true);
     }
     // item found, returning equivalent value.
-    return std::make_pair(it, false);
+    return make_pair(it, false);
 }
 
 
@@ -417,15 +417,15 @@ template <typename T, typename C, typename A, template <typename, typename> clas
 template <typename U>
 auto sorted_sequence<T, C, A, _>::insert(U&& k) -> pair<iterator,bool>
 {
-    key_type key(std::forward<U>(k));
+    key_type key(forward<U>(k));
     const_iterator it = lower_bound(key);
     if (it == end() || key_comp()(key, *it)) {
         // item not found, inserting value.
-        it = container_.insert(it, std::move(key));
-        return std::make_pair(it, true);
+        it = container_.insert(it, move(key));
+        return make_pair(it, true);
     }
     // item found, returning equivalent value.
-    return std::make_pair(it, false);
+    return make_pair(it, false);
 }
 
 
@@ -444,20 +444,20 @@ auto sorted_sequence<T, C, A, _>::insert(const_iterator position, const key_type
         }
     } else if (key_comp()(key, *position)) {
         // key is less than hint
-        it = std::lower_bound(begin(), position, key, key_comp());
+        it = PYCPP_NAMESPACE::lower_bound(begin(), position, key, key_comp());
     } else {
         // key is greater than or equal to hint
-        it = std::lower_bound(position, end(), key, key_comp());
+        it = PYCPP_NAMESPACE::lower_bound(position, end(), key, key_comp());
     }
 
     // insert item
     if (it == end() || key_comp()(key, *it)) {
         // item not found, inserting value.
         it = container_.insert(it, key);
-        return std::make_pair(it, true);
+        return make_pair(it, true);
     }
     // item found, returning equivalent value.
-    return std::make_pair(it, false);
+    return make_pair(it, false);
 }
 
 
@@ -465,7 +465,7 @@ template <typename T, typename C, typename A, template <typename, typename> clas
 template <typename U>
 auto sorted_sequence<T, C, A, _>::insert(const_iterator position, U&& k) -> iterator
 {
-    key_type key(std::forward<U>(k));
+    key_type key(forward<U>(k));
     const_iterator it;
     if (position == end()) {
         // hint is at end
@@ -478,16 +478,16 @@ auto sorted_sequence<T, C, A, _>::insert(const_iterator position, U&& k) -> iter
         }
     } else if (key_comp()(key, *position)) {
         // key is less than hint
-        it = std::lower_bound(begin(), position, key, key_comp());
+        it = PYCPP_NAMESPACE::lower_bound(begin(), position, key, key_comp());
     } else {
         // key is greater than or equal to hint
-        it = std::lower_bound(position, end(), key, key_comp());
+        it = PYCPP_NAMESPACE::lower_bound(position, end(), key, key_comp());
     }
 
     // insert item
     if (it == end() || key_comp()(key, *it)) {
         // item not found, inserting value.
-        return container_.insert(it, std::move(key));
+        return container_.insert(it, move(key));
     }
     // item found, returning equivalent value.
     return it;
@@ -500,14 +500,14 @@ void sorted_sequence<T, C, A, _>::insert(Iter first, Iter last)
 {
     if (is_forward_iterable<Iter>::value) {
         // reserve the underlying container if we can
-        size_t distance = std::distance(first, last);
+        size_t distance = distance(first, last);
         size_t size = container_.size();
         reserve()(container_, size + distance);
 
         // shortcut if inserting >25% items, shortens time complexity
         if (size < 4 || size / 4 > distance) {
             container_.insert(first, last);
-            std::sort(container_.begin(), container_.end(), key_comp());
+            sort(container_.begin(), container_.end(), key_comp());
             return;
         }
     }
@@ -555,7 +555,7 @@ auto sorted_sequence<T, C, A, _>::erase(const_iterator first, const_iterator las
 template <typename T, typename C, typename A, template <typename, typename> class _>
 void sorted_sequence<T, C, A, _>::swap(self_t& rhs)
 {
-    std::swap(container_, rhs.container_);
+    PYCPP_NAMESPACE::swap(container_, rhs.container_);
 }
 
 
@@ -570,7 +570,7 @@ template <typename T, typename C, typename A, template <typename, typename> clas
 template <typename... Ts>
 auto sorted_sequence<T, C, A, _>::emplace(Ts&&... ts) -> pair<iterator, bool>
 {
-    return insert(key_type(std::forward<Ts>(ts)...));
+    return insert(key_type(forward<Ts>(ts)...));
 }
 
 
@@ -578,7 +578,7 @@ template <typename T, typename C, typename A, template <typename, typename> clas
 template <typename... Ts>
 auto sorted_sequence<T, C, A, _>::emplace_hint(const_iterator position, Ts&&... ts) -> iterator
 {
-    return insert(position, key_type(std::forward<Ts>(ts)...));
+    return insert(position, key_type(forward<Ts>(ts)...));
 }
 
 

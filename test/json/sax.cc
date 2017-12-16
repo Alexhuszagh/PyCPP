@@ -7,9 +7,9 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/json.h>
+#include <pycpp/stl/sstream.h>
 #include <pycpp/stream/fstream.h>
 #include <gtest/gtest.h>
-#include <sstream>
 
 PYCPP_USING_NAMESPACE
 

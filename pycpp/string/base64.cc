@@ -3,7 +3,7 @@
 
 #include <pycpp/stl/iterator.h>
 #include <pycpp/string/base64.h>
-#include <cmath>
+#include <math.h>
 
 PYCPP_BEGIN_NAMESPACE
 

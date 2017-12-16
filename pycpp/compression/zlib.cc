@@ -166,13 +166,13 @@ zlib_compressor::zlib_compressor(int level):
 
 
 zlib_compressor::zlib_compressor(zlib_compressor&& rhs):
-    ptr_(std::move(rhs.ptr_))
+    ptr_(move(rhs.ptr_))
 {}
 
 
 zlib_compressor & zlib_compressor::operator=(zlib_compressor&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 
@@ -205,13 +205,13 @@ zlib_decompressor::zlib_decompressor():
 
 
 zlib_decompressor::zlib_decompressor(zlib_decompressor&& rhs):
-    ptr_(std::move(rhs.ptr_))
+    ptr_(move(rhs.ptr_))
 {}
 
 
 zlib_decompressor & zlib_decompressor::operator=(zlib_decompressor&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 

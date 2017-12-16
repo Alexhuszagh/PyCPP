@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/math/distribution.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 

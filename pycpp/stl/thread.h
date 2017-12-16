@@ -12,6 +12,21 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// ALIAS
+// -----
+
+namespace this_thread
+{
+
+using std::this_thread::yield;
+using std::this_thread::get_id;
+using std::this_thread::sleep_for;
+using std::this_thread::sleep_until;
+
+}   /* this_thread */
+
+using thread = std::thread;
+
 // SPECIALIZATION
 // --------------
 

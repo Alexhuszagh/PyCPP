@@ -12,12 +12,17 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// ALIAS
+// -----
+
+using std::type_index;
+
 // SPECIALIZATION
 // --------------
 
 #if defined(USE_XXHASH)
 
-PYCPP_SPECIALIZE_HASH_VALUE(hash, std::type_index);
+PYCPP_SPECIALIZE_HASH_VALUE(hash, type_index);
 
 #endif          // USE_XXHASH
 

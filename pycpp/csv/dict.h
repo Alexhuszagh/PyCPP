@@ -18,7 +18,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 using csv_indexes = ordered_map<std::string, size_t>;
-using csv_map = std::unordered_map<std::string, std::string>;
+using csv_map = unordered_map<std::string, std::string>;
 
 // OBJECTS
 // -------
@@ -42,8 +42,8 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     csv_dict_stream_reader(csvpunct_impl* = nullptr);
-    csv_dict_stream_reader(std::istream&, size_t skip = 0, csvpunct_impl* = nullptr);
-    void open(std::istream&, size_t skip = 0, csvpunct_impl* = nullptr);
+    csv_dict_stream_reader(istream&, size_t skip = 0, csvpunct_impl* = nullptr);
+    void open(istream&, size_t skip = 0, csvpunct_impl* = nullptr);
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
 
@@ -95,7 +95,7 @@ public:
     void open(const string_wrapper& str, size_t skip = 0, csvpunct_impl* = nullptr);
 
 private:
-    std::istringstream sstream_;
+    istringstream sstream_;
 };
 
 // WRITER
@@ -117,8 +117,8 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     csv_dict_stream_writer(csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    csv_dict_stream_writer(std::ostream&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    void open(std::ostream&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    csv_dict_stream_writer(ostream&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
+    void open(ostream&, const csv_row&, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
     void quoting(csv_quoting);
@@ -167,7 +167,7 @@ public:
     std::string str() const;
 
 private:
-    std::ostringstream sstream_;
+    ostringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

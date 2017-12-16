@@ -69,24 +69,24 @@ static fd_stream temporary_file_impl(const path_view_t& dir, const path_view_t& 
         }
     }
 
-    throw std::runtime_error("Unable to find suitable temporary file name.");
+    throw runtime_error("Unable to find suitable temporary file name.");
 }
 
 #else                           // POSIX
 
 static path_t gettempdir_impl()
 {
-    char *dir = std::getenv("TMPDIR");
+    char *dir = getenv("TMPDIR");
     if (dir != nullptr) {
         return path_t(dir);
     }
 
-    dir = std::getenv("TEMP");
+    dir = getenv("TEMP");
     if (dir != nullptr) {
         return path_t(dir);
     }
 
-    dir = std::getenv("TMP");
+    dir = getenv("TMP");
     if (dir != nullptr) {
         return path_t(dir);
     } else {
@@ -116,7 +116,7 @@ static fd_stream temporary_file_impl(const path_view_t& dir, const path_view_t& 
         }
     }
 
-    throw std::runtime_error("Unable to find suitable temporary file name.");
+    throw runtime_error("Unable to find suitable temporary file name.");
 }
 
 
@@ -168,7 +168,7 @@ path_t temporary_directory(const path_view_t& dir, const path_view_t& prefix)
         }
     }
 
-    throw std::runtime_error("Unable to find suitable temporary file name.");
+    throw runtime_error("Unable to find suitable temporary file name.");
 }
 
 

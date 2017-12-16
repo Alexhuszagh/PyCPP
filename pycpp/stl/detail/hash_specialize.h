@@ -8,8 +8,8 @@
 #pragma once
 
 #include <pycpp/config.h>
-#include <cstddef>
 #include <functional>
+#include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
 

@@ -24,10 +24,10 @@ PYCPP_BEGIN_NAMESPACE
    using path_view_t = u16string_view;
    using backup_path_t = std::string;
    using backup_path_view_t = string_view;
-   using path_list_t = std::deque<path_t>;
-   using path_view_list_t = std::deque<path_view_t>;
-   using backup_path_list_t = std::deque<backup_path_t>;
-   using backup_path_view_list_t = std::deque<backup_path_view_t>;
+   using path_list_t = deque<path_t>;
+   using path_view_list_t = deque<path_view_t>;
+   using backup_path_list_t = deque<backup_path_t>;
+   using backup_path_view_list_t = deque<backup_path_view_t>;
    std::u16string ansi_to_utf16(const string_view&);
    std::string utf16_to_ansi(const u16string_view&);
 #   define path_to_string(s) codec_utf16_utf8(s)
@@ -41,8 +41,8 @@ PYCPP_BEGIN_NAMESPACE
    using native_char_type = char;
    using path_t = std::string;
    using path_view_t = string_view;
-   using path_list_t = std::deque<path_t>;
-   using path_view_list_t = std::deque<path_view_t>;
+   using path_list_t = deque<path_t>;
+   using path_view_list_t = deque<path_view_t>;
 #   define path_to_string(s) std::string(s)
 #   define string_to_path(s) (s)
 #   define path_prefix(p) (p)

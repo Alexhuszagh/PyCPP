@@ -19,7 +19,7 @@
 #include <pycpp/stream/fstream.h>
 #include <pycpp/string/codec.h>
 #include <pycpp/string/unicode.h>
-#include <cassert>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 

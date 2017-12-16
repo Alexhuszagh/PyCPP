@@ -11,7 +11,7 @@
  */
 
 #include <pycpp/stl/string_view.h>
-#include <cstdint>
+#include <stdint.h>
 
 PYCPP_BEGIN_NAMESPACE
 

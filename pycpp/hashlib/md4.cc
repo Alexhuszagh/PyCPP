@@ -11,7 +11,7 @@
 #include <pycpp/stl/stdexcept.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
-#include <cstring>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 

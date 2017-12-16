@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/csv/writer.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/string.h>
 #include <pycpp/string/whitespace.h>
 
@@ -64,7 +65,7 @@ static std::string quote_value(const string_view& value, csvpunct_impl& punct, c
         case CSV_QUOTE_NONE:
             return quote_none(value, punct);
         default:
-            throw std::invalid_argument("Unrecognized CSV quoting option.");
+            throw invalid_argument("Unrecognized CSV quoting option.");
     }
 }
 
@@ -77,14 +78,14 @@ csv_stream_writer::csv_stream_writer(csv_quoting quoting, csvpunct_impl* punct):
 {}
 
 
-csv_stream_writer::csv_stream_writer(std::ostream& stream, csv_quoting quoting, csvpunct_impl* punct):
+csv_stream_writer::csv_stream_writer(ostream& stream, csv_quoting quoting, csvpunct_impl* punct):
     punct_(punct ? punct : new csvpunct)
 {
     open(stream, quoting, nullptr);
 }
 
 
-void csv_stream_writer::open(std::ostream& stream, csv_quoting q, csvpunct_impl* p)
+void csv_stream_writer::open(ostream& stream, csv_quoting q, csvpunct_impl* p)
 {
     stream_ = &stream;
     if (p) {
@@ -149,7 +150,7 @@ csv_file_writer::csv_file_writer(const string_view& name, csv_quoting quoting, c
 
 void csv_file_writer::open(const string_view& name, csv_quoting quoting, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     csv_stream_writer::open(file_, quoting, punct);
 }
 
@@ -165,7 +166,7 @@ csv_file_writer::csv_file_writer(const wstring_view& name, csv_quoting quoting, 
 
 void csv_file_writer::open(const wstring_view& name, csv_quoting quoting, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     csv_stream_writer::open(file_, quoting, punct);
 }
 
@@ -179,14 +180,14 @@ csv_file_writer::csv_file_writer(const u16string_view& name, csv_quoting quoting
 
 void csv_file_writer::open(const u16string_view& name, csv_quoting quoting, csvpunct_impl* punct)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     csv_stream_writer::open(file_, quoting, punct);
 }
 
 #endif                                          // WINDOWS
 
 csv_string_writer::csv_string_writer(csv_quoting quoting, csvpunct_impl* punct):
-    sstream_(std::ios_base::out | std::ios_base::binary)
+    sstream_(ios_base::out | ios_base::binary)
 {
     csv_stream_writer::open(sstream_, quoting, punct);
 }

@@ -2,12 +2,12 @@
 //  :license: MIT, see LICENSE.md for more details.
 /*
  *  \addtogroup Tests
- *  \brief `std::pair` SFINAE-detection unittests.
+ *  \brief `pair` SFINAE-detection unittests.
  */
 
 #include <pycpp/sfinae/is_pair.h>
+#include <pycpp/stl/tuple.h>
 #include <gtest/gtest.h>
-#include <tuple>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,12 +17,12 @@ PYCPP_USING_NAMESPACE
 
 TEST(is_pair, is_pair)
 {
-    using pair = std::pair<int, int>;
-    using t1 = std::tuple<int>;
-    using t2 = std::tuple<int, int>;
-    using t3 = std::tuple<int, int, int>;
+    using p1 = pair<int, int>;
+    using t1 = tuple<int>;
+    using t2 = tuple<int, int>;
+    using t3 = tuple<int, int, int>;
 
-    static_assert(is_pair<pair>::value, "");
+    static_assert(is_pair<p1>::value, "");
     static_assert(!is_pair<t1>::value, "");
     static_assert(!is_pair<t2>::value, "");
     static_assert(!is_pair<t3>::value, "");

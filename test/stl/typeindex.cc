@@ -6,8 +6,9 @@
  */
 
 #include <pycpp/stl/typeindex.h>
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <type_traits>
 
 PYCPP_USING_NAMESPACE
 
@@ -16,7 +17,7 @@ PYCPP_USING_NAMESPACE
 
 TEST(typeindex, hash)
 {
-    using hash_type = hash<std::type_index>;
-    using result_type = decltype(hash_type()(std::declval<std::type_index>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using hash_type = hash<type_index>;
+    using result_type = decltype(hash_type()(declval<type_index>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }

@@ -21,6 +21,7 @@
 #include <openssl/err.h>
 #include <openssl/ssl.h>
 #include <openssl/x509v3.h>
+#include <stdlib.h>
 
 // LEGACY
 #ifndef TLS_client_method
@@ -50,7 +51,7 @@ template <typename HttpAdaptor>
 class open_ssl_adaptor_t
 {
 public:
-    typedef open_ssl_adaptor_t<HttpAdaptor> self;
+    using self = open_ssl_adaptor_t<HttpAdaptor>;
 
     open_ssl_adaptor_t();
     open_ssl_adaptor_t(const self&) = delete;
@@ -145,7 +146,7 @@ void open_ssl_adaptor_t<HttpAdaptor>::set_context()
             break;
     }
     if (!ctx) {
-        throw std::runtime_error("Unable to initialize SSL context.");
+        throw runtime_error("Unable to initialize SSL context.");
     }
     SSL_CTX_set_options(ctx, SSL_OP_SINGLE_DH_USE);
 }
@@ -178,7 +179,7 @@ void open_ssl_adaptor_t<HttpAdaptor>::set_certificate()
     }
 
     if (ok != 1) {
-        throw std::runtime_error("Unable to load certificates from file.");
+        throw runtime_error("Unable to load certificates from file.");
     }
 }
 
@@ -198,7 +199,7 @@ void open_ssl_adaptor_t<HttpAdaptor>::set_revoke()
     X509_LOOKUP *lookup = X509_STORE_add_lookup(store, X509_LOOKUP_file());
     int format = X509_FILETYPE_PEM;
     if (!lookup || !(X509_load_crl_file(lookup, revoke.data(), format))) {
-        throw std::runtime_error("Unable to load certificates from file.");
+        throw runtime_error("Unable to load certificates from file.");
     } else {
         int flags = X509_V_FLAG_CRL_CHECK | X509_V_FLAG_CRL_CHECK_ALL;
         X509_STORE_set_flags(store, flags);
@@ -234,7 +235,7 @@ void open_ssl_adaptor_t<HttpAdaptor>::set_verify(const string_wrapper& host)
     // initalize content with bundle
     if (certificate) {
         if (!SSL_CTX_load_verify_locations(ctx, certificate.data(), nullptr)) {
-            throw std::runtime_error("Unable to load certificates from file.");
+            throw runtime_error("Unable to load certificates from file.");
         }
     } else {
         SSL_CTX_set_default_verify_paths(ctx);
@@ -278,7 +279,7 @@ void open_ssl_adaptor_t<HttpAdaptor>::ssl_connect()
                     return;
                 }
             default:
-                throw std::runtime_error("Unable to complete SSL handshake.");
+                throw runtime_error("Unable to complete SSL handshake.");
         }
     }
 }
@@ -297,10 +298,10 @@ open_ssl_adaptor_t<HttpAdaptor>::~open_ssl_adaptor_t()
 template <typename HttpAdaptor>
 open_ssl_adaptor_t<HttpAdaptor>::open_ssl_adaptor_t()
 {
-    std::lock_guard<std::mutex> lock(MUTEX);
+    lock_guard<mutex> lock(MUTEX);
     if (!SSL_INITIALIZED) {
         initialize();
-        std::atexit(cleanup);
+        atexit(cleanup);
         SSL_INITIALIZED = true;
     }
 }

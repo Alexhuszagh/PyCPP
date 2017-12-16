@@ -8,7 +8,7 @@
 #pragma once
 
 #include <pycpp/stl/stdexcept.h>
-#include <cmath>
+#include <math.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -31,7 +31,7 @@ T binomial(T n, T k)
     if (!k || n == k) {
         return 1;
     } else if (n < 0) {
-        throw std::overflow_error("Numeric overflow in binomial coeff.\n");
+        throw overflow_error("Numeric overflow in binomial coeff.\n");
     } else if (k < 0 || k > n) {
         return 0;
     }
@@ -44,7 +44,7 @@ T binomial(T n, T k)
     for (T i = 1; i <= k; ++i) {
         value *= (n - (k - i));
         if (value < 0) {
-            throw std::overflow_error("Numeric overflow in binomial coeff.\n");
+            throw overflow_error("Numeric overflow in binomial coeff.\n");
         }
         value /= i;
     }

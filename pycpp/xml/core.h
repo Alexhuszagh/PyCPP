@@ -11,7 +11,7 @@
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/string.h>
 #include <pycpp/stl/unordered_map.h>
-#include <cstdint>
+#include <stdint.h>
 
 PYCPP_BEGIN_NAMESPACE
 

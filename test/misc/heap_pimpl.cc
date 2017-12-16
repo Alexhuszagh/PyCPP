@@ -34,7 +34,7 @@ TEST(unique_heap_pimpl, integer)
     EXPECT_EQ(x, 5);
     EXPECT_EQ(y, 2);
 
-    std::swap(x, y);
+    swap(x, y);
     EXPECT_EQ(x, 2);
     EXPECT_EQ(y, 5);
 }

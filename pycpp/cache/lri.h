@@ -173,7 +173,7 @@ lri_cache<K, V, H, P, A, L, M>::lri_cache(const self& rhs, const allocator_type&
     cache_size_(rhs.cache_size_)
 {
     for (auto it = list_.begin(); it != list_.end(); ++it) {
-        map_.emplace(std::make_pair(std::cref(it->first), it));
+        map_.emplace(make_pair(cref(it->first), it));
     }
 }
 
@@ -187,7 +187,7 @@ auto lri_cache<K, V, H, P, A, L, M>::operator=(const self& rhs) -> self&
         cache_size_ = rhs.cache_size_;
         list_ = list_type(rhs.list_);
         for (auto it = list_.begin(); it != list_.end(); ++it) {
-            map_.emplace(std::make_pair(std::cref(it->first), it));
+            map_.emplace(make_pair(cref(it->first), it));
         }
     }
 
@@ -299,7 +299,7 @@ auto lri_cache<K, V, H, P, A, L, M>::operator[](key_type&& key) -> mapped_type&
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        return *put(std::forward<key_type>(key), mapped_type());
+        return *put(forward<key_type>(key), mapped_type());
     }
 
     return *get(LRI_ITERATOR(it->second));
@@ -311,7 +311,7 @@ auto lri_cache<K, V, H, P, A, L, M>::at(const key_type& key) -> mapped_type&
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        throw std::out_of_range("lri_cache::at():: Key not found.");
+        throw out_of_range("lri_cache::at():: Key not found.");
     }
 
     return *get(LRI_ITERATOR(it->second));
@@ -323,7 +323,7 @@ auto lri_cache<K, V, H, P, A, L, M>::at(const key_type& key) const -> const mapp
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        throw std::out_of_range("lri_cache::at():: Key not found.");
+        throw out_of_range("lri_cache::at():: Key not found.");
     }
 
     return *get(LRI_CONST_ITERATOR(it->second));
@@ -366,11 +366,11 @@ auto lri_cache<K, V, H, P, A, L, M>::equal_range(const key_type& key) -> pair<it
 {
     auto pair = map_.equal_range(key);
     if (pair.first == map_.end()) {
-        return std::make_pair(end(), end());
+        return make_pair(end(), end());
     } else if (pair.second == map_.end()) {
-        return std::make_pair(get(LRI_ITERATOR(pair.first->second)), end());
+        return make_pair(get(LRI_ITERATOR(pair.first->second)), end());
     } else {
-        return std::make_pair(get(LRI_ITERATOR(pair.first->second)), get(LRI_ITERATOR(pair.second->second)));
+        return make_pair(get(LRI_ITERATOR(pair.first->second)), get(LRI_ITERATOR(pair.second->second)));
     }
 }
 
@@ -380,11 +380,11 @@ auto lri_cache<K, V, H, P, A, L, M>::equal_range(const key_type& key) const -> p
 {
     auto pair = map_.equal_range(key);
     if (pair.first == map_.cend()) {
-        return std::make_pair(cend(), cend());
+        return make_pair(cend(), cend());
     } else if (pair.second == map_.cend()) {
-        return std::make_pair(get(LRI_CONST_ITERATOR(pair.first->second)), cend());
+        return make_pair(get(LRI_CONST_ITERATOR(pair.first->second)), cend());
     } else {
-        return std::make_pair(get(LRI_CONST_ITERATOR(pair.first->second)), get(LRI_CONST_ITERATOR(pair.second->second)));
+        return make_pair(get(LRI_CONST_ITERATOR(pair.first->second)), get(LRI_CONST_ITERATOR(pair.second->second)));
     }
 }
 
@@ -394,10 +394,10 @@ auto lri_cache<K, V, H, P, A, L, M>::insert(const key_type& key, const mapped_ty
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        return std::make_pair(put(key, value), true);
+        return make_pair(put(key, value), true);
     }
 
-    return std::make_pair(LRI_ITERATOR(it->second), false);
+    return make_pair(LRI_ITERATOR(it->second), false);
 }
 
 
@@ -406,10 +406,10 @@ auto lri_cache<K, V, H, P, A, L, M>::insert(const key_type& key, mapped_type&& v
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        return std::make_pair(put(key, std::forward<mapped_type>(value)), true);
+        return make_pair(put(key, forward<mapped_type>(value)), true);
     }
 
-    return std::make_pair(LRI_ITERATOR(it->second), false);
+    return make_pair(LRI_ITERATOR(it->second), false);
 }
 
 
@@ -418,10 +418,10 @@ auto lri_cache<K, V, H, P, A, L, M>::insert(key_type&& key, mapped_type&& value)
 {
     auto it = map_.find(key);
     if (it == map_.end()) {
-        return std::make_pair(put(std::forward<key_type>(key), std::forward<mapped_type>(value)), true);
+        return make_pair(put(forward<key_type>(key), forward<mapped_type>(value)), true);
     }
 
-    return std::make_pair(LRI_ITERATOR(it->second), false);
+    return make_pair(LRI_ITERATOR(it->second), false);
 }
 
 
@@ -465,9 +465,9 @@ void lri_cache<K, V, H, P, A, L, M>::clear()
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
 void lri_cache<K, V, H, P, A, L, M>::swap(self& rhs)
 {
-    std::swap(list_, rhs.list_);
-    std::swap(map_, rhs.map_);
-    std::swap(cache_size_, rhs.cache_size_);
+    PYCPP_NAMESPACE::swap(list_, rhs.list_);
+    PYCPP_NAMESPACE::swap(map_, rhs.map_);
+    PYCPP_NAMESPACE::swap(cache_size_, rhs.cache_size_);
 }
 
 
@@ -575,9 +575,9 @@ auto lri_cache<K, V, H, P, A, L, M>::pop(const_iterator it) -> iterator
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
 auto lri_cache<K, V, H, P, A, L, M>::put(const key_type& key, const mapped_type& value) -> iterator
 {
-    list_.push_front(std::make_pair(key, value));
+    list_.push_front(make_pair(key, value));
     auto it = list_.begin();
-    map_.emplace(std::make_pair(std::cref(it->first), it));
+    map_.emplace(make_pair(cref(it->first), it));
     clean();
 
     return LRI_ITERATOR(it);
@@ -587,9 +587,9 @@ auto lri_cache<K, V, H, P, A, L, M>::put(const key_type& key, const mapped_type&
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
 auto lri_cache<K, V, H, P, A, L, M>::put(const key_type& key, mapped_type&& value) -> iterator
 {
-    list_.push_front(std::make_pair(key, std::forward<mapped_type>(value)));
+    list_.push_front(make_pair(key, forward<mapped_type>(value)));
     auto it = list_.begin();
-    map_.emplace(std::make_pair(std::cref(it->first), it));
+    map_.emplace(make_pair(cref(it->first), it));
     clean();
 
     return LRI_ITERATOR(it);
@@ -599,9 +599,9 @@ auto lri_cache<K, V, H, P, A, L, M>::put(const key_type& key, mapped_type&& valu
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
 auto lri_cache<K, V, H, P, A, L, M>::put(key_type&& key, mapped_type&& value) -> iterator
 {
-    list_.push_front(std::make_pair(std::forward<key_type>(key), std::forward<mapped_type>(value)));
+    list_.push_front(make_pair(forward<key_type>(key), forward<mapped_type>(value)));
     auto it = list_.begin();
-    map_.emplace(std::make_pair(std::cref(it->first), it));
+    map_.emplace(make_pair(cref(it->first), it));
     clean();
 
     return LRI_ITERATOR(it);

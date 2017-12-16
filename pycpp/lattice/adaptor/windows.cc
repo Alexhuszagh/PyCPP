@@ -14,8 +14,8 @@
 #include <pycpp/windows/winapi.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
+#include <stdlib.h>
 #include <winsock2.h>
-#include <cstdlib>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -34,12 +34,12 @@ static bool WSA_INITIALIZED = false;
  */
 win32_socket_adaptor_t::win32_socket_adaptor_t()
 {
-    std::lock_guard<std::mutex> lock(LATTICE_MUTEX);
+    lock_guard<mutex> lock(LATTICE_MUTEX);
     if (!WSA_INITIALIZED) {
         if (WSAStartup(MAKEWORD(2,2), &SOCK_DATA) != 0){
-            throw std::runtime_error("Unable to startup the Windows socket API.");
+            throw runtime_error("Unable to startup the Windows socket API.");
         }
-        std::atexit([]() {
+        atexit([]() {
             WSACleanup();
         });
         WSA_INITIALIZED = true;
@@ -96,7 +96,7 @@ void win32_socket_adaptor_t::set_reuse_address()
     char *option = reinterpret_cast<char*>(&reuse);
     int size = sizeof(reuse);
     if (::setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, option, size)) {
-        throw std::runtime_error("Unable to set socket option via setsockopt().");
+        throw runtime_error("Unable to set socket option via setsockopt().");
     }
 }
 
@@ -110,10 +110,10 @@ void win32_socket_adaptor_t::set_timeout(const timeout_t& timeout)
 
     // set options
     if (::setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, option, size)) {
-        throw std::runtime_error("Unable to set socket option via setsockopt().");
+        throw runtime_error("Unable to set socket option via setsockopt().");
     }
     if (::setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, option, size)) {
-        throw std::runtime_error("Unable to set socket option via setsockopt().");
+        throw runtime_error("Unable to set socket option via setsockopt().");
     }
 }
 

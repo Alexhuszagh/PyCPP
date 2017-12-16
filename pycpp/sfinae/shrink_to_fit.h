@@ -24,14 +24,14 @@ PYCPP_HAS_MEMBER_FUNCTION(shrink_to_fit, has_shrink_to_fit, void (C::*)());
 struct shrink_to_fit
 {
     template <typename T>
-    typename std::enable_if<has_shrink_to_fit<T>::value, void>::type
+    enable_if_t<has_shrink_to_fit<T>::value, void>
     operator()(T &t)
     {
         t.shrink_to_fit();
     }
 
     template <typename T>
-    typename std::enable_if<!has_shrink_to_fit<T>::value, void>::type
+    enable_if_t<!has_shrink_to_fit<T>::value, void>
     operator()(T &t)
     {}
 };

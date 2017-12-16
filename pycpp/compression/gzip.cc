@@ -8,8 +8,8 @@
 #include <pycpp/compression/zlib.cc>
 #include <pycpp/compression/gzip.h>
 #include <pycpp/preprocessor/byteorder.h>
-#include <cstring>
-#include <ctime>
+#include <string.h>
+#include <time.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -35,7 +35,7 @@ static size_t gzip_compress_bound(size_t size)
  *  for testing purposes.
  */
 static std::string gzip_header(int level,
-    std::time_t mtime = 0,
+    time_t mtime = 0,
     const std::string& filename = "",
     const std::string& comment = "")
 {
@@ -255,9 +255,9 @@ static void read_string(z_stream& stream)
 {
     // no filename nor comment
     void* tmp = memchr(stream.next_in, 0, stream.avail_in);
-    stream.avail_in -= std::distance(stream.next_in, (Bytef*) tmp);
+    stream.avail_in -= distance(stream.next_in, (Bytef*) tmp);
     if (!stream.avail_in) {
-        throw std::runtime_error("Unable to read header.");
+        throw runtime_error("Unable to read header.");
     }
     --stream.avail_in;
     ++stream.next_in;
@@ -293,10 +293,10 @@ void gzip_decompressor_impl::read_footer()
         uint32_t size_ = le32toh(*buf++);
 
         if (crc_ != crc) {
-            throw std::runtime_error("CRC mismatch in GZIP decompression.");
+            throw runtime_error("CRC mismatch in GZIP decompression.");
         }
         if (size_ != (size & 0xffffffff)) {
-            throw std::runtime_error("Size mismatch in GZIP decompression.");
+            throw runtime_error("Size mismatch in GZIP decompression.");
         }
     }
 }
@@ -315,7 +315,7 @@ void gzip_decompressor_impl::call()
         check_zstatus(status);
 
         // store out CRC and length information
-        size_t length = std::distance(dst, stream.next_out);
+        size_t length = distance(dst, stream.next_out);
         size += length;
         crc = crc32(crc, dst, length);
     }
@@ -343,13 +343,13 @@ gzip_compressor::gzip_compressor(int level):
 
 
 gzip_compressor::gzip_compressor(gzip_compressor&& rhs):
-    ptr_(std::move(rhs.ptr_))
+    ptr_(move(rhs.ptr_))
 {}
 
 
 gzip_compressor & gzip_compressor::operator=(gzip_compressor&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 
@@ -382,13 +382,13 @@ gzip_decompressor::gzip_decompressor():
 
 
 gzip_decompressor::gzip_decompressor(gzip_decompressor&& rhs):
-    ptr_(std::move(rhs.ptr_))
+    ptr_(move(rhs.ptr_))
 {}
 
 
 gzip_decompressor & gzip_decompressor::operator=(gzip_decompressor&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 

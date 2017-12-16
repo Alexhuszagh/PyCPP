@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/sfinae/back.h>
+#include <pycpp/stl/deque.h>
+#include <pycpp/stl/set.h>
 #include <gtest/gtest.h>
-#include <deque>
-#include <set>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,23 +17,23 @@ PYCPP_USING_NAMESPACE
 
 TEST(back, back)
 {
-    std::deque<int> deq = {2, 3, 4};
-    std::set<int> set = {2, 3, 4};
-    const auto&d = deq;
+    deque<int> d1 = {2, 3, 4};
+    set<int> s = {2, 3, 4};
+    const auto&d2 = d1;
 
-    EXPECT_EQ(back()(deq), 4);
-    EXPECT_EQ(back()(d), 4);
-    back()(deq) = 5;
-    EXPECT_EQ(back()(d), 5);
-    EXPECT_EQ(back()(set), 4);
+    EXPECT_EQ(back()(d1), 4);
+    EXPECT_EQ(back()(d2), 4);
+    back()(d1) = 5;
+    EXPECT_EQ(back()(d2), 5);
+    EXPECT_EQ(back()(s), 4);
 }
 
 
 TEST(back, has_back)
 {
-    using deq = std::deque<int>;
-    using set = std::set<int>;
+    using deque_type = deque<int>;
+    using set_type = set<int>;
 
-    static_assert(has_back<deq>::value, "");
-    static_assert(!has_back<set>::value, "");
+    static_assert(has_back<deque_type>::value, "");
+    static_assert(!has_back<set_type>::value, "");
 }

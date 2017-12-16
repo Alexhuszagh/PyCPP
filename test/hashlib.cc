@@ -6,10 +6,10 @@
  */
 
 #include <pycpp/hashlib.h>
+#include <pycpp/stl/random.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <random>
-#include <utility>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 

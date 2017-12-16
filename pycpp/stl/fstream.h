@@ -7,5 +7,14 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/iostream.h>
 #include <fstream>
+
+PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+// TODO: conflicts with BUILD_STREAM
+
+PYCPP_END_NAMESPACE

@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/sfinae/front.h>
+#include <pycpp/stl/deque.h>
+#include <pycpp/stl/set.h>
 #include <gtest/gtest.h>
-#include <deque>
-#include <set>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,23 +17,23 @@ PYCPP_USING_NAMESPACE
 
 TEST(front, front)
 {
-    std::deque<int> deq = {2, 3, 4};
-    std::set<int> set = {2, 3, 4};
-    const auto&d = deq;
+    deque<int> d1 = {2, 3, 4};
+    set<int> s = {2, 3, 4};
+    const auto&d2 = d1;
 
-    EXPECT_EQ(front()(deq), 2);
-    EXPECT_EQ(front()(d), 2);
-    front()(deq) = 1;
-    EXPECT_EQ(front()(d), 1);
-    EXPECT_EQ(front()(set), 2);
+    EXPECT_EQ(front()(d1), 2);
+    EXPECT_EQ(front()(d2), 2);
+    front()(d1) = 1;
+    EXPECT_EQ(front()(d2), 1);
+    EXPECT_EQ(front()(s), 2);
 }
 
 
 TEST(front, has_front)
 {
-    using deq = std::deque<int>;
-    using set = std::set<int>;
+    using deque_type = deque<int>;
+    using set_type = set<int>;
 
-    static_assert(has_front<deq>::value, "");
-    static_assert(!has_front<set>::value, "");
+    static_assert(has_front<deque_type>::value, "");
+    static_assert(!has_front<set_type>::value, "");
 }

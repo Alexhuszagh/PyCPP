@@ -50,7 +50,7 @@ public:
     intrusive_list_iterator(const self_t&) = default;
     self_t& operator=(const self_t&) = default;
 //    template <typename U>
-//    enable_if<is_same<T, add_const<U>::type>::value, self_t&>
+//    enable_if_t<is_same<T, add_const_t<U>>::value, self_t&>
 //    operator=(const intrusive_list_iterator<U, DifferenceType, Pointer, Reference>&);
 
     // OPERATORS

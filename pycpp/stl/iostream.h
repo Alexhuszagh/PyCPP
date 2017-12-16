@@ -8,4 +8,23 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/stl/istream.h>
+#include <pycpp/stl/ostream.h>
+#include <pycpp/stl/streambuf.h>
 #include <iostream>
+
+PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+using std::cin;
+using std::cout;
+using std::cerr;
+using std::clog;
+using std::wcin;
+using std::wcout;
+using std::wcerr;
+using std::wclog;
+
+PYCPP_END_NAMESPACE

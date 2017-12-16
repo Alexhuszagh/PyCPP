@@ -6,10 +6,10 @@
  */
 
 #include <pycpp/iterator.h>
+#include <pycpp/stl/map.h>
+#include <pycpp/stl/unordered_map.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <map>
-#include <unordered_map>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 

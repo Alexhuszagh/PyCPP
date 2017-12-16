@@ -11,7 +11,7 @@
 #include <pycpp/stl/chrono.h>
 #include <pycpp/stl/limits.h>
 #include <pycpp/stl/stdexcept.h>
-#include <cstdint>
+#include <stdint.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -38,7 +38,7 @@ public:
     timeout_t(timeout_t&&) = default;
     timeout_t & operator=(timeout_t&&) = default;
 
-    timeout_t(const std::chrono::milliseconds &timeout);
+    timeout_t(const chrono::milliseconds &timeout);
     timeout_t(long ms);
 
     long seconds() const;
@@ -48,7 +48,7 @@ public:
     explicit operator bool() const;
 
 protected:
-    std::chrono::milliseconds timeout = std::chrono::milliseconds(0);
+    chrono::milliseconds timeout = chrono::milliseconds(0);
 
     template <typename Duration>
     void check_limits(const Duration &duration) const;
@@ -65,11 +65,11 @@ protected:
 template <typename Duration>
 void timeout_t::check_limits(const Duration &duration) const
 {
-    if (duration.count() > std::numeric_limits<long>::max()) {
-        throw std::overflow_error("Timeout value overflow.\n");
+    if (duration.count() > numeric_limits<long>::max()) {
+        throw overflow_error("Timeout value overflow.\n");
     }
-    if (duration.count() < std::numeric_limits<long>::min()) {
-        throw std::overflow_error("Timeout value underflow.\n");
+    if (duration.count() < numeric_limits<long>::min()) {
+        throw overflow_error("Timeout value underflow.\n");
     }
 }
 

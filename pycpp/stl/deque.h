@@ -16,6 +16,8 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
+using std::swap;
+
 template <
     typename T,
     typename Alloc = allocator<T>

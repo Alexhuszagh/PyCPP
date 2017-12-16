@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/sfinae/has_right_shift.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <utility>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,12 +17,12 @@ PYCPP_USING_NAMESPACE
 
 TEST(has_right_shift, has_right_shift)
 {
-    using pair = std::pair<int, int>;
+    using p1 = pair<int, int>;
 
     static_assert(has_right_shift<int>::value, "");
     static_assert(has_right_shift<int, int>::value, "");
-    static_assert(!has_right_shift<pair>::value, "");
-    static_assert(!has_right_shift<pair, pair>::value, "");
-    static_assert(!has_right_shift<pair, int>::value, "");
-    static_assert(!has_right_shift<int, pair>::value, "");
+    static_assert(!has_right_shift<p1>::value, "");
+    static_assert(!has_right_shift<p1, p1>::value, "");
+    static_assert(!has_right_shift<p1, int>::value, "");
+    static_assert(!has_right_shift<int, p1>::value, "");
 }

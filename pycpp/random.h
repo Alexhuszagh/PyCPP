@@ -19,11 +19,11 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-typedef int64_t seed_t;
-typedef double random_t;
-typedef uint64_t random_int_t;
-typedef std::vector<random_t> random_list_t;
-typedef std::vector<random_int_t> random_int_list_t;
+using seed_t = int64_t;
+using random_t = double;
+using random_int_t = uint64_t;
+using random_list_t = vector<random_t>;
+using random_int_list_t = vector<random_int_t>;
 
 // FUNCTIONS
 // ---------
@@ -199,12 +199,12 @@ random_list_t paretovariate(random_t alpha, size_t n);
  *  Iter must a RandomAccessIterator.
  */
 template <typename Iter>
-auto choice(Iter first, Iter last) -> decltype(*std::declval<Iter>())
+auto choice(Iter first, Iter last) -> decltype(*declval<Iter>())
 {
     if (first == last) {
-        throw std::runtime_error("choice() on empty range.");
+        throw runtime_error("choice() on empty range.");
     }
-    return first[static_cast<size_t>(randrange(0, std::distance(first, last)-1, 1))];
+    return first[static_cast<size_t>(randrange(0, distance(first, last)-1, 1))];
 }
 
 
@@ -216,26 +216,26 @@ auto choice(Iter first, Iter last) -> decltype(*std::declval<Iter>())
  */
 template <typename Iter>
 auto sample(Iter first, Iter last, size_t k)
-    -> intrusive_vector<typename std::iterator_traits<Iter>::value_type>
+    -> intrusive_vector<typename iterator_traits<Iter>::value_type>
 {
     // parameters
-    std::ptrdiff_t distance = std::distance(first, last);
+    ptrdiff_t dist = distance(first, last);
 
     // sanity check
-    if (static_cast<std::ptrdiff_t>(k) > distance) {
-        throw std::runtime_error("Cannot sample k elements from range size N if k > N.");
+    if (static_cast<ptrdiff_t>(k) > dist) {
+        throw runtime_error("Cannot sample k elements from range size N if k > N.");
     }
 
     // partial fisher yates shuffling on the indexes
-    auto r = xrange<size_t>(0, distance, 1);
-    std::vector<size_t> index(r.begin(), r.end());
+    auto r = xrange<size_t>(0, dist, 1);
+    vector<size_t> index(r.begin(), r.end());
     for (size_t i = k; i >= 1; --i) {
-        size_t j = static_cast<size_t>(randint(0, distance-1));
-        std::swap(index[i-1], index[j]);
+        size_t j = static_cast<size_t>(randint(0, dist-1));
+        swap(index[i-1], index[j]);
     }
 
     // fill vector
-    intrusive_vector<typename std::iterator_traits<Iter>::value_type> vector;
+    intrusive_vector<typename iterator_traits<Iter>::value_type> vector;
     vector.reserve(k);
     for (size_t i = 0; i < k; ++i) {
         size_t j = index[i];
@@ -255,10 +255,10 @@ auto sample(Iter first, Iter last, size_t k)
 template <typename Iter>
 void shuffle(Iter first, Iter last)
 {
-    size_t distance = static_cast<size_t>(std::distance(first, last));
-    for (size_t i = distance; i >= 1; --i) {
-        size_t j = static_cast<size_t>(randint(0, distance-1));
-        std::swap(first[i-1], first[j]);
+    size_t dist = static_cast<size_t>(distance(first, last));
+    for (size_t i = dist; i >= 1; --i) {
+        size_t j = static_cast<size_t>(randint(0, dist-1));
+        swap(first[i-1], first[j]);
     }
 }
 

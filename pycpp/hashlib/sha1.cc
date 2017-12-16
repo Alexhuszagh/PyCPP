@@ -8,8 +8,8 @@
 #include <pycpp/stl/stdexcept.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
-#include <cstdio>
-#include <cstring>
+#include <stdio.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
