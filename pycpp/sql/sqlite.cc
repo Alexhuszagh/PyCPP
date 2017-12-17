@@ -11,7 +11,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 //using string_ref = reference_wrapper<const std::string>;
-//using sql_database_cache = std::unordered_map<string_ref, sql_database*>;
+//using sql_database_cache = unordered_map<string_ref, sql_database*>;
 
 // CONSTANTS
 // ---------

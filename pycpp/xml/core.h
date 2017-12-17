@@ -27,8 +27,8 @@ struct xml_node_iterator_t;
 // -----
 
 using xml_string_t = std::string;
-using xml_string_list_t = std::deque<xml_string_t>;
-using xml_attr_t = std::unordered_map<xml_string_t, xml_string_t>;
+using xml_string_list_t = deque<xml_string_t>;
+using xml_attr_t = unordered_map<xml_string_t, xml_string_t>;
 
 // OBJECTS
 // -------

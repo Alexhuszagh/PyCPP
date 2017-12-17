@@ -44,9 +44,7 @@ template <
     typename Key,
     typename Hash = hash<Key>,
     typename KeyEqual = equal_to<Key>,
-    // TODO: getting segfault with allocator<pair, T>
-    // TODO: change back to allocator, not std::allocator
-    typename Allocator = std::allocator<Key>,
+    typename Allocator = allocator<Key>,
     template <typename, typename> class ValueTypeContainer = deque
 >
 class ordered_set

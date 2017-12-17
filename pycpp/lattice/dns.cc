@@ -113,6 +113,14 @@ address_t::operator addrinfo() const
 }
 
 
+address_cache_t::address_cache_t(initializer_list<typename address_cache_t::value_type> list)
+{
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        emplace(*it);
+    }
+}
+
+
 dns_lookup_t::dns_lookup_t(const string_wrapper& host, const string_wrapper& service)
 {
     assert(is_null_terminated(host));

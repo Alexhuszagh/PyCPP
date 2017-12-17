@@ -26,9 +26,14 @@ struct regexp_t;
 // ALIAS
 // -----
 
-using match_groups = std::vector<string_wrapper>;
-using match_groupdict = std::map<string_wrapper, string_wrapper>;
+// Custom wrappers for our high-level interface.
+using match_groups = vector<string_wrapper>;
+using match_groupdict = map<string_wrapper, string_wrapper>;
 using match_range = range<match_iterator_t>;
+
+// Aliases for RE2 types.
+using match_group_indexes = std::map<std::string, int>;
+using match_group_names = std::map<int, std::string>;
 
 // OBJECTS
 // -------

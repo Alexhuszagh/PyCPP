@@ -159,10 +159,11 @@ memory_resource* null_memory_resource() noexcept
 
 memory_resource* get_default_resource() noexcept
 {
-    memory_resource *r = memory_resource::default_resource_.load();
+    memory_resource* r = memory_resource::default_resource_.load();
     if (r == nullptr) {
         r = new_delete_resource();
     }
+
     return r;
 }
 

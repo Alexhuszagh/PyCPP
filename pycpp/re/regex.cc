@@ -199,9 +199,15 @@ size_t regexp_t::groups() const
 }
 
 
-const std::map<std::string, int>& regexp_t::groupindex() const
+const match_group_indexes& regexp_t::group_indexes() const
 {
     return ptr_->re2.NamedCapturingGroups();
+}
+
+
+const match_group_names& regexp_t::group_names() const
+{
+    return ptr_->re2.CapturingGroupNames();
 }
 
 

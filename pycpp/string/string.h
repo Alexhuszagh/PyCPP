@@ -28,8 +28,8 @@ struct string_wrapper;
 // -----
 
 using string_t = std::string;
-using string_list_t = std::vector<std::string>;
-using string_wrapper_list_t = std::vector<string_wrapper>;
+using string_list_t = vector<std::string>;
+using string_wrapper_list_t = vector<string_wrapper>;
 using split_function = function<bool(char)>;
 
 // CONSTANTS

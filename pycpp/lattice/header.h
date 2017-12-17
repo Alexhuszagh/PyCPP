@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/map.h>
 #include <pycpp/stl/ostream.h>
 #include <pycpp/stl/string.h>
@@ -30,10 +31,14 @@ struct lowercase_less
 /**
  *  \brief Custom headers for the request.
  */
-struct header_t: std::map<std::string, std::string, lowercase_less>
+struct header_t: map<std::string, std::string, lowercase_less>
 {
-    using base_t = std::map<std::string, std::string, lowercase_less>;
-    using base_t::base_t;
+    header_t() = default;
+    header_t(const header_t&) = default;
+    header_t& operator=(const header_t&) = default;
+    header_t(header_t&&) = default;
+    header_t& operator=(header_t&&) = default;
+    header_t(initializer_list<typename header_t::value_type> list);
 
     std::string string() const;
     bool accept() const;

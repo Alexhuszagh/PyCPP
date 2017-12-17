@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/map.h>
 #include <pycpp/stl/string.h>
 
@@ -20,10 +21,14 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Cookies to store user data for persistent sessions.
  */
-struct cookies_t: std::map<std::string, std::string>
+struct cookies_t: map<std::string, std::string>
 {
-    using base_t = std::map<std::string, std::string>;
-    using base_t::base_t;
+    cookies_t() = default;
+    cookies_t(const cookies_t&) = default;
+    cookies_t& operator=(const cookies_t&) = default;
+    cookies_t(cookies_t&&) = default;
+    cookies_t& operator=(cookies_t&&) = default;
+    cookies_t(initializer_list<typename cookies_t::value_type> list);
 
     std::string encode() const;
     explicit operator bool() const;

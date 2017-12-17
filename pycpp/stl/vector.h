@@ -40,9 +40,9 @@ struct hash;
 // vector<bool> uses a very fast hash implementation by default
 // that iterates over each bit. Let `std::hash` take care of it.
 template <typename Allocator>
-struct hash<std::vector<bool, Allocator>>
+struct hash<vector<bool, Allocator>>
 {
-    using argument_type = std::vector<bool, Allocator>;
+    using argument_type = vector<bool, Allocator>;
     using result_type = size_t;
 
     inline size_t operator()(const argument_type& x) const noexcept

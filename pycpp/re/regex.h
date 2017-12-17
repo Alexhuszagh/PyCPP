@@ -42,7 +42,8 @@ public:
     match_range finditer(const string_wrapper& str, size_t start = 0, size_t endpos = string_wrapper::npos);
     std::string sub(const string_wrapper& repl, const string_wrapper& str);
     size_t groups() const;
-    const std::map<std::string, int>& groupindex() const;
+    const match_group_indexes& group_indexes() const;
+    const match_group_names& group_names() const;
 
 private:
     friend struct match_t;

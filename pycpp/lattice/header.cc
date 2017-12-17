@@ -21,6 +21,14 @@ bool lowercase_less::operator()(const std::string &lhs, const std::string &rhs) 
 }
 
 
+header_t::header_t(initializer_list<typename header_t::value_type> list)
+{
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        emplace(*it);
+    }
+}
+
+
 std::string header_t::string() const
 {
     std::string string;

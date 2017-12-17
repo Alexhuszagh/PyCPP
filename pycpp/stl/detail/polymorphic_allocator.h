@@ -379,7 +379,8 @@ memory_resource* polymorphic_allocator<T>::resource() const
 #if PYCPP_NON_STANDARD_POLYMORPHIC_ALLOCATOR
 
 template <typename T>
-polymorphic_allocator<T>::polymorphic_allocator(polymorphic_allocator<T>&& rhs) noexcept
+polymorphic_allocator<T>::polymorphic_allocator(polymorphic_allocator<T>&& rhs) noexcept:
+    polymorphic_allocator()
 {
     // let resource use the default constructor
     std::swap(resource_, rhs.resource_);
@@ -388,7 +389,8 @@ polymorphic_allocator<T>::polymorphic_allocator(polymorphic_allocator<T>&& rhs) 
 
 template <typename T>
 template <typename U>
-polymorphic_allocator<T>::polymorphic_allocator(polymorphic_allocator<U>&& rhs) noexcept
+polymorphic_allocator<T>::polymorphic_allocator(polymorphic_allocator<U>&& rhs) noexcept:
+    polymorphic_allocator()
 {
     // let resource use the default constructor
     std::swap(resource_, rhs.resource_);

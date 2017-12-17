@@ -24,6 +24,14 @@ bool encode_version_one_cookie(const std::string &cookie)
 }
 
 
+cookies_t::cookies_t(initializer_list<typename cookies_t::value_type> list)
+{
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        emplace(*it);
+    }
+}
+
+
 std::string cookies_t::encode() const
 {
     std::string string;

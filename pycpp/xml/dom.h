@@ -33,7 +33,7 @@ public:
 
 private:
     xml_node_t* root_ = nullptr;
-    std::deque<xml_node_t*> levels_;
+    deque<xml_node_t*> levels_;
 };
 
 

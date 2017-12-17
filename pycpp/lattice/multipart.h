@@ -9,6 +9,7 @@
 #pragma once
 
 #include <pycpp/stl/deque.h>
+#include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/string/string.h>
 
@@ -128,11 +129,15 @@ buffer_ptr_t create_buffer(Ts&&... ts)
 /**
  *  \brief Data for multipart requests.
  */
-class multipart_t: public std::deque<part_ptr_t>
+class multipart_t: public deque<part_ptr_t>
 {
 public:
-    using base = std::deque<part_ptr_t>;
-    using base::base;
+    multipart_t() = default;
+    multipart_t(const multipart_t&) = default;
+    multipart_t& operator=(const multipart_t&) = default;
+    multipart_t(multipart_t&&) = default;
+    multipart_t& operator=(multipart_t&&) = default;
+    multipart_t(initializer_list<typename multipart_t::value_type> list);
 
     void add(const part_ptr_t& part);
     void add(part_ptr_t&& part);

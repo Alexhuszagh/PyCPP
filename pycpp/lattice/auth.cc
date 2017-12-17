@@ -3,6 +3,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/lattice/auth.h>
+#include <pycpp/stl/utility.h>
 
 
 PYCPP_BEGIN_NAMESPACE
@@ -17,8 +18,8 @@ authentication_t::authentication_t(const char* username, const char* password):
 
 
 authentication_t::authentication_t(std::string &&username, std::string &&password):
-    username(std::forward<std::string>(username)),
-    password(std::forward<std::string>(password))
+    username(forward<std::string>(username)),
+    password(forward<std::string>(password))
 {}
 
 

@@ -59,10 +59,13 @@ struct digest_t: authentication_t
 /**
  *  \brief Quality of protection directive.
  */
-struct quality_of_protection_t: public std::vector<std::string>
+struct quality_of_protection_t: public vector<std::string>
 {
-    using base_t = std::vector<std::string>;
-    using base_t::base_t;
+    quality_of_protection_t() = default;
+    quality_of_protection_t(const quality_of_protection_t&) = default;
+    quality_of_protection_t& operator=(const quality_of_protection_t&) = default;
+    quality_of_protection_t(quality_of_protection_t&&) = default;
+    quality_of_protection_t& operator=(quality_of_protection_t&&) = default;
     quality_of_protection_t(const string_wrapper& qop);
 
     bool auth() const;
@@ -77,7 +80,7 @@ struct quality_of_protection_t: public std::vector<std::string>
  *  \format
  *      Digest nonce="42148a112dd92b7e5b6ac4769c2a6693", opaque="35fa82343c10f5a83c7d9b8bb29d8518", realm="me@kennethreitz.com", qop=auth
  */
-struct digest_challenge_t: public std::unordered_map<
+struct digest_challenge_t: public unordered_map<
         std::string,
         std::string,
         lowercase_hash,
@@ -85,8 +88,11 @@ struct digest_challenge_t: public std::unordered_map<
     >
 {
 public:
-    using base_t = std::unordered_map<std::string, std::string, lowercase_hash, lowercase_equal_to>;
-    using base_t::base_t;
+    digest_challenge_t() = default;
+    digest_challenge_t(const digest_challenge_t&) = default;
+    digest_challenge_t& operator=(const digest_challenge_t&) = default;
+    digest_challenge_t(digest_challenge_t&&) = default;
+    digest_challenge_t& operator=(digest_challenge_t&&) = default;
     digest_challenge_t(const string_wrapper&);
 
     // DATA

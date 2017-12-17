@@ -242,9 +242,11 @@ std::string buffer_value_t::string() const
 }   /* detail */
 
 
-string_wrapper multipart_t::boundary() const
+multipart_t::multipart_t(initializer_list<typename multipart_t::value_type> list)
 {
-    return string_wrapper(boundary_);
+    for (auto it = list.begin(); it != list.end(); ++it) {
+        add(*it);
+    }
 }
 
 
@@ -257,6 +259,12 @@ void multipart_t::add(const part_ptr_t& part)
 void multipart_t::add(part_ptr_t&& part)
 {
     emplace_back(forward<part_ptr_t>(part));
+}
+
+
+string_wrapper multipart_t::boundary() const
+{
+    return string_wrapper(boundary_);
 }
 
 
