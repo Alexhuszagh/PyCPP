@@ -24,8 +24,14 @@ PYCPP_BEGIN_NAMESPACE
 struct json_dom_handler: json_sax_handler
 {
 public:
+    json_dom_handler() = delete;
+    json_dom_handler(const json_dom_handler&) = delete;
+    json_dom_handler& operator=(const json_dom_handler&) = delete;
+    json_dom_handler(json_dom_handler&&);
+    json_dom_handler& operator=(json_dom_handler&&);
     json_dom_handler(json_value_t&);
 
+    // SAX EVENTS
     virtual void start_document() override;
     virtual void end_document() override;
     virtual void start_object() override;
@@ -37,6 +43,9 @@ public:
     virtual void boolean(bool) override;
     virtual void number(double) override;
     virtual void string(const string_wrapper&) override;
+
+    // MODIFIERS
+    void swap(json_dom_handler&);
 
 private:
     json_value_t* root_ = nullptr;
@@ -51,6 +60,13 @@ private:
  */
 struct json_document_t: json_value_t
 {
+    json_document_t();
+    json_document_t(const json_document_t&) = delete;
+    json_document_t& operator=(const json_document_t&) = delete;
+    json_document_t(json_document_t&&);
+    json_document_t& operator=(json_document_t&&);
+
+    // READERS
     void loads(const string_wrapper&);
     void load(istream&);
     void load(const string_view&);
@@ -59,6 +75,7 @@ struct json_document_t: json_value_t
     void load(const u16string_view&);
 #endif                                          // WINDOWS
 
+    // WRITERS
     std::string dumps(char = ' ', int = 4);
     void dump(ostream&, char = ' ', int = 4);
     void dump(const string_view&, char = ' ', int = 4);

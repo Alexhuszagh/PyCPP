@@ -319,8 +319,17 @@ bool xml_sax_handler::use_namespaces() const
 }
 
 
-xml_stream_reader::xml_stream_reader()
-{}
+xml_stream_reader::xml_stream_reader(xml_stream_reader&& rhs)
+{
+    swap(rhs);
+}
+
+
+xml_stream_reader& xml_stream_reader::operator=(xml_stream_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 void xml_stream_reader::open(istream& s)
@@ -343,8 +352,26 @@ void xml_stream_reader::set_handler(xml_sax_handler& h)
 }
 
 
-xml_file_reader::xml_file_reader()
-{}
+void xml_stream_reader::swap(xml_stream_reader& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(stream_, rhs.stream_);
+    swap(handler_, rhs.handler_);
+}
+
+
+xml_file_reader::xml_file_reader(xml_file_reader&& rhs)
+{
+    swap(rhs);
+}
+
+
+xml_file_reader& xml_file_reader::operator=(xml_file_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 xml_file_reader::xml_file_reader(const string_view& name)
@@ -390,8 +417,24 @@ void xml_file_reader::open(const u16string_view& name)
 
 #endif                                          // WINDOWS
 
-xml_string_reader::xml_string_reader()
-{}
+
+void xml_file_reader::swap(xml_file_reader& rhs)
+{
+    static_assert(false, "");       // TODO: implement
+}
+
+
+xml_string_reader::xml_string_reader(xml_string_reader&& rhs)
+{
+    swap(rhs);
+}
+
+
+xml_string_reader& xml_string_reader::operator=(xml_string_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 xml_string_reader::xml_string_reader(const string_wrapper& str)
@@ -404,6 +447,12 @@ void xml_string_reader::open(const string_wrapper& str)
 {
     sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
     xml_stream_reader::open(sstream_);
+}
+
+
+void xml_string_reader::swap(xml_string_reader& rhs)
+{
+    static_assert(false, "");       // TODO: implement
 }
 
 PYCPP_END_NAMESPACE

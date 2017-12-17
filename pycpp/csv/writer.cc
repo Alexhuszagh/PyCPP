@@ -77,6 +77,20 @@ csv_stream_writer::csv_stream_writer(csv_quoting quoting, csvpunct_impl* punct):
 {}
 
 
+csv_stream_writer::csv_stream_writer(csv_stream_writer&& rhs):
+    csv_stream_writer()
+{
+    swap(rhs);
+}
+
+
+csv_stream_writer& csv_stream_writer::operator=(csv_stream_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
+
 csv_stream_writer::csv_stream_writer(ostream& stream, csv_quoting quoting, csvpunct_impl* punct):
     punct_(punct ? punct : new csvpunct)
 {
@@ -118,6 +132,16 @@ const csv_quoting csv_stream_writer::quoting() const
 }
 
 
+void csv_stream_writer::swap(csv_stream_writer& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(stream_, rhs.stream_);
+    swap(quoting_, rhs.quoting_);
+    swap(punct_, rhs.punct_);
+}
+
+
 void csv_stream_writer::operator()(const value_type& row)
 {
     std::string output;
@@ -139,6 +163,20 @@ void csv_stream_writer::operator()(const value_type& row)
 csv_file_writer::csv_file_writer(csv_quoting quoting, csvpunct_impl* punct):
     csv_stream_writer(quoting, punct)
 {}
+
+
+csv_file_writer::csv_file_writer(csv_file_writer&& rhs):
+    csv_file_writer()
+{
+    swap(rhs);
+}
+
+
+csv_file_writer& csv_file_writer::operator=(csv_file_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 csv_file_writer::csv_file_writer(const string_view& name, csv_quoting quoting, csvpunct_impl* punct)
@@ -185,6 +223,13 @@ void csv_file_writer::open(const u16string_view& name, csv_quoting quoting, csvp
 
 #endif                                          // WINDOWS
 
+
+void csv_file_writer::swap(csv_file_writer& rhs)
+{
+    static_assert(false, "");       // TODO: implement
+}
+
+
 csv_string_writer::csv_string_writer(csv_quoting quoting, csvpunct_impl* punct):
     sstream_(ios_base::out | ios_base::binary)
 {
@@ -192,9 +237,29 @@ csv_string_writer::csv_string_writer(csv_quoting quoting, csvpunct_impl* punct):
 }
 
 
+csv_string_writer::csv_string_writer(csv_string_writer&& rhs):
+    csv_string_writer()
+{
+    swap(rhs);
+}
+
+
+csv_string_writer& csv_string_writer::operator=(csv_string_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
+
 std::string csv_string_writer::str() const
 {
     return sstream_.str();
+}
+
+
+void csv_string_writer::swap(csv_string_writer& rhs)
+{
+    static_assert(false, "");       // TODO: implement
 }
 
 PYCPP_END_NAMESPACE

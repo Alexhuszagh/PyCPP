@@ -47,6 +47,20 @@ xml_string_t xml_node_t::tostring() const
     return str.substr(end_decl + 3);
 }
 
+// HANDLER
+
+xml_dom_handler::xml_dom_handler(xml_dom_handler&& rhs)
+{
+    swap(rhs);
+}
+
+
+xml_dom_handler& xml_dom_handler::operator=(xml_dom_handler&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
 
 xml_dom_handler::xml_dom_handler(xml_node_t& root):
     root_(&root)
@@ -90,6 +104,28 @@ void xml_dom_handler::characters(const string_wrapper& content)
 {
     xml_node_t* current = levels_.back();
     current->set_text(current->get_text() + xml_string_t(content));
+}
+
+
+void xml_dom_handler::swap(xml_dom_handler& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(root_, rhs.root_);
+    swap(levels_, rhs.levels_);
+}
+
+// DOCUMENT
+
+xml_document_t::xml_document_t(xml_document_t&& rhs):
+    xml_node_t(std::move(rhs))
+{}
+
+
+xml_document_t& xml_document_t::operator=(xml_document_t&& rhs)
+{
+    xml_node_t::operator=(std::move(rhs));
+    return *this;
 }
 
 

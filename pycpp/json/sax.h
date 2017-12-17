@@ -23,6 +23,12 @@ PYCPP_BEGIN_NAMESPACE
  */
 struct json_sax_handler
 {
+    json_sax_handler() = default;
+    json_sax_handler(const json_sax_handler&) = default;
+    json_sax_handler& operator=(const json_sax_handler&) = default;
+    json_sax_handler(json_sax_handler&&) = default;
+    json_sax_handler& operator=(json_sax_handler&&) = default;
+
     // SAX EVENTS
     virtual void start_document();
     virtual void end_document();
@@ -44,10 +50,16 @@ struct json_sax_handler
 struct json_stream_reader
 {
 public:
-    json_stream_reader();
+    json_stream_reader() = default;
+    json_stream_reader(const json_stream_reader&) = delete;
+    json_stream_reader& operator=(const json_stream_reader&) = delete;
+    json_stream_reader(json_stream_reader&&);
+    json_stream_reader& operator=(json_stream_reader&&);
 
+    // MODIFIERS
     void open(istream&);
     void set_handler(json_sax_handler&);
+    void swap(json_stream_reader&);
 
 private:
     istream* stream_ = nullptr;
@@ -61,16 +73,24 @@ private:
 struct json_file_reader: json_stream_reader
 {
 public:
-    json_file_reader();
+    json_file_reader() = default;
+    json_file_reader(const json_file_reader&) = delete;
+    json_file_reader& operator=(const json_file_reader&) = delete;
+    json_file_reader(json_file_reader&&);
+    json_file_reader& operator=(json_file_reader&&);
+
+    // STREAM
     json_file_reader(const string_view& name);
     void open(const string_view& name);
-
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     json_file_reader(const wstring_view& name);
     void open(const wstring_view& name);
     json_file_reader(const u16string_view& name);
     void open(const u16string_view& name);
 #endif                                          // WINDOWS
+
+    // MODIFIERS
+    void swap(json_file_reader&);
 
 private:
     ifstream file_;
@@ -83,9 +103,18 @@ private:
 struct json_string_reader: json_stream_reader
 {
 public:
-    json_string_reader();
+    json_string_reader() = default;
+    json_string_reader(const json_string_reader&) = delete;
+    json_string_reader& operator=(const json_string_reader&) = delete;
+    json_string_reader(json_string_reader&&);
+    json_string_reader& operator=(json_string_reader&&);
+
+    // STREAM
     json_string_reader(const string_wrapper& str);
     void open(const string_wrapper& str);
+
+    // MODIFIERS
+    void swap(json_string_reader&);
 
 private:
     istringstream sstream_;

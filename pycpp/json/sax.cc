@@ -182,8 +182,17 @@ void json_sax_handler::string(const string_wrapper&)
 {}
 
 
-json_stream_reader::json_stream_reader()
-{}
+json_stream_reader::json_stream_reader(json_stream_reader&& rhs)
+{
+    swap(rhs);
+}
+
+
+json_stream_reader& json_stream_reader::operator=(json_stream_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 void json_stream_reader::open(istream& s)
@@ -209,8 +218,26 @@ void json_stream_reader::set_handler(json_sax_handler& h)
 }
 
 
-json_file_reader::json_file_reader()
-{}
+void json_stream_reader::swap(json_stream_reader& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(stream_, rhs.stream_);
+    swap(handler_, rhs.handler_);
+}
+
+
+json_file_reader::json_file_reader(json_file_reader&& rhs)
+{
+    swap(rhs);
+}
+
+
+json_file_reader& json_file_reader::operator=(json_file_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 json_file_reader::json_file_reader(const string_view& name)
@@ -257,8 +284,23 @@ void json_file_reader::open(const u16string_view& name)
 #endif                                          // WINDOWS
 
 
-json_string_reader::json_string_reader()
-{}
+void json_file_reader::swap(json_file_reader& rhs)
+{
+    static_assert(false, "");       // TODO: implement
+}
+
+
+json_string_reader::json_string_reader(json_string_reader&& rhs)
+{
+    swap(rhs);
+}
+
+
+json_string_reader& json_string_reader::operator=(json_string_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 json_string_reader::json_string_reader(const string_wrapper& str)
@@ -271,6 +313,12 @@ void json_string_reader::open(const string_wrapper& str)
 {
     sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
     json_stream_reader::open(sstream_);
+}
+
+
+void json_string_reader::swap(json_string_reader& rhs)
+{
+    static_assert(false, "");       // TODO: implement
 }
 
 PYCPP_END_NAMESPACE

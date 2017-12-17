@@ -76,6 +76,7 @@ public:
     json_value_t(json_object_t&&);
     ~json_value_t();
 
+    // MODIFIERS
     void swap(json_value_t&);
 
     // CHECKERS

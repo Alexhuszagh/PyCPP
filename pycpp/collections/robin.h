@@ -1067,15 +1067,17 @@ public:
 
     void swap(robin_hash& other)
     {
-        PYCPP_NAMESPACE::swap(static_cast<Hash&>(*this), static_cast<Hash&>(other));
-        PYCPP_NAMESPACE::swap(static_cast<KeyEqual&>(*this), static_cast<KeyEqual&>(other));
-        PYCPP_NAMESPACE::swap(static_cast<GrowthPolicy&>(*this), static_cast<GrowthPolicy&>(other));
-        PYCPP_NAMESPACE::swap(m_buckets, other.m_buckets);
-        PYCPP_NAMESPACE::swap(m_bucket_count, other.m_bucket_count);
-        PYCPP_NAMESPACE::swap(m_nb_elements, other.m_nb_elements);
-        PYCPP_NAMESPACE::swap(m_load_threshold, other.m_load_threshold);
-        PYCPP_NAMESPACE::swap(m_max_load_factor, other.m_max_load_factor);
-        PYCPP_NAMESPACE::swap(m_grow_on_next_insert, other.m_grow_on_next_insert);
+        using PYCPP_NAMESPACE::swap;
+
+        swap(static_cast<Hash&>(*this), static_cast<Hash&>(other));
+        swap(static_cast<KeyEqual&>(*this), static_cast<KeyEqual&>(other));
+        swap(static_cast<GrowthPolicy&>(*this), static_cast<GrowthPolicy&>(other));
+        swap(m_buckets, other.m_buckets);
+        swap(m_bucket_count, other.m_bucket_count);
+        swap(m_nb_elements, other.m_nb_elements);
+        swap(m_load_threshold, other.m_load_threshold);
+        swap(m_max_load_factor, other.m_max_load_factor);
+        swap(m_grow_on_next_insert, other.m_grow_on_next_insert);
     }
 
     // LOOKUP

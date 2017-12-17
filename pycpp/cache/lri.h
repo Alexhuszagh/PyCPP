@@ -465,9 +465,11 @@ void lri_cache<K, V, H, P, A, L, M>::clear()
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
 void lri_cache<K, V, H, P, A, L, M>::swap(self& rhs)
 {
-    PYCPP_NAMESPACE::swap(list_, rhs.list_);
-    PYCPP_NAMESPACE::swap(map_, rhs.map_);
-    PYCPP_NAMESPACE::swap(cache_size_, rhs.cache_size_);
+    using PYCPP_NAMESPACE::swap;
+
+    swap(list_, rhs.list_);
+    swap(map_, rhs.map_);
+    swap(cache_size_, rhs.cache_size_);
 }
 
 

@@ -555,7 +555,9 @@ auto sorted_sequence<T, C, A, _>::erase(const_iterator first, const_iterator las
 template <typename T, typename C, typename A, template <typename, typename> class _>
 void sorted_sequence<T, C, A, _>::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(container_, rhs.container_);
+    using PYCPP_NAMESPACE::swap;
+
+    swap(container_, rhs.container_);
 }
 
 

@@ -23,6 +23,7 @@ PYCPP_BEGIN_NAMESPACE
  */
 struct json_writer
 {
+    // SAX EVENTS
     virtual void start_object();
     virtual void end_object();
     virtual void start_array();
@@ -56,7 +57,7 @@ public:
     bool is_pretty() const;
     void swap(json_stream_writer&);
 
-    // WRITERS
+    // SAX EVENTS
     virtual void start_object() override;
     virtual void end_object() override;
     virtual void start_array() override;
@@ -82,11 +83,15 @@ private:
 struct json_file_writer: json_stream_writer
 {
 public:
-    json_file_writer();
-    json_file_writer(const string_view& name);
-    // TODO: need copy/move
-    void open(const string_view& name);
+    json_file_writer() = default;
+    json_file_writer(const json_file_writer&) = delete;
+    json_file_writer& operator=(const json_file_writer&) = delete;
+    json_file_writer(json_file_writer&&);
+    json_file_writer& operator=(json_file_writer&&);
 
+    // STREAM
+    json_file_writer(const string_view& name);
+    void open(const string_view& name);
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     json_file_writer(const wstring_view& name);
     void open(const wstring_view& name);
@@ -94,6 +99,9 @@ public:
     void open(const u16string_view& name);
 #endif                                          // WINDOWS
     virtual void flush() const override;
+
+    // MODIFIERS
+    void swap(json_file_writer&);
 
 private:
     mutable ofstream file_;
@@ -106,8 +114,14 @@ struct json_string_writer: json_stream_writer
 {
 public:
     json_string_writer();
+    json_string_writer(const json_string_writer&) = delete;
+    json_string_writer& operator=(const json_string_writer&) = delete;
+    json_string_writer(json_string_writer&&);
+    json_string_writer& operator=(json_string_writer&&);
     std::string str() const;
-    // TODO: need copy/move
+
+    // MODIFIERS
+    void swap(json_string_writer&);
 
 private:
     ostringstream sstream_;

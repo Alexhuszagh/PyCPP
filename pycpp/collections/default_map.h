@@ -634,8 +634,10 @@ void default_map<K, T, C, A, M>::clear() noexcept
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
 void default_map<K, T, C, A, M>::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(map_, rhs.map_);
-    PYCPP_NAMESPACE::swap(callback_, rhs.callback_);
+    using PYCPP_NAMESPACE::swap;
+
+    swap(map_, rhs.map_);
+    swap(callback_, rhs.callback_);
 }
 
 
@@ -1008,8 +1010,10 @@ void default_unordered_map<K, T, H, P, A, M>::clear() noexcept
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 void default_unordered_map<K, T, H, P, A, M>::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(map_, rhs.map_);
-    PYCPP_NAMESPACE::swap(callback_, rhs.callback_);
+    using PYCPP_NAMESPACE::swap;
+
+    swap(map_, rhs.map_);
+    swap(callback_, rhs.callback_);
 }
 
 

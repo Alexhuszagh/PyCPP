@@ -767,30 +767,32 @@ if(BUILD_COMPRESSION)
         #"${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/zlib.cc"
     )
 
-    if(BUILD_STREAM)
-        list(APPEND HEADER_FILES
-            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.h"
-        )
-        list(APPEND SOURCE_FILES
-            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.cc"
-        )
-    endif()
+# TODO: restore
+#    if(BUILD_STREAM)
+#        list(APPEND HEADER_FILES
+#            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.h"
+#        )
+#        list(APPEND SOURCE_FILES
+#            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.cc"
+#        )
+#    endif()
 endif()
 
 if (BUILD_CSV)
-    list(APPEND HEADER_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/dict.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/punct.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/reader.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/writer.h"
-    )
-    list(APPEND SOURCE_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/dict.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/punct.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/reader.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/writer.cc"
-    )
+# TODO: restore
+#    list(APPEND HEADER_FILES
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/dict.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/punct.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/reader.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/writer.h"
+#    )
+#    list(APPEND SOURCE_FILES
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/dict.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/punct.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/reader.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/writer.cc"
+#    )
 endif()
 
 if (BUILD_FILESYSTEM)
@@ -837,19 +839,20 @@ if (BUILD_HASHLIB)
 endif()
 
 if(BUILD_JSON)
-    list(APPEND HEADER_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/core.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/dom.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/sax.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/writer.h"
-    )
-    list(APPEND SOURCE_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/core.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/dom.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/sax.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/writer.cc"
-    )
+# TODO: restore
+#    list(APPEND HEADER_FILES
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/core.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/dom.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/sax.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/writer.h"
+#    )
+#    list(APPEND SOURCE_FILES
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/core.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/dom.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/sax.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/writer.cc"
+#    )
 endif()
 
 if(BUILD_LATTICE)
@@ -961,21 +964,22 @@ if(BUILD_STREAM)
 endif()
 
 if(BUILD_XML)
-    list(APPEND HEADER_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.h"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.h"
-    )
-    list(APPEND SOURCE_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.cc"
-        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.cc"
-    )
+# TODO: restore
+#    list(APPEND HEADER_FILES
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.h"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.h"
+#    )
+#    list(APPEND SOURCE_FILES
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.cc"
+#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.cc"
+#    )
 endif()
 
 add_library(pycpp "")
@@ -1182,13 +1186,17 @@ if(BUILD_COMPRESSION)
         test/compression/detect.cc
         test/compression/gzip.cc
         test/compression/lzma.cc
-        test/compression/stream.cc
         test/compression/zlib.cc
     )
+    if (BUILD_STREAM)
+# TODO: restore
+#        list(APPEND TEST_FILES test/compression/stream.cc)
+    endif()
 endif()
 
 if (BUILD_CSV)
-    list(APPEND TEST_FILES test/csv.cc)
+# TODO: restore
+#    list(APPEND TEST_FILES test/csv.cc)
 endif()
 
 if (BUILD_FILESYSTEM)
@@ -1203,11 +1211,12 @@ if (BUILD_HASHLIB)
 endif()
 
 if (BUILD_JSON)
-    list(APPEND TEST_FILES
-        test/json/dom.cc
-        test/json/sax.cc
-        test/json/writer.cc
-    )
+# TODO: restore
+#    list(APPEND TEST_FILES
+#        test/json/dom.cc
+#        test/json/sax.cc
+#        test/json/writer.cc
+#    )
 endif()
 
 if(BUILD_LATTICE)
@@ -1260,11 +1269,12 @@ if (BUILD_STREAM)
 endif()
 
 if (BUILD_XML)
-    list(APPEND TEST_FILES
-        test/xml/dom.cc
-        test/xml/sax.cc
-        test/xml/writer.cc
-    )
+# TODO: restore
+#    list(APPEND TEST_FILES
+#        test/xml/dom.cc
+#        test/xml/sax.cc
+#        test/xml/writer.cc
+#    )
 endif()
 
 

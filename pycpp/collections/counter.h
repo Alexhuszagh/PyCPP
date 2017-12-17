@@ -553,7 +553,9 @@ void counter<K, H, P, A, M>::clear()
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 void counter<K, H, P, A, M>::swap(self& rhs)
 {
-    PYCPP_NAMESPACE::swap(map_, rhs.map_);
+    using PYCPP_NAMESPACE::swap;
+
+    swap(map_, rhs.map_);
 }
 
 

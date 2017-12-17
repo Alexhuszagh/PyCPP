@@ -18,11 +18,11 @@ TEST(json, dom)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    json_document_t document;
-    document.loads(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
+    json_document_t d1;
+    d1.loads(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
 
-    ASSERT_TRUE(document.has_object());
-    auto &object = document.get_object();
+    ASSERT_TRUE(d1.has_object());
+    auto &object = d1.get_object();
     EXPECT_EQ(object.size(), 7);
     EXPECT_EQ(object["hello"].get_string(), "world");
     EXPECT_EQ(object["t"].get_boolean(), true);
@@ -30,11 +30,23 @@ TEST(json, dom)
     EXPECT_EQ(object["a"].get_array().size(), 4);
     EXPECT_EQ(object["a"].get_array().front().get_number(), 1.);
 
-    auto str = document.dumps(' ', 0);
+    auto str = d1.dumps(' ', 0);
     // only check the first character, since the order isn't defined
     EXPECT_EQ(str.substr(0, 1), "{");
 
-    str = document.dumps(' ', 4);
+    str = d1.dumps(' ', 4);
     // only check the first two to ensure newlines are added
     EXPECT_EQ(str.substr(0, 2), "{\n");
+
+    // move constructor
+    json_document_t d2(std::move(d1));
+    ASSERT_TRUE(d2.has_object());
+    object = d2.get_object();
+    EXPECT_EQ(object.size(), 7);
+
+    // move assign
+    d1 = std::move(d2);
+    ASSERT_TRUE(d1.has_object());
+    object = d1.get_object();
+    EXPECT_EQ(object.size(), 7);
 }

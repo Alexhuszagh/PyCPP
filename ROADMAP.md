@@ -6,12 +6,35 @@
         - Change to use the global allocator generally speaking...
 
     - Make sure my streams properly handle moves but cannot be copied...
-        - SERIOUSLY....
+        - Compression
+            - Stream    - Skeleton
+        - CSV
+            - Reader    - Skeleton
+            - Writer    - Skeleton
+            - Dict      - Skeleton
+        - Stream
+            - Filter    -Unittests
+                - Fix filter with moves, there's a segfault bug
+            - FD
+            - Random Access
+            - MMAP
+            - Sequential
+        - JSON
+            - SAX       - Skeleton
+            - Writer    - Skeleton
+        - XML
+            - SAX       - Skeleton
+            - Writer    - Skeleton
+
+    - Interprocess
+        - Some sort of interprocess library like Boost would be great
 
     - Remove all superflous std:: shit
         - (ALMOST, ALMOST DONE)
         - Just need std::string...
             - LOLS
+            - Change everything involving std::string to a typedef alias of it...
+                - string_tmp or something...
 
     - Need custom allocators for the JSON and XML interfaces
     - Look at use woever rope.

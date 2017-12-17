@@ -113,18 +113,20 @@ void json_stream_writer::set_indent(char c, int width)
 }
 
 
-void json_stream_writer::swap(json_stream_writer& rhs)
-{
-    PYCPP_NAMESPACE::swap(indent_character_, rhs.indent_character_);
-    PYCPP_NAMESPACE::swap(indent_width_, rhs.indent_width_);
-    PYCPP_NAMESPACE::swap(stream_, rhs.stream_);
-    PYCPP_NAMESPACE::swap(writer_, rhs.writer_);
-}
-
-
 bool json_stream_writer::is_pretty() const
 {
     return indent_width_ > 0;
+}
+
+
+void json_stream_writer::swap(json_stream_writer& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(indent_character_, rhs.indent_character_);
+    swap(indent_width_, rhs.indent_width_);
+    swap(stream_, rhs.stream_);
+    swap(writer_, rhs.writer_);
 }
 
 
@@ -204,8 +206,17 @@ void json_stream_writer::flush() const      // null-op
 {}
 
 
-json_file_writer::json_file_writer()
-{}
+json_file_writer::json_file_writer(json_file_writer&& rhs)
+{
+    swap(rhs);
+}
+
+
+json_file_writer& json_file_writer::operator=(json_file_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 json_file_writer::json_file_writer(const string_view& name)
@@ -258,9 +269,29 @@ void json_file_writer::flush() const
 }
 
 
+void json_file_writer::swap(json_file_writer& rhs)
+{
+    static_assert(false, "");       // TODO: implement
+}
+
+
 json_string_writer::json_string_writer()
 {
     json_stream_writer::open(sstream_);
+}
+
+
+json_string_writer::json_string_writer(json_string_writer&& rhs):
+    json_string_writer()
+{
+    swap(rhs);
+}
+
+
+json_string_writer& json_string_writer::operator=(json_string_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
 }
 
 
@@ -268,6 +299,14 @@ std::string json_string_writer::str() const
 {
     flush();
     return sstream_.str();
+}
+
+
+void json_string_writer::swap(json_string_writer& rhs)
+{
+    // TODO: this should be pretty easy
+    // base swap + sstream_.swap()
+    static_assert(false, "");       // TODO: implement
 }
 
 PYCPP_END_NAMESPACE

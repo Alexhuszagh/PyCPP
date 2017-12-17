@@ -122,6 +122,20 @@ static void dump_impl(const json_value_t& value, json_stream_writer& writer)
 // OBJECTS
 // -------
 
+// HANDLER
+
+json_dom_handler::json_dom_handler(json_dom_handler&& rhs)
+{
+    swap(rhs);
+}
+
+
+json_dom_handler& json_dom_handler::operator=(json_dom_handler&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
 
 json_dom_handler::json_dom_handler(json_value_t& root):
     root_(&root)
@@ -192,6 +206,35 @@ void json_dom_handler::number(double d)
 void json_dom_handler::string(const string_wrapper& str)
 {
     add_value(levels_, has_key_, key_, json_string_t(str));
+}
+
+
+void json_dom_handler::swap(json_dom_handler& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(root_, rhs.root_);
+    swap(has_key_, rhs.has_key_);
+    swap(key_, rhs.key_);
+    swap(levels_, rhs.levels_);
+}
+
+// DOCUMENT
+
+json_document_t::json_document_t():
+    json_value_t()
+{}
+
+
+json_document_t::json_document_t(json_document_t&& rhs):
+    json_value_t(std::move(rhs))
+{}
+
+
+json_document_t& json_document_t::operator=(json_document_t&& rhs)
+{
+    json_value_t::operator=(std::move(rhs));
+    return *this;
 }
 
 

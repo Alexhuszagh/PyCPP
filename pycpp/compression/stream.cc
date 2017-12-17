@@ -108,173 +108,192 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Macro to define methods for a filtering istream base.
  */
-#define COMPRESSED_ISTREAM(name)                                                                                \
-    name##_istream::name##_istream()                                                                            \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_istream::name##_istream(istream& stream)                                                             \
-    {                                                                                                           \
-        open(stream);                                                                                           \
-    }                                                                                                           \
-                                                                                                                \
-    name##_istream::~name##_istream()                                                                           \
-    {                                                                                                           \
-        filter_istream::close();                                                                                \
-        rdbuf()->set_callback(nullptr);                                                                         \
-        ctx.close();                                                                                            \
-    }                                                                                                           \
-                                                                                                                \
-    void name##_istream::open(istream& stream)                                                                  \
-    {                                                                                                           \
-        filter_istream::open(stream, DECOMPRESS_CALLBACK);                                                      \
-    }                                                                                                           \
-                                                                                                                \
-    name##_istream::name##_istream(name##_istream&& rhs):                                                       \
-        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                                    \
-        filter_istream(PYCPP_NAMESPACE::move(rhs))                                                              \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_istream & name##_istream::operator=(name##_istream&& rhs)                                            \
-    {                                                                                                           \
-        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                                   \
-        filter_istream::operator=(PYCPP_NAMESPACE::move(rhs));                                                  \
-        return *this;                                                                                           \
+#define COMPRESSED_ISTREAM(name)                                        \
+    name##_istream::name##_istream()                                    \
+    {}                                                                  \
+                                                                        \
+    name##_istream::name##_istream(istream& stream)                     \
+    {                                                                   \
+        open(stream);                                                   \
+    }                                                                   \
+                                                                        \
+    name##_istream::~name##_istream()                                   \
+    {                                                                   \
+        filter_istream::close();                                        \
+        rdbuf()->set_callback(nullptr);                                 \
+        ctx.close();                                                    \
+    }                                                                   \
+                                                                        \
+    void name##_istream::open(istream& stream)                          \
+    {                                                                   \
+        filter_istream::open(stream, DECOMPRESS_CALLBACK);              \
+    }                                                                   \
+                                                                        \
+    name##_istream::name##_istream(name##_istream&& rhs):               \
+        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                            \
+        filter_istream(PYCPP_NAMESPACE::move(rhs))                      \
+    {}                                                                  \
+                                                                        \
+    name##_istream & name##_istream::operator=(name##_istream&& rhs)    \
+    {                                                                   \
+        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                           \
+        filter_istream::operator=(PYCPP_NAMESPACE::move(rhs));          \
+        return *this;                                                   \
+    }                                                                   \
+                                                                        \
+    void name##_istream::swap(name##_istream& rhs)                      \
+    {                                                                   \
+        static_assert(false, "");                                       \
     }
 
 
 /**
  *  \brief Macro to define methods for a filtering ostream base.
  */
-#define COMPRESSED_OSTREAM(name)                                                                                \
-    name##_ostream::name##_ostream()                                                                            \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_ostream::name##_ostream(int level):                                                                  \
-        ctx(level)                                                                                              \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_ostream::name##_ostream(ostream& stream)                                                             \
-    {                                                                                                           \
-        open(stream);                                                                                           \
-    }                                                                                                           \
-                                                                                                                \
-    name##_ostream::name##_ostream(ostream& stream, int level):                                                 \
-        ctx(level)                                                                                              \
-    {                                                                                                           \
-        open(stream);                                                                                           \
-    }                                                                                                           \
-                                                                                                                \
-    name##_ostream::~name##_ostream()                                                                           \
-    {                                                                                                           \
-        filter_ostream::close();                                                                                \
-        rdbuf()->set_callback(nullptr);                                                                         \
-        ctx.close();                                                                                            \
-    }                                                                                                           \
-                                                                                                                \
-    void name##_ostream::open(ostream& stream)                                                                  \
-    {                                                                                                           \
-        filter_ostream::open(stream, COMPRESS_CALLBACK);                                                        \
-    }                                                                                                           \
-                                                                                                                \
-    name##_ostream::name##_ostream(name##_ostream&& rhs):                                                       \
-        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                                    \
-        filter_ostream(PYCPP_NAMESPACE::move(rhs))                                                              \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_ostream & name##_ostream::operator=(name##_ostream&& rhs)                                            \
-    {                                                                                                           \
-        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                                   \
-        filter_ostream::operator=(PYCPP_NAMESPACE::move(rhs));                                                  \
-        return *this;                                                                                           \
+#define COMPRESSED_OSTREAM(name)                                        \
+    name##_ostream::name##_ostream()                                    \
+    {}                                                                  \
+                                                                        \
+    name##_ostream::name##_ostream(int level):                          \
+        ctx(level)                                                      \
+    {}                                                                  \
+                                                                        \
+    name##_ostream::name##_ostream(ostream& stream)                     \
+    {                                                                   \
+        open(stream);                                                   \
+    }                                                                   \
+                                                                        \
+    name##_ostream::name##_ostream(ostream& stream, int level):         \
+        ctx(level)                                                      \
+    {                                                                   \
+        open(stream);                                                   \
+    }                                                                   \
+                                                                        \
+    name##_ostream::~name##_ostream()                                   \
+    {                                                                   \
+        filter_ostream::close();                                        \
+        rdbuf()->set_callback(nullptr);                                 \
+        ctx.close();                                                    \
+    }                                                                   \
+                                                                        \
+    void name##_ostream::open(ostream& stream)                          \
+    {                                                                   \
+        filter_ostream::open(stream, COMPRESS_CALLBACK);                \
+    }                                                                   \
+                                                                        \
+    name##_ostream::name##_ostream(name##_ostream&& rhs):               \
+        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                            \
+        filter_ostream(PYCPP_NAMESPACE::move(rhs))                      \
+    {}                                                                  \
+                                                                        \
+    name##_ostream & name##_ostream::operator=(name##_ostream&& rhs)    \
+    {                                                                   \
+        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                           \
+        filter_ostream::operator=(PYCPP_NAMESPACE::move(rhs));          \
+        return *this;                                                   \
+    }                                                                   \
+                                                                        \
+    void name##_ostream::swap(name##_ostream& rhs)                      \
+    {                                                                   \
+        static_assert(false, "");                                       \
     }
-
 
 /**
  *  \brief Macro to define methods for a filtering ifstream base.
  */
-#define COMPRESSED_IFSTREAM(name)                                                                               \
-    name##_ifstream::name##_ifstream()                                                                          \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_ifstream::name##_ifstream(name##_ifstream&& rhs):                                                    \
-        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                                    \
-        filter_ifstream(PYCPP_NAMESPACE::move(rhs))                                                             \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_ifstream & name##_ifstream::operator=(name##_ifstream&& rhs)                                         \
-    {                                                                                                           \
-        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                                   \
-        filter_ifstream::operator=(PYCPP_NAMESPACE::move(rhs));                                                 \
-        return *this;                                                                                           \
-    }                                                                                                           \
-                                                                                                                \
-    name##_ifstream::~name##_ifstream()                                                                         \
-    {                                                                                                           \
-        filter_ifstream::close();                                                                               \
-        rdbuf()->set_callback(nullptr);                                                                         \
-        ctx.close();                                                                                            \
-    }                                                                                                           \
-                                                                                                                \
-    name##_ifstream::name##_ifstream(const string_view& name, ios_base::openmode mode)                          \
-    {                                                                                                           \
-        open(name, mode);                                                                                       \
-    }                                                                                                           \
-                                                                                                                \
-    void name##_ifstream::open(const string_view& name, ios_base::openmode mode)                                \
-    {                                                                                                           \
-        filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                                                 \
-    }                                                                                                           \
-                                                                                                                \
-    WIDE_PATH_IFSTREAM(name)
+#define COMPRESSED_IFSTREAM(name)                                                           \
+    name##_ifstream::name##_ifstream()                                                      \
+    {}                                                                                      \
+                                                                                            \
+    name##_ifstream::name##_ifstream(name##_ifstream&& rhs):                                \
+        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                \
+        filter_ifstream(PYCPP_NAMESPACE::move(rhs))                                         \
+    {}                                                                                      \
+                                                                                            \
+    name##_ifstream & name##_ifstream::operator=(name##_ifstream&& rhs)                     \
+    {                                                                                       \
+        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                               \
+        filter_ifstream::operator=(PYCPP_NAMESPACE::move(rhs));                             \
+        return *this;                                                                       \
+    }                                                                                       \
+                                                                                            \
+    name##_ifstream::~name##_ifstream()                                                     \
+    {                                                                                       \
+        filter_ifstream::close();                                                           \
+        rdbuf()->set_callback(nullptr);                                                     \
+        ctx.close();                                                                        \
+    }                                                                                       \
+                                                                                            \
+    name##_ifstream::name##_ifstream(const string_view& name, ios_base::openmode mode)      \
+    {                                                                                       \
+        open(name, mode);                                                                   \
+    }                                                                                       \
+                                                                                            \
+    void name##_ifstream::open(const string_view& name, ios_base::openmode mode)            \
+    {                                                                                       \
+        filter_ifstream::open(name, mode, DECOMPRESS_CALLBACK);                             \
+    }                                                                                       \
+                                                                                            \
+    WIDE_PATH_IFSTREAM(name)                                                                \
+                                                                                            \
+    void name##_ifstream::swap(name##_ifstream& rhs)                                        \
+    {                                                                                       \
+        static_assert(false, "");                                                           \
+    }
 
 
 /**
  *  \brief Macro to define methods for a filtering ofstream base.
  */
-#define COMPRESSED_OFSTREAM(name)                                                                               \
-    name##_ofstream::name##_ofstream()                                                                          \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_ofstream::name##_ofstream(int level):                                                                \
-        ctx(level)                                                                                              \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_ofstream::name##_ofstream(name##_ofstream&& rhs):                                                    \
-        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                                    \
-        filter_ofstream(PYCPP_NAMESPACE::move(rhs))                                                             \
-    {}                                                                                                          \
-                                                                                                                \
-    name##_ofstream & name##_ofstream::operator=(name##_ofstream&& rhs)                                         \
-    {                                                                                                           \
-        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                                   \
-        filter_ofstream::operator=(PYCPP_NAMESPACE::move(rhs));                                                 \
-        return *this;                                                                                           \
-    }                                                                                                           \
-                                                                                                                \
-    name##_ofstream::~name##_ofstream()                                                                         \
-    {                                                                                                           \
-        filter_ofstream::close();                                                                               \
-        rdbuf()->set_callback(nullptr);                                                                         \
-        ctx.close();                                                                                            \
-    }                                                                                                           \
-                                                                                                                \
-    name##_ofstream::name##_ofstream(const string_view& name, ios_base::openmode mode)                          \
-    {                                                                                                           \
-        open(name, mode);                                                                                       \
-    }                                                                                                           \
-                                                                                                                \
-    name##_ofstream::name##_ofstream(const string_view& name, int level, ios_base::openmode mode):              \
-        ctx(level)                                                                                              \
-    {                                                                                                           \
-        open(name, mode);                                                                                       \
-    }                                                                                                           \
-                                                                                                                \
-    void name##_ofstream::open(const string_view& name, ios_base::openmode mode)                                \
-    {                                                                                                           \
-        filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                                   \
-    }                                                                                                           \
-                                                                                                                \
-    WIDE_PATH_OFSTREAM(name)
+#define COMPRESSED_OFSTREAM(name)                                                                   \
+    name##_ofstream::name##_ofstream()                                                              \
+    {}                                                                                              \
+                                                                                                    \
+    name##_ofstream::name##_ofstream(int level):                                                    \
+        ctx(level)                                                                                  \
+    {}                                                                                              \
+                                                                                                    \
+    name##_ofstream::name##_ofstream(name##_ofstream&& rhs):                                        \
+        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                        \
+        filter_ofstream(PYCPP_NAMESPACE::move(rhs))                                                 \
+    {}                                                                                              \
+                                                                                                    \
+    name##_ofstream & name##_ofstream::operator=(name##_ofstream&& rhs)                             \
+    {                                                                                               \
+        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                       \
+        filter_ofstream::operator=(PYCPP_NAMESPACE::move(rhs));                                     \
+        return *this;                                                                               \
+    }                                                                                               \
+                                                                                                    \
+    name##_ofstream::~name##_ofstream()                                                             \
+    {                                                                                               \
+        filter_ofstream::close();                                                                   \
+        rdbuf()->set_callback(nullptr);                                                             \
+        ctx.close();                                                                                \
+    }                                                                                               \
+                                                                                                    \
+    name##_ofstream::name##_ofstream(const string_view& name, ios_base::openmode mode)              \
+    {                                                                                               \
+        open(name, mode);                                                                           \
+    }                                                                                               \
+                                                                                                    \
+    name##_ofstream::name##_ofstream(const string_view& name, int level, ios_base::openmode mode):  \
+        ctx(level)                                                                                  \
+    {                                                                                               \
+        open(name, mode);                                                                           \
+    }                                                                                               \
+                                                                                                    \
+    void name##_ofstream::open(const string_view& name, ios_base::openmode mode)                    \
+    {                                                                                               \
+        filter_ofstream::open(name, mode, COMPRESS_CALLBACK);                                       \
+    }                                                                                               \
+                                                                                                    \
+    WIDE_PATH_OFSTREAM(name)                                                                        \
+                                                                                                    \
+    void name##_ofstream::swap(name##_ofstream& rhs)                                                \
+    {                                                                                               \
+        static_assert(false, "");                                                                   \
+    }
 
 
 /**
@@ -484,18 +503,29 @@ void decompressing_istream::open(istream& stream)
 
 decompressing_istream::decompressing_istream(decompressing_istream&& rhs)
 {
-    PYCPP_NAMESPACE::swap(format, rhs.format);
-    PYCPP_NAMESPACE::swap(ctx, rhs.ctx);
+    using PYCPP_NAMESPACE::swap;
+
+    swap(format, rhs.format);
+    swap(ctx, rhs.ctx);
     filter_istream::swap(rhs);
 }
 
 
 decompressing_istream & decompressing_istream::operator=(decompressing_istream&& rhs)
 {
-    PYCPP_NAMESPACE::swap(format, rhs.format);
-    PYCPP_NAMESPACE::swap(ctx, rhs.ctx);
+    using PYCPP_NAMESPACE::swap;
+
+    swap(format, rhs.format);
+    swap(ctx, rhs.ctx);
     filter_istream::swap(rhs);
     return *this;
+}
+
+
+void decompressing_istream::swap(decompressing_istream& rhs)
+{
+    // TODO: implement...
+    static_assert(false, "");
 }
 
 
@@ -566,6 +596,13 @@ void decompressing_ifstream::open(const u16string_view& name, ios_base::openmode
 }
 
 #endif                                      // WINDOWS
+
+
+void decompressing_ifstream::swap(decompressing_ifstream& rhs)
+{
+    // TODO: implement...
+    static_assert(false, "");
+}
 
 // CLEANUP
 // -------

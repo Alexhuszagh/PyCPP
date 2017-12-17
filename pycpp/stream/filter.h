@@ -102,10 +102,11 @@ class filter_istream: public istream
 {
 public:
     filter_istream(filter_callback = nullptr);
-    ~filter_istream();
     filter_istream(const filter_istream&) = delete;
     filter_istream & operator=(const filter_istream&) = delete;
+    ~filter_istream();
 
+    // STREAM
     filter_istream(istream& stream, filter_callback = nullptr);
     void open(istream& stream, filter_callback = nullptr);
     void close();
@@ -113,6 +114,7 @@ public:
     void rdbuf(filter_streambuf *buffer);
 
 protected:
+    // PROPERTIES/MODIFIERS
     filter_istream(filter_istream&&);
     filter_istream & operator=(filter_istream&&);
     void swap(filter_istream &other);
@@ -132,10 +134,11 @@ class filter_ostream: public ostream
 {
 public:
     filter_ostream(filter_callback = nullptr);
-    ~filter_ostream();
     filter_ostream(const filter_ostream&) = delete;
     filter_ostream & operator=(const filter_ostream&) = delete;
+    ~filter_ostream();
 
+    // STREAM
     filter_ostream(ostream& stream, filter_callback = nullptr);
     void open(ostream& stream, filter_callback = nullptr);
     void close();
@@ -143,6 +146,7 @@ public:
     void rdbuf(filter_streambuf *buffer);
 
 protected:
+    // PROPERTIES/MODIFIERS
     filter_ostream(filter_ostream&&);
     filter_ostream & operator=(filter_ostream&&);
     void swap(filter_ostream &other);
@@ -162,16 +166,15 @@ class filter_ifstream: public filter_istream
 {
 public:
     filter_ifstream(filter_callback = nullptr);
-    ~filter_ifstream();
-
     filter_ifstream(const filter_ifstream&) = delete;
     filter_ifstream & operator=(const filter_ifstream&) = delete;
     filter_ifstream(filter_ifstream&&);
     filter_ifstream & operator=(filter_ifstream&&);
+    ~filter_ifstream();
 
+    // STREAM
     filter_ifstream(const string_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
     void open(const string_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
-
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     filter_ifstream(const wstring_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
     void open(const wstring_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
@@ -179,6 +182,7 @@ public:
     void open(const u16string_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
 #endif                                          // WINDOWS
 
+    // PROPERTIES/MODIFIERS
     bool is_open() const;
     void close();
     void swap(filter_ifstream&);
@@ -203,9 +207,9 @@ public:
     filter_ofstream(filter_ofstream&&);
     filter_ofstream & operator=(filter_ofstream&&);
 
+    // STREAM
     filter_ofstream(const string_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
     void open(const string_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
-
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     filter_ofstream(const wstring_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
     void open(const wstring_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
@@ -213,6 +217,7 @@ public:
     void open(const u16string_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
 #endif                                          // WINDOWS
 
+    // PROPERTIES/MODIFIERS
     bool is_open() const;
     void close();
     void swap(filter_ofstream&);

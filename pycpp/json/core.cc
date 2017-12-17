@@ -16,17 +16,17 @@ json_value_t::json_value_t():
 {}
 
 
-json_value_t::json_value_t(json_value_t&& other):
+json_value_t::json_value_t(json_value_t&& rhs):
     type_(json_null_type),
     data_((json_pointer_t) nullptr)
 {
-    swap(other);
+    swap(rhs);
 }
 
 
-json_value_t& json_value_t::operator=(json_value_t&& other)
+json_value_t& json_value_t::operator=(json_value_t&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -79,10 +79,10 @@ json_value_t::~json_value_t()
 }
 
 
-void json_value_t::swap(json_value_t& other)
+void json_value_t::swap(json_value_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(type_, other.type_);
-    PYCPP_NAMESPACE::swap(data_, other.data_);
+    PYCPP_NAMESPACE::swap(type_, rhs.type_);
+    PYCPP_NAMESPACE::swap(data_, rhs.data_);
 }
 
 

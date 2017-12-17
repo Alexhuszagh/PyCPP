@@ -50,50 +50,52 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Macro to define a filtering istream base.
  */
-#define COMPRESSED_ISTREAM(name)                                                                \
-    struct name##_istream: filter_istream                                                       \
-    {                                                                                           \
-    public:                                                                                     \
-        name##_istream();                                                                       \
-        name##_istream(const name##_istream&) = delete;                                         \
-        name##_istream & operator=(const name##_istream&) = delete;                             \
-        ~name##_istream();                                                                      \
-                                                                                                \
-        name##_istream(istream& stream);                                                        \
-        void open(istream& stream);                                                             \
-                                                                                                \
-    protected:                                                                                  \
-        name##_istream(name##_istream&&);                                                       \
-        name##_istream & operator=(name##_istream&&);                                           \
-                                                                                                \
-    private:                                                                                    \
-        name##_decompressor ctx;                                                                \
+#define COMPRESSED_ISTREAM(name)                                        \
+    struct name##_istream: filter_istream                               \
+    {                                                                   \
+    public:                                                             \
+        name##_istream();                                               \
+        name##_istream(const name##_istream&) = delete;                 \
+        name##_istream & operator=(const name##_istream&) = delete;     \
+        ~name##_istream();                                              \
+                                                                        \
+        name##_istream(istream& stream);                                \
+        void open(istream& stream);                                     \
+                                                                        \
+    protected:                                                          \
+        name##_istream(name##_istream&&);                               \
+        name##_istream& operator=(name##_istream&&);                    \
+        void swap(name##_istream&);                                     \
+                                                                        \
+    private:                                                            \
+        name##_decompressor ctx;                                        \
     }
 
 
 /**
  *  \brief Macro to define a filtering ostream base.
  */
-#define COMPRESSED_OSTREAM(name)                                                                \
-    struct name##_ostream: filter_ostream                                                       \
-    {                                                                                           \
-    public:                                                                                     \
-        name##_ostream();                                                                       \
-        name##_ostream(int level);                                                              \
-        name##_ostream(const name##_ostream&) = delete;                                         \
-        name##_ostream & operator=(const name##_ostream&) = delete;                             \
-        ~name##_ostream();                                                                      \
-                                                                                                \
-        name##_ostream(ostream& stream);                                                        \
-        name##_ostream(ostream& stream, int level);                                             \
-        void open(ostream& stream);                                                             \
-                                                                                                \
-    protected:                                                                                  \
-        name##_ostream(name##_ostream&&);                                                       \
-        name##_ostream & operator=(name##_ostream&&);                                           \
-                                                                                                \
-    private:                                                                                    \
-        name##_compressor ctx;                                                                  \
+#define COMPRESSED_OSTREAM(name)                                        \
+    struct name##_ostream: filter_ostream                               \
+    {                                                                   \
+    public:                                                             \
+        name##_ostream();                                               \
+        name##_ostream(int level);                                      \
+        name##_ostream(const name##_ostream&) = delete;                 \
+        name##_ostream & operator=(const name##_ostream&) = delete;     \
+        ~name##_ostream();                                              \
+                                                                        \
+        name##_ostream(ostream& stream);                                \
+        name##_ostream(ostream& stream, int level);                     \
+        void open(ostream& stream);                                     \
+                                                                        \
+    protected:                                                          \
+        name##_ostream(name##_ostream&&);                               \
+        name##_ostream & operator=(name##_ostream&&);                   \
+        void swap(name##_ostream&);                                     \
+                                                                        \
+    private:                                                            \
+        name##_compressor ctx;                                          \
     }
 
 
@@ -114,6 +116,7 @@ PYCPP_BEGIN_NAMESPACE
         name##_ifstream(const string_view& name, ios_base::openmode = ios_base::in);            \
         void open(const string_view& name, ios_base::openmode = ios_base::in);                  \
         WIDE_PATH_IFSTREAM(name)                                                                \
+        void swap(name##_ifstream&);                                                            \
                                                                                                 \
     private:                                                                                    \
         name##_decompressor ctx;                                                                \
@@ -139,6 +142,7 @@ PYCPP_BEGIN_NAMESPACE
         name##_ofstream(const string_view& name, int level, ios_base::openmode = ios_base::out);    \
         void open(const string_view& name, ios_base::openmode = ios_base::out);                     \
         WIDE_PATH_OFSTREAM(name)                                                                    \
+        void swap(name##_ofstream&);                                                                \
                                                                                                     \
     private:                                                                                        \
         name##_compressor ctx;                                                                      \
@@ -181,12 +185,15 @@ public:
     decompressing_istream & operator=(const decompressing_istream&) = delete;
     ~decompressing_istream();
 
+    // STREAM
     decompressing_istream(istream& stream);
     void open(istream& stream);
 
 protected:
+    // MODIFIERS
     decompressing_istream(decompressing_istream&&);
     decompressing_istream & operator=(decompressing_istream&&);
+    void swap(decompressing_istream&);
 
 private:
     compression_format format = compression_none;
@@ -207,6 +214,7 @@ public:
     decompressing_ifstream & operator=(decompressing_ifstream&&);
     ~decompressing_ifstream();
 
+    // STREAM
     decompressing_ifstream(const string_view& name, ios_base::openmode = ios_base::in);
     void open(const string_view& name, ios_base::openmode = ios_base::in);
 #if defined(HAVE_WFOPEN)                    // WINDOWS
@@ -215,6 +223,9 @@ public:
     decompressing_ifstream(const u16string_view& name, ios_base::openmode = ios_base::in);
     void open(const u16string_view& name, ios_base::openmode = ios_base::in);
 #endif                                      // WINDOWS
+
+    // MODIFIERS
+    void swap(decompressing_ifstream&);
 
 private:
     compression_format format = compression_none;

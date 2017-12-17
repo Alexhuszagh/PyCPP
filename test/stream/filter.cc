@@ -10,6 +10,9 @@
 #include <pycpp/stl/string.h>
 #include <pycpp/stream/filter.h>
 #include <gtest/gtest.h>
+#if BUILD_FILESYSTEM
+#   include <pycpp/filesystem.h>
+#endif          // BUILD_FILESYSTEM
 
 PYCPP_USING_NAMESPACE
 
@@ -38,6 +41,21 @@ void doublechars(const void*& src, size_t srclen,
 // TESTS
 // -----
 
+// STREAMBUF
+
+TEST(filter_streambuf, swap)
+{
+    filter_streambuf sb1(ios_base::in);
+    filter_streambuf sb2(ios_base::in);
+    sb1.swap(sb2);
+    EXPECT_NE(&sb1, &sb2);
+
+    filter_streambuf sb3(ios_base::in, nullptr, doublechars);
+    sb1.swap(sb3);
+    EXPECT_NE(&sb1, &sb3);
+}
+
+// ISTREAM
 
 TEST(filter_istream, nocallback)
 {
@@ -60,6 +78,7 @@ TEST(filter_istream, doublechars)
     EXPECT_EQ(line, "TThhiiss  iiss  aa  mmeessssaaggee");
 }
 
+// OSTREAM
 
 TEST(filter_ostream, nocallback)
 {
@@ -81,3 +100,107 @@ TEST(filter_ostream, doublechars)
     }
     EXPECT_EQ(sstream.str(), "TThhiiss  iiss  aa  mmeessssaaggee");
 }
+
+#if BUILD_FILESYSTEM
+
+// IFSTREAM
+
+TEST(filter_ifstream, null_constructor)
+{
+    filter_ifstream s1;
+    EXPECT_FALSE(s1.is_open());
+}
+
+
+TEST(filter_ifstream, doublechars)
+{
+    // write data
+    string path("sample_filter_ifstream.txt");
+    ASSERT_FALSE(exists(path));
+    {
+        ofstream stream(path);
+        stream << "This is a message";
+    }
+    ASSERT_TRUE(exists(path));
+
+    // read data
+    {
+        filter_ifstream s1(path, ios_base::in, doublechars);
+        ASSERT_TRUE(s1.is_open());
+        std::string line;
+        std::getline(s1, line);
+        EXPECT_EQ(line, "TThhiiss  iiss  aa  mmeessssaaggee");
+    }
+
+    // cleanup
+    EXPECT_TRUE(remove_file(path));
+}
+
+
+TEST(filter_ifstream, move)
+{
+    // write data
+    string path("sample_filter_ifstream.txt");
+    ASSERT_FALSE(exists(path));
+    {
+        ofstream stream(path);
+        stream << "This is a message";
+    }
+    ASSERT_TRUE(exists(path));
+
+    // read data
+    {
+        // TODO: restore
+//        filter_ifstream s1(path, ios_base::in, doublechars);
+//        filter_ifstream s2(std::move(s1));
+//        ASSERT_FALSE(s1.is_open());
+//        ASSERT_TRUE(s2.is_open());
+//        std::string line;
+//        std::getline(s1, line);
+//        EXPECT_EQ(line, "TThhiiss  iiss  aa  mmeessssaaggee");
+    }
+
+    // cleanup
+    EXPECT_TRUE(remove_file(path));
+}
+
+// OFSTREAM
+
+TEST(filter_ofstream, null_constructor)
+{
+    filter_ofstream s1;
+    EXPECT_FALSE(s1.is_open());
+}
+
+
+TEST(filter_ofstream, doublechars)
+{
+    // write data
+    string path("sample_filter_ofstream.txt");
+    ASSERT_FALSE(exists(path));
+    {
+        filter_ofstream s1(path, ios_base::out, doublechars);
+        ASSERT_TRUE(s1.is_open());
+        s1 << "This is a message";
+    }
+    ASSERT_TRUE(exists(path));
+
+    // read data
+    {
+        ifstream stream(path);
+        std::string line;
+        std::getline(stream, line);
+        EXPECT_EQ(line, "TThhiiss  iiss  aa  mmeessssaaggee");
+    }
+
+    // cleanup
+    EXPECT_TRUE(remove_file(path));
+}
+
+
+TEST(filter_ofstream, move)
+{
+    // TODO: implement...
+}
+
+#endif                  // BUILD_FILESYSTEM

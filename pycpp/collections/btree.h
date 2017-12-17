@@ -3115,8 +3115,10 @@ void btree<P>::clear()
 template <typename P>
 void btree<P>::swap(self_type &x)
 {
-    PYCPP_NAMESPACE::swap(static_cast<key_compare&>(*this), static_cast<key_compare&>(x));
-    PYCPP_NAMESPACE::swap(root_, x.root_);
+    using PYCPP_NAMESPACE::swap;
+
+    swap(static_cast<key_compare&>(*this), static_cast<key_compare&>(x));
+    swap(root_, x.root_);
 }
 
 

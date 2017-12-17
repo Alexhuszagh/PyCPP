@@ -467,9 +467,11 @@ void threshold_counter<K, H, P, A, M>::clear()
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 void threshold_counter<K, H, P, A, M>::swap(self& rhs)
 {
-    PYCPP_NAMESPACE::swap(map_, rhs.map_);
-    PYCPP_NAMESPACE::swap(interval_, rhs.interval_);
-    PYCPP_NAMESPACE::swap(count_, rhs.count_);
+    using PYCPP_NAMESPACE::swap;
+
+    swap(map_, rhs.map_);
+    swap(interval_, rhs.interval_);
+    swap(count_, rhs.count_);
 }
 
 

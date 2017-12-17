@@ -26,6 +26,20 @@ csv_dict_stream_reader::csv_dict_stream_reader(csvpunct_impl* punct):
 {}
 
 
+csv_dict_stream_reader::csv_dict_stream_reader(csv_dict_stream_reader&& rhs):
+    csv_dict_stream_reader()
+{
+    swap(rhs);
+}
+
+
+csv_dict_stream_reader& csv_dict_stream_reader::operator=(csv_dict_stream_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
+
 csv_dict_stream_reader::csv_dict_stream_reader(istream& stream, size_t skip, csvpunct_impl* punct)
 {
     open(stream, skip, punct);
@@ -48,6 +62,15 @@ void csv_dict_stream_reader::punctuation(csvpunct_impl* punct)
 const csvpunct_impl* csv_dict_stream_reader::punctuation() const
 {
     return reader_.punctuation();
+}
+
+
+void csv_dict_stream_reader::swap(csv_dict_stream_reader& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(reader_, rhs.reader_);
+    swap(header_, rhs.header_);
 }
 
 
@@ -90,6 +113,20 @@ auto csv_dict_stream_reader::end() -> iterator
 csv_dict_file_reader::csv_dict_file_reader(csvpunct_impl* punct):
     csv_dict_stream_reader(punct)
 {}
+
+
+csv_dict_file_reader::csv_dict_file_reader(csv_dict_file_reader&& rhs):
+    csv_dict_file_reader()
+{
+    swap(rhs);
+}
+
+
+csv_dict_file_reader& csv_dict_file_reader::operator=(csv_dict_file_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 csv_dict_file_reader::csv_dict_file_reader(const string_view& name, size_t skip, csvpunct_impl* punct)
@@ -137,9 +174,29 @@ void csv_dict_file_reader::open(const u16string_view& name, size_t skip, csvpunc
 #endif                                          // WINDOWS
 
 
+void csv_dict_file_reader::swap(csv_dict_file_reader& rhs)
+{
+    static_assert(false, "");       // TODO: implement
+}
+
+
 csv_dict_string_reader::csv_dict_string_reader(csvpunct_impl* punct):
     csv_dict_stream_reader(punct)
 {}
+
+
+csv_dict_string_reader::csv_dict_string_reader(csv_dict_string_reader&& rhs):
+    csv_dict_string_reader()
+{
+    swap(rhs);
+}
+
+
+csv_dict_string_reader& csv_dict_string_reader::operator=(csv_dict_string_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 csv_dict_string_reader::csv_dict_string_reader(const string_wrapper& str, size_t skip, csvpunct_impl* punct)
@@ -155,9 +212,29 @@ void csv_dict_string_reader::open(const string_wrapper& str, size_t skip, csvpun
 }
 
 
+void csv_dict_string_reader::swap(csv_dict_string_reader& rhs)
+{
+    static_assert(false, "");       // TODO: implement
+}
+
+
 csv_dict_stream_writer::csv_dict_stream_writer(csv_quoting quoting, csvpunct_impl* punct):
     writer_(quoting, punct)
 {}
+
+
+csv_dict_stream_writer::csv_dict_stream_writer(csv_dict_stream_writer&& rhs):
+    csv_dict_stream_writer()
+{
+    swap(rhs);
+}
+
+
+csv_dict_stream_writer& csv_dict_stream_writer::operator=(csv_dict_stream_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 csv_dict_stream_writer::csv_dict_stream_writer(ostream& stream, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
@@ -198,6 +275,15 @@ const csv_quoting csv_dict_stream_writer::quoting() const
 }
 
 
+void csv_dict_stream_writer::swap(csv_dict_stream_writer& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(writer_, rhs.writer_);
+    swap(header_, rhs.header_);
+}
+
+
 void csv_dict_stream_writer::operator()(const value_type& row)
 {
     csv_row flat(row.size());
@@ -212,6 +298,20 @@ void csv_dict_stream_writer::operator()(const value_type& row)
 csv_dict_file_writer::csv_dict_file_writer(csv_quoting quoting, csvpunct_impl* punct):
     csv_dict_stream_writer(quoting, punct)
 {}
+
+
+csv_dict_file_writer::csv_dict_file_writer(csv_dict_file_writer&& rhs):
+    csv_dict_file_writer()
+{
+    swap(rhs);
+}
+
+
+csv_dict_file_writer& csv_dict_file_writer::operator=(csv_dict_file_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 csv_dict_file_writer::csv_dict_file_writer(const string_view& name, const csv_row& header, csv_quoting quoting, csvpunct_impl* punct)
@@ -255,10 +355,31 @@ void csv_dict_file_writer::open(const u16string_view& name, const csv_row& heade
 
 #endif                                          // WINDOWS
 
+
+void csv_dict_file_writer::swap(csv_dict_file_writer& rhs)
+{
+    static_assert(false, "");       // TODO: implement
+}
+
+
 csv_dict_string_writer::csv_dict_string_writer(csv_quoting quoting, csvpunct_impl* punct):
     csv_dict_stream_writer(quoting, punct),
     sstream_(ios_base::out | ios_base::binary)
 {}
+
+
+csv_dict_string_writer::csv_dict_string_writer(csv_dict_string_writer&& rhs):
+    csv_dict_string_writer()
+{
+    swap(rhs);
+}
+
+
+csv_dict_string_writer& csv_dict_string_writer::operator=(csv_dict_string_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 csv_dict_string_writer::csv_dict_string_writer(const csv_row& header, csv_quoting quoting, csvpunct_impl* punct):
@@ -277,6 +398,12 @@ void csv_dict_string_writer::open(const csv_row& header, csv_quoting quoting, cs
 std::string csv_dict_string_writer::str() const
 {
     return sstream_.str();
+}
+
+
+void csv_dict_string_writer::swap(csv_dict_string_writer& rhs)
+{
+    static_assert(false, "");       // TODO: implement
 }
 
 PYCPP_END_NAMESPACE

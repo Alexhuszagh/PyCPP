@@ -56,15 +56,15 @@ filter_streambuf::~filter_streambuf()
 }
 
 
-filter_streambuf::filter_streambuf(filter_streambuf&& other)
+filter_streambuf::filter_streambuf(filter_streambuf&& rhs)
 {
-    swap(other);
+    swap(rhs);
 }
 
 
-filter_streambuf& filter_streambuf::operator=(filter_streambuf&& other)
+filter_streambuf& filter_streambuf::operator=(filter_streambuf&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -87,18 +87,20 @@ void filter_streambuf::close()
 }
 
 
-void filter_streambuf::swap(filter_streambuf& other)
+void filter_streambuf::swap(filter_streambuf& rhs)
 {
-    streambuf::swap(other);
-    PYCPP_NAMESPACE::swap(filebuf, other.filebuf);
-    PYCPP_NAMESPACE::swap(in_buffer, other.in_buffer);
-    PYCPP_NAMESPACE::swap(out_buffer, other.out_buffer);
-    PYCPP_NAMESPACE::swap(first, other.first);
-    PYCPP_NAMESPACE::swap(last, other.last);
+    using PYCPP_NAMESPACE::swap;
 
-    // reset internal buffer pointers
-    set_pointers();
-    other.set_pointers();
+    swap(filebuf, rhs.filebuf);
+    swap(callback, rhs.callback);
+    swap(in_buffer, rhs.in_buffer);
+    swap(out_buffer, rhs.out_buffer);
+    swap(first, rhs.first);
+    swap(last, rhs.last);
+
+    // TODO: why not swap the internal pointers???
+    // TODO: need to fix this issue, causing a segfault
+//    streambuf::swap(static_cast<streambuf&>(rhs));
 }
 
 
@@ -255,16 +257,16 @@ void filter_istream::open(istream& stream, filter_callback c)
 }
 
 
-filter_istream::filter_istream(filter_istream&& other):
+filter_istream::filter_istream(filter_istream&& rhs):
     filter_istream()
 {
-    swap(other);
+    swap(rhs);
 }
 
 
-filter_istream & filter_istream::operator=(filter_istream&& other)
+filter_istream & filter_istream::operator=(filter_istream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -287,16 +289,18 @@ void filter_istream::close()
 }
 
 
-void filter_istream::swap(filter_istream &other)
+void filter_istream::swap(filter_istream &rhs)
 {
+    using PYCPP_NAMESPACE::swap;
+
     // swap
-    istream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-    PYCPP_NAMESPACE::swap(stream, other.stream);
+    istream::swap(rhs);
+    swap(buffer, rhs.buffer);
+    swap(stream, rhs.stream);
 
     // set filebuffers
     ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    rhs.rdbuf(&rhs.buffer);
 }
 
 // OSTREAM
@@ -327,16 +331,16 @@ void filter_ostream::open(ostream& stream, filter_callback c)
 }
 
 
-filter_ostream::filter_ostream(filter_ostream&& other):
+filter_ostream::filter_ostream(filter_ostream&& rhs):
     filter_ostream()
 {
-    swap(other);
+    swap(rhs);
 }
 
 
-filter_ostream & filter_ostream::operator=(filter_ostream&& other)
+filter_ostream & filter_ostream::operator=(filter_ostream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -359,22 +363,22 @@ void filter_ostream::close()
 }
 
 
-void filter_ostream::swap(filter_ostream &other)
+void filter_ostream::swap(filter_ostream &rhs)
 {
     // swap
-    ostream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-    PYCPP_NAMESPACE::swap(stream, other.stream);
+    ostream::swap(rhs);
+    PYCPP_NAMESPACE::swap(buffer, rhs.buffer);
+    PYCPP_NAMESPACE::swap(stream, rhs.stream);
 
     // set filebuffers
     ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    rhs.rdbuf(&rhs.buffer);
 }
 
 // IFSTREAM
 
 filter_ifstream::filter_ifstream(filter_callback c):
-    filter_istream(file, c)
+    filter_istream(c)
 {}
 
 
@@ -384,22 +388,22 @@ filter_ifstream::~filter_ifstream()
 }
 
 
-filter_ifstream::filter_ifstream(filter_ifstream &&other):
-    filter_istream(file)
+filter_ifstream::filter_ifstream(filter_ifstream &&rhs):
+    filter_ifstream()
 {
-    swap(other);
+    swap(rhs);
 }
 
 
-filter_ifstream & filter_ifstream::operator=(filter_ifstream &&other)
+filter_ifstream & filter_ifstream::operator=(filter_ifstream &&rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
 
 filter_ifstream::filter_ifstream(const string_view& name, ios_base::openmode mode, filter_callback c):
-    filter_istream(file, c)
+    filter_ifstream(c)
 {
     open(name, mode, c);
 }
@@ -408,13 +412,13 @@ filter_ifstream::filter_ifstream(const string_view& name, ios_base::openmode mod
 void filter_ifstream::open(const string_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
-    rdbuf()->set_callback(c);
+    filter_istream::open(file, c);
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 filter_ifstream::filter_ifstream(const wstring_view& name, ios_base::openmode mode, filter_callback c):
-    filter_istream(file, c)
+    filter_ifstream(c)
 {
     open(name, mode, c);
 }
@@ -422,12 +426,12 @@ filter_ifstream::filter_ifstream(const wstring_view& name, ios_base::openmode mo
 void filter_ifstream::open(const wstring_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
-    rdbuf()->set_callback(c);
+    filter_istream::open(file, c);
 }
 
 
 filter_ifstream::filter_ifstream(const u16string_view& name, ios_base::openmode mode, filter_callback c):
-    filter_istream(file, c)
+    filter_ifstream(c)
 {
     open(name, mode, c);
 }
@@ -435,7 +439,7 @@ filter_ifstream::filter_ifstream(const u16string_view& name, ios_base::openmode 
 void filter_ifstream::open(const u16string_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
-    rdbuf()->set_callback(c);
+    filter_istream::open(file, c);
 }
 
 #endif                                          // WINDOWS
@@ -454,16 +458,16 @@ void filter_ifstream::close()
 }
 
 
-void filter_ifstream::swap(filter_ifstream &other)
+void filter_ifstream::swap(filter_ifstream &rhs)
 {
-    filter_istream::swap(other);
-    PYCPP_NAMESPACE::swap(file, other.file);
+    filter_istream::swap(rhs);
+    file.swap(rhs.file);
 }
 
 // OFSTREAM
 
 filter_ofstream::filter_ofstream(filter_callback c):
-    filter_ostream(file, c)
+    filter_ostream(c)
 {}
 
 
@@ -473,22 +477,22 @@ filter_ofstream::~filter_ofstream()
 }
 
 
-filter_ofstream::filter_ofstream(filter_ofstream &&other):
-    filter_ostream(file)
+filter_ofstream::filter_ofstream(filter_ofstream &&rhs):
+    filter_ofstream()
 {
-    swap(other);
+    swap(rhs);
 }
 
 
-filter_ofstream & filter_ofstream::operator=(filter_ofstream &&other)
+filter_ofstream & filter_ofstream::operator=(filter_ofstream &&rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
 
 filter_ofstream::filter_ofstream(const string_view& name, ios_base::openmode mode, filter_callback c):
-    filter_ostream(file, c)
+    filter_ofstream(c)
 {
     open(name, mode, c);
 }
@@ -496,13 +500,13 @@ filter_ofstream::filter_ofstream(const string_view& name, ios_base::openmode mod
 void filter_ofstream::open(const string_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
-    rdbuf()->set_callback(c);
+    filter_ostream::open(file, c);
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 filter_ofstream::filter_ofstream(const wstring_view& name, ios_base::openmode mode, filter_callback c):
-    filter_ostream(file, c)
+    filter_ofstream(c)
 {
     open(name, mode, c);
 }
@@ -510,12 +514,12 @@ filter_ofstream::filter_ofstream(const wstring_view& name, ios_base::openmode mo
 void filter_ofstream::open(const wstring_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
-    rdbuf()->set_callback(c);
+    filter_ostream::open(file, c);
 }
 
 
 filter_ofstream::filter_ofstream(const u16string_view& name, ios_base::openmode mode, filter_callback c):
-    filter_ostream(file, c)
+    filter_ofstream(c)
 {
     open(name, mode, c);
 }
@@ -523,7 +527,7 @@ filter_ofstream::filter_ofstream(const u16string_view& name, ios_base::openmode 
 void filter_ofstream::open(const u16string_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
-    rdbuf()->set_callback(c);
+    filter_ostream::open(file, c);
 }
 
 #endif                                          // WINDOWS
@@ -542,10 +546,10 @@ void filter_ofstream::close()
 }
 
 
-void filter_ofstream::swap(filter_ofstream &other)
+void filter_ofstream::swap(filter_ofstream &rhs)
 {
-    filter_ostream::swap(other);
-    PYCPP_NAMESPACE::swap(file, other.file);
+    filter_ostream::swap(rhs);
+    file.swap(rhs.file);
 }
 
 PYCPP_END_NAMESPACE

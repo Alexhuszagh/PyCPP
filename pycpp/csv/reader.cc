@@ -65,6 +65,19 @@ csv_stream_reader::csv_stream_reader(csvpunct_impl* punct):
 {}
 
 
+csv_stream_reader::csv_stream_reader(csv_stream_reader&& rhs)
+{
+    swap(rhs);
+}
+
+
+csv_stream_reader& csv_stream_reader::operator=(csv_stream_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
+
 csv_stream_reader::csv_stream_reader(istream& stream, size_t skip, csvpunct_impl* punct):
     punct_(punct ? punct : new csvpunct)
 {
@@ -95,6 +108,16 @@ void csv_stream_reader::punctuation(csvpunct_impl* punct)
 const csvpunct_impl* csv_stream_reader::punctuation() const
 {
     return punct_.get();
+}
+
+
+void csv_stream_reader::swap(csv_stream_reader& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(stream_, rhs.stream_);
+    swap(row_length_, rhs.row_length_);
+    swap(punct_, rhs.punct_);
 }
 
 
@@ -138,6 +161,20 @@ auto csv_stream_reader::end() -> iterator
 csv_file_reader::csv_file_reader(csvpunct_impl* punct):
     csv_stream_reader(punct)
 {}
+
+
+csv_file_reader::csv_file_reader(csv_file_reader&& rhs):
+    csv_file_reader()
+{
+    swap(rhs);
+}
+
+
+csv_file_reader& csv_file_reader::operator=(csv_file_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 csv_file_reader::csv_file_reader(const string_view& name, size_t skip, csvpunct_impl* punct)
@@ -184,9 +221,29 @@ void csv_file_reader::open(const u16string_view& name, size_t skip, csvpunct_imp
 #endif                                          // WINDOWS
 
 
+void csv_file_reader::swap(csv_file_reader& rhs)
+{
+    static_assert(false, "");       // TODO: implement
+}
+
+
 csv_string_reader::csv_string_reader(csvpunct_impl* punct):
     csv_stream_reader(punct)
 {}
+
+
+csv_string_reader::csv_string_reader(csv_string_reader&& rhs):
+    csv_string_reader()
+{
+    swap(rhs);
+}
+
+
+csv_string_reader& csv_string_reader::operator=(csv_string_reader&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 csv_string_reader::csv_string_reader(const string_wrapper& str, size_t skip, csvpunct_impl* punct)
@@ -199,6 +256,14 @@ void csv_string_reader::open(const string_wrapper& str, size_t skip, csvpunct_im
 {
     sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
     csv_stream_reader::open(sstream_, skip, punct);
+}
+
+
+void csv_string_reader::swap(csv_string_reader& rhs)
+{
+    // TODO: this should be pretty easy
+    // base swap + sstream_.swap()
+    static_assert(false, "");       // TODO: implement
 }
 
 PYCPP_END_NAMESPACE

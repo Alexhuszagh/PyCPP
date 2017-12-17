@@ -82,12 +82,26 @@ xml_stream_writer::xml_stream_writer(ostream& s, char c, int width)
 }
 
 
+xml_stream_writer::xml_stream_writer(xml_stream_writer&& rhs)
+{
+    swap(rhs);
+}
+
+
+xml_stream_writer& xml_stream_writer::operator=(xml_stream_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
+
 xml_stream_writer::~xml_stream_writer()
 {
     if (writer_) {
         xmlTextWriterEndDocument((xmlTextWriterPtr) writer_);
         xmlFreeTextWriter((xmlTextWriterPtr) writer_);
     }
+    // Don't free stream_, the writer automatically cleans it up
 }
 
 
@@ -95,6 +109,7 @@ void xml_stream_writer::open(ostream& s)
 {
     // cleanup
     if (writer_) {
+        xmlTextWriterEndDocument((xmlTextWriterPtr) writer_);
         xmlFreeTextWriter((xmlTextWriterPtr) writer_);
     }
 
@@ -120,6 +135,23 @@ void xml_stream_writer::set_indent(char c, int width)
 {
     indent_character_ = c;
     indent_width_ = width;
+}
+
+
+bool xml_stream_writer::is_pretty() const
+{
+    return indent_width_ > 0;
+}
+
+
+void xml_stream_writer::swap(xml_stream_writer& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+
+    swap(indent_character_, rhs.indent_character_);
+    swap(indent_width_, rhs.indent_width_);
+    swap(stream_, rhs.stream_);
+    swap(writer_, rhs.writer_);
 }
 
 
@@ -186,8 +218,17 @@ void xml_stream_writer::flush() const
 }
 
 
-xml_file_writer::xml_file_writer()
-{}
+xml_file_writer::xml_file_writer(xml_file_writer&& rhs)
+{
+    swap(rhs);
+}
+
+
+xml_file_writer& xml_file_writer::operator=(xml_file_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
 
 
 xml_file_writer::xml_file_writer(const string_view& name)
@@ -240,9 +281,29 @@ void xml_file_writer::flush() const
 }
 
 
+void xml_file_writer::swap(xml_file_writer& rhs)
+{
+    static_assert(false, "");       // TODO: implement
+}
+
+
 xml_string_writer::xml_string_writer()
 {
     xml_stream_writer::open(sstream_);
+}
+
+
+xml_string_writer::xml_string_writer(xml_string_writer&& rhs):
+    xml_string_writer()
+{
+    swap(rhs);
+}
+
+
+xml_string_writer& xml_string_writer::operator=(xml_string_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
 }
 
 
@@ -250,6 +311,12 @@ std::string xml_string_writer::str() const
 {
     flush();
     return sstream_.str();
+}
+
+
+void xml_string_writer::swap(xml_string_writer& rhs)
+{
+    static_assert(false, "");       // TODO: implement
 }
 
 PYCPP_END_NAMESPACE

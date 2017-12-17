@@ -73,45 +73,45 @@ xml_node_iterator_t::xml_node_iterator_t()
 {}
 
 
-xml_node_iterator_t::xml_node_iterator_t(const self_t& other):
-    ptr_((void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) other.ptr_))
+xml_node_iterator_t::xml_node_iterator_t(const self_t& rhs):
+    ptr_((void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) rhs.ptr_))
 {}
 
 
-auto xml_node_iterator_t::operator=(const self_t& other) -> xml_node_iterator_t&
+auto xml_node_iterator_t::operator=(const self_t& rhs) -> xml_node_iterator_t&
 {
-    if (this != &other) {
+    if (this != &rhs) {
         delete (xml_node_iterator_impl_t*) ptr_;
-        ptr_ = (void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) other.ptr_);
+        ptr_ = (void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) rhs.ptr_);
     }
     return *this;
 }
 
 
-xml_node_iterator_t::xml_node_iterator_t(self_t&& other)
+xml_node_iterator_t::xml_node_iterator_t(self_t&& rhs)
 {
-    swap(other);
+    swap(rhs);
 }
 
 
-auto xml_node_iterator_t::operator=(self_t&& other) -> xml_node_iterator_t&
+auto xml_node_iterator_t::operator=(self_t&& rhs) -> xml_node_iterator_t&
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
 
-bool xml_node_iterator_t::operator==(const self_t& other) const
+bool xml_node_iterator_t::operator==(const self_t& rhs) const
 {
     auto* l = (const xml_node_iterator_impl_t*) ptr_;
-    auto* r = (const xml_node_iterator_impl_t*) other.ptr_;
+    auto* r = (const xml_node_iterator_impl_t*) rhs.ptr_;
     return *l == *r;
 }
 
 
-bool xml_node_iterator_t::operator!=(const self_t& other) const
+bool xml_node_iterator_t::operator!=(const self_t& rhs) const
 {
-    return !operator==(other);
+    return !operator==(rhs);
 }
 
 
@@ -175,9 +175,10 @@ auto xml_node_iterator_t::operator->() const -> const_pointer
 }
 
 
-void xml_node_iterator_t::swap(self_t& other)
+void xml_node_iterator_t::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(ptr_, other.ptr_);
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 
@@ -192,10 +193,10 @@ xml_node_list_t::xml_node_list_t():
 {}
 
 
-xml_node_list_t::xml_node_list_t(const self_t& other):
+xml_node_list_t::xml_node_list_t(const self_t& rhs):
     ptr_(new xml_node_list_impl_t)
 {
-    auto& src = *(const xml_node_list_impl_t*) other.ptr_;
+    auto& src = *(const xml_node_list_impl_t*) rhs.ptr_;
     auto& dst = *(xml_node_list_impl_t*) ptr_;
     for (const xml_node_t& node: src) {
         xml_node_impl_t* ptr = new xml_node_impl_t(*node.ptr_);
@@ -205,10 +206,10 @@ xml_node_list_t::xml_node_list_t(const self_t& other):
 }
 
 
-auto xml_node_list_t::operator=(const self_t& other) -> self_t&
+auto xml_node_list_t::operator=(const self_t& rhs) -> self_t&
 {
-    if (this != &other) {
-        auto& src = *(const xml_node_list_impl_t*) other.ptr_;
+    if (this != &rhs) {
+        auto& src = *(const xml_node_list_impl_t*) rhs.ptr_;
         auto& dst = *(xml_node_list_impl_t*) ptr_;
         dst.clear();
         for (const xml_node_t& node: src) {
@@ -222,15 +223,15 @@ auto xml_node_list_t::operator=(const self_t& other) -> self_t&
 }
 
 
-xml_node_list_t::xml_node_list_t(self_t&& other)
+xml_node_list_t::xml_node_list_t(self_t&& rhs)
 {
-    swap(other);
+    swap(rhs);
 }
 
 
-auto xml_node_list_t::operator=(self_t&& other) -> self_t&
+auto xml_node_list_t::operator=(self_t&& rhs) -> self_t&
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -325,17 +326,17 @@ auto xml_node_list_t::crend() const -> const_reverse_iterator
 }
 
 
-bool xml_node_list_t::operator==(const self_t& other) const
+bool xml_node_list_t::operator==(const self_t& rhs) const
 {
     auto* l = (const xml_node_list_impl_t*) ptr_;
-    auto* r = (const xml_node_list_impl_t*) other.ptr_;
+    auto* r = (const xml_node_list_impl_t*) rhs.ptr_;
     return *l == *r;
 }
 
 
-bool xml_node_list_t::operator!=(const self_t& other) const
+bool xml_node_list_t::operator!=(const self_t& rhs) const
 {
-    return !operator==(other);
+    return !operator==(rhs);
 }
 
 
@@ -562,9 +563,10 @@ void xml_node_list_t::clear()
 }
 
 
-void xml_node_list_t::swap(self_t& other)
+void xml_node_list_t::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(ptr_, other.ptr_);
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 
@@ -788,21 +790,22 @@ void xml_node_t::set_children(xml_node_list_t&& children)
 }
 
 
-bool xml_node_t::operator==(const self_t& other) const
+bool xml_node_t::operator==(const self_t& rhs) const
 {
-    return ptr_.get() == other.ptr_.get();
+    return ptr_.get() == rhs.ptr_.get();
 }
 
 
-bool xml_node_t::operator!=(const self_t& other) const
+bool xml_node_t::operator!=(const self_t& rhs) const
 {
-    return !operator==(other);
+    return !operator==(rhs);
 }
 
 
-void xml_node_t::swap(self_t& other)
+void xml_node_t::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(ptr_, other.ptr_);
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 PYCPP_END_NAMESPACE

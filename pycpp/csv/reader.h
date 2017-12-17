@@ -33,16 +33,28 @@ public:
     // MEMBER TYPES
     // ------------
     using value_type = csv_row;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
     using reference = value_type&;
+    using const_reference = const value_type&;
     using iterator = input_iterator_facade<csv_stream_reader>;
 
     // MEMBER FUNCTIONS
     // ----------------
     csv_stream_reader(csvpunct_impl* = nullptr);
+    csv_stream_reader(const csv_stream_reader&) = delete;
+    csv_stream_reader& operator=(const csv_stream_reader&) = delete;
+    csv_stream_reader(csv_stream_reader&&);
+    csv_stream_reader& operator=(csv_stream_reader&&);
+
+    // STREAM
     csv_stream_reader(istream&, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(istream&, size_t skip = 0, csvpunct_impl* = nullptr);
+
+    // PROPERTIES/MODIFIERS
     void punctuation(csvpunct_impl*);
     const csvpunct_impl* punctuation() const;
+    void swap(csv_stream_reader&);
 
     // DATA
     value_type operator()();
@@ -67,16 +79,23 @@ struct csv_file_reader: csv_stream_reader
 {
 public:
     csv_file_reader(csvpunct_impl* = nullptr);
+    csv_file_reader(const csv_file_reader&) = delete;
+    csv_file_reader& operator=(const csv_file_reader&) = delete;
+    csv_file_reader(csv_file_reader&&);
+    csv_file_reader& operator=(csv_file_reader&&);
+
+    // STREAM
     csv_file_reader(const string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
-
-
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     csv_file_reader(const wstring_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const wstring_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
     csv_file_reader(const u16string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const u16string_view& name, size_t skip = 0, csvpunct_impl* = nullptr);
 #endif                                          // WINDOWS
+
+    // MODIFIERS
+    void swap(csv_file_reader&);
 
 private:
     ifstream file_;
@@ -90,8 +109,17 @@ struct csv_string_reader: csv_stream_reader
 {
 public:
     csv_string_reader(csvpunct_impl* = nullptr);
+    csv_string_reader(const csv_string_reader&) = delete;
+    csv_string_reader& operator=(const csv_string_reader&) = delete;
+    csv_string_reader(csv_string_reader&&);
+    csv_string_reader& operator=(csv_string_reader&&);
+
+    // STREAM
     csv_string_reader(const string_wrapper& str, size_t skip = 0, csvpunct_impl* = nullptr);
     void open(const string_wrapper& str, size_t skip = 0, csvpunct_impl* = nullptr);
+
+    // MODIFIERS
+    void swap(csv_string_reader&);
 
 private:
     istringstream sstream_;
