@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/multi_index/config.h>
 #include <multi_index/composite_key.hpp>
 
 PYCPP_BEGIN_NAMESPACE

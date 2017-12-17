@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/multi_index/config.h>
 #include <multi_index/ranked_index_fwd.hpp>
 
 PYCPP_BEGIN_NAMESPACE

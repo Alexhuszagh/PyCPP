@@ -505,6 +505,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/stack_pimpl.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/misc/xrange.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/composite_key.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/config.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/container.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/global_fun.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/multi_index/hashed_index_fwd.h"

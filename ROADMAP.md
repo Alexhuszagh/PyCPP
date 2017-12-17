@@ -13,7 +13,6 @@
         - Just need std::string...
             - LOLS
 
-    - Change the default hash...
     - Need custom allocators for the JSON and XML interfaces
     - Look at use woever rope.
 
