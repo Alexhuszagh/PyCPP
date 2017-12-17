@@ -6,6 +6,7 @@
  */
 
 #include <pycpp/stl/string_view.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -22,8 +23,8 @@ static const std::string NONNULL = {84, 104, 105, 115, 32, 105, 115, 32, 100, 97
 template <typename T, template <typename> class Hash>
 static void test_hash()
 {
-    using result_type = decltype(Hash<T>()(std::declval<T>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using result_type = decltype(Hash<T>()(declval<T>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }
 
 // TESTS
@@ -51,7 +52,7 @@ TEST(string_view, swap)
     EXPECT_EQ(str.size(), 14);
     EXPECT_EQ(other.size(), 0);
 
-    std::swap(str, other);
+    swap(str, other);
     EXPECT_EQ(str.size(), 0);
     EXPECT_EQ(other.size(), 14);
 

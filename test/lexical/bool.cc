@@ -8,6 +8,7 @@
 #include <pycpp/lexical/bool.h>
 #include <pycpp/lexical/format.h>
 #include <pycpp/stl/functional.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/stl/utility.h>
 #include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
@@ -17,7 +18,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-static std::vector<std::pair<bool, std::reference_wrapper<const std::string>>> DATA = {
+static vector<pair<bool, reference_wrapper<const std::string>>> DATA = {
     {true, TRUE_STRING},
     {false, FALSE_STRING},
 };
@@ -54,7 +55,7 @@ TEST(lexical_bool_extractor, lexical_bool_extractor)
 {
     EXPECT_EQ(bool(lexical_bool_extractor(TRUE_STRING)), true);
     EXPECT_EQ(bool(lexical_bool_extractor(FALSE_STRING)), false);
-    EXPECT_THROW(lexical_bool_extractor(""), std::runtime_error);
+    EXPECT_THROW(lexical_bool_extractor(""), runtime_error);
     ASSERT_TRUE("nan" != TRUE_STRING && "nan" != FALSE_STRING);
-    EXPECT_THROW(lexical_bool_extractor("nan"), std::runtime_error);
+    EXPECT_THROW(lexical_bool_extractor("nan"), runtime_error);
 }

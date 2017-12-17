@@ -13,8 +13,8 @@ PYCPP_USING_NAMESPACE
 template <typename T, template <typename> class Hash>
 static void test_hash()
 {
-    using result_type = decltype(Hash<T>()(std::declval<T>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using result_type = decltype(Hash<T>()(declval<T>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }
 
 // TESTS
@@ -64,7 +64,7 @@ TEST(secure_string, swap)
     EXPECT_EQ(str.size(), 14);
     EXPECT_EQ(other.size(), 0);
 
-    std::swap(str, other);
+    swap(str, other);
     EXPECT_EQ(str.size(), 0);
     EXPECT_EQ(other.size(), 14);
 
@@ -131,30 +131,30 @@ TEST(secure_string, concatenation)
 
     // secure_string + secure_string
     EXPECT_EQ(str3 + str4, "example");
-    EXPECT_EQ(std::move(str3) + str4, "example");
-    EXPECT_EQ(str5 + std::move(str4), "example");
-    EXPECT_EQ(std::move(str5) + std::move(str6), "example");
+    EXPECT_EQ(move(str3) + str4, "example");
+    EXPECT_EQ(str5 + move(str4), "example");
+    EXPECT_EQ(move(str5) + move(str6), "example");
 
     // secure_string + const char*
     str3 = str1, str4 = str2, str5 = str1, str6 = str2;
     EXPECT_EQ(str3 + "mple", "example");
-    EXPECT_EQ(std::move(str3) + "mple", "example");
+    EXPECT_EQ(move(str3) + "mple", "example");
     EXPECT_EQ("exa" + str4, "example");
-    EXPECT_EQ("exa" + std::move(str4), "example");
+    EXPECT_EQ("exa" + move(str4), "example");
 
     // secure_string + char
     str3 = str1, str4 = str2, str5 = str1, str6 = str2;
     EXPECT_EQ(str3 + 'm', "exam");
-    EXPECT_EQ(std::move(str3) + 'm', "exam");
+    EXPECT_EQ(move(str3) + 'm', "exam");
     EXPECT_EQ('a' + str4, "ample");
-    EXPECT_EQ('a' + std::move(str4), "ample");
+    EXPECT_EQ('a' + move(str4), "ample");
 
     // secure_string + view
     str3 = str1, str4 = str2, str5 = str1, str6 = str2;
     EXPECT_EQ(str3 + string_view("mple"), "example");
-    EXPECT_EQ(std::move(str3) + string_view("mple"), "example");
+    EXPECT_EQ(move(str3) + string_view("mple"), "example");
     EXPECT_EQ(string_view("exa") + str4, "example");
-    EXPECT_EQ(string_view("exa") + std::move(str4), "example");
+    EXPECT_EQ(string_view("exa") + move(str4), "example");
 }
 
 

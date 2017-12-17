@@ -36,10 +36,10 @@ TEST(intrusive_deque, constructor)
 //    copy = deque;
 //    EXPECT_EQ(copy.size(), 5);
 
-//    intrusive moved(std::move(deque));
+//    intrusive moved(move(deque));
 //    EXPECT_EQ(moved.size(), 5);
 //
-//    moved = std::move(copy);
+//    moved = move(copy);
 //    EXPECT_EQ(moved.size(), 5);
 }
 
@@ -57,10 +57,10 @@ TEST(intrusive_deque, iterator)
     }
 
     // check expected equality
-    EXPECT_TRUE(std::equal(deque.begin(), deque.end(), DATA.begin()));
-    EXPECT_TRUE(std::equal(deque.rbegin(), deque.rend(), DATA.rbegin()));
-    EXPECT_TRUE(std::equal(reversed.rbegin(), reversed.rend(), DATA.begin()));
-    EXPECT_TRUE(std::equal(reversed.begin(), reversed.end(), DATA.rbegin()));
+    EXPECT_TRUE(equal(deque.begin(), deque.end(), DATA.begin()));
+    EXPECT_TRUE(equal(deque.rbegin(), deque.rend(), DATA.rbegin()));
+    EXPECT_TRUE(equal(reversed.rbegin(), reversed.rend(), DATA.begin()));
+    EXPECT_TRUE(equal(reversed.begin(), reversed.end(), DATA.rbegin()));
 }
 
 

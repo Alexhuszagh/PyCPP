@@ -7,6 +7,7 @@
 
 #include <pycpp/collections/counter.h>
 #include <pycpp/stl/map.h>
+#include <pycpp/stl/stdexcept.h>
 #include <gtest/gtest.h>
 #include <math.h>
 
@@ -29,7 +30,7 @@ TEST(counter, ctor)
         {2, 4},
     };
     c c2(um);
-    c2 = std::move(um);
+    c2 = move(um);
     EXPECT_EQ(c2.size(), 2);
 
     // iter -- map
@@ -64,10 +65,10 @@ TEST(counter, ctor)
     EXPECT_EQ(c8.size(), 2);
 
     // move
-    c c9(std::move(c2));
+    c c9(move(c2));
     EXPECT_EQ(c9.size(), 2);
     c c10;
-    c10 = std::move(c3);
+    c10 = move(c3);
     EXPECT_EQ(c10.size(), 2);
 }
 
@@ -106,11 +107,11 @@ TEST(counter, iterators)
     auto f2 = c2.begin();
     auto l2 = c2.end();
 
-    EXPECT_EQ(std::distance(f1, l1), 3);
-    EXPECT_EQ(std::distance(f2, l2), 0);
+    EXPECT_EQ(distance(f1, l1), 3);
+    EXPECT_EQ(distance(f2, l2), 0);
 
     for (auto it = f1; it != l1; ++it) {
-        EXPECT_EQ(std::pow(it->first, 2), it->second);
+        EXPECT_EQ(pow(it->first, 2), it->second);
     }
 }
 
@@ -127,9 +128,9 @@ TEST(counter, element_access)
 
     // at
     EXPECT_EQ(c1.at(1), 1);
-    EXPECT_THROW(c2.at(1), std::out_of_range);
-    EXPECT_THROW(c1.at(4), std::out_of_range);
-    EXPECT_THROW(c2.at(4), std::out_of_range);
+    EXPECT_THROW(c2.at(1), out_of_range);
+    EXPECT_THROW(c1.at(4), out_of_range);
+    EXPECT_THROW(c2.at(4), out_of_range);
 
     // get
     EXPECT_EQ(c1.size(), 3);
@@ -296,7 +297,7 @@ TEST(counter, convenience)
     // elements
     vector<int> expected = {1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3};
     auto result = c1.elements();
-    std::sort(result.begin(), result.end());
+    sort(result.begin(), result.end());
     EXPECT_EQ(result, expected);
 }
 
@@ -346,5 +347,5 @@ TEST(counter, conversion)
     };
     typename c::map_type m1(c1);
 
-    EXPECT_TRUE(std::equal(c1.begin(), c1.end(), m1.begin()));
+    EXPECT_TRUE(equal(c1.begin(), c1.end(), m1.begin()));
 }

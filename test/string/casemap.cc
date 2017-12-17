@@ -6,6 +6,8 @@
  */
 
 #include <pycpp/preprocessor/byteorder.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 #include <pycpp/string/casemap.h>
 #include <gtest/gtest.h>
 
@@ -24,7 +26,7 @@ static void test_lowlevel(const std::string& input, const std::string& expected,
         const void* src_first = src;
         void* dst_first = dst;
         cb(src_first, input.size(), dst_first, 20);
-        EXPECT_EQ(std::distance(dst, (char*) dst_first), expected.size());
+        EXPECT_EQ(distance(dst, (char*) dst_first), expected.size());
         EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
     } catch (...) {
         delete[] dst;
@@ -103,7 +105,7 @@ TEST(casemap, ascii_capitalize)
 
 TEST(casemap, utf8_tolower)
 {
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
         {
             std::string {109, -61, -86, 109, 101},
             std::string {109, -61, -86, 109, 101},
@@ -228,7 +230,7 @@ TEST(casemap, utf8_tolower)
 
 TEST(casemap, utf8_toupper)
 {
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
         {
             std::string {109, -61, -86, 109, 101},
             std::string {77, -61, -118, 77, 69},
@@ -381,7 +383,7 @@ TEST(casemap, utf8_toupper)
 
 TEST(casemap, utf8_totitle)
 {
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
         {
             std::string {109, -61, -86, 109, 101},
             std::string {77, -61, -86, 109, 101},
@@ -409,7 +411,7 @@ TEST(casemap, utf8_totitle)
 
 TEST(casemap, utf8_capitalize)
 {
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
         {
             std::string {109, -61, -86, 109, 101},
             std::string {77, -61, -86, 109, 101},
@@ -437,7 +439,7 @@ TEST(casemap, utf8_capitalize)
 
 TEST(casemap, utf16_tolower)
 {
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
 #if BYTE_ORDER == LITTLE_ENDIAN
         {
             std::string {109, 0, -22, 0, 109, 0, 101, 0},
@@ -480,7 +482,7 @@ TEST(casemap, utf16_tolower)
 
 TEST(casemap, utf16_toupper)
 {
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
 #if BYTE_ORDER == LITTLE_ENDIAN
         {
             std::string {109, 0, -22, 0, 109, 0, 101, 0},
@@ -523,7 +525,7 @@ TEST(casemap, utf16_toupper)
 
 TEST(casemap, utf16_totitle)
 {
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
 #if BYTE_ORDER == LITTLE_ENDIAN
         {
             std::string {109, 0, -22, 0, 109, 0, 101, 0},
@@ -567,7 +569,7 @@ TEST(casemap, utf16_totitle)
 TEST(casemap, utf32_tolower)
 {
     // high-level
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
 #if BYTE_ORDER == LITTLE_ENDIAN
         {
             std::string {109, 0, 0, 0, -22, 0, 0, 0, 109, 0, 0, 0, 101, 0, 0, 0},
@@ -611,7 +613,7 @@ TEST(casemap, utf32_tolower)
 TEST(casemap, utf32_toupper)
 {
     // high-level
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
 #if BYTE_ORDER == LITTLE_ENDIAN
         {
             std::string {109, 0, 0, 0, -22, 0, 0, 0, 109, 0, 0, 0, 101, 0, 0, 0},
@@ -655,7 +657,7 @@ TEST(casemap, utf32_toupper)
 TEST(casemap, utf32_totitle)
 {
     // high-level
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
 #if BYTE_ORDER == LITTLE_ENDIAN
         {
             std::string {109, 0, 0, 0, -22, 0, 0, 0, 109, 0, 0, 0, 101, 0, 0, 0},

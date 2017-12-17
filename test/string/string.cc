@@ -200,7 +200,7 @@ TEST(string, index)
     EXPECT_EQ(index("This", "is"), 2);
     try {
         index("This", "igg");
-    } catch (std::exception) {
+    } catch (...) {
         return;
     }
     EXPECT_TRUE(false);
@@ -213,7 +213,7 @@ TEST(string, rindex)
     EXPECT_EQ(rindex("ThisThis", "is"), 6);
     try {
         rindex("This", "igg");
-    } catch (std::exception) {
+    } catch (...) {
         return;
     }
     EXPECT_TRUE(false);

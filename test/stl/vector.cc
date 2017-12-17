@@ -5,6 +5,8 @@
  *  \brief STL vector alias unittests.
  */
 
+#include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 #include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
 
@@ -24,6 +26,6 @@ TEST(vector, hash)
 {
     using vector_type = vector<bool>;
     using hash_type = hash<vector_type>;
-    using result_type = decltype(hash_type()(std::declval<vector_type>()));
-    static_assert(std::is_same<result_type, size_t>::value, "");
+    using result_type = decltype(hash_type()(declval<vector_type>()));
+    static_assert(is_same<result_type, size_t>::value, "");
 }

@@ -32,7 +32,7 @@ static void dump_impl(const xml_node_t& node, xml_stream_writer& writer)
 
 xml_string_t xml_node_t::tostring() const
 {
-    std::ostringstream stream;
+    ostringstream stream;
     {
         xml_stream_writer writer(stream, ' ', 0);
         dump_impl(*this, writer);
@@ -73,8 +73,8 @@ void xml_dom_handler::start_element(const string_wrapper& name, xml_attr_t&& att
     // create and append child
     xml_node_t child;
     child.set_tag(xml_string_t(name));
-    child.set_attrs(std::forward<xml_attr_t>(attrs));
-    list.push_back(std::move(child));
+    child.set_attrs(forward<xml_attr_t>(attrs));
+    list.push_back(move(child));
 
     levels_.emplace_back(&*list.rbegin());
 }
@@ -95,12 +95,12 @@ void xml_dom_handler::characters(const string_wrapper& content)
 
 void xml_document_t::loads(const string_wrapper& data)
 {
-    std::istringstream stream = std::istringstream(std::string(data));
+    istringstream stream = istringstream(std::string(data));
     load(stream);
 }
 
 
-void xml_document_t::load(std::istream& stream)
+void xml_document_t::load(istream& stream)
 {
     xml_stream_reader reader;
     xml_dom_handler handler(*this);
@@ -136,13 +136,13 @@ void xml_document_t::load(const u16string_view& path)
 
 std::string xml_document_t::dumps(char c, int width)
 {
-    std::ostringstream stream;
+    ostringstream stream;
     dump(stream, c, width);
     return stream.str();
 }
 
 
-void xml_document_t::dump(std::ostream& stream, char c, int width)
+void xml_document_t::dump(ostream& stream, char c, int width)
 {
     xml_stream_writer writer(stream, c, width);
     dump_impl(*this, writer);

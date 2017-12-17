@@ -478,7 +478,7 @@ std::string punycode_to_utf32(const string_wrapper& str)
         safe_free(dst);
         throw;
     }
-    size_t length = std::distance((char*) dst, (char*) dst_first);
+    size_t length = distance((char*) dst, (char*) dst_first);
     std::string output((char*) dst, length);
     safe_free(dst);
 

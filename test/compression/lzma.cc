@@ -40,7 +40,7 @@ TEST(lzma, lzma_compressor)
         EXPECT_EQ(ctx.compress(src, lzma.size(), dst, 0), compression_need_output);
         ctx.compress(src, lzma.size(), dst, 4096);
         EXPECT_TRUE(ctx.flush(dst, 4096));
-        EXPECT_EQ(std::distance(buffer, (char*) dst), LZMA_COMPRESSED.size());
+        EXPECT_EQ(distance(buffer, (char*) dst), LZMA_COMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, LZMA_COMPRESSED.data(), LZMA_COMPRESSED.size()), 0);
 
         // second example
@@ -49,7 +49,7 @@ TEST(lzma, lzma_compressor)
         dst = buffer;
         ctx.compress(src, lzma.size(), dst, 4096);
         EXPECT_TRUE(ctx.flush(dst, 4096));
-        EXPECT_EQ(std::distance(buffer, (char*) dst), LZMA_COMPRESSED.size());
+        EXPECT_EQ(distance(buffer, (char*) dst), LZMA_COMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, LZMA_COMPRESSED.data(), LZMA_COMPRESSED.size()), 0);
 
     } catch(...) {
@@ -77,7 +77,7 @@ TEST(lzma, lzma_decompressor)
         dst = buffer;
         ctx.decompress(src, lzma.size(), dst, 0);
         ctx.decompress(src, lzma.size(), dst, 4096);
-        EXPECT_EQ(std::distance(buffer, (char*) dst), LZMA_DECOMPRESSED.size());
+        EXPECT_EQ(distance(buffer, (char*) dst), LZMA_DECOMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, LZMA_DECOMPRESSED.data(), LZMA_DECOMPRESSED.size()), 0);
 
         // second example
@@ -85,7 +85,7 @@ TEST(lzma, lzma_decompressor)
         src = lzma.data();
         dst = buffer;
         ctx.decompress(src, lzma.size(), dst, 4096);
-        EXPECT_EQ(std::distance(buffer, (char*) dst), LZMA_DECOMPRESSED.size());
+        EXPECT_EQ(distance(buffer, (char*) dst), LZMA_DECOMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, LZMA_DECOMPRESSED.data(), LZMA_DECOMPRESSED.size()), 0);
 
     } catch(...) {

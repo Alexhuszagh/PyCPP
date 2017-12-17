@@ -13,8 +13,8 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-std::vector<int> VEC = {0, 1, 2, 3, 4, 5};
-std::vector<int> EMPTY;
+vector<int> VEC = {0, 1, 2, 3, 4, 5};
+vector<int> EMPTY;
 
 // TESTS
 // -----
@@ -32,7 +32,7 @@ TEST(vector_view, constructors)
     vec = vector_view<int>(VEC.data(), VEC.size());
     EXPECT_EQ(vec.size(), 6);
 
-    vec = std::move(other);
+    vec = move(other);
     EXPECT_EQ(vec.size(), 0);
     EXPECT_EQ(other.size(), 6);
 
@@ -50,7 +50,7 @@ TEST(vector_view, swap)
     EXPECT_EQ(vec.size(), 6);
     EXPECT_EQ(other.size(), 0);
 
-    std::swap(vec, other);
+    swap(vec, other);
     EXPECT_EQ(vec.size(), 0);
     EXPECT_EQ(other.size(), 6);
 
@@ -94,9 +94,9 @@ TEST(vector_view, relational)
 TEST(vector_view, iterator)
 {
     vector_view<int> vec(VEC);
-    std::vector<int> reversed(VEC.rbegin(), VEC.rend());
-    EXPECT_EQ(std::vector<int>(vec.begin(), vec.end()), VEC);
-    EXPECT_EQ(std::vector<int>(vec.rbegin(), vec.rend()), reversed);
+    vector<int> reversed(VEC.rbegin(), VEC.rend());
+    EXPECT_EQ(vector<int>(vec.begin(), vec.end()), VEC);
+    EXPECT_EQ(vector<int>(vec.rbegin(), vec.rend()), reversed);
 }
 
 
@@ -162,6 +162,6 @@ TEST(vector_view, conversions)
     EXPECT_TRUE(bool(vec));
     EXPECT_FALSE(bool(other));
 
-    EXPECT_EQ(std::vector<int>(vec), VEC);
-    EXPECT_EQ(std::vector<int>(other), EMPTY);
+    EXPECT_EQ(vector<int>(vec), VEC);
+    EXPECT_EQ(vector<int>(other), EMPTY);
 }

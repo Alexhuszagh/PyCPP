@@ -2,6 +2,7 @@
 //  :license: MIT, see LICENSE.md for more details.
 
 #include <pycpp/lexical/itoa.h>
+#include <pycpp/stl/utility.h>
 #include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
 
@@ -10,7 +11,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-static std::vector<std::pair<uint8_t, std::string>> DATA = {
+static vector<pair<uint8_t, std::string>> DATA = {
     {2, "100101"},
     {3, "1101"},
     {4, "211"},

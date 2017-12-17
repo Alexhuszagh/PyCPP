@@ -35,10 +35,10 @@ TEST(intrusive_vector, constructor)
     copy = vector;
     EXPECT_EQ(copy.size(), 5);
 
-    intrusive moved(std::move(vector));
+    intrusive moved(move(vector));
     EXPECT_EQ(moved.size(), 5);
 
-    moved = std::move(copy);
+    moved = move(copy);
     EXPECT_EQ(moved.size(), 5);
 }
 
@@ -58,10 +58,10 @@ TEST(intrusive_vector, iterator)
     }
 
     // check expected equality
-    EXPECT_TRUE(std::equal(vector.begin(), vector.end(), DATA.begin()));
-    EXPECT_TRUE(std::equal(vector.rbegin(), vector.rend(), DATA.rbegin()));
-    EXPECT_TRUE(std::equal(reversed.rbegin(), reversed.rend(), DATA.begin()));
-    EXPECT_TRUE(std::equal(reversed.begin(), reversed.end(), DATA.rbegin()));
+    EXPECT_TRUE(equal(vector.begin(), vector.end(), DATA.begin()));
+    EXPECT_TRUE(equal(vector.rbegin(), vector.rend(), DATA.rbegin()));
+    EXPECT_TRUE(equal(reversed.rbegin(), reversed.rend(), DATA.begin()));
+    EXPECT_TRUE(equal(reversed.begin(), reversed.end(), DATA.rbegin()));
 }
 
 

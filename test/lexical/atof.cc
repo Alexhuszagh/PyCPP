@@ -25,9 +25,9 @@ PYCPP_USING_NAMESPACE
         float f1_val = f1;                                              \
         float f2_val = f2;                                              \
         if (f2_val == 0) {                                              \
-            EXPECT_TRUE(std::abs(f1_val) < 1.176e-38);                  \
+            EXPECT_TRUE(abs(f1_val) < 1.176e-38);                       \
         } else {                                                        \
-            EXPECT_TRUE(std::abs((f1_val - f2_val) / f2_val) < 1e-6);   \
+            EXPECT_TRUE(abs((f1_val - f2_val) / f2_val) < 1e-6);        \
         }                                                               \
     }                                                                   \
     EXPECT_TRUE(true)
@@ -37,9 +37,9 @@ PYCPP_USING_NAMESPACE
         double f1_val = f1;                                             \
         double f2_val = f2;                                             \
         if (f2_val == 0) {                                              \
-            EXPECT_TRUE(std::abs(f1_val) < 2.226e-308);                 \
+            EXPECT_TRUE(abs(f1_val) < 2.226e-308);                      \
         } else {                                                        \
-            EXPECT_TRUE(std::abs((f1_val - f2_val) / f2_val) < 1e-12);  \
+            EXPECT_TRUE(abs((f1_val - f2_val) / f2_val) < 1e-12);       \
         }                                                               \
     }                                                                   \
     EXPECT_TRUE(true)
@@ -75,9 +75,9 @@ TEST(atof32, base10)
     EXPECT_FLOAT_NEAR(atof32("0.000000012345", 10), 1.2345e-8);
     EXPECT_FLOAT_NEAR(atof32("1.2345e-38", 10), 1.2345e-38);
     EXPECT_FLOAT_NEAR(atof32("0.000000000000000000000000000000000000012345", 10), 1.2345e-38);
-    EXPECT_TRUE(std::isnan(atof32(NAN_STRING, 10)));
-    EXPECT_TRUE(std::isinf(atof32(INFINITY_STRING, 10)));
-    EXPECT_TRUE(std::isinf(atof32("-" + INFINITY_STRING, 10)));
+    EXPECT_TRUE(isnan(atof32(NAN_STRING, 10)));
+    EXPECT_TRUE(isinf(atof32(INFINITY_STRING, 10)));
+    EXPECT_TRUE(isinf(atof32("-" + INFINITY_STRING, 10)));
 }
 
 
@@ -121,9 +121,9 @@ TEST(atof64, base10)
     // non-exponents of 1.<e-299 is prone to error
     // test the limit of our ability
     EXPECT_DOUBLE_NEAR(atof64("0.000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000012345", 10), 1.2345e-299);
-    EXPECT_TRUE(std::isnan(atof64(NAN_STRING, 10)));
-    EXPECT_TRUE(std::isinf(atof64(INFINITY_STRING, 10)));
-    EXPECT_TRUE(std::isinf(atof64("-" + INFINITY_STRING, 10)));
+    EXPECT_TRUE(isnan(atof64(NAN_STRING, 10)));
+    EXPECT_TRUE(isinf(atof64(INFINITY_STRING, 10)));
+    EXPECT_TRUE(isinf(atof64("-" + INFINITY_STRING, 10)));
 }
 
 

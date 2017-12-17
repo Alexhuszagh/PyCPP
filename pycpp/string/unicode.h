@@ -19,12 +19,12 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using unicode_lowlevel_callback = std::function<void(
+using unicode_lowlevel_callback = function<void(
     const void*& src, size_t srclen,
     void*& dst, size_t dstlen)
 >;
 
-using unicode_highlevel_callback = std::function<std::string(const string_wrapper&)>;
+using unicode_highlevel_callback = function<std::string(const string_wrapper&)>;
 
 // FUNCTIONS
 // ---------

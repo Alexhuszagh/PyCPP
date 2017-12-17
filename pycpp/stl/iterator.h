@@ -40,6 +40,10 @@ using std::crend;
 #endif          // HAVE_CPP14
 
 using std::iterator;
+using std::istream_iterator;
+using std::ostream_iterator;
+using std::istreambuf_iterator;
+using std::ostreambuf_iterator;
 using std::iterator_traits;
 using std::reverse_iterator;
 using std::input_iterator_tag;

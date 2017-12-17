@@ -37,17 +37,17 @@ TEST(lexical, format)
 }
 
 
-TEST(Lexi, Extract)
+TEST(lexical, extract)
 {
     EXPECT_EQ(lexical<std::nullptr_t>(NULL_STRING), nullptr);
-    ASSERT_THROW(lexical<std::nullptr_t>(FALSE_STRING), std::runtime_error);
+    ASSERT_THROW(lexical<std::nullptr_t>(FALSE_STRING), runtime_error);
     EXPECT_EQ(lexical<bool>(TRUE_STRING), true);
     EXPECT_EQ(lexical<bool>(FALSE_STRING), false);
-    ASSERT_THROW(lexical<bool>(NULL_STRING), std::runtime_error);
+    ASSERT_THROW(lexical<bool>(NULL_STRING), runtime_error);
     EXPECT_EQ(lexical<char>("f"), 'f');
     EXPECT_EQ(lexical<unsigned char>("f"), 'f');
-    ASSERT_THROW(lexical<char>(""), std::runtime_error);
-    ASSERT_THROW(lexical<unsigned char>(""), std::runtime_error);
+    ASSERT_THROW(lexical<char>(""), runtime_error);
+    ASSERT_THROW(lexical<unsigned char>(""), runtime_error);
     EXPECT_EQ(lexical<short>("-1"), -1);
     EXPECT_EQ(lexical<int>("-1"), -1);
     EXPECT_EQ(lexical<long>("-1"), -1);

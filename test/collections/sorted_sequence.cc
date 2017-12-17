@@ -6,6 +6,7 @@
  */
 
 #include <pycpp/collections/sorted_sequence.h>
+#include <pycpp/stl/stdexcept.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -20,8 +21,8 @@ TEST(sorted_sequence, constructor)
     sequence_type s1;
     sequence_type s2(s1);
     sequence_type s3 = s2;
-    sequence_type s4(std::move(s2));
-    sequence_type s5 = std::move(s3);
+    sequence_type s4(move(s2));
+    sequence_type s5 = move(s3);
 
     sequence_type s6({4, 5});
     s6 = {3};
@@ -53,10 +54,10 @@ TEST(sorted_sequence, iterators)
     EXPECT_EQ(*s1.cbegin(), 4);
     EXPECT_EQ(*s1.rbegin(), 5);
     EXPECT_EQ(*s1.crbegin(), 5);
-    EXPECT_EQ(std::distance(s1.begin(), s1.end()), 2);
-    EXPECT_EQ(std::distance(s1.cbegin(), s1.cend()), 2);
-    EXPECT_EQ(std::distance(s1.rbegin(), s1.rend()), 2);
-    EXPECT_EQ(std::distance(s1.crbegin(), s1.crend()), 2);
+    EXPECT_EQ(distance(s1.begin(), s1.end()), 2);
+    EXPECT_EQ(distance(s1.cbegin(), s1.cend()), 2);
+    EXPECT_EQ(distance(s1.rbegin(), s1.rend()), 2);
+    EXPECT_EQ(distance(s1.crbegin(), s1.crend()), 2);
 
     // should re-balance
     s1.emplace(1);
@@ -64,10 +65,10 @@ TEST(sorted_sequence, iterators)
     EXPECT_EQ(*s1.cbegin(), 1);
     EXPECT_EQ(*s1.rbegin(), 5);
     EXPECT_EQ(*s1.crbegin(), 5);
-    EXPECT_EQ(std::distance(s1.begin(), s1.end()), 3);
-    EXPECT_EQ(std::distance(s1.cbegin(), s1.cend()), 3);
-    EXPECT_EQ(std::distance(s1.rbegin(), s1.rend()), 3);
-    EXPECT_EQ(std::distance(s1.crbegin(), s1.crend()), 3);
+    EXPECT_EQ(distance(s1.begin(), s1.end()), 3);
+    EXPECT_EQ(distance(s1.cbegin(), s1.cend()), 3);
+    EXPECT_EQ(distance(s1.rbegin(), s1.rend()), 3);
+    EXPECT_EQ(distance(s1.crbegin(), s1.crend()), 3);
 }
 
 
@@ -77,7 +78,7 @@ TEST(sorted_sequence, element_access)
     sequence_type s1({5, 1, 4});
 
     EXPECT_EQ(s1.at(0), 1);
-    EXPECT_THROW(s1.at(3), std::out_of_range);
+    EXPECT_THROW(s1.at(3), out_of_range);
     EXPECT_EQ(s1[0], 1);
     EXPECT_EQ(s1[1], 4);
     EXPECT_EQ(s1[2], 5);
@@ -99,7 +100,7 @@ TEST(sorted_sequence, element_lookup)
     EXPECT_NE(s1.lower_bound(5), s1.end());
     EXPECT_EQ(s1.upper_bound(5), s1.end());
     auto range = s1.equal_range(1);
-    EXPECT_EQ(std::distance(range.first, range.second), 1);
+    EXPECT_EQ(distance(range.first, range.second), 1);
 }
 
 

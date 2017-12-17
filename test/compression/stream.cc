@@ -27,9 +27,9 @@ static std::string DECOMPRESSED("\x54\x68\x65\x20\x4d\x49\x54\x20\x4c\x69\x63\x6
 
 TEST(compression_stream, bz2_istream)
 {
-    std::istringstream sstream(BZ2_COMPRESSED);
+    istringstream sstream(BZ2_COMPRESSED);
     bz2_istream bz2(sstream);
-    std::ostringstream ostream;
+    ostringstream ostream;
     ostream << bz2.rdbuf();
 
     EXPECT_EQ(ostream.str(), DECOMPRESSED);
@@ -38,7 +38,7 @@ TEST(compression_stream, bz2_istream)
 
 TEST(compression_stream, bz2_ostream)
 {
-    std::ostringstream sstream;
+    ostringstream sstream;
     {
         bz2_ostream bz2(sstream);
         bz2 << DECOMPRESSED;
@@ -53,9 +53,9 @@ TEST(compression_stream, bz2_ostream)
 
 TEST(compression_stream, zlib_istream)
 {
-    std::istringstream sstream(ZLIB_COMPRESSED);
+    istringstream sstream(ZLIB_COMPRESSED);
     zlib_istream zlib(sstream);
-    std::ostringstream ostream;
+    ostringstream ostream;
     ostream << zlib.rdbuf();
 
     EXPECT_EQ(ostream.str(), DECOMPRESSED);
@@ -64,7 +64,7 @@ TEST(compression_stream, zlib_istream)
 
 TEST(compression_stream, zlib_ostream)
 {
-    std::ostringstream sstream;
+    ostringstream sstream;
     {
         zlib_ostream zlib(sstream);
         zlib << DECOMPRESSED;
@@ -76,9 +76,9 @@ TEST(compression_stream, zlib_ostream)
 
 TEST(compression_stream, gzip_istream)
 {
-    std::istringstream sstream(GZIP_COMPRESSED);
+    istringstream sstream(GZIP_COMPRESSED);
     gzip_istream gzip(sstream);
-    std::ostringstream ostream;
+    ostringstream ostream;
     ostream << gzip.rdbuf();
 
     EXPECT_EQ(ostream.str(), DECOMPRESSED);
@@ -87,7 +87,7 @@ TEST(compression_stream, gzip_istream)
 
 TEST(compression_stream, gzip_ostream)
 {
-    std::ostringstream sstream;
+    ostringstream sstream;
     {
         gzip_ostream gzip(sstream);
         gzip << DECOMPRESSED;
@@ -103,9 +103,9 @@ TEST(compression_stream, gzip_ostream)
 
 TEST(compression_stream, lzma_istream)
 {
-    std::istringstream sstream(LZMA_COMPRESSED);
+    istringstream sstream(LZMA_COMPRESSED);
     lzma_istream lzma(sstream);
-    std::ostringstream ostream;
+    ostringstream ostream;
     ostream << lzma.rdbuf();
 
     EXPECT_EQ(ostream.str(), DECOMPRESSED);
@@ -114,7 +114,7 @@ TEST(compression_stream, lzma_istream)
 
 TEST(compression_stream, lzma_ostream)
 {
-    std::ostringstream sstream;
+    ostringstream sstream;
     {
         lzma_ostream lzma(sstream);
         lzma << DECOMPRESSED;
@@ -128,13 +128,13 @@ TEST(compression_stream, lzma_ostream)
 TEST(compression_stream, decompressing_istream)
 {
     // declare variables
-    std::ostringstream ostream;
-    std::istringstream sstream;
+    ostringstream ostream;
+    istringstream sstream;
 
 #if defined(HAVE_BZIP2)
     // bzip2
-    ostream = std::ostringstream();
-    sstream = std::istringstream(BZ2_COMPRESSED);
+    ostream = ostringstream();
+    sstream = istringstream(BZ2_COMPRESSED);
     {
         decompressing_istream compressed(sstream);
         ostream << compressed.rdbuf();
@@ -144,8 +144,8 @@ TEST(compression_stream, decompressing_istream)
 
 #if defined(HAVE_ZLIB)
     // zlib
-    ostream = std::ostringstream();
-    sstream = std::istringstream(ZLIB_COMPRESSED);
+    ostream = ostringstream();
+    sstream = istringstream(ZLIB_COMPRESSED);
     {
         decompressing_istream compressed(sstream);
         ostream << compressed.rdbuf();
@@ -153,8 +153,8 @@ TEST(compression_stream, decompressing_istream)
     EXPECT_EQ(ostream.str(), DECOMPRESSED);
 
     // gzip
-    ostream = std::ostringstream();
-    sstream = std::istringstream(GZIP_COMPRESSED);
+    ostream = ostringstream();
+    sstream = istringstream(GZIP_COMPRESSED);
     {
         decompressing_istream compressed(sstream);
         ostream << compressed.rdbuf();
@@ -164,8 +164,8 @@ TEST(compression_stream, decompressing_istream)
 
 #if defined(HAVE_LZMA)
     // lzma
-    ostream = std::ostringstream();
-    sstream = std::istringstream(LZMA_COMPRESSED);
+    ostream = ostringstream();
+    sstream = istringstream(LZMA_COMPRESSED);
     {
         decompressing_istream compressed(sstream);
         ostream << compressed.rdbuf();

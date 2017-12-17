@@ -7,6 +7,8 @@
 
 #include <pycpp/collections/default_map.h>
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/stdexcept.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -14,7 +16,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-using int_ptr = std::shared_ptr<int>;
+using int_ptr = shared_ptr<int>;
 
 
 struct nonconstructable_int
@@ -30,7 +32,7 @@ private:
 
 int_ptr default_int()
 {
-    return std::make_shared<int>(0);
+    return make_shared<int>(0);
 }
 
 
@@ -54,12 +56,12 @@ TEST(default_map, constructor)
     classmap m3(default_nonconstructable_int);
     intmap m4(m2);
     intmap m5 = m4;
-    intmap m6(std::move(m4));
-    intmap m7 = std::move(m5);
+    intmap m6(move(m4));
+    intmap m7 = move(m5);
     classmap m8(m3);
     classmap m9 = m8;
-    classmap m10(std::move(m8));
-    classmap m11 = std::move(m9);
+    classmap m10(move(m8));
+    classmap m11 = move(m9);
 
     intmap m12({{0, default_int()}}, default_int);
     intmap m13(m12.begin(), m12.end(), default_int);
@@ -93,10 +95,10 @@ TEST(default_map, iterators)
     EXPECT_EQ(m1.cbegin()->first, 0);
     EXPECT_EQ(m1.rbegin()->first, 0);
     EXPECT_EQ(m1.crbegin()->first, 0);
-    EXPECT_EQ(std::distance(m1.begin(), m1.end()), 1);
-    EXPECT_EQ(std::distance(m1.cbegin(), m1.cend()), 1);
-    EXPECT_EQ(std::distance(m1.rbegin(), m1.rend()), 1);
-    EXPECT_EQ(std::distance(m1.crbegin(), m1.crend()), 1);
+    EXPECT_EQ(distance(m1.begin(), m1.end()), 1);
+    EXPECT_EQ(distance(m1.cbegin(), m1.cend()), 1);
+    EXPECT_EQ(distance(m1.rbegin(), m1.rend()), 1);
+    EXPECT_EQ(distance(m1.crbegin(), m1.crend()), 1);
 }
 
 
@@ -106,7 +108,7 @@ TEST(default_map, element_access)
     intmap m1({{0, default_int()}}, default_int);
 
     m1.at(0);
-    EXPECT_THROW(m1.at(1), std::out_of_range);
+    EXPECT_THROW(m1.at(1), out_of_range);
     m1[0];
     m1[1];
 }
@@ -124,7 +126,7 @@ TEST(default_map, operations)
     EXPECT_NE(m1.lower_bound(0), m1.end());
     EXPECT_EQ(m1.upper_bound(0), m1.end());
     auto range = m1.equal_range(0);
-    EXPECT_EQ(std::distance(range.first, range.second), 1);
+    EXPECT_EQ(distance(range.first, range.second), 1);
 }
 
 
@@ -136,8 +138,8 @@ TEST(default_map, modifiers)
 
     m2.emplace(1, default_int());
     m2.emplace_hint(m2.end(), 2, default_int());
-    m2.insert(std::make_pair(3, default_int()));
-    m2.insert(m2.end(), std::make_pair(4, default_int()));
+    m2.insert(make_pair(3, default_int()));
+    m2.insert(m2.end(), make_pair(4, default_int()));
     m2.insert({{5, default_int()}});
     m2.erase(m2.begin());
     m2.erase(1);
@@ -182,12 +184,12 @@ TEST(default_unordered_map, constructor)
     classmap m3(default_nonconstructable_int);
     intmap m4(m2);
     intmap m5 = m4;
-    intmap m6(std::move(m4));
-    intmap m7 = std::move(m5);
+    intmap m6(move(m4));
+    intmap m7 = move(m5);
     classmap m8(m3);
     classmap m9 = m8;
-    classmap m10(std::move(m8));
-    classmap m11 = std::move(m9);
+    classmap m10(move(m8));
+    classmap m11 = move(m9);
 
     intmap m12({{0, default_int()}}, default_int);
     intmap m13(m12.begin(), m12.end(), default_int);
@@ -219,8 +221,8 @@ TEST(default_unordered_map, iterators)
 
     EXPECT_EQ(m1.begin()->first, 0);
     EXPECT_EQ(m1.cbegin()->first, 0);
-    EXPECT_EQ(std::distance(m1.begin(), m1.end()), 1);
-    EXPECT_EQ(std::distance(m1.cbegin(), m1.cend()), 1);
+    EXPECT_EQ(distance(m1.begin(), m1.end()), 1);
+    EXPECT_EQ(distance(m1.cbegin(), m1.cend()), 1);
 }
 
 
@@ -230,7 +232,7 @@ TEST(default_unordered_map, element_access)
     intmap m1({{0, default_int()}}, default_int);
 
     m1.at(0);
-    EXPECT_THROW(m1.at(1), std::out_of_range);
+    EXPECT_THROW(m1.at(1), out_of_range);
     m1[0];
     m1[1];
 }
@@ -246,7 +248,7 @@ TEST(default_unordered_map, operations)
     EXPECT_EQ(m1.count(0), 1);
     EXPECT_EQ(m1.count(1), 0);
     auto range = m1.equal_range(0);
-    EXPECT_EQ(std::distance(range.first, range.second), 1);
+    EXPECT_EQ(distance(range.first, range.second), 1);
 }
 
 
@@ -258,8 +260,8 @@ TEST(default_unordered_map, modifiers)
 
     m2.emplace(1, default_int());
     m2.emplace_hint(m2.end(), 2, default_int());
-    m2.insert(std::make_pair(3, default_int()));
-    m2.insert(m2.end(), std::make_pair(4, default_int()));
+    m2.insert(make_pair(3, default_int()));
+    m2.insert(m2.end(), make_pair(4, default_int()));
     m2.insert({{5, default_int()}});
     m2.erase(m2.begin());
     m2.erase(1);

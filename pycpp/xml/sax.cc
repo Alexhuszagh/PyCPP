@@ -1,6 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/xml/sax.h>
 #include <libxml/tree.h>
 #include <libxml/xmlreader.h>
@@ -28,7 +29,7 @@ static xml_attr_t parse_attributes(const xmlChar** attrs)
         for (; first < last; ) {
             std::string key((char*) *first++);
             std::string value((char*) *first++);
-            attrib[std::move(key)] = std::move(value);
+            attrib[move(key)] = move(value);
         }
     }
 
@@ -38,7 +39,7 @@ static xml_attr_t parse_attributes(const xmlChar** attrs)
 
 static int stream_read(void* ctx, char* buffer, int length)
 {
-    auto* stream = (std::istream*) ctx;
+    auto* stream = (istream*) ctx;
     stream->read(buffer, length);
     return static_cast<int>(stream->gcount());
 }
@@ -149,13 +150,13 @@ static void warning_handler(void* data, const char* msg, ...)
 
 static void error_handler(void* data, const char* msg, ...)
 {
-    throw std::runtime_error(msg);
+    throw runtime_error(msg);
 }
 
 
 static void fatal_error_handler(void* data, const char* msg, ...)
 {
-    throw std::runtime_error(msg);
+    throw runtime_error(msg);
 }
 
 
@@ -218,11 +219,11 @@ xmlSAXHandler* handler_wrapper::handler()
 
 struct reader_impl
 {
-    void parse(std::istream&, handler_wrapper&);
+    void parse(istream&, handler_wrapper&);
 };
 
 
-void reader_impl::parse(std::istream& stream, handler_wrapper& wrapper)
+void reader_impl::parse(istream& stream, handler_wrapper& wrapper)
 {
     // create our context
     xmlParserCtxtPtr ctx = xmlCreateIOParserCtxt(wrapper.handler(),
@@ -235,7 +236,7 @@ void reader_impl::parse(std::istream& stream, handler_wrapper& wrapper)
 
     // process the context
     if (ctx == nullptr) {
-        throw std::runtime_error("Unable to make SAX context.");
+        throw runtime_error("Unable to make SAX context.");
     }
 
     if (ctx->sax != (xmlSAXHandlerPtr) &xmlDefaultSAXHandler) {
@@ -259,7 +260,7 @@ void reader_impl::parse(std::istream& stream, handler_wrapper& wrapper)
 
     // handle errors
     if (error != 0) {
-        throw std::runtime_error("Unknown runtime error during SAX2.");
+        throw runtime_error("Unknown runtime error during SAX2.");
     }
 }
 
@@ -322,11 +323,11 @@ xml_stream_reader::xml_stream_reader()
 {}
 
 
-void xml_stream_reader::open(std::istream& s)
+void xml_stream_reader::open(istream& s)
 {
     stream_ = &s;
     if (!handler_) {
-        throw std::runtime_error("Must assign handler prior parsing.");
+        throw runtime_error("Must assign handler prior parsing.");
     }
 
     // parse stream
@@ -354,7 +355,7 @@ xml_file_reader::xml_file_reader(const string_view& name)
 
 void xml_file_reader::open(const string_view& name)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     xml_stream_reader::open(file_);
 }
 
@@ -370,7 +371,7 @@ xml_file_reader::xml_file_reader(const wstring_view& name)
 
 void xml_file_reader::open(const wstring_view& name)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     xml_stream_reader::open(file_);
 }
 
@@ -383,7 +384,7 @@ xml_file_reader::xml_file_reader(const u16string_view& name)
 
 void xml_file_reader::open(const u16string_view& name)
 {
-    file_.open(name, std::ios_base::in | std::ios_base::binary);
+    file_.open(name, ios_base::in | ios_base::binary);
     xml_stream_reader::open(file_);
 }
 
@@ -401,7 +402,7 @@ xml_string_reader::xml_string_reader(const string_wrapper& str)
 
 void xml_string_reader::open(const string_wrapper& str)
 {
-    sstream_ = std::istringstream(std::string(str), std::ios_base::in | std::ios_base::binary);
+    sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
     xml_stream_reader::open(sstream_);
 }
 

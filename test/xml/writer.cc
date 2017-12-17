@@ -35,7 +35,7 @@ TEST(xml, xml_stream_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    std::ostringstream sstream;
+    ostringstream sstream;
     xml_stream_writer writer(sstream);
     test_xml_writer(writer);
     // force POSIX-like newlines
@@ -52,7 +52,7 @@ TEST(xml, xml_file_writer)
         xml_file_writer writer(path);
         test_xml_writer(writer);
     }
-    std::stringstream sstream;
+    stringstream sstream;
     {
         ifstream istream(path);
         sstream << istream.rdbuf();

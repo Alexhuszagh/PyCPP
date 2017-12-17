@@ -24,7 +24,7 @@ static void test_lowlevel(const std::string& input, const std::string& expected,
         const void* src_first = src;
         void* dst_first = dst;
         cb(src_first, input.size(), dst_first, 20);
-        EXPECT_EQ(std::distance(dst, (char*) dst_first), expected.size());
+        EXPECT_EQ(distance(dst, (char*) dst_first), expected.size());
         EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
     } catch (...) {
         delete[] dst;

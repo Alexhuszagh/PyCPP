@@ -33,12 +33,12 @@ TEST(lri_cache, constructor)
     EXPECT_EQ(copy.size(), 1);
 
     // move constructor
-    cache_type blank(std::move(cache));
+    cache_type blank(move(cache));
     EXPECT_EQ(cache.size(), 0);
     EXPECT_EQ(blank.size(), 1);
 
     // move assignment
-    cache = std::move(copy);
+    cache = move(copy);
     EXPECT_EQ(copy.size(), 0);
     EXPECT_EQ(cache.size(), 1);
 }
@@ -119,10 +119,10 @@ TEST(lri_cache, lookup)
     EXPECT_EQ(cache.count(5), 0);
 
     auto pair = cache.equal_range(1);
-    EXPECT_EQ(std::distance(pair.first, pair.second), 1);
+    EXPECT_EQ(distance(pair.first, pair.second), 1);
 
     pair = cache.equal_range(5);
-    EXPECT_EQ(std::distance(pair.first, pair.second), 0);
+    EXPECT_EQ(distance(pair.first, pair.second), 0);
 }
 
 

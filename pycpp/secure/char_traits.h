@@ -19,6 +19,6 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 template <typename Char>
-using secure_char_traits = std::char_traits<Char>;
+using secure_char_traits = char_traits<Char>;
 
 PYCPP_END_NAMESPACE

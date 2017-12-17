@@ -52,7 +52,7 @@ TEST(json, json_stream_reader)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
-    std::istringstream sstream(str);
+    istringstream sstream(str);
     json_stream_reader reader;
     test_json_reader(reader, sstream);
 }
@@ -66,7 +66,7 @@ TEST(json, json_file_reader)
     std::string path("test.json");
     {
         ofstream ostream(path);
-        ostream << str << std::endl;
+        ostream << str << endl;
     }
     {
         json_file_reader reader;

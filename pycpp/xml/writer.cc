@@ -13,7 +13,7 @@ PYCPP_BEGIN_NAMESPACE
 
 static int stream_write(void* ctx, const char* buffer, int length)
 {
-    auto* stream = (std::ostream*) ctx;
+    auto* stream = (ostream*) ctx;
     try {
         stream->write(buffer, length);
     } catch(...) {
@@ -75,7 +75,7 @@ xml_stream_writer::xml_stream_writer(char c, int width)
 }
 
 
-xml_stream_writer::xml_stream_writer(std::ostream& s, char c, int width)
+xml_stream_writer::xml_stream_writer(ostream& s, char c, int width)
 {
     set_indent(c, width);
     open(s);
@@ -91,7 +91,7 @@ xml_stream_writer::~xml_stream_writer()
 }
 
 
-void xml_stream_writer::open(std::ostream& s)
+void xml_stream_writer::open(ostream& s)
 {
     // cleanup
     if (writer_) {
@@ -198,7 +198,7 @@ xml_file_writer::xml_file_writer(const string_view& name)
 
 void xml_file_writer::open(const string_view& name)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     xml_stream_writer::open(file_);
 }
 
@@ -213,7 +213,7 @@ xml_file_writer::xml_file_writer(const wstring_view& name)
 
 void xml_file_writer::open(const wstring_view& name)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     xml_stream_writer::open(file_);
 }
 
@@ -226,7 +226,7 @@ xml_file_writer::xml_file_writer(const u16string_view& name)
 
 void xml_file_writer::open(const u16string_view& name)
 {
-    file_.open(name, std::ios_base::out | std::ios_base::binary);
+    file_.open(name, ios_base::out | ios_base::binary);
     xml_stream_writer::open(file_);
 }
 

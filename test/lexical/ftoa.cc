@@ -13,7 +13,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-static std::vector<float> FLOATS = {
+static vector<float> FLOATS = {
     0.,
     0.1,
     1.,
@@ -47,7 +47,7 @@ static std::vector<float> FLOATS = {
     1.2345e-38,
 };
 
-static std::vector<double> DOUBLES = {
+static vector<double> DOUBLES = {
     0.,
     0.1,
     1.,
@@ -102,8 +102,8 @@ TEST(f32toa, base2)
     EXPECT_EQ(f32toa(-1.2345678901234567890e3, 2).substr(0, 21), "-10011010010.10010001");
 
     // special
-    EXPECT_EQ(f32toa(std::numeric_limits<float>::quiet_NaN(), 2), NAN_STRING);
-    EXPECT_EQ(f32toa(std::numeric_limits<float>::infinity(), 2), INFINITY_STRING);
+    EXPECT_EQ(f32toa(numeric_limits<float>::quiet_NaN(), 2), NAN_STRING);
+    EXPECT_EQ(f32toa(numeric_limits<float>::infinity(), 2), INFINITY_STRING);
 }
 
 
@@ -122,8 +122,8 @@ TEST(f32toa, base10)
     EXPECT_EQ(f32toa(-1.2345678901234567890e3, 10).substr(0, 9), "-1234.567");
 
     // special
-    EXPECT_EQ(f32toa(std::numeric_limits<float>::quiet_NaN(), 10), NAN_STRING);
-    EXPECT_EQ(f32toa(std::numeric_limits<float>::infinity(), 10), INFINITY_STRING);
+    EXPECT_EQ(f32toa(numeric_limits<float>::quiet_NaN(), 10), NAN_STRING);
+    EXPECT_EQ(f32toa(numeric_limits<float>::infinity(), 10), INFINITY_STRING);
 
     // check parsed value is within 32-bit float error
     for (float f: FLOATS) {
@@ -157,8 +157,8 @@ TEST(f64toa, base2)
     EXPECT_EQ(f64toa(-1.2345678901234567890e3, 2).substr(0, 41), "-10011010010.1001000101100001001111110100");
 
     // special
-    EXPECT_EQ(f64toa(std::numeric_limits<float>::quiet_NaN(), 2), NAN_STRING);
-    EXPECT_EQ(f64toa(std::numeric_limits<float>::infinity(), 2), INFINITY_STRING);
+    EXPECT_EQ(f64toa(numeric_limits<float>::quiet_NaN(), 2), NAN_STRING);
+    EXPECT_EQ(f64toa(numeric_limits<float>::infinity(), 2), INFINITY_STRING);
 }
 
 
@@ -177,8 +177,8 @@ TEST(f64toa, base10)
     EXPECT_EQ(f64toa(-1.2345678901234567890e3, 10).substr(0, 17), "-1234.56789012345");
 
     // special
-    EXPECT_EQ(f32toa(std::numeric_limits<double>::quiet_NaN()), NAN_STRING);
-    EXPECT_EQ(f32toa(std::numeric_limits<double>::infinity()), INFINITY_STRING);
+    EXPECT_EQ(f32toa(numeric_limits<double>::quiet_NaN()), NAN_STRING);
+    EXPECT_EQ(f32toa(numeric_limits<double>::infinity()), INFINITY_STRING);
 
 
     // check parsed value is within 64-bit float error

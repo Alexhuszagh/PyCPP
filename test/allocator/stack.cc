@@ -35,7 +35,7 @@ TEST(stack_allocator, vector)
 {
     using allocator_type = stack_allocator<int, 200>;
     using arena_type = typename allocator_type::arena_type;
-    using vector = std::vector<int, allocator_type>;
+    using vector = vector<int, allocator_type>;
 
     arena_type arena;
     vector v1(arena);
@@ -48,7 +48,7 @@ TEST(stack_allocator, polymorphic)
     using allocator_type = polymorphic_allocator<int>;
     using resource_type = stack_resource<200>;
     using arena_type = typename resource_type::allocator_type::arena_type;
-    using vector = std::vector<int, allocator_type>;
+    using vector = vector<int, allocator_type>;
 
     arena_type arena;
     resource_type resource(arena);

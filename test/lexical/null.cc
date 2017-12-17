@@ -17,7 +17,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-static std::vector<std::pair<std::nullptr_t, std::reference_wrapper<const std::string>>> DATA = {
+static vector<pair<std::nullptr_t, reference_wrapper<const std::string>>> DATA = {
     {nullptr, NULL_STRING},
 };
 
@@ -41,5 +41,5 @@ TEST(lexical_null_extractor, lexical_null_extractor)
 {
     EXPECT_EQ(lexical_null_extractor(NULL_STRING).value(), nullptr);
     ASSERT_TRUE("nan" != NULL_STRING);
-    EXPECT_THROW(lexical_null_extractor("nan"), std::runtime_error);
+    EXPECT_THROW(lexical_null_extractor("nan"), runtime_error);
 }

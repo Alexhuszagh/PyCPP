@@ -16,12 +16,12 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using punycode_lowlevel_callback = std::function<void(
+using punycode_lowlevel_callback = function<void(
     const void*& src, size_t srclen,
     void*& dst, size_t dstlen)
 >;
 
-using punycode_highlevel_callback = std::function<std::string(const string_wrapper&)>;
+using punycode_highlevel_callback = function<std::string(const string_wrapper&)>;
 
 // FUNCTIONS
 // ---------

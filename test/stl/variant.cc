@@ -42,9 +42,9 @@ struct concat
     template <typename... Args>
     std::string operator()(const Args &... args) const
     {
-        std::ostringstream strm;
-        std::initializer_list<int>({(strm << args, 0)...});
-        return std::move(strm).str();
+        ostringstream strm;
+        initializer_list<int>({(strm << args, 0)...});
+        return move(strm).str();
     }
 };
 
@@ -53,9 +53,9 @@ struct move_thrower_t
 {
     constexpr move_thrower_t() {}
     move_thrower_t(const move_thrower_t &) = default;
-    [[noreturn]] move_thrower_t(move_thrower_t &&) { throw std::exception{}; }
+    [[noreturn]] move_thrower_t(move_thrower_t &&) { throw exception{}; }
     move_thrower_t& operator=(const move_thrower_t&) = default;
-    move_thrower_t& operator=(move_thrower_t&&) { throw std::exception{}; }
+    move_thrower_t& operator=(move_thrower_t&&) { throw exception{}; }
 };
 
 bool operator<(const move_thrower_t &, const move_thrower_t &) { return false; }
@@ -123,7 +123,7 @@ TEST(variant, visit_mut_var_mut_type)
     variant<int> v(42);
     EXPECT_EQ(42, get<int>(v));
     EXPECT_EQ(lref, visit(get_qual(), v));
-    EXPECT_EQ(rref, visit(get_qual(), std::move(v)));
+    EXPECT_EQ(rref, visit(get_qual(), move(v)));
 }
 
 TEST(variant, visit_mut_var_const_type)
@@ -131,7 +131,7 @@ TEST(variant, visit_mut_var_const_type)
     variant<const int> v(42);
     EXPECT_EQ(42, get<const int>(v));
     EXPECT_EQ(const_lref, visit(get_qual(), v));
-    EXPECT_EQ(const_rref, visit(get_qual(), std::move(v)));
+    EXPECT_EQ(const_rref, visit(get_qual(), move(v)));
 }
 
 
@@ -140,13 +140,13 @@ TEST(variant, visit_const_var_mut_type)
     const variant<int> v(42);
     EXPECT_EQ(42, get<int>(v));
     EXPECT_EQ(const_lref, visit(get_qual(), v));
-    EXPECT_EQ(const_rref, visit(get_qual(), std::move(v)));
+    EXPECT_EQ(const_rref, visit(get_qual(), move(v)));
 
 #if !defined(HAVE_GCC) || COMPILER_MAJOR_VERSION >= 5
     constexpr variant<int> cv(42);
     static_assert(42 == get<int>(cv), "");
     static_assert(const_lref == visit(get_qual(), cv), "");
-    static_assert(const_rref == visit(get_qual(), std::move(cv)), "");
+    static_assert(const_rref == visit(get_qual(), move(cv)), "");
 #endif
 }
 
@@ -155,13 +155,13 @@ TEST(variant, visit_const_var_const_type)
     const variant<const int> v(42);
     EXPECT_EQ(42, get<const int>(v));
     EXPECT_EQ(const_lref, visit(get_qual(), v));
-    EXPECT_EQ(const_rref, visit(get_qual(), std::move(v)));
+    EXPECT_EQ(const_rref, visit(get_qual(), move(v)));
 
 #if !defined(HAVE_GCC) || COMPILER_MAJOR_VERSION >= 5
     constexpr variant<const int> cv(42);
     static_assert(42 == get<const int>(cv), "");
     static_assert(const_lref == visit(get_qual(), cv), "");
-    static_assert(const_rref == visit(get_qual(), std::move(cv)), "");
+    static_assert(const_rref == visit(get_qual(), move(cv)), "");
 #endif
 }
 
@@ -376,7 +376,7 @@ TEST(variant, relops_one_valueless_by_exception)
 {
     // `v` normal, `w` corrupted.
     variant<int, move_thrower_t> v(42), w(42);
-    EXPECT_THROW(w = move_thrower_t{}, std::exception);
+    EXPECT_THROW(w = move_thrower_t{}, exception);
     EXPECT_FALSE(v.valueless_by_exception());
     EXPECT_TRUE(w.valueless_by_exception());
     // `v` op `w`
@@ -393,7 +393,7 @@ TEST(variant, relops_both_valueless_by_exception)
 {
     // `v`, `w` both corrupted.
     variant<int, move_thrower_t> v(42);
-    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_THROW(v = move_thrower_t{}, exception);
     variant<int, move_thrower_t> w(v);
     EXPECT_TRUE(v.valueless_by_exception());
     EXPECT_TRUE(w.valueless_by_exception());
@@ -415,7 +415,7 @@ TEST(variant, swap_same)
     EXPECT_EQ("hello", get<std::string>(v));
     EXPECT_EQ("world", get<std::string>(w));
 
-    std::swap(v, w);
+    swap(v, w);
 
     EXPECT_EQ("world", get<std::string>(v));
     EXPECT_EQ("hello", get<std::string>(w));
@@ -430,7 +430,7 @@ TEST(variant, swap_diff)
     EXPECT_EQ(42, get<int>(v));
     EXPECT_EQ("hello", get<std::string>(w));
 
-    std::swap(v, w);
+    swap(v, w);
 
     EXPECT_EQ("hello", get<std::string>(v));
     EXPECT_EQ(42, get<int>(w));
@@ -440,12 +440,12 @@ TEST(variant, swap_diff)
 TEST(variant, swap_one_valueless_by_exception)
 {
     variant<int, move_thrower_t> v(42), w(42);
-    EXPECT_THROW(w = move_thrower_t{}, std::exception);
+    EXPECT_THROW(w = move_thrower_t{}, exception);
 
     EXPECT_EQ(42, get<int>(v));
     EXPECT_TRUE(w.valueless_by_exception());
 
-    std::swap(v, w);
+    swap(v, w);
 
     EXPECT_TRUE(v.valueless_by_exception());
     EXPECT_EQ(42, get<int>(w));
@@ -455,13 +455,13 @@ TEST(variant, swap_one_valueless_by_exception)
 TEST(variant, swap_both_valueless_by_exception)
 {
     variant<int, move_thrower_t> v(42);
-    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_THROW(v = move_thrower_t{}, exception);
     variant<int, move_thrower_t> w(v);
 
     EXPECT_TRUE(v.valueless_by_exception());
     EXPECT_TRUE(w.valueless_by_exception());
 
-    std::swap(v, w);
+    swap(v, w);
 
     EXPECT_TRUE(v.valueless_by_exception());
     EXPECT_TRUE(w.valueless_by_exception());
@@ -562,7 +562,7 @@ TEST(variant, hash_string)
 TEST(variant, get_valueless_by_exception)
 {
     variant<int, move_thrower_t> v(42);
-    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_THROW(v = move_thrower_t{}, exception);
     EXPECT_TRUE(v.valueless_by_exception());
     EXPECT_THROW(get<int>(v), bad_variant_access);
     EXPECT_THROW(get<move_thrower_t>(v), bad_variant_access);
@@ -612,7 +612,7 @@ TEST(variant, getif_const_var_const_type)
 TEST(variant, getif_valueless_by_exception)
 {
     variant<int, move_thrower_t> v(42);
-    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_THROW(v = move_thrower_t{}, exception);
     EXPECT_TRUE(v.valueless_by_exception());
     EXPECT_EQ(nullptr, get_if<int>(&v));
     EXPECT_EQ(nullptr, get_if<move_thrower_t>(&v));
@@ -633,13 +633,13 @@ TEST(variant, ctor_move_value)
 {
     variant<int, std::string> v("hello");
     EXPECT_EQ("hello", get<std::string>(v));
-    variant<int, std::string> w(std::move(v));
+    variant<int, std::string> w(move(v));
     EXPECT_EQ("hello", get<std::string>(w));
     EXPECT_TRUE(get<std::string>(v).empty());
 
     constexpr variant<int, const char *> cv(42);
     static_assert(42 == get<int>(cv), "");
-    constexpr variant<int, const char *> cw(std::move(cv));
+    constexpr variant<int, const char *> cw(move(cv));
     static_assert(42 == get<int>(cw), "");
 }
 
@@ -647,9 +647,9 @@ TEST(variant, ctor_move_value)
 TEST(variant, ctor_move_valueless_by_exception)
 {
     variant<int, move_thrower_t> v(42);
-    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_THROW(v = move_thrower_t{}, exception);
     EXPECT_TRUE(v.valueless_by_exception());
-    variant<int, move_thrower_t> w(std::move(v));
+    variant<int, move_thrower_t> w(move(v));
     EXPECT_TRUE(w.valueless_by_exception());
 }
 
@@ -786,7 +786,7 @@ TEST(variant, ctor_copy)
 TEST(variant, ctor_copy_valueless_by_exception)
 {
     variant<int, move_thrower_t> v(42);
-    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_THROW(v = move_thrower_t{}, exception);
     EXPECT_TRUE(v.valueless_by_exception());
     variant<int, move_thrower_t> w(v);
     EXPECT_TRUE(w.valueless_by_exception());
@@ -846,13 +846,13 @@ TEST(variant, assign_fwd_better_match)
 TEST(variant, assign_fwd_nomatch)
 {
     struct x {};
-    static_assert(!std::is_assignable<variant<int, std::string>, x>{}, "variant<int, std::string> v; v = x;");
+    static_assert(!is_assignable<variant<int, std::string>, x>{}, "variant<int, std::string> v; v = x;");
 }
 
 
 TEST(variant, assign_fwd_ambiguous)
 {
-    static_assert(!std::is_assignable<variant<short, long>, int>{}, "variant<short, long> v; v = 42;");
+    static_assert(!is_assignable<variant<short, long>, int>{}, "variant<short, long> v; v = 42;");
 }
 
 
@@ -872,7 +872,7 @@ TEST(variant, assign_fwd_same_type_optimization)
 TEST(variant, assign_fwd_throw_on_assign)
 {
     variant<int, move_thrower_t> v(in_place_type_t<move_thrower_t>{});
-    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_THROW(v = move_thrower_t{}, exception);
     EXPECT_FALSE(v.valueless_by_exception());
     EXPECT_EQ(1u, v.index());
     v = 42;
@@ -891,7 +891,7 @@ TEST(variant, assign_move_same_type)
         x &operator=(x &&) noexcept { EXPECT_TRUE(true); return *this; }
     };
     variant<x, int> v, w;
-    v = std::move(w);
+    v = move(w);
 }
 
 TEST(variant, assign_move_diff_type)
@@ -904,16 +904,16 @@ TEST(variant, assign_move_diff_type)
         x &operator=(x &&) noexcept { EXPECT_TRUE(false); return *this; }
     };
     variant<x, int> v(42), w;
-    v = std::move(w);
+    v = move(w);
 }
 
 TEST(variant, assign_move_valueless_by_exception)
 {
     variant<int, move_thrower_t> v(42);
-    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_THROW(v = move_thrower_t{}, exception);
     EXPECT_TRUE(v.valueless_by_exception());
     variant<int, move_thrower_t> w(42);
-    w = std::move(v);
+    w = move(v);
     EXPECT_TRUE(w.valueless_by_exception());
 }
 
@@ -949,7 +949,7 @@ TEST(variant, assign_copy_diff_type)
 TEST(variant, assign_copy_valueless_by_exception)
 {
     variant<int, move_thrower_t> v(42);
-    EXPECT_THROW(v = move_thrower_t{}, std::exception);
+    EXPECT_THROW(v = move_thrower_t{}, exception);
     EXPECT_TRUE(v.valueless_by_exception());
     variant<int, move_thrower_t> w(42);
     w = v;

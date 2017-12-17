@@ -40,7 +40,7 @@ TEST(gzip, gzip_compressor)
         EXPECT_EQ(ctx.compress(src, gzip.size(), dst, 0), compression_need_output);
         ctx.compress(src, gzip.size(), dst, 4096);
         EXPECT_TRUE(ctx.flush(dst, 4096));
-        EXPECT_EQ(std::distance(buffer, (char*) dst), GZIP_COMPRESSED.size());
+        EXPECT_EQ(distance(buffer, (char*) dst), GZIP_COMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, GZIP_COMPRESSED.data(), GZIP_COMPRESSED.size()), 0);
 
         // second example
@@ -49,7 +49,7 @@ TEST(gzip, gzip_compressor)
         dst = buffer;
         ctx.compress(src, gzip.size(), dst, 4096);
         EXPECT_TRUE(ctx.flush(dst, 4096));
-        EXPECT_EQ(std::distance(buffer, (char*) dst), GZIP_COMPRESSED.size());
+        EXPECT_EQ(distance(buffer, (char*) dst), GZIP_COMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, GZIP_COMPRESSED.data(), GZIP_COMPRESSED.size()), 0);
 
     } catch(...) {
@@ -77,7 +77,7 @@ TEST(gzip, gzip_decompressor)
         dst = buffer;
         EXPECT_EQ(ctx.decompress(src, gzip.size(), dst, 0), compression_need_output);
         EXPECT_EQ(ctx.decompress(src, gzip.size(), dst, 4096), compression_eof);
-        EXPECT_EQ(std::distance(buffer, (char*) dst), GZIP_DECOMPRESSED.size());
+        EXPECT_EQ(distance(buffer, (char*) dst), GZIP_DECOMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, GZIP_DECOMPRESSED.data(), GZIP_DECOMPRESSED.size()), 0);
 
         // second example
@@ -85,7 +85,7 @@ TEST(gzip, gzip_decompressor)
         src = gzip.data();
         dst = buffer;
         EXPECT_EQ(ctx.decompress(src, gzip.size(), dst, 4096), compression_eof);
-        EXPECT_EQ(std::distance(buffer, (char*) dst), GZIP_DECOMPRESSED.size());
+        EXPECT_EQ(distance(buffer, (char*) dst), GZIP_DECOMPRESSED.size());
         EXPECT_EQ(strncmp(buffer, GZIP_DECOMPRESSED.data(), GZIP_DECOMPRESSED.size()), 0);
 
     } catch(...) {

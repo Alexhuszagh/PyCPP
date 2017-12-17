@@ -19,9 +19,11 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
+using std::char_traits;
+
 template <
     typename Char,
-    typename Traits = std::char_traits<Char>,
+    typename Traits = char_traits<Char>,
     typename Alloc = allocator<Char>
 >
 using basic_string = std::basic_string<Char, Traits, Alloc>;

@@ -7,6 +7,7 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/stl/fstream.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -28,7 +29,7 @@ static void test_fd(fd_t fd)
 {
     size_t size = 11;
     std::string in("Single Line");
-    std::vector<char> out(size);
+    vector<char> out(size);
 
     EXPECT_NE(fd, INVALID_FD_VALUE);
 
@@ -37,7 +38,7 @@ static void test_fd(fd_t fd)
     EXPECT_EQ((size_t) fd_tell(fd), size);
 
     // fd_seek
-    EXPECT_EQ((size_t) fd_seek(fd, 0, std::ios_base::beg), 0);
+    EXPECT_EQ((size_t) fd_seek(fd, 0, ios_base::beg), 0);
 
     // fd_read
     EXPECT_EQ((size_t) fd_read(fd, out.data(), out.size()), size);
@@ -443,7 +444,7 @@ TEST(path, gettempnam)
     auto suffix = base_name(path).substr(tempprefix.size());
     EXPECT_EQ(base_name(path).size(), tempprefix.size() + TMP_SUFFIX_LENGTH);
     EXPECT_EQ(dir_name(path), gettempdir());
-    EXPECT_TRUE(std::all_of(suffix.begin(), suffix.end(), [](native_char_type c) {
+    EXPECT_TRUE(all_of(suffix.begin(), suffix.end(), [](native_char_type c) {
         return TMP_SUFFIX_CHARACTERS.find(c) != std::string::npos;
     }));
 }
@@ -452,7 +453,7 @@ TEST(path, gettempnam)
 TEST(fd, fd_utils)
 {
     std::string path("sample_path");
-    std::ios_base::openmode iomode = std::ios_base::in | std::ios_base::out;
+    ios_base::openmode iomode = ios_base::in | ios_base::out;
     {
         // generic
         fd_t fd = fd_open(path, iomode);
@@ -493,7 +494,7 @@ TEST(remove, remove_file)
         // create file
         ASSERT_FALSE(exists(file));
         std::ofstream stream(file);
-        stream << "data" << std::endl;
+        stream << "data" << endl;
         stream.close();
         ASSERT_TRUE(exists(file));
     }

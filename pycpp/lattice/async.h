@@ -20,7 +20,7 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-using response_list_t = std::deque<response_t>;
+using response_list_t = deque<response_t>;
 
 
 /**
@@ -60,7 +60,7 @@ public:
     explicit operator bool() const;
 
 protected:
-    std::deque<future<response_t>> futures;
+    deque<future<response_t>> futures;
 };
 
 

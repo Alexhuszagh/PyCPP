@@ -24,7 +24,7 @@ TEST(btree_map, constructor_null)
     EXPECT_TRUE(m1.find(1) == m1.end());
     EXPECT_TRUE(m2.find(1) == m2.end());
 
-    m1.insert(std::make_pair(1, 1));
+    m1.insert(make_pair(1, 1));
     EXPECT_EQ(m1.size(), 1);
     EXPECT_EQ(m2.size(), 0);
     EXPECT_TRUE(m1.find(1) != m1.end());

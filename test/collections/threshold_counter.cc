@@ -7,6 +7,7 @@
 
 #include <pycpp/collections/threshold_counter.h>
 #include <pycpp/stl/map.h>
+#include <pycpp/stl/stdexcept.h>
 #include <gtest/gtest.h>
 #include <math.h>
 
@@ -29,7 +30,7 @@ TEST(threshold_counter, ctor)
         {2, 4},
     };
     t t2(um);
-    t2 = std::move(um);
+    t2 = move(um);
     EXPECT_EQ(t2.size(), 2);
 
     // iter -- map
@@ -64,10 +65,10 @@ TEST(threshold_counter, ctor)
     EXPECT_EQ(t8.size(), 2);
 
     // move
-    t t9(std::move(t2));
+    t t9(move(t2));
     EXPECT_EQ(t9.size(), 2);
     t t10;
-    t10 = std::move(t3);
+    t10 = move(t3);
     EXPECT_EQ(t10.size(), 2);
 }
 
@@ -106,11 +107,11 @@ TEST(threshold_counter, iterators)
     auto f2 = t2.begin();
     auto l2 = t2.end();
 
-    EXPECT_EQ(std::distance(f1, l1), 3);
-    EXPECT_EQ(std::distance(f2, l2), 0);
+    EXPECT_EQ(distance(f1, l1), 3);
+    EXPECT_EQ(distance(f2, l2), 0);
 
     for (auto it = f1; it != l1; ++it) {
-        EXPECT_EQ(std::pow(it->first, 2), it->second);
+        EXPECT_EQ(pow(it->first, 2), it->second);
     }
 }
 
@@ -127,9 +128,9 @@ TEST(threshold_counter, element_access)
 
     // at
     EXPECT_EQ(t1.at(1), 1);
-    EXPECT_THROW(t2.at(1), std::out_of_range);
-    EXPECT_THROW(t1.at(4), std::out_of_range);
-    EXPECT_THROW(t2.at(4), std::out_of_range);
+    EXPECT_THROW(t2.at(1), out_of_range);
+    EXPECT_THROW(t1.at(4), out_of_range);
+    EXPECT_THROW(t2.at(4), out_of_range);
 
     // get
     EXPECT_EQ(t1.size(), 3);
@@ -226,7 +227,7 @@ TEST(threshold_counter, convenience)
     // elements
     vector<int> expected = {1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3};
     auto result = t1.elements();
-    std::sort(result.begin(), result.end());
+    sort(result.begin(), result.end());
     EXPECT_EQ(result, expected);
 
     // get_common_count
@@ -287,8 +288,8 @@ TEST(threshold_counter, conversion)
     typename t::counter_type c1(t1);
     typename t::map_type m1(t1);
 
-    EXPECT_TRUE(std::equal(t1.begin(), t1.end(), c1.begin()));
-    EXPECT_TRUE(std::equal(t1.begin(), t1.end(), m1.begin()));
+    EXPECT_TRUE(equal(t1.begin(), t1.end(), c1.begin()));
+    EXPECT_TRUE(equal(t1.begin(), t1.end(), m1.begin()));
 }
 
 

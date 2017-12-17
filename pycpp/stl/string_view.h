@@ -43,7 +43,7 @@ using std::u32string_view;
 
 template <
     typename Char,
-    typename Traits = std::char_traits<Char>
+    typename Traits = char_traits<Char>
 >
 class basic_string_view;
 

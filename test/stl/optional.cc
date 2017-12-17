@@ -44,14 +44,14 @@ struct oracle
 
     oracle() : s(sDefaultConstructed) {}
     oracle(const oracle_value& v) : s(sValueCopyConstructed), val(v) {}
-    oracle(oracle_value&& v) : s(sValueMoveConstructed), val(std::move(v)) {v.s = sMovedFrom;}
+    oracle(oracle_value&& v) : s(sValueMoveConstructed), val(move(v)) {v.s = sMovedFrom;}
     oracle(const oracle& o) : s(sCopyConstructed), val(o.val) {}
-    oracle(oracle&& o) : s(sMoveConstructed), val(std::move(o.val)) {o.s = sMovedFrom;}
+    oracle(oracle&& o) : s(sMoveConstructed), val(move(o.val)) {o.s = sMovedFrom;}
 
     oracle& operator=(const oracle_value& v) { s = sValueCopyConstructed; val = v; return *this; }
-    oracle& operator=(oracle_value&& v) { s = sValueMoveConstructed; val = std::move(v); v.s = sMovedFrom; return *this; }
+    oracle& operator=(oracle_value&& v) { s = sValueMoveConstructed; val = move(v); v.s = sMovedFrom; return *this; }
     oracle& operator=(const oracle& o) { s = sCopyConstructed; val = o.val; return *this; }
-    oracle& operator=(oracle&& o) { s = sMoveConstructed; val = std::move(o.val); o.s = sMovedFrom; return *this; }
+    oracle& operator=(oracle&& o) { s = sMoveConstructed; val = move(o.val); o.s = sMovedFrom; return *this; }
 };
 
 bool operator==(oracle const& a, oracle const& b) { return a.val.i == b.val.i; }
@@ -166,7 +166,7 @@ TEST(optional, value_ctor)
     EXPECT_EQ(oo1->s, sMoveConstructed);
     EXPECT_EQ(v.s, sValueConstructed);
 
-    optional<oracle> oo2(std::move(v));
+    optional<oracle> oo2(move(v));
     EXPECT_NE(oo2, nullopt);
     EXPECT_NE(oo2, optional<oracle>{});
     EXPECT_EQ(oo2, oo1);
@@ -186,7 +186,7 @@ TEST(optional, value_ctor)
         EXPECT_EQ(oo1->s, sValueCopyConstructed);
         EXPECT_EQ(v.s, sValueConstructed);
 
-        optional<oracle> oo2{in_place, std::move(v)};
+        optional<oracle> oo2{in_place, move(v)};
         EXPECT_NE(oo2, nullopt);
         EXPECT_NE(oo2, optional<oracle>{});
         EXPECT_EQ(oo2, oo1);
@@ -224,13 +224,13 @@ TEST(optional, moved_from_state)
     EXPECT_EQ(j.val, 2);
     EXPECT_FALSE(j.moved);
 
-    move_aware<int> k = std::move(i);
+    move_aware<int> k = move(i);
     EXPECT_EQ(k.val, 1);
     EXPECT_FALSE(k.moved);
     EXPECT_EQ(i.val, 1);
     EXPECT_TRUE(i.moved);
 
-    k = std::move(j);
+    k = move(j);
     EXPECT_EQ(k.val, 2);
     EXPECT_FALSE(k.moved);
     EXPECT_EQ(j.val, 2);
@@ -243,13 +243,13 @@ TEST(optional, moved_from_state)
     EXPECT_TRUE(oj);
     EXPECT_FALSE(oj->moved);
 
-    optional<move_aware<int>> ok = std::move(oi);
+    optional<move_aware<int>> ok = move(oi);
     EXPECT_TRUE(ok);
     EXPECT_FALSE(ok->moved);
     EXPECT_TRUE(oi);
     EXPECT_TRUE(oi->moved);
 
-    ok = std::move(oj);
+    ok = move(oj);
     EXPECT_TRUE(ok);
     EXPECT_FALSE(ok->moved);
     EXPECT_TRUE(oj);
@@ -275,7 +275,7 @@ TEST(optional, copy_move_ctor_optional_int)
     EXPECT_NE(ok, oj);
     EXPECT_EQ(*ok, 1);
 
-    optional<int> ol = std::move(oi);
+    optional<int> ol = move(oi);
     EXPECT_TRUE(!!ol);
     EXPECT_TRUE(bool(ol));
     EXPECT_EQ(ol, oi);
@@ -315,7 +315,7 @@ TEST(optional, optional_optional)
 
     optional<int> oi;
     auto ooi = make_optional(oi);
-    static_assert(std::is_same<optional<optional<int>>, decltype(ooi)>::value, "");
+    static_assert(is_same<optional<optional<int>>, decltype(ooi)>::value, "");
 };
 
 
@@ -539,8 +539,8 @@ TEST(optional, hash)
 {
     using on1 = optional<int>;
     using on2 = optional<int&>;
-    using rt1 = decltype(hash<on1>()(std::declval<on1>()));
-    using rt2 = decltype(hash<on2>()(std::declval<on2>()));
+    using rt1 = decltype(hash<on1>()(declval<on1>()));
+    using rt2 = decltype(hash<on2>()(declval<on2>()));
 
     static_assert(is_same<rt1, size_t>::value, "");
     static_assert(is_same<rt2, size_t>::value, "");

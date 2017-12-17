@@ -49,11 +49,11 @@ struct int_generator
 
 TEST(iterator, category)
 {
-    using input_iterator = std::istream_iterator<int>;
-    using output_iterator = std::ostream_iterator<int>;
-    using forward_iterator = typename std::unordered_map<int, int>::iterator;
-    using bidirectional_iterator = typename std::map<int, int>::iterator;
-    using random_access_iterator = typename std::vector<int>::iterator;
+    using input_iterator = istream_iterator<int>;
+    using output_iterator = ostream_iterator<int>;
+    using forward_iterator = typename unordered_map<int, int>::iterator;
+    using bidirectional_iterator = typename map<int, int>::iterator;
+    using random_access_iterator = typename vector<int>::iterator;
 
     // type
     static_assert(is_input_iterator<input_iterator>::value, "");
@@ -113,10 +113,10 @@ TEST(iterator, category)
 
 TEST(iterator, transform_iterator)
 {
-    std::vector<int> list = {0, 1, 2, 3, 4};
+    vector<int> list = {0, 1, 2, 3, 4};
     auto first = make_transform_iterator(list.begin(), mul2);
     auto last = make_transform_iterator(list.end(), mul2);
-    EXPECT_TRUE(std::equal(first, last, list.begin(), [](int l, int r) {
+    EXPECT_TRUE(equal(first, last, list.begin(), [](int l, int r) {
         return l == r * 2;
     }));
 
@@ -151,7 +151,7 @@ TEST(iterator, input_iterator_facade)
 {
     using iterator = input_iterator_facade<int_generator>;
     int_generator g(0);
-    auto v = std::vector<int>(iterator(g), iterator());
+    auto v = vector<int>(iterator(g), iterator());
     EXPECT_EQ(v.size(), 5);
     EXPECT_EQ(v[0], 0);
     EXPECT_EQ(v[4], 4);
@@ -160,13 +160,13 @@ TEST(iterator, input_iterator_facade)
 
 TEST(iterator, chunked_range)
 {
-    using vector = std::vector<int>;
-    using vector_range = chunked_range<typename vector::const_iterator>;
+    using vector_type = vector<int>;
+    using vector_range = chunked_range<typename vector_type::const_iterator>;
     using input_iterator = input_iterator_facade<int_generator>;
     using input_range = chunked_range<input_iterator>;
 
     // forward+ iterators
-    vector v = {1, 2, 3, 1, 4, 2, 5};
+    vector_type v = {1, 2, 3, 1, 4, 2, 5};
     vector_range r1(v.begin(), v.end(), 3);
     auto f1 = r1.begin();
     auto l1 = r1.end();
@@ -244,17 +244,17 @@ TEST(iterator, chunked_range)
 
 TEST(iterator, unique_range)
 {
-    using vector = std::vector<int>;
-    using vector_range = unique_range<typename vector::const_iterator>;
+    using vector_type = vector<int>;
+    using vector_range = unique_range<typename vector_type::const_iterator>;
     using input_iterator = input_iterator_facade<int_generator>;
     using input_range = unique_range<input_iterator>;
 
     // forward+ iterators
-    vector v = {1, 2, 3, 1, 4, 2, 5};
+    vector_type v = {1, 2, 3, 1, 4, 2, 5};
     vector_range r1(v.begin(), v.end());
     vector_range r2(v.begin(), v.end());
-    vector v1(r1.begin(), r1.end());
-    vector v2(r2.begin(), r2.end());
+    vector_type v1(r1.begin(), r1.end());
+    vector_type v2(r2.begin(), r2.end());
     ASSERT_EQ(v1.size(), 5);
     ASSERT_EQ(v2.size(), 5);
     EXPECT_EQ(v1[0], 1);
@@ -265,7 +265,7 @@ TEST(iterator, unique_range)
     // input iterators
     int_generator g(0);
     auto r3 = input_range(input_iterator(g), input_iterator());
-    vector v3(r3.begin(), r3.end());
+    vector_type v3(r3.begin(), r3.end());
     ASSERT_EQ(v3.size(), 5);
     EXPECT_EQ(v3[0], 0);
     EXPECT_EQ(v3[4], 4);
@@ -274,13 +274,13 @@ TEST(iterator, unique_range)
 
 TEST(iterator, windowed_range)
 {
-    using vector = std::vector<int>;
-    using vector_range = windowed_range<typename vector::const_iterator>;
+    using vector_type = vector<int>;
+    using vector_range = windowed_range<typename vector_type::const_iterator>;
     using input_iterator = input_iterator_facade<int_generator>;
     using input_range = windowed_range<input_iterator>;
 
     // forward+ iterators
-    vector v = {1, 2, 3, 4, 5};
+    vector_type v = {1, 2, 3, 4, 5};
     vector_range r1(v.begin(), v.end(), 3);
     auto f1 = r1.begin();
     auto l1 = r1.end();

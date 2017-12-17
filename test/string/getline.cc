@@ -6,6 +6,7 @@
  */
 
 #include <pycpp/lexical.h>
+#include <pycpp/stl/sstream.h>
 #include <pycpp/string/getline.h>
 #include <gtest/gtest.h>
 
@@ -17,7 +18,7 @@ PYCPP_USING_NAMESPACE
 
 TEST(getline, unix)
 {
-    std::stringstream stream("line1\nline2\nline3");
+    stringstream stream("line1\nline2\nline3");
     std::string line;
     int counter = 1;
     while (getline(stream, line)) {
@@ -29,7 +30,7 @@ TEST(getline, unix)
 
 TEST(getline, windows)
 {
-    std::stringstream stream("line1\r\nline2\r\nline3");
+    stringstream stream("line1\r\nline2\r\nline3");
     std::string line;
     int counter = 1;
     while (getline(stream, line)) {
@@ -41,7 +42,7 @@ TEST(getline, windows)
 
 TEST(getline, macos9)
 {
-    std::stringstream stream("line1\rline2\rline3");
+    stringstream stream("line1\rline2\rline3");
     std::string line;
     int counter = 1;
     while (getline(stream, line)) {

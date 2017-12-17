@@ -39,9 +39,9 @@ static void test_update(const List& list, const Hasher&)
 template <typename Hasher>
 static void test_fuzz(const Hasher&, size_t n)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
+    random_device device;
+    default_random_engine engine(device());
+    uniform_int_distribution<> dist(-128, 127);
     for (size_t i = 0; i < 50; i++) {
         const size_t length = rand() % 1000;
         secure_string input;
@@ -59,7 +59,7 @@ static void test_fuzz(const Hasher&, size_t n)
 
 TEST(md2, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "F6A2EBAF32C712B834BC2955EF65B575"
@@ -100,7 +100,7 @@ TEST(md2, digest)
 
 TEST(md2, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "A0365D9BF982AAAD3526A01DB8A7206D",
         "FC770B692CAA57F6DC13FC2D1CC391A9"
     };
@@ -116,7 +116,7 @@ TEST(md2, fuzz)
 
 TEST(md4, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "0A5F25A7ADAE4B5FC3CD6F2EC94B4D18"
@@ -157,7 +157,7 @@ TEST(md4, digest)
 
 TEST(md4, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "51B834B7C1EF0B59EA50888FCB39ACE2",
         "33E0B062039C10F3F92BADEFED4A5C0B"
     };
@@ -173,7 +173,7 @@ TEST(md4, fuzz)
 
 TEST(md5, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "A7C48BA367E019D004BFB0239B85F2B3"
@@ -214,7 +214,7 @@ TEST(md5, digest)
 
 TEST(md5, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "9DD4E461268C8034F5C8564E155C67A6",
         "9336EBF25087D91C818EE6E9EC29F8C1"
     };
@@ -230,7 +230,7 @@ TEST(md5, fuzz)
 
 TEST(sha1, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "E2B5C793D8E006E471A5275E68ADFB98FE059DC4"
@@ -271,7 +271,7 @@ TEST(sha1, digest)
 
 TEST(sha1, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "11F6AD8EC52A2984ABAAFD7C3B516503785C2072",
         "DD7B7B74EA160E049DD128478E074CE47254BDE8"
     };
@@ -287,7 +287,7 @@ TEST(sha1, fuzz)
 
 TEST(sha2_256, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "86543EDCC2F0F4CCD0057538969B1BFF79D03F4E3CE9807194398849359D5DB0"
@@ -328,7 +328,7 @@ TEST(sha2_256, digest)
 
 TEST(sha2_256, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "2D711642B726B04401627CA9FBAC32F5C8530FB1903CC4DB02258717921A4881",
         "5DDE896887F6754C9B15BFE3A441AE4806DF2FDE94001311E08BF110622E0BBE"
     };
@@ -344,7 +344,7 @@ TEST(sha2_256, fuzz)
 
 TEST(sha2_224, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "C9D1EEFFAF00E89B940C9D4145B21C06705EBF4EE69E37A0990E7429"
@@ -385,7 +385,7 @@ TEST(sha2_224, digest)
 
 TEST(sha2_224, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "54A2F7F92A5F975D8096AF77A126EDDA7DA60C5AA872EF1B871701AE",
         "F076570BF05DD6440C2B881BFF82F55F9538DE824A66BFA4A1F672B6"
     };
@@ -401,7 +401,7 @@ TEST(sha2_224, fuzz)
 
 TEST(sha2_384, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "ADF848E92DFE3057BBDEE2897AB0FBE86D7AA318E5DE6CE03E6D28FEED0ECE898230CFE20E695801A1070B3EDC240826"
@@ -442,7 +442,7 @@ TEST(sha2_384, digest)
 
 TEST(sha2_384, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "D752C2C51FBA0E29AA190570A9D4253E44077A058D3297FA3A5630D5BD012622F97C28ACAED313B5C83BB990CAA7DA85",
         "53062481F3D242CA7422E4DF715F24812878D1A152AE60D33BCF12A8BD9990C8359EA490BB3F420479837689C57CBD57"
     };
@@ -458,7 +458,7 @@ TEST(sha2_384, fuzz)
 
 TEST(sha2_512, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "4B7A8D37DA56C3AE6DC5B8EB18D3DF3576EF972F9B876A65DEF2DB2953A14023C6BFD1159EFE8BCFFC7FA143C768A1C480E04E74B56F3F23048EED60EACE0EFC"
@@ -499,7 +499,7 @@ TEST(sha2_512, digest)
 
 TEST(sha2_512, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "A4ABD4448C49562D828115D13A1FCCEA927F52B4D5459297F8B43E42DA89238BC13626E43DCB38DDB082488927EC904FB42057443983E88585179D50551AFE62",
         "294C8E2D592D8B13DE92FD6D8254B33A4F4D816E06EC1C158C164A808A3D8164316908DD2580BE11660EFD8333D1F0F16B4869CB2FB94A657CFD8E3DDDBC9714"
     };
@@ -515,7 +515,7 @@ TEST(sha2_512, fuzz)
 
 TEST(sha3_224, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "CB4CBAC7A0964E0983DEEAB29F00D705688708C37EFA94DA211978DE"
@@ -556,7 +556,7 @@ TEST(sha3_224, digest)
 
 TEST(sha3_224, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "63E6CEB28AD474FA51C3D5DDA2239ADB5E58A1AE2600D18C6E116746",
         "B591DC145CC24DD0B1429E7FE2F4A3286C7F0DD957A3179145CC250B"
     };
@@ -572,7 +572,7 @@ TEST(sha3_224, fuzz)
 
 TEST(sha3_256, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "7165F47727ACD26881A9B57D09AFA37DF34A62537C3F377F00FEFA66F762A2BD"
@@ -613,7 +613,7 @@ TEST(sha3_256, digest)
 
 TEST(sha3_256, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "741EFA311F97686956946758E0D95F70F11FF2DA4F2FEB7C54314F44134AC49F",
         "39E297A02806CEB43F3C6098A17352F5D4A05D60E8D19DD8E184C85FA0B6AF6D"
     };
@@ -629,7 +629,7 @@ TEST(sha3_256, fuzz)
 
 TEST(sha3_384, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "E4255D285558D7E79D14B5ACBA190F511DB7B0AEFD7DCD461656E4D9507F9CBC0CF86F13BCC20118AA33D80506B2FBE3"
@@ -670,7 +670,7 @@ TEST(sha3_384, digest)
 
 TEST(sha3_384, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "5ABFC7BC2A09A612F87987CE070634A0932D31891A61A0EC598E81E6EC616C9F00F05FF627070CBF6CB0499B1C334D4D",
         "C35C3E4D856B5117A1C0F3E9F5DEE376666A1975D447A6A57032F606BA678EECA696014324010743CEB7F625063E0138"
     };
@@ -686,7 +686,7 @@ TEST(sha3_384, fuzz)
 
 TEST(sha3_512, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "AD287FDBB233F213A2D5DF760A9D232E146D732BAF19087AE8C6D75B716B91D88D811F778176BEDD0CEB3B387F8BDA6ABF805D20D6B68AD293160A859915D7AA"
@@ -727,7 +727,7 @@ TEST(sha3_512, digest)
 
 TEST(sha3_512, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "0FDB27960308C51467EDD49A0F5E0C434C9CCA721F4C35BFF005FEABAF6010E777A1137EE8187C5288AF57578D18D502A0BBE4C022F5587541961E10132D9834",
         "AB585B96D532A05EBBFF8653C430099964421248AC320DDE44CAB79388A78D1D2230630E682CBE9E6EE3E2252CABBC8524FCB3B8F5A8EFE42DE278E2D33DA3B0"
     };
@@ -743,7 +743,7 @@ TEST(sha3_512, fuzz)
 
 TEST(whirlpool, digest)
 {
-    std::vector<std::pair<secure_string, secure_string>> tests = {
+    vector<pair<secure_string, secure_string>> tests = {
         {
             "LOWER",
             "C1D36C5B5C7122371E8A027507B12A3D4921AC1DEBF8F28934100A8820B89B727EDB8E8B3A3FAA23B8C448EFB15139E366698C51EEF673A488AABFD8CC84E817"
@@ -784,7 +784,7 @@ TEST(whirlpool, digest)
 
 TEST(whirlpool, update)
 {
-    std::vector<secure_string> tests = {
+    vector<secure_string> tests = {
         "7D6388114687E86BA9A4D2DCAEEB8EC10EB239FBD5B0299FECF6C1355BA6D5C603AE4294BCE70A25BEAD8E7EDAE742465554ABD643B09815D3B168BE8BC58A51",
         "76FC79712863E2A5CC3D51D92CDFE2A7958113E3DBAE99E0A605C0CC2D3267EDA6F63EA447B7434AD4D34A2A2B8B099F424D48F0DA1AD7873CEC06D6F33612DF"
     };

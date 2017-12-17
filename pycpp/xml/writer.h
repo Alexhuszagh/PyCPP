@@ -42,10 +42,10 @@ struct xml_stream_writer: xml_writer
 {
 public:
     xml_stream_writer(char = ' ', int = 4);
-    xml_stream_writer(std::ostream&, char = ' ', int = 4);
+    xml_stream_writer(ostream&, char = ' ', int = 4);
     ~xml_stream_writer();
 
-    void open(std::ostream&);
+    void open(ostream&);
     void set_indent(char = ' ', int = 4);
 
     virtual void start_element(const string_wrapper&) override;
@@ -99,7 +99,7 @@ public:
     std::string str() const;
 
 private:
-    std::ostringstream sstream_;
+    ostringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

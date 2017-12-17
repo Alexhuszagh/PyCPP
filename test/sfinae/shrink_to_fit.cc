@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/sfinae/shrink_to_fit.h>
+#include <pycpp/stl/list.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <list>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,19 +17,19 @@ PYCPP_USING_NAMESPACE
 
 TEST(shrink_to_fit, shrink_to_fit)
 {
-    std::list<int> lst;
-    std::vector<int> vec;
+    list<int> l;
+    vector<int> v;
 
-    shrink_to_fit()(lst);
-    shrink_to_fit()(vec);
+    shrink_to_fit()(l);
+    shrink_to_fit()(v);
 }
 
 
 TEST(shrink_to_fit, has_shrink_to_fit)
 {
-    using lst = std::list<int>;
-    using vec = std::vector<int>;
+    using list_type = list<int>;
+    using vector_type = vector<int>;
 
-    static_assert(!has_shrink_to_fit<lst>::value, "");
-    static_assert(has_shrink_to_fit<vec>::value, "");
+    static_assert(!has_shrink_to_fit<list_type>::value, "");
+    static_assert(has_shrink_to_fit<vector_type>::value, "");
 }

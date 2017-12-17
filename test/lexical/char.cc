@@ -6,6 +6,7 @@
  */
 
 #include <pycpp/lexical/char.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/stl/utility.h>
 #include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
@@ -15,7 +16,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-static std::vector<std::pair<char, std::string>> DATA = {
+static vector<pair<char, std::string>> DATA = {
     {'\0', std::string("\0", 1)},
     {'\b', "\b"},
     {'\f', "\f"},
@@ -68,10 +69,10 @@ TEST(lexical_char_formatter, lexical_char_formatter)
 
 TEST(lexical_char_extractor, lexical_char_extractor)
 {
-    EXPECT_THROW(lexical_char_extractor(""), std::runtime_error);
+    EXPECT_THROW(lexical_char_extractor(""), runtime_error);
     EXPECT_EQ(char(lexical_char_extractor("c")), 'c');
     EXPECT_EQ(char(lexical_char_extractor("*")), '*');
     EXPECT_EQ(char(lexical_char_extractor("\n")), '\n');
     EXPECT_EQ(char(lexical_char_extractor("\t")), '\t');
-    EXPECT_THROW(lexical_char_extractor("cc"), std::runtime_error);
+    EXPECT_THROW(lexical_char_extractor("cc"), runtime_error);
 }
