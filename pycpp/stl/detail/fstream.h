@@ -8,8 +8,9 @@
 #pragma once
 
 #include <pycpp/preprocessor/compiler.h>
-#include <pycpp/stl/fstream.h>
+#include <pycpp/stl/iostream.h>
 #include <pycpp/stl/string_view.h>
+#include <fstream>
 
 #if defined(HAVE_GCC)
 #   include <pycpp/preprocessor/os.h>
@@ -55,12 +56,12 @@ public:
     bool is_open() const;
     void close();
     void swap(fstream &other);
-    std::basic_filebuf<char>* rdbuf() const;
-    void rdbuf(std::basic_filebuf<char> *buffer);
+    std::filebuf* rdbuf() const;
+    void rdbuf(std::filebuf *buffer);
 
 private:
     FILE *file = nullptr;
-    std::basic_filebuf<char> buffer;
+    std::filebuf buffer;
 };
 
 
@@ -94,12 +95,12 @@ public:
     bool is_open() const;
     void close();
     void swap(ifstream &other);
-    std::basic_filebuf<char>* rdbuf() const;
-    void rdbuf(std::basic_filebuf<char> *buffer);
+    std::filebuf* rdbuf() const;
+    void rdbuf(std::filebuf *buffer);
 
 private:
     FILE *file = nullptr;
-    std::basic_filebuf<char> buffer;
+    std::filebuf buffer;
 };
 
 
@@ -133,12 +134,12 @@ public:
     bool is_open() const;
     void close();
     void swap(ofstream &other);
-    std::basic_filebuf<char>* rdbuf() const;
-    void rdbuf(std::basic_filebuf<char> *buffer);
+    std::filebuf* rdbuf() const;
+    void rdbuf(std::filebuf *buffer);
 
 private:
     FILE *file = nullptr;
-    std::basic_filebuf<char> buffer;
+    std::filebuf buffer;
 };
 
 #else                           // NON-GCC/MSVC COMPILER

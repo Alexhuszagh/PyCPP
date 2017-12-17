@@ -12,13 +12,12 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/fstream.h>
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/iostream.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/stl/utility.h>
 #include <pycpp/stl/string_view.h>
-#include <pycpp/stream/fstream.h>
 
 PYCPP_BEGIN_NAMESPACE
 

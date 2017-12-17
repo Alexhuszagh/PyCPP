@@ -16,7 +16,7 @@
  *  2. https://github.com/llvm-mirror/libcxx/blob/master/include/fstream#L132
  */
 
-#include <pycpp/stream/fstream.h>
+#include <pycpp/stl/detail/fstream.h>
 #include <pycpp/string/codec.h>
 #include <pycpp/string/unicode.h>
 #include <assert.h>
@@ -28,7 +28,7 @@ PYCPP_BEGIN_NAMESPACE
 // MACROS
 // ------
 
-#define BASIC_FILEBUF(t) static_cast<std::basic_filebuf<char>>(t)
+#define BASIC_FILEBUF(t) static_cast<std::filebuf>(t)
 
 // FUNCTIONS
 // ---------
@@ -209,13 +209,13 @@ void fstream::open(const u16string_view& name, ios_base::openmode mode)
 #endif                                          // HAVE_WFOPEN
 
 
-std::basic_filebuf<char>* fstream::rdbuf() const
+std::filebuf* fstream::rdbuf() const
 {
-    return const_cast<std::basic_filebuf<char>*>(&buffer);
+    return const_cast<std::filebuf*>(&buffer);
 }
 
 
-void fstream::rdbuf(std::basic_filebuf<char> *buffer)
+void fstream::rdbuf(std::filebuf *buffer)
 {
     ios::rdbuf(buffer);
 }
@@ -330,13 +330,13 @@ void ifstream::open(const u16string_view& name, ios_base::openmode mode)
 #endif                                          // HAVE_WFOPEN
 
 
-std::basic_filebuf<char>* ifstream::rdbuf() const
+std::filebuf* ifstream::rdbuf() const
 {
-    return const_cast<std::basic_filebuf<char>*>(&buffer);
+    return const_cast<std::filebuf*>(&buffer);
 }
 
 
-void ifstream::rdbuf(std::basic_filebuf<char> *buffer)
+void ifstream::rdbuf(std::filebuf *buffer)
 {
     ios::rdbuf(buffer);
 }
@@ -448,13 +448,13 @@ void ofstream::open(const u16string_view& name, ios_base::openmode mode)
 #endif                                          // HAVE_WFOPEN
 
 
-std::basic_filebuf<char>* ofstream::rdbuf() const
+std::filebuf* ofstream::rdbuf() const
 {
-    return const_cast<std::basic_filebuf<char>*>(&buffer);
+    return const_cast<std::filebuf*>(&buffer);
 }
 
 
-void ofstream::rdbuf(std::basic_filebuf<char> *buffer)
+void ofstream::rdbuf(std::filebuf *buffer)
 {
     ios::rdbuf(buffer);
 }

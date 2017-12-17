@@ -8,11 +8,11 @@
 #pragma once
 
 #include <pycpp/csv/punct.h>
+#include <pycpp/stl/fstream.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/ostream.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/stl/string_view.h>
-#include <pycpp/stream/fstream.h>
 
 PYCPP_BEGIN_NAMESPACE
 

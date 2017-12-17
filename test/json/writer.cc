@@ -7,7 +7,7 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/json.h>
-#include <pycpp/stream/fstream.h>
+#include <pycpp/stl/fstream.h>
 #include <pycpp/string/string.h>
 #include <gtest/gtest.h>
 
@@ -49,7 +49,7 @@ TEST(json, json_file_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    std::string path("test.xml");
+    string path("test.xml");
     std::string str;
     {
         json_file_writer writer(path);

@@ -647,6 +647,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector_view.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/fstream.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/hash_specialize.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/polymorphic_allocator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash.h"
@@ -678,6 +679,7 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/stdlib.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/any.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.cc"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/fstream.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/polymorphic_allocator.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash_c.c"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/string/base16.cc"
@@ -944,14 +946,12 @@ if(BUILD_STREAM)
     if(BUILD_FILESYSTEM)
         list(APPEND HEADER_FILES
             "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/fd.h"
-            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/fstream.h"
             "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/mmap.h"
             "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/random_access.h"
             "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/sequential.h"
         )
         list(APPEND SOURCE_FILES
             "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/fd.cc"
-            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/fstream.cc"
             "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/mmap.cc"
             "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/random_access.cc"
             "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stream/sequential.cc"
@@ -1191,7 +1191,10 @@ if (BUILD_CSV)
 endif()
 
 if (BUILD_FILESYSTEM)
-    list(APPEND TEST_FILES test/filesystem.cc)
+    list(APPEND TEST_FILES
+        test/stl/detail/fstream.cc      # remove_file
+        test/filesystem.cc
+    )
 endif()
 
 if (BUILD_HASHLIB)
@@ -1248,7 +1251,6 @@ if (BUILD_STREAM)
     if(BUILD_FILESYSTEM)
         list(APPEND TEST_FILES
             test/stream/fd.cc
-            test/stream/fstream.cc
             test/stream/mmap.cc
             test/stream/random_access.cc
             test/stream/sequential.cc

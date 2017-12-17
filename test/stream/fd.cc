@@ -69,7 +69,7 @@ struct test_stream
 
 TEST(fd_streambuf, fd_streambuf)
 {
-    std::string path("sample_path");
+    string path("sample_path");
     size_t size = 11;
     std::string in("Single Line");
     vector<char> out(size);

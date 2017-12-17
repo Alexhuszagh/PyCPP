@@ -28,7 +28,7 @@ PYCPP_USING_NAMESPACE
 static void test_fd(fd_t fd)
 {
     size_t size = 11;
-    std::string in("Single Line");
+    string in("Single Line");
     vector<char> out(size);
 
     EXPECT_NE(fd, INVALID_FD_VALUE);
@@ -42,7 +42,7 @@ static void test_fd(fd_t fd)
 
     // fd_read
     EXPECT_EQ((size_t) fd_read(fd, out.data(), out.size()), size);
-    EXPECT_EQ(in, std::string(out.data(), out.size()));
+    EXPECT_EQ(in, string(out.data(), out.size()));
 
     // fd_close
     EXPECT_EQ(fd_close(fd), 0);
@@ -445,14 +445,14 @@ TEST(path, gettempnam)
     EXPECT_EQ(base_name(path).size(), tempprefix.size() + TMP_SUFFIX_LENGTH);
     EXPECT_EQ(dir_name(path), gettempdir());
     EXPECT_TRUE(all_of(suffix.begin(), suffix.end(), [](native_char_type c) {
-        return TMP_SUFFIX_CHARACTERS.find(c) != std::string::npos;
+        return TMP_SUFFIX_CHARACTERS.find(c) != string::npos;
     }));
 }
 
 
 TEST(fd, fd_utils)
 {
-    std::string path("sample_path");
+    string path("sample_path");
     ios_base::openmode iomode = ios_base::in | ios_base::out;
     {
         // generic
@@ -489,11 +489,11 @@ TEST(fd, fd_utils)
 
 TEST(remove, remove_file)
 {
-    std::string file("sample_testing_file");
+    string file("sample_testing_file");
     {
         // create file
         ASSERT_FALSE(exists(file));
-        std::ofstream stream(file);
+        ofstream stream(file);
         stream << "data" << endl;
         stream.close();
         ASSERT_TRUE(exists(file));
@@ -508,7 +508,7 @@ TEST(remove, remove_file)
 
 TEST(remove, remove_dir)
 {
-    std::string dir("sample_testing_folder");
+    string dir("sample_testing_folder");
     {
         // shallow
         mkdir(dir);

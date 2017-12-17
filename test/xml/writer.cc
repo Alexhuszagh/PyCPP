@@ -6,7 +6,7 @@
  */
 
 #include <pycpp/filesystem.h>
-#include <pycpp/stream/fstream.h>
+#include <pycpp/stl/fstream.h>
 #include <pycpp/string/string.h>
 #include <pycpp/xml.h>
 #include <gtest/gtest.h>
@@ -47,7 +47,7 @@ TEST(xml, xml_file_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    std::string path("test.xml");
+    string path("test.xml");
     {
         xml_file_writer writer(path);
         test_xml_writer(writer);

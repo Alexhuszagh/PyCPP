@@ -12,9 +12,6 @@
 #include <pycpp/stl/unordered_map.h>
 #include <pycpp/string/unicode.h>
 #include <assert.h>
-#if BUILD_STREAM
-#   include <pycpp/stream/fstream.h>
-#endif      // BUILD_STREAM
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -96,8 +93,6 @@ std::string get_boundary()
 }
 
 
-#if BUILD_STREAM                    // BUILD_STREAM
-
 /**
  *  \brief Read file using custom fstream
  */
@@ -109,63 +104,6 @@ static std::string read_fstream(const string_wrapper& filename)
 
     return stream.str();
 }
-
-#else                               // POSIX && WINDOWS
-
-/**
- *  \brief Read a file on a POSIX system.
- *
- *  POSIX systems require a null terminating byte for filenames, so
- *  all Unicode-supporting POSIX systems typically use UTF8 for
- *  filename encoding. This is easy, since it's our internal
- *  representation.
- */
-static std::string read_narrow(const string_wrapper& filename)
-{
-    assert(is_null_terminated(filename));
-
-    auto *name = filename.data();
-    std::ifstream file(name, ios_base::in | ios_base::binary);
-    ostringstream stream;
-    stream << file.rdbuf();
-
-    return stream.str();
-}
-
-#if defined(OS_WINDOWS)           // WINDOWS
-
-/**
- *  \brief Read a file on a Win32 system.
- *
- *  Windows systems support two APIs: a legacy, narrow API, for
- *  backwards compatibility with the local code page, and a
- *  UTF-16 wide API. Although MSVC provides a wide character
- *  overload for std::ifstream, MinGW does not, so the file must
- *  be opened with std::wifstream.
- */
-static std::string read_wide(const string_wrapper& filename)
-{
-    if (!is_unicode(filename)) {
-        // ascii only filename, narrow API works.
-        return read_narrow(filename);
-    }
-
-    auto utf16 = utf8_to_utf16(filename);
-    auto *name = reinterpret_cast<const wchar_t*>(utf16.data());
-    std::wifstream file(filename, ios_base::in | ios_base::binary);
-    wostringstream stream;
-    stream << file.rdbuf();
-
-    std::wstring wide = stream.str();
-    const size_t size = wide.size() * sizeof(char) / sizeof(wchar_t);
-    std::string string(reinterpret_cast<const char*>(wide.data()), size);
-
-    return utf16_to_utf8(string);
-}
-
-#endif                              // WINDOWS
-
-#endif                              // BUILD_STREAM
 
 
 static std::string detect_content_type(const string_wrapper& filename)
@@ -251,14 +189,7 @@ std::string part_value_t::string() const
 
 std::string file_value_t::buffer() const
 {
-#if BUILD_STREAM
     return read_fstream(filename);
-#elif defined(OS_WINDOWS)
-    // WIN32 has the wide API for files, using UTF-16
-    return read_wide(filename);
-#else
-    return read_narrow(filename);
-#endif
 }
 
 

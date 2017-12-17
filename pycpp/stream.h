@@ -8,9 +8,8 @@
 #pragma once
 
 #include <stream/filter.h>
-#if BUILD_FILESYSTEMM
+#if BUILD_FILESYSTEM
 #   include <stream/fd.h>
-#   include <stream/fstream.h>
 #   include <stream/mmap.h>
 #   include <stream/random_access.h>
 #   include <stream/sequential.h>

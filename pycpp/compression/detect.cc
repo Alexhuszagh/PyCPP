@@ -3,7 +3,7 @@
 
 #include <pycpp/compression/detect.h>
 #include <pycpp/preprocessor/parallel.h>
-#include <pycpp/stream/fstream.h>
+#include <pycpp/stl/fstream.h>
 
 PYCPP_BEGIN_NAMESPACE
 

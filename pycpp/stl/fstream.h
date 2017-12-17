@@ -7,14 +7,16 @@
 
 #pragma once
 
-#include <pycpp/stl/iostream.h>
-#include <fstream>
+#include <pycpp/stl/detail/fstream.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // ALIAS
 // -----
 
-// TODO: conflicts with BUILD_STREAM
+// Don't include wfilebuf, since we don't
+// provide a wide-stream API.
+using std::basic_filebuf;
+using std::filebuf;
 
 PYCPP_END_NAMESPACE

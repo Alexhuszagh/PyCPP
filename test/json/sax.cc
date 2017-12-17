@@ -7,8 +7,8 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/json.h>
+#include <pycpp/stl/fstream.h>
 #include <pycpp/stl/sstream.h>
-#include <pycpp/stream/fstream.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -63,7 +63,7 @@ TEST(json, json_file_reader)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
-    std::string path("test.json");
+    string path("test.json");
     {
         ofstream ostream(path);
         ostream << str << endl;

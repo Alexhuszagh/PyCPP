@@ -7,7 +7,7 @@
 
 #include <pycpp/csv.h>
 #include <pycpp/filesystem.h>
-#include <pycpp/stream/fstream.h>
+#include <pycpp/stl/fstream.h>
 #include <pycpp/string/string.h>
 #include <gtest/gtest.h>
 
@@ -132,7 +132,7 @@ TEST(csv_stream_reader, punctuation)
 
 TEST(csv_file_reader, simple_all)
 {
-    std::string path("sample_csv_path");
+    string path("sample_csv_path");
     ofstream ostream(path);
     ostream << CSV_TAB_ALL;
     ostream.close();
@@ -208,7 +208,7 @@ TEST(csv_stream_writer, punctuation)
 
 TEST(csv_file_writer, simple_all)
 {
-    std::string path("sample_csv_path");
+    string path("sample_csv_path");
     {
         csv_file_writer writer(path, CSV_QUOTE_ALL, new tabpunct);
         writer(CSV_HEADER);
@@ -294,7 +294,7 @@ TEST(csv_dict_stream_reader, punctuation)
 
 TEST(csv_dict_file_reader, simple_all)
 {
-    std::string path("sample_csv_path");
+    string path("sample_csv_path");
     ofstream ostream(path);
     ostream << CSV_TAB_ALL;
     ostream.close();
@@ -361,7 +361,7 @@ TEST(csv_dict_stream_writer, punctuation)
 
 TEST(csv_dict_file_writer, simple_all)
 {
-    std::string path("sample_csv_path");
+    string path("sample_csv_path");
     {
         csv_dict_file_writer writer(path, CSV_HEADER, CSV_QUOTE_ALL, new tabpunct);
         writer(CSV_MAP);

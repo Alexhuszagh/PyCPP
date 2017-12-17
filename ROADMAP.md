@@ -15,8 +15,12 @@
 
     - Ordered map and ordered set need new constructors and move operators
         - Need to revert `std::allocator` to `allocator` after.
+        - Why are they segfaulting.... FUCK
 
     - Change the default hash...
+    - Need custom allocators for the JSON and XML interfaces
+    - Always have build_stream true and use fstream.h as the STL default...
+        - xD
 
     - Look at use woever rope.
 
