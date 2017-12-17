@@ -347,20 +347,20 @@ compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(const second_type& y):
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(first_type&& x, second_type&& y):
-    first_(std::forward<first_type>(x)),
-    second_(std::forward<second_type>(y))
+    first_(forward<first_type>(x)),
+    second_(forward<second_type>(y))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(first_type&& x):
-    first_(std::forward<first_type>(x))
+    first_(forward<first_type>(x))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(second_type&& y):
-    second_(std::forward<second_type>(y))
+    second_(forward<second_type>(y))
 {}
 
 
@@ -395,8 +395,8 @@ constexpr auto compressed_pair_impl<T1, T2, 0>::second() const -> const second_t
 template <typename T1, typename T2>
 void compressed_pair_impl<T1, T2, 0>::swap(compressed_pair<T1, T2>& y)
 {
-    std::swap(first_, y.first());
-    std::swap(second_, y.second());
+    PYCPP_NAMESPACE::swap(first_, y.first());
+    PYCPP_NAMESPACE::swap(second_, y.second());
 }
 
 // 1    derive from T1
@@ -427,20 +427,20 @@ compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(const second_type& y):
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(first_type&& x, second_type&& y):
-    first_type(std::forward<first_type>(x)),
-    second_(std::forward<second_type>(y))
+    first_type(forward<first_type>(x)),
+    second_(forward<second_type>(y))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(first_type&& x):
-    first_type(std::forward<first_type>(x))
+    first_type(forward<first_type>(x))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(second_type&& y):
-    second_(std::forward<second_type>(y))
+    second_(forward<second_type>(y))
 {}
 
 
@@ -476,7 +476,7 @@ template <typename T1, typename T2>
 void compressed_pair_impl<T1, T2, 1>::swap(compressed_pair<T1, T2>& y)
 {
     // no need to swap empty base class:
-    std::swap(second_, y.second());
+    PYCPP_NAMESPACE::swap(second_, y.second());
 }
 
 // 2    derive from T2
@@ -507,20 +507,20 @@ compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(const second_type& y):
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(first_type&& x, second_type&& y):
-    second_type(std::forward<second_type>(y)),
-    first_(std::forward<first_type>(x))
+    second_type(forward<second_type>(y)),
+    first_(forward<first_type>(x))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(first_type&& x):
-    first_(std::forward<first_type>(x))
+    first_(forward<first_type>(x))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(second_type&& y):
-    second_type(std::forward<second_type>(y))
+    second_type(forward<second_type>(y))
 {}
 
 
@@ -556,7 +556,7 @@ template <typename T1, typename T2>
 void compressed_pair_impl<T1, T2, 2>::swap(compressed_pair<T1, T2>& y)
 {
     // no need to swap empty base class:
-    std::swap(first_, y.first());
+    PYCPP_NAMESPACE::swap(first_, y.first());
 }
 
 // 3    derive from T1 and T2
@@ -587,20 +587,20 @@ compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(const second_type& y):
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(first_type&& x, second_type&& y):
-    first_type(std::forward<first_type>(x)),
-    second_type(std::forward<second_type>(y))
+    first_type(forward<first_type>(x)),
+    second_type(forward<second_type>(y))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(first_type&& x):
-    first_type(std::forward<first_type>(x))
+    first_type(forward<first_type>(x))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(second_type&& y):
-    second_type(std::forward<second_type>(y))
+    second_type(forward<second_type>(y))
 {}
 
 
@@ -661,15 +661,15 @@ compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(const first_type& x):
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_type&& x, second_type&& y):
-    first_type(std::forward<first_type>(x)),
-    second_(std::forward<second_type>(y))
+    first_type(forward<first_type>(x)),
+    second_(forward<second_type>(y))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_type&& x):
     first_type(x),
-    second_(std::forward<first_type>(x))
+    second_(forward<first_type>(x))
 {}
 
 
@@ -730,15 +730,15 @@ compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(const first_type& x):
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_type&& x, second_type&& y):
-    first_(std::forward<first_type>(x)),
-    second_(std::forward<second_type>(y))
+    first_(forward<first_type>(x)),
+    second_(forward<second_type>(y))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_type&& x):
     first_(x),
-    second_(std::forward<first_type>(x))
+    second_(forward<first_type>(x))
 {}
 
 
@@ -773,8 +773,8 @@ constexpr auto compressed_pair_impl<T1, T2, 5>::second() const -> const second_t
 template <typename T1, typename T2>
 void compressed_pair_impl<T1, T2, 5>::swap(compressed_pair<T1, T2>& y)
 {
-    std::swap(first_, y.first());
-    std::swap(second_, y.second());
+    PYCPP_NAMESPACE::swap(first_, y.first());
+    PYCPP_NAMESPACE::swap(second_, y.second());
 }
 
 }   /* compressed_detail */
@@ -881,19 +881,19 @@ compressed_pair<T1, T2>::compressed_pair(second_const_reference y):
 
 template <typename T1, typename T2>
 compressed_pair<T1, T2>::compressed_pair(first_type&& x, second_type&& y):
-    base_t(std::forward<first_type>(x), std::forward<second_type>(y))
+    base_t(forward<first_type>(x), forward<second_type>(y))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair<T1, T2>::compressed_pair(first_type&& x):
-    base_t(std::forward<first_type>(x))
+    base_t(forward<first_type>(x))
 {}
 
 
 template <typename T1, typename T2>
 compressed_pair<T1, T2>::compressed_pair(second_type&& y):
-    base_t(std::forward<second_type>(y))
+    base_t(forward<second_type>(y))
 {}
 
 
@@ -952,13 +952,13 @@ compressed_pair<T, T>::compressed_pair(first_const_reference x):
 
 template <typename T>
 compressed_pair<T, T>::compressed_pair(first_type&& x, second_type&& y):
-    base_t(std::forward<first_type>(x), std::forward<second_type>(y))
+    base_t(forward<first_type>(x), forward<second_type>(y))
 {}
 
 
 template <typename T>
 compressed_pair<T, T>::compressed_pair(first_type&& x):
-    base_t(std::forward<first_type>(x))
+    base_t(forward<first_type>(x))
 {}
 
 
@@ -1028,13 +1028,13 @@ struct get_pair<0>
     template <typename T1, typename T2>
     inline constexpr T1&& operator()(compressed_pair<T1, T2>&& p) noexcept
     {
-        return std::forward<T1>(p.first());
+        return forward<T1>(p.first());
     }
 
     template <typename T1, typename T2>
     inline constexpr const T1&& operator()(const compressed_pair<T1, T2>&& p) noexcept
     {
-        return std::forward<const T1>(p.first());
+        return forward<const T1>(p.first());
     }
 };
 
@@ -1057,13 +1057,13 @@ struct get_pair<1>
     template <typename T1, typename T2>
     inline constexpr T2&& operator()(compressed_pair<T1, T2>&& p) noexcept
     {
-        return std::forward<T2>(p.second());
+        return forward<T2>(p.second());
     }
 
     template <typename T1, typename T2>
     inline constexpr const T2&& operator()(const compressed_pair<T1, T2>&& p) noexcept
     {
-        return std::forward<const T2>(p.second());
+        return forward<const T2>(p.second());
     }
 };
 
@@ -1090,7 +1090,7 @@ template <size_t I, typename T1, typename T2>
 inline constexpr tuple_element_t<I, compressed_pair<T1, T2>>&&
 get(compressed_pair<T1, T2>&& p) noexcept
 {
-    return compressed_detail::get_pair<I>()(std::move(p));
+    return compressed_detail::get_pair<I>()(move(p));
 }
 
 
@@ -1098,7 +1098,7 @@ template <size_t I, typename T1, typename T2>
 inline constexpr const tuple_element_t<I, compressed_pair<T1, T2>>&&
 get(const compressed_pair<T1, T2>&& p) noexcept
 {
-    return compressed_detail::get_pair<I>()(std::move(p));
+    return compressed_detail::get_pair<I>()(move(p));
 }
 
 
@@ -1118,14 +1118,14 @@ inline constexpr const T1& get(const compressed_pair<T1, T2>& p) noexcept
 template <typename T1, typename T2>
 inline constexpr T1&& get(compressed_pair<T1, T2>&& p) noexcept
 {
-    return compressed_detail::get_pair<0>()(std::move(p));
+    return compressed_detail::get_pair<0>()(move(p));
 }
 
 
 template <typename T1, typename T2>
 inline constexpr const T1&& get(const compressed_pair<T1, T2>&& p) noexcept
 {
-    return compressed_detail::get_pair<0>()(std::move(p));
+    return compressed_detail::get_pair<0>()(move(p));
 }
 
 
@@ -1146,14 +1146,14 @@ inline constexpr const T1& get(const compressed_pair<T2, T1>& p) noexcept
 template <typename T1, typename T2>
 inline constexpr T1&& get(compressed_pair<T2, T1>&& p) noexcept
 {
-    return compressed_detail::get_pair<1>()(std::move(p));
+    return compressed_detail::get_pair<1>()(move(p));
 }
 
 
 template <typename T1, typename T2>
 inline constexpr const T1&& get(const compressed_pair<T2, T1>&& p) noexcept
 {
-    return compressed_detail::get_pair<1>()(std::move(p));
+    return compressed_detail::get_pair<1>()(move(p));
 }
 
 PYCPP_END_NAMESPACE

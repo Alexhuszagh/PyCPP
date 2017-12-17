@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/stl/ios.h>
+#include <pycpp/stl/streambuf.h>
 #include <ostream>
 
 PYCPP_BEGIN_NAMESPACE
@@ -19,14 +19,8 @@ PYCPP_BEGIN_NAMESPACE
 using std::ends;
 using std::flush;
 using std::endl;
-
-template <
-    typename Char,
-    typename Traits = std::char_traits<Char>
->
-using basic_ostream = std::basic_ostream<Char, Traits>;
-
-using ostream = basic_ostream<char>;
-using wostream = basic_ostream<wchar_t>;
+using std::basic_ostream;
+using std::ostream;
+using std::wostream;
 
 PYCPP_END_NAMESPACE

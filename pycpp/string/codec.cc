@@ -17,24 +17,31 @@ template <typename S1, typename S2, typename Function>
 static S2& to_wide(const S1& s1, S2& s2, Function function)
 {
     // types
-    typedef typename S1::value_type Char1;
-    typedef typename S2::value_type Char2;
+    using char_type1 = typename S1::value_type;
+    using char_type2 = typename S2::value_type;
 
     // get parameters
-    size_t srclen = s1.size() * sizeof(Char1);
-    size_t dstlen = srclen * 4 / sizeof(Char1);
+    size_t srclen = s1.size() * sizeof(char_type1);
+    size_t dstlen = srclen * 4 / sizeof(char_type1);
     const char* src = (const char*) s1.data();
-    char* dst = new char[dstlen];
-    const void* src_first = (const void*) src;
-    void* dst_first = (void*) dst;
+    char* dst = nullptr;
 
-    // convert string
-    function(src_first, srclen, dst_first, dstlen);
-    size_t length = std::distance(dst, (char*) dst_first);
-    s2 = S2((Char2*) dst, length / sizeof(Char2));
-    delete[] dst;
+    try {
+        // initialize variables
+        dst = new char[dstlen];
+        const void* src_first = (const void*) src;
+        void* dst_first = (void*) dst;
 
-    return s2;
+        // convert string
+        function(src_first, srclen, dst_first, dstlen);
+        size_t length = distance(dst, (char*) dst_first);
+        s2 = S2((char_type2*) dst, length / sizeof(char_type2));
+        delete[] dst;
+        return s2;
+    } catch (...) {
+        delete[] dst;
+        throw;
+    }
 }
 
 
@@ -45,15 +52,15 @@ template <typename S1, typename S2, typename Function>
 static S2& to_narrow(const S1& s1, S2& s2, Function function)
 {
     // types
-    typedef typename S1::value_type Char1;
-    typedef typename S2::value_type Char2;
+    using char_type1 = typename S1::value_type;
+    using char_type2 = typename S2::value_type;
 
     // get parameters
     // each utf16 to utf8 conversion can increase the buffer size,
     // while each utf32 to utf16/utf8 at most keeps the buffer size
     // constant.
-    size_t srclen = s1.size() * sizeof(Char1);
-    size_t dstlen = sizeof(Char1) == 2 ? static_cast<size_t>(srclen * 1.5) : srclen;
+    size_t srclen = s1.size() * sizeof(char_type1);
+    size_t dstlen = sizeof(char_type1) == 2 ? static_cast<size_t>(srclen * 1.5) : srclen;
     const char* src = (const char*) s1.data();
     char* dst = new char[dstlen];
     const void* src_first = (const void*) src;
@@ -61,8 +68,8 @@ static S2& to_narrow(const S1& s1, S2& s2, Function function)
 
     // convert string
     function(src_first, srclen, dst_first, dstlen);
-    size_t length = std::distance(dst, (char*) dst_first);
-    s2 = S2((Char2*) dst, length / sizeof(Char2));
+    size_t length = distance(dst, (char*) dst_first);
+    s2 = S2((char_type2*) dst, length / sizeof(char_type2));
     delete[] dst;
 
     return s2;

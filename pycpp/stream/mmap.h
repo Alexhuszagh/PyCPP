@@ -57,7 +57,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Stream wrapping a memory-mapped I/O file.
  */
-class mmap_fstream: public std::iostream
+class mmap_fstream: public iostream
 {
 public:
     mmap_fstream();
@@ -67,14 +67,14 @@ public:
     mmap_fstream(mmap_fstream &&other);
     mmap_fstream & operator=(mmap_fstream &&other);
 
-    mmap_fstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    mmap_fstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    mmap_fstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    mmap_fstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    mmap_fstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    mmap_fstream(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
 #endif                                          // WINDOWS
 
     // MAPPING
@@ -108,7 +108,7 @@ private:
 /**
  *  \brief Stream wrapping a memory-mapped input file.
  */
-class mmap_ifstream: public std::istream
+class mmap_ifstream: public istream
 {
 public:
     mmap_ifstream();
@@ -118,14 +118,14 @@ public:
     mmap_ifstream(mmap_ifstream &&other);
     mmap_ifstream & operator=(mmap_ifstream &&other);
 
-    mmap_ifstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    mmap_ifstream(const string_view& name, ios_base::openmode mode = ios_base::in);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    mmap_ifstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in);
-    mmap_ifstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    mmap_ifstream(const wstring_view& name, ios_base::openmode mode = ios_base::in);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in);
+    mmap_ifstream(const u16string_view& name, ios_base::openmode mode = ios_base::in);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in);
 #endif                                          // WINDOWS
 
     // MAPPING
@@ -158,7 +158,7 @@ private:
 /**
  *  \brief Stream wrapping a memory-mapped ouput file.
  */
-class mmap_ofstream: public std::ostream
+class mmap_ofstream: public ostream
 {
 public:
     mmap_ofstream();
@@ -168,14 +168,14 @@ public:
     mmap_ofstream(mmap_ofstream &&other);
     mmap_ofstream & operator=(mmap_ofstream &&other);
 
-    mmap_ofstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    mmap_ofstream(const string_view& name, ios_base::openmode mode = ios_base::out);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    mmap_ofstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::out);
-    mmap_ofstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    mmap_ofstream(const wstring_view& name, ios_base::openmode mode = ios_base::out);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::out);
+    mmap_ofstream(const u16string_view& name, ios_base::openmode mode = ios_base::out);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::out);
 #endif                                          // WINDOWS
 
     // MAPPING

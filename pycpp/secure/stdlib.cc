@@ -311,7 +311,7 @@ static uint8_t CANARY[CANARY_SIZE];
 static const uint8_t* get_canary_impl()
 {
     if (sysrandom(CANARY, CANARY_SIZE) != CANARY_SIZE) {
-        throw std::runtime_error("Cannot read from CSPRNG for canary.");
+        throw runtime_error("Cannot read from CSPRNG for canary.");
     }
 
     return CANARY;
@@ -333,7 +333,7 @@ static const uint8_t* get_canary()
 static size_t check_page_size(size_t size)
 {
     if (size < CANARY_SIZE || size < sizeof(size_t)) {
-        throw std::runtime_error("Cannot get page size");
+        throw runtime_error("Cannot get page size");
     }
     return size;
 }
@@ -473,7 +473,7 @@ static uint8_t* unprotected_ptr_from_user_ptr(const void* ptr)
     page_mask = page_size - 1U;
     unprotected_ptr_u = ((uintptr_t) canary_ptr & (uintptr_t) ~page_mask);
     if (unprotected_ptr_u <= page_size * 2U) {
-        throw std::runtime_error("Unable to get unprotected ptr.");
+        throw runtime_error("Unable to get unprotected ptr.");
     }
 
     return (uint8_t*) unprotected_ptr_u;
@@ -712,7 +712,7 @@ void*  MALLOC_ATTRIBUTE secure_malloc(size_t size)
     if (size == 0) {
         return ptr;
     } else if (ptr == nullptr) {
-        throw std::bad_alloc();
+        throw bad_alloc();
     }
     secure_memset(ptr, (int) GARBAGE_VALUE, size);
 
@@ -787,10 +787,10 @@ static void secure_free_impl(void* ptr)
     total_size = page_size + page_size + unprotected_size + page_size;
     secure_mprotect_readwrite_impl(base_ptr, total_size);
     if (secure_memcmp(canary_ptr, canary, CANARY_SIZE) != 0) {
-        throw std::out_of_range("Access out of bounds memory.");
+        throw out_of_range("Access out of bounds memory.");
     }
     if (secure_memcmp_page_protection(unprotected_ptr + unprotected_size, canary, CANARY_SIZE) != 0) {
-        throw std::out_of_range("Access out of bounds memory.");
+        throw out_of_range("Access out of bounds memory.");
     }
     secure_munlock(unprotected_ptr, unprotected_size);
     aligned_free(base_ptr, total_size);

@@ -19,7 +19,7 @@ static void null_callback(const void*& src, size_t srclen,
     void*& dst, size_t dstlen,
     size_t char_size)
 {
-    size_t bytes = std::min(srclen, dstlen) * char_size;
+    size_t bytes = min(srclen, dstlen) * char_size;
     const char* src_ = reinterpret_cast<const char*>(src);
     char* dst_ = reinterpret_cast<char*>(dst);
 
@@ -38,7 +38,7 @@ static void null_callback(const void*& src, size_t srclen,
 
 // STREAMBUF
 
-filter_streambuf::filter_streambuf(std::ios_base::openmode m, std::streambuf* f, filter_callback c):
+filter_streambuf::filter_streambuf(ios_base::openmode m, streambuf* f, filter_callback c):
     mode(m),
     filebuf(f),
     callback(null_callback)
@@ -72,8 +72,8 @@ filter_streambuf& filter_streambuf::operator=(filter_streambuf&& other)
 void filter_streambuf::close()
 {
     sync();
-    std::streamsize converted = do_callback();
-    if (converted && filebuf && mode & std::ios_base::out) {
+    streamsize converted = do_callback();
+    if (converted && filebuf && mode & ios_base::out) {
         filebuf->sputn(out_buffer, converted);
     }
 
@@ -89,12 +89,12 @@ void filter_streambuf::close()
 
 void filter_streambuf::swap(filter_streambuf& other)
 {
-    std::streambuf::swap(other);
-    std::swap(filebuf, other.filebuf);
-    std::swap(in_buffer, other.in_buffer);
-    std::swap(out_buffer, other.out_buffer);
-    std::swap(first, other.first);
-    std::swap(last, other.last);
+    streambuf::swap(other);
+    PYCPP_NAMESPACE::swap(filebuf, other.filebuf);
+    PYCPP_NAMESPACE::swap(in_buffer, other.in_buffer);
+    PYCPP_NAMESPACE::swap(out_buffer, other.out_buffer);
+    PYCPP_NAMESPACE::swap(first, other.first);
+    PYCPP_NAMESPACE::swap(last, other.last);
 
     // reset internal buffer pointers
     set_pointers();
@@ -104,11 +104,11 @@ void filter_streambuf::swap(filter_streambuf& other)
 
 auto filter_streambuf::underflow() -> int_type
 {
-    if (!(mode & std::ios_base::in)) {
+    if (!(mode & ios_base::in)) {
         return traits_type::eof();
     }
 
-    std::streamsize read, converted;
+    streamsize read, converted;
 
     if (filebuf) {
         if (first == nullptr) {
@@ -132,7 +132,7 @@ auto filter_streambuf::underflow() -> int_type
 
 void filter_streambuf::set_pointers()
 {
-    if (mode & std::ios_base::in) {
+    if (mode & ios_base::in) {
         setg(0, 0, 0);
         setp(out_buffer, out_buffer + buffer_size);
     } else {
@@ -142,25 +142,25 @@ void filter_streambuf::set_pointers()
 }
 
 
-std::streamsize filter_streambuf::do_callback()
+streamsize filter_streambuf::do_callback()
 {
-    size_t distance;
-    std::streamsize processed, converted;
+    size_t dist;
+    streamsize processed, converted;
 
     // prep arguments
-    distance = std::distance(first, last);
+    dist = distance(first, last);
     const void* src = (const void*) first;
     void* dst = (void*) out_buffer;
 
     // do callback
-    callback(src, distance, dst, buffer_size, sizeof(char_type));
+    callback(src, dist, dst, buffer_size, sizeof(char_type));
 
     // get callback data
-    processed = std::distance(first, (char*)src);
-    converted = std::distance(out_buffer, (char*)dst);
+    processed = distance(first, (char*)src);
+    converted = distance(out_buffer, (char*)dst);
 
     // store state
-    if (processed < distance) {
+    if (processed < dist) {
         // overflow in bytes written to dst, store state
         first += processed;
     } else {
@@ -175,7 +175,7 @@ std::streamsize filter_streambuf::do_callback()
 
 auto filter_streambuf::overflow(int_type c) -> int_type
 {
-    if (!(mode & std::ios_base::out)) {
+    if (!(mode & ios_base::out)) {
         return traits_type::eof();
     }
 
@@ -184,7 +184,7 @@ auto filter_streambuf::overflow(int_type c) -> int_type
             first = in_buffer;
             last = in_buffer;
         } else if (last == first + buffer_size) {
-            std::streamsize converted = do_callback();
+            streamsize converted = do_callback();
             filebuf->sputn(out_buffer, converted);
         }
 
@@ -201,8 +201,8 @@ int filter_streambuf::sync()
     auto result = overflow(traits_type::eof());
 
     // flush buffer on output
-    if (filebuf && mode & std::ios_base::out) {
-        std::streamsize converted = do_callback();
+    if (filebuf && mode & ios_base::out) {
+        streamsize converted = do_callback();
         filebuf->sputn(out_buffer, converted);
         filebuf->pubsync();
     }
@@ -214,7 +214,7 @@ int filter_streambuf::sync()
 }
 
 
-void filter_streambuf::set_filebuf(std::streambuf* f)
+void filter_streambuf::set_filebuf(streambuf* f)
 {
     filebuf = f;
 }
@@ -230,8 +230,8 @@ void filter_streambuf::set_callback(filter_callback c)
 
 
 filter_istream::filter_istream(filter_callback c):
-    buffer(std::ios_base::in, nullptr, c),
-    std::istream(&buffer)
+    buffer(ios_base::in, nullptr, c),
+    istream(&buffer)
 {}
 
 
@@ -239,15 +239,15 @@ filter_istream::~filter_istream()
 {}
 
 
-filter_istream::filter_istream(std::istream& stream, filter_callback c):
-    buffer(std::ios_base::in, nullptr, c),
-    std::istream(&buffer)
+filter_istream::filter_istream(istream& stream, filter_callback c):
+    buffer(ios_base::in, nullptr, c),
+    istream(&buffer)
 {
     open(stream, c);
 }
 
 
-void filter_istream::open(std::istream& stream, filter_callback c)
+void filter_istream::open(istream& stream, filter_callback c)
 {
     this->stream = &stream;
     buffer.set_filebuf(stream.rdbuf());
@@ -256,11 +256,9 @@ void filter_istream::open(std::istream& stream, filter_callback c)
 
 
 filter_istream::filter_istream(filter_istream&& other):
-    std::istream(std::move(other)),
-    stream(std::move(other.stream)),
-    buffer(std::move(other.buffer))
+    filter_istream()
 {
-    std::ios::rdbuf(&buffer);
+    swap(other);
 }
 
 
@@ -279,7 +277,7 @@ filter_streambuf* filter_istream::rdbuf() const
 
 void filter_istream::rdbuf(filter_streambuf *buffer)
 {
-    std::ios::rdbuf(buffer);
+    ios::rdbuf(buffer);
 }
 
 
@@ -292,20 +290,20 @@ void filter_istream::close()
 void filter_istream::swap(filter_istream &other)
 {
     // swap
-    std::istream::swap(other);
-    std::swap(buffer, other.buffer);
-    std::swap(stream, other.stream);
+    istream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    PYCPP_NAMESPACE::swap(stream, other.stream);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
 // OSTREAM
 
 filter_ostream::filter_ostream(filter_callback c):
-    buffer(std::ios_base::out, nullptr, c),
-    std::ostream(&buffer)
+    buffer(ios_base::out, nullptr, c),
+    ostream(&buffer)
 {}
 
 
@@ -313,15 +311,15 @@ filter_ostream::~filter_ostream()
 {}
 
 
-filter_ostream::filter_ostream(std::ostream& stream, filter_callback c):
-    buffer(std::ios_base::out, nullptr, c),
-    std::ostream(&buffer)
+filter_ostream::filter_ostream(ostream& stream, filter_callback c):
+    buffer(ios_base::out, nullptr, c),
+    ostream(&buffer)
 {
     open(stream, c);
 }
 
 
-void filter_ostream::open(std::ostream& stream, filter_callback c)
+void filter_ostream::open(ostream& stream, filter_callback c)
 {
     this->stream = &stream;
     buffer.set_filebuf(stream.rdbuf());
@@ -330,11 +328,9 @@ void filter_ostream::open(std::ostream& stream, filter_callback c)
 
 
 filter_ostream::filter_ostream(filter_ostream&& other):
-    std::ostream(std::move(other)),
-    stream(std::move(other.stream)),
-    buffer(std::move(other.buffer))
+    filter_ostream()
 {
-    std::ios::rdbuf(&buffer);
+    swap(other);
 }
 
 
@@ -353,7 +349,7 @@ filter_streambuf* filter_ostream::rdbuf() const
 
 void filter_ostream::rdbuf(filter_streambuf *buffer)
 {
-    std::ios::rdbuf(buffer);
+    ios::rdbuf(buffer);
 }
 
 
@@ -366,12 +362,12 @@ void filter_ostream::close()
 void filter_ostream::swap(filter_ostream &other)
 {
     // swap
-    std::ostream::swap(other);
-    std::swap(buffer, other.buffer);
-    std::swap(stream, other.stream);
+    ostream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    PYCPP_NAMESPACE::swap(stream, other.stream);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
@@ -402,14 +398,14 @@ filter_ifstream & filter_ifstream::operator=(filter_ifstream &&other)
 }
 
 
-filter_ifstream::filter_ifstream(const string_view& name, std::ios_base::openmode mode, filter_callback c):
+filter_ifstream::filter_ifstream(const string_view& name, ios_base::openmode mode, filter_callback c):
     filter_istream(file, c)
 {
     open(name, mode, c);
 }
 
 
-void filter_ifstream::open(const string_view& name, std::ios_base::openmode mode, filter_callback c)
+void filter_ifstream::open(const string_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
@@ -417,26 +413,26 @@ void filter_ifstream::open(const string_view& name, std::ios_base::openmode mode
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-filter_ifstream::filter_ifstream(const wstring_view& name, std::ios_base::openmode mode, filter_callback c):
+filter_ifstream::filter_ifstream(const wstring_view& name, ios_base::openmode mode, filter_callback c):
     filter_istream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ifstream::open(const wstring_view& name, std::ios_base::openmode mode, filter_callback c)
+void filter_ifstream::open(const wstring_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
 }
 
 
-filter_ifstream::filter_ifstream(const u16string_view& name, std::ios_base::openmode mode, filter_callback c):
+filter_ifstream::filter_ifstream(const u16string_view& name, ios_base::openmode mode, filter_callback c):
     filter_istream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ifstream::open(const u16string_view& name, std::ios_base::openmode mode, filter_callback c)
+void filter_ifstream::open(const u16string_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
@@ -461,7 +457,7 @@ void filter_ifstream::close()
 void filter_ifstream::swap(filter_ifstream &other)
 {
     filter_istream::swap(other);
-    std::swap(file, other.file);
+    PYCPP_NAMESPACE::swap(file, other.file);
 }
 
 // OFSTREAM
@@ -491,13 +487,13 @@ filter_ofstream & filter_ofstream::operator=(filter_ofstream &&other)
 }
 
 
-filter_ofstream::filter_ofstream(const string_view& name, std::ios_base::openmode mode, filter_callback c):
+filter_ofstream::filter_ofstream(const string_view& name, ios_base::openmode mode, filter_callback c):
     filter_ostream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ofstream::open(const string_view& name, std::ios_base::openmode mode, filter_callback c)
+void filter_ofstream::open(const string_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
@@ -505,26 +501,26 @@ void filter_ofstream::open(const string_view& name, std::ios_base::openmode mode
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-filter_ofstream::filter_ofstream(const wstring_view& name, std::ios_base::openmode mode, filter_callback c):
+filter_ofstream::filter_ofstream(const wstring_view& name, ios_base::openmode mode, filter_callback c):
     filter_ostream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ofstream::open(const wstring_view& name, std::ios_base::openmode mode, filter_callback c)
+void filter_ofstream::open(const wstring_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
 }
 
 
-filter_ofstream::filter_ofstream(const u16string_view& name, std::ios_base::openmode mode, filter_callback c):
+filter_ofstream::filter_ofstream(const u16string_view& name, ios_base::openmode mode, filter_callback c):
     filter_ostream(file, c)
 {
     open(name, mode, c);
 }
 
-void filter_ofstream::open(const u16string_view& name, std::ios_base::openmode mode, filter_callback c)
+void filter_ofstream::open(const u16string_view& name, ios_base::openmode mode, filter_callback c)
 {
     file.open(name, mode);
     rdbuf()->set_callback(c);
@@ -549,7 +545,7 @@ void filter_ofstream::close()
 void filter_ofstream::swap(filter_ofstream &other)
 {
     filter_ostream::swap(other);
-    std::swap(file, other.file);
+    PYCPP_NAMESPACE::swap(file, other.file);
 }
 
 PYCPP_END_NAMESPACE

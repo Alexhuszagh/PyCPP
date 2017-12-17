@@ -12,7 +12,7 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-template <typename Type>
-using identity = multi_index::identity<Type>;
+template <typename T>
+using identity = multi_index::identity<T>;
 
 PYCPP_END_NAMESPACE

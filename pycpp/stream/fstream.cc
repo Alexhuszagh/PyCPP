@@ -36,9 +36,9 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Convert C++ mode to C mode.
  */
-std::string c_ios_mode(std::ios_base::openmode mode)
+std::string c_ios_mode(ios_base::openmode mode)
 {
-    using sios = std::ios_base;
+    using sios = ios_base;
 
     // Since "r+" and "r+b" do not create the file if it does not
     // exist,  we need to lazily check if the file exists only if
@@ -86,7 +86,7 @@ std::string c_ios_mode(std::ios_base::openmode mode)
 /**
  *  \brief Get C FILE pointer from narrow filename.
  */
-FILE * get_c_file(const string_view& narrow, std::ios_base::openmode mode)
+FILE * get_c_file(const string_view& narrow, ios_base::openmode mode)
 {
     assert(is_null_terminated(narrow));
 
@@ -104,7 +104,7 @@ FILE * get_c_file(const string_view& narrow, std::ios_base::openmode mode)
 /**
  *  \brief Get C FILE pointer from wide filename.
  */
-FILE * get_c_file(const u16string_view& wide, const std::ios_base::openmode mode)
+FILE * get_c_file(const u16string_view& wide, const ios_base::openmode mode)
 {
     assert(is_null_terminated(wide));
 
@@ -119,7 +119,7 @@ FILE * get_c_file(const u16string_view& wide, const std::ios_base::openmode mode
 /**
  *  \brief Get C FILE pointer from wide filename.
  */
-FILE * get_c_file(const wstring_view& wide, const std::ios_base::openmode mode)
+FILE * get_c_file(const wstring_view& wide, const ios_base::openmode mode)
 {
     return get_c_file(reinterpret_cast<const char16_t*>(wide.data()), mode);
 }
@@ -133,7 +133,7 @@ FILE * get_c_file(const wstring_view& wide, const std::ios_base::openmode mode)
 // FSTREAM
 
 fstream::fstream():
-    std::iostream(&buffer)
+    iostream(&buffer)
 {}
 
 
@@ -156,13 +156,13 @@ fstream & fstream::operator=(fstream &&other)
 }
 
 
-fstream::fstream(const string_view& name, std::ios_base::openmode mode)
+fstream::fstream(const string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const string_view& name, std::ios_base::openmode mode)
+void fstream::open(const string_view& name, ios_base::openmode mode)
 {
     // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
@@ -174,36 +174,36 @@ void fstream::open(const string_view& name, std::ios_base::openmode mode)
 
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-fstream::fstream(const wstring_view& name, std::ios_base::openmode mode)
+fstream::fstream(const wstring_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void fstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
-fstream::fstream(const u16string_view& name, std::ios_base::openmode mode)
+fstream::fstream(const u16string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void fstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 #endif                                          // HAVE_WFOPEN
@@ -217,7 +217,7 @@ std::basic_filebuf<char>* fstream::rdbuf() const
 
 void fstream::rdbuf(std::basic_filebuf<char> *buffer)
 {
-    std::ios::rdbuf(buffer);
+    ios::rdbuf(buffer);
 }
 
 
@@ -240,12 +240,12 @@ void fstream::close()
 void fstream::swap(fstream &other)
 {
     // swap
-    std::iostream::swap(other);
-    std::swap(file, other.file);
-    std::swap(buffer, other.buffer);
+    iostream::swap(other);
+    PYCPP_NAMESPACE::swap(file, other.file);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
@@ -253,7 +253,7 @@ void fstream::swap(fstream &other)
 // IFSTREAM
 
 ifstream::ifstream():
-    std::istream(&buffer)
+    istream(&buffer)
 {}
 
 
@@ -276,13 +276,13 @@ ifstream & ifstream::operator=(ifstream &&other)
 }
 
 
-ifstream::ifstream(const string_view& name, std::ios_base::openmode mode)
+ifstream::ifstream(const string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const string_view& name, std::ios_base::openmode mode)
+void ifstream::open(const string_view& name, ios_base::openmode mode)
 {
     // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
@@ -294,37 +294,37 @@ void ifstream::open(const string_view& name, std::ios_base::openmode mode)
 
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-ifstream::ifstream(const wstring_view& name, std::ios_base::openmode mode)
+ifstream::ifstream(const wstring_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void ifstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
-ifstream::ifstream(const u16string_view& name, std::ios_base::openmode mode)
+ifstream::ifstream(const u16string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void ifstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 #endif                                          // HAVE_WFOPEN
@@ -338,7 +338,7 @@ std::basic_filebuf<char>* ifstream::rdbuf() const
 
 void ifstream::rdbuf(std::basic_filebuf<char> *buffer)
 {
-    std::ios::rdbuf(buffer);
+    ios::rdbuf(buffer);
 }
 
 
@@ -361,18 +361,18 @@ void ifstream::close()
 void ifstream::swap(ifstream &other)
 {
     // swap
-    std::istream::swap(other);
-    std::swap(file, other.file);
-    std::swap(buffer, other.buffer);
+    istream::swap(other);
+    PYCPP_NAMESPACE::swap(file, other.file);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
 
 ofstream::ofstream():
-    std::ostream(&buffer)
+    ostream(&buffer)
 {}
 
 
@@ -395,12 +395,12 @@ ofstream & ofstream::operator=(ofstream &&other)
 }
 
 
-ofstream::ofstream(const string_view& name, std::ios_base::openmode mode)
+ofstream::ofstream(const string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
-void ofstream::open(const string_view& name, std::ios_base::openmode mode)
+void ofstream::open(const string_view& name, ios_base::openmode mode)
 {
     // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
@@ -412,37 +412,37 @@ void ofstream::open(const string_view& name, std::ios_base::openmode mode)
 
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-ofstream::ofstream(const wstring_view& name, std::ios_base::openmode mode)
+ofstream::ofstream(const wstring_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void ofstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
-ofstream::ofstream(const u16string_view& name, std::ios_base::openmode mode)
+ofstream::ofstream(const u16string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void ofstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     file = get_c_file(name, mode);
     buffer = BASIC_FILEBUF(__gnu_cxx::stdio_filebuf<char>(file, mode));
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 #endif                                          // HAVE_WFOPEN
@@ -456,7 +456,7 @@ std::basic_filebuf<char>* ofstream::rdbuf() const
 
 void ofstream::rdbuf(std::basic_filebuf<char> *buffer)
 {
-    std::ios::rdbuf(buffer);
+    ios::rdbuf(buffer);
 }
 
 
@@ -479,12 +479,12 @@ void ofstream::close()
 void ofstream::swap(ofstream &other)
 {
     // swap
-    std::ostream::swap(other);
-    std::swap(file, other.file);
-    std::swap(buffer, other.buffer);
+    ostream::swap(other);
+    PYCPP_NAMESPACE::swap(file, other.file);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
@@ -513,13 +513,13 @@ fstream & fstream::operator=(fstream &&other)
 }
 
 
-fstream::fstream(const string_view& name, std::ios_base::openmode mode)
+fstream::fstream(const string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const string_view& name, std::ios_base::openmode mode)
+void fstream::open(const string_view& name, ios_base::openmode mode)
 {
     // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
@@ -536,26 +536,26 @@ void fstream::open(const string_view& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-fstream::fstream(const wstring_view& name, std::ios_base::openmode mode)
+fstream::fstream(const wstring_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void fstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     assert(is_null_terminated(name));
     std::fstream::open(name.data(), mode);
 }
 
 
-fstream::fstream(const u16string_view& name, std::ios_base::openmode mode)
+fstream::fstream(const u16string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void fstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void fstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     assert(is_null_terminated(name));
     std::fstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
@@ -586,13 +586,13 @@ ifstream & ifstream::operator=(ifstream &&other)
 }
 
 
-ifstream::ifstream(const string_view& name, std::ios_base::openmode mode)
+ifstream::ifstream(const string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const string_view& name, std::ios_base::openmode mode)
+void ifstream::open(const string_view& name, ios_base::openmode mode)
 {
     // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
@@ -609,26 +609,26 @@ void ifstream::open(const string_view& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-ifstream::ifstream(const wstring_view& name, std::ios_base::openmode mode)
+ifstream::ifstream(const wstring_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void ifstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     assert(is_null_terminated(name));
     std::ifstream::open(name.data(), mode);
 }
 
 
-ifstream::ifstream(const u16string_view& name, std::ios_base::openmode mode)
+ifstream::ifstream(const u16string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void ifstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     assert(is_null_terminated(name));
     std::ifstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);
@@ -660,13 +660,13 @@ ofstream & ofstream::operator=(ofstream &&other)
 }
 
 
-ofstream::ofstream(const string_view& name, std::ios_base::openmode mode)
+ofstream::ofstream(const string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const string_view& name, std::ios_base::openmode mode)
+void ofstream::open(const string_view& name, ios_base::openmode mode)
 {
     // Windows, Unicode API
 #if defined(HAVE_WFOPEN)
@@ -683,26 +683,26 @@ void ofstream::open(const string_view& name, std::ios_base::openmode mode)
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
 
-ofstream::ofstream(const wstring_view& name, std::ios_base::openmode mode)
+ofstream::ofstream(const wstring_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void ofstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     assert(is_null_terminated(name));
     std::ofstream::open(name.data(), mode);
 }
 
 
-ofstream::ofstream(const u16string_view& name, std::ios_base::openmode mode)
+ofstream::ofstream(const u16string_view& name, ios_base::openmode mode)
 {
     open(name, mode);
 }
 
 
-void ofstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void ofstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     assert(is_null_terminated(name));
     std::ofstream::open(reinterpret_cast<const wchar_t*>(name.data()), mode);

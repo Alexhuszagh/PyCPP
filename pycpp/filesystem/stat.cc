@@ -359,8 +359,10 @@ static path_t read_link_impl(HANDLE handle)
 
     // handle errors
     if (io == 0) {
+        delete buf;
         handle_error(get_error_code());
     } else if (buf->ReparseTag != IO_REPARSE_TAG_SYMLINK) {
+        delete buf;
         throw filesystem_error(filesystem_not_a_symlink);
     }
 
@@ -520,6 +522,7 @@ path_t read_link(const path_view_t& path)
     auto buf = new value_type[PATH_MAX];
     auto length = ::readlink(path.data(), buf, PATH_MAX);
     if (length == -1) {
+        delete[] buf;
         handle_error(errno);
     }
 

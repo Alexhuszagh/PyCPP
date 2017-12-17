@@ -30,13 +30,13 @@ double variance(double mean,
     Iter first,
     Iter last)
 {
-    using value_type = typename std::iterator_traits<Iter>::value_type;
+    using value_type = typename iterator_traits<Iter>::value_type;
     double sum = 0;
-    std::for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
+    for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
         sum += pow(value - mean, 2);
     });
 
-    return sum / std::distance(first, last);
+    return sum / distance(first, last);
 }
 
 
@@ -113,13 +113,13 @@ double variance(double mean,
     Iter last,
     Summer summer)
 {
-    using value_type = typename std::iterator_traits<Iter>::value_type;
+    using value_type = typename iterator_traits<Iter>::value_type;
     double sum = 0;
-    std::for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
+    for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
         sum += pow(summer(value) - mean, 2);
     });
 
-    return sum / std::distance(first, last);
+    return sum / distance(first, last);
 }
 
 
@@ -215,16 +215,16 @@ double variance(double mean,
 {
     double sum = 0;
     double weight = 0;
-    size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
-    auto r = xrange<size_t>(0, distance, 1);
-    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+    size_t dist = min(distance(value_first, value_last), distance(weight_first, weight_last));
+    auto r = xrange<size_t>(0, dist, 1);
+    for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double v = pow(value_first[i] - mean, 2);
         double w = weight_first[i];
         sum += w * v;
         weight += w;
     });
 
-    return sum / (weight * (distance / (distance-1)));
+    return sum / (weight * (dist / (dist-1)));
 }
 
 
@@ -333,16 +333,16 @@ double variance(double mean,
 {
     double sum = 0;
     double weight = 0;
-    size_t distance = std::min(std::distance(value_first, value_last), std::distance(weight_first, weight_last));
-    auto r = xrange<size_t>(0, distance, 1);
-    std::for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
+    size_t dist = min(distance(value_first, value_last), distance(weight_first, weight_last));
+    auto r = xrange<size_t>(0, dist, 1);
+    for_each(PARALLEL_EXECUTION r.begin(), r.end(), [&](size_t i) {
         double v = pow(summer(value_first[i]) - mean, 2);
         double w = weighter(weight_first[i]);
         sum += w * v;
         weight += w;
     });
 
-    return sum / (weight * (distance / (distance-1)));
+    return sum / (weight * (dist / (dist-1)));
 }
 
 

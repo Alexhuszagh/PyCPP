@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include <pycpp/stl/string_view.h>
 #include <pycpp/stream/fd.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -27,7 +28,7 @@ extern size_t SEQUENTIAL_BUFFER_SIZE;
 /**
  *  \brief Stream wrapping a sequential I/O file.
  */
-class sequential_fstream: public std::iostream
+class sequential_fstream: public iostream
 {
 public:
     sequential_fstream();
@@ -37,14 +38,14 @@ public:
     sequential_fstream(sequential_fstream &&other);
     sequential_fstream & operator=(sequential_fstream &&other);
 
-    sequential_fstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    sequential_fstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    sequential_fstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    sequential_fstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    sequential_fstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    sequential_fstream(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
 #endif                                          // WINDOWS
 
     // DATA
@@ -60,7 +61,7 @@ private:
 /**
  *  \brief Stream wrapping a sequential input file.
  */
-class sequential_ifstream: public std::istream
+class sequential_ifstream: public istream
 {
 public:
     sequential_ifstream();
@@ -70,14 +71,14 @@ public:
     sequential_ifstream(sequential_ifstream &&other);
     sequential_ifstream & operator=(sequential_ifstream &&other);
 
-    sequential_ifstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::in);
+    sequential_ifstream(const string_view& name, ios_base::openmode mode = ios_base::in);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    sequential_ifstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::in);
-    sequential_ifstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::in);
+    sequential_ifstream(const wstring_view& name, ios_base::openmode mode = ios_base::in);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in);
+    sequential_ifstream(const u16string_view& name, ios_base::openmode mode = ios_base::in);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in);
 #endif                                          // WINDOWS
 
     // DATA
@@ -93,7 +94,7 @@ private:
 /**
  *  \brief Stream wrapping a sequential ouput file.
  */
-class sequential_ofstream: public std::ostream
+class sequential_ofstream: public ostream
 {
 public:
     sequential_ofstream();
@@ -103,14 +104,14 @@ public:
     sequential_ofstream(sequential_ofstream &&other);
     sequential_ofstream & operator=(sequential_ofstream &&other);
 
-    sequential_ofstream(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::string& name, std::ios_base::openmode mode = std::ios_base::out);
+    sequential_ofstream(const string_view& name, ios_base::openmode mode = ios_base::out);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    sequential_ofstream(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::wstring& name, std::ios_base::openmode mode = std::ios_base::out);
-    sequential_ofstream(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const std::u16string& name, std::ios_base::openmode mode = std::ios_base::out);
+    sequential_ofstream(const wstring_view& name, ios_base::openmode mode = ios_base::out);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::out);
+    sequential_ofstream(const u16string_view& name, ios_base::openmode mode = ios_base::out);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::out);
 #endif                                          // WINDOWS
 
     // DATA

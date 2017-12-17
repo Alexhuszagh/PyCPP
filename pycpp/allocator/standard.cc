@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/allocator/standard.h>
-#include <stdlib.h>
+#include <pycpp/misc/safe_stdlib.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -12,13 +12,13 @@ PYCPP_BEGIN_NAMESPACE
 
 void* standard_allocator_base::allocate(size_t n, size_t size, const void*)
 {
-    return malloc(n * size);
+    return safe_malloc(n * size);
 }
 
 
 void standard_allocator_base::deallocate(void* p, size_t)
 {
-    free(p);
+    safe_free(p);
 }
 
 PYCPP_END_NAMESPACE

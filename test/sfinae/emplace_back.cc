@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/sfinae/emplace_back.h>
+#include <pycpp/stl/unordered_set.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <unordered_set>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,24 +17,24 @@ PYCPP_USING_NAMESPACE
 
 TEST(emplace_back, emplace_back)
 {
-    std::unordered_set<int> set = {2, 3, 4};
-    std::vector<int> vec = {2, 3, 4};
+    unordered_set<int> s = {2, 3, 4};
+    vector<int> v = {2, 3, 4};
 
-    emplace_back()(set, 1);
-    emplace_back()(vec, 1);
+    emplace_back()(s, 1);
+    emplace_back()(v, 1);
 
-    ASSERT_EQ(set.size(), 4);
-    ASSERT_EQ(vec.size(), 4);
-    EXPECT_TRUE(set.find(1) != set.end());
-    EXPECT_EQ(vec.at(3), 1);
+    ASSERT_EQ(s.size(), 4);
+    ASSERT_EQ(v.size(), 4);
+    EXPECT_TRUE(s.find(1) != s.end());
+    EXPECT_EQ(v.at(3), 1);
 }
 
 
 TEST(emplace_back, has_emplace_back)
 {
-    using set = std::unordered_set<int>;
-    using vec = std::vector<int>;
+    using set_type = unordered_set<int>;
+    using vector_type = vector<int>;
 
-    static_assert(!has_emplace_back<set>::value, "");
-    static_assert(has_emplace_back<vec>::value, "");
+    static_assert(!has_emplace_back<set_type>::value, "");
+    static_assert(has_emplace_back<vector_type>::value, "");
 }

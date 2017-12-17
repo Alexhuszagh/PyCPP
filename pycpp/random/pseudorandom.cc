@@ -13,7 +13,7 @@
 #include <time.h>
 
 PYCPP_BEGIN_NAMESPACE
-\
+
 // ALIAS
 // -----
 
@@ -132,11 +132,17 @@ size_t pseudorandom(void* dst, size_t dstlen, bool deterministic)
 
 std::string pseudorandom(size_t length, bool deterministic)
 {
-    char* dst = new char[length];
-    pseudorandom(dst, length, deterministic);
-    std::string output(dst, length);
-    delete[] dst;
-    return output;
+    char* dst = nullptr;
+    try {
+        dst = new char[length];
+        pseudorandom(dst, length, deterministic);
+        std::string output(dst, length);
+        delete[] dst;
+        return output;
+    } catch (...) {
+        delete[] dst;
+        throw;
+    }
 }
 
 
@@ -216,8 +222,8 @@ random_int_t randrange(random_int_t start, random_int_t stop, size_t step)
         throw runtime_error("Cannot check negative range.");
     }
 
-    auto distance = (stop - start) / step;
-    uniform_int_distribution<random_int_t> distribution(0, distance);
+    auto dist = (stop - start) / step;
+    uniform_int_distribution<random_int_t> distribution(0, dist);
     return (random_value(distribution) * step) + start;
 }
 
@@ -228,8 +234,8 @@ random_int_list_t randrange(random_int_t start, random_int_t stop, size_t step, 
         throw runtime_error("Cannot check negative range.");
     }
 
-    auto distance = (stop - start) / step;
-    uniform_int_distribution<random_int_t> distribution(0, distance);
+    auto dist = (stop - start) / step;
+    uniform_int_distribution<random_int_t> distribution(0, dist);
     auto list = random_list(distribution, n);
     for_each(list.begin(), list.end(), [&start, &step](random_int_t& r) {
         r *= step;

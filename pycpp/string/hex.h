@@ -15,12 +15,12 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using hex_lowlevel_callback = std::function<void(
+using hex_lowlevel_callback = function<void(
     const void*& src, size_t srclen,
     void*& dst, size_t dstlen)
 >;
 
-using hex_highlevel_callback = std::function<std::string(const string_wrapper&)>;
+using hex_highlevel_callback = function<std::string(const string_wrapper&)>;
 
 // FUNCTIONS
 // ---------

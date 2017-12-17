@@ -4,7 +4,6 @@
 #include <pycpp/csv/writer.h>
 #include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/string.h>
-#include <pycpp/string/whitespace.h>
 
 PYCPP_BEGIN_NAMESPACE
 

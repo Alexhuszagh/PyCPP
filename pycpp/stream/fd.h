@@ -23,21 +23,21 @@ extern size_t DEFAULT_BUFFER_SIZE;
 /**
  *  \brief Filtering streambuffer that wraps a file descriptor.
  */
-class fd_streambuf: public std::streambuf
+class fd_streambuf: public streambuf
 {
 public:
     // MEMBER TYPES
     // ------------
-    using typename std::streambuf::char_type;
-    using typename std::streambuf::int_type;
-    using typename std::streambuf::traits_type;
-    using typename std::streambuf::off_type;
-    using typename std::streambuf::pos_type;
+    using typename streambuf::char_type;
+    using typename streambuf::int_type;
+    using typename streambuf::traits_type;
+    using typename streambuf::off_type;
+    using typename streambuf::pos_type;
 
     // MEMBER FUNCTIONS
     // ----------------
-    fd_streambuf(std::ios_base::openmode, fd_t fd);
-    fd_streambuf(std::ios_base::openmode, fd_t fd, size_t buffer_size);
+    fd_streambuf(ios_base::openmode, fd_t fd);
+    fd_streambuf(ios_base::openmode, fd_t fd, size_t buffer_size);
     virtual ~fd_streambuf();
 
     fd_streambuf(const fd_streambuf&) = delete;
@@ -57,15 +57,15 @@ protected:
     virtual int_type underflow();
     virtual int_type overflow(int_type = traits_type::eof());
     virtual int sync();
-    virtual pos_type seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode openmode = std::ios_base::in | std::ios_base::out);
-    virtual pos_type seekpos(pos_type pos, std::ios_base::openmode openmode = std::ios_base::in | std::ios_base::out);
+    virtual pos_type seekoff(off_type off, ios_base::seekdir way, ios_base::openmode openmode = ios_base::in | ios_base::out);
+    virtual pos_type seekpos(pos_type pos, ios_base::openmode openmode = ios_base::in | ios_base::out);
 
 private:
     void initialize_buffers();
     void set_readp();
     void set_writep();
 
-    std::ios_base::openmode mode;
+    ios_base::openmode mode;
     size_t buffer_size;
     fd_t fd_ = INVALID_FD_VALUE;
     char_type* in_first = nullptr;
@@ -78,7 +78,7 @@ private:
 /**
  *  \brief Stream wrapper using file descriptors.
  */
-class fd_stream: public std::iostream
+class fd_stream: public iostream
 {
 public:
     fd_stream();
@@ -106,7 +106,7 @@ private:
 /**
  *  \brief Input stream wrapper using file descriptors.
  */
-class fd_istream: public std::istream
+class fd_istream: public istream
 {
 public:
     fd_istream();
@@ -134,7 +134,7 @@ private:
 /**
  *  \brief Output stream wrapper using file descriptors.
  */
-class fd_ostream: public std::ostream
+class fd_ostream: public ostream
 {
 public:
     fd_ostream();

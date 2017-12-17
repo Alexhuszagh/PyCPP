@@ -30,7 +30,7 @@ extern size_t RANDOM_ACCESS_BUFFER_SIZE;
 /**
  *  \brief Stream wrapping a random-access I/O file.
  */
-class random_access_fstream: public std::iostream
+class random_access_fstream: public iostream
 {
 public:
     random_access_fstream();
@@ -40,14 +40,14 @@ public:
     random_access_fstream(random_access_fstream &&other);
     random_access_fstream & operator=(random_access_fstream &&other);
 
-    random_access_fstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    random_access_fstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    random_access_fstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    random_access_fstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
-    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out);
+    random_access_fstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    random_access_fstream(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
 #endif                                          // WINDOWS
 
     // DATA
@@ -63,7 +63,7 @@ private:
 /**
  *  \brief Stream wrapping a random-access input file.
  */
-class random_access_ifstream: public std::istream
+class random_access_ifstream: public istream
 {
 public:
     random_access_ifstream();
@@ -73,14 +73,14 @@ public:
     random_access_ifstream(random_access_ifstream &&other);
     random_access_ifstream & operator=(random_access_ifstream &&other);
 
-    random_access_ifstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    random_access_ifstream(const string_view& name, ios_base::openmode mode = ios_base::in);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    random_access_ifstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::in);
-    random_access_ifstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in);
-    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::in);
+    random_access_ifstream(const wstring_view& name, ios_base::openmode mode = ios_base::in);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in);
+    random_access_ifstream(const u16string_view& name, ios_base::openmode mode = ios_base::in);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in);
 #endif                                          // WINDOWS
 
     // DATA
@@ -96,7 +96,7 @@ private:
 /**
  *  \brief Stream wrapping a random-access ouput file.
  */
-class random_access_ofstream: public std::ostream
+class random_access_ofstream: public ostream
 {
 public:
     random_access_ofstream();
@@ -106,14 +106,14 @@ public:
     random_access_ofstream(random_access_ofstream &&other);
     random_access_ofstream & operator=(random_access_ofstream &&other);
 
-    random_access_ofstream(const string_view& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const string_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    random_access_ofstream(const string_view& name, ios_base::openmode mode = ios_base::out);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::out);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    random_access_ofstream(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const wstring_view& name, std::ios_base::openmode mode = std::ios_base::out);
-    random_access_ofstream(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::out);
-    void open(const u16string_view& name, std::ios_base::openmode mode = std::ios_base::out);
+    random_access_ofstream(const wstring_view& name, ios_base::openmode mode = ios_base::out);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::out);
+    random_access_ofstream(const u16string_view& name, ios_base::openmode mode = ios_base::out);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::out);
 #endif                                          // WINDOWS
 
     // DATA

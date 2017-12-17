@@ -42,7 +42,7 @@ struct test_stream
     {
         std::string expected = "Single line";
 
-        OStream ostream(path, std::ios_base::out);
+        OStream ostream(path, ios_base::out);
         ostream.map(0, expected.size());
         for (size_t i = 0; i < expected.size(); ++i) {
             ostream[i] = expected[i];
@@ -51,7 +51,7 @@ struct test_stream
         ostream.unmap();
         ostream.close();
 
-        IStream istream(path, std::ios_base::in);
+        IStream istream(path, ios_base::in);
         istream.map(0);
         EXPECT_TRUE(istream.has_mapping());
         std::string actual(istream.data(), istream.size());
@@ -69,7 +69,7 @@ struct test_stream
 
 TEST(mmap_fstream, mmap_fstream)
 {
-    typedef test_stream<mmap_fstream, mmap_fstream> tester;
+    using tester = test_stream<mmap_fstream, mmap_fstream>;
 
     tester()(UTF8_ENGLISH);
 #if defined(HAVE_WFOPEN)         // WINDOWS
@@ -83,7 +83,7 @@ TEST(mmap_fstream, mmap_fstream)
 
 TEST(mmap_fstream, mmap_iofstream)
 {
-    typedef test_stream<mmap_ifstream, mmap_ofstream> tester;
+    using tester = test_stream<mmap_ifstream, mmap_ofstream>;
 
     tester()(UTF8_ENGLISH);
 #if defined(HAVE_WFOPEN)         // WINDOWS

@@ -19,21 +19,16 @@ using std::try_lock;
 using std::lock;
 using std::call_once;
 using std::swap;
-
-using mutex = std::mutex;
-using recursive_mutex = std::recursive_mutex;
-using timed_mutex = std::timed_mutex;
-using recursive_timed_mutex = std::recursive_timed_mutex;
-using once_flag = std::once_flag;
-using adopt_lock_t = std::adopt_lock_t;
-using defer_lock_t = std::defer_lock_t;
-using try_to_lock_t = std::try_to_lock_t;
-
-template <typename Mutex>
-using lock_guard = std::lock_guard<Mutex>;
-
-template <typename Mutex>
-using unique_lock = std::unique_lock<Mutex>;
+using std::mutex;
+using std::recursive_mutex;
+using std::timed_mutex;
+using std::recursive_timed_mutex;
+using std::once_flag;
+using std::adopt_lock_t;
+using std::defer_lock_t;
+using std::try_to_lock_t;
+using std::lock_guard;
+using std::unique_lock;
 
 // EXTENSIONS
 // ----------

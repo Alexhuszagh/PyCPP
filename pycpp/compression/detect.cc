@@ -27,12 +27,18 @@ static bool detect_stream(istream& stream, const magic_bytes& magic)
 {
     // all magic bytes **must** have the same length
     size_t size = magic.front().size();
-    char* str = new char[size];
-    stream.read(str, size);
-    bool status = detect_header(string_wrapper(str, size), magic);
-    delete[] str;
+    char* str = nullptr;
 
-    return status;
+    try {
+        str = new char[size];
+        stream.read(str, size);
+        bool status = detect_header(string_wrapper(str, size), magic);
+        delete[] str;
+        return status;
+    } catch (...) {
+        delete[] str;
+        throw;
+    }
 }
 
 

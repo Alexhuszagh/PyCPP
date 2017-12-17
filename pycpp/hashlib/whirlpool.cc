@@ -753,39 +753,38 @@ static void whirlpool_final(void* ptr, void* buf)
 // -------
 
 
-whirlpool_hash::whirlpool_hash()
+whirlpool_hash::whirlpool_hash():
+    ctx(make_unique<whirlpool_context>())
 {
-    ctx = new whirlpool_context;
-    whirlpool_init(ctx);
+    whirlpool_init(ctx.get());
 }
 
 
-whirlpool_hash::whirlpool_hash(const void* src, size_t srclen)
+whirlpool_hash::whirlpool_hash(const void* src, size_t srclen):
+    ctx(make_unique<whirlpool_context>())
 {
-    ctx = new whirlpool_context;
-    whirlpool_init(ctx);
+    whirlpool_init(ctx.get());
     update(src, srclen);
 }
 
 
-whirlpool_hash::whirlpool_hash(const string_wrapper& str)
+whirlpool_hash::whirlpool_hash(const string_wrapper& str):
+    ctx(make_unique<whirlpool_context>())
 {
-    ctx = new whirlpool_context;
-    whirlpool_init(ctx);
+    whirlpool_init(ctx.get());
     update(str);
 }
 
 
 whirlpool_hash::~whirlpool_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void whirlpool_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, whirlpool_update);
+    hash_update(ctx.get(), src, srclen, whirlpool_update);
 }
 
 

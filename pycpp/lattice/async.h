@@ -20,7 +20,7 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-typedef std::deque<response_t> response_list_t;
+using response_list_t = std::deque<response_t>;
 
 
 /**
@@ -50,17 +50,17 @@ public:
     response_list_t perform();
 
     template <typename Duration>
-    enable_if_t<std::is_integral<Duration>::value, response_t>
+    enable_if_t<is_integral<Duration>::value, response_t>
     next(Duration seconds = 1);
 
     template <typename Duration>
-    enable_if_t<is_specialization<Duration, std::chrono::duration>::value, response_t>
-    next(const Duration& duration = std::chrono::seconds(1));
+    enable_if_t<is_specialization<Duration, chrono::duration>::value, response_t>
+    next(const Duration& duration = chrono::seconds(1));
 
     explicit operator bool() const;
 
 protected:
-    std::deque<std::future<response_t>> futures;
+    std::deque<future<response_t>> futures;
 };
 
 
@@ -75,12 +75,12 @@ template <typename... Ts>
 void pool_t::get(Ts&&... ts)
 {
     request_t request;
-    set_option(request, std::forward<Ts>(ts)...);
+    set_option(request, forward<Ts>(ts)...);
 
-    futures.emplace_back(std::async(std::launch::async, [](request_t &&request) {
+    futures.emplace_back(async(launch::async, [](request_t &&request) {
         request.set_method(GET);
         return request.exec();
-    }, std::move(request)));
+    }, move(request)));
 }
 
 
@@ -91,12 +91,12 @@ template <typename... Ts>
 void pool_t::head(Ts&&... ts)
 {
     request_t request;
-    set_option(request, std::forward<Ts>(ts)...);
+    set_option(request, forward<Ts>(ts)...);
 
-    futures.emplace_back(std::async(std::launch::async, [](request_t &&request) {
+    futures.emplace_back(async(launch::async, [](request_t &&request) {
         request.set_method(HEAD);
         return request.exec();
-    }, std::move(request)));
+    }, move(request)));
 }
 
 
@@ -107,12 +107,12 @@ template <typename... Ts>
 void pool_t::options(Ts&&... ts)
 {
     request_t request;
-    set_option(request, std::forward<Ts>(ts)...);
+    set_option(request, forward<Ts>(ts)...);
 
-    futures.emplace_back(std::async(std::launch::async, [](request_t &&request) {
+    futures.emplace_back(async(launch::async, [](request_t &&request) {
         request.set_method(OPTIONS);
         return request.exec();
-    }, std::move(request)));
+    }, move(request)));
 }
 
 
@@ -123,12 +123,12 @@ template <typename... Ts>
 void pool_t::patch(Ts&&... ts)
 {
     request_t request;
-    set_option(request, std::forward<Ts>(ts)...);
+    set_option(request, forward<Ts>(ts)...);
 
-    futures.emplace_back(std::async(std::launch::async, [](request_t &&request) {
+    futures.emplace_back(async(launch::async, [](request_t &&request) {
         request.set_method(PATCH);
         return request.exec();
-    }, std::move(request)));
+    }, move(request)));
 }
 
 
@@ -139,12 +139,12 @@ template <typename... Ts>
 void pool_t::post(Ts&&... ts)
 {
     request_t request;
-    set_option(request, std::forward<Ts>(ts)...);
+    set_option(request, forward<Ts>(ts)...);
 
-    futures.emplace_back(std::async(std::launch::async, [](request_t &&request) {
+    futures.emplace_back(async(launch::async, [](request_t &&request) {
         request.set_method(POST);
         return request.exec();
-    }, std::move(request)));
+    }, move(request)));
 }
 
 
@@ -155,12 +155,12 @@ template <typename... Ts>
 void pool_t::put(Ts&&... ts)
 {
     request_t request;
-    set_option(request, std::forward<Ts>(ts)...);
+    set_option(request, forward<Ts>(ts)...);
 
-    futures.emplace_back(std::async(std::launch::async, [](request_t &&request) {
+    futures.emplace_back(async(launch::async, [](request_t &&request) {
         request.set_method(PUT);
         return request.exec();
-    }, std::move(request)));
+    }, move(request)));
 }
 
 
@@ -171,12 +171,12 @@ template <typename... Ts>
 void pool_t::trace(Ts&&... ts)
 {
     request_t request;
-    set_option(request, std::forward<Ts>(ts)...);
+    set_option(request, forward<Ts>(ts)...);
 
-    futures.emplace_back(std::async(std::launch::async, [](request_t &&request) {
+    futures.emplace_back(async(launch::async, [](request_t &&request) {
         request.set_method(TRACE);
         return request.exec();
-    }, std::move(request)));
+    }, move(request)));
 }
 
 
@@ -184,10 +184,10 @@ void pool_t::trace(Ts&&... ts)
  *  \brief Block until next query is ready (using a seconds overload).
  */
 template <typename Duration>
-enable_if_t<std::is_integral<Duration>::value, response_t>
+enable_if_t<is_integral<Duration>::value, response_t>
 pool_t::next(Duration seconds)
 {
-    return next(std::chrono::seconds(seconds));
+    return next(chrono::seconds(seconds));
 }
 
 
@@ -195,19 +195,19 @@ pool_t::next(Duration seconds)
  *  \brief Block until next query is ready.
  */
 template <typename Duration>
-enable_if_t<is_specialization<Duration, std::chrono::duration>::value, response_t>
+enable_if_t<is_specialization<Duration, chrono::duration>::value, response_t>
 pool_t::next(const Duration& duration)
 {
     // set our starting timepoint
-    typedef std::chrono::high_resolution_clock highres_clock;
+    using highres_clock = chrono::high_resolution_clock;
 
     auto now = highres_clock::now();
     auto stop = now + duration;
 
     auto it = futures.begin();
     while (!futures.empty() && now < stop) {
-        auto status = it->wait_for(std::chrono::milliseconds(50));
-        if (status == std::future_status::ready) {
+        auto status = it->wait_for(chrono::milliseconds(50));
+        if (status == future_status::ready) {
             auto response = it->get();
             futures.erase(it);
             return response;

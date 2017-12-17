@@ -21,8 +21,7 @@ struct hash;
 // ALIAS
 // -----
 
-template <size_t Size>
-using bitset = std::bitset<Size>;
+using std::bitset;
 
 // SPECIALIZATION
 // --------------

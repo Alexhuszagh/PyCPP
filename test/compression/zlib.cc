@@ -25,12 +25,14 @@ static std::string ZLIB_DECOMPRESSED("\x54\x68\x65\x20\x4d\x49\x54\x20\x4c\x69\x
 
 TEST(zlib, zlib_compressor)
 {
-    char* buffer = new char[4096];
     std::string zlib = ZLIB_DECOMPRESSED;
     const void* src;
     void* dst;
+    char* buffer = nullptr;
 
     try {
+        buffer = new char[4096];
+
         // first example
         zlib_compressor ctx;
         src = zlib.data();
@@ -51,7 +53,8 @@ TEST(zlib, zlib_compressor)
         EXPECT_EQ(strncmp(buffer, ZLIB_COMPRESSED.data(), ZLIB_COMPRESSED.size()), 0);
 
     } catch(...) {
-        EXPECT_TRUE(false);
+        delete[] buffer;
+        throw;
     }
 
     delete[] buffer;
@@ -60,12 +63,14 @@ TEST(zlib, zlib_compressor)
 
 TEST(zlib, zlib_decompressor)
 {
-    char* buffer = new char[4096];
     std::string zlib = ZLIB_COMPRESSED;
     const void* src;
     void* dst;
+    char* buffer = nullptr;
 
     try {
+        buffer = new char[4096];
+
         // first example
         zlib_decompressor ctx;
         src = zlib.data();
@@ -84,7 +89,8 @@ TEST(zlib, zlib_decompressor)
         EXPECT_EQ(strncmp(buffer, ZLIB_DECOMPRESSED.data(), ZLIB_DECOMPRESSED.size()), 0);
 
     } catch(...) {
-        EXPECT_TRUE(false);
+        delete[] buffer;
+        throw;
     }
 
     delete[] buffer;

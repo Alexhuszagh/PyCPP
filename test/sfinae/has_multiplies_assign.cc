@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/sfinae/has_multiplies_assign.h>
+#include <pycpp/stl/utility.h>
 #include <gtest/gtest.h>
-#include <utility>
 
 PYCPP_USING_NAMESPACE
 

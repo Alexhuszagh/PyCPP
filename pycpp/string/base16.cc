@@ -1,7 +1,6 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/stl/iterator.h>
 #include <pycpp/string/base16.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -54,7 +53,7 @@ static void encode_base16_message(Iter1 &src, Iter2 &dst)
 template <typename Iter1, typename Iter2>
 static void decode_base16_message(Iter1 &src_first, Iter1 src_last, Iter2 &dst)
 {
-    char* buffer = new char[OUTPUT_INTERVAL];
+    char buffer[OUTPUT_INTERVAL];
     size_t i = 0;
     for (; i < OUTPUT_INTERVAL && src_first != src_last; i++, src_first++) {
         buffer[i] = DECODING[static_cast<int>(*src_first)];
@@ -65,8 +64,6 @@ static void decode_base16_message(Iter1 &src_first, Iter1 src_last, Iter2 &dst)
 
     // First, 11111111, Seconds, 11111111
     *dst++ = static_cast<char>((buffer[0] << 4) + (buffer[1]));
-
-    delete[] buffer;
 }
 
 
@@ -95,7 +92,7 @@ std::string base16_encode(const string_wrapper& str)
     base16.reserve(encoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();
-    auto dst = std::back_inserter(base16);
+    auto dst = back_inserter(base16);
     for (; first != last; ) {
         encode_base16_message(first, dst);
     }
@@ -125,7 +122,7 @@ std::string base16_decode(const string_wrapper& str)
     base16.reserve(decoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();
-    auto dst = std::back_inserter(base16);
+    auto dst = back_inserter(base16);
     for (; first != last; ) {
         decode_base16_message(first, last, dst);
     }

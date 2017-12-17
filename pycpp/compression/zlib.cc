@@ -161,7 +161,7 @@ compression_status zlib_decompressor_impl::operator()(const void*& src, size_t s
 
 
 zlib_compressor::zlib_compressor(int level):
-    ptr_(new zlib_compressor_impl(level))
+    ptr_(make_unique<zlib_compressor_impl>(level))
 {}
 
 
@@ -200,7 +200,7 @@ bool zlib_compressor::flush(void*& dst, size_t dstlen)
 
 
 zlib_decompressor::zlib_decompressor():
-    ptr_(new zlib_decompressor_impl)
+    ptr_(make_unique<zlib_decompressor_impl>())
 {}
 
 

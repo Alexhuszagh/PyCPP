@@ -32,7 +32,7 @@ PYCPP_BEGIN_NAMESPACE
  *  in `dst`, returning a pair containing the number of bytes read
  *  (`first`) and the number of bytes written (`second`).
  */
-using filter_callback = std::function<void(
+using filter_callback = function<void(
     const void*& src, size_t srclen,
     void*& dst, size_t dstlen,
     size_t char_size)
@@ -42,16 +42,16 @@ using filter_callback = std::function<void(
 /**
  *  \brief String buffer that transforms input to output data.
  */
-class filter_streambuf: public std::streambuf
+class filter_streambuf: public streambuf
 {
 public:
     // MEMBER TYPES
     // ------------
-    using typename std::streambuf::char_type;
-    using typename std::streambuf::int_type;
-    using typename std::streambuf::traits_type;
-    using typename std::streambuf::off_type;
-    using typename std::streambuf::pos_type;
+    using typename streambuf::char_type;
+    using typename streambuf::int_type;
+    using typename streambuf::traits_type;
+    using typename streambuf::off_type;
+    using typename streambuf::pos_type;
 
     // MEMBER VARIABLES
     // ----------------
@@ -59,7 +59,7 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    filter_streambuf(std::ios_base::openmode, std::streambuf* = nullptr, filter_callback = nullptr);
+    filter_streambuf(ios_base::openmode, streambuf* = nullptr, filter_callback = nullptr);
     virtual ~filter_streambuf();
 
     filter_streambuf(const filter_streambuf&) = delete;
@@ -69,7 +69,7 @@ public:
     void close();
     void swap(filter_streambuf&);
 
-    void set_filebuf(std::streambuf*);
+    void set_filebuf(streambuf*);
     void set_callback(filter_callback);
 
 protected:
@@ -81,13 +81,13 @@ protected:
 
 private:
     void set_pointers();
-    std::streamsize do_callback();
+    streamsize do_callback();
 
     friend class filter_istream;
     friend class filter_ostream;
 
-    std::ios_base::openmode mode;
-    std::streambuf *filebuf = nullptr;
+    ios_base::openmode mode;
+    streambuf *filebuf = nullptr;
     filter_callback callback = nullptr;
     char_type* in_buffer = nullptr;
     char_type* out_buffer = nullptr;
@@ -99,7 +99,7 @@ private:
 /**
  *  \brief Transform streaming input data via callback.
  */
-class filter_istream: public std::istream
+class filter_istream: public istream
 {
 public:
     filter_istream(filter_callback = nullptr);
@@ -107,8 +107,8 @@ public:
     filter_istream(const filter_istream&) = delete;
     filter_istream & operator=(const filter_istream&) = delete;
 
-    filter_istream(std::istream& stream, filter_callback = nullptr);
-    void open(std::istream& stream, filter_callback = nullptr);
+    filter_istream(istream& stream, filter_callback = nullptr);
+    void open(istream& stream, filter_callback = nullptr);
     void close();
     filter_streambuf* rdbuf() const;
     void rdbuf(filter_streambuf *buffer);
@@ -117,19 +117,19 @@ protected:
     filter_istream(filter_istream&&);
     filter_istream & operator=(filter_istream&&);
     void swap(filter_istream &other);
-    using std::istream::tellg;
-    using std::istream::seekg;
+    using istream::tellg;
+    using istream::seekg;
 
 private:
     filter_streambuf buffer;
-    std::istream *stream = nullptr;
+    istream *stream = nullptr;
 };
 
 
 /**
  *  \brief Transform streaming output data via callback.
  */
-class filter_ostream: public std::ostream
+class filter_ostream: public ostream
 {
 public:
     filter_ostream(filter_callback = nullptr);
@@ -137,8 +137,8 @@ public:
     filter_ostream(const filter_ostream&) = delete;
     filter_ostream & operator=(const filter_ostream&) = delete;
 
-    filter_ostream(std::ostream& stream, filter_callback = nullptr);
-    void open(std::ostream& stream, filter_callback = nullptr);
+    filter_ostream(ostream& stream, filter_callback = nullptr);
+    void open(ostream& stream, filter_callback = nullptr);
     void close();
     filter_streambuf* rdbuf() const;
     void rdbuf(filter_streambuf *buffer);
@@ -147,12 +147,12 @@ protected:
     filter_ostream(filter_ostream&&);
     filter_ostream & operator=(filter_ostream&&);
     void swap(filter_ostream &other);
-    using std::ostream::tellp;
-    using std::ostream::seekp;
+    using ostream::tellp;
+    using ostream::seekp;
 
 private:
     filter_streambuf buffer;
-    std::ostream *stream = nullptr;
+    ostream *stream = nullptr;
 };
 
 
@@ -170,14 +170,14 @@ public:
     filter_ifstream(filter_ifstream&&);
     filter_ifstream & operator=(filter_ifstream&&);
 
-    filter_ifstream(const string_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
-    void open(const string_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    filter_ifstream(const string_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
+    void open(const string_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    filter_ifstream(const wstring_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
-    void open(const wstring_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
-    filter_ifstream(const u16string_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
-    void open(const u16string_view&, std::ios_base::openmode = std::ios_base::in, filter_callback = nullptr);
+    filter_ifstream(const wstring_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
+    void open(const wstring_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
+    filter_ifstream(const u16string_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
+    void open(const u16string_view&, ios_base::openmode = ios_base::in, filter_callback = nullptr);
 #endif                                          // WINDOWS
 
     bool is_open() const;
@@ -204,14 +204,14 @@ public:
     filter_ofstream(filter_ofstream&&);
     filter_ofstream & operator=(filter_ofstream&&);
 
-    filter_ofstream(const string_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
-    void open(const string_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    filter_ofstream(const string_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
+    void open(const string_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    filter_ofstream(const wstring_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
-    void open(const wstring_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
-    filter_ofstream(const u16string_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
-    void open(const u16string_view&, std::ios_base::openmode = std::ios_base::out, filter_callback = nullptr);
+    filter_ofstream(const wstring_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
+    void open(const wstring_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
+    filter_ofstream(const u16string_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
+    void open(const u16string_view&, ios_base::openmode = ios_base::out, filter_callback = nullptr);
 #endif                                          // WINDOWS
 
     bool is_open() const;

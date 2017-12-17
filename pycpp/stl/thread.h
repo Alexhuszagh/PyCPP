@@ -25,7 +25,7 @@ using std::this_thread::sleep_until;
 
 }   /* this_thread */
 
-using thread = std::thread;
+using std::thread;
 
 // SPECIALIZATION
 // --------------

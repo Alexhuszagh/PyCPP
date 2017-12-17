@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/sql/sqlite.h>
+#include <pycpp/stl/functional.h>
 #include <sqlite3.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -9,7 +10,7 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-//using string_ref = std::reference_wrapper<const std::string>;
+//using string_ref = reference_wrapper<const std::string>;
 //using sql_database_cache = std::unordered_map<string_ref, sql_database*>;
 
 // CONSTANTS

@@ -9,6 +9,7 @@
 
 #include <pycpp/sfinae/has_member_function.h>
 #include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -27,14 +28,14 @@ struct emplace_back
     enable_if_t<has_emplace_back<T>::value, void>
     operator()(T &t, Ts&&... ts)
     {
-        t.emplace_back(std::forward<Ts>(ts)...);
+        t.emplace_back(forward<Ts>(ts)...);
     }
 
     template <typename T, typename... Ts>
     enable_if_t<!has_emplace_back<T>::value, void>
     operator()(T &t, Ts&&... ts)
     {
-        t.insert(t.end(), std::forward<Ts>(ts)...);
+        t.insert(t.end(), forward<Ts>(ts)...);
     }
 };
 

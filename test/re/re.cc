@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/re/re.h>
+#include <pycpp/stl/deque.h>
 #include <gtest/gtest.h>
-#include <deque>
 
 PYCPP_USING_NAMESPACE
 
@@ -76,8 +76,8 @@ TEST(re, re_findall)
 TEST(re, re_finditer)
 {
     std::string data = "These are a bunch of words";
-    std::deque<std::string> actual;
-    std::deque<std::string> expected = {
+    deque<std::string> actual;
+    deque<std::string> expected = {
         "These",
         "are",
         "a",

@@ -48,8 +48,8 @@ enum certificate_format_t
  */
 struct certificate_file_t: std::string
 {
-    typedef std::string base;
-    using base::base;
+    using base_t = std::string;
+    using base_t::base_t;
 
     std::string suffix() const;
     certificate_format_t format() const;
@@ -63,8 +63,8 @@ struct certificate_file_t: std::string
  */
 struct revocation_lists_t: std::string
 {
-    typedef std::string base;
-    using base::base;
+    using base_t = std::string;
+    using base_t::base_t;
 
     explicit operator bool() const;
 };

@@ -16,6 +16,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 using std::default_random_engine;
+using std::random_device;
 using std::exponential_distribution;
 using std::gamma_distribution;
 using std::lognormal_distribution;

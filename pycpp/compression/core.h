@@ -218,7 +218,7 @@ std::string compress_bound(const string_wrapper& str, size_t dstlen, Function fu
 
     try {
         function(src_first, str.size(), dst_first, dstlen);
-    } catch (exception&) {
+    } catch (...) {
         safe_free(dst);
         throw;
     }
@@ -240,7 +240,7 @@ std::string decompress_bound(const string_wrapper& str, size_t bound, Function f
 
     try {
         function(src_first, str.size(), dst_first, bound, bound);
-    } catch (exception&) {
+    } catch (...) {
         safe_free(dst);
         throw;
     }

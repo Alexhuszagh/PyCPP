@@ -138,10 +138,10 @@ TEST(sorted_sequence, operators)
     sequence_type s1;
     sequence_type s2({5, 1, 4});
 
-    s1 == s2;
-    s1 != s2;
-    s1 < s2;
-    s1 <= s2;
-    s1 > s2;
-    s1 >= s2;
+    EXPECT_FALSE(s1 == s2);
+    EXPECT_TRUE(s1 != s2);
+    EXPECT_TRUE(s1 < s2);
+    EXPECT_TRUE(s1 <= s2);
+    EXPECT_FALSE(s1 > s2);
+    EXPECT_FALSE(s1 >= s2);
 }

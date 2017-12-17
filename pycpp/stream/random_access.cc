@@ -17,8 +17,8 @@ size_t RANDOM_ACCESS_BUFFER_SIZE = 512;
 // RANDOM ACCESS FSTREAM
 
 random_access_fstream::random_access_fstream():
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::iostream(&buffer)
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    iostream(&buffer)
 {}
 
 
@@ -29,10 +29,10 @@ random_access_fstream::~random_access_fstream()
 
 
 random_access_fstream::random_access_fstream(random_access_fstream &&other):
-    buffer(std::move(other.buffer)),
-    std::iostream(&buffer)
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    iostream(&buffer)
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -43,49 +43,49 @@ random_access_fstream & random_access_fstream::operator=(random_access_fstream &
 }
 
 
-random_access_fstream::random_access_fstream(const string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::iostream(&buffer)
+random_access_fstream::random_access_fstream(const string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    iostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void random_access_fstream::open(const string_view& name, std::ios_base::openmode mode)
+void random_access_fstream::open(const string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in | std::ios_base::out;
+    mode |= ios_base::in | ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-random_access_fstream::random_access_fstream(const wstring_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::iostream(&buffer)
+random_access_fstream::random_access_fstream(const wstring_view& name, ios_base::openmode mode):
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    iostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void random_access_fstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void random_access_fstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-random_access_fstream::random_access_fstream(const u16string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::iostream(&buffer)
+random_access_fstream::random_access_fstream(const u16string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    iostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void random_access_fstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void random_access_fstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in | std::ios_base::out;
+    mode |= ios_base::in | ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -109,11 +109,11 @@ void random_access_fstream::close()
 void random_access_fstream::swap(random_access_fstream &other)
 {
     // swap
-    std::iostream::swap(other);
-    std::swap(buffer, other.buffer);
+    iostream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
@@ -121,8 +121,8 @@ void random_access_fstream::swap(random_access_fstream &other)
 
 
 random_access_ifstream::random_access_ifstream():
-    buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::istream(&buffer)
+    buffer(ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    istream(&buffer)
 {}
 
 
@@ -133,10 +133,10 @@ random_access_ifstream::~random_access_ifstream()
 
 
 random_access_ifstream::random_access_ifstream(random_access_ifstream &&other):
-    buffer(std::move(other.buffer)),
-    std::istream(&buffer)
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    istream(&buffer)
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -147,49 +147,49 @@ random_access_ifstream & random_access_ifstream::operator=(random_access_ifstrea
 }
 
 
-random_access_ifstream::random_access_ifstream(const string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::istream(&buffer)
+random_access_ifstream::random_access_ifstream(const string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    istream(&buffer)
 {
     open(name, mode);
 }
 
 
-void random_access_ifstream::open(const string_view& name, std::ios_base::openmode mode)
+void random_access_ifstream::open(const string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in;
+    mode |= ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-random_access_ifstream::random_access_ifstream(const wstring_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::istream(&buffer)
+random_access_ifstream::random_access_ifstream(const wstring_view& name, ios_base::openmode mode):
+    buffer(ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    istream(&buffer)
 {
     open(name, mode);
 }
 
 
-void random_access_ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void random_access_ifstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-random_access_ifstream::random_access_ifstream(const u16string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::istream(&buffer)
+random_access_ifstream::random_access_ifstream(const u16string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    istream(&buffer)
 {
     open(name, mode);
 }
 
 
-void random_access_ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void random_access_ifstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in;
+    mode |= ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -213,19 +213,19 @@ void random_access_ifstream::close()
 void random_access_ifstream::swap(random_access_ifstream &other)
 {
     // swap
-    std::istream::swap(other);
-    std::swap(buffer, other.buffer);
+    istream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
 // RANDOM ACCESS OFSTREAM
 
 random_access_ofstream::random_access_ofstream():
-    buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::ostream(&buffer)
+    buffer(ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    ostream(&buffer)
 {}
 
 
@@ -236,10 +236,10 @@ random_access_ofstream::~random_access_ofstream()
 
 
 random_access_ofstream::random_access_ofstream(random_access_ofstream &&other):
-    buffer(std::move(other.buffer)),
-    std::ostream(&buffer)
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    ostream(&buffer)
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -250,49 +250,49 @@ random_access_ofstream & random_access_ofstream::operator=(random_access_ofstrea
 }
 
 
-random_access_ofstream::random_access_ofstream(const string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::ostream(&buffer)
+random_access_ofstream::random_access_ofstream(const string_view& name, ios_base::openmode mode):
+    buffer(ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    ostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void random_access_ofstream::open(const string_view& name, std::ios_base::openmode mode)
+void random_access_ofstream::open(const string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::out;
+    mode |= ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-random_access_ofstream::random_access_ofstream(const wstring_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::ostream(&buffer)
+random_access_ofstream::random_access_ofstream(const wstring_view& name, ios_base::openmode mode):
+    buffer(ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    ostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void random_access_ofstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void random_access_ofstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-random_access_ofstream::random_access_ofstream(const u16string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
-    std::ostream(&buffer)
+random_access_ofstream::random_access_ofstream(const u16string_view& name, ios_base::openmode mode):
+    buffer(ios_base::out, INVALID_FD_VALUE, RANDOM_ACCESS_BUFFER_SIZE),
+    ostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void random_access_ofstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void random_access_ofstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::out;
+    mode |= ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -316,11 +316,11 @@ void random_access_ofstream::close()
 void random_access_ofstream::swap(random_access_ofstream &other)
 {
     // swap
-    std::ostream::swap(other);
-    std::swap(buffer, other.buffer);
+    ostream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 

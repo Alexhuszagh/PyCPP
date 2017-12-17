@@ -1,9 +1,8 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/stl/detail/polymorphic_allocator.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -42,15 +41,15 @@ TEST(polymorphic_allocator, null_memory_resource)
     using allocator_type = polymorphic_allocator<char>;
     allocator_type allocator(null_memory_resource());
 
-    EXPECT_THROW(allocator.allocate(50), std::bad_alloc);
+    EXPECT_THROW(allocator.allocate(50), bad_alloc);
 }
 
 
 TEST(polymorphic_allocator, vector)
 {
     using allocator_type = polymorphic_allocator<int>;
-    using vector = std::vector<int, allocator_type>;
+    using vector_type = vector<int, allocator_type>;
 
-    vector v1;
+    vector_type v1;
     v1.emplace_back(1);
 }

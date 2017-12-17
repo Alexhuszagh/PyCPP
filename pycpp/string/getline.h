@@ -19,6 +19,6 @@ PYCPP_BEGIN_NAMESPACE
  *
  *  Getline implementation which stops at "\r", "\n", or both.
  */
-std::istream& getline(std::istream& stream, std::string& line);
+istream& getline(istream& stream, std::string& line);
 
 PYCPP_END_NAMESPACE

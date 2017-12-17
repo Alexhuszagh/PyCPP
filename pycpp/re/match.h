@@ -49,7 +49,7 @@ public:
     match_groupdict groupdict() const;
     size_t start(size_t index = 0) const;
     size_t end(size_t index = 0) const;
-    std::pair<size_t, size_t> span(size_t index = 0) const;
+    pair<size_t, size_t> span(size_t index = 0) const;
     size_t pos() const;
     size_t endpos() const;
     size_t lastindex() const;
@@ -67,35 +67,35 @@ private:
     match_t();
     match_t(regexp_t&, const string_wrapper&, size_t, size_t);
 
-    std::unique_ptr<match_impl_t> ptr_;
+    unique_ptr<match_impl_t> ptr_;
 };
 
 
 /**
  *  \brief Forward iterator over matches in a regex.
  */
-struct match_iterator_t: std::iterator<std::forward_iterator_tag, match_t>
+struct match_iterator_t: iterator<forward_iterator_tag, match_t>
 {
 public:
     // MEMBER TYPES
     // ------------
-    typedef match_iterator_t self;
-    typedef std::iterator<std::forward_iterator_tag, match_t> base;
-    using typename base::value_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
+    using self_t = match_iterator_t;
+    using base_t = iterator<forward_iterator_tag, match_t>;
+    using typename base_t::value_type;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
     // MEMBER FUNCTIONS
     // ----------------
     match_iterator_t();
     match_iterator_t(regexp_t& regex, const string_wrapper& str);
     ~match_iterator_t();
-    match_iterator_t(const self&);
-    self& operator=(const self&);
-    match_iterator_t(self&&);
-    self& operator=(self&&);
+    match_iterator_t(const self_t&);
+    self_t& operator=(const self_t&);
+    match_iterator_t(self_t&&);
+    self_t& operator=(self_t&&);
 
     reference operator*();
     const_reference operator*() const;
@@ -106,10 +106,10 @@ public:
     bool operator==(const match_iterator_t&) const;
     bool operator!=(const match_iterator_t&) const;
 
-    void swap(self&);
+    void swap(self_t&);
 
 private:
-    std::shared_ptr<match_t> match_;
+    shared_ptr<match_t> match_;
     regexp_t* regex_ = nullptr;
     string_wrapper str_;
 };

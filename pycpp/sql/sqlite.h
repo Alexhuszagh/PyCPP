@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/sql/database.h>
+#include <pycpp/stl/exception.h>
 #include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -31,7 +32,7 @@ extern const int sqlite_open_readonly;
 /**
  *  \brief Exception for SQLite connections.
  */
-struct sqlite_exception: public std::exception
+struct sqlite_exception: public exception
 {
 public:
     sqlite_exception(int code);

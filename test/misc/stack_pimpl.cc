@@ -15,8 +15,8 @@ PYCPP_USING_NAMESPACE
 
 struct structure;
 struct int_wrapper;
-typedef stack_pimpl<structure, 8> pstructure;
-typedef stack_pimpl<int_wrapper, sizeof(uintptr_t)> pint_wrapper;
+using pstructure = stack_pimpl<structure, 8>;
+using pint_wrapper = stack_pimpl<int_wrapper, sizeof(uintptr_t)>;
 
 // OBJECTS
 // -------
@@ -92,7 +92,7 @@ int_wrapper::~int_wrapper()
 
 TEST(stack_pimpl, integer)
 {
-    typedef stack_pimpl<int> pint;
+    using pint = stack_pimpl<int>;
 
     pint x(2);
     pint y;

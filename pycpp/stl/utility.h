@@ -41,20 +41,18 @@ using std::move;
 using std::move_if_noexcept;
 using std::declval;
 using std::make_pair;
-
-template <typename T, typename U>
-using pair = std::pair<T, U>;
-
-using piecewise_construct_t = std::piecewise_construct_t;
+using std::pair;
+using std::piecewise_construct_t;
+using std::piecewise_construct;
 
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 
-using in_place = std::in_place;
-using in_place_t = std::in_place_t;
-template <typename T> using in_place_type_t = std::in_place_type_t<T>;
-template <typename T> using in_place_type = std::in_place_type<T>;
-template <size_t N> using in_place_index_t = std::in_place_index_t<N>;
-template <size_t N> using in_place_index = std::in_place_index<N>;
+using std::in_place;
+using std::in_place_t;
+using std::in_place_type_t;
+using std::in_place_type;
+using std::in_place_index_t;
+using std::in_place_index;
 
 #else                               // !HAVE_CPP17
 
@@ -85,11 +83,8 @@ constexpr in_place_type_t<T> in_place_type {};
 template <size_t N>
 constexpr in_place_index_t<N> in_place_index {};
 
-template <typename T, T ... Is>
-using integer_sequence = std::integer_sequence<T, Is...>;
-
-template <size_t... Is>
-using index_sequence = std::index_sequence<Is...>;
+using std::integer_sequence;
+using std::index_sequence;
 
 #else                               // !HAVE_CPP14
 
@@ -109,9 +104,5 @@ using index_sequence = integer_sequence<size_t, Is...>;
 #endif                              // HAVE_CPP14
 
 #endif                              // HAVE_CPP17
-
-// GLOBALS
-
-constexpr piecewise_construct_t piecewise_construct = piecewise_construct_t();
 
 PYCPP_END_NAMESPACE

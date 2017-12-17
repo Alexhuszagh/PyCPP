@@ -50,13 +50,13 @@ static size_t file_length(fd_t fd)
 #endif                                  // POSIX
 
 
-static int convert_prot(std::ios_base::openmode mode)
+static int convert_prot(ios_base::openmode mode)
 {
     int prot = 0;
-    if (mode & std::ios_base::in) {
+    if (mode & ios_base::in) {
         prot |= PROT_READ;
     }
-    if (mode & std::ios_base::out) {
+    if (mode & ios_base::out) {
         prot |= PROT_WRITE;
     }
 
@@ -64,7 +64,7 @@ static int convert_prot(std::ios_base::openmode mode)
 }
 
 
-static void* open_memory_view(fd_t fd, std::ios_base::openmode mode, size_t offset, size_t length)
+static void* open_memory_view(fd_t fd, ios_base::openmode mode, size_t offset, size_t length)
 {
 #if defined(OS_WINDOWS)
     int fd_ = _open_osfhandle((intptr_t) fd, 0);
@@ -99,8 +99,8 @@ static int close_memory_view(void *addr, size_t length)
 // MMAP FSTREAM
 
 mmap_fstream::mmap_fstream():
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
-    std::iostream(&buffer)
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE),
+    iostream(&buffer)
 {}
 
 
@@ -111,10 +111,10 @@ mmap_fstream::~mmap_fstream()
 
 
 mmap_fstream::mmap_fstream(mmap_fstream &&other):
-    buffer(std::move(other.buffer)),
-    std::iostream(&buffer)
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    iostream(&buffer)
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -125,49 +125,49 @@ mmap_fstream & mmap_fstream::operator=(mmap_fstream &&other)
 }
 
 
-mmap_fstream::mmap_fstream(const string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
-    std::iostream(&buffer)
+mmap_fstream::mmap_fstream(const string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE),
+    iostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void mmap_fstream::open(const string_view& name, std::ios_base::openmode mode)
+void mmap_fstream::open(const string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in | std::ios_base::out;
+    mode |= ios_base::in | ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-mmap_fstream::mmap_fstream(const wstring_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
-    std::iostream(&buffer)
+mmap_fstream::mmap_fstream(const wstring_view& name, ios_base::openmode mode):
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE),
+    iostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void mmap_fstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void mmap_fstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-mmap_fstream::mmap_fstream(const u16string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
-    std::iostream(&buffer)
+mmap_fstream::mmap_fstream(const u16string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE),
+    iostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void mmap_fstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void mmap_fstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in | std::ios_base::out;
+    mode |= ios_base::in | ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -199,13 +199,13 @@ void mmap_fstream::close()
 void mmap_fstream::swap(mmap_fstream &other)
 {
     // swap
-    std::iostream::swap(other);
-    std::swap(buffer, other.buffer);
-    std::swap(data_, other.data_);
-    std::swap(length_, other.length_);
+    iostream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    PYCPP_NAMESPACE::swap(data_, other.data_);
+    PYCPP_NAMESPACE::swap(length_, other.length_);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
@@ -264,7 +264,7 @@ void mmap_fstream::map(size_t o, size_t l)
     }
 
     // map memory
-    std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out;
+    ios_base::openmode mode = ios_base::in | ios_base::out;
     data_ = reinterpret_cast<char*>(open_memory_view(buffer.fd(), mode, o, l));
     if (data_) {
         length_ = l;
@@ -293,8 +293,8 @@ void mmap_fstream::flush(bool async)
 
 
 mmap_ifstream::mmap_ifstream():
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
-    std::istream(&buffer)
+    buffer(ios_base::in, INVALID_FD_VALUE),
+    istream(&buffer)
 {}
 
 
@@ -305,10 +305,10 @@ mmap_ifstream::~mmap_ifstream()
 
 
 mmap_ifstream::mmap_ifstream(mmap_ifstream &&other):
-    buffer(std::move(other.buffer)),
-    std::istream(&buffer)
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    istream(&buffer)
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -319,49 +319,49 @@ mmap_ifstream & mmap_ifstream::operator=(mmap_ifstream &&other)
 }
 
 
-mmap_ifstream::mmap_ifstream(const string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
-    std::istream(&buffer)
+mmap_ifstream::mmap_ifstream(const string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in, INVALID_FD_VALUE),
+    istream(&buffer)
 {
     open(name, mode);
 }
 
 
-void mmap_ifstream::open(const string_view& name, std::ios_base::openmode mode)
+void mmap_ifstream::open(const string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in;
+    mode |= ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-mmap_ifstream::mmap_ifstream(const wstring_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
-    std::istream(&buffer)
+mmap_ifstream::mmap_ifstream(const wstring_view& name, ios_base::openmode mode):
+    buffer(ios_base::in, INVALID_FD_VALUE),
+    istream(&buffer)
 {
     open(name, mode);
 }
 
 
-void mmap_ifstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void mmap_ifstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-mmap_ifstream::mmap_ifstream(const u16string_view& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
-    std::istream(&buffer)
+mmap_ifstream::mmap_ifstream(const u16string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in, INVALID_FD_VALUE),
+    istream(&buffer)
 {
     open(name, mode);
 }
 
 
-void mmap_ifstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void mmap_ifstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in;
+    mode |= ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -393,13 +393,13 @@ void mmap_ifstream::close()
 void mmap_ifstream::swap(mmap_ifstream &other)
 {
     // swap
-    std::istream::swap(other);
-    std::swap(buffer, other.buffer);
-    std::swap(data_, other.data_);
-    std::swap(length_, other.length_);
+    istream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    PYCPP_NAMESPACE::swap(data_, other.data_);
+    PYCPP_NAMESPACE::swap(length_, other.length_);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
@@ -443,7 +443,7 @@ void mmap_ifstream::map(size_t o, size_t l)
 
     // Note: read-only, cannot map beyond file.
     // map memory
-    std::ios_base::openmode mode = std::ios_base::in;
+    ios_base::openmode mode = ios_base::in;
     data_ = reinterpret_cast<char*>(open_memory_view(buffer.fd(), mode, o, l));
     if (data_) {
         length_ = l;
@@ -473,8 +473,8 @@ void mmap_ifstream::flush(bool async)
 mmap_ofstream::mmap_ofstream():
     // Linux and Windows require read/write access for mmap
     // Lie about the underlying fd and just provide write methods
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
-    std::ostream(&buffer)
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE),
+    ostream(&buffer)
 {}
 
 
@@ -485,10 +485,10 @@ mmap_ofstream::~mmap_ofstream()
 
 
 mmap_ofstream::mmap_ofstream(mmap_ofstream &&other):
-    buffer(std::move(other.buffer)),
-    std::ostream(&buffer)
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    ostream(&buffer)
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -499,55 +499,55 @@ mmap_ofstream & mmap_ofstream::operator=(mmap_ofstream &&other)
 }
 
 
-mmap_ofstream::mmap_ofstream(const string_view& name, std::ios_base::openmode mode):
+mmap_ofstream::mmap_ofstream(const string_view& name, ios_base::openmode mode):
     // Linux and Windows require read/write access for mmap
     // Lie about the underlying fd and just provide write methods
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
-    std::ostream(&buffer)
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE),
+    ostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void mmap_ofstream::open(const string_view& name, std::ios_base::openmode mode)
+void mmap_ofstream::open(const string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in | std::ios_base::out;
+    mode |= ios_base::in | ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-mmap_ofstream::mmap_ofstream(const wstring_view& name, std::ios_base::openmode mode):
+mmap_ofstream::mmap_ofstream(const wstring_view& name, ios_base::openmode mode):
     // Linux and Windows require read/write access for mmap
     // Lie about the underlying fd and just provide write methods
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
-    std::ostream(&buffer)
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE),
+    ostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void mmap_ofstream::open(const wstring_view& name, std::ios_base::openmode mode)
+void mmap_ofstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-mmap_ofstream::mmap_ofstream(const u16string_view& name, std::ios_base::openmode mode):
+mmap_ofstream::mmap_ofstream(const u16string_view& name, ios_base::openmode mode):
     // Linux and Windows require read/write access for mmap
     // Lie about the underlying fd and just provide write methods
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
-    std::ostream(&buffer)
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE),
+    ostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void mmap_ofstream::open(const u16string_view& name, std::ios_base::openmode mode)
+void mmap_ofstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in | std::ios_base::out;
+    mode |= ios_base::in | ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_random));
 }
 
@@ -579,13 +579,13 @@ void mmap_ofstream::close()
 void mmap_ofstream::swap(mmap_ofstream &other)
 {
     // swap
-    std::ostream::swap(other);
-    std::swap(buffer, other.buffer);
-    std::swap(data_, other.data_);
-    std::swap(length_, other.length_);
+    ostream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    PYCPP_NAMESPACE::swap(data_, other.data_);
+    PYCPP_NAMESPACE::swap(length_, other.length_);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
@@ -638,7 +638,7 @@ void mmap_ofstream::map(size_t o, size_t l)
     // map memory
     // Linux and Windows require read/write access for mmap
     // Lie about the underlying fd and just provide write methods
-    std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out;
+    ios_base::openmode mode = ios_base::in | ios_base::out;
     data_ = reinterpret_cast<char*>(open_memory_view(buffer.fd(), mode, o, l));
     if (data_) {
         length_ = l;

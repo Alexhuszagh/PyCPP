@@ -17,11 +17,12 @@ PYCPP_USING_NAMESPACE
 static void test_lowlevel(const std::string& input, const std::string& expected, casemap_lowlevel_callback cb)
 {
     const char* src = input.data();
-    char* dst = new char[20];
-    const void* src_first = src;
-    void* dst_first = dst;
+    char* dst = nullptr;
 
     try {
+        dst = new char[20];
+        const void* src_first = src;
+        void* dst_first = dst;
         cb(src_first, input.size(), dst_first, 20);
         EXPECT_EQ(std::distance(dst, (char*) dst_first), expected.size());
         EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);

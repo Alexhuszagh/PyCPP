@@ -5,11 +5,11 @@
  *  \brief Base16 unittests.
  */
 
+#include <pycpp/stl/random.h>
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 #include <pycpp/string/base16.h>
 #include <gtest/gtest.h>
-#include <random>
-#include <utility>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -19,7 +19,7 @@ PYCPP_USING_NAMESPACE
 
 TEST(base16, encode_decode)
 {
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
         {
             "LOWER",
             "4C4F574552"
@@ -59,9 +59,9 @@ TEST(base16, encode_decode)
 
 TEST(base16, fuzz)
 {
-    std::random_device device;
-    std::default_random_engine engine(device());
-    std::uniform_int_distribution<> dist(-128, 127);
+    random_device device;
+    default_random_engine engine(device());
+    uniform_int_distribution<> dist(-128, 127);
     for (size_t i = 0; i < 50; i++) {
         const size_t length = rand() % 1000;
         std::string input;

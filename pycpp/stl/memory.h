@@ -21,24 +21,11 @@ PYCPP_BEGIN_NAMESPACE
 using std::make_shared;
 using std::allocate_shared;
 using std::addressof;
-
-template <typename Allocator>
-using allocator_traits = std::allocator_traits<Allocator>;
-
-template <typename T>
-using default_delete = std::default_delete<T>;
-
-template<
-    typename T,
-    typename Deleter = std::default_delete<T>
->
-using unique_ptr = std::unique_ptr<T, Deleter>;
-
-template <typename T>
-using shared_ptr = std::shared_ptr<T>;
-
-template <typename T>
-using weak_ptr = std::weak_ptr<T>;
+using std::allocator_traits;
+using std::default_delete;
+using std::unique_ptr;
+using std::shared_ptr;
+using std::weak_ptr;
 
 template <typename T, typename Allocator>
 struct uses_allocator: std::uses_allocator<T, Allocator>
@@ -109,7 +96,7 @@ unique_ptr<T> make_unique(Ts&&... ts)
 template <typename T>
 unique_ptr<T> make_unique(size_t size)
 {
-    using type = typename remove_extent<T>::type;
+    using type = remove_extent_t<T>;
     return unique_ptr<T>(new type[size]);
 }
 

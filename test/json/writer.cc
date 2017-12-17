@@ -9,7 +9,6 @@
 #include <pycpp/json.h>
 #include <pycpp/stream/fstream.h>
 #include <pycpp/string/string.h>
-#include <pycpp/string/whitespace.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
@@ -38,7 +37,7 @@ TEST(json, json_stream_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    std::ostringstream sstream;
+    ostringstream sstream;
     json_stream_writer writer(sstream);
     test_json_writer(writer);
     // force POSIX-like newlines
@@ -56,7 +55,7 @@ TEST(json, json_file_writer)
         json_file_writer writer(path);
         test_json_writer(writer);
     }
-    std::ostringstream sstream;
+    ostringstream sstream;
     {
         ifstream istream(path);
         sstream << istream.rdbuf();

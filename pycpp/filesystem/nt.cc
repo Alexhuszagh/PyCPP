@@ -258,6 +258,7 @@ struct expandvars_impl
         auto data = reinterpret_cast<const Char*>(path.data());
         DWORD length = function(data, buf, MAX_PATH);
         if (length == 0) {
+            delete[] buf;
             throw filesystem_error(filesystem_unexpected_error);
         }
 
@@ -661,6 +662,7 @@ path_t getcwd()
     wchar_t* buf = new wchar_t[MAX_PATH];
     DWORD length = GetCurrentDirectoryW(MAX_PATH, buf);
     if (length == 0) {
+        delete[] buf;
         throw filesystem_error(filesystem_unexpected_error);
     }
 

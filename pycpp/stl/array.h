@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief STL array alias.
+ *  \brief <array> aliases.
  */
 
 #pragma once
@@ -27,11 +27,6 @@ struct tuple_element;
 
 using std::get;
 using std::swap;
-
-template <
-    typename T,
-    size_t N
->
-using array = std::array<T, N>;
+using std::array;
 
 PYCPP_END_NAMESPACE

@@ -96,22 +96,22 @@ void regex_impl_t::clear()
 
 
 regexp_t::regexp_t(const string_wrapper& view):
-    ptr_(new regex_impl_t(view))
+    ptr_(make_unique<regex_impl_t>(view))
 {
     if (!ptr_->re2.ok()) {
-        throw std::runtime_error("Invalid regular expression pattern.");
+        throw runtime_error("Invalid regular expression pattern.");
     }
 }
 
 
 regexp_t::regexp_t(regexp_t&& rhs):
-    ptr_(std::move(rhs.ptr_))
+    ptr_(move(rhs.ptr_))
 {}
 
 
 regexp_t & regexp_t::operator=(regexp_t&& rhs)
 {
-    std::swap(ptr_, rhs.ptr_);
+    swap(ptr_, rhs.ptr_);
     return *this;
 }
 

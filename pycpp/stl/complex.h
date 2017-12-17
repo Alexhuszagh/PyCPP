@@ -15,7 +15,6 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-template <typename T>
-using complex = std::complex<T>;
+using std::complex;
 
 PYCPP_END_NAMESPACE

@@ -15,6 +15,7 @@
 #include <pycpp/lattice/util.h>
 #include <pycpp/lexical.h>
 #include <pycpp/lexical/atoi.h>
+#include <pycpp/misc/safe_stdlib.h>
 #include <pycpp/string/string.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
@@ -370,36 +371,43 @@ std::string connection_t<Adapter>::chunked()
     // initialize alloc
     std::string hex;
     int result, offset = 0;
-    char *buffer = static_cast<char*>(malloc(offset));
-    char byte, *src = buffer + offset;
+    char* buffer = nullptr;
+    char byte, *src;
+    try {
+        buffer = static_cast<char*>(safe_malloc(offset));
+        src = buffer + offset;
 
-    while ((result = adaptor.read(&byte, 1))) {
-        if (!(byte == '\r' || byte == '\n')) {
-            hex += byte;
-        } else if (hex == "0") {
-            // end of file
-            break;
-        } else if (hex.size()) {
-            // get carriage return
-            result = adaptor.read(&byte, 1);
-
-            // read bytes
-            int64_t bytes = atoi64(hex, 16);
-            buffer = static_cast<char*>(realloc(buffer, bytes + offset));
-            int64_t read = readn(buffer + offset, bytes);
-            offset += read;
-            if (read != bytes) {
+        while ((result = adaptor.read(&byte, 1))) {
+            if (!(byte == '\r' || byte == '\n')) {
+                hex += byte;
+            } else if (hex == "0") {
+                // end of file
                 break;
-            }
+            } else if (hex.size()) {
+                // get carriage return
+                result = adaptor.read(&byte, 1);
 
-            // clear our hex buffer for new messages
-            hex.clear();
+                // read bytes
+                int64_t bytes = atoi64(hex, 16);
+                buffer = static_cast<char*>(safe_realloc(buffer, bytes + offset));
+                int64_t read = readn(buffer + offset, bytes);
+                offset += read;
+                if (read != bytes) {
+                    break;
+                }
+
+                // clear our hex buffer for new messages
+                hex.clear();
+            }
         }
+    } catch (bad_alloc&) {
+        safe_free(buffer);
+        throw;
     }
 
     // create string output
     std::string output(buffer, offset);
-    free(buffer);
+    safe_free(buffer);
 
     return output;
 }
@@ -431,17 +439,25 @@ std::string connection_t<Adapter>::read()
 {
     // read from connection
     int result, offset = 0;
-    char *buffer = static_cast<char*>(malloc(BUFFER_SIZE));
-    char *src = buffer + offset;
-    while ((result = adaptor.read(src, BUFFER_SIZE))) {
-        offset += result;
-        buffer = static_cast<char*>(realloc(buffer, BUFFER_SIZE + offset));
+    char* buffer = nullptr;
+    char* src;
+
+    try {
+        buffer = static_cast<char*>(safe_malloc(BUFFER_SIZE));
         src = buffer + offset;
+        while ((result = adaptor.read(src, BUFFER_SIZE))) {
+            offset += result;
+            buffer = static_cast<char*>(safe_realloc(buffer, BUFFER_SIZE + offset));
+            src = buffer + offset;
+        }
+    } catch (bad_alloc&) {
+        safe_free(buffer);
+        throw;
     }
 
     // create string output
     std::string output(buffer, offset);
-    free(buffer);
+    safe_free(buffer);
 
     return output;
 }
@@ -450,8 +466,8 @@ std::string connection_t<Adapter>::read()
 // TYPES
 // -----
 
-typedef connection_t<http_adaptor_t> http_connection_t;
-typedef connection_t<ssl_adaptor_t> https_connection_t;
+using http_connection_t = connection_t<http_adaptor_t>;
+using https_connection_t = connection_t<ssl_adaptor_t>;
 
 PYCPP_END_NAMESPACE
 

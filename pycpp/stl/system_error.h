@@ -16,11 +16,11 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using error_category = std::error_category;
-using error_condition = std::error_condition;
-using errc = std::errc;
-using error_code = std::error_code;
-using system_error = std::system_error;
+using std::error_category;
+using std::error_condition;
+using std::errc;
+using std::error_code;
+using std::system_error;
 
 // SPECIALIZATION
 // --------------

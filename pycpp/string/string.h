@@ -16,7 +16,6 @@
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/string_view.h>
 #include <pycpp/stl/vector.h>
-#include <pycpp/string/whitespace.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -28,26 +27,33 @@ struct string_wrapper;
 // ALIAS
 // -----
 
-typedef std::string string_t;
-typedef std::vector<std::string> string_list_t;
-typedef std::vector<string_wrapper> string_wrapper_list_t;
-typedef std::function<bool(char)> split_function;
+using string_t = std::string;
+using string_list_t = std::vector<std::string>;
+using string_wrapper_list_t = std::vector<string_wrapper>;
+using split_function = function<bool(char)>;
 
 // CONSTANTS
 // ---------
 
-extern const string_t ascii_letters;
-extern const string_t ascii_lowercase;
-extern const string_t ascii_uppercase;
-extern const string_t digits;
-extern const string_t hexdigits;
-extern const string_t letters;
-extern const string_t lowercase;
-extern const string_t octdigits;
-extern const string_t punctuation;
-extern const string_t printable;
-extern const string_t uppercase;
-extern const string_t whitespace;
+// Python string constants
+extern const string_t ASCII_LETTERS;
+extern const string_t ASCII_LOWERCASE;
+extern const string_t ASCII_UPPERCASE;
+extern const string_t DIGITS;
+extern const string_t HEXDIGITS;
+extern const string_t LETTERS;
+extern const string_t LOWERCASE;
+extern const string_t OCTDIGITS;
+extern const string_t PUNCTUATION;
+extern const string_t PRINTABLE;
+extern const string_t UPPERCASE;
+extern const string_t WHITESPACE;
+
+// Extensions
+extern const string_t SPACE;
+extern const string_t WINDOWS_NEWLINE;
+extern const string_t POSIX_NEWLINE;
+extern const string_t NEWLINE;
 
 // OBJECTS
 // -------
@@ -92,9 +98,9 @@ struct string_wrapper: string_view
     string_t upper() const;
     string_t replace(const string_wrapper& sub, const string_wrapper& repl, size_t maxreplace = SIZE_MAX);
     string_t expandtabs(size_t tabsize = 8);
-    string_t ltrim(const string_wrapper& characters = whitespace);
-    string_t rtrim(const string_wrapper& characters = whitespace);
-    string_t trim(const string_wrapper& characters = whitespace);
+    string_t ltrim(const string_wrapper& characters = WHITESPACE);
+    string_t rtrim(const string_wrapper& characters = WHITESPACE);
+    string_t trim(const string_wrapper& characters = WHITESPACE);
 
     // TOKENS
     string_wrapper_list_t split(split_function is_split, size_t maxsplit = SIZE_MAX) const;
@@ -130,17 +136,17 @@ bool endswith(const string_wrapper& str, const string_wrapper& sub);
 /**
  *  \brief Trim characters from left-end of string.
  */
-string_t ltrim(const string_wrapper& str, const string_wrapper& characters = whitespace);
+string_t ltrim(const string_wrapper& str, const string_wrapper& characters = WHITESPACE);
 
 /**
  *  \brief Trim characters from right-end of string.
  */
-string_t rtrim(const string_wrapper& str, const string_wrapper& characters = whitespace);
+string_t rtrim(const string_wrapper& str, const string_wrapper& characters = WHITESPACE);
 
 /**
  *  \brief Trim characters from both ends of string.
  */
-string_t trim(const string_wrapper& str, const string_wrapper& characters = whitespace);
+string_t trim(const string_wrapper& str, const string_wrapper& characters = WHITESPACE);
 
 /**
  *  \brief Split characters by delimiters into dst.

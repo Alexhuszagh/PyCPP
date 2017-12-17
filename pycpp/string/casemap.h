@@ -15,12 +15,12 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using casemap_lowlevel_callback = std::function<void(
+using casemap_lowlevel_callback = function<void(
     const void*& src, size_t srclen,
     void*& dst, size_t dstlen)
 >;
 
-using casemap_highlevel_callback = std::function<std::string(const string_view&)>;
+using casemap_highlevel_callback = function<std::string(const string_view&)>;
 
 // FUNCTIONS
 // ---------

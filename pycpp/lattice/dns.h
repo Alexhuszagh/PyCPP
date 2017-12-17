@@ -28,7 +28,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 struct address_cache_t;
-typedef shared_ptr<address_cache_t> dns_cache_t;
+using dns_cache_t = shared_ptr<address_cache_t>;
 
 // OBJECTS
 // -------
@@ -41,9 +41,9 @@ struct address_iterator_t: iterator<forward_iterator_tag, addrinfo>
 {
     // MEMBER TYPES
     // ------------
-    using self = address_iterator_t;
-    using base = iterator<forward_iterator_tag, addrinfo>;
-    using typename base::value_type;
+    using self_t = address_iterator_t;
+    using base_t = iterator<forward_iterator_tag, addrinfo>;
+    using typename base_t::value_type;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -52,10 +52,10 @@ struct address_iterator_t: iterator<forward_iterator_tag, addrinfo>
     // MEMBER FUNCTIONS
     // ----------------
     address_iterator_t() = default;
-    address_iterator_t(const self&) = default;
-    self& operator=(const self&) = default;
-    address_iterator_t(self&&) = default;
-    self& operator=(self&&) = default;
+    address_iterator_t(const self_t&) = default;
+    self_t& operator=(const self_t&) = default;
+    address_iterator_t(self_t&&) = default;
+    self_t& operator=(self_t&&) = default;
 
     address_iterator_t(pointer ptr);
 

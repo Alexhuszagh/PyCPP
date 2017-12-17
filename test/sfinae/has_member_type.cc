@@ -22,9 +22,9 @@ PYCPP_HAS_MEMBER_TYPE(mapped_type, has_mapped_type);
 
 TEST(has_member_type, has_mapped_type)
 {
-    using map = map<int, int>;
-    using vec = vector<int>;
+    using map_type = map<int, int>;
+    using vector_type = vector<int>;
 
-    static_assert(has_mapped_type<map>::value, "");
-    static_assert(!has_mapped_type<vec>::value, "");
+    static_assert(has_mapped_type<map_type>::value, "");
+    static_assert(!has_mapped_type<vector_type>::value, "");
 }

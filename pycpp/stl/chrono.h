@@ -26,28 +26,13 @@ using std::chrono::minutes;
 using std::chrono::hours;
 using std::chrono::duration_cast;
 using std::chrono::time_point_cast;
-
-using system_clock = std::chrono::system_clock;
-using steady_clock = std::chrono::steady_clock;
-using high_resolution_clock = std::chrono::high_resolution_clock;
-
-template <
-    typename Rep,
-    typename Period = ratio<1>
->
-using duration = std::chrono::duration<Rep, Period>;
-
-template <
-    typename Clock,
-    typename Duration = typename Clock::duration
->
-using time_point = std::chrono::time_point<Clock, Duration>;
-
-template <typename Rep>
-using treat_as_floating_point = std::chrono::treat_as_floating_point<Rep>;
-
-template <typename Rep>
-using duration_values = std::chrono::duration_values<Rep>;
+using std::chrono::system_clock;
+using std::chrono::steady_clock;
+using std::chrono::high_resolution_clock;
+using std::chrono::duration;
+using std::chrono::time_point;
+using std::chrono::treat_as_floating_point;
+using std::chrono::duration_values;
 
 }   /* chrono */
 

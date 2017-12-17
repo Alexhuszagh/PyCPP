@@ -15,7 +15,6 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-template <typename T>
-using initializer_list = std::initializer_list<T>;
+using std::initializer_list;
 
 PYCPP_END_NAMESPACE

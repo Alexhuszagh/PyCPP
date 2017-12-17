@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  The following section uses cryptographic random number generators.
- *  Although std::random_device was designed in the C++ standard library
+ *  Although random_device was designed in the C++ standard library
  *  for this reason, if hardware sources are insufficient, it allows
  *  a possibly deterministic fallback, which is true for compilers
  *  such a MinGW. For these reasons, native APIs and /dev/urandom
@@ -64,16 +64,16 @@ size_t sysrandom(void* dst, size_t dstlen)
 {
     HCRYPTPROV ctx;
     if (!acquire_context(&ctx)) {
-        throw std::runtime_error("Unable to initialize Win32 crypt library.");
+        throw runtime_error("Unable to initialize Win32 crypt library.");
     }
 
     BYTE* buffer = reinterpret_cast<BYTE*>(dst);
     if(!CryptGenRandom(ctx, dstlen, buffer)) {
-        throw std::runtime_error("Unable to generate random bytes.");
+        throw runtime_error("Unable to generate random bytes.");
     }
 
     if (!CryptReleaseContext(ctx, 0)) {
-        throw std::runtime_error("Unable to release Win32 crypt library.");
+        throw runtime_error("Unable to release Win32 crypt library.");
     }
 
     return dstlen;
@@ -90,7 +90,7 @@ size_t sysrandom(void* dst, size_t dstlen)
 {
     int bytes = syscall(SYS_getrandom, dst, dstlen, 0);
     if (bytes != dstlen) {
-        throw std::runtime_error("Unable to read N bytes from CSPRNG.");
+        throw runtime_error("Unable to read N bytes from CSPRNG.");
     }
 
     return dstlen;
@@ -108,7 +108,7 @@ size_t sysrandom(void* dst, size_t dstlen)
 {
     int bytes = getentropy(dst, dstlen);
     if (bytes != dstlen) {
-        throw std::runtime_error("Unable to read N bytes from CSPRNG.");
+        throw runtime_error("Unable to read N bytes from CSPRNG.");
     }
 
     return dstlen;
@@ -128,11 +128,11 @@ size_t sysrandom(void* dst, size_t dstlen)
 {
     int fd = open("/dev/urandom", O_RDONLY);
     if (fd == -1) {
-        throw std::runtime_error("Unable to open /dev/urandom.");
+        throw runtime_error("Unable to open /dev/urandom.");
     }
     if (read(fd, dst, dstlen) != dstlen) {
         close(fd);
-        throw std::runtime_error("Unable to read N bytes from CSPRNG.");
+        throw runtime_error("Unable to read N bytes from CSPRNG.");
     }
 
     close(fd);
@@ -148,11 +148,17 @@ size_t sysrandom(void* dst, size_t dstlen)
  */
 std::string sysrandom(size_t length)
 {
-    char* dst = new char[length];
-    sysrandom(dst, length);
-    std::string output(dst, length);
-    delete[] dst;
-    return output;
+    char* dst = nullptr;
+    try {
+        dst = new char[length];
+        sysrandom(dst, length);
+        std::string output(dst, length);
+        delete[] dst;
+        return output;
+    } catch (...) {
+        delete[] dst;
+        throw;
+    }
 }
 
 PYCPP_END_NAMESPACE

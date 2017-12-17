@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/exception.h>
 #include <new>
 
 PYCPP_BEGIN_NAMESPACE
@@ -15,6 +15,11 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using bad_alloc = std::bad_alloc;
+using std::bad_alloc;
+using std::bad_array_new_length;
+using std::new_handler;
+using std::nothrow_t;
+using std::nothrow;
+using std::set_new_handler;
 
 PYCPP_END_NAMESPACE

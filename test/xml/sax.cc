@@ -7,9 +7,9 @@
 
 #include <pycpp/filesystem.h>
 #include <pycpp/xml.h>
+#include <pycpp/stl/sstream.h>
 #include <pycpp/stream/fstream.h>
 #include <gtest/gtest.h>
-#include <sstream>
 
 PYCPP_USING_NAMESPACE
 
@@ -71,7 +71,7 @@ TEST(xml, xml_stream_reader)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string str("<?xml version=\"1.0\" encoding=\"UTF-8\"?><note><to email=\"tove@tove.com\">Tove</to><from email=\"jani@jani.com\">Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>");
-    std::istringstream sstream(str);
+    istringstream sstream(str);
     xml_stream_reader reader;
     test_xml_reader(reader, sstream);
 }
@@ -85,7 +85,7 @@ TEST(xml, xml_file_reader)
     std::string path("test.xml");
     {
         ofstream ostream(path);
-        ostream << str << std::endl;
+        ostream << str << endl;
     }
     {
         xml_file_reader reader;

@@ -21,7 +21,7 @@ size_t DEFAULT_BUFFER_SIZE = 4096;
 // STREAMBUF
 
 
-fd_streambuf::fd_streambuf(std::ios_base::openmode mode, fd_t fd):
+fd_streambuf::fd_streambuf(ios_base::openmode mode, fd_t fd):
     mode(mode),
     fd_(fd),
     buffer_size(DEFAULT_BUFFER_SIZE)
@@ -30,7 +30,7 @@ fd_streambuf::fd_streambuf(std::ios_base::openmode mode, fd_t fd):
 }
 
 
-fd_streambuf::fd_streambuf(std::ios_base::openmode mode, fd_t fd, size_t buffer_size):
+fd_streambuf::fd_streambuf(ios_base::openmode mode, fd_t fd, size_t buffer_size):
     mode(mode),
     fd_(fd),
     buffer_size(buffer_size)
@@ -73,11 +73,11 @@ bool fd_streambuf::is_open() const
 
 void fd_streambuf::swap(fd_streambuf& other)
 {
-    std::swap(fd_, other.fd_);
-    std::swap(in_first, other.in_first);
-    std::swap(in_last, other.in_last);
-    std::swap(out_first, other.out_first);
-    std::swap(out_last, other.out_last);
+    PYCPP_NAMESPACE::swap(fd_, other.fd_);
+    PYCPP_NAMESPACE::swap(in_first, other.in_first);
+    PYCPP_NAMESPACE::swap(in_last, other.in_last);
+    PYCPP_NAMESPACE::swap(out_first, other.out_first);
+    PYCPP_NAMESPACE::swap(out_last, other.out_last);
 
     // reset internal buffer pointers
     setg(0, 0, 0);
@@ -89,11 +89,11 @@ void fd_streambuf::swap(fd_streambuf& other)
 
 auto fd_streambuf::underflow() -> int_type
 {
-    if (!(mode & std::ios_base::in)) {
+    if (!(mode & ios_base::in)) {
         return traits_type::eof();
     }
 
-    std::streamsize read;
+    streamsize read;
     if (fd_ != INVALID_FD_VALUE) {
         set_readp();
         do {
@@ -113,17 +113,17 @@ auto fd_streambuf::underflow() -> int_type
 
 auto fd_streambuf::overflow(int_type c) -> int_type
 {
-    if (!(mode & std::ios_base::out)) {
+    if (!(mode & ios_base::out)) {
         return traits_type::eof();
     }
 
-    std::streamsize distance, wrote;
+    streamsize dist, wrote;
     if (fd_ != INVALID_FD_VALUE) {
         set_writep();
-        distance = std::distance(out_first, out_last);
-        if (distance == buffer_size) {
+        dist = distance(out_first, out_last);
+        if (dist == buffer_size) {
             do {
-                wrote = fd_write(fd_, out_first, distance);
+                wrote = fd_write(fd_, out_first, dist);
             } while (wrote == -1 && errno == EINTR);
             out_last = out_first;
         }
@@ -141,12 +141,12 @@ int fd_streambuf::sync()
     auto result = overflow(traits_type::eof());
 
     // flush buffer on output
-    std::streamsize distance, wrote;
-    if (fd_ != INVALID_FD_VALUE && mode & std::ios_base::out) {
-        distance = std::distance(out_first, out_last);
-        if (distance > 0) {
+    streamsize dist, wrote;
+    if (fd_ != INVALID_FD_VALUE && mode & ios_base::out) {
+        dist = distance(out_first, out_last);
+        if (dist > 0) {
             do {
-                wrote = fd_write(fd_, out_first, distance);
+                wrote = fd_write(fd_, out_first, dist);
             } while (wrote == -1 && errno == EINTR);
             out_last = out_first;
         }
@@ -159,13 +159,13 @@ int fd_streambuf::sync()
 }
 
 
-auto fd_streambuf::seekoff(off_type off, std::ios_base::seekdir way, std::ios_base::openmode) -> pos_type
+auto fd_streambuf::seekoff(off_type off, ios_base::seekdir way, ios_base::openmode) -> pos_type
 {
     return fd_seek(fd_, off, way);
 }
 
 
-auto fd_streambuf::seekpos(pos_type pos, std::ios_base::openmode) -> pos_type
+auto fd_streambuf::seekpos(pos_type pos, ios_base::openmode) -> pos_type
 {
     return fd_seek(fd_, pos);
 }
@@ -186,10 +186,10 @@ void fd_streambuf::fd(fd_t fd)
 
 void fd_streambuf::initialize_buffers()
 {
-    if (mode & std::ios_base::in) {
+    if (mode & ios_base::in) {
         in_first = new char_type[buffer_size];
     }
-    if (mode & std::ios_base::out) {
+    if (mode & ios_base::out) {
         out_first = new char_type[buffer_size];
         out_last = out_first;
     }
@@ -217,8 +217,8 @@ void fd_streambuf::set_writep()
 
 
 fd_stream::fd_stream():
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE),
-    std::iostream(&buffer),
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE),
+    iostream(&buffer),
     close_(false)
 {}
 
@@ -230,11 +230,11 @@ fd_stream::~fd_stream()
 
 
 fd_stream::fd_stream(fd_stream&& other):
-    buffer(std::move(other.buffer)),
-    std::iostream(&buffer),
-    close_(std::move(other.close_))
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    iostream(&buffer),
+    close_(PYCPP_NAMESPACE::move(other.close_))
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -246,8 +246,8 @@ fd_stream & fd_stream::operator=(fd_stream&& other)
 
 
 fd_stream::fd_stream(fd_t fd, bool close):
-    buffer(std::ios_base::in | std::ios_base::out, fd),
-    std::iostream(&buffer),
+    buffer(ios_base::in | ios_base::out, fd),
+    iostream(&buffer),
     close_(close)
 {}
 
@@ -268,7 +268,7 @@ fd_streambuf* fd_stream::rdbuf() const
 
 void fd_stream::rdbuf(fd_streambuf* buffer)
 {
-    std::ios::rdbuf(buffer);
+    ios::rdbuf(buffer);
 }
 
 
@@ -292,19 +292,19 @@ void fd_stream::close()
 void fd_stream::swap(fd_stream &other)
 {
     // swap
-    std::iostream::swap(other);
-    std::swap(buffer, other.buffer);
-    std::swap(close_, other.close_);
+    iostream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    PYCPP_NAMESPACE::swap(close_, other.close_);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
 
 fd_istream::fd_istream():
-    buffer(std::ios_base::in, INVALID_FD_VALUE),
-    std::istream(&buffer),
+    buffer(ios_base::in, INVALID_FD_VALUE),
+    istream(&buffer),
     close_(false)
 {}
 
@@ -316,11 +316,11 @@ fd_istream::~fd_istream()
 
 
 fd_istream::fd_istream(fd_istream&& other):
-    buffer(std::move(other.buffer)),
-    std::istream(&buffer),
-    close_(std::move(other.close_))
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    istream(&buffer),
+    close_(PYCPP_NAMESPACE::move(other.close_))
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -332,8 +332,8 @@ fd_istream & fd_istream::operator=(fd_istream&& other)
 
 
 fd_istream::fd_istream(fd_t fd, bool close):
-    buffer(std::ios_base::in, fd),
-    std::istream(&buffer),
+    buffer(ios_base::in, fd),
+    istream(&buffer),
     close_(close)
 {}
 
@@ -354,7 +354,7 @@ fd_streambuf* fd_istream::rdbuf() const
 
 void fd_istream::rdbuf(fd_streambuf* buffer)
 {
-    std::ios::rdbuf(buffer);
+    ios::rdbuf(buffer);
 }
 
 
@@ -379,12 +379,12 @@ void fd_istream::close()
 void fd_istream::swap(fd_istream &other)
 {
     // swap
-    std::istream::swap(other);
-    std::swap(buffer, other.buffer);
-    std::swap(close_, other.close_);
+    istream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    PYCPP_NAMESPACE::swap(close_, other.close_);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
@@ -393,8 +393,8 @@ void fd_istream::swap(fd_istream &other)
 
 
 fd_ostream::fd_ostream():
-    buffer(std::ios_base::out, INVALID_FD_VALUE),
-    std::ostream(&buffer),
+    buffer(ios_base::out, INVALID_FD_VALUE),
+    ostream(&buffer),
     close_(false)
 {}
 
@@ -406,11 +406,11 @@ fd_ostream::~fd_ostream()
 
 
 fd_ostream::fd_ostream(fd_ostream&& other):
-    buffer(std::move(other.buffer)),
-    std::ostream(&buffer),
-    close_(std::move(other.close_))
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    ostream(&buffer),
+    close_(PYCPP_NAMESPACE::move(other.close_))
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -422,8 +422,8 @@ fd_ostream & fd_ostream::operator=(fd_ostream&& other)
 
 
 fd_ostream::fd_ostream(fd_t fd, bool close):
-    buffer(std::ios_base::out, fd),
-    std::ostream(&buffer),
+    buffer(ios_base::out, fd),
+    ostream(&buffer),
     close_(close)
 {}
 
@@ -444,7 +444,7 @@ fd_streambuf* fd_ostream::rdbuf() const
 
 void fd_ostream::rdbuf(fd_streambuf* buffer)
 {
-    std::ios::rdbuf(buffer);
+    ios::rdbuf(buffer);
 }
 
 
@@ -469,12 +469,12 @@ void fd_ostream::close()
 void fd_ostream::swap(fd_ostream &other)
 {
     // swap
-    std::ostream::swap(other);
-    std::swap(buffer, other.buffer);
-    std::swap(close_, other.close_);
+    ostream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    PYCPP_NAMESPACE::swap(close_, other.close_);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 

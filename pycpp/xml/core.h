@@ -26,9 +26,9 @@ struct xml_node_iterator_t;
 // ALIAS
 // -----
 
-typedef std::string xml_string_t;
-typedef std::deque<xml_string_t> xml_string_list_t;
-typedef std::unordered_map<xml_string_t, xml_string_t> xml_attr_t;
+using xml_string_t = std::string;
+using xml_string_list_t = std::deque<xml_string_t>;
+using xml_attr_t = std::unordered_map<xml_string_t, xml_string_t>;
 
 // OBJECTS
 // -------
@@ -36,37 +36,37 @@ typedef std::unordered_map<xml_string_t, xml_string_t> xml_attr_t;
 /**
  *  \brief Iterator over XML nodes.
  */
-struct xml_node_iterator_t: std::iterator<std::bidirectional_iterator_tag, xml_node_t>
+struct xml_node_iterator_t: iterator<bidirectional_iterator_tag, xml_node_t>
 {
 public:
     // MEMBER TYPES
     // ------------
-    typedef xml_node_iterator_t self;
-    typedef std::iterator<std::bidirectional_iterator_tag, xml_node_t> base;
-    using typename base::value_type;
-    using typename base::difference_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
+    using self_t = xml_node_iterator_t;
+    using base_t = iterator<bidirectional_iterator_tag, xml_node_t>;
+    using typename base_t::value_type;
+    using typename base_t::difference_type;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
     // CONSTRUCTORS
     xml_node_iterator_t();
-    xml_node_iterator_t(const self&);
-    self & operator=(const self&);
-    xml_node_iterator_t(self&&);
-    self & operator=(self&&);
+    xml_node_iterator_t(const self_t&);
+    self_t& operator=(const self_t&);
+    xml_node_iterator_t(self_t&&);
+    self_t& operator=(self_t&&);
     ~xml_node_iterator_t();
 
     // RELATIONAL OPERATORS
-    bool operator==(const self&) const;
-    bool operator!=(const self&) const;
+    bool operator==(const self_t&) const;
+    bool operator!=(const self_t&) const;
 
     // INCREMENTORS
-    self& operator++();
-    self operator++(int);
-    self& operator--();
-    self operator--(int);
+    self_t& operator++();
+    self_t operator++(int);
+    self_t& operator--();
+    self_t operator--(int);
 
     // DEREFERENCE
     reference operator*();
@@ -75,7 +75,7 @@ public:
     const_pointer operator->() const;
 
     // OTHER
-    void swap(self&);
+    void swap(self_t&);
 
 private:
     friend struct xml_node_t;
@@ -93,24 +93,24 @@ struct xml_node_list_t
 public:
     // MEMBER TYPES
     // ------------
-    typedef xml_node_list_t self;
-    typedef xml_node_t value_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
-    typedef xml_node_iterator_t iterator;
-    typedef iterator const_iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    using self_t = xml_node_list_t;
+    using value_type = xml_node_t;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using iterator = xml_node_iterator_t;
+    using const_iterator = iterator;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
 
     // MEMBER FUNCTIONS
     // ----------------
     xml_node_list_t();
-    xml_node_list_t(const self&);
-    self& operator=(const self&);
-    xml_node_list_t(self&&);
-    self& operator=(self&&);
+    xml_node_list_t(const self_t&);
+    self_t& operator=(const self_t&);
+    xml_node_list_t(self_t&&);
+    self_t& operator=(self_t&&);
     ~xml_node_list_t();
 
     // ITERATORS
@@ -128,13 +128,13 @@ public:
     const_reverse_iterator crend() const;
 
     // RELATIONAL OPERATORS
-    bool operator==(const self&) const;
-    bool operator!=(const self&) const;
+    bool operator==(const self_t&) const;
+    bool operator!=(const self_t&) const;
 
     // LOOKUP
     // TODO: this should really be a string view....
     iterator find(const xml_string_t&) const;
-    std::pair<iterator, iterator> findall(const xml_string_t&) const;
+    pair<iterator, iterator> findall(const xml_string_t&) const;
 
     // I/O
     xml_string_list_t tostringlist() const;
@@ -150,16 +150,16 @@ public:
     const_reference back() const;
 
     // MODIFIERS
-    std::pair<iterator, bool> push_front(const value_type& x);
-    std::pair<iterator, bool> push_front(value_type&& x);
+    pair<iterator, bool> push_front(const value_type& x);
+    pair<iterator, bool> push_front(value_type&& x);
     void pop_front();
-    std::pair<iterator, bool> push_back(const value_type& x);
-    std::pair<iterator, bool> push_back(value_type&& x);
+    pair<iterator, bool> push_back(const value_type& x);
+    pair<iterator, bool> push_back(value_type&& x);
     void pop_back();
-    std::pair<iterator, bool> insert(iterator position, const value_type&);
-    std::pair<iterator, bool> insert(iterator position, value_type&&);
+    pair<iterator, bool> insert(iterator position, const value_type&);
+    pair<iterator, bool> insert(iterator position, value_type&&);
     void clear();
-    void swap(self&);
+    void swap(self_t&);
 
 private:
     friend struct xml_node_t;
@@ -176,11 +176,11 @@ struct xml_node_t
 public:
     // MEMBER TYPES
     // ------------
-    typedef xml_node_t self;
-    typedef xml_node_iterator_t iterator;
-    typedef iterator const_iterator;
-    typedef std::reverse_iterator<iterator> reverse_iterator;
-    typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
+    using self_t = xml_node_t;
+    using iterator = xml_node_iterator_t;
+    using const_iterator = iterator;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
+    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -230,17 +230,17 @@ public:
     void set_children(xml_node_list_t&&);
 
     // RELATIONAL OPERATORS
-    bool operator==(const self&) const;
-    bool operator!=(const self&) const;
+    bool operator==(const self_t&) const;
+    bool operator!=(const self_t&) const;
 
     // OTHER
-    void swap(self&);
+    void swap(self_t&);
 
 private:
     friend struct xml_node_list_t;
 
     xml_node_t(xml_node_impl_t*);
-    std::shared_ptr<xml_node_impl_t> ptr_;
+    shared_ptr<xml_node_impl_t> ptr_;
 };
 
 PYCPP_END_NAMESPACE

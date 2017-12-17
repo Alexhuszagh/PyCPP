@@ -8,9 +8,24 @@
 #include <pycpp/sfinae/is_string.h>
 #include <pycpp/stl/string.h>
 #include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>       // TODO: remove
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE
+
+// TODO: remove
+template <typename T, template <typename...> class C>
+struct is_specialization_v2: false_type
+{};
+
+template <template <typename...> class C, typename... Ts>
+struct is_specialization_v2<C<Ts...>, C>: true_type
+{
+    using x = typename C<Ts...>::x;
+};
+
+template <typename T>
+using is_stl_string_v2 = is_specialization_v2<T, basic_string>;
 
 // TESTS
 // -----

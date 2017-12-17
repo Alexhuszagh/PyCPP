@@ -72,7 +72,7 @@ static uint8_t encode_byte(uint8_t c)
     static constexpr uint32_t range = base - tmin;
 
     if (c < 0 || c > range) {
-        throw std::out_of_range("Character to encode is out of range\n");
+        throw out_of_range("Character to encode is out of range\n");
     }
     if (c > 25) {
         return c + 22;                      // '0'..'9'
@@ -114,7 +114,7 @@ size_t encode_character(uint32_t bias, uint32_t delta, Iter8 &first, Iter8 last)
     uint32_t t;
     uint32_t k = base;
     uint32_t q = delta;
-    size_t bytes = std::distance(first, last);
+    size_t bytes = distance(first, last);
 
     while (first < last) {
         t = threshold(k, bias);
@@ -182,7 +182,7 @@ void encode_impl(Iter32 &src_first, Iter32 src_last,
 
         // check overflow
         if ((m - n) > (SIZE_MAX - delta) / (h + 1)) {
-            throw std::overflow_error("Overflow detected in encoding.\n");
+            throw overflow_error("Overflow detected in encoding.\n");
         }
 
         delta += (m - n) * (h + 1);
@@ -193,7 +193,7 @@ void encode_impl(Iter32 &src_first, Iter32 src_last,
             uint32_t c = *src;
             if (c < n) {
                 if (++delta == 0) {
-                    throw std::overflow_error("Punycode encoding overflow.\n");
+                    throw overflow_error("Punycode encoding overflow.\n");
                 }
             } else if (c == n) {
                 encode_character(bias, delta, dst, dst_last);
@@ -217,7 +217,7 @@ template <typename Iter8, typename Iter32>
 void decode_impl(Iter8 &src, size_t srclen,
                  Iter32 &dst, size_t dstlen)
 {
-    static constexpr uint32_t int32_max = std::numeric_limits<int32_t>::max();
+    static constexpr uint32_t int32_max = numeric_limits<int32_t>::max();
     static constexpr uint32_t base = 36;
     static constexpr size_t initial_n = 128;
     static constexpr size_t initial_bias = 72;
@@ -230,7 +230,7 @@ void decode_impl(Iter8 &src, size_t srclen,
     size_t bias = initial_bias;
 
     // check for unicode characters
-    if (std::any_of(src, src+srclen, [](char c) {
+    if (any_of(src, src+srclen, [](char c) {
         return !is_ascii(c);
     })) {
         return;
@@ -241,15 +241,15 @@ void decode_impl(Iter8 &src, size_t srclen,
     for (ptr = src+srclen-1; ptr > src && *ptr != '-'; --ptr);
     size_t basic = ptr - src;
     size_t si = 0;
-    size_t di = std::min(basic, dstlen);
-    std::copy(src, src+di, dst);
+    size_t di = min(basic, dstlen);
+    copy(src, src+di, dst);
 
     for (si = basic + (basic > 0); si < srclen && di < dstlen; di++) {
         size_t oldi = i;
         for (size_t w = 1, k = base; di < dstlen; k += base) {
             auto digit = decode_byte(src[si++]);
             if (digit >= base || digit > (int32_max - i) / w) {
-                throw std::overflow_error("Overflow in Punycode decode.");
+                throw overflow_error("Overflow in Punycode decode.");
             }
 
             i += digit * w;
@@ -267,7 +267,7 @@ void decode_impl(Iter8 &src, size_t srclen,
             }
 
             if (w > INT32_MAX / (base - t)) {
-                throw std::overflow_error("Overflow in Punycode decode.");
+                throw overflow_error("Overflow in Punycode decode.");
             }
             w *= (base - t);
         }
@@ -275,7 +275,7 @@ void decode_impl(Iter8 &src, size_t srclen,
         size_t x = di + 1;
         bias = adapt_bias(i - oldi, x, oldi == 0);
         if (i / x > INT32_MAX - n) {
-            throw std::overflow_error("Overflow in Punycode decode.");
+            throw overflow_error("Overflow in Punycode decode.");
         }
 
         n += i / x;
@@ -294,14 +294,18 @@ static void punycode_conversion(const void*& src, size_t srclen, void*& dst, siz
 {
     // get preferred formats
     size_t u32_size = srclen * 4;
-    char* u32 = new char[u32_size];
-    const void* u32_src = (const void*) u32;
-    void* u32_dst = (void*) u32;
+    char* u32 = nullptr;
 
     // convert
     try {
+        // allocate memory
+        u32 = new char[u32_size];
+        const void* u32_src = (const void*) u32;
+        void* u32_dst = (void*) u32;
+
+        // convert string
         cb1(src, srclen, u32_dst, u32_size);
-        u32_size = std::distance(u32, (char*) u32_dst);
+        u32_size = distance(u32, (char*) u32_dst);
         cb2(u32_src, u32_size, dst, dstlen);
     } catch (...) {
         delete[] u32;
@@ -389,11 +393,11 @@ std::string utf32_to_punycode(const string_wrapper& str)
 
     try {
         utf32_to_punycode(src_first, srclen, dst_first, dstlen);
-    } catch (std::exception&) {
+    } catch (...) {
         safe_free(dst);
         throw;
     }
-    size_t length = std::distance(dst, (char*) dst_first);
+    size_t length = distance(dst, (char*) dst_first);
     std::string output(dst, length);
     safe_free(dst);
 
@@ -470,7 +474,7 @@ std::string punycode_to_utf32(const string_wrapper& str)
 
     try {
         punycode_to_utf32(src_first, srclen, dst_first, dstlen);
-    } catch (std::exception&) {
+    } catch (...) {
         safe_free(dst);
         throw;
     }

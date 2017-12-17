@@ -278,33 +278,32 @@ static void sha512_final(void* ptr, void* buf)
 // -------
 
 
-sha2_384_hash::sha2_384_hash()
+sha2_384_hash::sha2_384_hash():
+    ctx(make_unique<sha2_512_context>())
 {
-    ctx = new sha2_512_context;
-    sha384_init(ctx);
+    sha384_init(ctx.get());
 }
 
 
-sha2_384_hash::sha2_384_hash(const void* src, size_t srclen)
+sha2_384_hash::sha2_384_hash(const void* src, size_t srclen):
+    ctx(make_unique<sha2_512_context>())
 {
-    ctx = new sha2_512_context;
-    sha384_init(ctx);
+    sha384_init(ctx.get());
     update(src, srclen);
 }
 
 
-sha2_384_hash::sha2_384_hash(const string_wrapper& str)
+sha2_384_hash::sha2_384_hash(const string_wrapper& str):
+    ctx(make_unique<sha2_512_context>())
 {
-    ctx = new sha2_512_context;
-    sha384_init(ctx);
+    sha384_init(ctx.get());
     update(str);
 }
 
 
 sha2_384_hash::~sha2_384_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
@@ -315,7 +314,7 @@ void sha2_384_hash::update(const void* src, size_t srclen)
 
     while (length > 0) {
         size_t shift = length > 512 ? 512 : length;
-        sha512_update(ctx, first, shift);
+        sha512_update(ctx.get(), first, shift);
         length -= shift;
         first += shift;
     }
@@ -356,39 +355,38 @@ secure_string sha2_384_hash::hexdigest() const
 }
 
 
-sha2_512_hash::sha2_512_hash()
+sha2_512_hash::sha2_512_hash():
+    ctx(make_unique<sha2_512_context>())
 {
-    ctx = new sha2_512_context;
-    sha512_init(ctx);
+    sha512_init(ctx.get());
 }
 
 
-sha2_512_hash::sha2_512_hash(const void* src, size_t srclen)
+sha2_512_hash::sha2_512_hash(const void* src, size_t srclen):
+    ctx(make_unique<sha2_512_context>())
 {
-    ctx = new sha2_512_context;
-    sha512_init(ctx);
+    sha512_init(ctx.get());
     update(src, srclen);
 }
 
 
-sha2_512_hash::sha2_512_hash(const string_wrapper& str)
+sha2_512_hash::sha2_512_hash(const string_wrapper& str):
+    ctx(make_unique<sha2_512_context>())
 {
-    ctx = new sha2_512_context;
-    sha512_init(ctx);
+    sha512_init(ctx.get());
     update(str);
 }
 
 
 sha2_512_hash::~sha2_512_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void sha2_512_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, sha512_update);
+    hash_update(ctx.get(), src, srclen, sha512_update);
 }
 
 

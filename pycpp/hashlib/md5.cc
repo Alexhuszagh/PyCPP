@@ -305,39 +305,38 @@ static void md5_final(void* ptr, void* buf)
 // -------
 
 
-md5_hash::md5_hash()
+md5_hash::md5_hash():
+    ctx(make_unique<md5_context>())
 {
-    ctx = new md5_context;
-    md5_init(ctx);
+    md5_init(ctx.get());
 }
 
 
-md5_hash::md5_hash(const void* src, size_t srclen)
+md5_hash::md5_hash(const void* src, size_t srclen):
+    ctx(make_unique<md5_context>())
 {
-    ctx = new md5_context;
-    md5_init(ctx);
+    md5_init(ctx.get());
     update(src, srclen);
 }
 
 
-md5_hash::md5_hash(const string_wrapper& str)
+md5_hash::md5_hash(const string_wrapper& str):
+    ctx(make_unique<md5_context>())
 {
-    ctx = new md5_context;
-    md5_init(ctx);
+    md5_init(ctx.get());
     update(str);
 }
 
 
 md5_hash::~md5_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void md5_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, md5_update);
+    hash_update(ctx.get(), src, srclen, md5_update);
 }
 
 

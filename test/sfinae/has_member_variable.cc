@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/sfinae/has_member_variable.h>
+#include <pycpp/stl/string.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <string>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -23,9 +23,9 @@ PYCPP_HAS_MEMBER_VARIABLE(npos, has_npos);
 
 TEST(has_member_variable, has_npos)
 {
-    using str = std::string;
-    using vec = std::vector<int>;
+    using string_type = string;
+    using vector_type = vector<int>;
 
-    static_assert(has_npos<str>::value, "");
-    static_assert(!has_npos<vec>::value, "");
+    static_assert(has_npos<string_type>::value, "");
+    static_assert(!has_npos<vector_type>::value, "");
 }

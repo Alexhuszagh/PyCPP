@@ -101,7 +101,7 @@ enum derived_properties: uint16_t
 static uint32_t assert_strict(bool strict)
 {
     if (strict) {
-        throw std::runtime_error("Illegal character encountered.");
+        throw runtime_error("Illegal character encountered.");
     }
     return 0x0000FFFDul;
 }
@@ -185,7 +185,7 @@ static bool is_valid_byte(uint8_t byte, bool is_continuation, bool strict)
 {
     bool status = is_valid_byte(byte, is_continuation);
     if (!status && strict) {
-        throw std::runtime_error("Invalid byte encountered.");
+        throw runtime_error("Invalid byte encountered.");
     }
     return status;
 }
@@ -305,7 +305,7 @@ size_t utf16_to_utf32(uint32_t& c, Iter16 &first, Iter16 last, bool strict)
     if (c1 >= high_begin && c1 <= high_end) {
         // check source buffer, check whether or not we have space to replace
         if (first + 1 >= last) {
-            throw std::runtime_error("Not enough input characters for a full code point.");
+            throw runtime_error("Not enough input characters for a full code point.");
         }
 
         // surrogate pairs
@@ -408,11 +408,11 @@ size_t utf8_to_utf16_array(Iter8 &src_first, Iter8 src_last,
     }
 
     // store_pointers
-    size_t distance = std::distance(dst_first, dst);
+    size_t dist = distance(dst_first, dst);
     src_first = src;
     dst_first = dst;
 
-    return distance;
+    return dist;
 }
 
 
@@ -436,11 +436,11 @@ size_t utf8_to_utf32_array(Iter8 &src_first, Iter8 src_last,
     }
 
     // store_pointers
-    size_t distance = std::distance(dst_first, dst);
+    size_t dist = distance(dst_first, dst);
     src_first = src;
     dst_first = dst;
 
-    return distance;
+    return dist;
 }
 
 
@@ -468,11 +468,11 @@ size_t utf16_to_utf8_array(Iter16 &src_first, Iter16 src_last,
     }
 
     // store_pointers
-    size_t distance = std::distance(dst_first, dst);
+    size_t dist = distance(dst_first, dst);
     src_first = src;
     dst_first = dst;
 
-    return distance;
+    return dist;
 }
 
 
@@ -496,11 +496,11 @@ size_t utf16_to_utf32_array(Iter16 &src_first, Iter16 src_last,
     }
 
     // store_pointers
-    size_t distance = std::distance(dst_first, dst);
+    size_t dist = distance(dst_first, dst);
     src_first = src;
     dst_first = dst;
 
-    return distance;
+    return dist;
 }
 
 
@@ -524,11 +524,11 @@ size_t utf32_to_utf8_array(Iter32 &src_first, Iter32 src_last,
     }
 
     // store_pointers
-    size_t distance = std::distance(dst_first, dst);
+    size_t dist = distance(dst_first, dst);
     src_first = src;
     dst_first = dst;
 
-    return distance;
+    return dist;
 }
 
 
@@ -552,11 +552,11 @@ size_t utf32_to_utf16_array(Iter32 &src_first, Iter32 src_last,
     }
 
     // store_pointers
-    size_t distance = std::distance(dst_first, dst);
+    size_t dist = distance(dst_first, dst);
     src_first = src;
     dst_first = dst;
 
-    return distance;
+    return dist;
 }
 
 
@@ -641,11 +641,11 @@ struct to_wide_impl
 
         try {
             function(src_first, src_last, dst_first, dst_last, true);
-        } catch (std::exception&) {
+        } catch (...) {
             safe_free(dst);
             throw;
         }
-        size_t length = std::distance((char*) dst, (char*) dst_first);
+        size_t length = distance((char*) dst, (char*) dst_first);
         std::string output((const char*) dst, length);
         safe_free(dst);
 
@@ -679,11 +679,11 @@ struct to_narrow_impl
 
         try {
             function(src_first, src_last, dst_first, dst_last, true);
-        } catch (std::exception&) {
+        } catch (...) {
             safe_free(dst);
             throw;
         }
-        size_t length = std::distance((char*) dst, (char*) dst_first);
+        size_t length = distance((char*) dst, (char*) dst_first);
         std::string output((const char*) dst, length);
         safe_free(dst);
 
@@ -775,7 +775,7 @@ bool is_ascii(const string_wrapper& str)
 
 bool is_unicode(const string_wrapper& str)
 {
-    return std::any_of(str.cbegin(), str.cend(), [](char c) {
+    return any_of(str.cbegin(), str.cend(), [](char c) {
         return c <= 0;
     });
 }

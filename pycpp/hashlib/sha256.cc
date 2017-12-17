@@ -246,39 +246,38 @@ static void sha256_final(void* ptr, void* buf)
 // -------
 
 
-sha2_224_hash::sha2_224_hash()
+sha2_224_hash::sha2_224_hash():
+    ctx(make_unique<sha2_256_context>())
 {
-    ctx = new sha2_256_context;
-    sha224_init(ctx);
+    sha224_init(ctx.get());
 }
 
 
-sha2_224_hash::sha2_224_hash(const void* src, size_t srclen)
+sha2_224_hash::sha2_224_hash(const void* src, size_t srclen):
+    ctx(make_unique<sha2_256_context>())
 {
-    ctx = new sha2_256_context;
-    sha224_init(ctx);
+    sha224_init(ctx.get());
     update(src, srclen);
 }
 
 
-sha2_224_hash::sha2_224_hash(const string_wrapper& str)
+sha2_224_hash::sha2_224_hash(const string_wrapper& str):
+    ctx(make_unique<sha2_256_context>())
 {
-    ctx = new sha2_256_context;
-    sha224_init(ctx);
+    sha224_init(ctx.get());
     update(str);
 }
 
 
 sha2_224_hash::~sha2_224_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void sha2_224_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, sha256_update);
+    hash_update(ctx.get(), src, srclen, sha256_update);
 }
 
 
@@ -316,39 +315,38 @@ secure_string sha2_224_hash::hexdigest() const
 }
 
 
-sha2_256_hash::sha2_256_hash()
+sha2_256_hash::sha2_256_hash():
+    ctx(make_unique<sha2_256_context>())
 {
-    ctx = new sha2_256_context;
-    sha256_init(ctx);
+    sha256_init(ctx.get());
 }
 
 
-sha2_256_hash::sha2_256_hash(const void* src, size_t srclen)
+sha2_256_hash::sha2_256_hash(const void* src, size_t srclen):
+    ctx(make_unique<sha2_256_context>())
 {
-    ctx = new sha2_256_context;
-    sha256_init(ctx);
+    sha256_init(ctx.get());
     update(src, srclen);
 }
 
 
-sha2_256_hash::sha2_256_hash(const string_wrapper& str)
+sha2_256_hash::sha2_256_hash(const string_wrapper& str):
+    ctx(make_unique<sha2_256_context>())
 {
-    ctx = new sha2_256_context;
-    sha256_init(ctx);
+    sha256_init(ctx.get());
     update(str);
 }
 
 
 sha2_256_hash::~sha2_256_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void sha2_256_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, sha256_update);
+    hash_update(ctx.get(), src, srclen, sha256_update);
 }
 
 

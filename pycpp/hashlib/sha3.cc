@@ -336,39 +336,38 @@ void sha3_final(void* ptr, void* buf)
 
 
 
-sha3_224_hash::sha3_224_hash()
+sha3_224_hash::sha3_224_hash():
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_224_init(ctx);
+    sha3_224_init(ctx.get());
 }
 
 
-sha3_224_hash::sha3_224_hash(const void* src, size_t srclen)
+sha3_224_hash::sha3_224_hash(const void* src, size_t srclen):
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_224_init(ctx);
+    sha3_224_init(ctx.get());
     update(src, srclen);
 }
 
 
-sha3_224_hash::sha3_224_hash(const string_wrapper& str)
+sha3_224_hash::sha3_224_hash(const string_wrapper& str):
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_224_init(ctx);
+    sha3_224_init(ctx.get());
     update(str);
 }
 
 
 sha3_224_hash::~sha3_224_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void sha3_224_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, sha3_update);
+    hash_update(ctx.get(), src, srclen, sha3_update);
 }
 
 
@@ -406,40 +405,38 @@ secure_string sha3_224_hash::hexdigest() const
 }
 
 
-
-sha3_256_hash::sha3_256_hash()
+sha3_256_hash::sha3_256_hash():
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_256_init(ctx);
+    sha3_256_init(ctx.get());
 }
 
 
-sha3_256_hash::sha3_256_hash(const void* src, size_t srclen)
+sha3_256_hash::sha3_256_hash(const void* src, size_t srclen):
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_256_init(ctx);
+    sha3_256_init(ctx.get());
     update(src, srclen);
 }
 
 
-sha3_256_hash::sha3_256_hash(const string_wrapper& str)
+sha3_256_hash::sha3_256_hash(const string_wrapper& str):
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_256_init(ctx);
+    sha3_256_init(ctx.get());
     update(str);
 }
 
 
 sha3_256_hash::~sha3_256_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void sha3_256_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, sha3_update);
+    hash_update(ctx.get(), src, srclen, sha3_update);
 }
 
 
@@ -478,39 +475,38 @@ secure_string sha3_256_hash::hexdigest() const
 
 
 
-sha3_384_hash::sha3_384_hash()
+sha3_384_hash::sha3_384_hash():
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_384_init(ctx);
+    sha3_384_init(ctx.get());
 }
 
 
-sha3_384_hash::sha3_384_hash(const void* src, size_t srclen)
+sha3_384_hash::sha3_384_hash(const void* src, size_t srclen):
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_384_init(ctx);
+    sha3_384_init(ctx.get());
     update(src, srclen);
 }
 
 
-sha3_384_hash::sha3_384_hash(const string_wrapper& str)
+sha3_384_hash::sha3_384_hash(const string_wrapper& str):
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_384_init(ctx);
+    sha3_384_init(ctx.get());
     update(str);
 }
 
 
 sha3_384_hash::~sha3_384_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void sha3_384_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, sha3_update);
+    hash_update(ctx.get(), src, srclen, sha3_update);
 }
 
 
@@ -548,40 +544,38 @@ secure_string sha3_384_hash::hexdigest() const
 }
 
 
-
-sha3_512_hash::sha3_512_hash()
+sha3_512_hash::sha3_512_hash():
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_512_init(ctx);
+    sha3_512_init(ctx.get());
 }
 
 
-sha3_512_hash::sha3_512_hash(const void* src, size_t srclen)
+sha3_512_hash::sha3_512_hash(const void* src, size_t srclen):
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_512_init(ctx);
+    sha3_512_init(ctx.get());
     update(src, srclen);
 }
 
 
-sha3_512_hash::sha3_512_hash(const string_wrapper& str)
+sha3_512_hash::sha3_512_hash(const string_wrapper& str):
+    ctx(make_unique<sha3_context>())
 {
-    ctx = new sha3_context;
-    sha3_512_init(ctx);
+    sha3_512_init(ctx.get());
     update(str);
 }
 
 
 sha3_512_hash::~sha3_512_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void sha3_512_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, sha3_update);
+    hash_update(ctx.get(), src, srclen, sha3_update);
 }
 
 

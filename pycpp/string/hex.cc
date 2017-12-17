@@ -17,20 +17,23 @@ static void hex_impl(Iter1 &src_first, Iter1 src_last,
                      Iter2 &dst_first, Iter2 dst_last,
                      size_t width)
 {
-    char* buffer = new char[width];
+    char* buffer = nullptr;
+    try {
+        buffer = new char[width];
+        size_t shift = 2 * width;
+        while (src_first < src_last && dst_first + shift <= dst_last) {
+            memcpy(buffer, src_first, width);
+            bswap(buffer, width);
+            base16_encode(buffer, width, dst_first, shift);
 
-    size_t shift = 2 * width;
-    while (src_first < src_last && dst_first + shift <= dst_last) {
-
-        memcpy(buffer, src_first, width);
-        bswap(buffer, width);
-        base16_encode(buffer, width, dst_first, shift);
-
-        src_first += width;
-        dst_first += shift;
+            src_first += width;
+            dst_first += shift;
+        }
+        delete[] buffer;
+    } catch (...) {
+        delete[] buffer;
+        throw;
     }
-
-    delete[] buffer;
 }
 
 
@@ -72,19 +75,28 @@ void hex(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t widt
 
 std::string hex(const string_wrapper& str, size_t width)
 {
+    size_t srclen = str.size();
     size_t dstlen = 2 * str.size();
     const char* src = str.data();
-    char* dst = new char[dstlen + 1];
-    const void* src_first = (const void*) src;
-    void* dst_first = (void*) dst;
+    char* dst = nullptr;
 
-    // create STL container and return
-    hex(src_first, str.size(), dst_first, dstlen, width);
-    size_t size = std::distance(dst, (char*) dst_first);
-    std::string output(dst, size);
-    delete[] dst;
+    try {
+        // initialize memory for output
+        dst = new char[dstlen + 1];
+        const void* src_first = (const void*) src;
+        void* dst_first = (void*) dst;
 
-    return output;
+        // create STL container and return
+        hex(src_first, srclen, dst_first, dstlen, width);
+        size_t size = distance(dst, (char*) dst_first);
+        std::string output(dst, size);
+        delete[] dst;
+
+        return output;
+    } catch (...) {
+        delete[] dst;
+        throw;
+    }
 }
 
 
@@ -152,19 +164,28 @@ void unhex(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t wi
 
 std::string unhex(const string_wrapper& str, size_t width)
 {
+    size_t srclen = str.size();
     size_t dstlen = str.size() / 2;
     const char* src = str.data();
-    char* dst = new char[dstlen + 1];
-    const void* src_first = (const void*) src;
-    void* dst_first = (void*) dst;
+    char* dst = nullptr;
 
-    // create STL container and return
-    unhex(src_first, str.size(), dst_first, dstlen, width);
-    size_t size = std::distance(dst, (char*) dst_first);
-    std::string output(dst, size);
-    delete[] dst;
+    try {
+        // initialize memory for output
+        dst = new char[dstlen + 1];
+        const void* src_first = (const void*) src;
+        void* dst_first = (void*) dst;
 
-    return output;
+        // create STL container and return
+        unhex(src_first, srclen, dst_first, dstlen, width);
+        size_t size = distance(dst, (char*) dst_first);
+        std::string output(dst, size);
+        delete[] dst;
+
+        return output;
+    } catch (...) {
+        delete[] dst;
+        throw;
+    }
 }
 
 
@@ -178,6 +199,7 @@ std::string unhex_i8(const string_wrapper& str)
 {
     return unhex(str, 1);
 }
+
 
 void unhex_i16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {
@@ -200,6 +222,7 @@ std::string unhex_i32(const string_wrapper& str)
 {
     return unhex(str, 4);
 }
+
 
 void unhex_i64(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 {

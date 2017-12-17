@@ -29,10 +29,10 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using any = std::any;
-using bad_any_cast = std::bad_any_cast;
-using any_cast = std::any_cast;
-using make_any = std::make_any;
+using std::any;
+using std::bad_any_cast;
+using std::any_cast;
+using std::make_any;
 
 #else                               // !HAVE_CPP17
 

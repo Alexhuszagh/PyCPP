@@ -8,6 +8,7 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/preprocessor/byteorder.h>
 #include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/vector.h>
 #include <pycpp/stream/fd.h>
 #include <warnings/push.h>
 #include <warnings/narrowing-conversions.h>
@@ -45,12 +46,12 @@ struct test_stream
         fd_t fd;
         std::string expected = "Single line";
 
-        fd = fd_open(path, std::ios_base::out, permissions, access);
+        fd = fd_open(path, ios_base::out, permissions, access);
         OStream ostream(fd, true);
-        ostream << expected << std::endl;
+        ostream << expected << endl;
         ostream.close();
 
-        fd = fd_open(path, std::ios_base::in, permissions, access);
+        fd = fd_open(path, ios_base::in, permissions, access);
         IStream istream(fd, true);
         istream.seekg(seekg);
         std::string result;
@@ -71,11 +72,11 @@ TEST(fd_streambuf, fd_streambuf)
     std::string path("sample_path");
     size_t size = 11;
     std::string in("Single Line");
-    std::vector<char> out(size);
+    vector<char> out(size);
 
     // open
-    fd_t fd = fd_open(path, std::ios_base::in | std::ios_base::out);
-    fd_streambuf buf(std::ios_base::in | std::ios_base::out, fd);
+    fd_t fd = fd_open(path, ios_base::in | ios_base::out);
+    fd_streambuf buf(ios_base::in | ios_base::out, fd);
 
     // write
     EXPECT_EQ((size_t) buf.sputn(in.data(), in.size()), size);
@@ -96,7 +97,7 @@ TEST(fd_streambuf, fd_streambuf)
 
 TEST(fd_stream, fd_stream)
 {
-    typedef test_stream<fd_stream, fd_stream> tester;
+    using tester = test_stream<fd_stream, fd_stream>;
 
     tester()(UTF8_ENGLISH);
     tester()(UTF8_ENGLISH, 0, S_IWR_USR_GRP, access_normal);
@@ -113,7 +114,7 @@ TEST(fd_stream, fd_stream)
 
 TEST(fd_stream, iostream)
 {
-    typedef test_stream<fd_istream, fd_ostream> tester;
+    using tester = test_stream<fd_istream, fd_ostream>;
 
     tester()(UTF8_ENGLISH);
     tester()(UTF8_ENGLISH, 0, S_IWR_USR_GRP, access_normal);
@@ -130,7 +131,7 @@ TEST(fd_stream, iostream)
 
 TEST(fd_stream, seek)
 {
-    typedef test_stream<fd_istream, fd_ostream> tester;
+    using tester = test_stream<fd_istream, fd_ostream>;
 
     tester()(UTF8_ENGLISH, 4);
     tester()(UTF8_ENGLISH, 4, S_IWR_USR_GRP, access_normal);

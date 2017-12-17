@@ -9,12 +9,12 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 
-std::istream& getline(std::istream& stream, std::string& line)
+istream& getline(istream& stream, std::string& line)
 {
     line.clear();
 
-    std::istream::sentry sentry(stream, true);
-    std::streambuf* buffer = stream.rdbuf();
+    istream::sentry sentry(stream, true);
+    streambuf* buffer = stream.rdbuf();
 
     for(;;) {
         int8_t c = buffer->sbumpc();
@@ -30,7 +30,7 @@ std::istream& getline(std::istream& stream, std::string& line)
 
         case EOF:
             if(line.empty()) {
-                stream.setstate(std::ios::failbit);
+                stream.setstate(ios::failbit);
             }
             return stream;
 

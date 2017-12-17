@@ -30,11 +30,11 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-template <typename T> using optional = std::optional<T>;
-using nullopt_t = std::nullopt_t;
-using nullopt = std::nullopt;
-using bad_optional_access = std::bad_optional_access;
-using make_optional = std::make_optional;
+using std::optional;
+using std::nullopt_t;
+using std::nullopt;
+using std::bad_optional_access;
+using std::make_optional;
 
 #else                               // !HAVE_CPP17
 
@@ -446,7 +446,7 @@ class optional : private optional_base_t<T>
     }
 
 public:
-    typedef T value_type;
+    using value_type = T;
 
     // 20.5.5.1, constructors
     constexpr optional() noexcept : optional_base_t<T>()  {};
@@ -1150,8 +1150,8 @@ PYCPP_USING_NAMESPACE
 template <typename T>
 struct hash<optional<T>>
 {
-    typedef typename hash<T>::result_type result_type;
-    typedef optional<T> argument_type;
+    using result_type = typename hash<T>::result_type;
+    using argument_type = optional<T>;
 
     constexpr result_type operator()(const argument_type& arg) const
     {
@@ -1163,8 +1163,8 @@ struct hash<optional<T>>
 template <typename T>
 struct hash<optional<T&>>
 {
-    typedef typename hash<T>::result_type result_type;
-    typedef optional<T&> argument_type;
+    using result_type = typename hash<T>::result_type;
+    using argument_type = optional<T&>;
 
     constexpr result_type operator()(const argument_type& arg) const
     {
@@ -1187,8 +1187,8 @@ PYCPP_BEGIN_NAMESPACE
 template <typename T>
 struct hash<optional<T>>
 {
-    typedef typename hash<T>::result_type result_type;
-    typedef optional<T> argument_type;
+    using result_type = typename hash<T>::result_type;
+    using argument_type = optional<T>;
 
     constexpr result_type operator()(const argument_type& arg) const
     {
@@ -1199,8 +1199,8 @@ struct hash<optional<T>>
 template <typename T>
 struct hash<optional<T&>>
 {
-    typedef typename hash<T>::result_type result_type;
-    typedef optional<T&> argument_type;
+    using result_type = typename hash<T>::result_type;
+    using argument_type = optional<T&>;
 
     constexpr result_type operator()(const argument_type& arg) const
     {

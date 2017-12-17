@@ -362,7 +362,7 @@ void intrusive_forward_list<T>::pop_front() noexcept
 template <typename T>
 auto intrusive_forward_list<T>::insert_after(const_iterator position, value_type& x) noexcept -> iterator
 {
-    intrusive_forward_list_node* before, after;
+    intrusive_forward_list_node* before, *after;
     before = position.node_;
     after = before->next;
 

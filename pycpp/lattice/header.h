@@ -32,8 +32,8 @@ struct lowercase_less
  */
 struct header_t: std::map<std::string, std::string, lowercase_less>
 {
-    typedef std::map<std::string, std::string, lowercase_less> base;
-    using base::base;
+    using base_t = std::map<std::string, std::string, lowercase_less>;
+    using base_t::base_t;
 
     std::string string() const;
     bool accept() const;

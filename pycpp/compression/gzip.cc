@@ -338,7 +338,7 @@ compression_status gzip_decompressor_impl::operator()(const void*& src, size_t s
 
 
 gzip_compressor::gzip_compressor(int level):
-    ptr_(new gzip_compressor_impl(level))
+    ptr_(make_unique<gzip_compressor_impl>(level))
 {}
 
 
@@ -377,7 +377,7 @@ bool gzip_compressor::flush(void*& dst, size_t dstlen)
 
 
 gzip_decompressor::gzip_decompressor():
-    ptr_(new gzip_decompressor_impl)
+    ptr_(make_unique<gzip_decompressor_impl>())
 {}
 
 

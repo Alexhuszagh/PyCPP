@@ -44,12 +44,19 @@ struct json_stream_writer: json_writer
 public:
     json_stream_writer(char = ' ', int = 4);
     json_stream_writer(ostream&, char = ' ', int = 4);
+    json_stream_writer(const json_stream_writer&) = delete;
+    json_stream_writer& operator=(const json_stream_writer&) = delete;
+    json_stream_writer(json_stream_writer&&);
+    json_stream_writer& operator=(json_stream_writer&&);
     ~json_stream_writer();
 
+    // MODIFIERS/PROPERTIES
     void open(ostream&);
     void set_indent(char = ' ', int = 4);
     bool is_pretty() const;
+    void swap(json_stream_writer&);
 
+    // WRITERS
     virtual void start_object() override;
     virtual void end_object() override;
     virtual void start_array() override;
@@ -77,6 +84,7 @@ struct json_file_writer: json_stream_writer
 public:
     json_file_writer();
     json_file_writer(const string_view& name);
+    // TODO: need copy/move
     void open(const string_view& name);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -99,6 +107,7 @@ struct json_string_writer: json_stream_writer
 public:
     json_string_writer();
     std::string str() const;
+    // TODO: need copy/move
 
 private:
     ostringstream sstream_;

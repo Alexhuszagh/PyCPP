@@ -26,14 +26,14 @@ struct xrange_iterator: iterator<random_access_iterator_tag, T>
 {
     // MEMBER TYPES
     // ------------
-    typedef xrange_iterator<T> self;
-    typedef iterator<random_access_iterator_tag, T> base;
-    using typename base::value_type;
-    using typename base::difference_type;
-    typedef value_type& reference;
-    typedef const value_type& const_reference;
-    typedef value_type* pointer;
-    typedef const value_type* const_pointer;
+    using self_t = xrange_iterator<T>;
+    using base_t = iterator<random_access_iterator_tag, T>;
+    using typename base_t::value_type;
+    using typename base_t::difference_type;
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -44,23 +44,23 @@ struct xrange_iterator: iterator<random_access_iterator_tag, T>
     xrange_iterator& operator=(xrange_iterator&&) = default;
 
     // RELATIONAL OPERATORS
-    bool operator==(const self&) const;
-    bool operator!=(const self&) const;
-    bool operator<(const self&) const;
-    bool operator<=(const self&) const;
-    bool operator>(const self&) const;
-    bool operator>=(const self&) const;
+    bool operator==(const self_t&) const;
+    bool operator!=(const self_t&) const;
+    bool operator<(const self_t&) const;
+    bool operator<=(const self_t&) const;
+    bool operator>(const self_t&) const;
+    bool operator>=(const self_t&) const;
 
     // INCREMENTORS
-    self& operator++();
-    self operator++(int);
-    self& operator--();
-    self operator--(int);
-    self& operator+=(difference_type);
-    self& operator-=(difference_type);
-    self operator+(difference_type);
-    self operator-(difference_type);
-    difference_type operator-(const self&);
+    self_t& operator++();
+    self_t operator++(int);
+    self_t& operator--();
+    self_t operator--(int);
+    self_t& operator+=(difference_type);
+    self_t& operator-=(difference_type);
+    self_t operator+(difference_type);
+    self_t operator-(difference_type);
+    difference_type operator-(const self_t&);
     reference operator[](difference_type) const;
 
     // DEREFERENCE
@@ -70,7 +70,7 @@ struct xrange_iterator: iterator<random_access_iterator_tag, T>
     const_pointer operator->() const;
 
     // OTHER
-    void swap(self&);
+    void swap(self_t&);
 
 private:
     T value = 0;
@@ -89,49 +89,49 @@ xrange_iterator<T>::xrange_iterator(T value, T step):
 
 
 template <typename T>
-bool xrange_iterator<T>::operator==(const self& rhs) const
+bool xrange_iterator<T>::operator==(const self_t& rhs) const
 {
     return value == rhs.value;
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator!=(const self& rhs) const
+bool xrange_iterator<T>::operator!=(const self_t& rhs) const
 {
     return ordering::not_equal_to(*this, rhs);
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator<(const self& rhs) const
+bool xrange_iterator<T>::operator<(const self_t& rhs) const
 {
     return value < rhs.value;
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator<=(const self& rhs) const
+bool xrange_iterator<T>::operator<=(const self_t& rhs) const
 {
     return ordering::less_equal(*this, rhs);
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator>(const self& rhs) const
+bool xrange_iterator<T>::operator>(const self_t& rhs) const
 {
     return ordering::greater(*this, rhs);
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator>=(const self& rhs) const
+bool xrange_iterator<T>::operator>=(const self_t& rhs) const
 {
     return ordering::greater_equal(*this, rhs);
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator++() -> self&
+auto xrange_iterator<T>::operator++() -> self_t&
 {
     value += step;
     return *this;
@@ -139,16 +139,16 @@ auto xrange_iterator<T>::operator++() -> self&
 
 
 template <typename T>
-auto xrange_iterator<T>::operator++(int) -> self
+auto xrange_iterator<T>::operator++(int) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     operator++();
     return copy;
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator--() -> self&
+auto xrange_iterator<T>::operator--() -> self_t&
 {
     value -= step;
     return *this;
@@ -156,16 +156,16 @@ auto xrange_iterator<T>::operator--() -> self&
 
 
 template <typename T>
-auto xrange_iterator<T>::operator--(int) -> self
+auto xrange_iterator<T>::operator--(int) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     operator--();
     return copy;
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator+=(difference_type n) -> self&
+auto xrange_iterator<T>::operator+=(difference_type n) -> self_t&
 {
     value += step * n;
     return *this;
@@ -173,7 +173,7 @@ auto xrange_iterator<T>::operator+=(difference_type n) -> self&
 
 
 template <typename T>
-auto xrange_iterator<T>::operator-=(difference_type n) -> self&
+auto xrange_iterator<T>::operator-=(difference_type n) -> self_t&
 {
     value -= step * n;
     return *this;
@@ -181,25 +181,25 @@ auto xrange_iterator<T>::operator-=(difference_type n) -> self&
 
 
 template <typename T>
-auto xrange_iterator<T>::operator+(difference_type n) -> self
+auto xrange_iterator<T>::operator+(difference_type n) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     copy += n;
     return copy;
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator-(difference_type n) -> self
+auto xrange_iterator<T>::operator-(difference_type n) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     copy -= n;
     return copy;
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator-(const self& rhs) -> difference_type
+auto xrange_iterator<T>::operator-(const self_t& rhs) -> difference_type
 {
     return (value - rhs.value) / step;
 }
@@ -241,7 +241,7 @@ auto xrange_iterator<T>::operator->() const -> const_pointer
 
 
 template <typename T>
-void xrange_iterator<T>::swap(self& rhs)
+void xrange_iterator<T>::swap(self_t& rhs)
 {
     PYCPP_NAMESPACE::swap(value, rhs.value);
     PYCPP_NAMESPACE::swap(step, rhs.step);

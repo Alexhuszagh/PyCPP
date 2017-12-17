@@ -17,8 +17,8 @@ size_t SEQUENTIAL_BUFFER_SIZE = 8192;
 // SEQUENTIAL FSTREAM
 
 sequential_fstream::sequential_fstream():
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::iostream(&buffer)
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    iostream(&buffer)
 {}
 
 
@@ -29,10 +29,10 @@ sequential_fstream::~sequential_fstream()
 
 
 sequential_fstream::sequential_fstream(sequential_fstream &&other):
-    buffer(std::move(other.buffer)),
-    std::iostream(&buffer)
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    iostream(&buffer)
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -43,49 +43,50 @@ sequential_fstream & sequential_fstream::operator=(sequential_fstream &&other)
 }
 
 
-sequential_fstream::sequential_fstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::iostream(&buffer)
+// TODO: noppppppppeeeeeee
+sequential_fstream::sequential_fstream(const string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    iostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void sequential_fstream::open(const std::string& name, std::ios_base::openmode mode)
+void sequential_fstream::open(const string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in | std::ios_base::out;
+    mode |= ios_base::in | ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-sequential_fstream::sequential_fstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::iostream(&buffer)
+sequential_fstream::sequential_fstream(const wstring_view& name, ios_base::openmode mode):
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    iostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void sequential_fstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void sequential_fstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-sequential_fstream::sequential_fstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in | std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::iostream(&buffer)
+sequential_fstream::sequential_fstream(const u16string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    iostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void sequential_fstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void sequential_fstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in | std::ios_base::out;
+    mode |= ios_base::in | ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
@@ -110,11 +111,11 @@ void sequential_fstream::close()
 void sequential_fstream::swap(sequential_fstream &other)
 {
     // swap
-    std::iostream::swap(other);
-    std::swap(buffer, other.buffer);
+    iostream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
@@ -122,8 +123,8 @@ void sequential_fstream::swap(sequential_fstream &other)
 
 
 sequential_ifstream::sequential_ifstream():
-    buffer(std::ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::istream(&buffer)
+    buffer(ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    istream(&buffer)
 {}
 
 
@@ -134,10 +135,10 @@ sequential_ifstream::~sequential_ifstream()
 
 
 sequential_ifstream::sequential_ifstream(sequential_ifstream &&other):
-    buffer(std::move(other.buffer)),
-    std::istream(&buffer)
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    istream(&buffer)
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -148,49 +149,49 @@ sequential_ifstream & sequential_ifstream::operator=(sequential_ifstream &&other
 }
 
 
-sequential_ifstream::sequential_ifstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::istream(&buffer)
+sequential_ifstream::sequential_ifstream(const string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    istream(&buffer)
 {
     open(name, mode);
 }
 
 
-void sequential_ifstream::open(const std::string& name, std::ios_base::openmode mode)
+void sequential_ifstream::open(const string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in;
+    mode |= ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-sequential_ifstream::sequential_ifstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::istream(&buffer)
+sequential_ifstream::sequential_ifstream(const wstring_view& name, ios_base::openmode mode):
+    buffer(ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    istream(&buffer)
 {
     open(name, mode);
 }
 
 
-void sequential_ifstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void sequential_ifstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-sequential_ifstream::sequential_ifstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::istream(&buffer)
+sequential_ifstream::sequential_ifstream(const u16string_view& name, ios_base::openmode mode):
+    buffer(ios_base::in, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    istream(&buffer)
 {
     open(name, mode);
 }
 
 
-void sequential_ifstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void sequential_ifstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::in;
+    mode |= ios_base::in;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
@@ -215,19 +216,19 @@ void sequential_ifstream::close()
 void sequential_ifstream::swap(sequential_ifstream &other)
 {
     // swap
-    std::istream::swap(other);
-    std::swap(buffer, other.buffer);
+    istream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 
 // SEQUENTIAL OFSTREAM
 
 sequential_ofstream::sequential_ofstream():
-    buffer(std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::ostream(&buffer)
+    buffer(ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    ostream(&buffer)
 {}
 
 
@@ -238,10 +239,10 @@ sequential_ofstream::~sequential_ofstream()
 
 
 sequential_ofstream::sequential_ofstream(sequential_ofstream &&other):
-    buffer(std::move(other.buffer)),
-    std::ostream(&buffer)
+    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+    ostream(&buffer)
 {
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
 }
 
 
@@ -252,49 +253,49 @@ sequential_ofstream & sequential_ofstream::operator=(sequential_ofstream &&other
 }
 
 
-sequential_ofstream::sequential_ofstream(const std::string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::ostream(&buffer)
+sequential_ofstream::sequential_ofstream(const string_view& name, ios_base::openmode mode):
+    buffer(ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    ostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void sequential_ofstream::open(const std::string& name, std::ios_base::openmode mode)
+void sequential_ofstream::open(const string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::out;
+    mode |= ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
 
-sequential_ofstream::sequential_ofstream(const std::wstring& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::ostream(&buffer)
+sequential_ofstream::sequential_ofstream(const wstring_view& name, ios_base::openmode mode):
+    buffer(ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    ostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void sequential_ofstream::open(const std::wstring& name, std::ios_base::openmode mode)
+void sequential_ofstream::open(const wstring_view& name, ios_base::openmode mode)
 {
     open(reinterpret_cast<const char16_t*>(name.data()), mode);
 }
 
 
-sequential_ofstream::sequential_ofstream(const std::u16string& name, std::ios_base::openmode mode):
-    buffer(std::ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
-    std::ostream(&buffer)
+sequential_ofstream::sequential_ofstream(const u16string_view& name, ios_base::openmode mode):
+    buffer(ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
+    ostream(&buffer)
 {
     open(name, mode);
 }
 
 
-void sequential_ofstream::open(const std::u16string& name, std::ios_base::openmode mode)
+void sequential_ofstream::open(const u16string_view& name, ios_base::openmode mode)
 {
     close();
-    mode |= std::ios_base::out;
+    mode |= ios_base::out;
     buffer.fd(fd_open(name, mode, S_IWR_USR_GRP, access_sequential));
 }
 
@@ -318,11 +319,11 @@ void sequential_ofstream::close()
 void sequential_ofstream::swap(sequential_ofstream &other)
 {
     // swap
-    std::ostream::swap(other);
-    std::swap(buffer, other.buffer);
+    ostream::swap(other);
+    PYCPP_NAMESPACE::swap(buffer, other.buffer);
 
     // set filebuffers
-    std::ios::rdbuf(&buffer);
+    ios::rdbuf(&buffer);
     other.rdbuf(&other.buffer);
 }
 

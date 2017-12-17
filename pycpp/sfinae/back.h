@@ -9,6 +9,7 @@
 
 #include <pycpp/sfinae/has_member_function.h>
 #include <pycpp/stl/type_traits.h>
+#include <pycpp/stl/utility.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -18,16 +19,13 @@ namespace back_detail
 // ------
 
 template <typename T>
-using dereference_iterator_type = decltype(*std::declval<typename T::iterator>());
+using dereference_iterator_type = decltype(*declval<typename T::iterator>());
 
 template <typename T>
-using is_const_iterator = std::is_same<dereference_iterator_type<T>, typename T::const_reference>;
+using is_const_iterator = is_same<dereference_iterator_type<T>, typename T::const_reference>;
 
 template <typename T>
-struct is_const: std::integral_constant<
-        bool,
-        std::is_const<T>::value || is_const_iterator<T>::value
-    >
+struct is_const: bool_constant<PYCPP_NAMESPACE::is_const<T>::value || is_const_iterator<T>::value>
 {};
 
 }   /* back_detail */

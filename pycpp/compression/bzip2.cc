@@ -208,7 +208,7 @@ compression_status bz2_decompressor_impl::operator()(const void*& src, size_t sr
 
 
 bz2_compressor::bz2_compressor(int compress_level):
-    ptr_(new bz2_compressor_impl(compress_level))
+    ptr_(make_unique<bz2_compressor_impl>(compress_level))
 {}
 
 
@@ -247,7 +247,7 @@ bool bz2_compressor::flush(void*& dst, size_t dstlen)
 
 
 bz2_decompressor::bz2_decompressor():
-    ptr_(new bz2_decompressor_impl)
+    ptr_(make_unique<bz2_decompressor_impl>())
 {}
 
 

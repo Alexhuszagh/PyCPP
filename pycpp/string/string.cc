@@ -1,10 +1,13 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/preprocessor/os.h>
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/casemap.h>
 #include <pycpp/string/string.h>
 #include <pycpp/string/unicode.h>
-#include <pycpp/string/whitespace.h>
 #include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -12,18 +15,29 @@ PYCPP_BEGIN_NAMESPACE
 // CONSTANTS
 // ---------
 
-const string_t ascii_lowercase = "abcdefghijklmnopqrstuvwxyz";
-const string_t ascii_uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const string_t ascii_letters = ascii_lowercase + ascii_uppercase;
-const string_t digits = "0123456789";
-const string_t hexdigits = "0123456789abcdefABCDEF";
-const string_t lowercase = ascii_lowercase;
-const string_t uppercase = ascii_uppercase;
-const string_t letters = lowercase + uppercase;
-const string_t octdigits = "01234567";
-const string_t punctuation = "!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~";
-const string_t whitespace = WHITESPACE;
-const string_t printable = digits + letters + punctuation + whitespace;
+// Python string constants
+const string_t ASCII_LOWERCASE = "abcdefghijklmnopqrstuvwxyz";
+const string_t ASCII_UPPERCASE = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const string_t ASCII_LETTERS = ASCII_LOWERCASE + ASCII_UPPERCASE;
+const string_t DIGITS = "0123456789";
+const string_t HEXDIGITS = "0123456789abcdefABCDEF";
+const string_t LOWERCASE = ASCII_LOWERCASE;
+const string_t UPPERCASE = ASCII_UPPERCASE;
+const string_t LETTERS = LOWERCASE + UPPERCASE;
+const string_t OCTDIGITS = "01234567";
+const string_t PUNCTUATION = "!\"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~";
+const string_t WHITESPACE = " \t\n\r\v\f";
+const string_t PRINTABLE = DIGITS + LETTERS + PUNCTUATION + WHITESPACE;
+
+// Extensions
+const string_t SPACE = " ";
+const string_t WINDOWS_NEWLINE = "\r\n";
+const string_t POSIX_NEWLINE = "\n";
+#if defined(OS_WINDOWS)
+    const string_t NEWLINE = "\r\n";
+#else
+    const string_t NEWLINE = "\n";
+#endif
 
 // HELPERS
 // -------
@@ -142,32 +156,37 @@ string_list_t quoted_split_impl(Iter first, Iter last, char delimiter, char quot
 
     bool is_quoted = false;
     bool is_escaped = false;
-    char *word = new char[std::distance(first, last)];
+    char *word = new char[distance(first, last)];
     int j = 0;
     int k = 0;
 
-    for (auto it = first; it != last; ++it) {
-        char c = *it;
-        if (is_escaped) {           // escape letter and undo escaping
-            is_escaped = false;
-            word[j] = c;
-            j++;
-        }  else if (c == escape) {
-            is_escaped = true;      // escape next character
-        } else if (c == quote) {
-            is_quoted ^= true;      // opening/ending quote
-        } else if (is_quoted) {
-            word[j] = c;            // append quoted character to word
-            j++;
-        } else if (c == delimiter) {
-            data.emplace_back(std::string(word, j));
-            memset(word, 0, j);     // write null values to line
-            j = 0;
-            k++;
-        } else {
-            word[j] = c;            // append unquoted word
-            j++;
+    try {
+        for (auto it = first; it != last; ++it) {
+            char c = *it;
+            if (is_escaped) {           // escape letter and undo escaping
+                is_escaped = false;
+                word[j] = c;
+                j++;
+            }  else if (c == escape) {
+                is_escaped = true;      // escape next character
+            } else if (c == quote) {
+                is_quoted ^= true;      // opening/ending quote
+            } else if (is_quoted) {
+                word[j] = c;            // append quoted character to word
+                j++;
+            } else if (c == delimiter) {
+                data.emplace_back(std::string(word, j));
+                memset(word, 0, j);     // write null values to line
+                j = 0;
+                k++;
+            } else {
+                word[j] = c;            // append unquoted word
+                j++;
+            }
         }
+    } catch (...) {
+        delete[] word;
+        throw;
     }
 
     data.emplace_back(std::string(word, j));
@@ -217,8 +236,8 @@ string_t replace_impl(const string_wrapper& str, const string_wrapper& sub, cons
     string_t string;
     string.reserve(str.size());
     for (auto it = str.begin(); it != str.end(); ) {
-        size_t distance = static_cast<size_t>(std::distance(it, str.end()));
-        if (count && distance >= sub.size() && std::equal(sub.begin(), sub.end(), it)) {
+        size_t dist = static_cast<size_t>(distance(it, str.end()));
+        if (count && dist >= sub.size() && equal(sub.begin(), sub.end(), it)) {
             string.append(repl.data(), repl.size());
             it += sub.size();
             --count;
@@ -272,7 +291,7 @@ static size_t index_impl(const string_wrapper& str, const string_wrapper& sub, s
 {
     size_t i = find_impl(str, sub, start, end);
     if (i == SIZE_MAX) {
-        throw std::out_of_range("Substring not found in wrapper.");
+        throw out_of_range("Substring not found in wrapper.");
     }
     return i;
 }
@@ -282,7 +301,7 @@ static size_t rindex_impl(const string_wrapper& str, const string_wrapper& sub, 
 {
     size_t i = rfind_impl(str, sub, start, end);
     if (i == SIZE_MAX) {
-        throw std::out_of_range("Substring not found in wrapper.");
+        throw out_of_range("Substring not found in wrapper.");
     }
     return i;
 }
@@ -308,7 +327,7 @@ static size_t count_impl(const string_wrapper& str, const string_wrapper& sub, s
     size_t count = 0;
     size_t diff = substr.size() - sub.size();
     for (auto it = str.begin(); it <= str.begin()+diff; ++it) {
-        count += std::equal(sub.begin(), sub.end(), it);
+        count += equal(sub.begin(), sub.end(), it);
     }
 
     return count;
@@ -357,7 +376,7 @@ bool endswith(const string_wrapper& str, const string_wrapper& sub)
 
 string_list_t split(const string_wrapper& str, split_function is_split, size_t maxsplit)
 {
-    typedef typename string_wrapper::const_iterator iter;
+    using iter = typename string_wrapper::const_iterator;
     string_list_t data;
 
     split_impl(str.begin(), str.end(), maxsplit, is_split, [&](iter first, iter second) {
@@ -384,13 +403,13 @@ string_list_t quoted_split(const string_wrapper& str, char delimiter, char quote
 
 string_list_t rsplit(const string_wrapper& str, split_function is_split, size_t maxsplit)
 {
-    typedef typename string_wrapper::const_iterator iter;
+    using iter = typename string_wrapper::const_iterator;
     string_list_t data;
 
     rsplit_impl(str.begin(), str.end(), maxsplit, is_split, [&](iter first, iter second) {
         return data.emplace_back(string_t(first, second));
     });
-    std::reverse(data.begin(), data.end());
+    reverse(data.begin(), data.end());
 
     return data;
 }
@@ -519,7 +538,7 @@ string_wrapper::string_wrapper(const_pointer str, size_type n):
 
 
 string_wrapper::string_wrapper(const_pointer first, const_pointer last):
-    string_view(first, std::distance(first, last))
+    string_view(first, distance(first, last))
 {}
 
 
@@ -558,7 +577,7 @@ const string_view& string_wrapper::view() const
 
 string_wrapper_list_t string_wrapper::split(split_function is_split, size_t maxsplit) const
 {
-    typedef typename string_wrapper::const_iterator iter;
+    using iter = typename string_wrapper::const_iterator;
     string_wrapper_list_t data;
 
     split_impl(begin(), end(), maxsplit, is_split, [&](iter first, iter second) {
@@ -579,13 +598,13 @@ string_wrapper_list_t string_wrapper::split(const string_wrapper& sep, size_t ma
 
 string_wrapper_list_t string_wrapper::rsplit(split_function is_split, size_t maxsplit) const
 {
-    typedef typename string_wrapper::const_iterator iter;
+    using iter = typename string_wrapper::const_iterator;
     string_wrapper_list_t data;
 
     rsplit_impl(begin(), end(), maxsplit, is_split, [&](iter first, iter second) {
         return data.emplace_back(string_wrapper(first, second));
     });
-    std::reverse(data.begin(), data.end());
+    reverse(data.begin(), data.end());
 
     return data;
 }

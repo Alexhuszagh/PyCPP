@@ -39,25 +39,13 @@ using std::crend;
 
 #endif          // HAVE_CPP14
 
-template <
-    typename Category,
-    typename T,
-    typename Distance = ptrdiff_t,
-    typename Pointer = T*,
-    typename Reference = T&
->
-using iterator = std::iterator<Category, T, Distance, Pointer, Reference>;
-
-template <typename Iterator>
-using iterator_traits = std::iterator_traits<Iterator>;
-
-template <typename Iterator>
-using reverse_iterator = std::reverse_iterator<Iterator>;
-
-using input_iterator_tag = std::input_iterator_tag;
-using output_iterator_tag = std::output_iterator_tag;
-using forward_iterator_tag = std::forward_iterator_tag;
-using bidirectional_iterator_tag = std::bidirectional_iterator_tag;
-using random_access_iterator_tag = std::random_access_iterator_tag;
+using std::iterator;
+using std::iterator_traits;
+using std::reverse_iterator;
+using std::input_iterator_tag;
+using std::output_iterator_tag;
+using std::forward_iterator_tag;
+using std::bidirectional_iterator_tag;
+using std::random_access_iterator_tag;
 
 PYCPP_END_NAMESPACE

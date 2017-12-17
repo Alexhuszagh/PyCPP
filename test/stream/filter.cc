@@ -5,10 +5,11 @@
  *  \brief Transformable stream unittests.
  */
 
+#include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/sstream.h>
+#include <pycpp/stl/string.h>
 #include <pycpp/stream/filter.h>
 #include <gtest/gtest.h>
-#include <sstream>
-#include <string>
 
 PYCPP_USING_NAMESPACE
 
@@ -19,7 +20,7 @@ void doublechars(const void*& src, size_t srclen,
     void*& dst, size_t dstlen,
     size_t char_size)
 {
-    size_t bytes = std::min(srclen, dstlen / 2) * char_size;
+    size_t bytes = min(srclen, dstlen / 2) * char_size;
     const char* src_ = reinterpret_cast<const char*>(src);
     char* dst_ = reinterpret_cast<char*>(dst);
 
@@ -40,7 +41,7 @@ void doublechars(const void*& src, size_t srclen,
 
 TEST(filter_istream, nocallback)
 {
-    std::istringstream sstream("This is a message");
+    istringstream sstream("This is a message");
     filter_istream stream(sstream);
     std::string line;
 
@@ -51,7 +52,7 @@ TEST(filter_istream, nocallback)
 
 TEST(filter_istream, doublechars)
 {
-    std::istringstream sstream("This is a message");
+    istringstream sstream("This is a message");
     filter_istream stream(sstream, doublechars);
     std::string line;
 
@@ -62,7 +63,7 @@ TEST(filter_istream, doublechars)
 
 TEST(filter_ostream, nocallback)
 {
-    std::ostringstream sstream;
+    ostringstream sstream;
     {
         filter_ostream stream(sstream);
         stream << "This is a message";
@@ -73,7 +74,7 @@ TEST(filter_ostream, nocallback)
 
 TEST(filter_ostream, doublechars)
 {
-    std::ostringstream sstream;
+    ostringstream sstream;
     {
         filter_ostream stream(sstream, doublechars);
         stream << "This is a message";

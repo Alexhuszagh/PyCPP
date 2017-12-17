@@ -71,6 +71,19 @@ json_stream_writer::json_stream_writer(ostream& s, char c, int width)
 }
 
 
+json_stream_writer::json_stream_writer(json_stream_writer&& rhs)
+{
+    swap(rhs);
+}
+
+
+json_stream_writer& json_stream_writer::operator=(json_stream_writer&& rhs)
+{
+    swap(rhs);
+    return *this;
+}
+
+
 json_stream_writer::~json_stream_writer()
 {
     delete (rapidjson_ostream*) stream_;
@@ -97,6 +110,15 @@ void json_stream_writer::set_indent(char c, int width)
 {
     indent_character_ = c;
     indent_width_ = width;
+}
+
+
+void json_stream_writer::swap(json_stream_writer& rhs)
+{
+    PYCPP_NAMESPACE::swap(indent_character_, rhs.indent_character_);
+    PYCPP_NAMESPACE::swap(indent_width_, rhs.indent_width_);
+    PYCPP_NAMESPACE::swap(stream_, rhs.stream_);
+    PYCPP_NAMESPACE::swap(writer_, rhs.writer_);
 }
 
 

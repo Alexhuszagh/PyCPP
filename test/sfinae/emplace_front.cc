@@ -6,9 +6,9 @@
  */
 
 #include <pycpp/sfinae/emplace_front.h>
+#include <pycpp/stl/deque.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <deque>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -17,24 +17,24 @@ PYCPP_USING_NAMESPACE
 
 TEST(emplace_front, emplace_front)
 {
-    std::deque<int> deq = {2, 3, 4};
-    std::vector<int> vec = {2, 3, 4};
+    deque<int> d = {2, 3, 4};
+    vector<int> v = {2, 3, 4};
 
-    emplace_front()(deq, 1);
-    emplace_front()(vec, 1);
+    emplace_front()(d, 1);
+    emplace_front()(v, 1);
 
-    ASSERT_EQ(deq.size(), 4);
-    ASSERT_EQ(vec.size(), 4);
-    EXPECT_EQ(deq.at(0), 1);
-    EXPECT_EQ(vec.at(0), 1);
+    ASSERT_EQ(d.size(), 4);
+    ASSERT_EQ(v.size(), 4);
+    EXPECT_EQ(d.at(0), 1);
+    EXPECT_EQ(v.at(0), 1);
 }
 
 
 TEST(emplace_front, has_emplace_front)
 {
-    using deq = std::deque<int>;
-    using vec = std::vector<int>;
+    using deque_type = deque<int>;
+    using vector_type = vector<int>;
 
-    static_assert(has_emplace_front<deq>::value, "");
-    static_assert(!has_emplace_front<vec>::value, "");
+    static_assert(has_emplace_front<deque_type>::value, "");
+    static_assert(!has_emplace_front<vector_type>::value, "");
 }

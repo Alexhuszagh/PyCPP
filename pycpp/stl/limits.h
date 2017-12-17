@@ -15,7 +15,8 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-template <typename T>
-using numeric_limits = std::numeric_limits<T>;
+using std::numeric_limits;
+using std::float_round_style;
+using std::float_denorm_style;
 
 PYCPP_END_NAMESPACE

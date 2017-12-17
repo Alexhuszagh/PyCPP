@@ -15,12 +15,12 @@
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 #   include <string_view>
 #else                               // !HAVE_CPP17
-#   include <algorithm>
-#   include <cassert>
-#   include <iterator>
-#   include <limits>
-#   include <stdexcept>
-#   include <string>
+#   include <pycpp/stl/algorithm.h>
+#   include <pycpp/stl/iostream.h>
+#   include <pycpp/stl/iterator.h>
+#   include <pycpp/stl/limits.h>
+#   include <pycpp/stl/stdexcept.h>
+#   include <assert.h>
 #endif                              // HAVE_CPP17
 
 PYCPP_BEGIN_NAMESPACE
@@ -30,15 +30,11 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-template <
-    typename Char,
-    typename Traits = std::char_traits<Char>
->
-using basic_string_view = std::basic_string_view<Char, Traits>;
-using string_view = std::string_view;
-using wstring_view = std::wstring_view;
-using u16string_view = std::u16string_view;
-using u32string_view = std::u32string_view;
+using std::basic_string_view;
+using std::string_view;
+using std::wstring_view;
+using std::u16string_view;
+using std::u32string_view;
 
 #else                               // !HAVE_CPP17
 
@@ -88,11 +84,11 @@ public:
     using pointer = Char*;
     using const_pointer = const Char*;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using iterator = const_pointer;
     using const_iterator = const_pointer;
-    using reverse_iterator = std::reverse_iterator<pointer>;
-    using const_reverse_iterator = std::reverse_iterator<const_pointer>;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<pointer>;
+    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_pointer>;
 
     // MEMBER VARIABLES
     // ----------------
@@ -328,7 +324,7 @@ auto basic_string_view<C, T>::length() const noexcept -> size_type
 template <typename C, typename T>
 auto basic_string_view<C, T>::max_size() const noexcept -> size_type
 {
-    return std::numeric_limits<size_type>::max();
+    return numeric_limits<size_type>::max();
 }
 
 
@@ -351,7 +347,7 @@ template <typename C, typename T>
 auto basic_string_view<C, T>::at(size_type pos) const -> const_reference
 {
     if (pos > size()) {
-        throw std::out_of_range("string_view::at");
+        throw out_of_range("string_view::at");
     }
     return operator[](pos);
 }
@@ -401,8 +397,8 @@ void basic_string_view<C, T>::remove_suffix(size_type n)
 template <typename C, typename T>
 void basic_string_view<C, T>::swap(basic_string_view<C, T>& rhs) noexcept
 {
-    std::swap(data_, rhs.data_);
-    std::swap(length_, rhs.length_);
+    PYCPP_NAMESPACE::swap(data_, rhs.data_);
+    PYCPP_NAMESPACE::swap(length_, rhs.length_);
 }
 
 
@@ -410,10 +406,10 @@ template <typename C, typename T>
 auto basic_string_view<C, T>::copy(value_type* dst, size_type count, size_type pos) const -> size_type
 {
     if (pos > size()) {
-        throw std::out_of_range("basic_string_view::copy");
+        throw out_of_range("basic_string_view::copy");
     }
 
-    size_type length = std::min(count, size() - pos);
+    size_type length = min(count, size() - pos);
     traits_type::copy(dst, data() + pos, length * sizeof(value_type));
 
     return length;
@@ -424,12 +420,11 @@ template <typename C, typename T>
 basic_string_view<C, T> basic_string_view<C, T>::substr(size_type pos, size_type n) const
 {
     if (pos > size()) {
-        throw std::out_of_range("basic_string_view::substr");
+        throw out_of_range("basic_string_view::substr");
     }
 
-    return basic_string_view(data() + pos, std::min(n, size() - pos));
+    return basic_string_view(data() + pos, min(n, size() - pos));
 }
-
 
 
 template <typename C, typename T>
@@ -437,7 +432,7 @@ int basic_string_view<C, T>::compare(basic_string_view<C, T> s) const noexcept
 {
     size_type lhs_size = size();
     size_type rhs_size = s.size();
-    int result = traits_type::compare(data(), s.data(), std::min(lhs_size, rhs_size));
+    int result = traits_type::compare(data(), s.data(), min(lhs_size, rhs_size));
     if (result != 0) {
         return result;
     } else if (lhs_size < rhs_size) {
@@ -540,8 +535,8 @@ auto basic_string_view<C, T>::find(basic_string_view<C, T> s, size_type pos) con
     if (s.empty()) {
       return pos;
     }
-    const_iterator iter = std::search(cbegin() + pos, cend(), s.cbegin(), s.cend(), traits_type::eq);
-    return iter == cend() ? npos : std::distance(cbegin(), iter);
+    const_iterator iter = search(cbegin() + pos, cend(), s.cbegin(), s.cend(), traits_type::eq);
+    return iter == cend() ? npos : distance(cbegin(), iter);
 }
 
 
@@ -627,8 +622,8 @@ auto basic_string_view<C, T>::find_first_of(basic_string_view<C, T> s, size_type
         return npos;
     }
 
-    const_iterator it = std::find_first_of(cbegin() + pos, cend(), s.cbegin(), s.cend(), traits_type::eq);
-    return it == cend() ? npos : std::distance(cbegin(), it);
+    const_iterator it = PYCPP_NAMESPACE::find_first_of(cbegin() + pos, cend(), s.cbegin(), s.cend(), traits_type::eq);
+    return it == cend() ? npos : distance(cbegin(), it);
 }
 
 
@@ -670,11 +665,11 @@ auto basic_string_view<C, T>::find_last_of(basic_string_view<C, T> s, size_type 
         pos = size() - (pos+1);
     }
 
-    const_reverse_iterator iter = std::find_first_of(crbegin() + pos, crend(), s.cbegin(), s.cend(), traits_type::eq);
+    const_reverse_iterator iter = PYCPP_NAMESPACE::find_first_of(crbegin() + pos, crend(), s.cbegin(), s.cend(), traits_type::eq);
     if (iter == crend()) {
         return npos;
     }
-    return size() - 1 - std::distance(crbegin(), iter);
+    return size() - 1 - distance(crbegin(), iter);
 }
 
 
@@ -714,7 +709,7 @@ auto basic_string_view<C, T>::find_first_not_of(basic_string_view<C, T> s, size_
         return pos;
     }
     const_iterator iter = find_not_of(cbegin() + pos, cend(), s);
-    return iter == cend() ? npos : std::distance(cbegin(), iter);
+    return iter == cend() ? npos : distance(cbegin(), iter);
 }
 
 
@@ -759,7 +754,7 @@ auto basic_string_view<C, T>::find_last_not_of(basic_string_view<C, T> s, size_t
     if (iter == crend()) {
         return npos;
     }
-    return size() - 1 - std::distance(crbegin(), iter);
+    return size() - 1 - distance(crbegin(), iter);
 }
 
 
@@ -836,7 +831,7 @@ bool operator>=(basic_string_view<C, T> lhs, basic_string_view<C, T> rhs) noexce
 
 
 template <typename C, typename T>
-std::basic_ostream<C, T>& operator<<(std::basic_ostream<C, T>& os, basic_string_view<C, T> v)
+basic_ostream<C, T>& operator<<(basic_ostream<C, T>& os, basic_string_view<C, T> v)
 {
     return os.write(v.data(), v.length());
 }

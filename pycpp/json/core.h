@@ -62,8 +62,10 @@ struct json_value_t
 {
 public:
     json_value_t();
+    json_value_t(const json_value_t&) = delete;
+    json_value_t& operator=(const json_value_t&) = delete;
     json_value_t(json_value_t&&);
-    json_value_t & operator=(json_value_t&&);
+    json_value_t& operator=(json_value_t&&);
 
     json_value_t(json_type type);
     json_value_t(json_null_t);

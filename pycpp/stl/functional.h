@@ -27,26 +27,13 @@ using std::invoke;
 
 #endif          // HAVE_CPP17
 
-template <typename T = void>
-using equal_to = std::equal_to<T>;
-
-template <typename T = void>
-using less = std::less<T>;
-
-template <typename T = void>
-using less_equal = std::less_equal<T>;
-
-template <typename T = void>
-using greater = std::greater<T>;
-
-template <typename T = void>
-using greater_equal = std::greater_equal<T>;
-
-template <typename R, typename ... Ts>
-using function = std::function<R, Ts...>;
-
-template <typename T>
-using reference_wrapper = std::reference_wrapper<T>;
+using std::equal_to;
+using std::less;
+using std::less_equal;
+using std::greater;
+using std::greater_equal;
+using std::function;
+using std::reference_wrapper;
 
 #if USE_XXHASH                          // XXHASH
 

@@ -21,39 +21,17 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 using std::swap;
-
-template <
-    class Char,
-    class Traits = std::char_traits<Char>,
-    class Allocator = std::allocator<Char>
->
-using basic_stringbuf = std::basic_stringbuf<Char, Traits, Allocator>;
-
-template <
-    typename Char,
-    typename Traits = std::char_traits<Char>
->
-using basic_istringstream = std::basic_istringstream<Char, Traits>;
-
-template <
-    typename Char,
-    typename Traits = std::char_traits<Char>
->
-using basic_ostringstream = std::basic_ostringstream<Char, Traits>;
-
-template <
-    typename Char,
-    typename Traits = std::char_traits<Char>
->
-using basic_stringstream = std::basic_stringstream<Char, Traits>;
-
-using stringbuf = basic_stringbuf<char>;
-using wstringbuf = basic_stringbuf<wchar_t>;
-using istringstream = basic_istringstream<char>;
-using wistringstream = basic_istringstream<wchar_t>;
-using ostringstream = basic_ostringstream<char>;
-using wostringstream = basic_ostringstream<wchar_t>;
-using stringstream = basic_stringstream<char>;
-using wstringstream = basic_stringstream<wchar_t>;
+using std::basic_stringbuf;
+using std::basic_istringstream;
+using std::basic_ostringstream;
+using std::basic_stringstream;
+using std::stringbuf;
+using std::wstringbuf;
+using std::istringstream;
+using std::wistringstream;
+using std::ostringstream;
+using std::wostringstream;
+using std::stringstream;
+using std::wstringstream;
 
 PYCPP_END_NAMESPACE

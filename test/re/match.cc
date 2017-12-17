@@ -6,8 +6,8 @@
  */
 
 #include <pycpp/re/regex.h>
+#include <pycpp/stl/deque.h>
 #include <gtest/gtest.h>
-#include <deque>
 
 PYCPP_USING_NAMESPACE
 
@@ -22,8 +22,8 @@ TEST(re, match_iterator_t)
     match_iterator_t first(regex, data);
     match_iterator_t last;
 
-    std::deque<std::string> actual;
-    std::deque<std::string> expected = {
+    deque<std::string> actual;
+    deque<std::string> expected = {
         "These",
         "are",
         "a",

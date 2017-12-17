@@ -53,7 +53,7 @@ secure_string hash_digest(void* ctx, size_t hashlen, void (*cb)(void*, void*))
         secure_free(dst);
         return output;
 
-    } catch (exception&) {
+    } catch (...) {
         secure_free(dst);
         throw;
     }
@@ -74,7 +74,7 @@ void hash_hexdigest(void* ctx, void*& dst, size_t dstlen, size_t hashlen, void (
         hash_digest(ctx, hash_dst, hashlen, hashlen, cb);
         hex_i8(hash_src, hashlen, dst, dstlen);
         secure_free(hash);
-    } catch (exception&) {
+    } catch (...) {
         secure_free(hash);
         throw;
     }
@@ -94,7 +94,7 @@ secure_string hash_hexdigest(void* ctx, size_t hashlen, void (*cb)(void*, void*)
         secure_free(dst);
         return output;
 
-    } catch (exception&) {
+    } catch (...) {
         secure_free(dst);
         throw;
     }

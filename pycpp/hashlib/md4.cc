@@ -276,39 +276,38 @@ void md4_final(void *ptr, void* buf)
 // -------
 
 
-md4_hash::md4_hash()
+md4_hash::md4_hash():
+    ctx(make_unique<md4_context>())
 {
-    ctx = new md4_context;
-    md4_init(ctx);
+    md4_init(ctx.get());
 }
 
 
-md4_hash::md4_hash(const void* src, size_t srclen)
+md4_hash::md4_hash(const void* src, size_t srclen):
+    ctx(make_unique<md4_context>())
 {
-    ctx = new md4_context;
-    md4_init(ctx);
+    md4_init(ctx.get());
     update(src, srclen);
 }
 
 
-md4_hash::md4_hash(const string_wrapper& str)
+md4_hash::md4_hash(const string_wrapper& str):
+    ctx(make_unique<md4_context>())
 {
-    ctx = new md4_context;
-    md4_init(ctx);
+    md4_init(ctx.get());
     update(str);
 }
 
 
 md4_hash::~md4_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void md4_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, md4_update);
+    hash_update(ctx.get(), src, srclen, md4_update);
 }
 
 

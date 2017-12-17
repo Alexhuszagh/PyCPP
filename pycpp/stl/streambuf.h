@@ -9,3 +9,14 @@
 
 #include <pycpp/config.h>
 #include <streambuf>
+
+PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+using std::basic_streambuf;
+using std::streambuf;
+using std::wstreambuf;
+
+PYCPP_END_NAMESPACE

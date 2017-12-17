@@ -7,10 +7,10 @@
  *  \brief Punycode encoding and decoding unittests.
  */
 
+#include <pycpp/stl/utility.h>
+#include <pycpp/stl/vector.h>
 #include <pycpp/string/punycode.h>
 #include <gtest/gtest.h>
-#include <utility>
-#include <vector>
 
 PYCPP_USING_NAMESPACE
 
@@ -54,13 +54,14 @@ static const std::string UTF32_3 = {0, 0, 0, 109, 0, 0, 0, -22, 0, 0, 0, 109, 0,
 static void test_lowlevel(const std::string& input, const std::string& expected, punycode_lowlevel_callback cb)
 {
     const char* src = input.data();
-    char* dst = new char[20];
-    const void* src_first = src;
-    void* dst_first = dst;
+    char* dst = nullptr;
 
     try {
+        dst = new char[20];
+        const void* src_first = src;
+        void* dst_first = dst;
         cb(src_first, input.size(), dst_first, 20);
-        EXPECT_EQ(std::distance(dst, (char*) dst_first), expected.size());
+        EXPECT_EQ(distance(dst, (char*) dst_first), expected.size());
         EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
     } catch (...) {
         delete[] dst;
@@ -163,7 +164,7 @@ TEST(punycode, punycode_to_utf32)
  */
 TEST(punycode, sequences)
 {
-    std::vector<std::pair<std::string, std::string>> tests = {
+    vector<pair<std::string, std::string>> tests = {
         {
             std::string {-26, -75, -117, -24, -81, -107},
             "0zwm56d",

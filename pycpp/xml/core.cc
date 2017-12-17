@@ -7,6 +7,7 @@
 #include <pycpp/multi_index/mem_fun.h>
 #include <pycpp/multi_index/sequenced_index.h>
 #include <pycpp/multi_index/tag.h>
+#include <pycpp/stl/functional.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/stl/stdexcept.h>
 #include <pycpp/xml/core.h>
@@ -25,22 +26,22 @@ struct name_tag {};
 struct id_tag {};
 
 
-typedef multi_index_container<
+using xml_node_list_impl_t = multi_index_container<
     xml_node_t,
     indexed_by<
         sequenced<>,
         hashed_non_unique<
             tag<name_tag>,
             const_mem_fun<xml_node_t, const xml_string_t&, &xml_node_t::get_tag>,
-            std::hash<xml_string_t>
+            hash<xml_string_t>
         >,
         hashed_non_unique<
             tag<id_tag>,
             const_mem_fun<xml_node_t, uintptr_t, &xml_node_t::get_id>,
-            std::hash<uintptr_t>
+            hash<uintptr_t>
         >
     >
-> xml_node_list_impl_t;
+>;
 
 using xml_node_iterator_impl_t = typename xml_node_list_impl_t::iterator;
 
@@ -72,12 +73,12 @@ xml_node_iterator_t::xml_node_iterator_t()
 {}
 
 
-xml_node_iterator_t::xml_node_iterator_t(const self& other):
+xml_node_iterator_t::xml_node_iterator_t(const self_t& other):
     ptr_((void*) new xml_node_iterator_impl_t(*(xml_node_iterator_impl_t*) other.ptr_))
 {}
 
 
-auto xml_node_iterator_t::operator=(const self& other) -> xml_node_iterator_t&
+auto xml_node_iterator_t::operator=(const self_t& other) -> xml_node_iterator_t&
 {
     if (this != &other) {
         delete (xml_node_iterator_impl_t*) ptr_;
@@ -87,20 +88,20 @@ auto xml_node_iterator_t::operator=(const self& other) -> xml_node_iterator_t&
 }
 
 
-xml_node_iterator_t::xml_node_iterator_t(self&& other)
+xml_node_iterator_t::xml_node_iterator_t(self_t&& other)
 {
     swap(other);
 }
 
 
-auto xml_node_iterator_t::operator=(self&& other) -> xml_node_iterator_t&
+auto xml_node_iterator_t::operator=(self_t&& other) -> xml_node_iterator_t&
 {
     swap(other);
     return *this;
 }
 
 
-bool xml_node_iterator_t::operator==(const self& other) const
+bool xml_node_iterator_t::operator==(const self_t& other) const
 {
     auto* l = (const xml_node_iterator_impl_t*) ptr_;
     auto* r = (const xml_node_iterator_impl_t*) other.ptr_;
@@ -108,13 +109,13 @@ bool xml_node_iterator_t::operator==(const self& other) const
 }
 
 
-bool xml_node_iterator_t::operator!=(const self& other) const
+bool xml_node_iterator_t::operator!=(const self_t& other) const
 {
     return !operator==(other);
 }
 
 
-auto xml_node_iterator_t::operator++() -> self&
+auto xml_node_iterator_t::operator++() -> self_t&
 {
     auto& it = *(xml_node_iterator_impl_t*) ptr_;
     ++it;
@@ -122,15 +123,15 @@ auto xml_node_iterator_t::operator++() -> self&
 }
 
 
-auto xml_node_iterator_t::operator++(int) -> self
+auto xml_node_iterator_t::operator++(int) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     operator++();
     return copy;
 }
 
 
-auto xml_node_iterator_t::operator--() -> self&
+auto xml_node_iterator_t::operator--() -> self_t&
 {
     auto& it = *(xml_node_iterator_impl_t*) ptr_;
     --it;
@@ -138,9 +139,9 @@ auto xml_node_iterator_t::operator--() -> self&
 }
 
 
-auto xml_node_iterator_t::operator--(int) -> self
+auto xml_node_iterator_t::operator--(int) -> self_t
 {
-    self copy(*this);
+    self_t copy(*this);
     operator--();
     return copy;
 }
@@ -174,9 +175,9 @@ auto xml_node_iterator_t::operator->() const -> const_pointer
 }
 
 
-void xml_node_iterator_t::swap(self& other)
+void xml_node_iterator_t::swap(self_t& other)
 {
-    std::swap(ptr_, other.ptr_);
+    PYCPP_NAMESPACE::swap(ptr_, other.ptr_);
 }
 
 
@@ -191,7 +192,7 @@ xml_node_list_t::xml_node_list_t():
 {}
 
 
-xml_node_list_t::xml_node_list_t(const self& other):
+xml_node_list_t::xml_node_list_t(const self_t& other):
     ptr_(new xml_node_list_impl_t)
 {
     auto& src = *(const xml_node_list_impl_t*) other.ptr_;
@@ -204,7 +205,7 @@ xml_node_list_t::xml_node_list_t(const self& other):
 }
 
 
-auto xml_node_list_t::operator=(const self& other) -> self&
+auto xml_node_list_t::operator=(const self_t& other) -> self_t&
 {
     if (this != &other) {
         auto& src = *(const xml_node_list_impl_t*) other.ptr_;
@@ -221,13 +222,13 @@ auto xml_node_list_t::operator=(const self& other) -> self&
 }
 
 
-xml_node_list_t::xml_node_list_t(self&& other)
+xml_node_list_t::xml_node_list_t(self_t&& other)
 {
     swap(other);
 }
 
 
-auto xml_node_list_t::operator=(self&& other) -> self&
+auto xml_node_list_t::operator=(self_t&& other) -> self_t&
 {
     swap(other);
     return *this;
@@ -324,7 +325,7 @@ auto xml_node_list_t::crend() const -> const_reverse_iterator
 }
 
 
-bool xml_node_list_t::operator==(const self& other) const
+bool xml_node_list_t::operator==(const self_t& other) const
 {
     auto* l = (const xml_node_list_impl_t*) ptr_;
     auto* r = (const xml_node_list_impl_t*) other.ptr_;
@@ -332,7 +333,7 @@ bool xml_node_list_t::operator==(const self& other) const
 }
 
 
-bool xml_node_list_t::operator!=(const self& other) const
+bool xml_node_list_t::operator!=(const self_t& other) const
 {
     return !operator==(other);
 }
@@ -357,26 +358,26 @@ auto xml_node_list_t::find(const xml_string_t& tag) const -> iterator
 }
 
 
-auto xml_node_list_t::findall(const xml_string_t& tag) const -> std::pair<iterator, iterator>
+auto xml_node_list_t::findall(const xml_string_t& tag) const -> pair<iterator, iterator>
 {
-    auto pair = std::make_pair(iterator(), iterator());
+    auto p = make_pair(iterator(), iterator());
 
     // get iterators to elements
     auto& c = *(xml_node_list_impl_t*) ptr_;
     auto& v = c.get<name_tag>();
     auto impl = v.equal_range(tag);
     if (impl.first == v.end()) {
-        pair.first = end();
-        pair.second = end();
+        p.first = end();
+        p.second = end();
     } else if (impl.second == v.end()) {
-        pair.first.ptr_ = new xml_node_iterator_impl_t(c.iterator_to(*impl.first));
-        pair.second = end();
+        p.first.ptr_ = new xml_node_iterator_impl_t(c.iterator_to(*impl.first));
+        p.second = end();
     } else {
-        pair.first.ptr_ = new xml_node_iterator_impl_t(c.iterator_to(*impl.first));
-        pair.second.ptr_ = new xml_node_iterator_impl_t(c.iterator_to(*impl.second));
+        p.first.ptr_ = new xml_node_iterator_impl_t(c.iterator_to(*impl.first));
+        p.second.ptr_ = new xml_node_iterator_impl_t(c.iterator_to(*impl.second));
     }
 
-    return pair;
+    return p;
 }
 
 
@@ -437,33 +438,33 @@ auto xml_node_list_t::back() const -> const_reference
 }
 
 
-auto xml_node_list_t::push_front(const value_type& x) -> std::pair<iterator, bool>
+auto xml_node_list_t::push_front(const value_type& x) -> pair<iterator, bool>
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
-    auto pair = c.push_front(x);
-    if (pair.second) {
+    auto p = c.push_front(x);
+    if (p.second) {
         // insertion happened, make sure to parent the item
-        pair.first->ptr_->parent = this;
+        p.first->ptr_->parent = this;
     }
 
     iterator it;
-    it.ptr_ = new xml_node_iterator_impl_t(pair.first);
-    return std::make_pair(std::move(it), pair.second);
+    it.ptr_ = new xml_node_iterator_impl_t(p.first);
+    return make_pair(move(it), p.second);
 }
 
 
-auto xml_node_list_t::push_front(value_type&& x) -> std::pair<iterator, bool>
+auto xml_node_list_t::push_front(value_type&& x) -> pair<iterator, bool>
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
-    auto pair = c.push_front(std::forward<value_type>(x));
-    if (pair.second) {
+    auto p = c.push_front(forward<value_type>(x));
+    if (p.second) {
         // insertion happened, make sure to parent the item
-        pair.first->ptr_->parent = this;
+        p.first->ptr_->parent = this;
     }
 
     iterator it;
-    it.ptr_ = new xml_node_iterator_impl_t(pair.first);
-    return std::make_pair(std::move(it), pair.second);
+    it.ptr_ = new xml_node_iterator_impl_t(p.first);
+    return make_pair(move(it), p.second);
 }
 
 
@@ -477,33 +478,33 @@ void xml_node_list_t::pop_front()
 }
 
 
-auto xml_node_list_t::push_back(const value_type& x) -> std::pair<iterator, bool>
+auto xml_node_list_t::push_back(const value_type& x) -> pair<iterator, bool>
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
-    auto pair = c.push_back(x);
-    if (pair.second) {
+    auto p = c.push_back(x);
+    if (p.second) {
         // insertion happened, make sure to parent the item
-        pair.first->ptr_->parent = this;
+        p.first->ptr_->parent = this;
     }
 
     iterator it;
-    it.ptr_ = new xml_node_iterator_impl_t(pair.first);
-    return std::make_pair(std::move(it), pair.second);
+    it.ptr_ = new xml_node_iterator_impl_t(p.first);
+    return make_pair(move(it), p.second);
 }
 
 
-auto xml_node_list_t::push_back(value_type&& x) -> std::pair<iterator, bool>
+auto xml_node_list_t::push_back(value_type&& x) -> pair<iterator, bool>
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
-    auto pair = c.push_back(std::forward<value_type>(x));
-    if (pair.second) {
+    auto p = c.push_back(forward<value_type>(x));
+    if (p.second) {
         // insertion happened, make sure to parent the item
-        pair.first->ptr_->parent = this;
+        p.first->ptr_->parent = this;
     }
 
     iterator it;
-    it.ptr_ = new xml_node_iterator_impl_t(pair.first);
-    return std::make_pair(std::move(it), pair.second);
+    it.ptr_ = new xml_node_iterator_impl_t(p.first);
+    return make_pair(move(it), p.second);
 }
 
 
@@ -517,35 +518,35 @@ void xml_node_list_t::pop_back()
 }
 
 
-auto xml_node_list_t::insert(iterator position, const value_type& x) -> std::pair<iterator, bool>
+auto xml_node_list_t::insert(iterator position, const value_type& x) -> pair<iterator, bool>
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
     auto pos = *(xml_node_iterator_impl_t*) position.ptr_;
-    auto pair = c.insert(pos, x);
-    if (pair.second) {
+    auto p = c.insert(pos, x);
+    if (p.second) {
         // insertion happened, make sure to parent the item
-        pair.first->ptr_->parent = this;
+        p.first->ptr_->parent = this;
     }
 
     iterator it;
-    it.ptr_ = new xml_node_iterator_impl_t(pair.first);
-    return std::make_pair(std::move(it), pair.second);
+    it.ptr_ = new xml_node_iterator_impl_t(p.first);
+    return make_pair(move(it), p.second);
 }
 
 
-auto xml_node_list_t::insert(iterator position, value_type&& x) -> std::pair<iterator, bool>
+auto xml_node_list_t::insert(iterator position, value_type&& x) -> pair<iterator, bool>
 {
     auto& c = *(xml_node_list_impl_t*) ptr_;
     auto pos = *(xml_node_iterator_impl_t*) position.ptr_;
-    auto pair = c.insert(pos, std::forward<value_type>(x));
-    if (pair.second) {
+    auto p = c.insert(pos, forward<value_type>(x));
+    if (p.second) {
         // insertion happened, make sure to parent the item
-        pair.first->ptr_->parent = this;
+        p.first->ptr_->parent = this;
     }
 
     iterator it;
-    it.ptr_ = new xml_node_iterator_impl_t(pair.first);
-    return std::make_pair(std::move(it), pair.second);
+    it.ptr_ = new xml_node_iterator_impl_t(p.first);
+    return make_pair(move(it), p.second);
 }
 
 
@@ -561,9 +562,9 @@ void xml_node_list_t::clear()
 }
 
 
-void xml_node_list_t::swap(self& other)
+void xml_node_list_t::swap(self_t& other)
 {
-    std::swap(ptr_, other.ptr_);
+    PYCPP_NAMESPACE::swap(ptr_, other.ptr_);
 }
 
 
@@ -581,7 +582,7 @@ xml_node_t xml_node_t::fromstring(const xml_string_t& str)
 {
     xml_node_t node;
     {
-        std::istringstream stream(str);
+        istringstream stream(str);
         xml_stream_reader reader;
         xml_dom_handler handler(node);
         reader.set_handler(handler);
@@ -716,7 +717,7 @@ void xml_node_t::set_tag(const xml_string_t& tag)
         auto &container = *(xml_node_list_impl_t*) ptr_->parent->ptr_;
         auto it = container.iterator_to(*this);
         if (it == container.end()) {
-            throw std::runtime_error("Node has no visible parent.");
+            throw runtime_error("Node has no visible parent.");
         }
 
         // update the underlying container
@@ -755,53 +756,53 @@ void xml_node_t::set_tag(xml_string_t&& tag)
         auto &container = *(xml_node_list_impl_t*) ptr_->parent->ptr_;
         auto it = container.iterator_to(*this);
         if (it == container.end()) {
-            throw std::runtime_error("Node has no visible parent.");
+            throw runtime_error("Node has no visible parent.");
         }
 
         // update the underlying container
         container.modify(it, [&tag](xml_node_t &n) {
-            std::swap(n.ptr_->tag, tag);
+            PYCPP_NAMESPACE::swap(n.ptr_->tag, tag);
         });
 
     } else {
-        std::swap(ptr_->tag, tag);
+        PYCPP_NAMESPACE::swap(ptr_->tag, tag);
     }
 }
 
 
 void xml_node_t::set_text(xml_string_t&& text)
 {
-    std::swap(ptr_->text, text);
+    PYCPP_NAMESPACE::swap(ptr_->text, text);
 }
 
 
 void xml_node_t::set_attrs(xml_attr_t&& attrs)
 {
-    std::swap(ptr_->attrs, attrs);
+    PYCPP_NAMESPACE::swap(ptr_->attrs, attrs);
 }
 
 
 void xml_node_t::set_children(xml_node_list_t&& children)
 {
-    std::swap(ptr_->children, children);
+    PYCPP_NAMESPACE::swap(ptr_->children, children);
 }
 
 
-bool xml_node_t::operator==(const self& other) const
+bool xml_node_t::operator==(const self_t& other) const
 {
     return ptr_.get() == other.ptr_.get();
 }
 
 
-bool xml_node_t::operator!=(const self& other) const
+bool xml_node_t::operator!=(const self_t& other) const
 {
     return !operator==(other);
 }
 
 
-void xml_node_t::swap(self& other)
+void xml_node_t::swap(self_t& other)
 {
-    std::swap(ptr_, other.ptr_);
+    PYCPP_NAMESPACE::swap(ptr_, other.ptr_);
 }
 
 PYCPP_END_NAMESPACE

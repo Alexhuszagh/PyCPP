@@ -1,7 +1,6 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
-#include <pycpp/stl/iterator.h>
 #include <pycpp/string/base64.h>
 #include <math.h>
 
@@ -24,7 +23,7 @@ static size_t encoded_byte_count(const size_t length)
 {
     static constexpr double input = static_cast<double>(INPUT_INTERVAL);
     static constexpr double output = static_cast<double>(OUTPUT_INTERVAL);
-    return static_cast<size_t>(std::ceil(length * output / input));
+    return static_cast<size_t>(ceil(length * output / input));
 }
 
 
@@ -32,7 +31,7 @@ static size_t decoded_byte_count(const size_t length)
 {
     static constexpr double input = static_cast<double>(INPUT_INTERVAL);
     static constexpr double output = static_cast<double>(OUTPUT_INTERVAL);
-    return static_cast<size_t>(std::floor(length * input / output));
+    return static_cast<size_t>(floor(length * input / output));
 }
 
 /**
@@ -53,7 +52,7 @@ static size_t decoded_size(size_t length)
 {
     static constexpr double input = static_cast<double>(INPUT_INTERVAL);
     static constexpr double output = static_cast<double>(OUTPUT_INTERVAL);
-    return static_cast<size_t>(std::ceil(length * input) / output);
+    return static_cast<size_t>(ceil(length * input) / output);
 }
 
 
@@ -116,8 +115,8 @@ static size_t pad_buffer(Iter& first, Iter last,
 template <typename Iter1, typename Iter2>
 static void encode_base64_message(Iter1& src_first, Iter1 src_last, Iter2 &dst)
 {
-    char *b1 = new char[INPUT_INTERVAL];
-    char *b2 = new char[OUTPUT_INTERVAL];
+    char b1[INPUT_INTERVAL];
+    char b2[OUTPUT_INTERVAL];
     size_t filled = encoded_byte_count(pad_buffer(src_first, src_last, b1, INPUT_INTERVAL));
 
     // First: 11111100
@@ -135,9 +134,6 @@ static void encode_base64_message(Iter1& src_first, Iter1 src_last, Iter2 &dst)
     for (size_t i = filled; i < OUTPUT_INTERVAL; ++i) {
         *dst++ = '=';
     }
-
-    delete[] b1;
-    delete[] b2;
 }
 
 
@@ -147,8 +143,8 @@ static void encode_base64_message(Iter1& src_first, Iter1 src_last, Iter2 &dst)
 template <typename Iter1, typename Iter2>
 static void decode_base64_message(Iter1 &src_first, Iter1 src_last, Iter2 &dst)
 {
-    char* b1 = new char[OUTPUT_INTERVAL];
-    char* b2 = new char[INPUT_INTERVAL];
+    char b1[OUTPUT_INTERVAL];
+    char b2[INPUT_INTERVAL];
     size_t filled = decoded_byte_count(pad_buffer(src_first, src_last, b1, OUTPUT_INTERVAL, [](char c) {
         return DECODING[static_cast<int>(c)];
     }));
@@ -163,9 +159,6 @@ static void decode_base64_message(Iter1 &src_first, Iter1 src_last, Iter2 &dst)
     for (size_t i = 0; i < filled; ++i) {
         *dst++ = b2[i];
     }
-
-    delete[] b1;
-    delete[] b2;
 }
 
 
@@ -194,7 +187,7 @@ std::string base64_encode(const string_wrapper& str)
     base64.reserve(encoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();
-    auto dst = std::back_inserter(base64);
+    auto dst = back_inserter(base64);
     for (; first < last; ) {
         encode_base64_message(first, last, dst);
     }
@@ -224,7 +217,7 @@ std::string base64_decode(const string_wrapper& str)
     base64.reserve(decoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();
-    auto dst = std::back_inserter(base64);
+    auto dst = back_inserter(base64);
     for (; first < last; ) {
         decode_base64_message(first, last, dst);
     }

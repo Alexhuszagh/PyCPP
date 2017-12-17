@@ -56,7 +56,7 @@ public:
 private:
     istream* stream_ = nullptr;
     size_t row_length_ = 0;
-    shared_ptr<csvpunct_impl> punct_;
+    unique_ptr<csvpunct_impl> punct_;
 };
 
 

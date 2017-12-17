@@ -78,7 +78,7 @@ enum hash_algorithm
         secure_string hexdigest() const;                                \
                                                                         \
     private:                                                            \
-        cx##_context* ctx;                                              \
+        unique_ptr<cx##_context> ctx;                                   \
     }
 
 // FUNCTIONS

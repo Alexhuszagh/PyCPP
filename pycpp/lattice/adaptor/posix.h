@@ -31,11 +31,11 @@ PYCPP_BEGIN_NAMESPACE
 class posix_socket_adaptor_t
 {
 public:
-    typedef posix_socket_adaptor_t self;
+    using self_t = posix_socket_adaptor_t;
 
     posix_socket_adaptor_t();
-    posix_socket_adaptor_t(const self&) = delete;
-    self& operator=(const self&) = delete;
+    posix_socket_adaptor_t(const self_t&) = delete;
+    self_t& operator=(const self_t&) = delete;
     ~posix_socket_adaptor_t();
 
     // REQUESTS

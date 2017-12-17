@@ -61,16 +61,12 @@ struct digest_t: authentication_t
  */
 struct quality_of_protection_t: public std::vector<std::string>
 {
-protected:
-    typedef std::vector<std::string> Base;
-
-public:
-    using Base::Base;
+    using base_t = std::vector<std::string>;
+    using base_t::base_t;
     quality_of_protection_t(const string_wrapper& qop);
 
     bool auth() const;
     bool authint() const;
-
     explicit operator bool() const;
 };
 
@@ -89,8 +85,8 @@ struct digest_challenge_t: public std::unordered_map<
     >
 {
 public:
-    using base = std::unordered_map<std::string, std::string, lowercase_hash, lowercase_equal_to>;
-    using base::base;
+    using base_t = std::unordered_map<std::string, std::string, lowercase_hash, lowercase_equal_to>;
+    using base_t::base_t;
     digest_challenge_t(const string_wrapper&);
 
     // DATA

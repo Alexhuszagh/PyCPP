@@ -12,7 +12,7 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-template <typename Value,typename Type, Type (*PtrToFunction)(Value)>
-using global_fun = multi_index::global_fun<Value, Type, PtrToFunction>;
+template <typename Value, typename T, T (*PtrToFunction)(Value)>
+using global_fun = multi_index::global_fun<Value, T, PtrToFunction>;
 
 PYCPP_END_NAMESPACE

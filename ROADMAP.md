@@ -2,6 +2,12 @@
 
 **Short-Term**
 
+    - Get rid of naked new/delete
+        - Change to use the global allocator generally speaking...
+        
+    - Make sure my streams properly handle moves but cannot be copied...
+        - SERIOUSLY....
+
     - Ordered map and ordered set need new constructors and move operators
         - Need to revert `std::allocator` to `allocator` after.
 

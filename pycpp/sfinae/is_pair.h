@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Type detection for `std::pair`.
+ *  \brief Type detection for `pair`.
  */
 
 #pragma once
@@ -17,11 +17,11 @@ PYCPP_BEGIN_NAMESPACE
 // ------
 
 template <typename T>
-struct is_pair: std::false_type
+struct is_pair: false_type
 {};
 
 template <typename T, typename U>
-struct is_pair<std::pair<T, U>>: std::true_type
+struct is_pair<pair<T, U>>: true_type
 {};
 
 #ifdef HAVE_CPP14

@@ -15,8 +15,8 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using type_info = std::type_info;
-using bad_typeid = std::bad_typeid;
-using bad_cast = std::bad_cast;
+using std::type_info;
+using std::bad_typeid;
+using std::bad_cast;
 
 PYCPP_END_NAMESPACE

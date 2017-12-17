@@ -52,7 +52,7 @@ void memcpy_bswap16(void* dst, void* src, size_t bytes)
     // bounds check
     if (bytes % 2) {
         // not an interval of 2-bytes
-        throw std::runtime_error("Trailing data for memcpy_bswap16.");
+        throw PYCPP_NAMESPACE::runtime_error("Trailing data for memcpy_bswap16.");
     }
 
     // copy bytes
@@ -69,7 +69,7 @@ void memcpy_bswap32(void* dst, void* src, size_t bytes)
     // bounds check
     if (bytes % 4) {
         // not an interval of 4-bytes
-        throw std::runtime_error("Trailing data for memcpy_bswap32.");
+        throw PYCPP_NAMESPACE::runtime_error("Trailing data for memcpy_bswap32.");
     }
 
     // copy bytes
@@ -86,7 +86,7 @@ void memcpy_bswap64(void* dst, void* src, size_t bytes)
     // bounds check
     if (bytes % 8) {
         // not an interval of 8-bytes
-        throw std::runtime_error("Trailing data for memcpy_bswap64.");
+        throw PYCPP_NAMESPACE::runtime_error("Trailing data for memcpy_bswap64.");
     }
 
     // copy bytes
@@ -103,7 +103,7 @@ void memcpy_bswap(void* dst, void* src, size_t bytes, int width)
     // bounds check
     if (bytes % width) {
         // not an interval of width-bytes
-        throw std::runtime_error("Trailing data for memcpy_bswap.");
+        throw PYCPP_NAMESPACE::runtime_error("Trailing data for memcpy_bswap.");
     }
 
     // copy bytes

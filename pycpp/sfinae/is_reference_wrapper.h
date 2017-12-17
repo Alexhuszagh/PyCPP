@@ -2,7 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Type detection for `std::reference_wrapper`.
+ *  \brief Type detection for `reference_wrapper`.
  */
 
 #pragma once
@@ -17,11 +17,11 @@ PYCPP_BEGIN_NAMESPACE
 // ------
 
 template <typename T>
-struct is_reference_wrapper: std::false_type
+struct is_reference_wrapper: false_type
 {};
 
 template <typename T>
-struct is_reference_wrapper<std::reference_wrapper<T>>: std::true_type
+struct is_reference_wrapper<reference_wrapper<T>>: true_type
 {};
 
 #ifdef HAVE_CPP14

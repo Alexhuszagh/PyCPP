@@ -222,11 +222,14 @@ static void casemap_conversion(const void*& src, size_t srclen, void*& dst, size
 {
     // get preferred formats
     size_t u32_size = srclen * 4;
-    char* u32 = new char[u32_size];
-    const void* u32_src = (const void*) u32;
-    void* u32_dst = (void*) u32;
+    char* u32 = nullptr;
 
     try {
+        // allocate memory
+        u32 = new char[u32_size];
+        const void* u32_src = (const void*) u32;
+        void* u32_dst = (void*) u32;
+
         // convert to UTF32
         cb1(src, srclen, u32_dst, u32_size);
         u32_size = distance(u32, (char*) u32_dst);
@@ -236,7 +239,7 @@ static void casemap_conversion(const void*& src, size_t srclen, void*& dst, size
         cb2(u32_src, u32_size, u32_dst, u32_size);
 
         // convert back to original encoding
-        const void* u32_src = (const void*) u32;
+        u32_src = (const void*) u32;
         cb3(u32_src, u32_size, dst, dstlen);
     } catch (...) {
         delete[] u32;

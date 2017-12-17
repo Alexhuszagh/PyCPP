@@ -21,7 +21,7 @@ thread_local_storage int tls = 0;
 // ---------
 
 
-void test_value()
+void test_value() noexcept
 {
     EXPECT_EQ(tls, 0);
     tls = 5;

@@ -25,12 +25,14 @@ static std::string LZMA_DECOMPRESSED("\x54\x68\x65\x20\x4d\x49\x54\x20\x4c\x69\x
 
 TEST(lzma, lzma_compressor)
 {
-    char* buffer = new char[4096];
     std::string lzma = LZMA_DECOMPRESSED;
     const void* src;
     void* dst;
+    char* buffer = nullptr;
 
     try {
+        buffer = new char[4096];
+
         // first example
         lzma_compressor ctx;
         src = lzma.data();
@@ -51,7 +53,8 @@ TEST(lzma, lzma_compressor)
         EXPECT_EQ(strncmp(buffer, LZMA_COMPRESSED.data(), LZMA_COMPRESSED.size()), 0);
 
     } catch(...) {
-        EXPECT_TRUE(false);
+        delete[] buffer;
+        throw;
     }
 
     delete[] buffer;
@@ -60,12 +63,14 @@ TEST(lzma, lzma_compressor)
 
 TEST(lzma, lzma_decompressor)
 {
-    char* buffer = new char[4096];
     std::string lzma = LZMA_COMPRESSED;
     const void* src;
     void* dst;
+    char* buffer = nullptr;
 
     try {
+        buffer = new char[4096];
+
         // first example
         lzma_decompressor ctx;
         src = lzma.data();
@@ -84,7 +89,8 @@ TEST(lzma, lzma_decompressor)
         EXPECT_EQ(strncmp(buffer, LZMA_DECOMPRESSED.data(), LZMA_DECOMPRESSED.size()), 0);
 
     } catch(...) {
-        EXPECT_TRUE(false);
+        delete[] buffer;
+        throw;
     }
 
     delete[] buffer;

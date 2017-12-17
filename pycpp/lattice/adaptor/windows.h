@@ -32,11 +32,11 @@ PYCPP_BEGIN_NAMESPACE
 class win32_socket_adaptor_t
 {
 public:
-    typedef win32_socket_adaptor_t self;
+    using self_t = win32_socket_adaptor_t;
 
     win32_socket_adaptor_t();
-    win32_socket_adaptor_t(const self&) = delete;
-    self& operator=(const self&) = delete;
+    win32_socket_adaptor_t(const self_t&) = delete;
+    self_t& operator=(const self_t&) = delete;
     ~win32_socket_adaptor_t();
 
     // REQUESTS

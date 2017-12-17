@@ -21,25 +21,22 @@
 #   include <pycpp/stl/new.h>
 #   include <pycpp/stl/type_traits.h>
 #   include <pycpp/stl/utility.h>
-#   include <cstddef>
+#   include <stddef.h>
 #endif                              // HAVE_CPP17
 
 PYCPP_BEGIN_NAMESPACE
 
 #if defined(HAVE_CPP17)             // HAVE_CPP17
 
-// ALIAS
-// -----
-
-template <typename... Ts> using variant = std::variant<Ts...>;
-using monostate = std::monostate;
-using bad_variant_access = std::bad_variant_access;
-template <size_t I, typename T> using variant_alternative = std::variant_alternative<I, T>;
-template <size_t I, typename T> using variant_alternative_t = std::variant_alternative_t<I, T>;
-using visit = std::visit;
-using holds_alternative = std::holds_alternative;
-using get = std::get;
-using get_if = std::get_if;
+using std::variant;
+using std::monostate;
+using std::bad_variant_access;
+using std::variant_alternative;
+using std::variant_alternative_t;
+using std::visit;
+using std::holds_alternative;
+using std::get;
+using std::get_if;
 
 #else                               // !HAVE_CPP17
 
@@ -88,7 +85,7 @@ constexpr size_t variant_size_v = variant_size<T>::value;
 #define PYCPP_AUTO_REFREF auto
 #define PYCPP_AUTO_REFREF_RETURN(...) -> decltype((__VA_ARGS__))                \
     {                                                                           \
-      static_assert(is_reference<decltype((__VA_ARGS__))>::value, "");     \
+      static_assert(is_reference<decltype((__VA_ARGS__))>::value, "");          \
       return __VA_ARGS__;                                                       \
     }
 
@@ -213,25 +210,25 @@ using remove_all_extents_t = typename remove_all_extents<T>::type;
 
 template <typename F, typename... As>
 inline constexpr auto invoke_(F &&f, As&&... as)
-PYCPP_AUTO_NOEXCEPT_RETURN(std::forward<F>(f)(std::forward<As>(as)...))
+PYCPP_AUTO_NOEXCEPT_RETURN(forward<F>(f)(forward<As>(as)...))
 
 #include <warnings/pop.h>
 
 template <typename B, typename T, typename D>
 inline constexpr auto invoke_(T B::*pmv, D &&d)
-PYCPP_AUTO_NOEXCEPT_RETURN(std::forward<D>(d).*pmv)
+PYCPP_AUTO_NOEXCEPT_RETURN(forward<D>(d).*pmv)
 
 template <typename Pmv, typename Ptr>
 inline constexpr auto invoke_(Pmv pmv, Ptr&& ptr)
-PYCPP_AUTO_NOEXCEPT_RETURN((*std::forward<Ptr>(ptr)).*pmv)
+PYCPP_AUTO_NOEXCEPT_RETURN((*forward<Ptr>(ptr)).*pmv)
 
 template <typename B, typename T, typename D, typename... As>
 inline constexpr auto invoke_(T B::*pmf, D &&d, As&&... as)
-PYCPP_AUTO_NOEXCEPT_RETURN((std::forward<D>(d).*pmf)(std::forward<As>(as)...))
+PYCPP_AUTO_NOEXCEPT_RETURN((forward<D>(d).*pmf)(forward<As>(as)...))
 
 template <typename Pmf, typename Ptr, typename... As>
 inline constexpr auto invoke_(Pmf pmf, Ptr&& ptr, As&&... as)
-PYCPP_AUTO_NOEXCEPT_RETURN(((*std::forward<Ptr>(ptr)).*pmf)(std::forward<As>(as)...))
+PYCPP_AUTO_NOEXCEPT_RETURN(((*forward<Ptr>(ptr)).*pmf)(forward<As>(as)...))
 
 namespace invoker
 {
@@ -317,7 +314,7 @@ struct equal_to
     template <typename T, typename U>
     inline constexpr bool operator()(T&& lhs, U&& rhs) const
     {
-        return std::forward<T>(lhs) == std::forward<U>(rhs);
+        return forward<T>(lhs) == forward<U>(rhs);
     }
 };
 
@@ -327,7 +324,7 @@ struct not_equal_to
     template <typename T, typename U>
     inline constexpr bool operator()(T&& lhs, U&& rhs) const
     {
-        return std::forward<T>(lhs) != std::forward<U>(rhs);
+        return forward<T>(lhs) != forward<U>(rhs);
     }
 };
 
@@ -337,7 +334,7 @@ struct less
     template <typename T, typename U>
     inline constexpr bool operator()(T&& lhs, U&& rhs) const
     {
-        return std::forward<T>(lhs) < std::forward<U>(rhs);
+        return forward<T>(lhs) < forward<U>(rhs);
     }
 };
 
@@ -347,7 +344,7 @@ struct greater
     template <typename T, typename U>
     inline constexpr bool operator()(T&& lhs, U&& rhs) const
     {
-        return std::forward<T>(lhs) > std::forward<U>(rhs);
+        return forward<T>(lhs) > forward<U>(rhs);
     }
 };
 
@@ -357,7 +354,7 @@ struct less_equal
     template <typename T, typename U>
     inline constexpr bool operator()(T&& lhs, U&& rhs) const
     {
-        return std::forward<T>(lhs) <= std::forward<U>(rhs);
+        return forward<T>(lhs) <= forward<U>(rhs);
     }
 };
 
@@ -367,7 +364,7 @@ struct greater_equal
     template <typename T, typename U>
     inline constexpr bool operator()(T&& lhs, U&& rhs) const
     {
-        return std::forward<T>(lhs) >= std::forward<U>(rhs);
+        return forward<T>(lhs) >= forward<U>(rhs);
     }
 };
 
@@ -487,7 +484,7 @@ struct recursive_union
     {
         template <typename V>
         inline constexpr PYCPP_AUTO_REFREF operator()(V &&v) const
-        PYCPP_AUTO_REFREF_RETURN(get_alt_impl<I - 1>{}(std::forward<V>(v).tail_))
+        PYCPP_AUTO_REFREF_RETURN(get_alt_impl<I - 1>{}(forward<V>(v).tail_))
     };
 
     template <bool Dummy>
@@ -495,26 +492,26 @@ struct recursive_union
     {
         template <typename V>
         inline constexpr PYCPP_AUTO_REFREF operator()(V &&v) const
-        PYCPP_AUTO_REFREF_RETURN(std::forward<V>(v).head_)
+        PYCPP_AUTO_REFREF_RETURN(forward<V>(v).head_)
     };
 
     template <typename V, size_t I>
     inline static constexpr PYCPP_AUTO_REFREF get_alt(V &&v, in_place_index_t<I>)
-    PYCPP_AUTO_REFREF_RETURN(get_alt_impl<I>{}(std::forward<V>(v)))
+    PYCPP_AUTO_REFREF_RETURN(get_alt_impl<I>{}(forward<V>(v)))
 };
 
 struct base
 {
     template <size_t I, typename V>
     inline static constexpr PYCPP_AUTO_REFREF get_alt(V &&v)
-    PYCPP_AUTO_REFREF_RETURN(recursive_union::get_alt(data(std::forward<V>(v)), in_place_index_t<I>{}))
+    PYCPP_AUTO_REFREF_RETURN(recursive_union::get_alt(data(forward<V>(v)), in_place_index_t<I>{}))
 };
 
 struct variant
 {
     template <size_t I, typename V>
     inline static constexpr PYCPP_AUTO_REFREF get_alt(V &&v)
-    PYCPP_AUTO_REFREF_RETURN(base::get_alt<I>(std::forward<V>(v).impl_))
+    PYCPP_AUTO_REFREF_RETURN(base::get_alt<I>(forward<V>(v).impl_))
 };
 
 }   /* access */
@@ -552,7 +549,7 @@ private:
     make_farray(Fs &&... fs)
     {
         using result = array<common_type_t<decay_t<Fs>...>, sizeof...(Fs)>;
-        return visit_visitor_return_type_check<decay_t<Fs>...>(), result{{std::forward<Fs>(fs)...}};
+        return visit_visitor_return_type_check<decay_t<Fs>...>(), result{{forward<Fs>(fs)...}};
     }
 
     template <size_t... Is>
@@ -641,15 +638,15 @@ public:
     template <typename Visitor, typename... Vs>
     inline static constexpr PYCPP_DECLTYPE_AUTO visit_alt_at(size_t index, Visitor&& visitor, Vs&&... vs)
     PYCPP_DECLTYPE_AUTO_RETURN(
-        at(make_fdiagonal<Visitor&&, decltype(as_base(std::forward<Vs>(vs)))...>(), index)
-        (std::forward<Visitor>(visitor), as_base(std::forward<Vs>(vs))...)
+        at(make_fdiagonal<Visitor&&, decltype(as_base(forward<Vs>(vs)))...>(), index)
+        (forward<Visitor>(visitor), as_base(forward<Vs>(vs))...)
     )
 
     template <typename Visitor, typename... Vs>
     inline static constexpr PYCPP_DECLTYPE_AUTO visit_alt(Visitor &&visitor, Vs&&... vs)
     PYCPP_DECLTYPE_AUTO_RETURN(
-        at(make_fmatrix<Visitor &&, decltype(as_base(std::forward<Vs>(vs)))...>(), vs.index()...)
-        (std::forward<Visitor>(visitor), as_base(std::forward<Vs>(vs))...)
+        at(make_fmatrix<Visitor &&, decltype(as_base(forward<Vs>(vs)))...>(), vs.index()...)
+        (forward<Visitor>(visitor), as_base(forward<Vs>(vs))...)
     )
 };
 
@@ -666,7 +663,7 @@ private:
 #include <warnings/unused-parameter.h>
 
         inline constexpr PYCPP_DECLTYPE_AUTO operator()(Visitor&& visitor, Values&&... values) const
-        PYCPP_DECLTYPE_AUTO_RETURN(invoke_(std::forward<Visitor>(visitor), std::forward<Values>(values)...))
+        PYCPP_DECLTYPE_AUTO_RETURN(invoke_(forward<Visitor>(visitor), forward<Values>(values)...))
 
 #include <warnings/pop.h>
 
@@ -680,33 +677,33 @@ private:
         template <typename... Alts>
         inline constexpr PYCPP_DECLTYPE_AUTO operator()(Alts &&... alts) const
         PYCPP_DECLTYPE_AUTO_RETURN(
-            visit_exhaustive_visitor_check<Visitor, decltype((std::forward<Alts>(alts).value))...>{}(
-                std::forward<Visitor>(visitor_),
-                std::forward<Alts>(alts).value...
+            visit_exhaustive_visitor_check<Visitor, decltype((forward<Alts>(alts).value))...>{}(
+                forward<Visitor>(visitor_),
+                forward<Alts>(alts).value...
             )
         )
     };
 
     template <typename Visitor>
     inline static constexpr PYCPP_AUTO make_value_visitor(Visitor &&visitor)
-    PYCPP_AUTO_RETURN(value_visitor<Visitor>{std::forward<Visitor>(visitor)})
+    PYCPP_AUTO_RETURN(value_visitor<Visitor>{forward<Visitor>(visitor)})
 
 public:
     template <typename Visitor, typename... Vs>
     inline static constexpr PYCPP_DECLTYPE_AUTO visit_alt_at(size_t index, Visitor&& visitor, Vs&&... vs)
-    PYCPP_DECLTYPE_AUTO_RETURN(base::visit_alt_at(index, std::forward<Visitor>(visitor), std::forward<Vs>(vs).impl_...))
+    PYCPP_DECLTYPE_AUTO_RETURN(base::visit_alt_at(index, forward<Visitor>(visitor), forward<Vs>(vs).impl_...))
 
     template <typename Visitor, typename... Vs>
     inline static constexpr PYCPP_DECLTYPE_AUTO visit_alt(Visitor &&visitor, Vs&&... vs)
-    PYCPP_DECLTYPE_AUTO_RETURN(base::visit_alt(std::forward<Visitor>(visitor), std::forward<Vs>(vs).impl_...))
+    PYCPP_DECLTYPE_AUTO_RETURN(base::visit_alt(forward<Visitor>(visitor), forward<Vs>(vs).impl_...))
 
     template <typename Visitor, typename... Vs>
     inline static constexpr PYCPP_DECLTYPE_AUTO visit_value_at(size_t index, Visitor&& visitor, Vs&&... vs)
-    PYCPP_DECLTYPE_AUTO_RETURN(visit_alt_at(index, make_value_visitor(std::forward<Visitor>(visitor)), std::forward<Vs>(vs)...))
+    PYCPP_DECLTYPE_AUTO_RETURN(visit_alt_at(index, make_value_visitor(forward<Visitor>(visitor)), forward<Vs>(vs)...))
 
     template <typename Visitor, typename... Vs>
     inline static constexpr PYCPP_DECLTYPE_AUTO visit_value(Visitor&& visitor, Vs&&... vs)
-    PYCPP_DECLTYPE_AUTO_RETURN(visit_alt(make_value_visitor(std::forward<Visitor>(visitor)), std::forward<Vs>(vs)...))
+    PYCPP_DECLTYPE_AUTO_RETURN(visit_alt(make_value_visitor(forward<Visitor>(visitor)), forward<Vs>(vs)...))
 };
 
 }   /* visitation */
@@ -721,7 +718,7 @@ struct alt
 
     template <typename... Args>
     inline explicit constexpr alt(in_place_t, Args &&... args):
-        value(std::forward<Args>(args)...)
+        value(forward<Args>(args)...)
     {}
 
 #include <warnings/pop.h>
@@ -747,12 +744,12 @@ union recursive_union<DestructibleTrait, Index>
                                                                                         \
         template <typename... Args>                                                     \
         inline explicit constexpr recursive_union(in_place_index_t<0>, Args&&... args): \
-            head_(in_place_t{}, std::forward<Args>(args)...)                            \
+            head_(in_place_t{}, forward<Args>(args)...)                                 \
         {}                                                                              \
                                                                                         \
         template <size_t I, typename... Args>                                           \
         inline explicit constexpr recursive_union(in_place_index_t<I>, Args&&... args): \
-            tail_(in_place_index_t<I - 1>{}, std::forward<Args>(args)...)               \
+            tail_(in_place_index_t<I - 1>{}, forward<Args>(args)...)                    \
         {}                                                                              \
                                                                                         \
         recursive_union(const recursive_union &) = default;                             \
@@ -782,7 +779,7 @@ VARIANT_RECURSIVE_UNION(Trait::Unavailable, ~recursive_union() = delete;);
 // DECLARATIONS
 // ------------
 
-struct bad_variant_access: std::exception
+struct bad_variant_access: exception
 {
     virtual const char *what() const noexcept;
 };
@@ -848,7 +845,7 @@ public:
 
     template <size_t I, typename... Args>
     inline explicit constexpr base(in_place_index_t<I>, Args&&... args):
-        data_(in_place_index_t<I>{}, std::forward<Args>(args)...),
+        data_(in_place_index_t<I>{}, forward<Args>(args)...),
         index_(I)
     {}
 
@@ -877,12 +874,12 @@ protected:
 
     friend inline constexpr base&& as_base(base&& b)
     {
-        return std::move(b);
+        return move(b);
     }
 
     friend inline constexpr const base&& as_base(const base&& b)
     {
-        return std::move(b);
+        return move(b);
     }
 
     friend inline constexpr data_t& data(base& b)
@@ -897,12 +894,12 @@ protected:
 
     friend inline constexpr data_t&& data(base&& b)
     {
-        return std::move(b).data_;
+        return move(b).data_;
     }
 
     friend inline constexpr const data_t&& data(const base&& b)
     {
-        return std::move(b).data_;
+        return move(b).data_;
     }
 
     inline static constexpr size_t size()
@@ -935,7 +932,7 @@ struct dtor
 #   define INHERITING_CTOR(type, base)                      \
         template <typename... Args>                         \
         inline explicit constexpr type(Args &&... args):    \
-            base(std::forward<Args>(args)...)               \
+            base(forward<Args>(args)...)                    \
         {}
 #else
 #   define INHERITING_CTOR(type, base) using base::base;
@@ -1009,14 +1006,14 @@ protected:
         template <typename LhsAlt, typename RhsAlt>
         inline void operator()(LhsAlt& lhs_alt, RhsAlt&& rhs_alt) const
         {
-            constructor::construct_alt(lhs_alt, std::forward<RhsAlt>(rhs_alt).value);
+            constructor::construct_alt(lhs_alt, forward<RhsAlt>(rhs_alt).value);
         }
     };
 
     template <size_t I, typename T, typename... Args>
     inline static T& construct_alt(alt<I, T> &a, Args &&... args)
     {
-        ::new (static_cast<void *>(addressof_(a))) alt<I, T>(in_place_t{}, std::forward<Args>(args)...);
+        ::new (static_cast<void *>(addressof_(a))) alt<I, T>(in_place_t{}, forward<Args>(args)...);
         return a.value;
     }
 
@@ -1025,7 +1022,7 @@ protected:
     {
         lhs.destroy();
         if (!rhs.valueless_by_exception()) {
-            visitation::base::visit_alt_at(rhs.index(), ctor{}, lhs, std::forward<Rhs>(rhs));
+            visitation::base::visit_alt_at(rhs.index(), ctor{}, lhs, forward<Rhs>(rhs));
             lhs.index_ = rhs.index_;
         }
     }
@@ -1062,7 +1059,7 @@ VARIANT_MOVE_CONSTRUCTOR(
     move_constructor(move_constructor &&that) noexcept(all(is_nothrow_move_constructible<Ts>::value...)):
         move_constructor(valueless_t{})
     {
-        this->generic_construct(*this, std::move(that));
+        this->generic_construct(*this, move(that));
     }
 );
 
@@ -1125,10 +1122,10 @@ public:
 
     template <size_t I, typename... Args>
     inline auto emplace(Args &&... args)
-        -> decltype(this->construct_alt(access::base::get_alt<I>(*this), std::forward<Args>(args)...))
+        -> decltype(this->construct_alt(access::base::get_alt<I>(*this), forward<Args>(args)...))
     {
         this->destroy();
-        auto &result = this->construct_alt(access::base::get_alt<I>(*this), std::forward<Args>(args)...);
+        auto &result = this->construct_alt(access::base::get_alt<I>(*this), forward<Args>(args)...);
         this->index_ = I;
         return result;
     }
@@ -1140,7 +1137,7 @@ protected:
         template <typename ThisAlt, typename ThatAlt>
         inline void operator()(ThisAlt &this_alt, ThatAlt &&that_alt) const
         {
-            self->assign_alt(this_alt, std::forward<ThatAlt>(that_alt).value);
+            self->assign_alt(this_alt, forward<ThatAlt>(that_alt).value);
         }
         assignment *self;
     };
@@ -1151,21 +1148,21 @@ protected:
 #include <warnings/push.h>
 #include <warnings/conversion.h>
         if (this->index() == I) {
-            a.value = std::forward<Arg>(arg);
+            a.value = forward<Arg>(arg);
         } else {
             struct {
-                void operator()(std::true_type) const
+                void operator()(true_type) const
                 {
-                    this_->emplace<I>(std::forward<Arg>(arg_));
+                    this_->emplace<I>(forward<Arg>(arg_));
                 }
 
-                void operator()(std::false_type) const
+                void operator()(false_type) const
                 {
-                    this_->emplace<I>(T(std::forward<Arg>(arg_)));
+                    this_->emplace<I>(T(forward<Arg>(arg_)));
                 }
                 assignment *this_;
                 Arg &&arg_;
-          } impl {this, std::forward<Arg>(arg)};
+          } impl {this, forward<Arg>(arg)};
 
           impl(bool_constant<is_nothrow_constructible<T, Arg>::value || !is_nothrow_move_constructible<T>::value>{});
         }
@@ -1180,7 +1177,7 @@ protected:
         } else if (that.valueless_by_exception()) {
             this->destroy();
         } else {
-            visitation::base::visit_alt_at(that.index(), assigner<That>{this}, *this, std::forward<That>(that));
+            visitation::base::visit_alt_at(that.index(), assigner<That>{this}, *this, forward<That>(that));
         }
     }
 };
@@ -1218,7 +1215,7 @@ VARIANT_MOVE_ASSIGNMENT(
         all((is_nothrow_move_constructible<Ts>::value &&
              is_nothrow_move_assignable<Ts>::value)...))
     {
-        this->generic_assign(std::move(that));
+        this->generic_assign(move(that));
         return *this;
     }
 );
@@ -1284,7 +1281,7 @@ public:
     template <size_t I, typename Arg>
     inline void assign(Arg&& arg)
     {
-        this->assign_alt(access::base::get_alt<I>(*this), std::forward<Arg>(arg));
+        this->assign_alt(access::base::get_alt<I>(*this), forward<Arg>(arg));
     }
 
     inline void swap(impl &that)
@@ -1297,21 +1294,21 @@ public:
             impl *lhs = this;
             impl *rhs = addressof_(that);
             if (lhs->move_nothrow() && !rhs->move_nothrow()) {
-                std::swap(lhs, rhs);
+                PYCPP_NAMESPACE::swap(lhs, rhs);
             }
-            impl tmp(std::move(*rhs));
+            impl tmp(move(*rhs));
             // EXTENSION: When the move construction of `lhs` into `rhs` throws
             // and `tmp` is nothrow move constructible then we move `tmp` back
             // into `rhs` and provide the strong exception safety guarantee.
             try {
-                this->generic_construct(*rhs, std::move(*lhs));
+                this->generic_construct(*rhs, move(*lhs));
             } catch (...) {
                 if (tmp.move_nothrow()) {
-                    this->generic_construct(*rhs, std::move(tmp));
+                    this->generic_construct(*rhs, move(tmp));
                 }
                 throw;
             }
-            this->generic_construct(*lhs, std::move(tmp));
+            this->generic_construct(*lhs, move(tmp));
         }
     }
 
@@ -1321,7 +1318,7 @@ private:
         template <typename ThisAlt, typename ThatAlt>
         inline void operator()(ThisAlt &this_alt, ThatAlt &that_alt) const
         {
-            std::swap(this_alt.value, that_alt.value);
+            PYCPP_NAMESPACE::swap(this_alt.value, that_alt.value);
         }
     };
 
@@ -1405,7 +1402,7 @@ public:
         enable_if_t<is_constructible<T, Arg>::value, int> = 0
     >
     inline constexpr variant(Arg&& arg) noexcept(is_nothrow_constructible<T, Arg>::value):
-        impl_(in_place_index_t<I>{}, std::forward<Arg>(arg))
+        impl_(in_place_index_t<I>{}, forward<Arg>(arg))
     {}
 
     template <
@@ -1416,7 +1413,7 @@ public:
     >
     inline explicit constexpr variant(in_place_index_t<I>, Args&&... args)
     noexcept(is_nothrow_constructible<T, Args...>::value):
-        impl_(in_place_index_t<I>{}, std::forward<Args>(args)...)
+        impl_(in_place_index_t<I>{}, forward<Args>(args)...)
     {}
 
     template <
@@ -1428,7 +1425,7 @@ public:
     >
     inline explicit constexpr variant(in_place_index_t<I>, initializer_list<U> list, Args&&... args)
     noexcept(is_nothrow_constructible<T, initializer_list<U>&, Args...>::value):
-        impl_(in_place_index_t<I>{}, list, std::forward<Args>(args)...)
+        impl_(in_place_index_t<I>{}, list, forward<Args>(args)...)
     {}
 
     template <
@@ -1439,7 +1436,7 @@ public:
     >
     inline explicit constexpr variant(in_place_type_t<T>, Args&&... args)
     noexcept(is_nothrow_constructible<T, Args...>::value):
-        impl_(in_place_index_t<I>{}, std::forward<Args>(args)...)
+        impl_(in_place_index_t<I>{}, forward<Args>(args)...)
     {}
 
     template <
@@ -1451,7 +1448,7 @@ public:
     >
     inline explicit constexpr variant(in_place_type_t<T>, initializer_list<U> list, Args&&... args)
     noexcept(is_nothrow_constructible<T, initializer_list<U>&, Args...>::value):
-        impl_(in_place_index_t<I>{}, list, std::forward<Args>(args)...)
+        impl_(in_place_index_t<I>{}, list, forward<Args>(args)...)
     {}
 
     ~variant() = default;
@@ -1468,7 +1465,7 @@ public:
     >
     inline variant& operator=(Arg&& arg) noexcept((is_nothrow_assignable<T&, Arg>::value && is_nothrow_constructible<T, Arg>::value))
     {
-        impl_.template assign<I>(std::forward<Arg>(arg));
+        impl_.template assign<I>(forward<Arg>(arg));
         return *this;
     }
 
@@ -1480,7 +1477,7 @@ public:
     >
     inline T& emplace(Args &&... args)
     {
-        return impl_.template emplace<I>(std::forward<Args>(args)...);
+        return impl_.template emplace<I>(forward<Args>(args)...);
     }
 
     template <
@@ -1492,7 +1489,7 @@ public:
     >
     inline T& emplace(initializer_list<U> list, Args &&... args)
     {
-        return impl_.template emplace<I>(list, std::forward<Args>(args)...);
+        return impl_.template emplace<I>(list, forward<Args>(args)...);
     }
 
     template <
@@ -1503,7 +1500,7 @@ public:
     >
     inline T& emplace(Args &&... args)
     {
-        return impl_.template emplace<I>(std::forward<Args>(args)...);
+        return impl_.template emplace<I>(forward<Args>(args)...);
     }
 
     template <
@@ -1515,7 +1512,7 @@ public:
     >
     inline T& emplace(initializer_list<U> list, Args&&... args)
     {
-        return impl_.template emplace<I>(list, std::forward<Args>(args)...);
+        return impl_.template emplace<I>(list, forward<Args>(args)...);
     }
 
     inline constexpr bool valueless_by_exception() const noexcept
@@ -1568,12 +1565,12 @@ struct generic_get_impl
     {}
 
     constexpr PYCPP_AUTO_REFREF operator()(V &&v) const
-    PYCPP_AUTO_REFREF_RETURN(access::variant::get_alt<I>(std::forward<V>(v)).value)
+    PYCPP_AUTO_REFREF_RETURN(access::variant::get_alt<I>(forward<V>(v)).value)
 };
 
 template <size_t I, typename V>
 inline constexpr PYCPP_AUTO_REFREF generic_get(V&& v)
-PYCPP_AUTO_REFREF_RETURN(generic_get_impl<I, V>(holds_alternative<I>(v) ? 0 : (throw bad_variant_access(), 0))(std::forward<V>(v)))
+PYCPP_AUTO_REFREF_RETURN(generic_get_impl<I, V>(holds_alternative<I>(v) ? 0 : (throw bad_variant_access(), 0))(forward<V>(v)))
 
 }  /* var_detail */
 
@@ -1586,7 +1583,7 @@ inline constexpr variant_alternative_t<I, variant<Ts...>>& get(variant<Ts...> &v
 template <size_t I, typename... Ts>
 inline constexpr variant_alternative_t<I, variant<Ts...>>&& get(variant<Ts...>&& v)
 {
-    return var_detail::generic_get<I>(std::move(v));
+    return var_detail::generic_get<I>(move(v));
 }
 
 template <size_t I, typename... Ts>
@@ -1598,7 +1595,7 @@ inline constexpr const variant_alternative_t<I, variant<Ts...>>& get(const varia
 template <size_t I, typename... Ts>
 inline constexpr const variant_alternative_t<I, variant<Ts...>>&& get(const variant<Ts...>&& v)
 {
-    return var_detail::generic_get<I>(std::move(v));
+    return var_detail::generic_get<I>(move(v));
 }
 
 template <typename T, typename... Ts>
@@ -1610,7 +1607,7 @@ inline constexpr T& get(variant<Ts...>& v)
 template <typename T, typename... Ts>
 inline constexpr T&& get(variant<Ts...>&& v)
 {
-    return get<var_detail::find_index_checked<T, Ts...>::value>(std::move(v));
+    return get<var_detail::find_index_checked<T, Ts...>::value>(move(v));
 }
 
 template <typename T, typename... Ts>
@@ -1622,7 +1619,7 @@ inline constexpr const T& get(const variant<Ts...>& v)
 template <typename T, typename... Ts>
 inline constexpr const T&& get(const variant<Ts...>&& v)
 {
-    return get<var_detail::find_index_checked<T, Ts...>::value>(std::move(v));
+    return get<var_detail::find_index_checked<T, Ts...>::value>(move(v));
 }
 
 namespace var_detail
@@ -1722,7 +1719,7 @@ template <typename Visitor, typename... Vs>
 inline constexpr PYCPP_DECLTYPE_AUTO visit(Visitor&& visitor, Vs&&... vs)
 PYCPP_DECLTYPE_AUTO_RETURN(
     (var_detail::all(!vs.valueless_by_exception()...) ? (void)0 : throw bad_variant_access()),
-    var_detail::visitation::variant::visit_value(std::forward<Visitor>(visitor), std::forward<Vs>(vs)...)
+    var_detail::visitation::variant::visit_value(forward<Visitor>(visitor), forward<Vs>(vs)...)
 )
 
 struct monostate

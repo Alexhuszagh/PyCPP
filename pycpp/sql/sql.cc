@@ -17,7 +17,7 @@ PYCPP_BEGIN_NAMESPACE
 //// ALIAS
 //// -----
 //
-//using string_ref = std::reference_wrapper<const std::string>;
+//using string_ref = reference_wrapper<const std::string>;
 //using sql_database_cache = std::unordered_map<string_ref, sql_database*>;
 //
 //// GLOBALS

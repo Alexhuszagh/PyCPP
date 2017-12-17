@@ -25,12 +25,14 @@ static std::string GZIP_DECOMPRESSED("\x54\x68\x65\x20\x4d\x49\x54\x20\x4c\x69\x
 
 TEST(gzip, gzip_compressor)
 {
-    char* buffer = new char[4096];
     std::string gzip = GZIP_DECOMPRESSED;
     const void* src;
     void* dst;
+    char* buffer = nullptr;
 
     try {
+        buffer = new char[4096];
+
         // first example
         gzip_compressor ctx;
         src = gzip.data();
@@ -51,7 +53,8 @@ TEST(gzip, gzip_compressor)
         EXPECT_EQ(strncmp(buffer, GZIP_COMPRESSED.data(), GZIP_COMPRESSED.size()), 0);
 
     } catch(...) {
-        EXPECT_TRUE(false);
+        delete[] buffer;
+        throw;
     }
 
     delete[] buffer;
@@ -60,12 +63,14 @@ TEST(gzip, gzip_compressor)
 
 TEST(gzip, gzip_decompressor)
 {
-    char* buffer = new char[4096];
     std::string gzip = GZIP_COMPRESSED;
     const void* src;
     void* dst;
+    char* buffer = nullptr;
 
     try {
+        buffer = new char[4096];
+
         // first example
         gzip_decompressor ctx;
         src = gzip.data();
@@ -86,7 +91,6 @@ TEST(gzip, gzip_decompressor)
     } catch(...) {
         delete[] buffer;
         throw;
-        EXPECT_TRUE(false);
     }
 
     delete[] buffer;

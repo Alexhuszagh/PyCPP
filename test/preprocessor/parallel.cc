@@ -6,17 +6,19 @@
  */
 
 #include <pycpp/preprocessor/parallel.h>
+#include <pycpp/stl/numeric.h>
+#include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <numeric>
-#include <vector>
+
+PYCPP_USING_NAMESPACE;
 
 // TESTS
 // -----
 
 
-TEST(parallel, for_each)
+TEST(parallel, accumulate)
 {
-    std::vector<int> v = {1, 2, 3, 4, 5};
-    auto sum = std::accumulate(PARALLEL_EXECUTION v.begin(), v.end(), 0);
+    vector<int> v = {1, 2, 3, 4, 5};
+    auto sum = accumulate(PARALLEL_EXECUTION v.begin(), v.end(), 0);
     EXPECT_EQ(sum, 15);
 }

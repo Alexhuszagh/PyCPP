@@ -28,9 +28,9 @@
 // -------
 
 #if defined(_WIN64)         // WIN64
-    typedef int64_t OffsetType;
+    using offset_t = int64_t;
 #else                       // WIN32
-    typedef uint32_t OffsetType;
+    using offset_t = uint32_t;
 #endif                      // WIN64
 
 // CONSTANTS
@@ -49,7 +49,7 @@
 #define MAP_ANONYMOUS   0x20
 #define MAP_ANON        MAP_ANONYMOUS
 
-#define MAP_FAILED      ((void *)-1)
+#define MAP_FAILED      ((void*)-1)
 
 /* Flags for msync. */
 #define MS_ASYNC        1
@@ -59,9 +59,9 @@
 // FUNCTIONS
 // ---------
 
-void* mmap(void *addr, size_t len, int prot, int flags, int fildes, OffsetType off);
-int munmap(void *addr, size_t len);
-int _mprotect(void *addr, size_t len, int prot);
-int msync(void *addr, size_t len, int flags);
-int mlock(const void *addr, size_t len);
-int munlock(const void *addr, size_t len);
+void* mmap(void* addr, size_t len, int prot, int flags, int fildes, offset_t off);
+int munmap(void* addr, size_t len);
+int mprotect(void* addr, size_t len, int prot);
+int msync(void* addr, size_t len, int flags);
+int mlock(const void* addr, size_t len);
+int munlock(const void* addr, size_t len);

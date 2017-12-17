@@ -39,11 +39,11 @@ struct test_stream
     {
         std::string expected = "Single line";
 
-        OStream ostream(path, std::ios_base::out);
-        ostream << expected << std::endl;
+        OStream ostream(path, ios_base::out);
+        ostream << expected << endl;
         ostream.close();
 
-        IStream istream(path, std::ios_base::in);
+        IStream istream(path, ios_base::in);
         std::string result;
         std::getline(istream, result);
         istream.close();
@@ -60,7 +60,7 @@ struct test_stream
 
 TEST(sequential_fstream, sequential_fstream)
 {
-    typedef test_stream<sequential_fstream, sequential_fstream> tester;
+    using tester = test_stream<sequential_fstream, sequential_fstream>;
 
     tester()(UTF8_ENGLISH);
 #if defined(HAVE_WFOPEN)         // WINDOWS
@@ -74,7 +74,7 @@ TEST(sequential_fstream, sequential_fstream)
 
 TEST(sequential_fstream, sequential_iofstream)
 {
-    typedef test_stream<sequential_ifstream, sequential_ofstream> tester;
+    using tester = test_stream<sequential_ifstream, sequential_ofstream>;
 
     tester()(UTF8_ENGLISH);
 #if defined(HAVE_WFOPEN)         // WINDOWS

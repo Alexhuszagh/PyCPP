@@ -623,6 +623,7 @@ path_t getcwd()
 {
     char* buf = new char[PATH_MAX];
     if (!::getcwd(buf, PATH_MAX)) {
+        delete[] buf;
         throw filesystem_error(filesystem_unexpected_error);
     }
 

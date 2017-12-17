@@ -170,7 +170,7 @@ compression_status lzma_decompressor_impl::operator()(const void*& src, size_t s
 
 
 lzma_compressor::lzma_compressor(int level):
-    ptr_(new lzma_compressor_impl(level))
+    ptr_(make_unique<lzma_compressor_impl>(level))
 {}
 
 
@@ -207,8 +207,9 @@ bool lzma_compressor::flush(void*& dst, size_t dstlen)
     return ptr_->flush(dst, dstlen);
 }
 
+
 lzma_decompressor::lzma_decompressor():
-    ptr_(new lzma_decompressor_impl)
+    ptr_(make_unique<lzma_decompressor_impl>())
 {}
 
 

@@ -61,7 +61,7 @@ using is_const_char32p = str_detail::is_char_t<const char32_t*, T>;
 // STL
 
 template <typename T>
-using is_stl_string = is_specialization<T, basic_string>;
+using is_stl_string = is_specialization<T, std::basic_string>;
 
 // GENERAL
 

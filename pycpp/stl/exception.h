@@ -24,12 +24,11 @@ using std::rethrow_if_nested;
 using std::terminate;
 using std::get_terminate;
 using std::set_terminate;
-
-using exception = std::exception;
-using nested_exception = std::nested_exception;
-using bad_exception = std::bad_exception;
-using terminate_handler = std::terminate_handler;
-using exception_ptr = std::exception_ptr;
+using std::exception;
+using std::nested_exception;
+using std::bad_exception;
+using std::terminate_handler;
+using std::exception_ptr;
 
 #if defined(HAVE_CPP17)
 

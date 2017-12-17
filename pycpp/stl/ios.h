@@ -15,13 +15,44 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-template <typename State>
-using fpos = std::fpos<State>;
-
-using ios_base = std::ios_base;
-using streamsize = std::streamsize;
-using streampos = std::streampos;
-using wstreampos = std::wstreampos;
-using streamoff = std::streamoff;
+using std::fpos;
+using std::streampos;
+using std::wstreampos;
+using std::ios_base;
+using std::basic_ios;
+using std::ios;
+using std::wios;
+using std::io_errc;
+using std::is_error_code_enum;
+using std::streamoff;
+using std::streamsize;
+using std::iostream_category;
+using std::iostream_category;
+using std::make_error_code;
+using std::make_error_condition;
+using std::boolalpha;
+using std::noboolalpha;
+using std::showbase;
+using std::noshowbase;
+using std::showpoint;
+using std::noshowpoint;
+using std::showpos;
+using std::noshowpos;
+using std::skipws;
+using std::noskipws;
+using std::uppercase;
+using std::nouppercase;
+using std::unitbuf;
+using std::nounitbuf;
+using std::internal;
+using std::left;
+using std::right;
+using std::dec;
+using std::hex;
+using std::oct;
+using std::fixed;
+using std::scientific;
+using std::hexfloat;
+using std::defaultfloat;
 
 PYCPP_END_NAMESPACE

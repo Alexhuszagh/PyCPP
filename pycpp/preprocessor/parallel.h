@@ -7,16 +7,17 @@
 
 #pragma once
 
+#include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
 #if defined(HAVE_CPP17)
-#   include <execution>
+#   include <pycpp/stl/execution.h>
 #endif
 
 // MACROS
 // ------
 
 #if defined(HAVE_CPP17)
-#   define PARALLEL_EXECUTION std::execution::par,
+#   define PARALLEL_EXECUTION PYCPP_NAMESPACE::execution::par,
 #else
 #   define PARALLEL_EXECUTION
 #endif

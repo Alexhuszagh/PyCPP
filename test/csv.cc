@@ -9,7 +9,6 @@
 #include <pycpp/filesystem.h>
 #include <pycpp/stream/fstream.h>
 #include <pycpp/string/string.h>
-#include <pycpp/string/whitespace.h>
 #include <gtest/gtest.h>
 
 PYCPP_USING_NAMESPACE

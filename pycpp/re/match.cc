@@ -104,7 +104,7 @@ size_t match_t::end(size_t index) const
 
 pair<size_t, size_t> match_t::span(size_t index) const
 {
-    return std::make_pair(start(index), end(index));
+    return make_pair(start(index), end(index));
 }
 
 
@@ -167,7 +167,7 @@ match_t::match_t()
 
 
 match_t::match_t(regexp_t& regex, const string_wrapper& view, size_t pos, size_t endpos):
-    ptr_(new match_impl_t)
+    ptr_(make_unique<match_impl_t>())
 {
     ptr_->re2 = &regex.ptr_->re2;
     ptr_->input = view;
@@ -191,7 +191,7 @@ match_iterator_t::match_iterator_t()
 
 
 match_iterator_t::match_iterator_t(regexp_t& regex, const string_wrapper& str):
-    match_(new match_t(regex.search(str))),
+    match_(make_shared<match_t>(regex.search(str))),
     regex_(&regex),
     str_(str)
 {}
@@ -201,14 +201,14 @@ match_iterator_t::~match_iterator_t()
 {}
 
 
-match_iterator_t::match_iterator_t(const self& rhs):
+match_iterator_t::match_iterator_t(const self_t& rhs):
     match_(rhs.match_),
     regex_(rhs.regex_),
     str_(rhs.str_)
 {}
 
 
-auto match_iterator_t::operator=(const self& rhs) -> self&
+auto match_iterator_t::operator=(const self_t& rhs) -> self_t&
 {
     match_ = rhs.match_;
     regex_ = rhs.regex_;
@@ -217,14 +217,14 @@ auto match_iterator_t::operator=(const self& rhs) -> self&
 }
 
 
-match_iterator_t::match_iterator_t(self&& rhs):
-    match_(std::move(rhs.match_)),
-    regex_(std::move(rhs.regex_)),
-    str_(std::move(rhs.str_))
+match_iterator_t::match_iterator_t(self_t&& rhs):
+    match_(move(rhs.match_)),
+    regex_(move(rhs.regex_)),
+    str_(move(rhs.str_))
 {}
 
 
-auto match_iterator_t::operator=(self&& rhs) -> self&
+auto match_iterator_t::operator=(self_t&& rhs) -> self_t&
 {
     swap(rhs);
     return *this;
@@ -259,7 +259,7 @@ match_iterator_t& match_iterator_t::operator++()
 {
     if (regex_ && match_ && *match_) {
         size_t pos = match_->end();
-        match_.reset(new match_t(regex_->search(str_, pos)));
+        match_ = make_shared<match_t>(regex_->search(str_, pos));
         // no more match, reset
         if (!*match_) {
             match_.reset();
@@ -295,7 +295,7 @@ bool match_iterator_t::operator!=(const match_iterator_t& rhs) const
 }
 
 
-void match_iterator_t::swap(self& rhs)
+void match_iterator_t::swap(self_t& rhs)
 {
     PYCPP_NAMESPACE::swap(match_, rhs.match_);
     PYCPP_NAMESPACE::swap(regex_, rhs.regex_);

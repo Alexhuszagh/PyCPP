@@ -25,9 +25,11 @@
 #include <pycpp/secure/allocator.h>
 #include <pycpp/secure/char_traits.h>
 #include <pycpp/secure/stdlib.h>
+#include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/stdexcept.h>
 #include <pycpp/stl/string_view.h>
 #include <pycpp/stl/type_traits.h>
 
@@ -80,12 +82,12 @@ insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
     using traits_type = typename String::traits_type;
 
     // reallocate if necessary
-    size_t n = std::distance(first, last);
+    size_t n = distance(first, last);
     size_t pos = p - string.begin();
     size_t move = string.size() - pos;
     size_t new_size = string.size() + n;
     if (new_size >= string.capacity()) {
-        string.reserve(std::max(new_size+1, 2 * string.capacity()));
+        string.reserve(max(new_size+1, 2 * string.capacity()));
     }
 
     // move
@@ -328,10 +330,10 @@ private:
     friend void swap(secure_basic_string<C, T, A>& lhs, secure_basic_string<C, T, A>& rhs);
 
     template <typename C, typename T, typename A>
-    friend std::basic_istream<C, T>& operator>>(std::basic_istream<C, T>& stream, secure_basic_string<C, T, A>& str);
+    friend basic_istream<C, T>& operator>>(basic_istream<C, T>& stream, secure_basic_string<C, T, A>& str);
 
     template <typename C, typename T, typename A>
-    friend std::basic_ostream<C, T>& operator<<(std::basic_ostream<C, T>& stream, secure_basic_string<C, T, A>& str);
+    friend basic_ostream<C, T>& operator<<(basic_ostream<C, T>& stream, secure_basic_string<C, T, A>& str);
 
     // RELATIONAL OPERATORS
     template <typename C, typename T, typename A>
@@ -492,14 +494,14 @@ void swap(secure_basic_string<C, T, A>& lhs, secure_basic_string<C, T, A>& rhs)
 
 
 template <typename C, typename T, typename A>
-std::basic_istream<C, T> & operator>>(std::basic_istream<C, T> &stream, secure_basic_string<C, T, A>& str)
+basic_istream<C, T> & operator>>(basic_istream<C, T> &stream, secure_basic_string<C, T, A>& str)
 {
     return stream.read(const_cast<char*>(get<0>(str.data_)), str.length_);
 }
 
 
 template <typename C, typename T, typename A>
-std::basic_ostream<C, T> & operator<<(std::basic_ostream<C, T> &stream, secure_basic_string<C, T, A>& str)
+basic_ostream<C, T> & operator<<(basic_ostream<C, T> &stream, secure_basic_string<C, T, A>& str)
 {
     return stream.write(str.data(), str.length());
 }
@@ -731,21 +733,21 @@ secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, 
 template <typename C, typename T, typename A>
 secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, secure_basic_string<C, T, A>&& rhs)
 {
-    return std::move(lhs.append(rhs.data(), rhs.size()));
+    return move(lhs.append(rhs.data(), rhs.size()));
 }
 
 
 template <typename C, typename T, typename A>
 secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, const secure_basic_string<C, T, A>& rhs)
 {
-    return std::move(lhs.append(rhs.data(), rhs.size()));
+    return move(lhs.append(rhs.data(), rhs.size()));
 }
 
 
 template <typename C, typename T, typename A>
 secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, secure_basic_string<C, T, A>&& rhs)
 {
-    return std::move(rhs.insert(0, lhs.data(), lhs.size()));
+    return move(rhs.insert(0, lhs.data(), lhs.size()));
 }
 
 
@@ -764,7 +766,7 @@ secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, 
 template <typename C, typename T, typename A>
 secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, const C* rhs)
 {
-    return std::move(lhs.append(rhs));
+    return move(lhs.append(rhs));
 }
 
 
@@ -783,7 +785,7 @@ secure_basic_string<C, T, A> operator+(const C* lhs, const secure_basic_string<C
 template <typename C, typename T, typename A>
 secure_basic_string<C, T, A> operator+(const C* lhs, secure_basic_string<C, T, A>&& rhs)
 {
-    return std::move(rhs.insert(0, lhs, T::length(lhs)));
+    return move(rhs.insert(0, lhs, T::length(lhs)));
 }
 
 
@@ -802,7 +804,7 @@ template <typename C, typename T, typename A>
 secure_basic_string<C, T, A> operator+(secure_basic_string<C, T, A>&& lhs, C rhs)
 {
     lhs.push_back(rhs);
-    return std::move(lhs);
+    return move(lhs);
 }
 
 
@@ -820,7 +822,7 @@ secure_basic_string<C, T, A> operator+(C lhs, const secure_basic_string<C, T, A>
 template <typename C, typename T, typename A>
 secure_basic_string<C, T, A> operator+(C lhs, secure_basic_string<C, T, A>&& rhs)
 {
-    return std::move(rhs.insert(size_t(0), size_t(1), lhs));
+    return move(rhs.insert(size_t(0), size_t(1), lhs));
 }
 
 
@@ -838,7 +840,7 @@ secure_basic_string<C, T1, A> operator+(const secure_basic_string<C, T1, A>& lhs
 template <typename C, typename T1, typename A, typename T2>
 secure_basic_string<C, T1, A> operator+(secure_basic_string<C, T1, A>&& lhs, const basic_string_view<C, T2>& rhs)
 {
-    return std::move(lhs.append(rhs.data(), rhs.size()));
+    return move(lhs.append(rhs.data(), rhs.size()));
 }
 
 
@@ -856,7 +858,7 @@ secure_basic_string<C, T1, A> operator+(const basic_string_view<C, T2>& lhs, con
 template <typename C, typename T1, typename A, typename T2>
 secure_basic_string<C, T1, A> operator+(const basic_string_view<C, T2>& lhs, secure_basic_string<C, T1, A>&& rhs)
 {
-    return std::move(rhs.insert(0, lhs.data(), lhs.size()));
+    return move(rhs.insert(0, lhs.data(), lhs.size()));
 }
 
 
@@ -957,10 +959,10 @@ secure_basic_string<C, T, A>::secure_basic_string(const self_t& str, size_t pos,
 {
     size_type n = str.size();
     if (pos > n) {
-        throw std::out_of_range("secure_basic_string::secure_basic_string().");
+        throw out_of_range("secure_basic_string::secure_basic_string().");
     }
 
-    length_ = std::min(len, n - pos);
+    length_ = min(len, n - pos);
     capacity_ = length_ + 1;
     get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), capacity_);
     traits_type::copy(get<0>(data_), str.data() + pos, length_);
@@ -1008,7 +1010,7 @@ template <typename Iter>
 secure_basic_string<C, T, A>::secure_basic_string(Iter first, Iter last, const allocator_type& alloc):
     data_(alloc)
 {
-    length_ = std::distance(first, last);
+    length_ = distance(first, last);
     capacity_ = length_ + 1;
     get<0>(data_) = allocator_traits<allocator_type>::allocate(get<1>(data_), capacity_);
 
@@ -1186,10 +1188,10 @@ template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::reserve(size_t n)
 {
     if (n > max_size()) {
-        throw std::out_of_range("Cannot allocate above max_size.");
+        throw out_of_range("Cannot allocate above max_size.");
     }
 
-    size_t r = std::max(n, size());
+    size_t r = max(n, size());
     if (r != capacity()) {
         reallocate(r);
     }
@@ -1333,7 +1335,7 @@ auto secure_basic_string<C, T, A>::append(const view_type& str) -> self_t&
     size_t n = str.length();
     size_t r = length() + n;
     if (r >= capacity()) {
-        reallocate(std::max(r+1, 2 * capacity()));
+        reallocate(max(r+1, 2 * capacity()));
     }
 
     traits_type::copy(get<0>(data_) + length(), str.data(), n);
@@ -1368,7 +1370,7 @@ auto secure_basic_string<C, T, A>::append(size_t n, char c) -> self_t&
 {
     size_t r = length() + n;
     if (r >= capacity()) {
-        reallocate(std::max(r+1, 2 * capacity()));
+        reallocate(max(r+1, 2 * capacity()));
     }
 
     while (n--) {
@@ -1384,10 +1386,10 @@ template <typename C, typename T, typename A>
 template <typename Iter>
 auto secure_basic_string<C, T, A>::append(Iter first, Iter last) -> self_t&
 {
-    size_t n = std::distance(first, last);
+    size_t n = distance(first, last);
     size_t r = length() + n;
     if (r >= capacity()) {
-        reallocate(std::max(r+1, 2 * capacity()));
+        reallocate(max(r+1, 2 * capacity()));
     }
 
     for (; first != last; ++first) {
@@ -1434,7 +1436,7 @@ auto secure_basic_string<C, T, A>::assign(const view_type& str) -> self_t&
     size_t n = str.length();
     size_t r = length() + n;
     if (r >= capacity()) {
-        reallocate(std::max(r+1, 2 * capacity()));
+        reallocate(max(r+1, 2 * capacity()));
     }
 
     length_ = n;
@@ -1473,7 +1475,7 @@ auto secure_basic_string<C, T, A>::assign(size_t n, value_type c) -> self_t&
 {
     size_t r = length() + n;
     if (r >= capacity()) {
-        reallocate(std::max(r+1, 2 * capacity()));
+        reallocate(max(r+1, 2 * capacity()));
     }
 
     length_ = n;
@@ -1532,7 +1534,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::insert(size_t pos, const char* s, size_t n) -> self_t&
 {
     if (pos > size()) {
-        throw std::out_of_range("secure_basic_string::erase().");
+        throw out_of_range("secure_basic_string::erase().");
     }
 
     const_iterator p = begin() + pos;
@@ -1545,7 +1547,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::insert(size_t pos, size_t n, char c) -> self_t&
 {
     if (pos > size()) {
-        throw std::out_of_range("secure_basic_string::insert().");
+        throw out_of_range("secure_basic_string::insert().");
     }
 
     const_iterator p = begin() + pos;
@@ -1614,7 +1616,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::erase(size_t pos, size_t len) -> self_t&
 {
     if (pos > size()) {
-        throw std::out_of_range("secure_basic_string::erase().");
+        throw out_of_range("secure_basic_string::erase().");
     }
 
     size_type move = size() - pos - len;
@@ -1652,7 +1654,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::replace(size_t pos, size_t len, const basic_string_view<C, T>& str) -> self_t&
 {
     if (pos > size()) {
-        throw std::out_of_range("secure_basic_string::replace().");
+        throw out_of_range("secure_basic_string::replace().");
     }
 
     const_iterator p1 = begin() + pos;
@@ -1679,7 +1681,7 @@ template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::replace(size_t pos, size_t len, size_t n, char c) -> self_t&
 {
     if (pos > size()) {
-        throw std::out_of_range("secure_basic_string::replace().");
+        throw out_of_range("secure_basic_string::replace().");
     }
 
     const_iterator p1 = begin() + pos;
@@ -1724,9 +1726,9 @@ void secure_basic_string<C, T, A>::pop_back()
 template <typename C, typename T, typename A>
 void secure_basic_string<C, T, A>::swap(self_t& other)
 {
-    std::swap(capacity_, other.capacity_);
-    std::swap(length_, other.length_);
-    std::swap(data_, other.data_);
+    PYCPP_NAMESPACE::swap(capacity_, other.capacity_);
+    PYCPP_NAMESPACE::swap(length_, other.length_);
+    PYCPP_NAMESPACE::swap(data_, other.data_);
 }
 
 
@@ -1762,10 +1764,10 @@ template <typename C, typename T, typename A>
 size_t secure_basic_string<C, T, A>::copy(pointer s, size_t len, size_t pos) const
 {
     if (pos > length()) {
-        throw std::out_of_range("secure_basic_string:: copy().");
+        throw out_of_range("secure_basic_string:: copy().");
     }
 
-    size_type rlen = std::min(len, length() - pos);
+    size_type rlen = min(len, length() - pos);
     traits_type::copy(s, data() + pos, rlen);
     return rlen;
 }

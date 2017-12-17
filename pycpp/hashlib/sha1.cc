@@ -263,39 +263,38 @@ static void sha1_final(void* ptr, void* buf)
 // -------
 
 
-sha1_hash::sha1_hash()
+sha1_hash::sha1_hash():
+    ctx(make_unique<sha1_context>())
 {
-    ctx = new sha1_context;
-    sha1_init(ctx);
+    sha1_init(ctx.get());
 }
 
 
-sha1_hash::sha1_hash(const void* src, size_t srclen)
+sha1_hash::sha1_hash(const void* src, size_t srclen):
+    ctx(make_unique<sha1_context>())
 {
-    ctx = new sha1_context;
-    sha1_init(ctx);
+    sha1_init(ctx.get());
     update(src, srclen);
 }
 
 
-sha1_hash::sha1_hash(const string_wrapper& str)
+sha1_hash::sha1_hash(const string_wrapper& str):
+    ctx(make_unique<sha1_context>())
 {
-    ctx = new sha1_context;
-    sha1_init(ctx);
+    sha1_init(ctx.get());
     update(str);
 }
 
 
 sha1_hash::~sha1_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void sha1_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, sha1_update);
+    hash_update(ctx.get(), src, srclen, sha1_update);
 }
 
 

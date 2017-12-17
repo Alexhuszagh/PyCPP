@@ -23,8 +23,8 @@ template <
     typename Key,
     typename T,
     typename Hash = hash<Key>,
-    typename Pred = std::equal_to<Key>,
-    typename Alloc = allocator<std::pair<const Key, T>>
+    typename Pred = equal_to<Key>,
+    typename Alloc = allocator<pair<const Key, T>>
 >
 using unordered_map = std::unordered_map<Key, T, Hash, Pred, Alloc>;
 
@@ -32,8 +32,8 @@ template <
     typename Key,
     typename T,
     typename Hash = hash<Key>,
-    typename Pred = std::equal_to<Key>,
-    typename Alloc = allocator<std::pair<const Key, T>>
+    typename Pred = equal_to<Key>,
+    typename Alloc = allocator<pair<const Key, T>>
 >
 using unordered_multimap = std::unordered_multimap<Key, T, Hash, Pred, Alloc>;
 

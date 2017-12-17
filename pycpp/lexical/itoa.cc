@@ -22,7 +22,7 @@ inline uint32_t digits(Int value, uint8_t base)
     if (value == 0) {
         return 1;
     }
-    return static_cast<uint32_t>(std::floor(::log(value) / ::log(base)) + 1);
+    return static_cast<uint32_t>(floor(log(value) / log(base)) + 1);
 }
 
 // GENERIC
@@ -34,7 +34,7 @@ template <typename Int>
 static void itoa_naive(Int value, char* first, char*& last, uint8_t base)
 {
     if (base < 2 || base > 36) {
-        throw std::invalid_argument("Numerical base must be from 2-36");
+        throw invalid_argument("Numerical base must be from 2-36");
     }
 
     uint32_t rem;
@@ -48,7 +48,7 @@ static void itoa_naive(Int value, char* first, char*& last, uint8_t base)
     rem = value % base;
     *p++ = BASEN[rem];
 
-    std::reverse(first, p);
+    reverse(first, p);
     last = p;
 }
 
@@ -83,7 +83,7 @@ static void itoa_optimized(Int value, char* first, char*& last, const char* tabl
         value /= base;
     }
 
-    std::reverse(first, p);
+    reverse(first, p);
     last = p;
 }
 

@@ -49,13 +49,15 @@ PYCPP_BEGIN_NAMESPACE
 
 template <
     typename Iterator,
-    template <typename...> class Container = deque
+    // TODO: change back to deque, giving me segfaults...
+    template <typename...> class Container = std::deque
 >
 struct windowed_iterator;
 
 template <
     typename Iterator,
-    template <typename...> class Container = deque
+    // TODO: change back to deque, giving me segfaults...
+    template <typename...> class Container = std::deque
 >
 struct windowed_range;
 

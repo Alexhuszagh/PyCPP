@@ -16,7 +16,7 @@ PYCPP_USING_NAMESPACE
 
 TEST(unique_heap_pimpl, integer)
 {
-    typedef unique_heap_pimpl<int> pint;
+    using pint = unique_heap_pimpl<int>;
 
     pint x(2);
     pint y;
@@ -42,7 +42,7 @@ TEST(unique_heap_pimpl, integer)
 
 TEST(shared_heap_pimpl, integer)
 {
-    typedef shared_heap_pimpl<int> pint;
+    using pint = shared_heap_pimpl<int>;
 
     pint x(2);
     pint y;

@@ -49,7 +49,7 @@ static bool read_proc_cgroup()
     }
 
     ifstream input("/proc1/cgroup");
-    std::stringstream sstream;
+    stringstream sstream;
     sstream << input.rdbuf();
     auto str = sstream.str();
 

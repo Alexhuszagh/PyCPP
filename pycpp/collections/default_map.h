@@ -459,7 +459,7 @@ auto default_map<K, T, C, A, M>::operator[](key_type&& k) -> mapped_type&
 {
     auto it = map_.find(k);
     if (it == map_.end()) {
-        it = map_.emplace_hint(it, std::forward<key_type>(k), callback_());
+        it = map_.emplace_hint(it, forward<key_type>(k), callback_());
     }
     return it->second;
 }
@@ -546,7 +546,7 @@ template <typename K, typename T, typename C, typename A, template <typename, ty
 template <typename... Ts>
 auto default_map<K, T, C, A, M>::emplace(Ts&&... ts) -> pair<iterator, bool>
 {
-    return map_.emplace(std::forward<Ts>(ts)...);
+    return map_.emplace(forward<Ts>(ts)...);
 }
 
 
@@ -554,7 +554,7 @@ template <typename K, typename T, typename C, typename A, template <typename, ty
 template <typename... Ts>
 auto default_map<K, T, C, A, M>::emplace_hint(const_iterator position, Ts&&... ts) -> iterator
 {
-    return map_.emplace_hint(position, std::forward<Ts>(ts)...);
+    return map_.emplace_hint(position, forward<Ts>(ts)...);
 }
 
 
@@ -569,7 +569,7 @@ template <typename K, typename T, typename C, typename A, template <typename, ty
 template <typename U>
 auto default_map<K, T, C, A, M>::insert(U&& val) -> pair<iterator, bool>
 {
-    return map_.insert(std::forward<U>(val));
+    return map_.insert(forward<U>(val));
 }
 
 
@@ -584,7 +584,7 @@ template <typename K, typename T, typename C, typename A, template <typename, ty
 template <typename U>
 auto default_map<K, T, C, A, M>::insert(const_iterator position, U&& val) -> iterator
 {
-    return map_.insert(position, std::forward<U>(val));
+    return map_.insert(position, forward<U>(val));
 }
 
 
@@ -634,8 +634,8 @@ void default_map<K, T, C, A, M>::clear() noexcept
 template <typename K, typename T, typename C, typename A, template <typename, typename, typename, typename> class M>
 void default_map<K, T, C, A, M>::swap(self_t& rhs)
 {
-    std::swap(map_, rhs.map_);
-    std::swap(callback_, rhs.callback_);
+    PYCPP_NAMESPACE::swap(map_, rhs.map_);
+    PYCPP_NAMESPACE::swap(callback_, rhs.callback_);
 }
 
 
@@ -861,7 +861,7 @@ auto default_unordered_map<K, T, H, P, A, M>::operator[](key_type&& k) -> mapped
 {
     auto it = map_.find(k);
     if (it == map_.end()) {
-        it = map_.emplace_hint(it, std::forward<key_type>(k), callback_());
+        it = map_.emplace_hint(it, forward<key_type>(k), callback_());
     }
     return it->second;
 }
@@ -920,7 +920,7 @@ template <typename K, typename T, typename H, typename P, typename A, template <
 template <typename... Ts>
 auto default_unordered_map<K, T, H, P, A, M>::emplace(Ts&&... ts) -> pair<iterator, bool>
 {
-    return map_.emplace(std::forward<Ts>(ts)...);
+    return map_.emplace(forward<Ts>(ts)...);
 }
 
 
@@ -928,7 +928,7 @@ template <typename K, typename T, typename H, typename P, typename A, template <
 template <typename... Ts>
 auto default_unordered_map<K, T, H, P, A, M>::emplace_hint(const_iterator position, Ts&&... ts) -> iterator
 {
-    return map_.emplace_hint(position, std::forward<Ts>(ts)...);
+    return map_.emplace_hint(position, forward<Ts>(ts)...);
 }
 
 
@@ -943,7 +943,7 @@ template <typename K, typename T, typename H, typename P, typename A, template <
 template <typename U>
 auto default_unordered_map<K, T, H, P, A, M>::insert(U&& val) -> pair<iterator, bool>
 {
-    return map_.insert(std::forward<U>(val));
+    return map_.insert(forward<U>(val));
 }
 
 
@@ -958,7 +958,7 @@ template <typename K, typename T, typename H, typename P, typename A, template <
 template <typename U>
 auto default_unordered_map<K, T, H, P, A, M>::insert(const_iterator position, U&& val) -> iterator
 {
-    return map_.insert(position, std::forward<U>(val));
+    return map_.insert(position, forward<U>(val));
 }
 
 
@@ -1008,8 +1008,8 @@ void default_unordered_map<K, T, H, P, A, M>::clear() noexcept
 template <typename K, typename T, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 void default_unordered_map<K, T, H, P, A, M>::swap(self_t& rhs)
 {
-    std::swap(map_, rhs.map_);
-    std::swap(callback_, rhs.callback_);
+    PYCPP_NAMESPACE::swap(map_, rhs.map_);
+    PYCPP_NAMESPACE::swap(callback_, rhs.callback_);
 }
 
 

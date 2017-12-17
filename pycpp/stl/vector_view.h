@@ -43,11 +43,11 @@ public:
     using pointer = T*;
     using const_pointer = const T*;
     using size_type = size_t;
-    using difference_type = std::ptrdiff_t;
+    using difference_type = ptrdiff_t;
     using iterator = pointer;
     using const_iterator = const_pointer;
-    using reverse_iterator = std::reverse_iterator<pointer>;
-    using const_reverse_iterator = std::reverse_iterator<const_pointer>;
+    using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<pointer>;
+    using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_pointer>;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -113,56 +113,56 @@ private:
     template <typename U>
     friend bool operator==(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator==(const vector<U>& lhs, const vector_view<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator==(const vector<U, A>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator==(const vector_view<U>& lhs, const vector<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator==(const vector_view<U>& lhs, const vector<U, A>& right) noexcept;
 
     template <typename U>
     friend bool operator!=(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator!=(const vector<U>& lhs, const vector_view<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator!=(const vector<U, A>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator!=(const vector_view<U>& lhs, const vector<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator!=(const vector_view<U>& lhs, const vector<U, A>& right) noexcept;
 
     template <typename U>
     friend bool operator<(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator<(const vector<U>& lhs, const vector_view<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator<(const vector<U, A>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator<(const vector_view<U>& lhs, const vector<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator<(const vector_view<U>& lhs, const vector<U, A>& right) noexcept;
 
     template <typename U>
     friend bool operator<=(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator<=(const vector<U>& lhs, const vector_view<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator<=(const vector<U, A>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator<=(const vector_view<U>& lhs, const vector<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator<=(const vector_view<U>& lhs, const vector<U, A>& right) noexcept;
 
     template <typename U>
     friend bool operator>(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator>(const vector<U>& lhs, const vector_view<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator>(const vector<U, A>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator>(const vector_view<U>& lhs, const vector<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator>(const vector_view<U>& lhs, const vector<U, A>& right) noexcept;
 
     template <typename U>
     friend bool operator>=(const vector_view<U>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator>=(const vector<U>& lhs, const vector_view<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator>=(const vector<U, A>& lhs, const vector_view<U>& right) noexcept;
 
-    template <typename U>
-    friend bool operator>=(const vector_view<U>& lhs, const vector<U>& right) noexcept;
+    template <typename U, typename A>
+    friend bool operator>=(const vector_view<U>& lhs, const vector<U, A>& right) noexcept;
 };
 
 // IMPLEMENTATION
@@ -179,19 +179,19 @@ void swap(vector_view<T>& lhs, vector_view<T>& rhs)
 template <typename T>
 bool operator==(const vector_view<T>& lhs, const vector_view<T>& rhs) noexcept
 {
-    return lhs.size() == rhs.size() && std::equal(lhs.begin(), lhs.end(), rhs.begin());
+    return lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin());
 }
 
 
-template <typename T>
-bool operator==(const std::vector<T>& lhs, const vector_view<T>& rhs) noexcept
+template <typename T, typename A>
+bool operator==(const vector<T, A>& lhs, const vector_view<T>& rhs) noexcept
 {
     return vector_view<T>(lhs) == rhs;
 }
 
 
-template <typename T>
-bool operator==(const vector_view<T>& lhs, const std::vector<T>& rhs) noexcept
+template <typename T, typename A>
+bool operator==(const vector_view<T>& lhs, const vector<T, A>& rhs) noexcept
 {
     return lhs == vector_view<T>(rhs);
 }
@@ -204,15 +204,15 @@ bool operator!=(const vector_view<T>& lhs, const vector_view<T>& rhs) noexcept
 }
 
 
-template <typename T>
-bool operator!=(const std::vector<T>& lhs, const vector_view<T>& rhs) noexcept
+template <typename T, typename A>
+bool operator!=(const vector<T, A>& lhs, const vector_view<T>& rhs) noexcept
 {
     return vector_view<T>(lhs) != rhs;
 }
 
 
-template <typename T>
-bool operator!=(const vector_view<T>& lhs, const std::vector<T>& rhs) noexcept
+template <typename T, typename A>
+bool operator!=(const vector_view<T>& lhs, const vector<T, A>& rhs) noexcept
 {
     return lhs != vector_view<T>(rhs);
 }
@@ -221,19 +221,19 @@ bool operator!=(const vector_view<T>& lhs, const std::vector<T>& rhs) noexcept
 template <typename T>
 bool operator<(const vector_view<T>& lhs, const vector_view<T>& rhs) noexcept
 {
-    return std::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
+    return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end());
 }
 
 
-template <typename T>
-bool operator<(const std::vector<T>& lhs, const vector_view<T>& rhs) noexcept
+template <typename T, typename A>
+bool operator<(const vector<T, A>& lhs, const vector_view<T>& rhs) noexcept
 {
     return vector_view<T>(lhs) < rhs;
 }
 
 
-template <typename T>
-bool operator<(const vector_view<T>& lhs, const std::vector<T> &rhs) noexcept
+template <typename T, typename A>
+bool operator<(const vector_view<T>& lhs, const vector<T, A> &rhs) noexcept
 {
     return lhs < vector_view<T>(rhs);
 }
@@ -246,15 +246,15 @@ bool operator<=(const vector_view<T>& lhs, const vector_view<T>& rhs) noexcept
 }
 
 
-template <typename T>
-bool operator<=(const std::vector<T>& lhs, const vector_view<T>& rhs) noexcept
+template <typename T, typename A>
+bool operator<=(const vector<T, A>& lhs, const vector_view<T>& rhs) noexcept
 {
     return vector_view<T>(lhs) <= rhs;
 }
 
 
-template <typename T>
-bool operator<=(const vector_view<T>& lhs, const std::vector<T>& rhs) noexcept
+template <typename T, typename A>
+bool operator<=(const vector_view<T>& lhs, const vector<T, A>& rhs) noexcept
 {
     return lhs <= vector_view<T>(rhs);
 }
@@ -267,15 +267,15 @@ bool operator>(const vector_view<T>& lhs, const vector_view<T>& rhs) noexcept
 }
 
 
-template <typename T>
-bool operator>(const std::vector<T> &lhs, const vector_view<T> &rhs) noexcept
+template <typename T, typename A>
+bool operator>(const vector<T, A> &lhs, const vector_view<T> &rhs) noexcept
 {
     return vector_view<T>(lhs) > rhs;
 }
 
 
-template <typename T>
-bool operator>(const vector_view<T> &lhs, const std::vector<T> &rhs) noexcept
+template <typename T, typename A>
+bool operator>(const vector_view<T> &lhs, const vector<T, A> &rhs) noexcept
 {
     return lhs > vector_view<T>(rhs);
 }
@@ -288,15 +288,15 @@ bool operator>=(const vector_view<T> &lhs, const vector_view<T> &rhs) noexcept
 }
 
 
-template <typename T>
-bool operator>=(const std::vector<T> &lhs, const vector_view<T> &rhs) noexcept
+template <typename T, typename A>
+bool operator>=(const vector<T, A> &lhs, const vector_view<T> &rhs) noexcept
 {
     return vector_view<T>(lhs) >= rhs;
 }
 
 
-template <typename T>
-bool operator>=(const vector_view<T> &lhs, const std::vector<T> &rhs) noexcept
+template <typename T, typename A>
+bool operator>=(const vector_view<T> &lhs, const vector<T, A> &rhs) noexcept
 {
     return lhs >= vector_view<T>(rhs);
 }
@@ -513,8 +513,8 @@ auto vector_view<T>::data() const noexcept -> const_pointer
 template <typename T>
 void vector_view<T>::swap(vector_view<T>& rhs)
 {
-    std::swap(data_, rhs.data_);
-    std::swap(size_, rhs.size_);
+    PYCPP_NAMESPACE::swap(data_, rhs.data_);
+    PYCPP_NAMESPACE::swap(size_, rhs.size_);
 }
 
 
@@ -539,10 +539,10 @@ template <typename T>
 auto vector_view<T>::copy(value_type* dst, size_type count, size_type pos) -> size_type
 {
     if (pos > size()) {
-        throw std::out_of_range("vector_view::copy");
+        throw out_of_range("vector_view::copy");
     }
 
-    size_type length = std::min(count, size() - pos);
+    size_type length = min(count, size() - pos);
     // can pass 0 to memcpy
     memcpy(dst, data() + pos, length * sizeof(value_type));
 

@@ -47,7 +47,7 @@ public:
 private:
     friend struct match_t;
 
-    std::unique_ptr<regex_impl_t> ptr_;
+    unique_ptr<regex_impl_t> ptr_;
 };
 
 

@@ -17,9 +17,9 @@ using namespace prod_detail;
 // DATA
 // ----
 
-static std::vector<int> W = {1380, 1520, 1560, 2140};
-static std::vector<int> H = {1710, 1710, 1820, 1820, 1820, 1880, 1880};
-typedef typename std::vector<int>::iterator It;
+static vector<int> W = {1380, 1520, 1560, 2140};
+static vector<int> H = {1710, 1710, 1820, 1820, 1820, 1880, 1880};
+using It = typename vector<int>::iterator;
 
 // TESTS
 // -----
@@ -32,7 +32,7 @@ TEST(itertools, for_each_permutation)
     int sum = 0;
     for_each_permutation(W.begin(), W.begin()+2, W.end(), [&](It first, It last) {
         ++c;
-        sum = std::accumulate(first, last, sum);
+        sum = accumulate(first, last, sum);
         return false;
     });
     EXPECT_EQ(c, 12);
@@ -43,7 +43,7 @@ TEST(itertools, for_each_permutation)
     sum = 0;
     for_each_permutation(W.begin(), W.begin()+3, W.end(), [&](It first, It last) {
         ++c;
-        sum = std::accumulate(first, last, sum);
+        sum = accumulate(first, last, sum);
         return false;
     });
     EXPECT_EQ(c, 24);
@@ -65,7 +65,7 @@ TEST(itertools, for_each_combination)
     int sum = 0;
     for_each_combination(W.begin(), W.begin()+2, W.end(), [&](It first, It last) {
         ++c;
-        sum = std::accumulate(first, last, sum);
+        sum = accumulate(first, last, sum);
         return false;
     });
     EXPECT_EQ(c, 6);
@@ -76,7 +76,7 @@ TEST(itertools, for_each_combination)
     sum = 0;
     for_each_combination(W.begin(), W.begin()+3, W.end(), [&](It first, It last) {
         ++c;
-        sum = std::accumulate(first, last, sum);
+        sum = accumulate(first, last, sum);
         return false;
     });
     EXPECT_EQ(c, 4);
@@ -93,10 +93,10 @@ TEST(itertools, count_each_combination)
 
 TEST(itertools, product)
 {
-    typedef std::vector<std::vector<int>> ll;
-    typedef std::vector<std::map<int, int>> lm;
-    typedef std::map<int, std::vector<int>> ml;
-    typedef std::map<int, std::map<int, int>> mm;
+    using ll = vector<vector<int>>;
+    using lm = vector<map<int, int>>;
+    using ml = map<int, vector<int>>;
+    using mm = map<int, map<int, int>>;
 
     static_assert(is_list_list<ll>::value, "Cannot detect list of lists");
     static_assert(is_list_map<lm>::value, "Cannot detect list of maps");
@@ -109,13 +109,13 @@ TEST(itertools, cartesian_product)
 {
     int c = 0;
     int sum = 0;
-    typedef std::reference_wrapper<const int> intw;
+    using intw = reference_wrapper<const int>;
 
     // empty
-    std::vector<std::vector<int>> v;
+    vector<vector<int>> v;
     product(v, [&](intw* first, intw* last) {
         ++c;
-        sum = std::accumulate(first, last, sum);
+        sum = accumulate(first, last, sum);
         return false;
     });
     EXPECT_EQ(c, 0);
@@ -127,7 +127,7 @@ TEST(itertools, cartesian_product)
     v = {{1, 2, 3}};
     product(v, [&](intw* first, intw* last) {
         ++c;
-        sum = std::accumulate(first, last, sum);
+        sum = accumulate(first, last, sum);
         return false;
     });
     EXPECT_EQ(c, 3);
@@ -139,7 +139,7 @@ TEST(itertools, cartesian_product)
     v = {{1, 2, 3}, {4, 5, 6}};
     product(v, [&](intw* first, intw* last) {
         ++c;
-        sum = std::accumulate(first, last, sum);
+        sum = accumulate(first, last, sum);
         return false;
     });
     EXPECT_EQ(c, 9);
@@ -151,7 +151,7 @@ TEST(itertools, cartesian_product)
     v = {{1, 2, 3}, {4, 5, 6}, {7, 8, 9}};
     product(v, [&](intw* first, intw* last) {
         ++c;
-        sum = std::accumulate(first, last, sum);
+        sum = accumulate(first, last, sum);
         return false;
     });
     EXPECT_EQ(c, 27);

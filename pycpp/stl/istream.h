@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/stl/ios.h>
+#include <pycpp/stl/streambuf.h>
 #include <istream>
 
 PYCPP_BEGIN_NAMESPACE
@@ -17,22 +17,11 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 using std::ws;
-
-template <
-    typename Char,
-    typename Traits = std::char_traits<Char>
->
-using basic_istream = std::basic_istream<Char, Traits>;
-
-template <
-    typename Char,
-    typename Traits = std::char_traits<Char>
->
-using basic_iostream = std::basic_iostream<Char, Traits>;
-
-using istream = basic_istream<char>;
-using wistream = basic_istream<wchar_t>;
-using iostream = basic_iostream<char>;
-using wiostream = basic_iostream<wchar_t>;
+using std::basic_istream;
+using std::basic_iostream;
+using std::istream;
+using std::wistream;
+using std::iostream;
+using std::wiostream;
 
 PYCPP_END_NAMESPACE

@@ -10,6 +10,9 @@
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
 #include <algorithm>
+#if defined(HAVE_CPP17)
+#   include <pycpp/stl/execution.h>
+#endif      // HAVE_CPP17
 
 PYCPP_BEGIN_NAMESPACE
 

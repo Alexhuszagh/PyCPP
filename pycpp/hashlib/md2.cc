@@ -111,39 +111,38 @@ static void md2_final(void* ptr, void* buf)
 // -------
 
 
-md2_hash::md2_hash()
+md2_hash::md2_hash():
+    ctx(make_unique<md2_context>())
 {
-    ctx = new md2_context;
-    md2_init(ctx);
+    md2_init(ctx.get());
 }
 
 
-md2_hash::md2_hash(const void* src, size_t srclen)
+md2_hash::md2_hash(const void* src, size_t srclen):
+    ctx(make_unique<md2_context>())
 {
-    ctx = new md2_context;
-    md2_init(ctx);
+    md2_init(ctx.get());
     update(src, srclen);
 }
 
 
-md2_hash::md2_hash(const string_wrapper& str)
+md2_hash::md2_hash(const string_wrapper& str):
+    ctx(make_unique<md2_context>())
 {
-    ctx = new md2_context;
-    md2_init(ctx);
+    md2_init(ctx.get());
     update(str);
 }
 
 
 md2_hash::~md2_hash()
 {
-    secure_zero(ctx, sizeof(*ctx));
-    delete ctx;
+    secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
 void md2_hash::update(const void* src, size_t srclen)
 {
-    hash_update(ctx, src, srclen, md2_update);
+    hash_update(ctx.get(), src, srclen, md2_update);
 }
 
 

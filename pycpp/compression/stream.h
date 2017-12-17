@@ -25,19 +25,19 @@ PYCPP_BEGIN_NAMESPACE
  */
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-#   define WIDE_PATH_IFSTREAM(name)                                                                             \
-        name##_ifstream(const wstring_view& name, std::ios_base::openmode = std::ios_base::in);                 \
-        void open(const wstring_view& name, std::ios_base::openmode = std::ios_base::in);                       \
-        name##_ifstream(const u16string_view& name, std::ios_base::openmode = std::ios_base::in);               \
-        void open(const u16string_view& name, std::ios_base::openmode = std::ios_base::in);
+#   define WIDE_PATH_IFSTREAM(name)                                                                 \
+        name##_ifstream(const wstring_view& name, ios_base::openmode = ios_base::in);               \
+        void open(const wstring_view& name, ios_base::openmode = ios_base::in);                     \
+        name##_ifstream(const u16string_view& name, ios_base::openmode = ios_base::in);             \
+        void open(const u16string_view& name, ios_base::openmode = ios_base::in);
 
-#   define WIDE_PATH_OFSTREAM(name)                                                                             \
-        name##_ofstream(const wstring_view& name, std::ios_base::openmode = std::ios_base::out);                \
-        name##_ofstream(const wstring_view& name, int level, std::ios_base::openmode = std::ios_base::out);     \
-        void open(const wstring_view& name, std::ios_base::openmode = std::ios_base::out);                      \
-        name##_ofstream(const u16string_view& name, std::ios_base::openmode = std::ios_base::out);              \
-        name##_ofstream(const u16string_view& name, int level, std::ios_base::openmode = std::ios_base::out);   \
-        void open(const u16string_view& name, std::ios_base::openmode = std::ios_base::out);
+#   define WIDE_PATH_OFSTREAM(name)                                                                 \
+        name##_ofstream(const wstring_view& name, ios_base::openmode = ios_base::out);              \
+        name##_ofstream(const wstring_view& name, int level, ios_base::openmode = ios_base::out);   \
+        void open(const wstring_view& name, ios_base::openmode = ios_base::out);                    \
+        name##_ofstream(const u16string_view& name, ios_base::openmode = ios_base::out);            \
+        name##_ofstream(const u16string_view& name, int level, ios_base::openmode = ios_base::out); \
+        void open(const u16string_view& name, ios_base::openmode = ios_base::out);
 
 #else                                       // POSIX
 
@@ -59,8 +59,8 @@ PYCPP_BEGIN_NAMESPACE
         name##_istream & operator=(const name##_istream&) = delete;                             \
         ~name##_istream();                                                                      \
                                                                                                 \
-        name##_istream(std::istream& stream);                                                   \
-        void open(std::istream& stream);                                                        \
+        name##_istream(istream& stream);                                                        \
+        void open(istream& stream);                                                             \
                                                                                                 \
     protected:                                                                                  \
         name##_istream(name##_istream&&);                                                       \
@@ -84,9 +84,9 @@ PYCPP_BEGIN_NAMESPACE
         name##_ostream & operator=(const name##_ostream&) = delete;                             \
         ~name##_ostream();                                                                      \
                                                                                                 \
-        name##_ostream(std::ostream& stream);                                                   \
-        name##_ostream(std::ostream& stream, int level);                                        \
-        void open(std::ostream& stream);                                                        \
+        name##_ostream(ostream& stream);                                                        \
+        name##_ostream(ostream& stream, int level);                                             \
+        void open(ostream& stream);                                                             \
                                                                                                 \
     protected:                                                                                  \
         name##_ostream(name##_ostream&&);                                                       \
@@ -111,8 +111,8 @@ PYCPP_BEGIN_NAMESPACE
         name##_ifstream & operator=(name##_ifstream&&);                                         \
         ~name##_ifstream();                                                                     \
                                                                                                 \
-        name##_ifstream(const string_view& name, std::ios_base::openmode = std::ios_base::in);  \
-        void open(const string_view& name, std::ios_base::openmode = std::ios_base::in);        \
+        name##_ifstream(const string_view& name, ios_base::openmode = ios_base::in);            \
+        void open(const string_view& name, ios_base::openmode = ios_base::in);                  \
         WIDE_PATH_IFSTREAM(name)                                                                \
                                                                                                 \
     private:                                                                                    \
@@ -123,25 +123,25 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Macro to define a filtering ofstream base.
  */
-#define COMPRESSED_OFSTREAM(name)                                                                           \
-    struct name##_ofstream: filter_ofstream                                                                 \
-    {                                                                                                       \
-    public:                                                                                                 \
-        name##_ofstream();                                                                                  \
-        name##_ofstream(int level);                                                                         \
-        name##_ofstream(const name##_ofstream&) = delete;                                                   \
-        name##_ofstream & operator=(const name##_ofstream&) = delete;                                       \
-        name##_ofstream(name##_ofstream&&);                                                                 \
-        name##_ofstream & operator=(name##_ofstream&&);                                                     \
-        ~name##_ofstream();                                                                                 \
-                                                                                                            \
-        name##_ofstream(const string_view& name, std::ios_base::openmode = std::ios_base::out);             \
-        name##_ofstream(const string_view& name, int level, std::ios_base::openmode = std::ios_base::out);  \
-        void open(const string_view& name, std::ios_base::openmode = std::ios_base::out);                   \
-        WIDE_PATH_OFSTREAM(name)                                                                            \
-                                                                                                            \
-    private:                                                                                                \
-        name##_compressor ctx;                                                                              \
+#define COMPRESSED_OFSTREAM(name)                                                                   \
+    struct name##_ofstream: filter_ofstream                                                         \
+    {                                                                                               \
+    public:                                                                                         \
+        name##_ofstream();                                                                          \
+        name##_ofstream(int level);                                                                 \
+        name##_ofstream(const name##_ofstream&) = delete;                                           \
+        name##_ofstream & operator=(const name##_ofstream&) = delete;                               \
+        name##_ofstream(name##_ofstream&&);                                                         \
+        name##_ofstream & operator=(name##_ofstream&&);                                             \
+        ~name##_ofstream();                                                                         \
+                                                                                                    \
+        name##_ofstream(const string_view& name, ios_base::openmode = ios_base::out);               \
+        name##_ofstream(const string_view& name, int level, ios_base::openmode = ios_base::out);    \
+        void open(const string_view& name, ios_base::openmode = ios_base::out);                     \
+        WIDE_PATH_OFSTREAM(name)                                                                    \
+                                                                                                    \
+    private:                                                                                        \
+        name##_compressor ctx;                                                                      \
     }
 
 
@@ -181,8 +181,8 @@ public:
     decompressing_istream & operator=(const decompressing_istream&) = delete;
     ~decompressing_istream();
 
-    decompressing_istream(std::istream& stream);
-    void open(std::istream& stream);
+    decompressing_istream(istream& stream);
+    void open(istream& stream);
 
 protected:
     decompressing_istream(decompressing_istream&&);
@@ -207,13 +207,13 @@ public:
     decompressing_ifstream & operator=(decompressing_ifstream&&);
     ~decompressing_ifstream();
 
-    decompressing_ifstream(const string_view& name, std::ios_base::openmode = std::ios_base::in);
-    void open(const string_view& name, std::ios_base::openmode = std::ios_base::in);
+    decompressing_ifstream(const string_view& name, ios_base::openmode = ios_base::in);
+    void open(const string_view& name, ios_base::openmode = ios_base::in);
 #if defined(HAVE_WFOPEN)                    // WINDOWS
-    decompressing_ifstream(const wstring_view& name, std::ios_base::openmode = std::ios_base::in);
-    void open(const wstring_view& name, std::ios_base::openmode = std::ios_base::in);
-    decompressing_ifstream(const u16string_view& name, std::ios_base::openmode = std::ios_base::in);
-    void open(const u16string_view& name, std::ios_base::openmode = std::ios_base::in);
+    decompressing_ifstream(const wstring_view& name, ios_base::openmode = ios_base::in);
+    void open(const wstring_view& name, ios_base::openmode = ios_base::in);
+    decompressing_ifstream(const u16string_view& name, ios_base::openmode = ios_base::in);
+    void open(const u16string_view& name, ios_base::openmode = ios_base::in);
 #endif                                      // WINDOWS
 
 private:
