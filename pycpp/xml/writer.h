@@ -67,7 +67,7 @@ public:
     virtual void write_attribute_ns(const string_wrapper&, const string_wrapper&, const string_wrapper&, const string_wrapper&) override;
     virtual void flush() const override;
 
-private:
+protected:
     char indent_character_ = ' ';
     int indent_width_ = 0;
     void* stream_ = nullptr;
@@ -99,7 +99,7 @@ public:
     virtual void flush() const override;
 
     // MODIFIERS
-    void swap(xml_string_writer&);
+    void swap(xml_file_writer&);
 
 private:
     mutable ofstream file_;

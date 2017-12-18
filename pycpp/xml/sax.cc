@@ -335,9 +335,7 @@ xml_stream_reader& xml_stream_reader::operator=(xml_stream_reader&& rhs)
 void xml_stream_reader::open(istream& s)
 {
     stream_ = &s;
-    if (!handler_) {
-        throw runtime_error("Must assign handler prior parsing.");
-    }
+    assert(handler_ && "Must assign handler prior parsing.");
 
     // parse stream
     handler_wrapper wrapper(*handler_);
@@ -420,7 +418,11 @@ void xml_file_reader::open(const u16string_view& name)
 
 void xml_file_reader::swap(xml_file_reader& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    // TODO: check
+    using PYCPP_NAMESPACE::swap;
+    xml_stream_reader::swap(rhs);
+    swap(file_, rhs.file_);
+    // TODO: assign files...
 }
 
 
@@ -452,7 +454,10 @@ void xml_string_reader::open(const string_wrapper& str)
 
 void xml_string_reader::swap(xml_string_reader& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    // TODO: check
+    using PYCPP_NAMESPACE::swap;
+    xml_stream_reader::swap(rhs);
+    swap(sstream_, rhs.sstream_);
 }
 
 PYCPP_END_NAMESPACE

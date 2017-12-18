@@ -67,7 +67,7 @@ public:
     void set_handler(xml_sax_handler&);
     void swap(xml_stream_reader&);
 
-private:
+protected:
     istream* stream_ = nullptr;
     xml_sax_handler* handler_ = nullptr;
 };

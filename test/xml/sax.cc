@@ -13,16 +13,23 @@
 
 PYCPP_USING_NAMESPACE
 
-
+// HELPERS
 // -------
 
 
 template <typename SaxReader, typename OpenArg>
-static void test_xml_reader(SaxReader& reader, OpenArg& arg)
+static void test_xml_reader(SaxReader& reader, OpenArg& arg, bool move = false)
 {
     xml_document_t document;
     xml_dom_handler handler(document);
-    reader.set_handler(handler);
+    SaxReader r2;
+    if (move) {
+        SaxReader r2;
+        r2.set_handler(handler);
+        r2.swap(reader);
+    } else {
+        reader.set_handler(handler);
+    }
     reader.open(arg);
 
     // check document root
@@ -71,9 +78,16 @@ TEST(xml, xml_stream_reader)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string str("<?xml version=\"1.0\" encoding=\"UTF-8\"?><note><to email=\"tove@tove.com\">Tove</to><from email=\"jani@jani.com\">Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>");
-    istringstream sstream(str);
-    xml_stream_reader reader;
-    test_xml_reader(reader, sstream);
+    {
+        istringstream sstream(str);
+        xml_stream_reader reader;
+        test_xml_reader(reader, sstream);
+    }
+    {
+        istringstream sstream(str);
+        xml_stream_reader reader;
+        test_xml_reader(reader, sstream, true);
+    }
 }
 
 
@@ -91,6 +105,10 @@ TEST(xml, xml_file_reader)
         xml_file_reader reader;
         test_xml_reader(reader, path);
     }
+    {
+        xml_file_reader reader;
+        test_xml_reader(reader, path, true);
+    }
     EXPECT_TRUE(remove_file(path));
 }
 
@@ -100,6 +118,12 @@ TEST(xml, xml_string_reader)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string str("<?xml version=\"1.0\" encoding=\"UTF-8\"?><note><to email=\"tove@tove.com\">Tove</to><from email=\"jani@jani.com\">Jani</from><heading>Reminder</heading><body>Don't forget me this weekend!</body></note>");
-    xml_string_reader reader;
-    test_xml_reader(reader, str);
+    {
+        xml_string_reader reader;
+        test_xml_reader(reader, str);
+    }
+    {
+        xml_string_reader reader;
+        test_xml_reader(reader, str, true);
+    }
 }

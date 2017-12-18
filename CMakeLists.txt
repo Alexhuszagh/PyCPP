@@ -963,22 +963,21 @@ if(BUILD_STREAM)
 endif()
 
 if(BUILD_XML)
-# TODO: restore
-#    list(APPEND HEADER_FILES
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml.h"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.h"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.h"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.h"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.h"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.h"
-#    )
-#    list(APPEND SOURCE_FILES
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.cc"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.cc"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.cc"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.cc"
-#        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.cc"
-#    )
+    list(APPEND HEADER_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.h"
+    )
+    list(APPEND SOURCE_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/core.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/dom.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/sax.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/text.cc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/xml/writer.cc"
+    )
 endif()
 
 add_library(pycpp "")
@@ -1187,7 +1186,6 @@ if(BUILD_COMPRESSION)
         test/compression/lzma.cc
         test/compression/zlib.cc
     )
-# TODO: restore
     if (BUILD_STREAM)
         list(APPEND TEST_FILES test/compression/stream.cc)
     endif()

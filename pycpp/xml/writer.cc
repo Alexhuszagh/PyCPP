@@ -283,7 +283,12 @@ void xml_file_writer::flush() const
 
 void xml_file_writer::swap(xml_file_writer& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    using PYCPP_NAMESPACE::swap;
+    xml_stream_writer::swap(rhs);
+    swap(file_, rhs.file_);
+    // TODO: this isn't working....
+//    stream_ = &file_;
+//    rhs.stream_ = &rhs.file_;
 }
 
 
@@ -316,7 +321,10 @@ std::string xml_string_writer::str() const
 
 void xml_string_writer::swap(xml_string_writer& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    // TODO: check
+    using PYCPP_NAMESPACE::swap;
+    xml_stream_writer::swap(rhs);
+    swap(sstream_, rhs.sstream_);
 }
 
 PYCPP_END_NAMESPACE

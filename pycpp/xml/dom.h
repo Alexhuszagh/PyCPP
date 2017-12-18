@@ -52,7 +52,7 @@ private:
  */
 struct xml_document_t: xml_node_t
 {
-    xml_document_t();
+    xml_document_t() = default;
     xml_document_t(const xml_document_t&) = delete;
     xml_document_t& operator=(const xml_document_t&) = delete;
     xml_document_t(xml_document_t&&);
