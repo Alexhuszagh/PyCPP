@@ -16,6 +16,90 @@
 
 PYCPP_USING_NAMESPACE
 
+// OBJECTS
+// -------
+
+
+struct filter_istream_wrapper: filter_istream
+{
+    // Export ::swap publicly for unittests
+    using filter_istream::filter_istream;
+    using filter_istream::swap;
+};
+
+
+struct filter_ostream_wrapper: filter_ostream
+{
+    // Export ::swap publicly for unittests
+    using filter_ostream::filter_ostream;
+    using filter_ostream::swap;
+};
+
+
+template <typename OStream>
+struct test_ostream
+{
+    template <typename T, typename Checker, typename ... Ts>
+    void standard(T &t, const string_view& message, Checker checker, Ts... ts)
+    {
+        {
+            OStream s1(t, ts...);
+            s1 << message;
+        }
+        checker();
+    }
+
+    template <typename T, typename Checker, typename ... Ts>
+    void move(T &t, const string_view& message, const Checker checker, Ts... ts)
+    {
+        {
+            OStream s1(t, ts...), s2;
+            s1.swap(s2);
+            s2 << message;
+        }
+        checker();
+    }
+
+    template <typename T, typename Checker, typename ... Ts>
+    void operator()(T &t, const string_view& message, Checker checker, Ts... ts)
+    {
+        standard(t, message, checker, ts...);
+        move(t, message, checker, ts...);
+    }
+};
+
+
+template <typename IStream>
+struct test_istream
+{
+    template <typename T, typename Checker, typename ... Ts>
+    void standard(T &t, Checker checker, Ts... ts)
+    {
+        IStream s1(t, ts...);
+        std::string line;
+        std::getline(s1, line);
+        checker(line);
+    }
+
+    template <typename T, typename Checker, typename ... Ts>
+    void move(T &t, const Checker checker, Ts... ts)
+    {
+        IStream s1(t, ts...), s2;
+        s1.swap(s2);
+        std::string line;
+        std::getline(s2, line);
+        checker(line);
+    }
+
+    template <typename T, typename Checker, typename ... Ts>
+    void operator()(T &t, Checker checker, Ts... ts)
+    {
+        standard(t, checker, ts...);
+        move(t, checker, ts...);
+    }
+};
+
+
 // FUNCTIONS
 // ---------
 
@@ -59,46 +143,56 @@ TEST(filter_streambuf, swap)
 
 TEST(filter_istream, nocallback)
 {
-    istringstream sstream("This is a message");
-    filter_istream stream(sstream);
-    std::string line;
+    using tester = test_istream<filter_istream_wrapper>;
 
-    std::getline(stream, line);
-    EXPECT_EQ(line, "This is a message");
+    istringstream sstream("This is a message");
+    std::string actual = "This is a message";
+    tester()(sstream, [&sstream, &actual](const std::string& result) {
+        EXPECT_EQ(result, actual);
+        sstream.seekg(0);
+    }, nullptr);
 }
 
 
 TEST(filter_istream, doublechars)
 {
-    istringstream sstream("This is a message");
-    filter_istream stream(sstream, doublechars);
-    std::string line;
+    using tester = test_istream<filter_istream_wrapper>;
 
-    std::getline(stream, line);
-    EXPECT_EQ(line, "TThhiiss  iiss  aa  mmeessssaaggee");
+    istringstream sstream("This is a message");
+    std::string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
+    tester()(sstream, [&sstream, &actual](const std::string& result) {
+        EXPECT_EQ(result, actual);
+        sstream.seekg(0);
+    }, doublechars);
 }
 
 // OSTREAM
 
 TEST(filter_ostream, nocallback)
 {
+    using tester = test_ostream<filter_ostream_wrapper>;
+
     ostringstream sstream;
-    {
-        filter_ostream stream(sstream);
-        stream << "This is a message";
-    }
-    EXPECT_EQ(sstream.str(), "This is a message");
+    std::string message = "This is a message";
+    std::string actual = message;
+    tester()(sstream, message, [&sstream, &actual]() {
+        EXPECT_EQ(sstream.str(), actual);
+        sstream.seekp(0);
+    }, nullptr);
 }
 
 
 TEST(filter_ostream, doublechars)
 {
+    using tester = test_ostream<filter_ostream_wrapper>;
+
     ostringstream sstream;
-    {
-        filter_ostream stream(sstream, doublechars);
-        stream << "This is a message";
-    }
-    EXPECT_EQ(sstream.str(), "TThhiiss  iiss  aa  mmeessssaaggee");
+    std::string message = "This is a message";
+    std::string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
+    tester()(sstream, message, [&sstream, &actual]() {
+        EXPECT_EQ(sstream.str(), actual);
+        sstream.seekp(0);
+    }, doublechars);
 }
 
 #if BUILD_FILESYSTEM
@@ -124,41 +218,11 @@ TEST(filter_ifstream, doublechars)
     ASSERT_TRUE(exists(path));
 
     // read data
-    {
-        filter_ifstream s1(path, ios_base::in, doublechars);
-        ASSERT_TRUE(s1.is_open());
-        std::string line;
-        std::getline(s1, line);
-        EXPECT_EQ(line, "TThhiiss  iiss  aa  mmeessssaaggee");
-    }
-
-    // cleanup
-    EXPECT_TRUE(remove_file(path));
-}
-
-
-TEST(filter_ifstream, move)
-{
-    // write data
-    string path("sample_filter_ifstream.txt");
-    ASSERT_FALSE(exists(path));
-    {
-        ofstream stream(path);
-        stream << "This is a message";
-    }
-    ASSERT_TRUE(exists(path));
-
-    // read data
-    {
-        // TODO: restore
-//        filter_ifstream s1(path, ios_base::in, doublechars);
-//        filter_ifstream s2(std::move(s1));
-//        ASSERT_FALSE(s1.is_open());
-//        ASSERT_TRUE(s2.is_open());
-//        std::string line;
-//        std::getline(s1, line);
-//        EXPECT_EQ(line, "TThhiiss  iiss  aa  mmeessssaaggee");
-    }
+    using tester = test_istream<filter_ifstream>;
+    std::string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
+    tester()(path, [&actual](const std::string& result) {
+        EXPECT_EQ(result, actual);
+    }, ios_base::in, doublechars);
 
     // cleanup
     EXPECT_TRUE(remove_file(path));
@@ -175,32 +239,23 @@ TEST(filter_ofstream, null_constructor)
 
 TEST(filter_ofstream, doublechars)
 {
-    // write data
-    string path("sample_filter_ofstream.txt");
-    ASSERT_FALSE(exists(path));
-    {
-        filter_ofstream s1(path, ios_base::out, doublechars);
-        ASSERT_TRUE(s1.is_open());
-        s1 << "This is a message";
-    }
-    ASSERT_TRUE(exists(path));
-
     // read data
-    {
-        ifstream stream(path);
-        std::string line;
-        std::getline(stream, line);
-        EXPECT_EQ(line, "TThhiiss  iiss  aa  mmeessssaaggee");
-    }
-
-    // cleanup
-    EXPECT_TRUE(remove_file(path));
-}
-
-
-TEST(filter_ofstream, move)
-{
-    // TODO: implement...
+    using tester = test_ostream<filter_ofstream>;
+    string path("sample_filter_ofstream.txt");
+    std::string message = "This is a message";
+    std::string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
+    tester()(path, message, [&path, &actual]() {
+        // check contents
+        {
+            ifstream ifs(path);
+            std::string line;
+            std::getline(ifs, line);
+            EXPECT_EQ(line, actual);
+        }
+        // cleanup
+        ASSERT_TRUE(exists(path));
+        EXPECT_TRUE(remove_file(path));
+    }, ios_base::out, doublechars);
 }
 
 #endif                  // BUILD_FILESYSTEM

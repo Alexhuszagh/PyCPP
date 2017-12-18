@@ -56,7 +56,8 @@ filter_streambuf::~filter_streambuf()
 }
 
 
-filter_streambuf::filter_streambuf(filter_streambuf&& rhs)
+filter_streambuf::filter_streambuf(filter_streambuf&& rhs):
+    filter_streambuf(rhs.mode)
 {
     swap(rhs);
 }
@@ -97,10 +98,7 @@ void filter_streambuf::swap(filter_streambuf& rhs)
     swap(out_buffer, rhs.out_buffer);
     swap(first, rhs.first);
     swap(last, rhs.last);
-
-    // TODO: why not swap the internal pointers???
-    // TODO: need to fix this issue, causing a segfault
-//    streambuf::swap(static_cast<streambuf&>(rhs));
+    streambuf::swap(static_cast<streambuf&>(rhs));
 }
 
 
@@ -297,10 +295,6 @@ void filter_istream::swap(filter_istream &rhs)
     istream::swap(rhs);
     swap(buffer, rhs.buffer);
     swap(stream, rhs.stream);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    rhs.rdbuf(&rhs.buffer);
 }
 
 // OSTREAM
@@ -365,14 +359,12 @@ void filter_ostream::close()
 
 void filter_ostream::swap(filter_ostream &rhs)
 {
+    using PYCPP_NAMESPACE::swap;
+
     // swap
     ostream::swap(rhs);
-    PYCPP_NAMESPACE::swap(buffer, rhs.buffer);
-    PYCPP_NAMESPACE::swap(stream, rhs.stream);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    rhs.rdbuf(&rhs.buffer);
+    swap(buffer, rhs.buffer);
+    swap(stream, rhs.stream);
 }
 
 // IFSTREAM
@@ -460,8 +452,15 @@ void filter_ifstream::close()
 
 void filter_ifstream::swap(filter_ifstream &rhs)
 {
-    filter_istream::swap(rhs);
+    // swap the underlying files
     file.swap(rhs.file);
+
+    // update the underlying file buffers, since these might have changed
+    rdbuf()->set_filebuf(rhs.file.rdbuf());
+    rhs.rdbuf()->set_filebuf(file.rdbuf());
+
+    // swap the underlying streams
+    filter_istream::swap(rhs);
 }
 
 // OFSTREAM
@@ -548,8 +547,15 @@ void filter_ofstream::close()
 
 void filter_ofstream::swap(filter_ofstream &rhs)
 {
-    filter_ostream::swap(rhs);
+    // swap the underlying files
     file.swap(rhs.file);
+
+    // update the underlying file buffers, since these might have changed
+    rdbuf()->set_filebuf(rhs.file.rdbuf());
+    rhs.rdbuf()->set_filebuf(file.rdbuf());
+
+    // swap the underlying streams
+    filter_ostream::swap(rhs);
 }
 
 PYCPP_END_NAMESPACE

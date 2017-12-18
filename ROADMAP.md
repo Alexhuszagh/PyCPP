@@ -13,8 +13,6 @@
             - Writer    - Skeleton
             - Dict      - Skeleton
         - Stream
-            - Filter    -Unittests
-                - Fix filter with moves, there's a segfault bug
             - FD
             - Random Access
             - MMAP

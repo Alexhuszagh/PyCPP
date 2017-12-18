@@ -39,7 +39,7 @@ template <typename IStream, typename OStream>
 struct test_stream
 {
     template <typename String>
-    void operator()(const String &path)
+    void standard(const String &path)
     {
         std::string expected = "Single line";
 
@@ -54,6 +54,33 @@ struct test_stream
 
         EXPECT_EQ(result, expected);
         EXPECT_TRUE(remove_file(path));
+    }
+
+    template <typename String>
+    void move(const String &path)
+    {
+        std::string expected = "Single line";
+
+        OStream ofs1(path, ios_base::out);
+        OStream ofs2(std::move(ofs1));
+        ofs2 << expected << endl;
+        ofs2.close();
+
+        IStream ifs1(path, ios_base::in);
+        IStream ifs2(std::move(ifs1));
+        std::string result;
+        std::getline(ifs2, result);
+        ifs2.close();
+
+        EXPECT_EQ(result, expected);
+        EXPECT_TRUE(remove_file(path));
+    }
+
+    template <typename String>
+    void operator()(const String &path)
+    {
+        standard(path);
+        move(path);
     }
 };
 
