@@ -767,15 +767,14 @@ if(BUILD_COMPRESSION)
         #"${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/zlib.cc"
     )
 
-# TODO: restore
-#    if(BUILD_STREAM)
-#        list(APPEND HEADER_FILES
-#            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.h"
-#        )
-#        list(APPEND SOURCE_FILES
-#            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.cc"
-#        )
-#    endif()
+    if(BUILD_STREAM)
+        list(APPEND HEADER_FILES
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.h"
+        )
+        list(APPEND SOURCE_FILES
+            "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/compression/stream.cc"
+        )
+    endif()
 endif()
 
 if (BUILD_CSV)
@@ -1188,9 +1187,9 @@ if(BUILD_COMPRESSION)
         test/compression/lzma.cc
         test/compression/zlib.cc
     )
-    if (BUILD_STREAM)
 # TODO: restore
-#        list(APPEND TEST_FILES test/compression/stream.cc)
+    if (BUILD_STREAM)
+        list(APPEND TEST_FILES test/compression/stream.cc)
     endif()
 endif()
 
@@ -1259,13 +1258,12 @@ endif()
 if (BUILD_STREAM)
     list(APPEND TEST_FILES test/stream/filter.cc)
     if(BUILD_FILESYSTEM)
-# TODO: restore
-#        list(APPEND TEST_FILES
-#            test/stream/fd.cc
-#            test/stream/mmap.cc
-#            test/stream/random_access.cc
-#            test/stream/sequential.cc
-#        )
+        list(APPEND TEST_FILES
+            test/stream/fd.cc
+            test/stream/mmap.cc
+            test/stream/random_access.cc
+            test/stream/sequential.cc
+        )
     endif()
 endif()
 

@@ -6,17 +6,10 @@
         - Change to use the global allocator generally speaking...
 
     - Make sure my streams properly handle moves but cannot be copied...
-        - Compression
-            - Stream    - Skeleton
         - CSV
             - Reader    - Skeleton
             - Writer    - Skeleton
             - Dict      - Skeleton
-        - Stream
-            - FD
-            - Random Access
-            - MMAP
-            - Sequential
         - JSON
             - SAX       - Skeleton
             - Writer    - Skeleton

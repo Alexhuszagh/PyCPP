@@ -46,15 +46,15 @@ fd_streambuf::~fd_streambuf()
 }
 
 
-fd_streambuf::fd_streambuf(fd_streambuf&& other)
+fd_streambuf::fd_streambuf(fd_streambuf&& rhs)
 {
-    swap(other);
+    swap(rhs);
 }
 
 
-fd_streambuf& fd_streambuf::operator=(fd_streambuf&& other)
+fd_streambuf& fd_streambuf::operator=(fd_streambuf&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -71,19 +71,18 @@ bool fd_streambuf::is_open() const
 }
 
 
-void fd_streambuf::swap(fd_streambuf& other)
+void fd_streambuf::swap(fd_streambuf& rhs)
 {
-    PYCPP_NAMESPACE::swap(fd_, other.fd_);
-    PYCPP_NAMESPACE::swap(in_first, other.in_first);
-    PYCPP_NAMESPACE::swap(in_last, other.in_last);
-    PYCPP_NAMESPACE::swap(out_first, other.out_first);
-    PYCPP_NAMESPACE::swap(out_last, other.out_last);
+    using PYCPP_NAMESPACE::swap;
 
-    // reset internal buffer pointers
-    setg(0, 0, 0);
-    setp(0, 0);
-    other.setg(0, 0, 0);
-    other.setp(0, 0);
+    swap(mode, rhs.mode);
+    swap(buffer_size, rhs.buffer_size);
+    swap(fd_, rhs.fd_);
+    swap(in_first, rhs.in_first);
+    swap(in_last, rhs.in_last);
+    swap(out_first, rhs.out_first);
+    swap(out_last, rhs.out_last);
+    streambuf::swap(rhs);
 }
 
 
@@ -229,18 +228,18 @@ fd_stream::~fd_stream()
 }
 
 
-fd_stream::fd_stream(fd_stream&& other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+fd_stream::fd_stream(fd_stream&& rhs):
+    buffer(PYCPP_NAMESPACE::move(rhs.buffer)),
     iostream(&buffer),
-    close_(PYCPP_NAMESPACE::move(other.close_))
+    close_(PYCPP_NAMESPACE::move(rhs.close_))
 {
     ios::rdbuf(&buffer);
 }
 
 
-fd_stream & fd_stream::operator=(fd_stream&& other)
+fd_stream & fd_stream::operator=(fd_stream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -289,16 +288,14 @@ void fd_stream::close()
 }
 
 
-void fd_stream::swap(fd_stream &other)
+void fd_stream::swap(fd_stream& rhs)
 {
-    // swap
-    iostream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-    PYCPP_NAMESPACE::swap(close_, other.close_);
+    using PYCPP_NAMESPACE::swap;
 
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    // swap
+    iostream::swap(rhs);
+    swap(buffer, rhs.buffer);
+    swap(close_, rhs.close_);
 }
 
 
@@ -315,18 +312,18 @@ fd_istream::~fd_istream()
 }
 
 
-fd_istream::fd_istream(fd_istream&& other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+fd_istream::fd_istream(fd_istream&& rhs):
+    buffer(PYCPP_NAMESPACE::move(rhs.buffer)),
     istream(&buffer),
-    close_(PYCPP_NAMESPACE::move(other.close_))
+    close_(PYCPP_NAMESPACE::move(rhs.close_))
 {
     ios::rdbuf(&buffer);
 }
 
 
-fd_istream & fd_istream::operator=(fd_istream&& other)
+fd_istream & fd_istream::operator=(fd_istream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -376,16 +373,14 @@ void fd_istream::close()
 }
 
 
-void fd_istream::swap(fd_istream &other)
+void fd_istream::swap(fd_istream& rhs)
 {
-    // swap
-    istream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-    PYCPP_NAMESPACE::swap(close_, other.close_);
+    using PYCPP_NAMESPACE::swap;
 
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    // swap
+    istream::swap(rhs);
+    swap(buffer, rhs.buffer);
+    swap(close_, rhs.close_);
 }
 
 
@@ -405,18 +400,18 @@ fd_ostream::~fd_ostream()
 }
 
 
-fd_ostream::fd_ostream(fd_ostream&& other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
+fd_ostream::fd_ostream(fd_ostream&& rhs):
+    buffer(PYCPP_NAMESPACE::move(rhs.buffer)),
     ostream(&buffer),
-    close_(PYCPP_NAMESPACE::move(other.close_))
+    close_(PYCPP_NAMESPACE::move(rhs.close_))
 {
     ios::rdbuf(&buffer);
 }
 
 
-fd_ostream & fd_ostream::operator=(fd_ostream&& other)
+fd_ostream & fd_ostream::operator=(fd_ostream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -466,16 +461,14 @@ void fd_ostream::close()
 }
 
 
-void fd_ostream::swap(fd_ostream &other)
+void fd_ostream::swap(fd_ostream& rhs)
 {
-    // swap
-    ostream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-    PYCPP_NAMESPACE::swap(close_, other.close_);
+    using PYCPP_NAMESPACE::swap;
 
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    // swap
+    ostream::swap(rhs);
+    swap(buffer, rhs.buffer);
+    swap(close_, rhs.close_);
 }
 
 

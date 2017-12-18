@@ -36,9 +36,11 @@ public:
     gzip_compressor(gzip_compressor&&);
     gzip_compressor & operator=(gzip_compressor&&);
     ~gzip_compressor();
-    void close();
+
     compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
+    void close();
+    void swap(gzip_compressor&);
 
 private:
     unique_ptr<gzip_compressor_impl> ptr_;
@@ -55,9 +57,11 @@ public:
     gzip_decompressor(gzip_decompressor&&);
     gzip_decompressor & operator=(gzip_decompressor&&);
     ~gzip_decompressor();
-    void close();
+
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
+    void close();
+    void swap(gzip_decompressor&);
 
 private:
     unique_ptr<gzip_decompressor_impl> ptr_;

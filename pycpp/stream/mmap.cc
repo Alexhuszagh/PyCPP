@@ -110,17 +110,16 @@ mmap_fstream::~mmap_fstream()
 }
 
 
-mmap_fstream::mmap_fstream(mmap_fstream &&other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
-    iostream(&buffer)
+mmap_fstream::mmap_fstream(mmap_fstream&& rhs):
+    mmap_fstream()
 {
-    ios::rdbuf(&buffer);
+    swap(rhs);
 }
 
 
-mmap_fstream & mmap_fstream::operator=(mmap_fstream &&other)
+mmap_fstream & mmap_fstream::operator=(mmap_fstream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -196,17 +195,13 @@ void mmap_fstream::close()
 }
 
 
-void mmap_fstream::swap(mmap_fstream &other)
+void mmap_fstream::swap(mmap_fstream& rhs)
 {
-    // swap
-    iostream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-    PYCPP_NAMESPACE::swap(data_, other.data_);
-    PYCPP_NAMESPACE::swap(length_, other.length_);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    using PYCPP_NAMESPACE::swap;
+    iostream::swap(rhs);
+    swap(buffer, rhs.buffer);
+    swap(data_, rhs.data_);
+    swap(length_, rhs.length_);
 }
 
 
@@ -304,17 +299,16 @@ mmap_ifstream::~mmap_ifstream()
 }
 
 
-mmap_ifstream::mmap_ifstream(mmap_ifstream &&other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
-    istream(&buffer)
+mmap_ifstream::mmap_ifstream(mmap_ifstream&& rhs):
+    mmap_ifstream()
 {
-    ios::rdbuf(&buffer);
+    swap(rhs);
 }
 
 
-mmap_ifstream & mmap_ifstream::operator=(mmap_ifstream &&other)
+mmap_ifstream & mmap_ifstream::operator=(mmap_ifstream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -390,17 +384,13 @@ void mmap_ifstream::close()
 }
 
 
-void mmap_ifstream::swap(mmap_ifstream &other)
+void mmap_ifstream::swap(mmap_ifstream& rhs)
 {
-    // swap
-    istream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-    PYCPP_NAMESPACE::swap(data_, other.data_);
-    PYCPP_NAMESPACE::swap(length_, other.length_);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    using PYCPP_NAMESPACE::swap;
+    istream::swap(rhs);
+    swap(buffer, rhs.buffer);
+    swap(data_, rhs.data_);
+    swap(length_, rhs.length_);
 }
 
 
@@ -484,17 +474,16 @@ mmap_ofstream::~mmap_ofstream()
 }
 
 
-mmap_ofstream::mmap_ofstream(mmap_ofstream &&other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
-    ostream(&buffer)
+mmap_ofstream::mmap_ofstream(mmap_ofstream&& rhs):
+    mmap_ofstream()
 {
-    ios::rdbuf(&buffer);
+    swap(rhs);
 }
 
 
-mmap_ofstream & mmap_ofstream::operator=(mmap_ofstream &&other)
+mmap_ofstream & mmap_ofstream::operator=(mmap_ofstream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -576,17 +565,13 @@ void mmap_ofstream::close()
 }
 
 
-void mmap_ofstream::swap(mmap_ofstream &other)
+void mmap_ofstream::swap(mmap_ofstream& rhs)
 {
-    // swap
-    ostream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-    PYCPP_NAMESPACE::swap(data_, other.data_);
-    PYCPP_NAMESPACE::swap(length_, other.length_);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    using PYCPP_NAMESPACE::swap;
+    ostream::swap(rhs);
+    swap(buffer, rhs.buffer);
+    swap(data_, rhs.data_);
+    swap(length_, rhs.length_);
 }
 
 

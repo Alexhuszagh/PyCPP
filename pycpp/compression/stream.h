@@ -54,7 +54,7 @@ PYCPP_BEGIN_NAMESPACE
     struct name##_istream: filter_istream                               \
     {                                                                   \
     public:                                                             \
-        name##_istream();                                               \
+        name##_istream() = default;                                     \
         name##_istream(const name##_istream&) = delete;                 \
         name##_istream & operator=(const name##_istream&) = delete;     \
         ~name##_istream();                                              \
@@ -79,7 +79,7 @@ PYCPP_BEGIN_NAMESPACE
     struct name##_ostream: filter_ostream                               \
     {                                                                   \
     public:                                                             \
-        name##_ostream();                                               \
+        name##_ostream() = default;                                     \
         name##_ostream(int level);                                      \
         name##_ostream(const name##_ostream&) = delete;                 \
         name##_ostream & operator=(const name##_ostream&) = delete;     \
@@ -106,7 +106,7 @@ PYCPP_BEGIN_NAMESPACE
     struct name##_ifstream: filter_ifstream                                                     \
     {                                                                                           \
     public:                                                                                     \
-        name##_ifstream();                                                                      \
+        name##_ifstream() = default;                                                            \
         name##_ifstream(const name##_ifstream&) = delete;                                       \
         name##_ifstream & operator=(const name##_ifstream&) = delete;                           \
         name##_ifstream(name##_ifstream&&);                                                     \
@@ -130,7 +130,7 @@ PYCPP_BEGIN_NAMESPACE
     struct name##_ofstream: filter_ofstream                                                         \
     {                                                                                               \
     public:                                                                                         \
-        name##_ofstream();                                                                          \
+        name##_ofstream() = default;                                                                \
         name##_ofstream(int level);                                                                 \
         name##_ofstream(const name##_ofstream&) = delete;                                           \
         name##_ofstream & operator=(const name##_ofstream&) = delete;                               \
@@ -180,7 +180,7 @@ PYCPP_BEGIN_NAMESPACE
 struct decompressing_istream: filter_istream
 {
 public:
-    decompressing_istream();
+    decompressing_istream() = default;
     decompressing_istream(const decompressing_istream&) = delete;
     decompressing_istream & operator=(const decompressing_istream&) = delete;
     ~decompressing_istream();
@@ -207,7 +207,7 @@ private:
 struct decompressing_ifstream: filter_ifstream
 {
 public:
-    decompressing_ifstream();
+    decompressing_ifstream() = default;
     decompressing_ifstream(const decompressing_ifstream&) = delete;
     decompressing_ifstream & operator=(const decompressing_ifstream&) = delete;
     decompressing_ifstream(decompressing_ifstream&&);

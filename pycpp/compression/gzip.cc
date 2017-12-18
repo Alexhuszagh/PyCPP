@@ -349,19 +349,13 @@ gzip_compressor::gzip_compressor(gzip_compressor&& rhs):
 
 gzip_compressor & gzip_compressor::operator=(gzip_compressor&& rhs)
 {
-    swap(ptr_, rhs.ptr_);
+    swap(rhs);
     return *this;
 }
 
 
 gzip_compressor::~gzip_compressor()
 {}
-
-
-void gzip_compressor::close()
-{
-    ptr_.reset();
-}
 
 
 compression_status gzip_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
@@ -373,6 +367,19 @@ compression_status gzip_compressor::compress(const void*& src, size_t srclen, vo
 bool gzip_compressor::flush(void*& dst, size_t dstlen)
 {
     return ptr_->flush(dst, dstlen);
+}
+
+
+void gzip_compressor::close()
+{
+    ptr_.reset();
+}
+
+
+void gzip_compressor::swap(gzip_compressor& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 
@@ -388,19 +395,13 @@ gzip_decompressor::gzip_decompressor(gzip_decompressor&& rhs):
 
 gzip_decompressor & gzip_decompressor::operator=(gzip_decompressor&& rhs)
 {
-    swap(ptr_, rhs.ptr_);
+    swap(rhs);
     return *this;
 }
 
 
 gzip_decompressor::~gzip_decompressor()
 {}
-
-
-void gzip_decompressor::close()
-{
-    ptr_.reset();
-}
 
 
 compression_status gzip_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
@@ -412,6 +413,19 @@ compression_status gzip_decompressor::decompress(const void*& src, size_t srclen
 bool gzip_decompressor::flush(void*& dst, size_t dstlen)
 {
     return ptr_->flush(dst, dstlen);
+}
+
+
+void gzip_decompressor::close()
+{
+    ptr_.reset();
+}
+
+
+void gzip_decompressor::swap(gzip_decompressor& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 // FUNCTIONS

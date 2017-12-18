@@ -28,17 +28,16 @@ random_access_fstream::~random_access_fstream()
 }
 
 
-random_access_fstream::random_access_fstream(random_access_fstream &&other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
-    iostream(&buffer)
+random_access_fstream::random_access_fstream(random_access_fstream&& rhs):
+    random_access_fstream()
 {
-    ios::rdbuf(&buffer);
+    swap(rhs);
 }
 
 
-random_access_fstream & random_access_fstream::operator=(random_access_fstream &&other)
+random_access_fstream & random_access_fstream::operator=(random_access_fstream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -106,15 +105,11 @@ void random_access_fstream::close()
 }
 
 
-void random_access_fstream::swap(random_access_fstream &other)
+void random_access_fstream::swap(random_access_fstream& rhs)
 {
-    // swap
-    iostream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    using PYCPP_NAMESPACE::swap;
+    iostream::swap(rhs);
+    swap(buffer, rhs.buffer);
 }
 
 // RANDOM ACCESS IFSTREAM
@@ -132,17 +127,16 @@ random_access_ifstream::~random_access_ifstream()
 }
 
 
-random_access_ifstream::random_access_ifstream(random_access_ifstream &&other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
-    istream(&buffer)
+random_access_ifstream::random_access_ifstream(random_access_ifstream&& rhs):
+    random_access_ifstream()
 {
-    ios::rdbuf(&buffer);
+    swap(rhs);
 }
 
 
-random_access_ifstream & random_access_ifstream::operator=(random_access_ifstream &&other)
+random_access_ifstream & random_access_ifstream::operator=(random_access_ifstream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -210,15 +204,11 @@ void random_access_ifstream::close()
 }
 
 
-void random_access_ifstream::swap(random_access_ifstream &other)
+void random_access_ifstream::swap(random_access_ifstream& rhs)
 {
-    // swap
-    istream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    using PYCPP_NAMESPACE::swap;
+    istream::swap(rhs);
+    swap(buffer, rhs.buffer);
 }
 
 // RANDOM ACCESS OFSTREAM
@@ -235,17 +225,16 @@ random_access_ofstream::~random_access_ofstream()
 }
 
 
-random_access_ofstream::random_access_ofstream(random_access_ofstream &&other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
-    ostream(&buffer)
+random_access_ofstream::random_access_ofstream(random_access_ofstream&& rhs):
+    random_access_ofstream()
 {
-    ios::rdbuf(&buffer);
+    swap(rhs);
 }
 
 
-random_access_ofstream & random_access_ofstream::operator=(random_access_ofstream &&other)
+random_access_ofstream & random_access_ofstream::operator=(random_access_ofstream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -313,15 +302,11 @@ void random_access_ofstream::close()
 }
 
 
-void random_access_ofstream::swap(random_access_ofstream &other)
+void random_access_ofstream::swap(random_access_ofstream& rhs)
 {
-    // swap
-    ostream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    using PYCPP_NAMESPACE::swap;
+    ostream::swap(rhs);
+    swap(buffer, rhs.buffer);
 }
 
 PYCPP_END_NAMESPACE

@@ -98,7 +98,7 @@ void filter_streambuf::swap(filter_streambuf& rhs)
     swap(out_buffer, rhs.out_buffer);
     swap(first, rhs.first);
     swap(last, rhs.last);
-    streambuf::swap(static_cast<streambuf&>(rhs));
+    streambuf::swap(rhs);
 }
 
 

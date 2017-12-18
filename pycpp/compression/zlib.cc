@@ -172,19 +172,13 @@ zlib_compressor::zlib_compressor(zlib_compressor&& rhs):
 
 zlib_compressor & zlib_compressor::operator=(zlib_compressor&& rhs)
 {
-    swap(ptr_, rhs.ptr_);
+    swap(rhs);
     return *this;
 }
 
 
 zlib_compressor::~zlib_compressor()
 {}
-
-
-void zlib_compressor::close()
-{
-    ptr_.reset();
-}
 
 
 compression_status zlib_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
@@ -196,6 +190,19 @@ compression_status zlib_compressor::compress(const void*& src, size_t srclen, vo
 bool zlib_compressor::flush(void*& dst, size_t dstlen)
 {
     return ptr_->flush(dst, dstlen);
+}
+
+
+void zlib_compressor::close()
+{
+    ptr_.reset();
+}
+
+
+void zlib_compressor::swap(zlib_compressor& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 
@@ -211,19 +218,13 @@ zlib_decompressor::zlib_decompressor(zlib_decompressor&& rhs):
 
 zlib_decompressor & zlib_decompressor::operator=(zlib_decompressor&& rhs)
 {
-    swap(ptr_, rhs.ptr_);
+    swap(rhs);
     return *this;
 }
 
 
 zlib_decompressor::~zlib_decompressor()
 {}
-
-
-void zlib_decompressor::close()
-{
-    ptr_.reset();
-}
 
 
 compression_status zlib_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
@@ -235,6 +236,19 @@ compression_status zlib_decompressor::decompress(const void*& src, size_t srclen
 bool zlib_decompressor::flush(void*& dst, size_t dstlen)
 {
     return ptr_->flush(dst, dstlen);
+}
+
+
+void zlib_decompressor::close()
+{
+    ptr_.reset();
+}
+
+
+void zlib_decompressor::swap(zlib_decompressor& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 // FUNCTIONS

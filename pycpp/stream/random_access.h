@@ -36,13 +36,13 @@ public:
     random_access_fstream();
     ~random_access_fstream();
     random_access_fstream(const random_access_fstream&) = delete;
-    random_access_fstream & operator=(const random_access_fstream&) = delete;
-    random_access_fstream(random_access_fstream &&other);
-    random_access_fstream & operator=(random_access_fstream &&other);
+    random_access_fstream& operator=(const random_access_fstream&) = delete;
+    random_access_fstream(random_access_fstream&&);
+    random_access_fstream& operator=(random_access_fstream&&);
 
+    // STREAM
     random_access_fstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
     void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
-
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     random_access_fstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
     void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
@@ -50,10 +50,10 @@ public:
     void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
 #endif                                          // WINDOWS
 
-    // DATA
+    // MODIFIERS/PROPERTIES
     bool is_open() const;
     void close();
-    void swap(random_access_fstream &other);
+    void swap(random_access_fstream&);
 
 private:
     fd_streambuf buffer;
@@ -69,13 +69,13 @@ public:
     random_access_ifstream();
     ~random_access_ifstream();
     random_access_ifstream(const random_access_ifstream&) = delete;
-    random_access_ifstream & operator=(const random_access_ifstream&) = delete;
-    random_access_ifstream(random_access_ifstream &&other);
-    random_access_ifstream & operator=(random_access_ifstream &&other);
+    random_access_ifstream& operator=(const random_access_ifstream&) = delete;
+    random_access_ifstream(random_access_ifstream&&);
+    random_access_ifstream& operator=(random_access_ifstream&&);
 
+    // STREAM
     random_access_ifstream(const string_view& name, ios_base::openmode mode = ios_base::in);
     void open(const string_view& name, ios_base::openmode mode = ios_base::in);
-
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     random_access_ifstream(const wstring_view& name, ios_base::openmode mode = ios_base::in);
     void open(const wstring_view& name, ios_base::openmode mode = ios_base::in);
@@ -83,10 +83,10 @@ public:
     void open(const u16string_view& name, ios_base::openmode mode = ios_base::in);
 #endif                                          // WINDOWS
 
-    // DATA
+    // MODIFIERS/PROPERTIES
     bool is_open() const;
     void close();
-    void swap(random_access_ifstream &other);
+    void swap(random_access_ifstream&);
 
 private:
     fd_streambuf buffer;
@@ -102,13 +102,13 @@ public:
     random_access_ofstream();
     ~random_access_ofstream();
     random_access_ofstream(const random_access_ofstream&) = delete;
-    random_access_ofstream & operator=(const random_access_ofstream&) = delete;
-    random_access_ofstream(random_access_ofstream &&other);
-    random_access_ofstream & operator=(random_access_ofstream &&other);
+    random_access_ofstream& operator=(const random_access_ofstream&) = delete;
+    random_access_ofstream(random_access_ofstream&&);
+    random_access_ofstream& operator=(random_access_ofstream&&);
 
+    // STREAM
     random_access_ofstream(const string_view& name, ios_base::openmode mode = ios_base::out);
     void open(const string_view& name, ios_base::openmode mode = ios_base::out);
-
 #if defined(HAVE_WFOPEN)                        // WINDOWS
     random_access_ofstream(const wstring_view& name, ios_base::openmode mode = ios_base::out);
     void open(const wstring_view& name, ios_base::openmode mode = ios_base::out);
@@ -116,10 +116,10 @@ public:
     void open(const u16string_view& name, ios_base::openmode mode = ios_base::out);
 #endif                                          // WINDOWS
 
-    // DATA
+    // MODIFIERS/PROPERTIES
     bool is_open() const;
     void close();
-    void swap(random_access_ofstream &other);
+    void swap(random_access_ofstream&);
 
 private:
     fd_streambuf buffer;

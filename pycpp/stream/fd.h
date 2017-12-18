@@ -38,16 +38,16 @@ public:
     // ----------------
     fd_streambuf(ios_base::openmode, fd_t fd);
     fd_streambuf(ios_base::openmode, fd_t fd, size_t buffer_size);
-    virtual ~fd_streambuf();
-
     fd_streambuf(const fd_streambuf&) = delete;
     fd_streambuf& operator=(const fd_streambuf&) = delete;
     fd_streambuf(fd_streambuf&&);
     fd_streambuf& operator=(fd_streambuf&&);
+    virtual ~fd_streambuf();
+
+    // MODIFIERS/PROPERTIES
     void close();
     bool is_open() const;
     void swap(fd_streambuf&);
-
     fd_t fd() const;
     void fd(fd_t fd);
 
@@ -84,16 +84,18 @@ public:
     fd_stream();
     ~fd_stream();
     fd_stream(const fd_stream&) = delete;
-    fd_stream & operator=(const fd_stream&) = delete;
-    fd_stream(fd_stream &&other);
-    fd_stream & operator=(fd_stream &&other);
+    fd_stream& operator=(const fd_stream&) = delete;
+    fd_stream(fd_stream&&);
+    fd_stream& operator=(fd_stream&&);
 
+    // STREAM
     fd_stream(fd_t fd, bool close = false);
     void open(fd_t fd, bool close = false);
+
+    // MODIFIERS/PROPERTIES
     void close();
     bool is_open() const;
-
-    void swap(fd_stream &other);
+    void swap(fd_stream&);
     fd_streambuf* rdbuf() const;
     void rdbuf(fd_streambuf* buffer);
 
@@ -112,16 +114,18 @@ public:
     fd_istream();
     ~fd_istream();
     fd_istream(const fd_istream&) = delete;
-    fd_istream & operator=(const fd_istream&) = delete;
-    fd_istream(fd_istream &&other);
-    fd_istream & operator=(fd_istream &&other);
+    fd_istream& operator=(const fd_istream&) = delete;
+    fd_istream(fd_istream&&);
+    fd_istream& operator=(fd_istream&&);
 
+    // STREAM
     fd_istream(fd_t fd, bool close = false);
     void open(fd_t fd, bool close = false);
+
+    // MODIFIERS/PROPERTIES
     void close();
     bool is_open() const;
-
-    void swap(fd_istream &other);
+    void swap(fd_istream&);
     fd_streambuf* rdbuf() const;
     void rdbuf(fd_streambuf* buffer);
 
@@ -141,15 +145,17 @@ public:
     ~fd_ostream();
     fd_ostream(const fd_ostream&) = delete;
     fd_ostream & operator=(const fd_ostream&) = delete;
-    fd_ostream(fd_ostream &&other);
-    fd_ostream & operator=(fd_ostream &&other);
+    fd_ostream(fd_ostream&&);
+    fd_ostream & operator=(fd_ostream&&);
 
+    // STREAM
     fd_ostream(fd_t fd, bool close = false);
     void open(fd_t fd, bool close = false);
+
+    // MODIFIERS/PROPERTIES
     void close();
     bool is_open() const;
-
-    void swap(fd_ostream &other);
+    void swap(fd_ostream&);
     fd_streambuf* rdbuf() const;
     void rdbuf(fd_streambuf* buffer);
 

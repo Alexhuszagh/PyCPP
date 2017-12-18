@@ -217,21 +217,15 @@ bz2_compressor::bz2_compressor(bz2_compressor&& rhs):
 {}
 
 
-bz2_compressor & bz2_compressor::operator=(bz2_compressor&& rhs)
+bz2_compressor& bz2_compressor::operator=(bz2_compressor&& rhs)
 {
-    swap(ptr_, rhs.ptr_);
+    swap(rhs);
     return *this;
 }
 
 
 bz2_compressor::~bz2_compressor()
 {}
-
-
-void bz2_compressor::close()
-{
-    ptr_.reset();
-}
 
 
 compression_status bz2_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
@@ -243,6 +237,19 @@ compression_status bz2_compressor::compress(const void*& src, size_t srclen, voi
 bool bz2_compressor::flush(void*& dst, size_t dstlen)
 {
     return ptr_->flush(dst, dstlen);
+}
+
+
+void bz2_compressor::close()
+{
+    ptr_.reset();
+}
+
+
+void bz2_compressor::swap(bz2_compressor& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 
@@ -258,19 +265,13 @@ bz2_decompressor::bz2_decompressor(bz2_decompressor&& rhs):
 
 bz2_decompressor & bz2_decompressor::operator=(bz2_decompressor&& rhs)
 {
-    swap(ptr_, rhs.ptr_);
+    swap(rhs);
     return *this;
 }
 
 
 bz2_decompressor::~bz2_decompressor()
 {}
-
-
-void bz2_decompressor::close()
-{
-    ptr_.reset();
-}
 
 
 compression_status bz2_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
@@ -282,6 +283,19 @@ compression_status bz2_decompressor::decompress(const void*& src, size_t srclen,
 bool bz2_decompressor::flush(void*& dst, size_t dstlen)
 {
     return ptr_->flush(dst, dstlen);
+}
+
+
+void bz2_decompressor::close()
+{
+    ptr_.reset();
+}
+
+
+void bz2_decompressor::swap(bz2_decompressor& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 // FUNCTIONS

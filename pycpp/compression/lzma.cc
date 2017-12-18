@@ -181,19 +181,13 @@ lzma_compressor::lzma_compressor(lzma_compressor&& rhs):
 
 lzma_compressor & lzma_compressor::operator=(lzma_compressor&& rhs)
 {
-    swap(ptr_, rhs.ptr_);
+    swap(rhs);
     return *this;
 }
 
 
 lzma_compressor::~lzma_compressor()
 {}
-
-
-void lzma_compressor::close()
-{
-    ptr_.reset();
-}
 
 
 compression_status lzma_compressor::compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
@@ -205,6 +199,19 @@ compression_status lzma_compressor::compress(const void*& src, size_t srclen, vo
 bool lzma_compressor::flush(void*& dst, size_t dstlen)
 {
     return ptr_->flush(dst, dstlen);
+}
+
+
+void lzma_compressor::close()
+{
+    ptr_.reset();
+}
+
+
+void lzma_compressor::swap(lzma_compressor& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 
@@ -220,19 +227,13 @@ lzma_decompressor::lzma_decompressor(lzma_decompressor&& rhs):
 
 lzma_decompressor & lzma_decompressor::operator=(lzma_decompressor&& rhs)
 {
-    swap(ptr_, rhs.ptr_);
+    swap(rhs);
     return *this;
 }
 
 
 lzma_decompressor::~lzma_decompressor()
 {}
-
-
-void lzma_decompressor::close()
-{
-    ptr_.reset();
-}
 
 
 compression_status lzma_decompressor::decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
@@ -244,6 +245,19 @@ compression_status lzma_decompressor::decompress(const void*& src, size_t srclen
 bool lzma_decompressor::flush(void*& dst, size_t dstlen)
 {
     return ptr_->flush(dst, dstlen);
+}
+
+
+void lzma_decompressor::close()
+{
+    ptr_.reset();
+}
+
+
+void lzma_decompressor::swap(lzma_decompressor& rhs)
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ptr_, rhs.ptr_);
 }
 
 // FUNCTIONS

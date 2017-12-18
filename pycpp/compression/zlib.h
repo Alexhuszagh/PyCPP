@@ -36,9 +36,11 @@ public:
     zlib_compressor(zlib_compressor&&);
     zlib_compressor & operator=(zlib_compressor&&);
     ~zlib_compressor();
-    void close();
+
     compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
+    void close();
+    void swap(zlib_compressor&);
 
 private:
     unique_ptr<zlib_compressor_impl> ptr_;
@@ -55,9 +57,11 @@ public:
     zlib_decompressor(zlib_decompressor&&);
     zlib_decompressor & operator=(zlib_decompressor&&);
     ~zlib_decompressor();
-    void close();
+
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
+    void close();
+    void swap(zlib_decompressor&);
 
 private:
     unique_ptr<zlib_decompressor_impl> ptr_;

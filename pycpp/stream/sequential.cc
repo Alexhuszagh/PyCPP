@@ -28,22 +28,20 @@ sequential_fstream::~sequential_fstream()
 }
 
 
-sequential_fstream::sequential_fstream(sequential_fstream &&other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
-    iostream(&buffer)
+sequential_fstream::sequential_fstream(sequential_fstream&& rhs):
+    sequential_fstream()
 {
-    ios::rdbuf(&buffer);
+    swap(rhs);
 }
 
 
-sequential_fstream & sequential_fstream::operator=(sequential_fstream &&other)
+sequential_fstream & sequential_fstream::operator=(sequential_fstream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
 
-// TODO: noppppppppeeeeeee
 sequential_fstream::sequential_fstream(const string_view& name, ios_base::openmode mode):
     buffer(ios_base::in | ios_base::out, INVALID_FD_VALUE, SEQUENTIAL_BUFFER_SIZE),
     iostream(&buffer)
@@ -108,15 +106,11 @@ void sequential_fstream::close()
 }
 
 
-void sequential_fstream::swap(sequential_fstream &other)
+void sequential_fstream::swap(sequential_fstream& rhs)
 {
-    // swap
-    iostream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    using PYCPP_NAMESPACE::swap;
+    iostream::swap(rhs);
+    swap(buffer, rhs.buffer);
 }
 
 // SEQUENTIAL IFSTREAM
@@ -134,17 +128,16 @@ sequential_ifstream::~sequential_ifstream()
 }
 
 
-sequential_ifstream::sequential_ifstream(sequential_ifstream &&other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
-    istream(&buffer)
+sequential_ifstream::sequential_ifstream(sequential_ifstream&& rhs):
+    sequential_ifstream()
 {
-    ios::rdbuf(&buffer);
+    swap(rhs);
 }
 
 
-sequential_ifstream & sequential_ifstream::operator=(sequential_ifstream &&other)
+sequential_ifstream & sequential_ifstream::operator=(sequential_ifstream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -213,15 +206,11 @@ void sequential_ifstream::close()
 }
 
 
-void sequential_ifstream::swap(sequential_ifstream &other)
+void sequential_ifstream::swap(sequential_ifstream& rhs)
 {
-    // swap
-    istream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    using PYCPP_NAMESPACE::swap;
+    istream::swap(rhs);
+    swap(buffer, rhs.buffer);
 }
 
 // SEQUENTIAL OFSTREAM
@@ -238,17 +227,16 @@ sequential_ofstream::~sequential_ofstream()
 }
 
 
-sequential_ofstream::sequential_ofstream(sequential_ofstream &&other):
-    buffer(PYCPP_NAMESPACE::move(other.buffer)),
-    ostream(&buffer)
+sequential_ofstream::sequential_ofstream(sequential_ofstream&& rhs):
+    sequential_ofstream()
 {
-    ios::rdbuf(&buffer);
+    swap(rhs);
 }
 
 
-sequential_ofstream & sequential_ofstream::operator=(sequential_ofstream &&other)
+sequential_ofstream & sequential_ofstream::operator=(sequential_ofstream&& rhs)
 {
-    swap(other);
+    swap(rhs);
     return *this;
 }
 
@@ -316,15 +304,11 @@ void sequential_ofstream::close()
 }
 
 
-void sequential_ofstream::swap(sequential_ofstream &other)
+void sequential_ofstream::swap(sequential_ofstream& rhs)
 {
-    // swap
-    ostream::swap(other);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
-
-    // set filebuffers
-    ios::rdbuf(&buffer);
-    other.rdbuf(&other.buffer);
+    using PYCPP_NAMESPACE::swap;
+    ostream::swap(rhs);
+    swap(buffer, rhs.buffer);
 }
 
 PYCPP_END_NAMESPACE

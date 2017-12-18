@@ -38,27 +38,60 @@ template <typename IStream, typename OStream>
 struct test_stream
 {
     template <typename String>
-    void operator()(const String &path)
+    void standard(const String &path)
     {
         std::string expected = "Single line";
 
-        OStream ostream(path, ios_base::out);
-        ostream.map(0, expected.size());
+        OStream ofs1(path, ios_base::out);
+        ofs1.map(0, expected.size());
         for (size_t i = 0; i < expected.size(); ++i) {
-            ostream[i] = expected[i];
+            ofs1[i] = expected[i];
         }
-        ostream.flush(false);
-        ostream.unmap();
-        ostream.close();
+        ofs1.flush(false);
+        ofs1.unmap();
+        ofs1.close();
 
-        IStream istream(path, ios_base::in);
-        istream.map(0);
-        EXPECT_TRUE(istream.has_mapping());
-        std::string actual(istream.data(), istream.size());
-        istream.close();
+        IStream ifs1(path, ios_base::in);
+        ifs1.map(0);
+        EXPECT_TRUE(ifs1.has_mapping());
+        std::string actual(ifs1.data(), ifs1.size());
+        ifs1.close();
 
         EXPECT_EQ(actual, expected);
         EXPECT_TRUE(remove_file(path));
+    }
+
+    template <typename String>
+    void move(const String &path)
+    {
+        std::string expected = "Single line";
+
+        OStream ofs1(path, ios_base::out);
+        ofs1.map(0, expected.size());
+        OStream osf2(std::move(ofs1));
+        for (size_t i = 0; i < expected.size(); ++i) {
+            osf2[i] = expected[i];
+        }
+        osf2.flush(false);
+        osf2.unmap();
+        osf2.close();
+
+        IStream ifs1(path, ios_base::in);
+        ifs1.map(0);
+        IStream ifs2(std::move(ifs1));
+        EXPECT_TRUE(ifs2.has_mapping());
+        std::string actual(ifs2.data(), ifs2.size());
+        ifs2.close();
+
+        EXPECT_EQ(actual, expected);
+        EXPECT_TRUE(remove_file(path));
+    }
+
+    template <typename String>
+    void operator()(const String &path)
+    {
+        standard(path);
+        move(path);
     }
 };
 

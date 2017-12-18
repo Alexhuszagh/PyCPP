@@ -109,9 +109,6 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Macro to define methods for a filtering istream base.
  */
 #define COMPRESSED_ISTREAM(name)                                        \
-    name##_istream::name##_istream()                                    \
-    {}                                                                  \
-                                                                        \
     name##_istream::name##_istream(istream& stream)                     \
     {                                                                   \
         open(stream);                                                   \
@@ -129,21 +126,21 @@ PYCPP_BEGIN_NAMESPACE
         filter_istream::open(stream, DECOMPRESS_CALLBACK);              \
     }                                                                   \
                                                                         \
-    name##_istream::name##_istream(name##_istream&& rhs):               \
-        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                            \
-        filter_istream(PYCPP_NAMESPACE::move(rhs))                      \
-    {}                                                                  \
+    name##_istream::name##_istream(name##_istream&& rhs)                \
+    {                                                                   \
+        swap(rhs);                                                      \
+    }                                                                   \
                                                                         \
     name##_istream & name##_istream::operator=(name##_istream&& rhs)    \
     {                                                                   \
-        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                           \
-        filter_istream::operator=(PYCPP_NAMESPACE::move(rhs));          \
+        swap(rhs);                                                      \
         return *this;                                                   \
     }                                                                   \
                                                                         \
     void name##_istream::swap(name##_istream& rhs)                      \
     {                                                                   \
-        static_assert(false, "");                                       \
+        filter_istream::swap(rhs);                                      \
+        ctx.swap(rhs.ctx);                                              \
     }
 
 
@@ -151,9 +148,6 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Macro to define methods for a filtering ostream base.
  */
 #define COMPRESSED_OSTREAM(name)                                        \
-    name##_ostream::name##_ostream()                                    \
-    {}                                                                  \
-                                                                        \
     name##_ostream::name##_ostream(int level):                          \
         ctx(level)                                                      \
     {}                                                                  \
@@ -181,39 +175,35 @@ PYCPP_BEGIN_NAMESPACE
         filter_ostream::open(stream, COMPRESS_CALLBACK);                \
     }                                                                   \
                                                                         \
-    name##_ostream::name##_ostream(name##_ostream&& rhs):               \
-        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                            \
-        filter_ostream(PYCPP_NAMESPACE::move(rhs))                      \
-    {}                                                                  \
+    name##_ostream::name##_ostream(name##_ostream&& rhs)                \
+    {                                                                   \
+        swap(rhs);                                                      \
+    }                                                                   \
                                                                         \
     name##_ostream & name##_ostream::operator=(name##_ostream&& rhs)    \
     {                                                                   \
-        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                           \
-        filter_ostream::operator=(PYCPP_NAMESPACE::move(rhs));          \
+        swap(rhs);                                                      \
         return *this;                                                   \
     }                                                                   \
                                                                         \
     void name##_ostream::swap(name##_ostream& rhs)                      \
     {                                                                   \
-        static_assert(false, "");                                       \
+        filter_ostream::swap(rhs);                                      \
+        ctx.swap(rhs.ctx);                                              \
     }
 
 /**
  *  \brief Macro to define methods for a filtering ifstream base.
  */
 #define COMPRESSED_IFSTREAM(name)                                                           \
-    name##_ifstream::name##_ifstream()                                                      \
-    {}                                                                                      \
-                                                                                            \
-    name##_ifstream::name##_ifstream(name##_ifstream&& rhs):                                \
-        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                \
-        filter_ifstream(PYCPP_NAMESPACE::move(rhs))                                         \
-    {}                                                                                      \
+    name##_ifstream::name##_ifstream(name##_ifstream&& rhs)                                 \
+    {                                                                                       \
+        swap(rhs);                                                                          \
+    }                                                                                       \
                                                                                             \
     name##_ifstream & name##_ifstream::operator=(name##_ifstream&& rhs)                     \
     {                                                                                       \
-        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                               \
-        filter_ifstream::operator=(PYCPP_NAMESPACE::move(rhs));                             \
+        swap(rhs);                                                                          \
         return *this;                                                                       \
     }                                                                                       \
                                                                                             \
@@ -238,7 +228,8 @@ PYCPP_BEGIN_NAMESPACE
                                                                                             \
     void name##_ifstream::swap(name##_ifstream& rhs)                                        \
     {                                                                                       \
-        static_assert(false, "");                                                           \
+        filter_ifstream::swap(rhs);                                                         \
+        ctx.swap(rhs.ctx);                                                                  \
     }
 
 
@@ -246,22 +237,18 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Macro to define methods for a filtering ofstream base.
  */
 #define COMPRESSED_OFSTREAM(name)                                                                   \
-    name##_ofstream::name##_ofstream()                                                              \
-    {}                                                                                              \
-                                                                                                    \
     name##_ofstream::name##_ofstream(int level):                                                    \
         ctx(level)                                                                                  \
     {}                                                                                              \
                                                                                                     \
-    name##_ofstream::name##_ofstream(name##_ofstream&& rhs):                                        \
-        ctx(PYCPP_NAMESPACE::move(rhs.ctx)),                                                        \
-        filter_ofstream(PYCPP_NAMESPACE::move(rhs))                                                 \
-    {}                                                                                              \
+    name##_ofstream::name##_ofstream(name##_ofstream&& rhs)                                         \
+    {                                                                                               \
+        swap(rhs);                                                                                  \
+    }                                                                                               \
                                                                                                     \
     name##_ofstream & name##_ofstream::operator=(name##_ofstream&& rhs)                             \
     {                                                                                               \
-        ctx = PYCPP_NAMESPACE::move(rhs.ctx);                                                       \
-        filter_ofstream::operator=(PYCPP_NAMESPACE::move(rhs));                                     \
+        swap(rhs);                                                                                  \
         return *this;                                                                               \
     }                                                                                               \
                                                                                                     \
@@ -292,7 +279,8 @@ PYCPP_BEGIN_NAMESPACE
                                                                                                     \
     void name##_ofstream::swap(name##_ofstream& rhs)                                                \
     {                                                                                               \
-        static_assert(false, "");                                                                   \
+        filter_ofstream::swap(rhs);                                                                 \
+        ctx.swap(rhs.ctx);                                                                          \
     }
 
 
@@ -475,10 +463,6 @@ static void delete_decompressor(compression_format format, void* ctx)
 #endif                                      // HAVE_LZMA
 
 
-decompressing_istream::decompressing_istream()
-{}
-
-
 decompressing_istream::~decompressing_istream()
 {
     filter_istream::close();
@@ -503,49 +487,35 @@ void decompressing_istream::open(istream& stream)
 
 decompressing_istream::decompressing_istream(decompressing_istream&& rhs)
 {
-    using PYCPP_NAMESPACE::swap;
-
-    swap(format, rhs.format);
-    swap(ctx, rhs.ctx);
-    filter_istream::swap(rhs);
+    swap(rhs);
 }
 
 
 decompressing_istream & decompressing_istream::operator=(decompressing_istream&& rhs)
 {
-    using PYCPP_NAMESPACE::swap;
-
-    swap(format, rhs.format);
-    swap(ctx, rhs.ctx);
-    filter_istream::swap(rhs);
+    swap(rhs);
     return *this;
 }
 
 
 void decompressing_istream::swap(decompressing_istream& rhs)
 {
-    // TODO: implement...
-    static_assert(false, "");
+    using PYCPP_NAMESPACE::swap;
+    filter_istream::swap(rhs);
+    swap(format, rhs.format);
+    swap(ctx, rhs.ctx);
 }
-
-
-decompressing_ifstream::decompressing_ifstream()
-{}
 
 
 decompressing_ifstream::decompressing_ifstream(decompressing_ifstream&& rhs)
 {
-    PYCPP_NAMESPACE::swap(format, rhs.format);
-    PYCPP_NAMESPACE::swap(ctx, rhs.ctx);
-    filter_istream::swap(rhs);
+    swap(rhs);
 }
 
 
 decompressing_ifstream& decompressing_ifstream::operator=(decompressing_ifstream&& rhs)
 {
-    PYCPP_NAMESPACE::swap(format, rhs.format);
-    PYCPP_NAMESPACE::swap(ctx, rhs.ctx);
-    filter_istream::swap(rhs);
+    swap(rhs);
     return *this;
 }
 
@@ -600,8 +570,10 @@ void decompressing_ifstream::open(const u16string_view& name, ios_base::openmode
 
 void decompressing_ifstream::swap(decompressing_ifstream& rhs)
 {
-    // TODO: implement...
-    static_assert(false, "");
+    using PYCPP_NAMESPACE::swap;
+    filter_ifstream::swap(rhs);
+    swap(format, rhs.format);
+    swap(ctx, rhs.ctx);
 }
 
 // CLEANUP

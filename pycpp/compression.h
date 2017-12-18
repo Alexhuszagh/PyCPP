@@ -11,3 +11,6 @@
 #include <pycpp/compression/bzip2.h>
 #include <pycpp/compression/xz.h>
 #include <pycpp/compression/zlib.h>
+#if defined(BUILD_STREAM)
+#   include <pycpp/compression/stream.h>
+#endif

@@ -41,25 +41,56 @@ template <typename IStream, typename OStream>
 struct test_stream
 {
     template <typename String>
-    void operator()(const String &path, size_t seekg = 0, mode_t permissions = S_IWR_USR_GRP, io_access_pattern access = access_normal)
+    void standard(const String &path, size_t seekg, mode_t permissions, io_access_pattern access)
     {
         fd_t fd;
         std::string expected = "Single line";
 
         fd = fd_open(path, ios_base::out, permissions, access);
-        OStream ostream(fd, true);
-        ostream << expected << endl;
-        ostream.close();
+        OStream ofs1(fd, true);
+        ofs1 << expected << endl;
+        ofs1.close();
 
         fd = fd_open(path, ios_base::in, permissions, access);
-        IStream istream(fd, true);
-        istream.seekg(seekg);
+        IStream ifs1(fd, true);
+        ifs1.seekg(seekg);
         std::string result;
-        std::getline(istream, result);
-        istream.close();
+        std::getline(ifs1, result);
+        ifs1.close();
 
         EXPECT_EQ(result, expected.substr(seekg));
         EXPECT_TRUE(remove_file(path));
+    }
+
+    template <typename String>
+    void move(const String &path, size_t seekg, mode_t permissions, io_access_pattern access)
+    {
+        fd_t fd;
+        std::string expected = "Single line";
+
+        fd = fd_open(path, ios_base::out, permissions, access);
+        OStream ofs1(fd, true);
+        OStream ofs2(std::move(ofs1));
+        ofs2 << expected << endl;
+        ofs2.close();
+
+        fd = fd_open(path, ios_base::in, permissions, access);
+        IStream ifs1(fd, true);
+        IStream ifs2(std::move(ifs1));
+        ifs2.seekg(seekg);
+        std::string result;
+        std::getline(ifs2, result);
+        ifs2.close();
+
+        EXPECT_EQ(result, expected.substr(seekg));
+        EXPECT_TRUE(remove_file(path));
+    }
+
+    template <typename String>
+    void operator()(const String &path, size_t seekg = 0, mode_t permissions = S_IWR_USR_GRP, io_access_pattern access = access_normal)
+    {
+        standard(path, seekg, permissions, access);
+        move(path, seekg, permissions, access);
     }
 };
 

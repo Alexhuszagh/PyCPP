@@ -59,15 +59,15 @@ public:
     // MEMBER FUNCTIONS
     // ----------------
     filter_streambuf(ios_base::openmode, streambuf* = nullptr, filter_callback = nullptr);
-    virtual ~filter_streambuf();
-
     filter_streambuf(const filter_streambuf&) = delete;
     filter_streambuf& operator=(const filter_streambuf&) = delete;
     filter_streambuf(filter_streambuf&&);
     filter_streambuf& operator=(filter_streambuf&&);
+    virtual ~filter_streambuf();
+
+    // MODIFIERS/PROPERTIES
     void close();
     void swap(filter_streambuf&);
-
     void set_filebuf(streambuf*);
     void set_callback(filter_callback);
 
@@ -123,7 +123,7 @@ protected:
 
 private:
     filter_streambuf buffer;
-    istream *stream = nullptr;
+    istream* stream = nullptr;
 };
 
 
@@ -155,7 +155,7 @@ protected:
 
 private:
     filter_streambuf buffer;
-    ostream *stream = nullptr;
+    ostream* stream = nullptr;
 };
 
 
