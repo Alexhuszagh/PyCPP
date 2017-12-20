@@ -5,6 +5,10 @@
     - Get rid of naked new/delete
         - Change to use the global allocator generally speaking...
 
+    - Make moves always non-throwing
+        - Check if copies can be non-throwing too
+        - Add a lot of noexcepts in my code....
+
     - Make sure my streams properly handle moves but cannot be copied...
         - CSV
             - Reader    - Skeleton

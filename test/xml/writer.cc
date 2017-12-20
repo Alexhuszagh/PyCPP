@@ -18,20 +18,28 @@ PYCPP_USING_NAMESPACE
 
 static std::string EXPECTED = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<name>Alex</name>\n";
 
-template <typename Writer, typename OpenArg>
-static void test_xml_writer(OpenArg& arg, bool move = false)
+template <typename Writer, typename ... Ts>
+static Writer test_xml_writer(bool move, Ts&&... ts)
 {
     Writer w1;
     if (move) {
-        Writer w2(arg);
+        Writer w2(std::forward<Ts>(ts)...);
         w1.swap(w2);
     } else {
-        w1 = Writer(arg);
+        w1 = Writer(std::forward<Ts>(ts)...);
     }
     w1.start_element("name");
     w1.write_text("Alex");
     w1.end_element();
     w1.flush();
+
+    return w1;
+}
+
+
+static void check_result(const std::string& str)
+{
+    EXPECT_EQ(replace(str, NEWLINE, POSIX_NEWLINE), EXPECTED);
 }
 
 
@@ -45,13 +53,13 @@ TEST(xml, xml_stream_writer)
     // the backends are robustly tested
     {
         ostringstream sstream;
-        test_xml_writer<xml_stream_writer>(sstream);
-        EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), EXPECTED);
+        test_xml_writer<xml_stream_writer>(false, sstream);
+        check_result(sstream.str());
     }
     {
         ostringstream sstream;
-        test_xml_writer<xml_stream_writer>(sstream, true);
-        EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), EXPECTED);
+        test_xml_writer<xml_stream_writer>(true, sstream);
+        check_result(sstream.str());
     }
 }
 
@@ -66,30 +74,25 @@ TEST(xml, xml_file_writer)
         stringstream sstream;
         ifstream ifs(path);
         sstream << ifs.rdbuf();
-        EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), EXPECTED);
+        check_result(sstream.str());
         EXPECT_TRUE(remove_file(path));
     };
 
     {
-        test_xml_writer<xml_file_writer>(path);
+        test_xml_writer<xml_file_writer>(false, path);
         checker();
     }
     {
-        test_xml_writer<xml_file_writer>(path, true);
+        test_xml_writer<xml_file_writer>(true, path);
         checker();
     }
-    exit(0);
 }
 
 
-#if 0
 TEST(xml, xml_string_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    xml_string_writer writer;
-    test_xml_writer(writer);
-    // force POSIX-like newlines
-    EXPECT_EQ(replace(writer.str(), NEWLINE, POSIX_NEWLINE), "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<name>Alex</name>\n");
+    check_result(test_xml_writer<xml_string_writer>(false).str());
+    check_result(test_xml_writer<xml_string_writer>(true).str());
 }
-#endif

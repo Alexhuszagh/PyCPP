@@ -1267,11 +1267,11 @@ endif()
 
 if (BUILD_XML)
 # TODO: restore
-#    list(APPEND TEST_FILES
+    list(APPEND TEST_FILES
 #        test/xml/dom.cc
 #        test/xml/sax.cc
-#        test/xml/writer.cc
-#    )
+        test/xml/writer.cc
+    )
 endif()
 
 

@@ -123,9 +123,7 @@ void xml_stream_writer::open(ostream& s)
     writer_ = (void*) xmlNewTextWriter((xmlOutputBufferPtr) stream_);
     if (writer_) {
         auto* writer = (xmlTextWriterPtr) writer_;
-        std::string indent(indent_width_, indent_character_);
-        xmlTextWriterSetIndent(writer, indent_width_);
-        xmlTextWriterSetIndentString(writer, (const xmlChar*) indent.data());
+        set_indent(indent_character_, indent_width_);
         xmlTextWriterStartDocument(writer, nullptr, "utf-8", nullptr);
     }
 }
@@ -135,6 +133,12 @@ void xml_stream_writer::set_indent(char c, int width)
 {
     indent_character_ = c;
     indent_width_ = width;
+
+    if (writer_) {
+        std::string indent(indent_width_, indent_character_);
+        xmlTextWriterSetIndent((xmlTextWriterPtr) writer_, indent_width_);
+        xmlTextWriterSetIndentString((xmlTextWriterPtr) writer_, (const xmlChar*) indent.data());
+    }
 }
 
 
@@ -239,8 +243,8 @@ xml_file_writer::xml_file_writer(const string_view& name)
 
 void xml_file_writer::open(const string_view& name)
 {
-    file_.open(name, ios_base::out | ios_base::binary);
-    xml_stream_writer::open(file_);
+    file_->open(name, ios_base::out | ios_base::binary);
+    xml_stream_writer::open(*file_);
 }
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
@@ -254,8 +258,8 @@ xml_file_writer::xml_file_writer(const wstring_view& name)
 
 void xml_file_writer::open(const wstring_view& name)
 {
-    file_.open(name, ios_base::out | ios_base::binary);
-    xml_stream_writer::open(file_);
+    file_->open(name, ios_base::out | ios_base::binary);
+    xml_stream_writer::open(*file_);
 }
 
 
@@ -267,8 +271,8 @@ xml_file_writer::xml_file_writer(const u16string_view& name)
 
 void xml_file_writer::open(const u16string_view& name)
 {
-    file_.open(name, ios_base::out | ios_base::binary);
-    xml_stream_writer::open(file_);
+    file_->open(name, ios_base::out | ios_base::binary);
+    xml_stream_writer::open(*file_);
 }
 
 #endif                                          // WINDOWS
@@ -277,7 +281,7 @@ void xml_file_writer::open(const u16string_view& name)
 void xml_file_writer::flush() const
 {
     xml_stream_writer::flush();
-    file_.flush();
+    file_->flush();
 }
 
 
@@ -286,15 +290,12 @@ void xml_file_writer::swap(xml_file_writer& rhs)
     using PYCPP_NAMESPACE::swap;
     xml_stream_writer::swap(rhs);
     swap(file_, rhs.file_);
-    // TODO: this isn't working....
-//    stream_ = &file_;
-//    rhs.stream_ = &rhs.file_;
 }
 
 
 xml_string_writer::xml_string_writer()
 {
-    xml_stream_writer::open(sstream_);
+    xml_stream_writer::open(*sstream_);
 }
 
 
@@ -315,13 +316,12 @@ xml_string_writer& xml_string_writer::operator=(xml_string_writer&& rhs)
 std::string xml_string_writer::str() const
 {
     flush();
-    return sstream_.str();
+    return sstream_->str();
 }
 
 
 void xml_string_writer::swap(xml_string_writer& rhs)
 {
-    // TODO: check
     using PYCPP_NAMESPACE::swap;
     xml_stream_writer::swap(rhs);
     swap(sstream_, rhs.sstream_);

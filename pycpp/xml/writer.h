@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/misc/heap_pimpl.h>
 #include <pycpp/stl/fstream.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/string/string.h>
@@ -76,11 +77,21 @@ protected:
 
 
 /**
+ *  \brief Base to ensure file_ cleanup occurs after stream cleanup.
+ */
+struct xml_file_writer_base
+{
+    mutable unique_heap_pimpl<ofstream> file_;
+};
+
+
+/**
  *  \brief Writer for stream-based document.
  */
-struct xml_file_writer: xml_stream_writer
+struct xml_file_writer:
+    protected xml_file_writer_base,
+    public xml_stream_writer
 {
-public:
     xml_file_writer() = default;
     xml_file_writer(const xml_file_writer&) = delete;
     xml_file_writer& operator=(const xml_file_writer&) = delete;
@@ -100,18 +111,25 @@ public:
 
     // MODIFIERS
     void swap(xml_file_writer&);
+};
 
-private:
-    mutable ofstream file_;
+
+/**
+ *  \brief Base to ensure file_ cleanup occurs after stream cleanup.
+ */
+struct xml_string_writer_base
+{
+    mutable unique_heap_pimpl<ostringstream> sstream_;
 };
 
 
 /**
  *  \brief Writer for string-based document.
  */
-struct xml_string_writer: xml_stream_writer
+struct xml_string_writer:
+    protected xml_string_writer_base,
+    public xml_stream_writer
 {
-public:
     xml_string_writer();
     xml_string_writer(const xml_string_writer&) = delete;
     xml_string_writer& operator=(const xml_string_writer&) = delete;
@@ -121,9 +139,6 @@ public:
 
     // MODIFIERS
     void swap(xml_string_writer&);
-
-private:
-    ostringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

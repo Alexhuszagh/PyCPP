@@ -48,6 +48,7 @@ using std::is_volatile;
 using std::remove_const;
 using std::remove_volatile;
 using std::remove_cv;
+using std::remove_pointer;
 using std::remove_reference;
 using std::remove_extent;
 using std::decay;
@@ -137,6 +138,9 @@ using remove_volatile_t = typename remove_volatile<T>::type;
 
 template <typename T>
 using remove_cv_t = typename remove_cv<T>::type;
+
+template <typename T>
+using remove_pointer_t = typename remove_pointer<T>::type;
 
 template <typename T>
 using remove_reference_t = typename remove_reference<T>::type;
