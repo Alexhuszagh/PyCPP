@@ -81,6 +81,37 @@ struct hash<std::shared_ptr<T>>
 // FUNCTIONS
 // ---------
 
+/**
+ *  \brief `new` analog for a custom allocator.
+ */
+template <typename T, typename Allocator, typename ... Ts>
+inline T* allocate_and_construct(Allocator& allocator, Ts&&... ts)
+{
+    using allocator_type = typename allocator_traits<Allocator>::template rebind_alloc<T>;
+    using traits_type = allocator_traits<allocator_type>;
+
+    // the allocator should throw if there's no memory available
+    allocator_type alloc(allocator);
+    T* t = traits_type::allocate(alloc, sizeof(T));
+    traits_type::construct(alloc, t, std::forward<Ts>(ts)...);
+    return t;
+}
+
+
+/**
+ *  \brief `delete` analog for a custom allocator.
+ */
+template <typename T, typename Allocator>
+inline void destroy_and_deallocate(Allocator& allocator, T* t, size_t n = 1)
+{
+    using allocator_type = typename allocator_traits<Allocator>::template rebind_alloc<T>;
+    using traits_type = allocator_traits<allocator_type>;
+
+    allocator_type alloc(allocator);
+    traits_type::destroy(alloc, t);
+    traits_type::deallocate(alloc, t, n);
+}
+
 #if defined(HAVE_CPP14)     // CPP14
 
 using std::make_unique;

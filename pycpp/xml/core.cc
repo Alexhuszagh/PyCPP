@@ -25,7 +25,7 @@ PYCPP_BEGIN_NAMESPACE
 struct name_tag {};
 struct id_tag {};
 
-
+// TODO: allocator....
 using xml_node_list_impl_t = multi_index_container<
     xml_node_t,
     indexed_by<
@@ -572,11 +572,26 @@ void xml_node_list_t::swap(self_t& rhs)
 
 xml_node_t::xml_node_t():
     ptr_(new xml_node_impl_t)
+//    ptr_(allocate_shared<xml_node_impl_t>(allocator), allocator)
 {}
 
 
-xml_node_t::xml_node_t(xml_node_impl_t*ptr):
+xml_node_t::xml_node_t(const xml_node_t& rhs) noexcept:
+    ptr_(rhs.ptr_)
+//    ptr_(get<0>(rhs.ptr_), allocator)
+{}
+
+
+xml_node_t::xml_node_t(xml_node_t&& rhs) noexcept:
+    ptr_(move(rhs.ptr_))
+//    ptr_(move(get<0>(rhs.ptr_)), allocator)
+{}
+
+
+
+xml_node_t::xml_node_t(xml_node_impl_t* ptr) noexcept:
     ptr_(ptr)
+//    ptr_(ptr, allocator)
 {}
 
 
@@ -670,43 +685,43 @@ auto xml_node_t::crend() const -> const_reverse_iterator
 }
 
 
-const xml_string_t& xml_node_t::get_tag() const
+const xml_string_t& xml_node_t::get_tag() const noexcept
 {
     return ptr_->tag;
 }
 
 
-const xml_string_t& xml_node_t::get_text() const
+const xml_string_t& xml_node_t::get_text() const noexcept
 {
     return ptr_->text;
 }
 
 
-xml_attr_t& xml_node_t::get_attrs()
+xml_attr_t& xml_node_t::get_attrs() noexcept
 {
     return ptr_->attrs;
 }
 
 
-const xml_attr_t& xml_node_t::get_attrs() const
+const xml_attr_t& xml_node_t::get_attrs() const noexcept
 {
     return ptr_->attrs;
 }
 
 
-xml_node_list_t& xml_node_t::get_children()
+xml_node_list_t& xml_node_t::get_children() noexcept
 {
     return ptr_->children;
 }
 
 
-const xml_node_list_t& xml_node_t::get_children() const
+const xml_node_list_t& xml_node_t::get_children() const noexcept
 {
     return ptr_->children;
 }
 
 
-uintptr_t xml_node_t::get_id() const
+uintptr_t xml_node_t::get_id() const noexcept
 {
     return (uintptr_t) ptr_.get();
 }

@@ -2,16 +2,56 @@
 
 **Short-Term**
 
+    - Need an alias for std::nullptr_t as nullptr_t in a public header...
+
+    - Add noexcepts everywhere
+    - Change enum default `throw` to abort (logic error).
+        - Algorithm
+        - Allocator
+        - Cache
+        - Collections
+        - Compression
+        - CSV
+        - Filesystem
+        - Fixed
+        - Hashlib
+        - Intrusive
+        - Iterator
+        - Itertools
+        - JSON
+            - Core      (don't like the core API, get shouldn't allow you to change the value....)
+            - DOM
+            - SAX
+            - Writer
+        - Lattice
+        - Lexical
+        - Math
+        - Memmap
+        - Misc
+        - Multi_index
+        - Preprocessor
+        - Random
+        - Re
+        - Runtime
+        - Secure
+        - SFINAE
+        - SQL
+        - STL
+        - Stream
+        - String
+        - View
+        - Windows
+        - XML
+
     - Get rid of naked new/delete
         - Change to use the global allocator generally speaking...
+        - make_shared -> allocate_shared
+        - make_unique to use a custom allocator....
+        - `allocate_and_construct` for custom allocators...
 
     - Make moves always non-throwing
         - Check if copies can be non-throwing too
         - Add a lot of noexcepts in my code....
-
-    - Make sure my streams properly handle moves but cannot be copied...
-        - JSON
-            - SAX       - Skeleton
 
     - Interprocess
         - Some sort of interprocess library like Boost would be great

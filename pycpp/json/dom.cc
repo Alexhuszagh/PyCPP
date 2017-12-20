@@ -25,14 +25,14 @@ static void add_value(Levels &levels, bool& has_key, json_string_t& key, Ts... t
         return;
     } else if (has_key) {
         // adding to object
-        auto &object = parent->get_object();
+        json_object_t& object = parent->get_object();
         object.emplace(key, json_value_t(forward<Ts>(ts)...));
         value = &object.at(key);
         key.clear();
         has_key = false;
     } else {
         // add to array
-        auto &array = parent->get_array();
+        json_array_t &array = parent->get_array();
         array.push_back(json_value_t(forward<Ts>(ts)...));
         value = &array.back();
     }

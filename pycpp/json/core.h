@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/misc/compressed_pair.h>
 #include <pycpp/stl/string.h>
 #include <pycpp/stl/unordered_map.h>
 #include <pycpp/stl/vector.h>
@@ -61,40 +62,51 @@ using json_object_t = unordered_map<json_string_t, json_value_t>;
 struct json_value_t
 {
 public:
-    json_value_t();
-    json_value_t(const json_value_t&) = delete;
-    json_value_t& operator=(const json_value_t&) = delete;
-    json_value_t(json_value_t&&);
-    json_value_t& operator=(json_value_t&&);
+    // MEMBER TYPES
+    // ------------
+    using allocator_type = allocator<void>;
 
-    json_value_t(json_type type);
-    json_value_t(json_null_t);
-    json_value_t(json_boolean_t);
-    json_value_t(json_number_t);
-    json_value_t(json_string_t&&);
-    json_value_t(json_array_t&&);
-    json_value_t(json_object_t&&);
+    // MEMBER FUNCTIONS
+    // ----------------
+    json_value_t(const allocator_type& = allocator_type()) noexcept;
+    json_value_t(const json_value_t&, const allocator_type& = allocator_type()) = delete;
+    json_value_t& operator=(const json_value_t&) = delete;
+    json_value_t(json_value_t&&, const allocator_type& = allocator_type()) noexcept;
+    json_value_t& operator=(json_value_t&&) noexcept;
+
+    json_value_t(json_type type, const allocator_type& = allocator_type()) noexcept;
+    json_value_t(json_null_t, const allocator_type& = allocator_type()) noexcept;
+    json_value_t(json_boolean_t, const allocator_type& = allocator_type());
+    json_value_t(json_number_t, const allocator_type& = allocator_type());
+    json_value_t(json_string_t&&, const allocator_type& = allocator_type());
+    json_value_t(json_array_t&&, const allocator_type& = allocator_type());
+    json_value_t(json_object_t&&, const allocator_type& = allocator_type());
     ~json_value_t();
 
     // MODIFIERS
-    void swap(json_value_t&);
 
     // CHECKERS
-    json_type type() const;
-    bool has_null() const;
-    bool has_boolean() const;
-    bool has_number() const;
-    bool has_string() const;
-    bool has_array() const;
-    bool has_object() const;
+    json_type type() const noexcept;
+    bool has_null() const noexcept;
+    bool has_boolean() const noexcept;
+    bool has_number() const noexcept;
+    bool has_string() const noexcept;
+    bool has_array() const noexcept;
+    bool has_object() const noexcept;
 
     // GETTERS
-    json_null_t get_null() const;
-    json_boolean_t get_boolean() const;
-    json_number_t get_number() const;
-    json_string_t& get_string() const;
-    json_array_t& get_array() const;
-    json_object_t& get_object() const;
+    json_null_t& get_null();
+    const json_null_t& get_null() const;
+    json_boolean_t& get_boolean();
+    const json_boolean_t& get_boolean() const;
+    json_number_t& get_number();
+    const json_number_t& get_number() const;
+    json_string_t& get_string();
+    const json_string_t& get_string() const;
+    json_array_t& get_array();
+    const json_array_t& get_array() const;
+    json_object_t& get_object();
+    const json_object_t& get_object() const;
 
     // SETTERS
     void set_null(json_null_t);
@@ -110,15 +122,18 @@ public:
     void set(json_array_t&&);
     void set(json_object_t&&);
 
-    // CONVERSIONS
-    operator json_boolean_t() const;
-    operator json_number_t() const;
-    operator json_string_t&() const;
-    operator json_array_t&() const;
-    operator json_object_t&() const;
+    // RELATIONAL OPERATORS
+    bool operator==(const json_value_t&) const noexcept;
+    bool operator!=(const json_value_t&) const noexcept;
+
+    // OTHER
+    void swap(json_value_t&) noexcept;
+
+    // OBSERVERS
+    allocator_type get_allocator() const noexcept;
 
 private:
-    json_type type_;
+    compressed_pair<json_type, allocator_type> type_;
     json_pointer_t data_;
 
     void reset();

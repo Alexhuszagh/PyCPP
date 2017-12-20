@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/misc/compressed_pair.h>
 #include <pycpp/stl/deque.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/string.h>
@@ -181,15 +182,16 @@ public:
     using const_iterator = iterator;
     using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
     using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
+    using allocator_type = allocator<void>;
 
     // MEMBER FUNCTIONS
     // ----------------
 
     // CONSTRUCTORS
     xml_node_t();
-    xml_node_t(const xml_node_t&) = default;
+    xml_node_t(const xml_node_t&) noexcept;
     xml_node_t & operator=(const xml_node_t&) = default;
-    xml_node_t(xml_node_t&&) = default;
+    xml_node_t(xml_node_t&&) noexcept;
     xml_node_t & operator=(xml_node_t&&) = default;
 
     // I/O
@@ -211,13 +213,13 @@ public:
     const_reverse_iterator crend() const;
 
     // GETTERS
-    const xml_string_t& get_tag() const;
-    const xml_string_t& get_text() const;
-    xml_attr_t& get_attrs();
-    const xml_attr_t& get_attrs() const;
-    xml_node_list_t& get_children();
-    const xml_node_list_t& get_children() const;
-    uintptr_t get_id() const;
+    const xml_string_t& get_tag() const noexcept;
+    const xml_string_t& get_text() const noexcept;
+    xml_attr_t& get_attrs() noexcept;
+    const xml_attr_t& get_attrs() const noexcept;
+    xml_node_list_t& get_children() noexcept;
+    const xml_node_list_t& get_children() const noexcept;
+    uintptr_t get_id() const noexcept;
 
     // SETTERS
     void set_tag(const xml_string_t&);
@@ -236,11 +238,15 @@ public:
     // OTHER
     void swap(self_t&);
 
+    // OBSERVERS
+//    allocator_type get_allocator() const noexcept;
+
 private:
     friend struct xml_node_list_t;
 
-    xml_node_t(xml_node_impl_t*);
+    xml_node_t(xml_node_impl_t*) noexcept;
     shared_ptr<xml_node_impl_t> ptr_;
+//    compressed_pair<shared_ptr<xml_node_impl_t>, allocator_type> ptr_;
 };
 
 PYCPP_END_NAMESPACE
