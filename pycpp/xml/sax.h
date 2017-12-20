@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/misc/heap_pimpl.h>
 #include <pycpp/stl/fstream.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/string/string.h>
@@ -73,12 +74,23 @@ protected:
 };
 
 
+
+/**
+ *  \brief Base to ensure file_ cleanup occurs after stream cleanup.
+ */
+struct xml_file_reader_base
+{
+    unique_heap_pimpl<ifstream> file_;
+};
+
+
 /**
  *  \brief Reader for stream-based document.
  */
-struct xml_file_reader: xml_stream_reader
+struct xml_file_reader:
+    protected xml_file_reader_base,
+    public xml_stream_reader
 {
-public:
     xml_file_reader() = default;
     xml_file_reader(const xml_file_reader&) = delete;
     xml_file_reader& operator=(const xml_file_reader&) = delete;
@@ -97,18 +109,25 @@ public:
 
     // MODIFIERS
     void swap(xml_file_reader&);
+};
 
-private:
-    ifstream file_;
+
+/**
+ *  \brief Base to ensure file_ cleanup occurs after stream cleanup.
+ */
+struct xml_string_reader_base
+{
+    unique_heap_pimpl<istringstream> sstream_;
 };
 
 
 /**
  *  \brief Reader for string-based document.
  */
-struct xml_string_reader: xml_stream_reader
+struct xml_string_reader:
+    protected xml_string_reader_base,
+    public xml_stream_reader
 {
-public:
     xml_string_reader() = default;
     xml_string_reader(const xml_string_reader&) = delete;
     xml_string_reader& operator=(const xml_string_reader&) = delete;
@@ -121,9 +140,6 @@ public:
 
     // MODIFIERS
     void swap(xml_string_reader&);
-
-private:
-    istringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

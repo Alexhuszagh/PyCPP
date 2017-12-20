@@ -1266,10 +1266,9 @@ if (BUILD_STREAM)
 endif()
 
 if (BUILD_XML)
-# TODO: restore
     list(APPEND TEST_FILES
-#        test/xml/dom.cc
-#        test/xml/sax.cc
+        test/xml/dom.cc
+        test/xml/sax.cc
         test/xml/writer.cc
     )
 endif()

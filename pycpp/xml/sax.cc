@@ -353,7 +353,6 @@ void xml_stream_reader::set_handler(xml_sax_handler& h)
 void xml_stream_reader::swap(xml_stream_reader& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(stream_, rhs.stream_);
     swap(handler_, rhs.handler_);
 }
@@ -380,8 +379,8 @@ xml_file_reader::xml_file_reader(const string_view& name)
 
 void xml_file_reader::open(const string_view& name)
 {
-    file_.open(name, ios_base::in | ios_base::binary);
-    xml_stream_reader::open(file_);
+    file_->open(name, ios_base::in | ios_base::binary);
+    xml_stream_reader::open(*file_);
 }
 
 
@@ -396,8 +395,8 @@ xml_file_reader::xml_file_reader(const wstring_view& name)
 
 void xml_file_reader::open(const wstring_view& name)
 {
-    file_.open(name, ios_base::in | ios_base::binary);
-    xml_stream_reader::open(file_);
+    file_->open(name, ios_base::in | ios_base::binary);
+    xml_stream_reader::open(*file_);
 }
 
 
@@ -409,8 +408,8 @@ xml_file_reader::xml_file_reader(const u16string_view& name)
 
 void xml_file_reader::open(const u16string_view& name)
 {
-    file_.open(name, ios_base::in | ios_base::binary);
-    xml_stream_reader::open(file_);
+    file_->open(name, ios_base::in | ios_base::binary);
+    xml_stream_reader::open(*file_);
 }
 
 #endif                                          // WINDOWS
@@ -418,11 +417,9 @@ void xml_file_reader::open(const u16string_view& name)
 
 void xml_file_reader::swap(xml_file_reader& rhs)
 {
-    // TODO: check
     using PYCPP_NAMESPACE::swap;
     xml_stream_reader::swap(rhs);
     swap(file_, rhs.file_);
-    // TODO: assign files...
 }
 
 
@@ -448,13 +445,12 @@ xml_string_reader::xml_string_reader(const string_wrapper& str)
 void xml_string_reader::open(const string_wrapper& str)
 {
     sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
-    xml_stream_reader::open(sstream_);
+    xml_stream_reader::open(*sstream_);
 }
 
 
 void xml_string_reader::swap(xml_string_reader& rhs)
 {
-    // TODO: check
     using PYCPP_NAMESPACE::swap;
     xml_stream_reader::swap(rhs);
     swap(sstream_, rhs.sstream_);

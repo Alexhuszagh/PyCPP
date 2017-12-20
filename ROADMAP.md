@@ -17,9 +17,6 @@
         - JSON
             - SAX       - Skeleton
             - Writer    - Skeleton
-        - XML
-            - SAX       - Skeleton
-            - Writer    - Skeleton
 
     - Interprocess
         - Some sort of interprocess library like Boost would be great
