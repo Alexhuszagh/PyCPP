@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/json/core.h>
+#include <pycpp/misc/heap_pimpl.h>
 #include <pycpp/stl/fstream.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/string/string.h>
@@ -78,11 +79,21 @@ private:
 
 
 /**
+ *  \brief Base to ensure file_ cleanup occurs after stream cleanup.
+ */
+struct json_file_writer_base
+{
+    mutable unique_heap_pimpl<ofstream> file_;
+};
+
+
+/**
  *  \brief Writer for file-based document.
  */
-struct json_file_writer: json_stream_writer
+struct json_file_writer:
+    protected json_file_writer_base,
+    public json_stream_writer
 {
-public:
     json_file_writer() = default;
     json_file_writer(const json_file_writer&) = delete;
     json_file_writer& operator=(const json_file_writer&) = delete;
@@ -102,17 +113,25 @@ public:
 
     // MODIFIERS
     void swap(json_file_writer&);
-
-private:
-    mutable ofstream file_;
 };
+
+
+/**
+ *  \brief Base to ensure file_ cleanup occurs after stream cleanup.
+ */
+struct json_string_writer_base
+{
+    mutable unique_heap_pimpl<ostringstream> sstream_;
+};
+
 
 /**
  *  \brief Writer for string-based document.
  */
-struct json_string_writer: json_stream_writer
+struct json_string_writer:
+    protected json_string_writer_base,
+    public json_stream_writer
 {
-public:
     json_string_writer();
     json_string_writer(const json_string_writer&) = delete;
     json_string_writer& operator=(const json_string_writer&) = delete;
@@ -122,9 +141,6 @@ public:
 
     // MODIFIERS
     void swap(json_string_writer&);
-
-private:
-    ostringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

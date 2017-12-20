@@ -16,7 +16,9 @@ PYCPP_USING_NAMESPACE
 TEST(unordered_map, unordered_map)
 {
     using unordered_map_type = unordered_map<int, int>;
-    unordered_map_type ump;
+    unordered_map_type ump1, ump2;
+    unordered_map_type ump3(ump1);
+    unordered_map_type ump4(std::move(ump1));
 }
 
 

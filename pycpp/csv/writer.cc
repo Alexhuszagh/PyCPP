@@ -226,7 +226,21 @@ void csv_file_writer::open(const u16string_view& name, csv_quoting quoting, csvp
 
 void csv_file_writer::swap(csv_file_writer& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    using PYCPP_NAMESPACE::swap;
+    swap(file_, rhs.file_);
+    swap(quoting_, rhs.quoting_);
+    swap(punct_, rhs.punct_);
+
+    // swap the streams, considering null conditions
+    if (stream_ && rhs.stream_) {
+        // do nothing
+    } else if (stream_) {
+        stream_ = nullptr;
+        rhs.stream_ = &rhs.file_;
+    } else if (rhs.stream_) {
+        rhs.stream_ = nullptr;
+        stream_ = &file_;
+    }
 }
 
 
@@ -259,7 +273,21 @@ std::string csv_string_writer::str() const
 
 void csv_string_writer::swap(csv_string_writer& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    using PYCPP_NAMESPACE::swap;
+    swap(sstream_, rhs.sstream_);
+    swap(quoting_, rhs.quoting_);
+    swap(punct_, rhs.punct_);
+
+    // swap the streams, considering null conditions
+    if (stream_ && rhs.stream_) {
+        // do nothing
+    } else if (stream_) {
+        stream_ = nullptr;
+        rhs.stream_ = &rhs.sstream_;
+    } else if (rhs.stream_) {
+        rhs.stream_ = nullptr;
+        stream_ = &sstream_;
+    }
 }
 
 PYCPP_END_NAMESPACE

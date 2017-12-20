@@ -16,17 +16,33 @@ PYCPP_USING_NAMESPACE
 // HELPERS
 // -------
 
+static std::string EXPECTED = "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}";
 
-template <typename Writer>
-static void test_json_writer(Writer& writer)
+template <typename Writer, typename ... Ts>
+static Writer test_json_writer(bool move, Ts&&... ts)
 {
-    writer.start_object();
-    writer.key("k1");
-    writer.string("v1");
-    writer.key("k2");
-    writer.number(5);
-    writer.end_object();
-    writer.flush();
+    Writer w1;
+    if (move) {
+        Writer w2(std::forward<Ts>(ts)...);
+        w1.swap(w2);
+    } else {
+        w1 = Writer(std::forward<Ts>(ts)...);
+    }
+    w1.start_object();
+    w1.key("k1");
+    w1.string("v1");
+    w1.key("k2");
+    w1.number(5);
+    w1.end_object();
+    w1.flush();
+
+    return w1;
+}
+
+
+static void check_result(const std::string& str)
+{
+    EXPECT_EQ(replace(str, NEWLINE, POSIX_NEWLINE), EXPECTED);
 }
 
 // TESTS
@@ -37,11 +53,16 @@ TEST(json, json_stream_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    ostringstream sstream;
-    json_stream_writer writer(sstream);
-    test_json_writer(writer);
-    // force POSIX-like newlines
-    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}");
+    {
+        ostringstream sstream;
+        test_json_writer<json_stream_writer>(false, sstream);
+        check_result(sstream.str());
+    }
+    {
+        ostringstream sstream;
+        test_json_writer<json_stream_writer>(true, sstream);
+        check_result(sstream.str());
+    }
 }
 
 
@@ -49,20 +70,24 @@ TEST(json, json_file_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    string path("test.xml");
-    std::string str;
+    string path("test.json");
+    auto checker = [&path]()
     {
-        json_file_writer writer(path);
-        test_json_writer(writer);
-    }
-    ostringstream sstream;
+        stringstream sstream;
+        ifstream ifs(path);
+        sstream << ifs.rdbuf();
+        check_result(sstream.str());
+        EXPECT_TRUE(remove_file(path));
+    };
+
     {
-        ifstream istream(path);
-        sstream << istream.rdbuf();
-        // force POSIX-like newlines
+        test_json_writer<json_file_writer>(false, path);
+        checker();
     }
-    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}");
-    EXPECT_TRUE(remove_file(path));
+    {
+        test_json_writer<json_file_writer>(true, path);
+        checker();
+    }
 }
 
 
@@ -70,8 +95,5 @@ TEST(json, json_string_writer)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    json_string_writer writer;
-    test_json_writer(writer);
-    // force POSIX-like newlines
-    EXPECT_EQ(replace(writer.str(), NEWLINE, POSIX_NEWLINE), "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}");
+    check_result(test_json_writer<json_string_writer>(false).str());
 }

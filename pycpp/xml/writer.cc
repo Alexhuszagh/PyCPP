@@ -151,7 +151,6 @@ bool xml_stream_writer::is_pretty() const
 void xml_stream_writer::swap(xml_stream_writer& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(indent_character_, rhs.indent_character_);
     swap(indent_width_, rhs.indent_width_);
     swap(stream_, rhs.stream_);

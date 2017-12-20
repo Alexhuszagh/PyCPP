@@ -10,13 +10,8 @@
         - Add a lot of noexcepts in my code....
 
     - Make sure my streams properly handle moves but cannot be copied...
-        - CSV
-            - Reader    - Skeleton
-            - Writer    - Skeleton
-            - Dict      - Skeleton
         - JSON
             - SAX       - Skeleton
-            - Writer    - Skeleton
 
     - Interprocess
         - Some sort of interprocess library like Boost would be great

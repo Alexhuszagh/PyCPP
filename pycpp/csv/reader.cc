@@ -114,7 +114,6 @@ const csvpunct_impl* csv_stream_reader::punctuation() const
 void csv_stream_reader::swap(csv_stream_reader& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(stream_, rhs.stream_);
     swap(row_length_, rhs.row_length_);
     swap(punct_, rhs.punct_);
@@ -141,8 +140,7 @@ bool csv_stream_reader::eof() const
 
 csv_stream_reader::operator bool() const
 {
-    assert(stream_ && "Stream cannot be null.");
-    return !(stream_->bad() || eof());
+    return stream_ && !(stream_->bad() || eof());
 }
 
 
@@ -223,7 +221,21 @@ void csv_file_reader::open(const u16string_view& name, size_t skip, csvpunct_imp
 
 void csv_file_reader::swap(csv_file_reader& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    using PYCPP_NAMESPACE::swap;
+    swap(file_, rhs.file_);
+    swap(row_length_, rhs.row_length_);
+    swap(punct_, rhs.punct_);
+
+    // swap the streams, considering null conditions
+    if (stream_ && rhs.stream_) {
+        // do nothing
+    } else if (stream_) {
+        stream_ = nullptr;
+        rhs.stream_ = &rhs.file_;
+    } else if (rhs.stream_) {
+        rhs.stream_ = nullptr;
+        stream_ = &file_;
+    }
 }
 
 
@@ -261,9 +273,21 @@ void csv_string_reader::open(const string_wrapper& str, size_t skip, csvpunct_im
 
 void csv_string_reader::swap(csv_string_reader& rhs)
 {
-    // TODO: this should be pretty easy
-    // base swap + sstream_.swap()
-    static_assert(false, "");       // TODO: implement
+    using PYCPP_NAMESPACE::swap;
+    swap(sstream_, rhs.sstream_);
+    swap(row_length_, rhs.row_length_);
+    swap(punct_, rhs.punct_);
+
+    // swap the streams, considering null conditions
+    if (stream_ && rhs.stream_) {
+        // do nothing
+    } else if (stream_) {
+        stream_ = nullptr;
+        rhs.stream_ = &rhs.sstream_;
+    } else if (rhs.stream_) {
+        rhs.stream_ = nullptr;
+        stream_ = &sstream_;
+    }
 }
 
 PYCPP_END_NAMESPACE

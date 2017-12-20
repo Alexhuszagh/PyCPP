@@ -68,7 +68,7 @@ public:
     iterator begin();
     iterator end();
 
-private:
+protected:
     csv_stream_reader reader_;
     csv_indexes header_;
 };
@@ -168,7 +168,7 @@ public:
     // DATA
     void operator()(const value_type& row);
 
-private:
+protected:
     csv_stream_writer writer_;
     csv_indexes header_;
 };

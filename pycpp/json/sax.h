@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/json/core.h>
+#include <pycpp/misc/heap_pimpl.h>
 #include <pycpp/stl/fstream.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/string/string.h>
@@ -68,11 +69,21 @@ private:
 
 
 /**
+ *  \brief Base to ensure file_ cleanup occurs after stream cleanup.
+ */
+struct json_file_reader_base
+{
+    unique_heap_pimpl<ifstream> file_;
+};
+
+
+/**
  *  \brief Reader for file-based document.
  */
-struct json_file_reader: json_stream_reader
+struct json_file_reader:
+    protected json_file_reader_base,
+    public json_stream_reader
 {
-public:
     json_file_reader() = default;
     json_file_reader(const json_file_reader&) = delete;
     json_file_reader& operator=(const json_file_reader&) = delete;
@@ -91,18 +102,25 @@ public:
 
     // MODIFIERS
     void swap(json_file_reader&);
+};
 
-private:
-    ifstream file_;
+
+/**
+ *  \brief Base to ensure file_ cleanup occurs after stream cleanup.
+ */
+struct json_string_reader_base
+{
+    unique_heap_pimpl<istringstream> sstream_;
 };
 
 
 /**
  *  \brief Reader for string-based document.
  */
-struct json_string_reader: json_stream_reader
+struct json_string_reader:
+    protected json_string_reader_base,
+    public json_stream_reader
 {
-public:
     json_string_reader() = default;
     json_string_reader(const json_string_reader&) = delete;
     json_string_reader& operator=(const json_string_reader&) = delete;
@@ -115,9 +133,6 @@ public:
 
     // MODIFIERS
     void swap(json_string_reader&);
-
-private:
-    istringstream sstream_;
 };
 
 PYCPP_END_NAMESPACE

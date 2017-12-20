@@ -128,6 +128,20 @@ TEST(csv_stream_reader, punctuation)
 }
 
 
+TEST(csv_stream_reader, move)
+{
+    istringstream sstream(CSV_SIMPLE_MINIMAL);
+    csv_stream_reader r1(sstream), r2;
+    r1.swap(r2);
+    EXPECT_FALSE(bool(r1));
+    EXPECT_TRUE(bool(r2));
+    EXPECT_EQ(r2(), CSV_HEADER);
+    EXPECT_TRUE(bool(r2));
+    EXPECT_EQ(r2(), CSV_ROW);
+    EXPECT_FALSE(bool(r2));
+}
+
+
 #if defined(BUILD_FILESYSTEM)
 
 TEST(csv_file_reader, simple_all)
@@ -148,6 +162,27 @@ TEST(csv_file_reader, simple_all)
     EXPECT_TRUE(remove_file(path));
 }
 
+
+TEST(csv_file_reader, move)
+{
+    string path("sample_csv_path");
+    ofstream ostream(path);
+    ostream << CSV_TAB_ALL;
+    ostream.close();
+
+    {
+        csv_file_reader r1(path, 0, new tabpunct), r2;
+        r1.swap(r2);
+        EXPECT_FALSE(bool(r1));
+        EXPECT_TRUE(bool(r2));
+        EXPECT_EQ(r2(), CSV_HEADER);
+        EXPECT_TRUE(bool(r2));
+        EXPECT_EQ(r2(), CSV_ROW);
+        EXPECT_FALSE(bool(r2));
+    }
+    EXPECT_TRUE(remove_file(path));
+}
+
 #endif          // BUILD_FILESYSTEM
 
 
@@ -161,6 +196,18 @@ TEST(csv_string_reader, simple_all)
     EXPECT_FALSE(bool(reader));
 }
 
+
+TEST(csv_string_reader, move)
+{
+    csv_string_reader r1(CSV_SIMPLE_ALL), r2;
+    r1.swap(r2);
+    EXPECT_FALSE(bool(r1));
+    EXPECT_TRUE(bool(r2));
+    EXPECT_EQ(r2(), CSV_HEADER);
+    EXPECT_TRUE(bool(r2));
+    EXPECT_EQ(r2(), CSV_ROW);
+    EXPECT_FALSE(bool(r2));
+}
 
 // SIMPLE WRITER
 
@@ -204,6 +251,20 @@ TEST(csv_stream_writer, punctuation)
 }
 
 
+TEST(csv_stream_writer, move)
+{
+    ostringstream sstream;
+    {
+        csv_stream_writer w1(sstream, CSV_QUOTE_MINIMAL), w2;
+        w1.swap(w2);
+        w2(CSV_HEADER);
+        w2(CSV_ROW);
+    }
+    // force POSIX-like newlines
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_SIMPLE_MINIMAL);
+}
+
+
 #if defined(BUILD_FILESYSTEM)
 
 TEST(csv_file_writer, simple_all)
@@ -213,6 +274,26 @@ TEST(csv_file_writer, simple_all)
         csv_file_writer writer(path, CSV_QUOTE_ALL, new tabpunct);
         writer(CSV_HEADER);
         writer(CSV_ROW);
+    }
+
+    stringstream sstream;
+    ifstream istream(path);
+    sstream << istream.rdbuf();
+    istream.close();
+
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
+    EXPECT_TRUE(remove_file(path));
+}
+
+
+TEST(csv_file_writer, move)
+{
+    string path("sample_csv_path");
+    {
+        csv_file_writer w1(path, CSV_QUOTE_ALL, new tabpunct), w2;
+        w1.swap(w2);
+        w2(CSV_HEADER);
+        w2(CSV_ROW);
     }
 
     stringstream sstream;
@@ -235,6 +316,15 @@ TEST(csv_string_writer, simple_all)
     EXPECT_EQ(replace(writer.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
 }
 
+
+TEST(csv_string_writer, move)
+{
+    csv_string_writer w1(CSV_QUOTE_ALL, new tabpunct), w2;
+    w1.swap(w2);
+    w2(CSV_HEADER);
+    w2(CSV_ROW);
+    EXPECT_EQ(replace(w2.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
+}
 
 // DICT READER
 
@@ -290,6 +380,17 @@ TEST(csv_dict_stream_reader, punctuation)
 }
 
 
+TEST(csv_dict_stream_reader, move)
+{
+    istringstream sstream(CSV_SIMPLE_MINIMAL);
+    csv_dict_stream_reader r1(sstream), r2;
+    r1.swap(r2);
+    EXPECT_TRUE(bool(r2));
+    EXPECT_EQ(r2(), CSV_MAP);
+    EXPECT_FALSE(bool(r2));
+}
+
+
 #if defined(BUILD_FILESYSTEM)
 
 TEST(csv_dict_file_reader, simple_all)
@@ -308,6 +409,24 @@ TEST(csv_dict_file_reader, simple_all)
     EXPECT_TRUE(remove_file(path));
 }
 
+
+TEST(csv_dict_file_reader, move)
+{
+    string path("sample_csv_path");
+    ofstream ostream(path);
+    ostream << CSV_TAB_ALL;
+    ostream.close();
+
+    {
+        csv_dict_file_reader r1(path, 0, new tabpunct), r2;
+        r1.swap(r2);
+        EXPECT_TRUE(bool(r2));
+        EXPECT_EQ(r2(), CSV_MAP);
+        EXPECT_FALSE(bool(r2));
+    }
+    EXPECT_TRUE(remove_file(path));
+}
+
 #endif          // BUILD_FILESYSTEM
 
 
@@ -317,6 +436,16 @@ TEST(csv_dict_string_reader, simple_all)
     EXPECT_TRUE(bool(reader));
     EXPECT_EQ(reader(), CSV_MAP);
     EXPECT_FALSE(bool(reader));
+}
+
+
+TEST(csv_dict_string_reader, move)
+{
+    csv_dict_string_reader r1(CSV_SIMPLE_ALL), r2;
+    r1.swap(r2);
+    EXPECT_TRUE(bool(r2));
+    EXPECT_EQ(r2(), CSV_MAP);
+    EXPECT_FALSE(bool(r2));
 }
 
 
@@ -357,6 +486,19 @@ TEST(csv_dict_stream_writer, punctuation)
     EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
 }
 
+
+TEST(csv_dict_stream_writer, move)
+{
+    ostringstream sstream;
+    {
+        csv_dict_stream_writer w1(sstream, CSV_HEADER, CSV_QUOTE_MINIMAL), w2;
+        w1.swap(w2);
+        w2(CSV_MAP);
+    }
+    // force POSIX-like newlines
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_SIMPLE_MINIMAL);
+}
+
 #if defined(BUILD_FILESYSTEM)
 
 TEST(csv_dict_file_writer, simple_all)
@@ -376,6 +518,25 @@ TEST(csv_dict_file_writer, simple_all)
     EXPECT_TRUE(remove_file(path));
 }
 
+
+TEST(csv_dict_file_writer, move)
+{
+    string path("sample_csv_path");
+    {
+        csv_dict_file_writer w1(path, CSV_HEADER, CSV_QUOTE_ALL, new tabpunct), w2;
+        w1.swap(w2);
+        w2(CSV_MAP);
+    }
+
+    stringstream sstream;
+    ifstream istream(path);
+    sstream << istream.rdbuf();
+    istream.close();
+
+    EXPECT_EQ(replace(sstream.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
+    EXPECT_TRUE(remove_file(path));
+}
+
 #endif          // BUILD_FILESYSTEM
 
 
@@ -384,4 +545,13 @@ TEST(csv_dict_string_writer, simple_all)
     csv_dict_string_writer writer(CSV_HEADER, CSV_QUOTE_ALL, new tabpunct);
     writer(CSV_MAP);
     EXPECT_EQ(replace(writer.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
+}
+
+
+TEST(csv_dict_string_writer, move)
+{
+    csv_dict_string_writer w1(CSV_HEADER, CSV_QUOTE_ALL, new tabpunct), w2;
+    w1.swap(w2);
+    w2(CSV_MAP);
+    EXPECT_EQ(replace(w2.str(), NEWLINE, POSIX_NEWLINE), CSV_TAB_ALL);
 }

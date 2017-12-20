@@ -18,11 +18,18 @@ PYCPP_USING_NAMESPACE
 
 
 template <typename SaxReader, typename OpenArg>
-static void test_json_reader(SaxReader& reader, OpenArg& arg)
+static void test_json_reader(SaxReader& reader, OpenArg& arg, bool move = false)
 {
     json_document_t document;
     json_dom_handler handler(document);
-    reader.set_handler(handler);
+    SaxReader r2;
+    if (move) {
+        SaxReader r2;
+        r2.set_handler(handler);
+        r2.swap(reader);
+    } else {
+        reader.set_handler(handler);
+    }
     reader.open(arg);
 
     ASSERT_TRUE(document.has_object());
@@ -52,9 +59,16 @@ TEST(json, json_stream_reader)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
-    istringstream sstream(str);
-    json_stream_reader reader;
-    test_json_reader(reader, sstream);
+    {
+        istringstream sstream(str);
+        json_stream_reader reader;
+        test_json_reader(reader, sstream);
+    }
+    {
+        istringstream sstream(str);
+        json_stream_reader reader;
+        test_json_reader(reader, sstream, true);
+    }
 }
 
 
@@ -72,6 +86,10 @@ TEST(json, json_file_reader)
         json_file_reader reader;
         test_json_reader(reader, path);
     }
+    {
+        json_file_reader reader;
+        test_json_reader(reader, path, true);
+    }
     EXPECT_TRUE(remove_file(path));
 }
 
@@ -81,6 +99,12 @@ TEST(json, json_string_reader)
     // don't worry about compliance testing:
     // the backends are robustly tested
     std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
-    json_string_reader reader;
-    test_json_reader(reader, str);
+    {
+        json_string_reader reader;
+        test_json_reader(reader, str);
+    }
+    {
+        json_string_reader reader;
+        test_json_reader(reader, str, true);
+    }
 }

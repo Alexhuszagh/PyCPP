@@ -68,7 +68,6 @@ const csvpunct_impl* csv_dict_stream_reader::punctuation() const
 void csv_dict_stream_reader::swap(csv_dict_stream_reader& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(reader_, rhs.reader_);
     swap(header_, rhs.header_);
 }
@@ -176,7 +175,25 @@ void csv_dict_file_reader::open(const u16string_view& name, size_t skip, csvpunc
 
 void csv_dict_file_reader::swap(csv_dict_file_reader& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    using PYCPP_NAMESPACE::swap;
+    swap(file_, rhs.file_);
+    swap(header_, rhs.header_);
+
+    auto& l = reader_;
+    auto& r = rhs.reader_;
+    swap(l.row_length_, r.row_length_);
+    swap(l.punct_, r.punct_);
+
+    // swap the streams, considering null conditions
+    if (l.stream_ && r.stream_) {
+        // do nothing
+    } else if (l.stream_) {
+        l.stream_ = nullptr;
+        r.stream_ = &rhs.file_;
+    } else if (r.stream_) {
+        r.stream_ = nullptr;
+        l.stream_ = &file_;
+    }
 }
 
 
@@ -214,7 +231,25 @@ void csv_dict_string_reader::open(const string_wrapper& str, size_t skip, csvpun
 
 void csv_dict_string_reader::swap(csv_dict_string_reader& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    using PYCPP_NAMESPACE::swap;
+    swap(sstream_, rhs.sstream_);
+    swap(header_, rhs.header_);
+
+    auto& l = reader_;
+    auto& r = rhs.reader_;
+    swap(l.row_length_, r.row_length_);
+    swap(l.punct_, r.punct_);
+
+    // swap the streams, considering null conditions
+    if (l.stream_ && r.stream_) {
+        // do nothing
+    } else if (l.stream_) {
+        l.stream_ = nullptr;
+        r.stream_ = &rhs.sstream_;
+    } else if (r.stream_) {
+        r.stream_ = nullptr;
+        l.stream_ = &sstream_;
+    }
 }
 
 
@@ -278,7 +313,6 @@ const csv_quoting csv_dict_stream_writer::quoting() const
 void csv_dict_stream_writer::swap(csv_dict_stream_writer& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(writer_, rhs.writer_);
     swap(header_, rhs.header_);
 }
@@ -358,7 +392,25 @@ void csv_dict_file_writer::open(const u16string_view& name, const csv_row& heade
 
 void csv_dict_file_writer::swap(csv_dict_file_writer& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    using PYCPP_NAMESPACE::swap;
+    swap(file_, rhs.file_);
+    swap(header_, rhs.header_);
+
+    auto& l = writer_;
+    auto& r = rhs.writer_;
+    swap(l.quoting_, r.quoting_);
+    swap(l.punct_, r.punct_);
+
+    // swap the streams, considering null conditions
+    if (l.stream_ && r.stream_) {
+        // do nothing
+    } else if (l.stream_) {
+        l.stream_ = nullptr;
+        r.stream_ = &rhs.file_;
+    } else if (r.stream_) {
+        r.stream_ = nullptr;
+        l.stream_ = &file_;
+    }
 }
 
 
@@ -403,7 +455,25 @@ std::string csv_dict_string_writer::str() const
 
 void csv_dict_string_writer::swap(csv_dict_string_writer& rhs)
 {
-    static_assert(false, "");       // TODO: implement
+    using PYCPP_NAMESPACE::swap;
+    swap(sstream_, rhs.sstream_);
+    swap(header_, rhs.header_);
+
+    auto& l = writer_;
+    auto& r = rhs.writer_;
+    swap(l.quoting_, r.quoting_);
+    swap(l.punct_, r.punct_);
+
+    // swap the streams, considering null conditions
+    if (l.stream_ && r.stream_) {
+        // do nothing
+    } else if (l.stream_) {
+        l.stream_ = nullptr;
+        r.stream_ = &rhs.sstream_;
+    } else if (r.stream_) {
+        r.stream_ = nullptr;
+        l.stream_ = &sstream_;
+    }
 }
 
 PYCPP_END_NAMESPACE

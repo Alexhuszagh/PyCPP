@@ -66,7 +66,9 @@ public:
     // DATA
     void operator()(const value_type& row);
 
-private:
+protected:
+    friend struct csv_dict_file_writer;
+    friend struct csv_dict_string_writer;
     ostream* stream_ = nullptr;
     csv_quoting quoting_ = CSV_QUOTE_MINIMAL;
     shared_ptr<csvpunct_impl> punct_;

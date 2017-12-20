@@ -65,7 +65,9 @@ public:
     iterator begin();
     iterator end();
 
-private:
+protected:
+    friend struct csv_dict_file_reader;
+    friend struct csv_dict_string_reader;
     istream* stream_ = nullptr;
     size_t row_length_ = 0;
     unique_ptr<csvpunct_impl> punct_;
