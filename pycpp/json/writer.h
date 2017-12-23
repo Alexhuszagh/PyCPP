@@ -48,15 +48,15 @@ public:
     json_stream_writer(ostream&, char = ' ', int = 4);
     json_stream_writer(const json_stream_writer&) = delete;
     json_stream_writer& operator=(const json_stream_writer&) = delete;
-    json_stream_writer(json_stream_writer&&);
-    json_stream_writer& operator=(json_stream_writer&&);
-    ~json_stream_writer();
+    json_stream_writer(json_stream_writer&&) noexcept;
+    json_stream_writer& operator=(json_stream_writer&&) noexcept;
+    ~json_stream_writer() noexcept;
 
     // MODIFIERS/PROPERTIES
     void open(ostream&);
     void set_indent(char = ' ', int = 4);
-    bool is_pretty() const;
-    void swap(json_stream_writer&);
+    bool is_pretty() const noexcept;
+    void swap(json_stream_writer&) noexcept;
 
     // SAX EVENTS
     virtual void start_object() override;
@@ -83,6 +83,7 @@ private:
  */
 struct json_file_writer_base
 {
+    json_file_writer_base();
     mutable unique_heap_pimpl<ofstream> file_;
 };
 
@@ -97,8 +98,8 @@ struct json_file_writer:
     json_file_writer() = default;
     json_file_writer(const json_file_writer&) = delete;
     json_file_writer& operator=(const json_file_writer&) = delete;
-    json_file_writer(json_file_writer&&);
-    json_file_writer& operator=(json_file_writer&&);
+    json_file_writer(json_file_writer&&) noexcept;
+    json_file_writer& operator=(json_file_writer&&) noexcept;
 
     // STREAM
     json_file_writer(const string_view& name);
@@ -112,7 +113,7 @@ struct json_file_writer:
     virtual void flush() const override;
 
     // MODIFIERS
-    void swap(json_file_writer&);
+    void swap(json_file_writer&) noexcept;
 };
 
 
@@ -121,7 +122,8 @@ struct json_file_writer:
  */
 struct json_string_writer_base
 {
-    mutable unique_heap_pimpl<ostringstream> sstream_;
+    json_string_writer_base();
+    mutable unique_heap_pimpl<json_ostringstream_t> sstream_;
 };
 
 
@@ -136,11 +138,11 @@ struct json_string_writer:
     json_string_writer(const json_string_writer&) = delete;
     json_string_writer& operator=(const json_string_writer&) = delete;
     json_string_writer(json_string_writer&&);
-    json_string_writer& operator=(json_string_writer&&);
-    std::string str() const;
+    json_string_writer& operator=(json_string_writer&&) noexcept;
+    json_string_t str() const;
 
     // MODIFIERS
-    void swap(json_string_writer&);
+    void swap(json_string_writer&) noexcept;
 };
 
 PYCPP_END_NAMESPACE

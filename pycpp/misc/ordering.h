@@ -21,9 +21,9 @@ namespace ordering
  *  \brief `!=` implemented as `==`.
  */
 template <typename T>
-static bool not_equal_to(const T& left, const T& right)
+static bool not_equal_to(const T& lhs, const T& rhs) noexcept(noexcept(lhs == rhs))
 {
-    return !(left == right);
+    return !(lhs == rhs);
 }
 
 
@@ -31,9 +31,9 @@ static bool not_equal_to(const T& left, const T& right)
  *  \brief `<=` implemented as `<`.
  */
 template <typename T>
-static bool less_equal(const T& left, const T& right)
+static bool less_equal(const T& lhs, const T& rhs) noexcept(noexcept(lhs < rhs))
 {
-    return !(right < left);
+    return !(rhs < lhs);
 }
 
 
@@ -41,9 +41,9 @@ static bool less_equal(const T& left, const T& right)
  *  \brief `>` implemented as `<`.
  */
 template <typename T>
-static bool greater(const T& left, const T& right)
+static bool greater(const T& lhs, const T& rhs) noexcept(noexcept(lhs < rhs))
 {
-    return right < left;
+    return rhs < lhs;
 }
 
 
@@ -51,9 +51,9 @@ static bool greater(const T& left, const T& right)
  *  \brief `>=` implemented as `<`.
  */
 template <typename T>
-static bool greater_equal(const T& left, const T& right)
+static bool greater_equal(const T& lhs, const T& rhs) noexcept(noexcept(lhs < rhs))
 {
-    return !(left < right);
+    return !(lhs < rhs);
 }
 
 }   /* ordering */

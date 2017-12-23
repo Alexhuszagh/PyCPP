@@ -205,16 +205,16 @@ struct btree_key_compare_to_adapter: Compare
 template <>
 struct btree_key_compare_to_adapter<less<std::string>>: public btree_key_compare_to_tag
 {
-    btree_key_compare_to_adapter()
+    btree_key_compare_to_adapter() noexcept
     {}
 
-    btree_key_compare_to_adapter(const less<std::string>&)
+    btree_key_compare_to_adapter(const less<std::string>&) noexcept
     {}
 
-    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<less<std::string>>&)
+    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<less<std::string>>&) noexcept
     {}
 
-    int operator()(const std::string& a, const std::string& b) const
+    int operator()(const std::string& a, const std::string& b) const noexcept
     {
         return a.compare(b);
     }
@@ -275,7 +275,7 @@ struct btree_key_comparer<Key, Compare, true>
     btree_key_comparer()
     {}
 
-    btree_key_comparer(Compare c):
+    btree_key_comparer(Compare c) noexcept(noexcept(Compare(c))):
         comp(c)
     {}
 
@@ -360,31 +360,31 @@ template <
 >
 struct btree_map_params: public btree_common_params<Key, Compare, Alloc, TargetNodeSize, sizeof(Key) + sizeof(Data)>
 {
+    using key_type = Key;
     using data_type = Data;
     using mapped_type = Data;
-    using value_type = pair<const Key, data_type>;
-    using mutable_value_type = pair<Key, data_type>;
+    using value_type = pair<const key_type, data_type>;
+    using mutable_value_type = pair<key_type, data_type>;
     using pointer = value_type*;
     using const_pointer = const value_type*;
     using reference = value_type&;
     using const_reference = const value_type&;
 
     enum {
-        value_size = sizeof(Key) + sizeof(data_type),
+        value_size = sizeof(key_type) + sizeof(data_type),
     };
 
-    static const Key& key(const value_type& x)
+    static const key_type& key(const value_type& x) noexcept
     {
         return x.first;
     }
 
-    static const Key& key(const mutable_value_type& x)
+    static const key_type& key(const mutable_value_type& x) noexcept
     {
         return x.first;
     }
 
-
-    static void swap(mutable_value_type* a, mutable_value_type* b)
+    static void swap(mutable_value_type* a, mutable_value_type* b) PYCPP_NOEXCEPT_SWAPPABLE(key_type, mapped_type)
     {
         btree_swap_helper(a->first, b->first);
         btree_swap_helper(a->second, b->second);
@@ -406,15 +406,15 @@ struct btree_set_params: public btree_common_params<Key, Compare, Alloc, TargetN
     using const_reference = const value_type&;
 
     enum {
-        value_size = sizeof(Key),
+        value_size = sizeof(value_type),
     };
 
-    static const Key& key(const value_type& x)
+    static const Key& key(const value_type& x) noexcept
     {
         return x;
     }
 
-    static void swap(mutable_value_type* a, mutable_value_type* b)
+    static void swap(mutable_value_type* a, mutable_value_type* b) PYCPP_NOEXCEPT_SWAPPABLE(value_type)
     {
         btree_swap_helper<mutable_value_type>(*a, *b);
     }
@@ -619,40 +619,40 @@ public:
 
     // Getter/setter for whether this is a leaf node or not. This value
     // doesn't change after the node is created.
-    bool leaf() const
+    bool leaf() const noexcept
     {
         return fields_.leaf;
     }
 
     // Getter for the position of this node in its parent.
-    int position() const
+    int position() const noexcept
     {
         return fields_.position;
     }
 
-    void set_position(int v)
+    void set_position(int v) noexcept
     {
         fields_.position = v;
     }
 
     // Getter/setter for the number of values stored in this node.
-    int count() const
+    int count() const noexcept
     {
         return fields_.count;
     }
 
-    void set_count(int v)
+    void set_count(int v) noexcept
     {
         fields_.count = v;
     }
 
-    int max_count() const
+    int max_count() const noexcept
     {
         return fields_.max_count;
     }
 
     // Getter for the parent of this node.
-    btree_node* parent() const
+    btree_node* parent() const noexcept
     {
         return fields_.parent;
     }
@@ -660,12 +660,12 @@ public:
     // Getter for whether the node is the root of the tree. The parent
     // of the root of the tree is the leftmost node in the tree which
     // is guaranteed to be a leaf.
-    bool is_root() const
+    bool is_root() const noexcept
     {
         return parent()->leaf();
     }
 
-    void make_root()
+    void make_root() noexcept
     {
         assert(parent()->is_root());
         fields_.parent = fields_.parent->parent();
@@ -673,44 +673,44 @@ public:
 
     // Getter for the rightmost root node field. Only valid on the root
     // node.
-    btree_node* rightmost() const
+    btree_node* rightmost() const noexcept
     {
         return fields_.rightmost;
     }
 
-    btree_node** mutable_rightmost()
+    btree_node** mutable_rightmost() noexcept
     {
         return &fields_.rightmost;
     }
 
     // Getter for the size root node field. Only valid on the root node.
-    size_type size() const
+    size_type size() const noexcept
     {
         return fields_.size;
     }
 
-    size_type* mutable_size()
+    size_type* mutable_size() noexcept
     {
         return &fields_.size;
     }
 
     // Getters for the key/value at position i in the node.
-    const key_type& key(int i) const
+    const key_type& key(int i) const noexcept
     {
         return params_type::key(fields_.values[i]);
     }
 
-    reference value(int i)
+    reference value(int i) noexcept
     {
         return reinterpret_cast<reference>(fields_.values[i]);
     }
 
-    const_reference value(int i) const
+    const_reference value(int i) const noexcept
     {
         return reinterpret_cast<const_reference>(fields_.values[i]);
     }
 
-    mutable_value_type* mutable_value(int i)
+    mutable_value_type* mutable_value(int i) noexcept
     {
         return &fields_.values[i];
     }
@@ -722,17 +722,17 @@ public:
     }
 
     // Getters/setter for the child at position i in the node.
-    btree_node* child(int i) const
+    btree_node* child(int i) const noexcept
     {
         return fields_.children[i];
     }
 
-    btree_node** mutable_child(int i)
+    btree_node** mutable_child(int i) noexcept
     {
         return &fields_.children[i];
     }
 
-    void set_child(int i, btree_node* c)
+    void set_child(int i, btree_node* c) noexcept
     {
         *mutable_child(i) = c;
         c->fields_.parent = this;
@@ -852,7 +852,7 @@ public:
     void swap(btree_node* src);
 
     // Node allocation/deletion routines.
-    static btree_node* init_leaf(leaf_fields* f, btree_node* parent, int max_count)
+    static btree_node* init_leaf(leaf_fields* f, btree_node* parent, int max_count) noexcept
     {
         btree_node* n = reinterpret_cast<btree_node*>(f);
         f->leaf = 1;
@@ -866,7 +866,7 @@ public:
         return n;
     }
 
-    static btree_node* init_internal(internal_fields* f, btree_node* parent)
+    static btree_node* init_internal(internal_fields* f, btree_node* parent) noexcept
     {
         btree_node* n = init_leaf(f, parent, node_values);
         f->leaf = 0;
@@ -876,7 +876,7 @@ public:
         return n;
     }
 
-    static btree_node* init_root(root_fields* f, btree_node* parent)
+    static btree_node* init_root(root_fields* f, btree_node* parent) noexcept
     {
         btree_node* n = init_internal(f, parent);
         f->rightmost = parent;
@@ -935,17 +935,17 @@ struct btree_iterator
     using const_iterator = btree_iterator<const_node, const_reference, const_pointer>;
     using self_type = btree_iterator<Node, Reference, Pointer>;
 
-    btree_iterator():
+    btree_iterator() noexcept:
         node(nullptr),
         position(-1)
     {}
 
-    btree_iterator(Node* n, int p):
+    btree_iterator(Node* n, int p) noexcept:
         node(n),
         position(p)
     {}
 
-    btree_iterator(const iterator& x):
+    btree_iterator(const iterator& x) noexcept:
         node(x.node),
         position(x.position)
     {}
@@ -983,17 +983,17 @@ struct btree_iterator
     }
 
     // Accessors for the key/value the iterator is pointing at.
-    const key_type& key() const
+    const key_type& key() const noexcept
     {
         return node->key(position);
     }
 
-    reference operator*() const
+    reference operator*() const noexcept
     {
         return node->value(position);
     }
 
-    pointer operator->() const
+    pointer operator->() const noexcept
     {
         return &node->value(position);
     }
@@ -1102,12 +1102,12 @@ class btree : public Params::key_compare
 
     struct node_stats
     {
-        node_stats(btree_ssize_t l, btree_ssize_t i):
+        node_stats(btree_ssize_t l, btree_ssize_t i) noexcept:
             leaf_nodes(l),
             internal_nodes(i)
         {}
 
-        node_stats& operator+=(const node_stats& x)
+        node_stats& operator+=(const node_stats& x) noexcept
         {
             leaf_nodes += x.leaf_nodes;
             internal_nodes += x.internal_nodes;
@@ -1159,42 +1159,42 @@ public:
     }
 
     // Iterator routines.
-    iterator begin()
+    iterator begin() noexcept
     {
         return iterator(leftmost(), 0);
     }
 
-    const_iterator begin() const
+    const_iterator begin() const noexcept
     {
         return const_iterator(leftmost(), 0);
     }
 
-    iterator end()
+    iterator end() noexcept
     {
         return iterator(rightmost(), rightmost() ? rightmost()->count() : 0);
     }
 
-    const_iterator end() const
+    const_iterator end() const noexcept
     {
         return const_iterator(rightmost(), rightmost() ? rightmost()->count() : 0);
     }
 
-    reverse_iterator rbegin()
+    reverse_iterator rbegin() noexcept
     {
         return reverse_iterator(end());
     }
 
-    const_reverse_iterator rbegin() const
+    const_reverse_iterator rbegin() const noexcept
     {
         return const_reverse_iterator(end());
     }
 
-    reverse_iterator rend()
+    reverse_iterator rend() noexcept
     {
         return reverse_iterator(begin());
     }
 
-    const_reverse_iterator rend() const
+    const_reverse_iterator rend() const noexcept
     {
         return const_reverse_iterator(begin());
     }
@@ -1391,12 +1391,12 @@ public:
         return *this;
     }
 
-    key_compare* mutable_key_comp()
+    key_compare* mutable_key_comp() noexcept
     {
         return this;
     }
 
-    const key_compare& key_comp() const
+    const key_compare& key_comp() const noexcept
     {
         return *this;
     }
@@ -1420,7 +1420,7 @@ public:
 
     // Size routines. Note that empty() is slightly faster than
     // doing size()==0.
-    size_type size() const
+    size_type size() const noexcept
     {
         if (empty()) {
             return 0;
@@ -1431,12 +1431,12 @@ public:
         return root()->size();
     }
 
-    size_type max_size() const
+    size_type max_size() const noexcept
     {
         return numeric_limits<size_type>::max();
     }
 
-    bool empty() const
+    bool empty() const noexcept
     {
         return root() == nullptr;
     }
@@ -1525,28 +1525,28 @@ public:
 
 private:
     // Internal accessor routines.
-    node_type* root()
+    node_type* root() noexcept
     {
         return root_.data;
     }
 
-    const node_type* root() const
+    const node_type* root() const noexcept
     {
         return root_.data;
     }
 
-    node_type** mutable_root()
+    node_type** mutable_root() noexcept
     {
         return &root_.data;
     }
 
     // The rightmost node is stored in the root node.
-    node_type* rightmost()
+    node_type* rightmost() noexcept
     {
         return (!root() || root()->leaf()) ? root() : root()->rightmost();
     }
 
-    const node_type* rightmost() const
+    const node_type* rightmost() const noexcept
     {
         return (!root() || root()->leaf()) ? root() : root()->rightmost();
     }
@@ -1557,29 +1557,29 @@ private:
     }
 
     // The leftmost node is stored as the parent of the root node.
-    node_type* leftmost()
+    node_type* leftmost() noexcept
     {
         return root() ? root()->parent() : nullptr;
     }
 
-    const node_type* leftmost() const
+    const node_type* leftmost() const noexcept
     {
         return root() ? root()->parent() : nullptr;
     }
 
     // The size of the tree is stored in the root node.
-    size_type* mutable_size()
+    size_type* mutable_size() noexcept
     {
         return root()->mutable_size();
     }
 
     // Allocator routines.
-    internal_allocator_type* mutable_internal_allocator()
+    internal_allocator_type* mutable_internal_allocator() noexcept
     {
         return static_cast<internal_allocator_type*>(&root_);
     }
 
-    const internal_allocator_type& internal_allocator() const
+    const internal_allocator_type& internal_allocator() const noexcept
     {
         return *static_cast<const internal_allocator_type*>(&root_);
     }
@@ -1644,12 +1644,12 @@ private:
     // Tries to shrink the height of the tree by 1.
     void try_shrink();
 
-    iterator internal_end(iterator iter)
+    iterator internal_end(iterator iter) noexcept
     {
         return iter.node ? iter : end();
     }
 
-    const_iterator internal_end(const_iterator iter) const
+    const_iterator internal_end(const_iterator iter) const noexcept
     {
         return iter.node ? iter : end();
     }
@@ -1825,42 +1825,42 @@ public:
     {}
 
     // Iterator routines.
-    iterator begin()
+    iterator begin() noexcept
     {
         return tree_.begin();
     }
 
-    const_iterator begin() const
+    const_iterator begin() const noexcept
     {
         return tree_.begin();
     }
 
-    iterator end()
+    iterator end() noexcept
     {
         return tree_.end();
     }
 
-    const_iterator end() const
+    const_iterator end() const noexcept
     {
         return tree_.end();
     }
 
-    reverse_iterator rbegin()
+    reverse_iterator rbegin() noexcept
     {
         return tree_.rbegin();
     }
 
-    const_reverse_iterator rbegin() const
+    const_reverse_iterator rbegin() const noexcept
     {
         return tree_.rbegin();
     }
 
-    reverse_iterator rend()
+    reverse_iterator rend() noexcept
     {
         return tree_.rend();
     }
 
-    const_reverse_iterator rend() const
+    const_reverse_iterator rend() const noexcept
     {
         return tree_.rend();
     }
@@ -1918,17 +1918,17 @@ public:
     }
 
     // Size routines.
-    size_type size() const
+    size_type size() const noexcept
     {
         return tree_.size();
     }
 
-    size_type max_size() const
+    size_type max_size() const noexcept
     {
         return tree_.max_size();
     }
 
-    bool empty() const
+    bool empty() const noexcept
     {
         return tree_.empty();
     }

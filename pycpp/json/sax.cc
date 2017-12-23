@@ -1,12 +1,23 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/json/new.h>
 #include <pycpp/json/sax.h>
 #include <pycpp/stl/stdexcept.h>
 #include <rapidjson/istreamwrapper.h>
 #include <rapidjson/reader.h>
 
 PYCPP_BEGIN_NAMESPACE
+
+// ALIAS
+// -----
+
+using rapidjson_istream = rapidjson::IStreamWrapper;
+using rapidjson_reader = rapidjson::GenericReader<
+    rapidjson::UTF8<>,
+    rapidjson::UTF8<>,
+    json_backend_allocator
+>;
 
 // HELPERS
 // -------
@@ -182,13 +193,13 @@ void json_sax_handler::string(const string_wrapper&)
 {}
 
 
-json_stream_reader::json_stream_reader(json_stream_reader&& rhs)
+json_stream_reader::json_stream_reader(json_stream_reader&& rhs) noexcept
 {
     swap(rhs);
 }
 
 
-json_stream_reader& json_stream_reader::operator=(json_stream_reader&& rhs)
+json_stream_reader& json_stream_reader::operator=(json_stream_reader&& rhs) noexcept
 {
     swap(rhs);
     return *this;
@@ -204,36 +215,40 @@ void json_stream_reader::open(istream& s)
 
     // parse stream
     handler_impl impl(*handler_);
-    rapidjson::Reader reader;
-    rapidjson::IStreamWrapper istream(*stream_);
+    rapidjson_reader reader;
+    rapidjson_istream istream(*stream_);
     handler_->start_document();
     reader.Parse(istream, impl);
     handler_->end_document();
 }
 
 
-void json_stream_reader::set_handler(json_sax_handler& h)
+void json_stream_reader::set_handler(json_sax_handler& h) noexcept
 {
     handler_ = &h;
 }
 
 
-void json_stream_reader::swap(json_stream_reader& rhs)
+void json_stream_reader::swap(json_stream_reader& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(stream_, rhs.stream_);
     swap(handler_, rhs.handler_);
 }
 
 
-json_file_reader::json_file_reader(json_file_reader&& rhs)
+json_file_reader_base::json_file_reader_base():
+    file_(json_allocator())
+{}
+
+
+json_file_reader::json_file_reader(json_file_reader&& rhs) noexcept
 {
     swap(rhs);
 }
 
 
-json_file_reader& json_file_reader::operator=(json_file_reader&& rhs)
+json_file_reader& json_file_reader::operator=(json_file_reader&& rhs) noexcept
 {
     swap(rhs);
     return *this;
@@ -284,7 +299,7 @@ void json_file_reader::open(const u16string_view& name)
 #endif                                          // WINDOWS
 
 
-void json_file_reader::swap(json_file_reader& rhs)
+void json_file_reader::swap(json_file_reader& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     json_stream_reader::swap(rhs);
@@ -292,13 +307,18 @@ void json_file_reader::swap(json_file_reader& rhs)
 }
 
 
-json_string_reader::json_string_reader(json_string_reader&& rhs)
+json_string_reader_base::json_string_reader_base():
+    sstream_(json_allocator())
+{}
+
+
+json_string_reader::json_string_reader(json_string_reader&& rhs) noexcept
 {
     swap(rhs);
 }
 
 
-json_string_reader& json_string_reader::operator=(json_string_reader&& rhs)
+json_string_reader& json_string_reader::operator=(json_string_reader&& rhs) noexcept
 {
     swap(rhs);
     return *this;
@@ -313,12 +333,12 @@ json_string_reader::json_string_reader(const string_wrapper& str)
 
 void json_string_reader::open(const string_wrapper& str)
 {
-    sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
+    sstream_ = json_istringstream_t(json_string_t(str), ios_base::in | ios_base::binary);
     json_stream_reader::open(*sstream_);
 }
 
 
-void json_string_reader::swap(json_string_reader& rhs)
+void json_string_reader::swap(json_string_reader& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     json_stream_reader::swap(rhs);

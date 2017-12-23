@@ -8,6 +8,7 @@
 #pragma once
 
 // TODO: add custom allocators
+#include <pycpp/allocator/crt.h>
 #include <pycpp/allocator/secure.h>
 #include <pycpp/allocator/stack.h>
 #include <pycpp/allocator/standard.h>

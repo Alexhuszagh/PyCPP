@@ -20,7 +20,7 @@
 // HELPERS
 // -------
 
-static int map_mman_error(const DWORD err, const int deferr)
+static int map_mman_error(const DWORD err, const int deferr) noexcept
 {
     if (err == 0) {
         return 0;
@@ -29,7 +29,7 @@ static int map_mman_error(const DWORD err, const int deferr)
     return err;
 }
 
-static DWORD map_mmap_prot_page(const int prot)
+static DWORD map_mmap_prot_page(const int prot) noexcept
 {
     DWORD protect = 0;
 
@@ -46,7 +46,7 @@ static DWORD map_mmap_prot_page(const int prot)
     return protect;
 }
 
-static DWORD map_mmap_prot_file(const int prot)
+static DWORD map_mmap_prot_file(const int prot) noexcept
 {
     DWORD desired_access = 0;
 
@@ -68,7 +68,7 @@ static DWORD map_mmap_prot_file(const int prot)
 // ---------
 
 
-void* mmap(void* addr, size_t len, int prot, int flags, int fildes, offset_t off)
+void* mmap(void* addr, size_t len, int prot, int flags, int fildes, offset_t off) noexcept
 {
     HANDLE fm, h;
 
@@ -131,7 +131,7 @@ void* mmap(void* addr, size_t len, int prot, int flags, int fildes, offset_t off
     return map;
 }
 
-int munmap(void* addr, size_t len)
+int munmap(void* addr, size_t len) noexcept
 {
     if (UnmapViewOfFile(addr)) {
         return 0;
@@ -142,7 +142,7 @@ int munmap(void* addr, size_t len)
     return -1;
 }
 
-int mprotect(void* addr, size_t len, int prot)
+int mprotect(void* addr, size_t len, int prot) noexcept
 {
     DWORD newProtect = map_mmap_prot_page(prot);
     DWORD oldProtect = 0;
@@ -156,7 +156,7 @@ int mprotect(void* addr, size_t len, int prot)
     return -1;
 }
 
-int msync(void* addr, size_t len, int flags)
+int msync(void* addr, size_t len, int flags) noexcept
 {
     if (FlushViewOfFile(addr, len)) {
         return 0;
@@ -167,7 +167,7 @@ int msync(void* addr, size_t len, int flags)
     return -1;
 }
 
-int mlock(const void* addr, size_t len)
+int mlock(const void* addr, size_t len) noexcept
 {
     if (VirtualLock((LPVOID)addr, len)) {
         return 0;
@@ -178,7 +178,7 @@ int mlock(const void* addr, size_t len)
     return -1;
 }
 
-int munlock(const void* addr, size_t len)
+int munlock(const void* addr, size_t len) noexcept
 {
     if (VirtualUnlock((LPVOID)addr, len)) {
         return 0;

@@ -4,6 +4,7 @@
 #include <pycpp/csv/writer.h>
 #include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/string.h>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -64,7 +65,7 @@ static std::string quote_value(const string_view& value, csvpunct_impl& punct, c
         case CSV_QUOTE_NONE:
             return quote_none(value, punct);
         default:
-            throw invalid_argument("Unrecognized CSV quoting option.");
+            assert(false && "Unrecognized CSV quoting option.");
     }
 }
 

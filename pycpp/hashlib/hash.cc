@@ -9,6 +9,7 @@
 #include <pycpp/secure/stdlib.h>
 #include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/hex.h>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -264,7 +265,7 @@ static void get_hash(Memory& mem, hash_algorithm algorithm, Function& function)
             break;
 
         default:
-            throw runtime_error("Unrecognized hashing algorithm.");
+            assert(false && "Unrecognized hashing algorithm.");
     }
 }
 

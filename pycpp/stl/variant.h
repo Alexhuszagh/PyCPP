@@ -285,7 +285,7 @@ using is_invocable_r = invocable::is_invocable_r<void, R, F, Args...>;
 template <typename T>
 struct is_swappable_impl
 {
-    private:
+private:
     template <typename U, typename = decltype(swap(declval<U&>(), declval<U&>()))>
     inline static true_type test(int);
 

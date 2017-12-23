@@ -10,6 +10,7 @@
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
 #include <type_traits>
+#include <utility>
 #include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -32,6 +33,15 @@ using std::is_class;
 using std::is_enum;
 using std::is_empty;
 using std::is_union;
+using std::is_trivial;
+using std::is_trivially_copyable;
+using std::is_standard_layout;
+using std::is_literal_type;
+using std::is_pod;
+using std::is_polymorphic;
+using std::is_abstract;
+using std::is_signed;
+using std::is_unsigned;
 using std::common_type;
 
 // Conversion
@@ -65,6 +75,22 @@ using std::add_pointer;
 using std::enable_if;
 using std::conditional;
 
+// Helpers
+template <typename...>
+using void_t = void;
+
+// Integral Constant
+using std::integral_constant;
+
+template <bool B>
+using bool_constant = integral_constant<bool, B>;
+
+template <size_t N>
+using size_constant = integral_constant<size_t, N>;
+
+using std::true_type;
+using std::false_type;
+
 // Convertible
 using std::is_convertible;
 
@@ -93,6 +119,51 @@ using std::is_move_assignable;
 using std::is_trivially_move_assignable;
 using std::is_nothrow_move_assignable;
 
+// Swappable (C++17 backport)
+template <typename T1, typename T2>
+struct is_swappable_with_impl
+{
+private:
+    template <typename U1, typename U2, typename = decltype(swap(std::declval<U1&>(), std::declval<U2&>()))>
+    inline static true_type test(int);
+
+    template <typename U1, typename U2>
+    inline static false_type test(...);
+
+public:
+    using type = decltype(test<T1, T2>(0));
+};
+
+template <typename T1, typename T2>
+using is_swappable_with = typename is_swappable_with_impl<T1, T2>::type;
+
+template <typename T1, typename T2, bool = is_swappable_with<T1, T2>::value>
+struct is_nothrow_swappable_with
+{
+    static constexpr bool value = noexcept(swap(std::declval<T1&>(), std::declval<T2&>()));
+};
+
+template <typename T1, typename T2>
+struct is_nothrow_swappable_with<T1, T2, false>: false_type
+{};
+
+template <typename T>
+using is_swappable = is_swappable_with<T, T>;
+
+template <typename T>
+using is_nothrow_swappable = is_nothrow_swappable_with<T, T>;
+
+// Relocatable (Proposed extension)
+// `is_relocatable` should be specialized for any types if possible,
+// since it allows raw bitwise copies.
+// Inspired by Working Group paper P0023R0.
+template <typename T>
+struct is_relocatable: bool_constant<
+        is_trivially_copyable<T>::value ||
+        is_trivially_move_constructible<T>::value
+    >
+{};
+
 // Destructable
 using std::is_destructible;
 using std::is_trivially_destructible;
@@ -101,22 +172,6 @@ using std::is_nothrow_destructible;
 // Memory
 using std::aligned_storage;
 using std::alignment_of;
-
-// Helpers
-template <typename...>
-using void_t = void;
-
-// Integral Constant
-using std::integral_constant;
-
-template <bool B>
-using bool_constant = integral_constant<bool, B>;
-
-template <size_t N>
-using size_constant = integral_constant<size_t, N>;
-
-using std::true_type;
-using std::false_type;
 
 // CONVENIENCE
 // -----------
@@ -226,6 +281,33 @@ template <typename T>
 constexpr bool is_union_v = is_union<T>::value;
 
 template <typename T>
+constexpr bool is_trivial_v = is_trivial<T>::value;
+
+template <typename T>
+constexpr bool is_trivially_copyable_v = is_trivially_copyable<T>::value;
+
+template <typename T>
+constexpr bool is_standard_layout_v = is_standard_layout<T>::value;
+
+template <typename T>
+constexpr bool is_literal_type_v = is_literal_type<T>::value;
+
+template <typename T>
+constexpr bool is_pod_v = is_pod<T>::value;
+
+template <typename T>
+constexpr bool is_polymorphic_v = is_polymorphic<T>::value;
+
+template <typename T>
+constexpr bool is_abstract_v = is_abstract<T>::value;
+
+template <typename T>
+constexpr bool is_signed_v = is_signed<T>::value;
+
+template <typename T>
+constexpr bool is_unsigned_v = is_unsigned<T>::value;
+
+template <typename T>
 constexpr bool is_const_v = is_const<T>::value;
 
 template <typename T>
@@ -297,8 +379,23 @@ constexpr bool is_trivially_move_assignable_v = is_trivially_move_assignable<T>:
 template <typename T>
 constexpr bool is_nothrow_move_assignable_v = is_nothrow_move_assignable<T>::value;
 
+template <typename T, typename U>
+constexpr bool is_swappable_with_v = is_swappable_with<T, U>::value;
+
+template <typename T, typename U>
+constexpr bool is_nothrow_swappable_with_v = is_nothrow_swappable_with<T, U>::value;
+
+template <typename T>
+constexpr bool is_swappable_v = is_swappable<T>::value;
+
+template <typename T>
+constexpr bool is_nothrow_swappable_v = is_nothrow_swappable<T>::value;
+
 template <typename T>
 constexpr bool is_destructible_v = is_destructible<T>::value;
+
+template <typename T>
+constexpr bool is_relocatable_v = is_relocatable<T>::value;
 
 template <typename T>
 constexpr bool is_trivially_destructible_v = is_trivially_destructible<T>::value;
@@ -310,5 +407,94 @@ template <typename T>
 constexpr size_t alignment_of_v = alignment_of<T>::value;
 
 #endif          // HAVE_CPP14
+
+namespace type_detail
+{
+// DETAIL
+// ------
+
+template <template <typename> class T, typename ... Ts>
+struct map_and;
+
+
+template <template <typename> class T>
+struct map_and<T>: true_type
+{};
+
+
+template <template <typename> class T, typename U, typename ... Ts>
+struct map_and<T, U, Ts...>: conditional_t<T<U>::value && map_and<T, Ts...>::value, true_type, false_type>
+{};
+
+
+template <template <typename> class T, typename ... Ts>
+struct map_or;
+
+
+template <template <typename> class T>
+struct map_or<T>: false_type
+{};
+
+
+template <template <typename> class T, typename U, typename ... Ts>
+struct map_or<T, U, Ts...>: conditional_t<T<U>::value || map_or<T, Ts...>::value, true_type, false_type>
+{};
+
+}   /* type_detail */
+
+// MACROS
+// ------
+
+// Specify no-except conditions for 1-5 arguments
+#define PYCPP_TYPE_ID(x) x
+#define PYCPP_GET_TYPE(_1,_2,_3,_4,_5,NAME,...) NAME
+
+// noexcept(noexcept(is_nothrow_constructible<Ts...>::value))
+#define PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE1(T1) noexcept(noexcept(type_detail::map_and<is_nothrow_default_constructible, T1>::value))
+#define PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE2(T1, T2) noexcept(noexcept(type_detail::map_and<is_nothrow_default_constructible, T1, T2>::value))
+#define PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE3(T1, T2, T3) noexcept(noexcept(type_detail::map_and<is_nothrow_default_constructible, T1, T2, T3>::value))
+#define PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE4(T1, T2, T3, T4) noexcept(noexcept(type_detail::map_and<is_nothrow_default_constructible, T1, T2, T3, T4>::value))
+#define PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE5(T1, T2, T3, T4, T5) noexcept(noexcept(type_detail::map_and<is_nothrow_default_constructible, T1, T2, T3, T4, T5>::value))
+#define PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE(...) PYCPP_TYPE_ID(PYCPP_GET_TYPE(__VA_ARGS__, PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE5, PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE4, PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE3, PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE2, PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE1)(__VA_ARGS__))
+
+// noexcept(noexcept(is_nothrow_copy_constructible<Ts...>::value))
+#define PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE1(T1) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_constructible, T1>::value))
+#define PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE2(T1, T2) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_constructible, T1, T2>::value))
+#define PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE3(T1, T2, T3) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_constructible, T1, T2, T3>::value))
+#define PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE4(T1, T2, T3, T4) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_constructible, T1, T2, T3, T4>::value))
+#define PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE5(T1, T2, T3, T4, T5) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_constructible, T1, T2, T3, T4, T5>::value))
+#define PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE(...) PYCPP_TYPE_ID(PYCPP_GET_TYPE(__VA_ARGS__, PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE5, PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE4, PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE3, PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE2, PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE1)(__VA_ARGS__))
+
+// noexcept(noexcept(is_nothrow_copy_assignable<Ts...>::value))
+#define PYCPP_NOEXCEPT_COPY_ASSIGNABLE1(T1) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_assignable, T1>::value))
+#define PYCPP_NOEXCEPT_COPY_ASSIGNABLE2(T1, T2) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_assignable, T1, T2>::value))
+#define PYCPP_NOEXCEPT_COPY_ASSIGNABLE3(T1, T2, T3) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_assignable, T1, T2, T3>::value))
+#define PYCPP_NOEXCEPT_COPY_ASSIGNABLE4(T1, T2, T3, T4) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_assignable, T1, T2, T3, T4>::value))
+#define PYCPP_NOEXCEPT_COPY_ASSIGNABLE5(T1, T2, T3, T4, T5) noexcept(noexcept(type_detail::map_and<is_nothrow_copy_assignable, T1, T2, T3, T4, T5>::value))
+#define PYCPP_NOEXCEPT_COPY_ASSIGNABLE(...) PYCPP_TYPE_ID(PYCPP_GET_TYPE(__VA_ARGS__, PYCPP_NOEXCEPT_COPY_ASSIGNABLE5, PYCPP_NOEXCEPT_COPY_ASSIGNABLE4, PYCPP_NOEXCEPT_COPY_ASSIGNABLE3, PYCPP_NOEXCEPT_COPY_ASSIGNABLE2, PYCPP_NOEXCEPT_COPY_ASSIGNABLE1)(__VA_ARGS__))
+
+// noexcept(noexcept(is_nothrow_move_constructible<Ts...>::value))
+#define PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE1(T1) noexcept(noexcept(type_detail::map_and<is_nothrow_move_constructible, T1>::value))
+#define PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE2(T1, T2) noexcept(noexcept(type_detail::map_and<is_nothrow_move_constructible, T1, T2>::value))
+#define PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE3(T1, T2, T3) noexcept(noexcept(type_detail::map_and<is_nothrow_move_constructible, T1, T2, T3>::value))
+#define PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE4(T1, T2, T3, T4) noexcept(noexcept(type_detail::map_and<is_nothrow_move_constructible, T1, T2, T3, T4>::value))
+#define PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE5(T1, T2, T3, T4, T5) noexcept(noexcept(type_detail::map_and<is_nothrow_move_constructible, T1, T2, T3, T4, T5>::value))
+#define PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE(...) PYCPP_TYPE_ID(PYCPP_GET_TYPE(__VA_ARGS__, PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE5, PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE4, PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE3, PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE2, PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE1)(__VA_ARGS__))
+
+// noexcept(noexcept(is_nothrow_move_assignable<Ts...>::value))
+#define PYCPP_NOEXCEPT_MOVE_ASSIGNABLE1(T1) noexcept(noexcept(type_detail::map_and<is_nothrow_move_assignable, T1>::value))
+#define PYCPP_NOEXCEPT_MOVE_ASSIGNABLE2(T1, T2) noexcept(noexcept(type_detail::map_and<is_nothrow_move_assignable, T1, T2>::value))
+#define PYCPP_NOEXCEPT_MOVE_ASSIGNABLE3(T1, T2, T3) noexcept(noexcept(type_detail::map_and<is_nothrow_move_assignable, T1, T2, T3>::value))
+#define PYCPP_NOEXCEPT_MOVE_ASSIGNABLE4(T1, T2, T3, T4) noexcept(noexcept(type_detail::map_and<is_nothrow_move_assignable, T1, T2, T3, T4>::value))
+#define PYCPP_NOEXCEPT_MOVE_ASSIGNABLE5(T1, T2, T3, T4, T5) noexcept(noexcept(type_detail::map_and<is_nothrow_move_assignable, T1, T2, T3, T4, T5>::value))
+#define PYCPP_NOEXCEPT_MOVE_ASSIGNABLE(...) PYCPP_TYPE_ID(PYCPP_GET_TYPE(__VA_ARGS__, PYCPP_NOEXCEPT_MOVE_ASSIGNABLE5, PYCPP_NOEXCEPT_MOVE_ASSIGNABLE4, PYCPP_NOEXCEPT_MOVE_ASSIGNABLE3, PYCPP_NOEXCEPT_MOVE_ASSIGNABLE2, PYCPP_NOEXCEPT_MOVE_ASSIGNABLE1)(__VA_ARGS__))
+
+// noexcept(noexcept(is_nothrow_swappable<Ts...>::value))
+#define PYCPP_NOEXCEPT_SWAPPABLE1(T1) noexcept(noexcept(type_detail::map_and<is_nothrow_swappable, T1>::value))
+#define PYCPP_NOEXCEPT_SWAPPABLE2(T1, T2) noexcept(noexcept(type_detail::map_and<is_nothrow_swappable, T1, T2>::value))
+#define PYCPP_NOEXCEPT_SWAPPABLE3(T1, T2, T3) noexcept(noexcept(type_detail::map_and<is_nothrow_swappable, T1, T2, T3>::value))
+#define PYCPP_NOEXCEPT_SWAPPABLE4(T1, T2, T3, T4) noexcept(noexcept(type_detail::map_and<is_nothrow_swappable, T1, T2, T3, T4>::value))
+#define PYCPP_NOEXCEPT_SWAPPABLE5(T1, T2, T3, T4, T5) noexcept(noexcept(type_detail::map_and<is_nothrow_swappable, T1, T2, T3, T4, T5>::value))
+#define PYCPP_NOEXCEPT_SWAPPABLE(...) PYCPP_TYPE_ID(PYCPP_GET_TYPE(__VA_ARGS__, PYCPP_NOEXCEPT_SWAPPABLE5, PYCPP_NOEXCEPT_SWAPPABLE4, PYCPP_NOEXCEPT_SWAPPABLE3, PYCPP_NOEXCEPT_SWAPPABLE2, PYCPP_NOEXCEPT_SWAPPABLE1)(__VA_ARGS__))
 
 PYCPP_END_NAMESPACE

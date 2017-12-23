@@ -58,14 +58,14 @@ TEST(json, json_stream_reader)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
+    json_string_t str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
     {
-        istringstream sstream(str);
+        json_istringstream_t sstream(str);
         json_stream_reader reader;
         test_json_reader(reader, sstream);
     }
     {
-        istringstream sstream(str);
+        json_istringstream_t sstream(str);
         json_stream_reader reader;
         test_json_reader(reader, sstream, true);
     }
@@ -76,7 +76,7 @@ TEST(json, json_file_reader)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
+    json_string_t str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
     string path("test.json");
     {
         ofstream ostream(path);
@@ -98,7 +98,7 @@ TEST(json, json_string_reader)
 {
     // don't worry about compliance testing:
     // the backends are robustly tested
-    std::string str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
+    json_string_t str(" { \"hello\" : \"world\", \"t\" : true , \"f\" : false, \"n\": null, \"i\":123, \"pi\": 3.1416, \"a\":[1, 2, 3, 4] } ");
     {
         json_string_reader reader;
         test_json_reader(reader, str);

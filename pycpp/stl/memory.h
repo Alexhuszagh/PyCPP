@@ -12,6 +12,7 @@
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/detail/polymorphic_allocator.h>
 #include <memory>
+#include <stdlib.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -21,7 +22,6 @@ PYCPP_BEGIN_NAMESPACE
 using std::make_shared;
 using std::allocate_shared;
 using std::addressof;
-using std::allocator_traits;
 using std::default_delete;
 using std::unique_ptr;
 using std::shared_ptr;
@@ -30,6 +30,67 @@ using std::weak_ptr;
 template <typename T, typename Allocator>
 struct uses_allocator: std::uses_allocator<T, Allocator>
 {};
+
+// Check if the allocator has `reallocate`, an extension.
+template <typename T>
+class has_reallocate
+{
+protected:
+    template <typename C> static char &test(decltype(std::declval<C>().reallocate(std::declval<typename C::value_type*>(), std::declval<size_t>(), std::declval<size_t>())));
+    template <typename C> static long &test(...);
+
+public:
+    enum {
+        value = sizeof(test<T>(0)) == sizeof(char)
+    };
+};
+
+template <typename Allocator>
+struct allocator_traits: std::allocator_traits<Allocator>
+{
+    using typename std::allocator_traits<Allocator>::value_type;
+    using typename std::allocator_traits<Allocator>::pointer;
+    using typename std::allocator_traits<Allocator>::size_type;
+
+    // Overload if class provides specialized reallocate
+    template <typename T = value_type, typename A = Allocator>
+    enable_if_t<has_reallocate<A>::value, pointer>
+    reallocate(Allocator& allocator, pointer ptr, size_type old_size, size_type new_size)
+    {
+        return allocator.reallocate(ptr, old_size, new_size);
+    }
+
+    // Overload if class does not provide specialized reallocate
+    // and can be trivially moved as bytes.
+    template <typename T = value_type, typename A = Allocator>
+    enable_if_t<!has_reallocate<A>::value && is_relocatable<T>::value, pointer>
+    reallocate(Allocator& allocator, pointer ptr, size_type old_size, size_type new_size)
+    {
+        pointer p = allocator.allocate(new_size);
+        memcpy((void*) p, (void*) ptr, old_size * sizeof(value_type));
+        allocator.deallocate(ptr, old_size);
+        return p;
+    }
+
+    // Overload if class does not provide specialized reallocate
+    // and cannot be trivially moved as bytes.
+    template <typename T = value_type, typename A = Allocator>
+    enable_if_t<!has_reallocate<A>::value && !is_relocatable<T>::value, pointer>
+    reallocate(Allocator& allocator, pointer ptr, size_type old_size, size_type new_size)
+    {
+        pointer p = allocator.allocate(new_size);
+        // use placement new to construct-in-place
+        // Don't use `std::move`, since that move assigns into
+        // uninitialized memory.
+        for (size_t i = 0; i < old_size; ++i) {
+            T& src = ptr[i];
+            T* dst = &p[i];
+            new (static_cast<void*>(dst)) T(std::move(src));
+        }
+        allocator.deallocate(ptr, old_size);
+        return p;
+    }
+};
 
 #if USE_POLYMORPHIC_ALLOCATOR           // POLYMOPRHIC
 
@@ -42,6 +103,20 @@ template <typename T>
 using allocator = std::allocator<T>;
 
 #endif                                  // POLYMOPRHIC
+
+// The following are from cstddef, so include them here
+using std::nullptr_t;
+
+#if defined(HAVE_CPP17)     // HAVE_CPP17
+
+using std::byte;
+
+#else                       // !HAVE_CPP17
+
+enum class byte: unsigned char
+{};
+
+#endif                      // HAVE_CPP17
 
 // FORWARD
 // -------
@@ -85,7 +160,7 @@ struct hash<std::shared_ptr<T>>
  *  \brief `new` analog for a custom allocator.
  */
 template <typename T, typename Allocator, typename ... Ts>
-inline T* allocate_and_construct(Allocator& allocator, Ts&&... ts)
+inline T* allocate_and_construct(const Allocator& allocator, Ts&&... ts)
 {
     using allocator_type = typename allocator_traits<Allocator>::template rebind_alloc<T>;
     using traits_type = allocator_traits<allocator_type>;
@@ -102,7 +177,7 @@ inline T* allocate_and_construct(Allocator& allocator, Ts&&... ts)
  *  \brief `delete` analog for a custom allocator.
  */
 template <typename T, typename Allocator>
-inline void destroy_and_deallocate(Allocator& allocator, T* t, size_t n = 1)
+inline void destroy_and_deallocate(const Allocator& allocator, T* t, size_t n = 1)
 {
     using allocator_type = typename allocator_traits<Allocator>::template rebind_alloc<T>;
     using traits_type = allocator_traits<allocator_type>;

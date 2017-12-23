@@ -29,6 +29,6 @@ enum transfer_encoding_t: unsigned int
     IDENTITY    = 16,
 };
 
-enum_flag(transfer_encoding_t);
+PYCPP_ENUM_FLAG(transfer_encoding_t);
 
 PYCPP_END_NAMESPACE

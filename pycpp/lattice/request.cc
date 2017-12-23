@@ -8,6 +8,7 @@
 #include <pycpp/string/base64.h>
 #include <pycpp/string/codec.h>
 #include <pycpp/string/unicode.h>
+#include <assert.h>
 #include <stdio.h>
 
 #if defined(OS_WINDOWS)
@@ -50,7 +51,7 @@ std::string request_t::method_name() const
         case CONNECT:
             return "CONNECT";
         default:
-            throw out_of_range("HTTP request method unknown.\n");
+            assert(false && "HTTP request method unknown.\n");
     }
 }
 

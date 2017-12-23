@@ -51,16 +51,16 @@ struct json_sax_handler
 struct json_stream_reader
 {
 public:
-    json_stream_reader() = default;
+    json_stream_reader() noexcept = default;
     json_stream_reader(const json_stream_reader&) = delete;
     json_stream_reader& operator=(const json_stream_reader&) = delete;
-    json_stream_reader(json_stream_reader&&);
-    json_stream_reader& operator=(json_stream_reader&&);
+    json_stream_reader(json_stream_reader&&) noexcept;
+    json_stream_reader& operator=(json_stream_reader&&) noexcept;
 
     // MODIFIERS
     void open(istream&);
-    void set_handler(json_sax_handler&);
-    void swap(json_stream_reader&);
+    void set_handler(json_sax_handler&) noexcept;
+    void swap(json_stream_reader&) noexcept;
 
 private:
     istream* stream_ = nullptr;
@@ -73,6 +73,7 @@ private:
  */
 struct json_file_reader_base
 {
+    json_file_reader_base();
     unique_heap_pimpl<ifstream> file_;
 };
 
@@ -87,8 +88,8 @@ struct json_file_reader:
     json_file_reader() = default;
     json_file_reader(const json_file_reader&) = delete;
     json_file_reader& operator=(const json_file_reader&) = delete;
-    json_file_reader(json_file_reader&&);
-    json_file_reader& operator=(json_file_reader&&);
+    json_file_reader(json_file_reader&&) noexcept;
+    json_file_reader& operator=(json_file_reader&&) noexcept;
 
     // STREAM
     json_file_reader(const string_view& name);
@@ -101,7 +102,7 @@ struct json_file_reader:
 #endif                                          // WINDOWS
 
     // MODIFIERS
-    void swap(json_file_reader&);
+    void swap(json_file_reader&) noexcept;
 };
 
 
@@ -110,7 +111,8 @@ struct json_file_reader:
  */
 struct json_string_reader_base
 {
-    unique_heap_pimpl<istringstream> sstream_;
+    json_string_reader_base();
+    unique_heap_pimpl<json_istringstream_t> sstream_;
 };
 
 
@@ -124,15 +126,15 @@ struct json_string_reader:
     json_string_reader() = default;
     json_string_reader(const json_string_reader&) = delete;
     json_string_reader& operator=(const json_string_reader&) = delete;
-    json_string_reader(json_string_reader&&);
-    json_string_reader& operator=(json_string_reader&&);
+    json_string_reader(json_string_reader&&) noexcept;
+    json_string_reader& operator=(json_string_reader&&) noexcept;
 
     // STREAM
     json_string_reader(const string_wrapper& str);
     void open(const string_wrapper& str);
 
     // MODIFIERS
-    void swap(json_string_reader&);
+    void swap(json_string_reader&) noexcept;
 };
 
 PYCPP_END_NAMESPACE

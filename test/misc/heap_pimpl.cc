@@ -17,6 +17,7 @@ PYCPP_USING_NAMESPACE
 TEST(unique_heap_pimpl, integer)
 {
     using pint = unique_heap_pimpl<int>;
+    static_assert(sizeof(pint) > sizeof(int*), "std::allocator shouldn have overhead.");
 
     pint x(2);
     pint y;
@@ -37,6 +38,13 @@ TEST(unique_heap_pimpl, integer)
     swap(x, y);
     EXPECT_EQ(x, 2);
     EXPECT_EQ(y, 5);
+}
+
+
+TEST(unique_heap_pimpl, std_allocator)
+{
+    using pint = unique_heap_pimpl<int, std::allocator<int>>;
+    static_assert(sizeof(pint) == sizeof(int*), "std::allocator shouldn't have overhead.");
 }
 
 

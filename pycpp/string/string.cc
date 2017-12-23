@@ -512,6 +512,11 @@ string_wrapper::string_wrapper(const string_t& str):
 {}
 
 
+string_wrapper::string_wrapper(const string& str):
+    string_view(str.data(), str.length())
+{}
+
+
 string_wrapper::string_wrapper(const string_view& str):
     string_view(str)
 {}
@@ -523,6 +528,11 @@ string_wrapper::string_wrapper(const string_wrapper& str, size_type pos, size_ty
 
 
 string_wrapper::string_wrapper(const string_t& str, size_type pos, size_type len):
+    string_view(string_view(str).substr(pos, len))
+{}
+
+
+string_wrapper::string_wrapper(const string& str, size_type pos, size_type len):
     string_view(string_view(str).substr(pos, len))
 {}
 

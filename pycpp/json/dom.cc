@@ -4,6 +4,7 @@
 #include <pycpp/json/dom.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/stl/stdexcept.h>
+#include <assert.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -88,7 +89,7 @@ static void dump_number_impl(const json_number_t& value, json_stream_writer& wri
 
 static void dump_string_impl(const json_string_t& value, json_stream_writer& writer)
 {
-    writer.string(value);
+    writer.string(string_wrapper(value.data(), value.size()));
 }
 
 
@@ -114,7 +115,7 @@ static void dump_impl(const json_value_t& value, json_stream_writer& writer)
             dump_object_impl(value.get_object(), writer);
             break;
         default:
-            throw runtime_error("Unexpected JSON value type.");
+            assert(false && "Unexpected JSON value type.");
     }
 }
 
@@ -137,7 +138,7 @@ json_dom_handler& json_dom_handler::operator=(json_dom_handler&& rhs)
 }
 
 
-json_dom_handler::json_dom_handler(json_value_t& root):
+json_dom_handler::json_dom_handler(json_value_t& root) noexcept:
     root_(&root)
 {}
 
@@ -212,7 +213,6 @@ void json_dom_handler::string(const string_wrapper& str)
 void json_dom_handler::swap(json_dom_handler& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(root_, rhs.root_);
     swap(has_key_, rhs.has_key_);
     swap(key_, rhs.key_);
@@ -221,17 +221,17 @@ void json_dom_handler::swap(json_dom_handler& rhs)
 
 // DOCUMENT
 
-json_document_t::json_document_t():
+json_document_t::json_document_t() noexcept:
     json_value_t()
 {}
 
 
-json_document_t::json_document_t(json_document_t&& rhs):
+json_document_t::json_document_t(json_document_t&& rhs) noexcept:
     json_value_t(std::move(rhs))
 {}
 
 
-json_document_t& json_document_t::operator=(json_document_t&& rhs)
+json_document_t& json_document_t::operator=(json_document_t&& rhs) noexcept
 {
     json_value_t::operator=(std::move(rhs));
     return *this;
@@ -240,7 +240,7 @@ json_document_t& json_document_t::operator=(json_document_t&& rhs)
 
 void json_document_t::loads(const string_wrapper& data)
 {
-    istringstream stream = istringstream(std::string(data));
+    json_istringstream_t stream = json_istringstream_t(string(data));
     load(stream);
 }
 
@@ -279,9 +279,9 @@ void json_document_t::load(const u16string_view& path)
 #endif                                           // WINDOWS
 
 
-std::string json_document_t::dumps(char c, int width)
+json_string_t json_document_t::dumps(char c, int width)
 {
-    ostringstream stream;
+    json_ostringstream_t stream;
     dump(stream, c, width);
     return stream.str();
 }

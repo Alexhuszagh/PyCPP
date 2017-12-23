@@ -17,7 +17,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Check if running on WINE.
  */
-bool is_wine();
+bool is_wine() noexcept;
 
 /**
  *  \brief Check if running in a general container.

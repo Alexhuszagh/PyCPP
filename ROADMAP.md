@@ -4,12 +4,31 @@
 
     - Need an alias for std::nullptr_t as nullptr_t in a public header...
 
+    - Implement new/delete resource in terms of malloc/free
+    - Add a realloc for all allocators....
+    - Subclass allocator_traits to add a realloc too...
+    - Specialized `is_relocatable` for a lot of types.
+        - Basically everything can be specialized....
+
+    - Get rid of naked new/delete
+        - Change to use the global allocator generally speaking...
+        - make_shared -> allocate_shared
+        - make_unique to use a custom allocator....
+        - `allocate_and_construct` for custom allocators...
+        - Don't store the allocator in JSON and XML values (or any values)
+            - **HOW** (Pass the allocator always??)
+
     - Add noexcepts everywhere
-    - Change enum default `throw` to abort (logic error).
-        - Algorithm
-        - Allocator
-        - Cache
         - Collections
+            - Ordered
+                - Almost certainly need a reinterpret_cast<> to const Key
+            - Ordered_map
+            - Ordered_set
+            - Robin
+                - Change Robin to use `pair<const Key, T>`
+                - Almost certainly need a reinterpret_cast<> to const Key
+            - Robin_map
+            - Robin_set
         - Compression
         - CSV
         - Filesystem
@@ -17,37 +36,24 @@
         - Hashlib
         - Intrusive
         - Iterator
-        - Itertools
-        - JSON
-            - Core      (don't like the core API, get shouldn't allow you to change the value....)
-            - DOM
-            - SAX
-            - Writer
         - Lattice
         - Lexical
         - Math
         - Memmap
         - Misc
-        - Multi_index
-        - Preprocessor
+            - Safe Stdlib
+            - XRange
         - Random
         - Re
         - Runtime
+            - OS
         - Secure
         - SFINAE
         - SQL
         - STL
         - Stream
         - String
-        - View
-        - Windows
         - XML
-
-    - Get rid of naked new/delete
-        - Change to use the global allocator generally speaking...
-        - make_shared -> allocate_shared
-        - make_unique to use a custom allocator....
-        - `allocate_and_construct` for custom allocators...
 
     - Make moves always non-throwing
         - Check if copies can be non-throwing too

@@ -31,7 +31,7 @@ struct bad_hash
 
 TEST(ordered_map, constructor_null)
 {
-    ordered_map<std::string, std::string> m1;
+    ordered_map<string, string> m1;
     EXPECT_EQ(m1.size(), 0);
     m1["key"] = "value";
     EXPECT_EQ(m1.size(), 1);
@@ -41,10 +41,10 @@ TEST(ordered_map, constructor_null)
 
 TEST(ordered_map, constructor_iterable)
 {
-    ordered_map<std::string, std::string> m1;
+    ordered_map<string, string> m1;
     m1["key"] = "value";
 
-    ordered_map<std::string, std::string> m2(m1.begin(), m1.end());
+    ordered_map<string, string> m2(m1.begin(), m1.end());
     EXPECT_EQ(m2.size(), 1);
     EXPECT_EQ(m2.at("key"), "value");
 }
@@ -52,10 +52,10 @@ TEST(ordered_map, constructor_iterable)
 
 TEST(ordered_map, constructor_copy)
 {
-    ordered_map<std::string, std::string> m1;
+    ordered_map<string, string> m1;
     m1["key"] = "value";
 
-    ordered_map<std::string, std::string> m2(m1);
+    ordered_map<string, string> m2(m1);
     EXPECT_EQ(m1.size(), 1);
     EXPECT_EQ(m2.size(), 1);
     EXPECT_EQ(m2.at("key"), "value");
@@ -64,10 +64,10 @@ TEST(ordered_map, constructor_copy)
 
 TEST(ordered_map, constructor_move)
 {
-    ordered_map<std::string, std::string> m1;
+    ordered_map<string, string> m1;
     m1["key"] = "value";
 
-    ordered_map<std::string, std::string> m2(move(m1));
+    ordered_map<string, string> m2(move(m1));
     EXPECT_EQ(m2.size(), 1);
     EXPECT_EQ(m2.at("key"), "value");
 }

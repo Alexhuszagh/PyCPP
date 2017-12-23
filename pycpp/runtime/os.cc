@@ -64,6 +64,8 @@ static bool read_proc_cgroup()
  */
 static bool read_pid1()
 {
+    // TODO: ifstream needs noexcept everything
+
     // this **has** to exist.
     ifstream input("/proc/1/sched");
     std::string line;
@@ -90,7 +92,7 @@ static bool read_pid1()
 // ---------
 
 
-bool is_wine()
+bool is_wine() noexcept
 {
 #if defined(OS_WINDOWS)                 // WINDOWS
 

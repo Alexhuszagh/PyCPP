@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/misc/compressed_pair.h>
+#include <pycpp/stl/sstream.h>
 #include <pycpp/stl/string.h>
 #include <pycpp/stl/unordered_map.h>
 #include <pycpp/stl/vector.h>
@@ -41,12 +41,15 @@ struct json_value_t;
 // -----
 
 using json_pointer_t = uint_fast64_t;
-using json_null_t = std::nullptr_t;
+using json_null_t = nullptr_t;
 using json_boolean_t = bool;
 using json_number_t = double;
-using json_string_t = std::string;
+using json_string_t = string;
 using json_array_t = vector<json_value_t>;
 using json_object_t = unordered_map<json_string_t, json_value_t>;
+using json_stringstream_t = basic_stringstream<char, char_traits<char>, allocator<char>>;
+using json_istringstream_t = basic_istringstream<char, char_traits<char>, allocator<char>>;
+using json_ostringstream_t = basic_ostringstream<char, char_traits<char>, allocator<char>>;
 
 // OBJECTS
 // -------
@@ -68,22 +71,20 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    json_value_t(const allocator_type& = allocator_type()) noexcept;
-    json_value_t(const json_value_t&, const allocator_type& = allocator_type()) = delete;
+    json_value_t() noexcept;
+    json_value_t(const json_value_t&) = delete;
     json_value_t& operator=(const json_value_t&) = delete;
-    json_value_t(json_value_t&&, const allocator_type& = allocator_type()) noexcept;
+    json_value_t(json_value_t&&) noexcept;
     json_value_t& operator=(json_value_t&&) noexcept;
 
-    json_value_t(json_type type, const allocator_type& = allocator_type()) noexcept;
-    json_value_t(json_null_t, const allocator_type& = allocator_type()) noexcept;
-    json_value_t(json_boolean_t, const allocator_type& = allocator_type());
-    json_value_t(json_number_t, const allocator_type& = allocator_type());
-    json_value_t(json_string_t&&, const allocator_type& = allocator_type());
-    json_value_t(json_array_t&&, const allocator_type& = allocator_type());
-    json_value_t(json_object_t&&, const allocator_type& = allocator_type());
+    json_value_t(json_type type) noexcept;
+    json_value_t(json_null_t&&) noexcept;
+    json_value_t(json_boolean_t&&);
+    json_value_t(json_number_t&&);
+    json_value_t(json_string_t&&);
+    json_value_t(json_array_t&&);
+    json_value_t(json_object_t&&);
     ~json_value_t();
-
-    // MODIFIERS
 
     // CHECKERS
     json_type type() const noexcept;
@@ -109,15 +110,15 @@ public:
     const json_object_t& get_object() const;
 
     // SETTERS
-    void set_null(json_null_t);
-    void set_boolean(json_boolean_t);
-    void set_number(json_number_t);
+    void set_null(json_null_t&&);
+    void set_boolean(json_boolean_t&&);
+    void set_number(json_number_t&&);
     void set_string(json_string_t&&);
     void set_array(json_array_t&&);
     void set_object(json_object_t&&);
-    void set(json_null_t);
-    void set(json_boolean_t);
-    void set(json_number_t);
+    void set(json_null_t&&);
+    void set(json_boolean_t&&);
+    void set(json_number_t&&);
     void set(json_string_t&&);
     void set(json_array_t&&);
     void set(json_object_t&&);
@@ -129,11 +130,8 @@ public:
     // OTHER
     void swap(json_value_t&) noexcept;
 
-    // OBSERVERS
-    allocator_type get_allocator() const noexcept;
-
 private:
-    compressed_pair<json_type, allocator_type> type_;
+    json_type type_;
     json_pointer_t data_;
 
     void reset();

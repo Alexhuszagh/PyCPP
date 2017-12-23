@@ -2,6 +2,7 @@
 //  :license: MIT, see licenses/mit.md for more details.
 
 #include <pycpp/json/core.h>
+#include <pycpp/json/new.h>
 #include <pycpp/stl/stdexcept.h>
 #include <assert.h>
 
@@ -11,14 +12,14 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-json_value_t::json_value_t(const allocator_type& allocator) noexcept:
-    type_(json_null_type, allocator),
+json_value_t::json_value_t() noexcept:
+    type_(json_null_type),
     data_((json_pointer_t) nullptr)
 {}
 
 
-json_value_t::json_value_t(json_value_t&& rhs, const allocator_type& allocator) noexcept:
-    type_(json_null_type, allocator),
+json_value_t::json_value_t(json_value_t&& rhs) noexcept:
+    type_(json_null_type),
     data_((json_pointer_t) nullptr)
 {
     swap(rhs);
@@ -32,45 +33,45 @@ json_value_t& json_value_t::operator=(json_value_t&& rhs) noexcept
 }
 
 
-json_value_t::json_value_t(json_type type, const allocator_type& allocator) noexcept:
-    type_(type, allocator),
+json_value_t::json_value_t(json_type type) noexcept:
+    type_(type),
     data_((json_pointer_t) nullptr)
 {}
 
 
-json_value_t::json_value_t(json_null_t, const allocator_type& allocator) noexcept:
-    type_(json_null_type, allocator),
+json_value_t::json_value_t(json_null_t&&) noexcept:
+    type_(json_null_type),
     data_((json_pointer_t) nullptr)
 {}
 
 
-json_value_t::json_value_t(bool value, const allocator_type& allocator):
-    type_(json_boolean_type, allocator),
-    data_(reinterpret_cast<json_pointer_t>(allocate_and_construct<json_boolean_t>(get<1>(type_), value)))
+json_value_t::json_value_t(json_boolean_t&& value):
+    type_(json_boolean_type),
+    data_(reinterpret_cast<json_pointer_t>(json_new<json_boolean_t>(move(value))))
 {}
 
 
-json_value_t::json_value_t(double value, const allocator_type& allocator):
-    type_(json_number_type, allocator),
-    data_(reinterpret_cast<json_pointer_t>(allocate_and_construct<json_number_t>(get<1>(type_), value)))
+json_value_t::json_value_t(json_number_t&& value):
+    type_(json_number_type),
+    data_(reinterpret_cast<json_pointer_t>(json_new<json_number_t>(move(value))))
 {}
 
 
-json_value_t::json_value_t(json_string_t&& value, const allocator_type& allocator):
-    type_(json_string_type, allocator),
-    data_(reinterpret_cast<json_pointer_t>(allocate_and_construct<json_string_t>(get<1>(type_), move(value))))
+json_value_t::json_value_t(json_string_t&& value):
+    type_(json_string_type),
+    data_(reinterpret_cast<json_pointer_t>(json_new<json_string_t>(move(value), json_allocator())))
 {}
 
 
-json_value_t::json_value_t(json_array_t&& value, const allocator_type& allocator):
-    type_(json_array_type, allocator),
-    data_(reinterpret_cast<json_pointer_t>(allocate_and_construct<json_array_t>(get<1>(type_), move(value))))
+json_value_t::json_value_t(json_array_t&& value):
+    type_(json_array_type),
+    data_(reinterpret_cast<json_pointer_t>(json_new<json_array_t>(move(value), json_allocator())))
 {}
 
 
-json_value_t::json_value_t(json_object_t&& value, const allocator_type& allocator):
-    type_(json_object_type, allocator),
-    data_(reinterpret_cast<json_pointer_t>(allocate_and_construct<json_object_t>(get<1>(type_), move(value))))
+json_value_t::json_value_t(json_object_t&& value):
+    type_(json_object_type),
+    data_(reinterpret_cast<json_pointer_t>(json_new<json_object_t>(move(value), json_allocator())))
 {}
 
 
@@ -82,7 +83,7 @@ json_value_t::~json_value_t()
 
 json_type json_value_t::type() const noexcept
 {
-    return get<0>(type_);
+    return type_;
 }
 
 
@@ -250,69 +251,69 @@ const json_object_t& json_value_t::get_object() const
 }
 
 
-void json_value_t::set_null(json_null_t value)
+void json_value_t::set_null(json_null_t&& value)
 {
     reset();
     data_ = (json_pointer_t) nullptr;
-    get<0>(type_) = json_null_type;
+    type_ = json_null_type;
 }
 
 
-void json_value_t::set_boolean(json_boolean_t value)
+void json_value_t::set_boolean(json_boolean_t&& value)
 {
     reset();
-    data_ = reinterpret_cast<json_pointer_t>(allocate_and_construct<json_boolean_t>(get<1>(type_), value));
-    get<0>(type_) = json_boolean_type;
+    data_ = reinterpret_cast<json_pointer_t>(json_new<json_boolean_t>(move(value)));
+    type_ = json_boolean_type;
 }
 
 
-void json_value_t::set_number(json_number_t value)
+void json_value_t::set_number(json_number_t&& value)
 {
     reset();
-    data_ = reinterpret_cast<json_pointer_t>(allocate_and_construct<json_number_t>(get<1>(type_), value));
-    get<0>(type_) = json_number_type;
+    data_ = reinterpret_cast<json_pointer_t>(json_new<json_number_t>(move(value)));
+    type_ = json_number_type;
 }
 
 
 void json_value_t::set_string(json_string_t&& value)
 {
     reset();
-    data_ = reinterpret_cast<json_pointer_t>(allocate_and_construct<json_string_t>(get<1>(type_), move(value)));
-    get<0>(type_) = json_string_type;
+    data_ = reinterpret_cast<json_pointer_t>(json_new<json_string_t>(move(value), json_allocator()));
+    type_ = json_string_type;
 }
 
 
 void json_value_t::set_array(json_array_t&& value)
 {
     reset();
-    data_ = reinterpret_cast<json_pointer_t>(allocate_and_construct<json_array_t>(get<1>(type_), move(value)));
-    get<0>(type_) = json_array_type;
+    data_ = reinterpret_cast<json_pointer_t>(json_new<json_array_t>(move(value), json_allocator()));
+    type_ = json_array_type;
 }
 
 
 void json_value_t::set_object(json_object_t&& value)
 {
     reset();
-    data_ = reinterpret_cast<json_pointer_t>(allocate_and_construct<json_object_t>(get<1>(type_), move(value)));
-    get<0>(type_) = json_object_type;
+    data_ = reinterpret_cast<json_pointer_t>(json_new<json_object_t>(move(value), json_allocator()));
+    type_ = json_object_type;
 }
 
 
-void json_value_t::set(json_null_t value)
+void json_value_t::set(json_null_t&& value)
 {
-    set_null(value);
+    set_null(forward<json_null_t>(value));
 }
 
 
-void json_value_t::set(json_boolean_t value)
+void json_value_t::set(json_boolean_t&& value)
 {
-    set_boolean(value);
+    set_boolean(forward<json_boolean_t>(value));
 }
 
 
-void json_value_t::set(json_number_t value)
+void json_value_t::set(json_number_t&& value)
 {
-    set_number(value);
+    set_number(forward<json_number_t>(value));
 }
 
 
@@ -376,38 +377,32 @@ void json_value_t::swap(json_value_t& rhs) noexcept
 }
 
 
-auto json_value_t::get_allocator() const noexcept -> allocator_type
-{
-    return get<1>(type_);
-}
-
-
 void json_value_t::reset()
 {
-    allocator_type& allocator = get<1>(type_);
+    allocator_type allocator;
     switch (type()) {
         case json_null_type:
             break;
         case json_boolean_type:
-            destroy_and_deallocate(allocator, (json_boolean_t*) data_);
+            json_delete(reinterpret_cast<json_boolean_t*>(data_));
             break;
         case json_number_type:
-            destroy_and_deallocate(allocator, (json_number_t*) data_);
+            json_delete(reinterpret_cast<json_number_t*>(data_));
             break;
         case json_string_type:
-            destroy_and_deallocate(allocator, (json_string_t*) data_);
+            json_delete(reinterpret_cast<json_string_t*>(data_));
             break;
         case json_array_type:
-            destroy_and_deallocate(allocator, (json_array_t*) data_);
+            json_delete(reinterpret_cast<json_array_t*>(data_));
             break;
         case json_object_type:
-            destroy_and_deallocate(allocator, (json_object_t*) data_);
+            json_delete(reinterpret_cast<json_object_t*>(data_));
             break;
         default:
             assert(false && "Unexpected JSON value type.");
     }
 
-    get<0>(type_) = json_null_type;
+    type_ = json_null_type;
     data_ = (json_pointer_t) nullptr;
 }
 

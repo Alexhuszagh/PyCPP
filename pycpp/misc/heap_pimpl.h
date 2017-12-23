@@ -17,6 +17,12 @@
  *  copying the wrapper creates a shallow copy of the implied
  *  member.
  *
+ *  By default, the heap PIMPL wrappers use `allocator` for object
+ *  construction and deletion, which adds overhead relative to
+ *  `std::allocator`, when `USE_POLYMORPHIC_ALLOCATOR` is defined.
+ *  Providing an empty allocator makes these classes as efficient
+ *  as the underlying smart pointers.
+ *
  *  The class should be used as a private member variable encapsulating
  *  the implied class in the public class. For example:
  *
@@ -45,32 +51,78 @@ PYCPP_BEGIN_NAMESPACE
 
 // UNIQUE
 
+
+/**
+ *  \brief Specialize memory manager for the unique heap PIMPL wrapper.
+ *  Use inheritance for empty-base class optimization.
+ */
+template <typename T, typename Allocator>
+struct unique_heap_pimpl_manager: Allocator
+{
+    unique_heap_pimpl_manager(const Allocator& alloc):
+        Allocator(alloc)
+    {}
+
+    template <typename ... Ts>
+    static inline T* create(const Allocator& alloc, Ts&&... ts)
+    {
+        return allocate_and_construct<T>(alloc, std::forward<Ts>(ts)...);
+    }
+
+    template <typename ... Ts>
+    inline T* create(Ts&&... ts) const
+    {
+        return unique_heap_pimpl_manager::create(static_cast<const Allocator&>(*this), std::forward<Ts>(ts)...);
+    }
+
+    static inline void destroy(const Allocator& alloc, T* p)
+    {
+        destroy_and_deallocate(alloc, p);
+    }
+
+    inline void destroy(T* p) const
+    {
+        unique_heap_pimpl_manager::destroy(static_cast<const Allocator&>(*this), p);
+    }
+
+    inline void operator()(T* p) const
+    {
+        destroy(p);
+    }
+};
+
+
 /**
  *  \brief PIMPL idiom using pointer indirection and unique semantics.
  */
-template <typename T>
+template <
+    typename T,
+    typename Allocator = allocator<T>
+>
 class unique_heap_pimpl
 {
 public:
     // MEMBER TYPES
     // ------------
-    using self_t = unique_heap_pimpl<T>;
+    using self_t = unique_heap_pimpl<T, Allocator>;
     using value_type = T;
     using reference = T&;
     using const_reference = const T&;
     using pointer = T*;
     using const_pointer = const T*;
+    using allocator_type = Allocator;
+    using deleter_type = unique_heap_pimpl_manager<T, Allocator>;
 
     // MEMBER FUNCTIONS
     // ----------------
-    unique_heap_pimpl();
-    unique_heap_pimpl(const self_t&);
+    unique_heap_pimpl(const allocator_type& = allocator_type());
+    unique_heap_pimpl(const self_t&, const allocator_type& = allocator_type());
     self_t& operator=(const self_t&);
-    unique_heap_pimpl(self_t&&);
-    self_t& operator=(self_t&&);
-    unique_heap_pimpl(const value_type&);
+    unique_heap_pimpl(self_t&&, const allocator_type& = allocator_type()) noexcept;
+    self_t& operator=(self_t&&) noexcept;
+    unique_heap_pimpl(const value_type&, const allocator_type& = allocator_type());
     self_t& operator=(const value_type&);
-    unique_heap_pimpl(value_type&&);
+    unique_heap_pimpl(value_type&&, const allocator_type& = allocator_type());
     self_t& operator=(value_type&&);
 
     // CONVERSIONS
@@ -84,10 +136,10 @@ public:
     const_reference get() const noexcept;
 
     // MODIFIERS
-    void swap(self_t&);
+    void swap(self_t&) noexcept;
 
 private:
-    unique_ptr<T> t_ = nullptr;
+    unique_ptr<value_type, deleter_type> t_ = nullptr;
 };
 
 // SHARED
@@ -95,29 +147,33 @@ private:
 /**
  *  \brief PIMPL idiom using pointer indirection and shared semantics.
  */
-template <typename T>
+template <
+    typename T,
+    typename Allocator = allocator<T>
+>
 class shared_heap_pimpl
 {
 public:
     // MEMBER TYPES
     // ------------
-    using self_t = shared_heap_pimpl<T>;
+    using self_t = shared_heap_pimpl<T, Allocator>;
     using value_type = T;
     using reference = T&;
     using const_reference = const T&;
     using pointer = T*;
     using const_pointer = const T*;
+    using allocator_type = Allocator;
 
     // MEMBER FUNCTIONS
     // ----------------
-    shared_heap_pimpl();
+    shared_heap_pimpl(const allocator_type& allocator = allocator_type());
     shared_heap_pimpl(const self_t&) = default;
     self_t& operator=(const self_t&) = default;
-    shared_heap_pimpl(self_t&&) = default;
-    self_t& operator=(self_t&&) = default;
-    shared_heap_pimpl(const value_type&);
+    shared_heap_pimpl(self_t&&) noexcept = default;
+    self_t& operator=(self_t&&) noexcept = default;
+    shared_heap_pimpl(const value_type&, const allocator_type& allocator = allocator_type());
     self_t& operator=(const value_type&);
-    shared_heap_pimpl(value_type&&);
+    shared_heap_pimpl(value_type&&, const allocator_type& allocator = allocator_type());
     self_t& operator=(value_type&&);
 
     // CONVERSIONS
@@ -131,7 +187,7 @@ public:
     const_reference get() const noexcept;
 
     // MODIFIERS
-    void swap(self_t&);
+    void swap(self_t&) noexcept;
 
 private:
     shared_ptr<T> t_ = nullptr;
@@ -142,36 +198,36 @@ private:
 
 // UNIQUE
 
-template <typename T>
-unique_heap_pimpl<T>::unique_heap_pimpl():
-    t_(make_unique<value_type>())
+template <typename T, typename A>
+unique_heap_pimpl<T, A>::unique_heap_pimpl(const allocator_type& allocator):
+    t_(deleter_type::create(allocator), deleter_type(allocator))
 {}
 
 
-template <typename T>
-unique_heap_pimpl<T>::unique_heap_pimpl(const self_t& rhs):
-    t_(make_unique<value_type>(rhs.get()))
+template <typename T, typename A>
+unique_heap_pimpl<T, A>::unique_heap_pimpl(const self_t& rhs, const allocator_type& allocator):
+    t_(deleter_type::create(allocator, rhs.get()), deleter_type(allocator))
 {}
 
 
-template <typename T>
-auto unique_heap_pimpl<T>::operator=(const self_t& rhs) -> self_t&
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::operator=(const self_t& rhs) -> self_t&
 {
     if (this != &rhs) {
-        t_ = make_unique<value_type>(rhs.get());
+        t_.reset(t_.get_deleter().create(rhs.get()));
     }
     return *this;
 }
 
 
-template <typename T>
-unique_heap_pimpl<T>::unique_heap_pimpl(self_t&& rhs):
+template <typename T, typename A>
+unique_heap_pimpl<T, A>::unique_heap_pimpl(self_t&& rhs, const allocator_type&) noexcept:
     t_(move(rhs.t_))
 {}
 
 
-template <typename T>
-auto unique_heap_pimpl<T>::operator=(self_t&& rhs) -> self_t&
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::operator=(self_t&& rhs) noexcept -> self_t&
 {
     if (this != &rhs) {
         t_ = move(rhs.t_);
@@ -180,188 +236,188 @@ auto unique_heap_pimpl<T>::operator=(self_t&& rhs) -> self_t&
 }
 
 
-template <typename T>
-unique_heap_pimpl<T>::unique_heap_pimpl(const value_type& rhs):
-    t_(make_unique<value_type>(rhs))
+template <typename T, typename A>
+unique_heap_pimpl<T, A>::unique_heap_pimpl(const value_type& rhs, const allocator_type& allocator):
+    t_(deleter_type::create(allocator, rhs), deleter_type(allocator))
 {}
 
 
-template <typename T>
-auto unique_heap_pimpl<T>::operator=(const value_type& rhs) -> self_t&
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::operator=(const value_type& rhs) -> self_t&
 {
     *t_ = rhs;
     return *this;
 }
 
 
-template <typename T>
-unique_heap_pimpl<T>::unique_heap_pimpl(value_type&& rhs):
-    t_(make_unique<value_type>(move(rhs)))
+template <typename T, typename A>
+unique_heap_pimpl<T, A>::unique_heap_pimpl(value_type&& rhs, const allocator_type& allocator):
+    t_(deleter_type::create(allocator, move(rhs)), deleter_type(allocator))
 {}
 
 
-template <typename T>
-auto unique_heap_pimpl<T>::operator=(value_type&& rhs) -> self_t&
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::operator=(value_type&& rhs) -> self_t&
 {
     *t_ = move(rhs);
     return *this;
 }
 
 
-template <typename T>
-auto unique_heap_pimpl<T>::operator*() noexcept -> reference
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::operator*() noexcept -> reference
 {
     return get();
 }
 
 
-template <typename T>
-auto unique_heap_pimpl<T>::operator*() const noexcept -> const_reference
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::operator*() const noexcept -> const_reference
 {
     return get();
 }
 
 
-template <typename T>
-auto unique_heap_pimpl<T>::operator->() noexcept -> pointer
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::operator->() noexcept -> pointer
 {
     return &get();
 }
 
-template <typename T>
-auto unique_heap_pimpl<T>::operator->() const noexcept -> const_pointer
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::operator->() const noexcept -> const_pointer
 {
     return &get();
 }
 
 
-template <typename T>
-unique_heap_pimpl<T>::operator reference() noexcept
+template <typename T, typename A>
+unique_heap_pimpl<T, A>::operator reference() noexcept
 {
     return get();
 }
 
 
-template <typename T>
-unique_heap_pimpl<T>::operator const_reference() const noexcept
+template <typename T, typename A>
+unique_heap_pimpl<T, A>::operator const_reference() const noexcept
 {
     return get();
 }
 
 
-template <typename T>
-auto unique_heap_pimpl<T>::get() noexcept -> reference
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::get() noexcept -> reference
 {
     return *t_;
 }
 
 
-template <typename T>
-auto unique_heap_pimpl<T>::get() const noexcept -> const_reference
+template <typename T, typename A>
+auto unique_heap_pimpl<T, A>::get() const noexcept -> const_reference
 {
     return *t_;
 }
 
 
-template <typename T>
-void unique_heap_pimpl<T>::swap(self_t& rhs)
+template <typename T, typename A>
+void unique_heap_pimpl<T, A>::swap(self_t& rhs) noexcept
 {
     swap(t_, rhs.t_);
 }
 
 // SHARED
 
-template <typename T>
-shared_heap_pimpl<T>::shared_heap_pimpl():
-    t_(make_shared<value_type>())
+template <typename T, typename A>
+shared_heap_pimpl<T, A>::shared_heap_pimpl(const allocator_type& allocator):
+    t_(allocate_shared<value_type>(allocator))
 {}
 
 
-template <typename T>
-shared_heap_pimpl<T>::shared_heap_pimpl(const value_type& rhs):
-    t_(make_shared<value_type>(rhs))
+template <typename T, typename A>
+shared_heap_pimpl<T, A>::shared_heap_pimpl(const value_type& rhs, const allocator_type& allocator):
+    t_(allocate_shared<value_type>(allocator, rhs))
 {}
 
 
-template <typename T>
-auto shared_heap_pimpl<T>::operator=(const value_type& rhs) -> self_t&
+template <typename T, typename A>
+auto shared_heap_pimpl<T, A>::operator=(const value_type& rhs) -> self_t&
 {
     *t_ = rhs;
     return *this;
 }
 
 
-template <typename T>
-shared_heap_pimpl<T>::shared_heap_pimpl(value_type&& rhs):
-    t_(make_shared<value_type>(move(rhs)))
+template <typename T, typename A>
+shared_heap_pimpl<T, A>::shared_heap_pimpl(value_type&& rhs, const allocator_type& allocator):
+    t_(allocate_shared<value_type>(allocator, move(rhs)))
 {}
 
 
-template <typename T>
-auto shared_heap_pimpl<T>::operator=(value_type&& rhs) -> self_t&
+template <typename T, typename A>
+auto shared_heap_pimpl<T, A>::operator=(value_type&& rhs) -> self_t&
 {
     *t_ = move(rhs);
     return *this;
 }
 
 
-template <typename T>
-auto shared_heap_pimpl<T>::operator*() noexcept -> reference
+template <typename T, typename A>
+auto shared_heap_pimpl<T, A>::operator*() noexcept -> reference
 {
     return get();
 }
 
 
-template <typename T>
-auto shared_heap_pimpl<T>::operator*() const noexcept -> const_reference
+template <typename T, typename A>
+auto shared_heap_pimpl<T, A>::operator*() const noexcept -> const_reference
 {
     return get();
 }
 
 
-template <typename T>
-auto shared_heap_pimpl<T>::operator->() noexcept -> pointer
+template <typename T, typename A>
+auto shared_heap_pimpl<T, A>::operator->() noexcept -> pointer
 {
     return &get();
 }
 
-template <typename T>
-auto shared_heap_pimpl<T>::operator->() const noexcept -> const_pointer
+template <typename T, typename A>
+auto shared_heap_pimpl<T, A>::operator->() const noexcept -> const_pointer
 {
     return &get();
 }
 
 
-template <typename T>
-shared_heap_pimpl<T>::operator reference() noexcept
+template <typename T, typename A>
+shared_heap_pimpl<T, A>::operator reference() noexcept
 {
     return get();
 }
 
 
-template <typename T>
-shared_heap_pimpl<T>::operator const_reference() const noexcept
+template <typename T, typename A>
+shared_heap_pimpl<T, A>::operator const_reference() const noexcept
 {
     return get();
 }
 
 
-template <typename T>
-auto shared_heap_pimpl<T>::get() noexcept -> reference
+template <typename T, typename A>
+auto shared_heap_pimpl<T, A>::get() noexcept -> reference
 {
     return *t_;
 }
 
 
-template <typename T>
-auto shared_heap_pimpl<T>::get() const noexcept -> const_reference
+template <typename T, typename A>
+auto shared_heap_pimpl<T, A>::get() const noexcept -> const_reference
 {
     return *t_;
 }
 
 
-template <typename T>
-void shared_heap_pimpl<T>::swap(self_t& rhs)
+template <typename T, typename A>
+void shared_heap_pimpl<T, A>::swap(self_t& rhs) noexcept
 {
     swap(t_, rhs.t_);
 }

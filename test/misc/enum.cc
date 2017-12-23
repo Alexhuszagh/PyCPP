@@ -31,8 +31,8 @@ enum class enum2_t
     J,
 };
 
-enum_flag(enum1_t)
-enum_flag(enum1_t, enum2_t)
+PYCPP_ENUM_FLAG(enum1_t)
+PYCPP_ENUM_FLAG(enum1_t, enum2_t)
 
 // TESTS
 // -----

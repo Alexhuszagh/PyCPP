@@ -1,6 +1,7 @@
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 
+#include <pycpp/json/new.h>
 #include <pycpp/json/writer.h>
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/prettywriter.h>
@@ -12,7 +13,12 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 using rapidjson_ostream = rapidjson::OStreamWrapper;
-using rapidjson_prettywriter = rapidjson::PrettyWriter<rapidjson_ostream>;
+using rapidjson_prettywriter = rapidjson::PrettyWriter<
+    rapidjson_ostream,
+    rapidjson::UTF8<>,
+    rapidjson::UTF8<>,
+    json_backend_allocator
+>;
 
 // OBJECTS
 // -------
@@ -71,35 +77,35 @@ json_stream_writer::json_stream_writer(ostream& s, char c, int width)
 }
 
 
-json_stream_writer::json_stream_writer(json_stream_writer&& rhs)
+json_stream_writer::json_stream_writer(json_stream_writer&& rhs) noexcept
 {
     swap(rhs);
 }
 
 
-json_stream_writer& json_stream_writer::operator=(json_stream_writer&& rhs)
+json_stream_writer& json_stream_writer::operator=(json_stream_writer&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-json_stream_writer::~json_stream_writer()
+json_stream_writer::~json_stream_writer() noexcept
 {
-    delete (rapidjson_ostream*) stream_;
-    delete (rapidjson_prettywriter*) writer_;
+    json_delete(reinterpret_cast<rapidjson_ostream*>(stream_));
+    json_delete(reinterpret_cast<rapidjson_prettywriter*>(writer_));
 }
 
 
 void json_stream_writer::open(ostream& s)
 {
     // cleanup
-    delete (rapidjson_ostream*) stream_;
-    delete (rapidjson_prettywriter*) writer_;
+    json_delete(reinterpret_cast<rapidjson_ostream*>(stream_));
+    json_delete(reinterpret_cast<rapidjson_prettywriter*>(writer_));
 
     // reset
-    stream_ = (void*) new rapidjson_ostream(s);
-    writer_ = (void*) new rapidjson_prettywriter(*(rapidjson_ostream*) stream_);
+    stream_ = reinterpret_cast<void*>(json_new<rapidjson_ostream>(s));
+    writer_ = reinterpret_cast<void*>(json_new<rapidjson_prettywriter>(*(rapidjson_ostream*) stream_));
     auto writer = (rapidjson_prettywriter*) writer_;
     writer->Reset(*(rapidjson_ostream*) stream_);
     set_indent(indent_character_, indent_width_);
@@ -117,13 +123,13 @@ void json_stream_writer::set_indent(char c, int width)
 }
 
 
-bool json_stream_writer::is_pretty() const
+bool json_stream_writer::is_pretty() const noexcept
 {
     return indent_width_ > 0;
 }
 
 
-void json_stream_writer::swap(json_stream_writer& rhs)
+void json_stream_writer::swap(json_stream_writer& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(indent_character_, rhs.indent_character_);
@@ -209,13 +215,18 @@ void json_stream_writer::flush() const      // null-op
 {}
 
 
-json_file_writer::json_file_writer(json_file_writer&& rhs)
+json_file_writer_base::json_file_writer_base():
+    file_(json_allocator())
+{}
+
+
+json_file_writer::json_file_writer(json_file_writer&& rhs) noexcept
 {
     swap(rhs);
 }
 
 
-json_file_writer& json_file_writer::operator=(json_file_writer&& rhs)
+json_file_writer& json_file_writer::operator=(json_file_writer&& rhs) noexcept
 {
     swap(rhs);
     return *this;
@@ -272,12 +283,17 @@ void json_file_writer::flush() const
 }
 
 
-void json_file_writer::swap(json_file_writer& rhs)
+void json_file_writer::swap(json_file_writer& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     json_stream_writer::swap(rhs);
     swap(file_, rhs.file_);
 }
+
+
+json_string_writer_base::json_string_writer_base():
+    sstream_(json_allocator())
+{}
 
 
 json_string_writer::json_string_writer()
@@ -293,21 +309,21 @@ json_string_writer::json_string_writer(json_string_writer&& rhs):
 }
 
 
-json_string_writer& json_string_writer::operator=(json_string_writer&& rhs)
+json_string_writer& json_string_writer::operator=(json_string_writer&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-std::string json_string_writer::str() const
+json_string_t json_string_writer::str() const
 {
     flush();
     return sstream_->str();
 }
 
 
-void json_string_writer::swap(json_string_writer& rhs)
+void json_string_writer::swap(json_string_writer& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     json_stream_writer::swap(rhs);

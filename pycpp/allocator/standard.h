@@ -5,7 +5,7 @@
  *  \addtogroup PyCPP
  *  \brief Standard allocator analogous to `std::allocator`.
  *
- *  A shallow wrapper around `malloc` and `free`. This allocator
+ *  A shallow wrapper around `new` and `delete`. This allocator
  *  has poor performance, and therefore should be used sparingly.
  */
 
@@ -30,8 +30,8 @@ struct standard_allocator;
  */
 struct standard_allocator_base
 {
-    void* allocate(size_t n, size_t size, const void* hint = nullptr);
-    void deallocate(void* p, size_t n);
+    static void* allocate(size_t n, size_t size, const void* hint = nullptr);
+    static void deallocate(void* p, size_t n);
 };
 
 
@@ -59,7 +59,7 @@ struct standard_allocator: private standard_allocator_base
     template <typename U> standard_allocator(const standard_allocator<U>&) noexcept;
     self_t& operator=(const self_t&) noexcept = default;
     template <typename U> self_t& operator=(const standard_allocator<U>&) noexcept;
-    ~standard_allocator() = default;
+    ~standard_allocator() noexcept = default;
 
     // ALLOCATOR TRAITS
     pointer allocate(size_type, const void* = nullptr);

@@ -685,6 +685,8 @@ public:
             m_iterator(other.m_iterator)
         {}
 
+        // TODO: remove these functions
+
         const typename robin_hash::key_type& key() const
         {
             return KeySelect()(m_iterator->value());
@@ -701,6 +703,7 @@ public:
         {
             return U()(m_iterator->value());
         }
+        // TODO: end remove these functions
 
         reference operator*() const
         {

@@ -59,7 +59,7 @@ struct secure_allocator: private secure_allocator_base
     template <typename U> secure_allocator(const secure_allocator<U>&) noexcept;
     self_t& operator=(const self_t&) noexcept = default;
     template <typename U> self_t& operator=(const secure_allocator<U>&) noexcept;
-    ~secure_allocator() = default;
+    ~secure_allocator() noexcept = default;
 
     // ALLOCATOR TRAITS
     pointer allocate(size_type, const void* = nullptr);

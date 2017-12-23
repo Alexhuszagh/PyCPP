@@ -3,7 +3,7 @@
 //  :license: Boost, see licenses/boost.md for more details.
 
 #include <pycpp/stl/detail/polymorphic_allocator.h>
-#if !defined(HAVE_CPP17)
+#if defined(PYCPP_DEFINE_POLYMORPHIC_ALLOCATOR)
 #   include <limits>
 #endif
 
@@ -25,7 +25,7 @@ bool operator!=(const memory_resource& lhs, const memory_resource& rhs)
 }
 
 
-#if defined(HAVE_CPP17)             // HAVE_CPP17
+#if !defined(PYCPP_DEFINE_POLYMORPHIC_ALLOCATOR)        // !PYCPP_DEFINE_POLYMORPHIC_ALLOCATOR
 
 // FUNCTIONS
 // ---------
@@ -54,7 +54,7 @@ memory_resource* set_default_resource(memory_resource* r) noexcept
     return std::pmr::set_default_resource(r);
 }
 
-#else                               // !HAVE_CPP17
+#else                                                   // !PYCPP_DEFINE_POLYMORPHIC_ALLOCATOR
 
 namespace polymorphic_detail
 {
@@ -201,6 +201,6 @@ bool memory_resource::is_equal(const memory_resource& rhs) const noexcept
 }
 
 
-#endif                              // HAVE_CPP17
+#endif                                      // PYCPP_DEFINE_POLYMORPHIC_ALLOCATOR
 
 PYCPP_END_NAMESPACE

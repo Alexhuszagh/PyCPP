@@ -12,14 +12,14 @@
 #   include <pycpp/filesystem.h>
 #   include <pycpp/filesystem/exception.h>
 #   include <pycpp/preprocessor/sysstat.h>
+#   include <pycpp/stl/algorithm.h>
 #   include <pycpp/string/unicode.h>
 #   include <fcntl.h>
 #   include <limits.h>
 #   include <unistd.h>
 #   include <wordexp.h>
-#   include <algorithm>
-#   include <cassert>
-#   include <cstdlib>
+#   include <assert.h>
+#   include <stdlib.h>
 #endif
 
 PYCPP_BEGIN_NAMESPACE
@@ -569,7 +569,7 @@ static int fadvise_impl(int fd, off_t offset, off_t len, io_access_pattern patte
             arg = 0;                // disable read-ahead
             break;
         default:
-            throw invalid_argument("Unrecognized I/O access pattern.");
+            assert(false && "Unrecognized I/O access pattern.");
     }
 
     return fcntl(fd, F_RDAHEAD, arg);
@@ -591,7 +591,7 @@ static int fadvise_impl(int fd, off_t offset, off_t len, io_access_pattern patte
             advice = POSIX_FADV_RANDOM;
             break;
         default:
-            throw invalid_argument("Unrecognized I/O access pattern.");
+            assert(false && "Unrecognized I/O access pattern.");
     }
     return posix_fadvise(fd, offset, len, advice);
 }

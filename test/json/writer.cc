@@ -16,6 +16,7 @@ PYCPP_USING_NAMESPACE
 // HELPERS
 // -------
 
+// TODO: change to json_string_t
 static std::string EXPECTED = "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}";
 
 template <typename Writer, typename ... Ts>
@@ -23,10 +24,10 @@ static Writer test_json_writer(bool move, Ts&&... ts)
 {
     Writer w1;
     if (move) {
-        Writer w2(std::forward<Ts>(ts)...);
+        Writer w2(forward<Ts>(ts)...);
         w1.swap(w2);
     } else {
-        w1 = Writer(std::forward<Ts>(ts)...);
+        w1 = Writer(forward<Ts>(ts)...);
     }
     w1.start_object();
     w1.key("k1");
@@ -40,7 +41,7 @@ static Writer test_json_writer(bool move, Ts&&... ts)
 }
 
 
-static void check_result(const std::string& str)
+static void check_result(const json_string_t& str)
 {
     EXPECT_EQ(replace(str, NEWLINE, POSIX_NEWLINE), EXPECTED);
 }
@@ -54,12 +55,12 @@ TEST(json, json_stream_writer)
     // don't worry about compliance testing:
     // the backends are robustly tested
     {
-        ostringstream sstream;
+        json_ostringstream_t sstream;
         test_json_writer<json_stream_writer>(false, sstream);
         check_result(sstream.str());
     }
     {
-        ostringstream sstream;
+        json_ostringstream_t sstream;
         test_json_writer<json_stream_writer>(true, sstream);
         check_result(sstream.str());
     }
@@ -73,7 +74,7 @@ TEST(json, json_file_writer)
     string path("test.json");
     auto checker = [&path]()
     {
-        stringstream sstream;
+        json_stringstream_t sstream;
         ifstream ifs(path);
         sstream << ifs.rdbuf();
         check_result(sstream.str());

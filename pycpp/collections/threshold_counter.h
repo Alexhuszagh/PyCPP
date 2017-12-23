@@ -129,15 +129,15 @@ public:
     threshold_counter(initializer_list<key_type>, float = 0.01, const allocator_type& alloc = allocator_type());
 
     // CAPACITY
-    size_type size() const;
-    size_type max_size() const;
+    size_type size() const noexcept;
+    size_type max_size() const noexcept;
     bool empty() const noexcept;
 
     // ITERATORS
-    const_iterator begin() const;
-    const_iterator cbegin() const;
-    const_iterator end() const;
-    const_iterator cend() const;
+    const_iterator begin() const noexcept;
+    const_iterator cbegin() const noexcept;
+    const_iterator end() const noexcept;
+    const_iterator cend() const noexcept;
 
     // ELEMENT ACCESS
     const mapped_type& at(const key_type&) const;
@@ -175,7 +175,7 @@ public:
     // OBSERVERS
     hasher hash_function() const;
     key_equal key_eq() const;
-    allocator_type get_allocator() const;
+    allocator_type get_allocator() const noexcept;
 
     // CONVERSION
     explicit operator counter_type() const;
@@ -358,14 +358,14 @@ threshold_counter<K, H, P, A, M>::threshold_counter(initializer_list<key_type> l
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::size() const -> size_type
+auto threshold_counter<K, H, P, A, M>::size() const noexcept -> size_type
 {
     return map_.size();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::max_size() const -> size_type
+auto threshold_counter<K, H, P, A, M>::max_size() const noexcept -> size_type
 {
     return map_.max_size();
 }
@@ -379,28 +379,28 @@ bool threshold_counter<K, H, P, A, M>::empty() const noexcept
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::begin() const -> const_iterator
+auto threshold_counter<K, H, P, A, M>::begin() const noexcept -> const_iterator
 {
     return map_.begin();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::cbegin() const -> const_iterator
+auto threshold_counter<K, H, P, A, M>::cbegin() const noexcept -> const_iterator
 {
     return map_.cbegin();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::end() const -> const_iterator
+auto threshold_counter<K, H, P, A, M>::end() const noexcept -> const_iterator
 {
     return map_.end();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::cend() const -> const_iterator
+auto threshold_counter<K, H, P, A, M>::cend() const noexcept -> const_iterator
 {
     return map_.cend();
 }
@@ -619,7 +619,7 @@ auto threshold_counter<K, H, P, A, M>::key_eq() const -> key_equal
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::get_allocator() const -> allocator_type
+auto threshold_counter<K, H, P, A, M>::get_allocator() const noexcept -> allocator_type
 {
     return map_.get_allocator();
 }

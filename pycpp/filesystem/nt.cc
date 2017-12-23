@@ -585,7 +585,7 @@ static DWORD convert_acess_pattern(io_access_pattern pattern)
         case access_random:
             return FILE_FLAG_RANDOM_ACCESS;
         default:
-            throw invalid_argument("Unrecognized I/O access pattern.");
+            assert(false && "Unrecognized I/O access pattern.");
     }
 }
 

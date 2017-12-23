@@ -29,7 +29,7 @@ public:
     json_dom_handler& operator=(const json_dom_handler&) = delete;
     json_dom_handler(json_dom_handler&&);
     json_dom_handler& operator=(json_dom_handler&&);
-    json_dom_handler(json_value_t&);
+    json_dom_handler(json_value_t&) noexcept;
 
     // SAX EVENTS
     virtual void start_document() override;
@@ -60,11 +60,11 @@ private:
  */
 struct json_document_t: json_value_t
 {
-    json_document_t();
+    json_document_t() noexcept;
     json_document_t(const json_document_t&) = delete;
     json_document_t& operator=(const json_document_t&) = delete;
-    json_document_t(json_document_t&&);
-    json_document_t& operator=(json_document_t&&);
+    json_document_t(json_document_t&&) noexcept;
+    json_document_t& operator=(json_document_t&&) noexcept;
 
     // READERS
     void loads(const string_wrapper&);
@@ -76,7 +76,7 @@ struct json_document_t: json_value_t
 #endif                                          // WINDOWS
 
     // WRITERS
-    std::string dumps(char = ' ', int = 4);
+    json_string_t dumps(char = ' ', int = 4);
     void dump(ostream&, char = ' ', int = 4);
     void dump(const string_view&, char = ' ', int = 4);
 #if defined(HAVE_WFOPEN)                        // WINDOWS

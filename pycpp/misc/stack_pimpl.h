@@ -64,7 +64,7 @@ namespace pimp_detail
 // be used in place of a weaker one, according to the C standard.
 
 template <typename T, size_t Size, size_t Alignment>
-inline void assert_storage()
+inline void assert_storage() noexcept
 {
     static_assert(sizeof(T) == Size, "");
     static_assert(alignof(T) <= Alignment, "");
@@ -74,7 +74,7 @@ inline void assert_storage()
 template <typename T, size_t Size, size_t Alignment>
 struct storage_asserter
 {
-    inline storage_asserter()
+    inline storage_asserter() noexcept
     {
         assert_storage<T, Size, Alignment>();
     }
@@ -112,15 +112,15 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    stack_pimpl();
-    stack_pimpl(const self_t&);
-    self_t& operator=(const self_t&);
-    stack_pimpl(self_t&&);
-    self_t& operator=(self_t&&);
-    stack_pimpl(const value_type&);
-    self_t& operator=(const value_type&);
-    stack_pimpl(value_type&&);
-    self_t& operator=(value_type&&);
+    stack_pimpl() PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE(T);
+    stack_pimpl(const self_t&) PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE(T);
+    self_t& operator=(const self_t&) PYCPP_NOEXCEPT_COPY_ASSIGNABLE(T);
+    stack_pimpl(self_t&&) PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE(T);
+    self_t& operator=(self_t&&) PYCPP_NOEXCEPT_MOVE_ASSIGNABLE(T);
+    stack_pimpl(const value_type&) PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE(T);
+    self_t& operator=(const value_type&) PYCPP_NOEXCEPT_COPY_ASSIGNABLE(T);
+    stack_pimpl(value_type&&) PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE(T);
+    self_t& operator=(value_type&&) PYCPP_NOEXCEPT_MOVE_ASSIGNABLE(T);
     ~stack_pimpl();
 
     // CONVERSIONS
@@ -134,11 +134,10 @@ public:
     const_reference get() const noexcept;
 
     // MODIFIERS
-    void swap(self_t&);
+    void swap(self_t&) PYCPP_NOEXCEPT_SWAPPABLE(T);
 
 private:
     using memory_type = aligned_storage_t<Size, Alignment>;
-
     memory_type mem_;
 };
 
@@ -153,21 +152,21 @@ template <typename T, size_t Size, size_t Alignment>
 const size_t stack_pimpl<T, Size, Alignment>::alignment;
 
 template <typename T, size_t Size, size_t Alignment>
-stack_pimpl<T, Size, Alignment>::stack_pimpl()
+stack_pimpl<T, Size, Alignment>::stack_pimpl() PYCPP_NOEXCEPT_DEFAULT_CONSTRUCTIBLE(T)
 {
     new (&get()) value_type();
 }
 
 
 template <typename T, size_t Size, size_t Alignment>
-stack_pimpl<T, Size, Alignment>::stack_pimpl(const self_t& rhs)
+stack_pimpl<T, Size, Alignment>::stack_pimpl(const self_t& rhs) PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE(T)
 {
     new (&get()) value_type(rhs.get());
 }
 
 
 template <typename T, size_t Size, size_t Alignment>
-auto stack_pimpl<T, Size, Alignment>::operator=(const self_t& rhs) -> self_t&
+auto stack_pimpl<T, Size, Alignment>::operator=(const self_t& rhs) PYCPP_NOEXCEPT_COPY_ASSIGNABLE(T) -> self_t&
 {
     if (this != &rhs) {
         get() = rhs.get();
@@ -177,14 +176,14 @@ auto stack_pimpl<T, Size, Alignment>::operator=(const self_t& rhs) -> self_t&
 
 
 template <typename T, size_t Size, size_t Alignment>
-stack_pimpl<T, Size, Alignment>::stack_pimpl(self_t&& rhs)
+stack_pimpl<T, Size, Alignment>::stack_pimpl(self_t&& rhs) PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE(T)
 {
     new (&get()) value_type(move(rhs.get()));
 }
 
 
 template <typename T, size_t Size, size_t Alignment>
-auto stack_pimpl<T, Size, Alignment>::operator=(self_t&& rhs) -> self_t&
+auto stack_pimpl<T, Size, Alignment>::operator=(self_t&& rhs) PYCPP_NOEXCEPT_MOVE_ASSIGNABLE(T) -> self_t&
 {
     if (this != &rhs) {
         get() = move(rhs.get());
@@ -194,14 +193,14 @@ auto stack_pimpl<T, Size, Alignment>::operator=(self_t&& rhs) -> self_t&
 
 
 template <typename T, size_t Size, size_t Alignment>
-stack_pimpl<T, Size, Alignment>::stack_pimpl(const value_type& rhs)
+stack_pimpl<T, Size, Alignment>::stack_pimpl(const value_type& rhs) PYCPP_NOEXCEPT_COPY_CONSTRUCTIBLE(T)
 {
     new (&get()) value_type(rhs);
 }
 
 
 template <typename T, size_t Size, size_t Alignment>
-auto stack_pimpl<T, Size, Alignment>::operator=(const value_type& rhs) -> self_t&
+auto stack_pimpl<T, Size, Alignment>::operator=(const value_type& rhs) PYCPP_NOEXCEPT_COPY_ASSIGNABLE(T) -> self_t&
 {
     get() = rhs;
     return *this;
@@ -209,14 +208,14 @@ auto stack_pimpl<T, Size, Alignment>::operator=(const value_type& rhs) -> self_t
 
 
 template <typename T, size_t Size, size_t Alignment>
-stack_pimpl<T, Size, Alignment>::stack_pimpl(value_type&& rhs)
+stack_pimpl<T, Size, Alignment>::stack_pimpl(value_type&& rhs) PYCPP_NOEXCEPT_MOVE_CONSTRUCTIBLE(T)
 {
     new (&get()) value_type(move(rhs));
 }
 
 
 template <typename T, size_t Size, size_t Alignment>
-auto stack_pimpl<T, Size, Alignment>::operator=(value_type&& rhs) -> self_t&
+auto stack_pimpl<T, Size, Alignment>::operator=(value_type&& rhs) PYCPP_NOEXCEPT_MOVE_ASSIGNABLE(T) -> self_t&
 {
     get() = move(rhs);
     return *this;
@@ -287,9 +286,10 @@ auto stack_pimpl<T, Size, Alignment>::get() const noexcept -> const_reference
 
 
 template <typename T, size_t Size, size_t Alignment>
-void stack_pimpl<T, Size, Alignment>::swap(self_t& rhs)
+void stack_pimpl<T, Size, Alignment>::swap(self_t& rhs) PYCPP_NOEXCEPT_SWAPPABLE(T)
 {
-    PYCPP_NAMESPACE::swap(get(), rhs.get());
+    using PYCPP_NAMESPACE::swap;
+    swap(get(), rhs.get());
 }
 
 PYCPP_END_NAMESPACE

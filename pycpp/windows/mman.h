@@ -59,9 +59,32 @@
 // FUNCTIONS
 // ---------
 
-void* mmap(void* addr, size_t len, int prot, int flags, int fildes, offset_t off);
-int munmap(void* addr, size_t len);
-int mprotect(void* addr, size_t len, int prot);
-int msync(void* addr, size_t len, int flags);
-int mlock(const void* addr, size_t len);
-int munlock(const void* addr, size_t len);
+/**
+ *  \brief Create mapping of virtual address space, as if by POSIX `mmap`.
+ */
+void* mmap(void* addr, size_t len, int prot, int flags, int fildes, offset_t off) noexcept;
+
+/**
+ *  \brief Unmap virtual address space, as if by POSIX `munmap`.
+ */
+int munmap(void* addr, size_t len) noexcept;
+
+/**
+ *  \brief Change access protections of mapped memory, as if by POSIX `mprotect`.
+ */
+int mprotect(void* addr, size_t len, int prot) noexcept;
+
+/**
+ *  \brief Flush changes in mapped memory to filesystem, as if by POSIX `msync`.
+ */
+int msync(void* addr, size_t len, int flags) noexcept;
+
+/**
+ *  \brief Lock mapped memory into RAM, as if by POSIX `mlock`.
+ */
+int mlock(const void* addr, size_t len) noexcept;
+
+/**
+ *  \brief Unlock RAM-locked mapped memory, as if by POSIX `munlock`.
+ */
+int munlock(const void* addr, size_t len) noexcept;

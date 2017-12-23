@@ -85,7 +85,7 @@ public:
     linear_allocator_arena& operator=(const linear_allocator_arena&) = delete;
     linear_allocator_arena(linear_allocator_arena&&) = delete;
     linear_allocator_arena& operator=(linear_allocator_arena&&) = delete;
-    ~linear_allocator_arena();
+    ~linear_allocator_arena() noexcept;
 
     // ALLOCATION
     template <size_t RequiredAlignment> char* allocate(size_t n);
@@ -100,10 +100,10 @@ private:
     alignas(Alignment) char buf_[StackSize];
     compressed_pair<char*, mutex_type> data_;
 
-    char*& ptr_();
-    char* const& ptr_() const;
-    mutex_type& mutex_();
-    const mutex_type& mutex_() const;
+    char*& ptr_() noexcept;
+    char* const& ptr_() const noexcept;
+    mutex_type& mutex_() noexcept;
+    const mutex_type& mutex_() const noexcept;
 
     static size_t align_up(size_t n) noexcept;
     bool pointer_in_buffer(char* p) noexcept;
@@ -214,7 +214,7 @@ linear_allocator_arena<S, A, UL>::linear_allocator_arena() noexcept:
 
 
 template <size_t S, size_t A, bool UL>
-linear_allocator_arena<S, A, UL>::~linear_allocator_arena()
+linear_allocator_arena<S, A, UL>::~linear_allocator_arena() noexcept
 {
     ptr_() = nullptr;
 }
@@ -274,28 +274,28 @@ void linear_allocator_arena<S, A, UL>::reset() noexcept
 
 
 template <size_t S, size_t A, bool UL>
-auto linear_allocator_arena<S, A, UL>::ptr_() -> char*&
+auto linear_allocator_arena<S, A, UL>::ptr_() noexcept -> char*&
 {
     return get<0>(data_);
 }
 
 
 template <size_t S, size_t A, bool UL>
-auto linear_allocator_arena<S, A, UL>::ptr_() const -> char* const&
+auto linear_allocator_arena<S, A, UL>::ptr_() const noexcept -> char* const&
 {
     return get<0>(data_);
 }
 
 
 template <size_t S, size_t A, bool UL>
-auto linear_allocator_arena<S, A, UL>::mutex_() -> mutex_type&
+auto linear_allocator_arena<S, A, UL>::mutex_() noexcept -> mutex_type&
 {
     return get<1>(data_);
 }
 
 
 template <size_t S, size_t A, bool UL>
-auto linear_allocator_arena<S, A, UL>::mutex_() const -> const mutex_type&
+auto linear_allocator_arena<S, A, UL>::mutex_() const noexcept -> const mutex_type&
 {
     return get<1>(data_);
 }

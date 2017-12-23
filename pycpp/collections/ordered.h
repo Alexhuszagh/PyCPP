@@ -1014,7 +1014,6 @@ private:
         }
     }
 
-
     template <typename K, typename P>
     pair<iterator, bool> insert_impl(const K& key, size_t hash, P&& value)
     {

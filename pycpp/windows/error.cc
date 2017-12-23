@@ -20,7 +20,7 @@ PYCPP_BEGIN_NAMESPACE
 #if defined(OS_WINDOWS)                     // WINDOWS
 
 
-int translate_win32_error(int code)
+int translate_win32_error(int code) noexcept
 {
     switch (code) {
         case ERROR_NOACCESS:                    return EACCES;
@@ -125,7 +125,7 @@ int translate_win32_error(int code)
 }
 
 
-void set_errno_win32()
+void set_errno_win32() noexcept
 {
     // errno is thread-safe on POSIX and Windows.
     // On Windows, however, this feature is "undocumented", but
@@ -136,13 +136,13 @@ void set_errno_win32()
 #else                                       // POSIX
 
 
-int translate_win32_error(int code)     // nullopt
+int translate_win32_error(int code) noexcept     // nullopt
 {
     return code;
 }
 
 
-void set_errno_win32()                  // nullopt
+void set_errno_win32() noexcept                  // nullopt
 {}
 
 #endif                                      // WINDOWS

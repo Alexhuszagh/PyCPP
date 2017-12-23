@@ -147,18 +147,18 @@ public:
     self& operator=(self&&);
 
     // CAPACITY
-    size_type size() const;
-    size_type cache_size() const;
-    size_type max_size() const;
+    size_type size() const noexcept;
+    size_type cache_size() const noexcept;
+    size_type max_size() const noexcept;
     bool empty() const noexcept;
 
     // ITERATORS
-    iterator begin();
-    const_iterator begin() const;
-    const_iterator cbegin() const;
-    iterator end();
-    const_iterator end() const;
-    const_iterator cend() const;
+    iterator begin() noexcept;
+    const_iterator begin() const noexcept;
+    const_iterator cbegin() const noexcept;
+    iterator end() noexcept;
+    const_iterator end() const noexcept;
+    const_iterator cend() const noexcept;
 
     // ELEMENT ACCESS
     mapped_type& operator[](const key_type&);
@@ -170,13 +170,13 @@ public:
     iterator find(const key_type&);
     const_iterator find(const key_type&) const;
     size_type count(const key_type&) const;
-   pair<iterator, iterator> equal_range(const key_type&);
-   pair<const_iterator, const_iterator> equal_range(const key_type&) const;
+    pair<iterator, iterator> equal_range(const key_type&);
+    pair<const_iterator, const_iterator> equal_range(const key_type&) const;
 
     // MODIFIERS
-   pair<iterator, bool> insert(const key_type&, const mapped_type&);
-   pair<iterator, bool> insert(const key_type&, mapped_type&&);
-   pair<iterator, bool> insert(key_type&&, mapped_type&&);
+    pair<iterator, bool> insert(const key_type&, const mapped_type&);
+    pair<iterator, bool> insert(const key_type&, mapped_type&&);
+    pair<iterator, bool> insert(key_type&&, mapped_type&&);
     iterator erase(const_iterator);
     size_type erase(const key_type&);
     iterator erase(const_iterator, const_iterator);
@@ -199,7 +199,7 @@ public:
     // OBSERVERS
     hasher hash_function() const;
     key_equal key_eq() const;
-    allocator_type get_allocator() const;
+    allocator_type get_allocator() const noexcept;
 
 protected:
     // CACHE
@@ -274,21 +274,21 @@ auto lru_cache<K, V, H, P, A, L, M>::operator=(self&& rhs) -> self&
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::cache_size() const -> size_type
+auto lru_cache<K, V, H, P, A, L, M>::cache_size() const noexcept -> size_type
 {
     return cache_size_;
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::size() const -> size_type
+auto lru_cache<K, V, H, P, A, L, M>::size() const noexcept -> size_type
 {
     return map_.size();
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::max_size() const -> size_type
+auto lru_cache<K, V, H, P, A, L, M>::max_size() const noexcept -> size_type
 {
     return map_.max_size();
 }
@@ -302,42 +302,42 @@ bool lru_cache<K, V, H, P, A, L, M>::empty() const noexcept
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::begin() -> iterator
+auto lru_cache<K, V, H, P, A, L, M>::begin() noexcept -> iterator
 {
     return LRU_ITERATOR(list_.begin());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::begin() const -> const_iterator
+auto lru_cache<K, V, H, P, A, L, M>::begin() const noexcept -> const_iterator
 {
     return LRU_CONST_ITERATOR(list_.begin());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::cbegin() const -> const_iterator
+auto lru_cache<K, V, H, P, A, L, M>::cbegin() const noexcept -> const_iterator
 {
     return LRU_CONST_ITERATOR(list_.begin());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::end() -> iterator
+auto lru_cache<K, V, H, P, A, L, M>::end() noexcept -> iterator
 {
     return LRU_ITERATOR(list_.end());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::end() const -> const_iterator
+auto lru_cache<K, V, H, P, A, L, M>::end() const noexcept -> const_iterator
 {
     return LRU_CONST_ITERATOR(list_.end());
 }
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::cend() const -> const_iterator
+auto lru_cache<K, V, H, P, A, L, M>::cend() const noexcept -> const_iterator
 {
     return LRU_CONST_ITERATOR(list_.end());
 }
@@ -612,7 +612,7 @@ auto lru_cache<K, V, H, P, A, L, M>::key_eq() const -> key_equal
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::get_allocator() const -> allocator_type
+auto lru_cache<K, V, H, P, A, L, M>::get_allocator() const noexcept -> allocator_type
 {
     return map_.get_allocator();
 }

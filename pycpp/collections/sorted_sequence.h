@@ -88,18 +88,18 @@ struct sorted_sequence
     self_t& operator=(initializer_list<value_type>);
 
     // ITERATORS
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_reverse_iterator rbegin() const;
-    const_reverse_iterator rend() const;
-    const_iterator cbegin() const;
-    const_iterator cend() const;
-    const_reverse_iterator crbegin() const;
-    const_reverse_iterator crend() const;
+    const_iterator begin() const noexcept;
+    const_iterator end() const noexcept;
+    const_reverse_iterator rbegin() const noexcept;
+    const_reverse_iterator rend() const noexcept;
+    const_iterator cbegin() const noexcept;
+    const_iterator cend() const noexcept;
+    const_reverse_iterator crbegin() const noexcept;
+    const_reverse_iterator crend() const noexcept;
 
     // CAPACITY
-    size_type size() const;
-    size_type max_size() const;
+    size_type size() const noexcept;
+    size_type max_size() const noexcept;
     bool empty() const noexcept;
 
     // ELEMENT ACCESS
@@ -237,70 +237,70 @@ auto sorted_sequence<T, C, A, _>::operator=(initializer_list<value_type> list) -
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::begin() const -> const_iterator
+auto sorted_sequence<T, C, A, _>::begin() const noexcept -> const_iterator
 {
     return container_.begin();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::end() const -> const_iterator
+auto sorted_sequence<T, C, A, _>::end() const noexcept -> const_iterator
 {
     return container_.end();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::rbegin() const -> const_reverse_iterator
+auto sorted_sequence<T, C, A, _>::rbegin() const noexcept -> const_reverse_iterator
 {
     return container_.rbegin();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::rend() const -> const_reverse_iterator
+auto sorted_sequence<T, C, A, _>::rend() const noexcept -> const_reverse_iterator
 {
     return container_.rend();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::cbegin() const -> const_iterator
+auto sorted_sequence<T, C, A, _>::cbegin() const noexcept -> const_iterator
 {
     return container_.cbegin();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::cend() const -> const_iterator
+auto sorted_sequence<T, C, A, _>::cend() const noexcept -> const_iterator
 {
     return container_.cend();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::crbegin() const -> const_reverse_iterator
+auto sorted_sequence<T, C, A, _>::crbegin() const noexcept -> const_reverse_iterator
 {
     return container_.crbegin();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::crend() const -> const_reverse_iterator
+auto sorted_sequence<T, C, A, _>::crend() const noexcept -> const_reverse_iterator
 {
     return container_.crend();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::size() const -> size_type
+auto sorted_sequence<T, C, A, _>::size() const noexcept -> size_type
 {
     return container_.size();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::max_size() const -> size_type
+auto sorted_sequence<T, C, A, _>::max_size() const noexcept -> size_type
 {
     return container_.max_size();
 }

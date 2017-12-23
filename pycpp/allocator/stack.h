@@ -102,7 +102,7 @@ public:
     stack_allocator_arena& operator=(const stack_allocator_arena&) = delete;
     stack_allocator_arena(stack_allocator_arena&&) = delete;
     stack_allocator_arena& operator=(stack_allocator_arena&&) = delete;
-    ~stack_allocator_arena();
+    ~stack_allocator_arena() noexcept;
 
     // ALLOCATION
     template <size_t RequiredAlignment> char* allocate(size_t n);
@@ -120,12 +120,12 @@ private:
     alignas(Alignment) char buf_[StackSize];
     compressed_pair<compressed_pair<char*, fallback_type>, mutex_type> data_;
 
-    char*& ptr_();
-    char* const& ptr_() const;
-    fallback_type& fallback_();
-    const fallback_type& fallback_() const;
-    mutex_type& mutex_();
-    const mutex_type& mutex_() const;
+    char*& ptr_() noexcept;
+    char* const& ptr_() const noexcept;
+    fallback_type& fallback_() noexcept;
+    const fallback_type& fallback_() const noexcept;
+    mutex_type& mutex_() noexcept;
+    const mutex_type& mutex_() const noexcept;
     static size_t align_up(size_t n) noexcept;
     bool pointer_in_buffer(char* p) noexcept;
 };
@@ -200,13 +200,6 @@ private:
         typename T2, size_t S2, size_t A2, bool UF2, typename F2, bool UL2
     >
     friend bool operator==(const stack_allocator<T1, S1, A1, UF1, F1, UL1>& lhs,
-                           const stack_allocator<T2, S2, A2, UF2, F2, UL2>& rhs) noexcept;
-
-    template <
-        typename T1, size_t S1, size_t A1, bool UF1, typename F1, bool UL1,
-        typename T2, size_t S2, size_t A2, bool UF2, typename F2, bool UL2
-    >
-    friend bool operator!=(const stack_allocator<T1, S1, A1, UF1, F1, UL1>& lhs,
                            const stack_allocator<T2, S2, A2, UF2, F2, UL2>& rhs) noexcept;
 
     arena_type* arena_ = nullptr;
@@ -294,7 +287,7 @@ stack_allocator_arena<S, A, UF, F, UL>::stack_allocator_arena(const fallback_typ
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-stack_allocator_arena<S, A, UF, F, UL>::~stack_allocator_arena()
+stack_allocator_arena<S, A, UF, F, UL>::~stack_allocator_arena() noexcept
 {
     ptr_() = nullptr;
 }
@@ -367,42 +360,42 @@ void stack_allocator_arena<S, A, UF, F, UL>::reset() noexcept
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-auto stack_allocator_arena<S, A, UF, F, UL>::ptr_() -> char*&
+auto stack_allocator_arena<S, A, UF, F, UL>::ptr_() noexcept -> char*&
 {
     return get<0>(get<0>(data_));
 }
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-auto stack_allocator_arena<S, A, UF, F, UL>::ptr_() const -> char* const&
+auto stack_allocator_arena<S, A, UF, F, UL>::ptr_() const noexcept -> char* const&
 {
     return get<0>(get<0>(data_));
 }
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-auto stack_allocator_arena<S, A, UF, F, UL>::fallback_() -> fallback_type&
+auto stack_allocator_arena<S, A, UF, F, UL>::fallback_() noexcept -> fallback_type&
 {
     return get<1>(get<0>(data_));
 }
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-auto stack_allocator_arena<S, A, UF, F, UL>::fallback_() const -> const fallback_type&
+auto stack_allocator_arena<S, A, UF, F, UL>::fallback_() const noexcept -> const fallback_type&
 {
     return get<1>(get<0>(data_));
 }
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-auto stack_allocator_arena<S, A, UF, F, UL>::mutex_() -> mutex_type&
+auto stack_allocator_arena<S, A, UF, F, UL>::mutex_() noexcept -> mutex_type&
 {
     return get<1>(data_);
 }
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-auto stack_allocator_arena<S, A, UF, F, UL>::mutex_() const -> const mutex_type&
+auto stack_allocator_arena<S, A, UF, F, UL>::mutex_() const noexcept -> const mutex_type&
 {
     return get<1>(data_);
 }

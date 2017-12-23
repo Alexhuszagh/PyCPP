@@ -459,6 +459,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/algorithm/interpolation_search.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/crt.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/linear.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.h"
@@ -659,6 +660,7 @@ set(HEADER_FILES
 )
 
 set(SOURCE_FILES
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/crt.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/standard.cc"
@@ -841,6 +843,7 @@ if(BUILD_JSON)
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/core.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/dom.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/new.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/sax.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/json/writer.h"
     )
@@ -1015,6 +1018,7 @@ list(APPEND PYCPP_LIBRARIES pycpp)
 set(TEST_FILES
     test/main.cc
     test/algorithm/interpolation_search.cc
+    test/allocator/crt.cc
     test/allocator/linear.cc
     test/allocator/pool.cc
     test/allocator/secure.cc

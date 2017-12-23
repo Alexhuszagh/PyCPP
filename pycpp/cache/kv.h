@@ -68,7 +68,9 @@ private:
 template <
     typename Key,
     typename T,
-    typename Compare = less<Key>
+    typename Compare = less<Key>,
+    typename Allocator = allocator<pair<const Key, T>>
+    // TODO: do I need an allocator???
 >
 struct kv_cache
 {
@@ -88,10 +90,13 @@ public:
     using const_iterator = kv_iterator<const value_type>;
     using reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<iterator>;
     using const_reverse_iterator = PYCPP_NAMESPACE::reverse_iterator<const_iterator>;
+    using allocator_type = Allocator;
 
     // MEMBER FUNCTIONS
     // ----------------
     // TODO: need to use the comparator...
+    // TODO: need the allocator too
+    // TODO: noexcept?
     kv_cache(const path_view_t&, kv_options = kv_none);
     ~kv_cache();
 

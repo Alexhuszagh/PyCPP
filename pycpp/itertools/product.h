@@ -72,12 +72,12 @@ struct iterator_reference
         reference_wrapper<const value_type>
     >;
 
-    static iterator begin(const container_type &t)
+    static iterator begin(const container_type &t) noexcept(noexcept(t.begin()))
     {
         return t.begin();
     }
 
-    static iterator end(const container_type &t)
+    static iterator end(const container_type &t) noexcept(noexcept(t.end()))
     {
         return t.end();
     }

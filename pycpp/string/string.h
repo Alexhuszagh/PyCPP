@@ -78,9 +78,11 @@ struct string_wrapper: string_view
     string_wrapper& operator=(string_wrapper&& str) = default;
 
     string_wrapper(const string_t& str);
+    string_wrapper(const string& str);
     string_wrapper(const string_view& str);
     string_wrapper(const string_wrapper& str, size_type pos, size_type len = npos);
     string_wrapper(const string_t& str, size_type pos, size_type len = npos);
+    string_wrapper(const string& str, size_type pos, size_type len = npos);
     string_wrapper(const_pointer str);
     string_wrapper(const_pointer str, size_type n);
     string_wrapper(const_pointer first, const_pointer last);

@@ -166,32 +166,32 @@
 /**
  *  \brief Swap bytes in-place of type sizeof(T) == width.
  */
-void bswap(void* buf, int width);
+void bswap(void* buf, int width) noexcept;
 
 /**
  *  \brief Swap bytes from src into dst of type sizeof(T) == width.
  */
-void bswap(void* dst, void* src, int width);
+void bswap(void* dst, void* src, int width) noexcept;
 
 /**
  *  \brief memcpy() with byteswap for each 16-bit type.
  */
-void memcpy_bswap16(void* dst, void* src, size_t bytes);
+void memcpy_bswap16(void* dst, void* src, size_t bytes) noexcept;
 
 /**
  *  \brief memcpy() with byteswap for each 32-bit type.
  */
-void memcpy_bswap32(void* dst, void* src, size_t bytes);
+void memcpy_bswap32(void* dst, void* src, size_t bytes) noexcept;
 
 /**
  *  \brief memcpy() with byteswap for each 64-bit type.
  */
-void memcpy_bswap64(void* dst, void* src, size_t bytes);
+void memcpy_bswap64(void* dst, void* src, size_t bytes) noexcept;
 
 /**
  *  \brief memcpy() with byteswap for type sizeof(T) == width.
  */
-void memcpy_bswap(void* dst, void* src, size_t bytes, int width);
+void memcpy_bswap(void* dst, void* src, size_t bytes, int width) noexcept;
 
 
 #if BYTE_ORDER == LITTLE_ENDIAN
@@ -258,8 +258,8 @@ void memcpy_bswap(void* dst, void* src, size_t bytes, int width);
 #if defined(NEED_BSWAPXX)
 #   include <stdint.h>
 
-uint16_t bswap16(uint16_t i);
-uint32_t bswap32(uint32_t i);
-uint64_t bswap64(uint64_t i);
+uint16_t bswap16(uint16_t i) noexcept;
+uint32_t bswap32(uint32_t i) noexcept;
+uint64_t bswap64(uint64_t i) noexcept;
 
 #endif
