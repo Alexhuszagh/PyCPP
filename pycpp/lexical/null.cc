@@ -16,7 +16,7 @@ lexical_null_formatter::lexical_null_formatter()
 {}
 
 
-lexical_null_formatter::lexical_null_formatter(const std::nullptr_t nullp)
+lexical_null_formatter::lexical_null_formatter(const nullptr_t nullp)
 {}
 
 size_t lexical_null_formatter::size() const
@@ -63,15 +63,15 @@ lexical_null_extractor::lexical_null_extractor(const string_view &string)
 }
 
 
-std::nullptr_t lexical_null_extractor::value() const
+nullptr_t lexical_null_extractor::value() const
 {
     // WARNING: This is used as a patch for MSVC, where functional-style
-    // type-casts are not allowed with std::nullptr_t.
+    // type-casts are not allowed with nullptr_t.
     return nullptr;
 }
 
 
-lexical_null_extractor::operator std::nullptr_t() const
+lexical_null_extractor::operator nullptr_t() const
 {
     return nullptr;
 }

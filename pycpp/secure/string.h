@@ -496,7 +496,7 @@ void swap(secure_basic_string<C, T, A>& lhs, secure_basic_string<C, T, A>& rhs)
 template <typename C, typename T, typename A>
 basic_istream<C, T> & operator>>(basic_istream<C, T> &stream, secure_basic_string<C, T, A>& str)
 {
-    return stream.read(const_cast<char*>(get<0>(str.data_)), str.length_);
+    return stream.read(get<0>(str.data_), str.length_);
 }
 
 
@@ -1072,7 +1072,7 @@ void secure_basic_string<C, T, A>::munlock()
 template <typename C, typename T, typename A>
 auto secure_basic_string<C, T, A>::begin() -> iterator
 {
-    return const_cast<iterator>(get<0>(data_));
+    return iterator(get<0>(data_));
 }
 
 

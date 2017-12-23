@@ -91,11 +91,12 @@ private:
         }
     };
 
-    using ht = robin_detail::robin_hash<Key, KeySelect, void, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy>;
+    using ht = robin_detail::robin_hash<Key, Key, KeySelect, void, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy>;
 
 public:
     using key_type = typename ht::key_type;
     using value_type = typename ht::value_type;
+    using mutable_value_type = typename ht::mutable_value_type;
     using size_type = typename ht::size_type;
     using difference_type = typename ht::difference_type;
     using hasher = typename ht::hasher;

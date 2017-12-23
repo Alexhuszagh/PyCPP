@@ -70,7 +70,14 @@ struct crt_allocator: private crt_allocator_base
 // ALIAS
 // -----
 
-using crt_resource = resource_adaptor<crt_allocator<char>>;
+using crt_resource = resource_adaptor<crt_allocator<byte>>;
+
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable<crt_allocator<T>>: true_type
+{};
 
 // DETAIL
 // ------

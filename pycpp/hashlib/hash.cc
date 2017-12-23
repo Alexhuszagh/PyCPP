@@ -205,6 +205,18 @@ struct hexdigest_stl
 };
 
 
+template <typename T, bool IsConst>
+using conditional_const_t = conditional_t<
+    IsConst,
+    const T,
+    T
+>;
+
+
+template <typename T, typename Memory>
+using hash_type = conditional_const_t<T, is_const<Memory>::value>;
+
+
 /**
  *  \brief Cast storage to the correct type.
  */
@@ -213,55 +225,55 @@ static void get_hash(Memory& mem, hash_algorithm algorithm, Function& function)
 {
     switch (algorithm) {
         case md2_hash_algorithm:
-            function(reinterpret_cast<md2_hash&>(mem));
+            function(reinterpret_cast<hash_type<md2_hash, Memory>&>(mem));
             break;
 
         case md4_hash_algorithm:
-            function(reinterpret_cast<md4_hash&>(mem));
+            function(reinterpret_cast<hash_type<md4_hash, Memory>&>(mem));
             break;
 
         case md5_hash_algorithm:
-            function(reinterpret_cast<md5_hash&>(mem));
+            function(reinterpret_cast<hash_type<md5_hash, Memory>&>(mem));
             break;
 
         case sha1_hash_algorithm:
-            function(reinterpret_cast<sha1_hash&>(mem));
+            function(reinterpret_cast<hash_type<sha1_hash, Memory>&>(mem));
             break;
 
         case sha2_224_hash_algorithm:
-            function(reinterpret_cast<sha2_224_hash&>(mem));
+            function(reinterpret_cast<hash_type<sha2_224_hash, Memory>&>(mem));
             break;
 
         case sha2_256_hash_algorithm:
-            function(reinterpret_cast<sha2_256_hash&>(mem));
+            function(reinterpret_cast<hash_type<sha2_256_hash, Memory>&>(mem));
             break;
 
         case sha2_384_hash_algorithm:
-            function(reinterpret_cast<sha2_384_hash&>(mem));
+            function(reinterpret_cast<hash_type<sha2_384_hash, Memory>&>(mem));
             break;
 
         case sha2_512_hash_algorithm:
-            function(reinterpret_cast<sha2_512_hash&>(mem));
+            function(reinterpret_cast<hash_type<sha2_512_hash, Memory>&>(mem));
             break;
 
         case sha3_224_hash_algorithm:
-            function(reinterpret_cast<sha3_224_hash&>(mem));
+            function(reinterpret_cast<hash_type<sha3_224_hash, Memory>&>(mem));
             break;
 
         case sha3_256_hash_algorithm:
-            function(reinterpret_cast<sha3_256_hash&>(mem));
+            function(reinterpret_cast<hash_type<sha3_256_hash, Memory>&>(mem));
             break;
 
         case sha3_384_hash_algorithm:
-            function(reinterpret_cast<sha3_384_hash&>(mem));
+            function(reinterpret_cast<hash_type<sha3_384_hash, Memory>&>(mem));
             break;
 
         case sha3_512_hash_algorithm:
-            function(reinterpret_cast<sha3_512_hash&>(mem));
+            function(reinterpret_cast<hash_type<sha3_512_hash, Memory>&>(mem));
             break;
 
         case whirlpool_hash_algorithm:
-            function(reinterpret_cast<whirlpool_hash&>(mem));
+            function(reinterpret_cast<hash_type<whirlpool_hash, Memory>&>(mem));
             break;
 
         default:
@@ -350,21 +362,21 @@ void cryptographic_hash::update(const string_wrapper& str)
 void cryptographic_hash::digest(void*& dst, size_t dstlen) const
 {
     digest_cstring functor = {dst, dstlen};
-    get_hash(const_cast<memory_type&>(mem), algorithm, functor);
+    get_hash(mem, algorithm, functor);
 }
 
 
 void cryptographic_hash::hexdigest(void*& dst, size_t dstlen) const
 {
     hexdigest_cstring functor = {dst, dstlen};
-    get_hash(const_cast<memory_type&>(mem), algorithm, functor);
+    get_hash(mem, algorithm, functor);
 }
 
 
 secure_string cryptographic_hash::digest() const
 {
     digest_stl functor;
-    get_hash(const_cast<memory_type&>(mem), algorithm, functor);
+    get_hash(mem, algorithm, functor);
     return move(functor.str);
 }
 
@@ -372,7 +384,7 @@ secure_string cryptographic_hash::digest() const
 secure_string cryptographic_hash::hexdigest() const
 {
     hexdigest_stl functor;
-    get_hash(const_cast<memory_type&>(mem), algorithm, functor);
+    get_hash(mem, algorithm, functor);
     return move(functor.str);
 }
 

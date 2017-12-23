@@ -2,33 +2,48 @@
 
 **Short-Term**
 
-    - Need an alias for std::nullptr_t as nullptr_t in a public header...
-
-    - Implement new/delete resource in terms of malloc/free
-    - Add a realloc for all allocators....
-    - Subclass allocator_traits to add a realloc too...
     - Specialized `is_relocatable` for a lot of types.
         - Basically everything can be specialized....
+        - cache
+        - cipher
+        - collections
+        - compression
+        - csv
+        - filesystem
+        - fixed
+        - hashlib
+        - intrusive
+        - iterator
+        - itertools
+        - json
+        - lattice
+        - lexical
+        - math
+        - memmap
+        - misc
+        - multi_index
+        - preprocessor
+        - random
+        - re
+        - runtime
+        - secure
+        - sfinae
+        - sql
+        - stl
+            - DO NEXT... (make sure STL containers are relocatable...)
+        - stream
+        - string
+        - windows
+        - xml
+
 
     - Get rid of naked new/delete
         - Change to use the global allocator generally speaking...
-        - make_shared -> allocate_shared
-        - make_unique to use a custom allocator....
         - `allocate_and_construct` for custom allocators...
         - Don't store the allocator in JSON and XML values (or any values)
             - **HOW** (Pass the allocator always??)
 
     - Add noexcepts everywhere
-        - Collections
-            - Ordered
-                - Almost certainly need a reinterpret_cast<> to const Key
-            - Ordered_map
-            - Ordered_set
-            - Robin
-                - Change Robin to use `pair<const Key, T>`
-                - Almost certainly need a reinterpret_cast<> to const Key
-            - Robin_map
-            - Robin_set
         - Compression
         - CSV
         - Filesystem
@@ -100,8 +115,6 @@
 
         - Need a custom stringstream that takes a view or some shit, since that STL stringstream constructor is fucking dumb as shit.
 
-    - The robin map needs to use std::pair<const Key, Value> rather than it's bullshit.
-
     - Implement more intrusive containers.
         - vector -- DONE
         - deque -- DONE
@@ -128,7 +141,6 @@
         - unordered_multimap
 
     - Ordered set unittests
-    - Add tests for robin-hood hash into the project
 
     - Add custom memory allocators
         - https://github.com/mtrebi/memory-allocators

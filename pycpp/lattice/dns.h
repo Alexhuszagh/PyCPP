@@ -82,7 +82,7 @@ struct address_t
     int family;
     int socket_type;
     int protocol;
-    sockaddr address;
+    mutable sockaddr address;
     size_t length;
 
     address_t() = default;

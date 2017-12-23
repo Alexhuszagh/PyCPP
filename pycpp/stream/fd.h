@@ -96,8 +96,8 @@ public:
     void close();
     bool is_open() const;
     void swap(fd_stream&);
-    fd_streambuf* rdbuf() const;
-    void rdbuf(fd_streambuf* buffer);
+    streambuf* rdbuf() const;
+    void rdbuf(streambuf* buffer);
 
 private:
     fd_streambuf buffer;
@@ -126,8 +126,8 @@ public:
     void close();
     bool is_open() const;
     void swap(fd_istream&);
-    fd_streambuf* rdbuf() const;
-    void rdbuf(fd_streambuf* buffer);
+    streambuf* rdbuf() const;
+    void rdbuf(streambuf* buffer);
 
 private:
     fd_streambuf buffer;
@@ -156,8 +156,8 @@ public:
     void close();
     bool is_open() const;
     void swap(fd_ostream&);
-    fd_streambuf* rdbuf() const;
-    void rdbuf(fd_streambuf* buffer);
+    streambuf* rdbuf() const;
+    void rdbuf(streambuf* buffer);
 
 private:
     fd_streambuf buffer;

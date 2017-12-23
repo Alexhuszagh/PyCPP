@@ -21,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 struct lexical_null_formatter
 {
     lexical_null_formatter();
-    lexical_null_formatter(std::nullptr_t nullp);
+    lexical_null_formatter(nullptr_t nullp);
 
     // DATA
     size_t size() const;
@@ -43,8 +43,8 @@ struct lexical_null_extractor
     lexical_null_extractor(const string_view& string);
 
     // CONVERSIONS
-    std::nullptr_t value() const;
-    operator std::nullptr_t() const;
+    nullptr_t value() const;
+    operator nullptr_t() const;
 };
 
 PYCPP_END_NAMESPACE

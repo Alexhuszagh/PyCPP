@@ -88,8 +88,8 @@ public:
     ~linear_allocator_arena() noexcept;
 
     // ALLOCATION
-    template <size_t RequiredAlignment> char* allocate(size_t n);
-    void deallocate(char* p, size_t n) noexcept;
+    template <size_t RequiredAlignment> byte* allocate(size_t n);
+    void deallocate(byte* p, size_t n) noexcept;
 
     // PROPERTIES
     static size_t size() noexcept;
@@ -97,16 +97,16 @@ public:
     void reset() noexcept;
 
 private:
-    alignas(Alignment) char buf_[StackSize];
-    compressed_pair<char*, mutex_type> data_;
+    alignas(Alignment) byte buf_[StackSize];
+    compressed_pair<byte*, mutex_type> data_;
 
-    char*& ptr_() noexcept;
-    char* const& ptr_() const noexcept;
+    byte*& ptr_() noexcept;
+    byte* const& ptr_() const noexcept;
     mutex_type& mutex_() noexcept;
     const mutex_type& mutex_() const noexcept;
 
     static size_t align_up(size_t n) noexcept;
-    bool pointer_in_buffer(char* p) noexcept;
+    bool pointer_in_buffer(byte* p) noexcept;
 };
 
 // ALLOCATOR
@@ -188,10 +188,33 @@ template <
     bool UseLocks = false
 >
 using linear_resource = resource_adaptor<
-    linear_allocator<char, StackSize, Alignment, UseLocks>
+    linear_allocator<byte, StackSize, Alignment, UseLocks>
 >;
 
-// TODO: add locked, unlocked here...
+template <
+    typename T,
+    size_t StackSize,
+    size_t Alignment = alignof(max_align_t)
+>
+using linear_locked_allocator = linear_allocator<T, StackSize, Alignment, true>;
+
+template <
+    typename T,
+    size_t StackSize,
+    size_t Alignment = alignof(max_align_t)
+>
+using linear_unlocked_allocator = linear_allocator<T, StackSize, Alignment, false>;
+
+// SPECIALIZATION
+// --------------
+
+template <size_t S, size_t A, bool UL>
+struct is_relocatable<linear_allocator_arena<S, A, UL>>: false_type
+{};
+
+template <typename T, size_t S, size_t A, bool UL>
+struct is_relocatable<linear_allocator<T, S, A, UL>>: true_type
+{};
 
 // IMPLEMENTATION
 // --------------
@@ -222,7 +245,7 @@ linear_allocator_arena<S, A, UL>::~linear_allocator_arena() noexcept
 
 template <size_t S, size_t A, bool UL>
 template <size_t RequiredAlignment>
-char* linear_allocator_arena<S, A, UL>::allocate(size_t n)
+byte* linear_allocator_arena<S, A, UL>::allocate(size_t n)
 {
     static_assert(RequiredAlignment <= alignment, "Alignment is too small for this arena");
     assert(pointer_in_buffer(ptr_()) && "Allocator has outlived arena.");
@@ -230,7 +253,7 @@ char* linear_allocator_arena<S, A, UL>::allocate(size_t n)
     lock_guard<mutex_type> lock(mutex_());
     size_t aligned_n = align_up(n);
     if (static_cast<size_t>(buf_ + stack_size - ptr_()) >= aligned_n) {
-        char* r = ptr_();
+        byte* r = ptr_();
         ptr_() += aligned_n;
         return r;
     }
@@ -245,7 +268,7 @@ char* linear_allocator_arena<S, A, UL>::allocate(size_t n)
 
 
 template <size_t S, size_t A, bool UL>
-void linear_allocator_arena<S, A, UL>::deallocate(char* p, size_t n) noexcept
+void linear_allocator_arena<S, A, UL>::deallocate(byte* p, size_t n) noexcept
 {
     assert(pointer_in_buffer(ptr_()) && "Allocator has outlived arena.");
 }
@@ -274,14 +297,14 @@ void linear_allocator_arena<S, A, UL>::reset() noexcept
 
 
 template <size_t S, size_t A, bool UL>
-auto linear_allocator_arena<S, A, UL>::ptr_() noexcept -> char*&
+auto linear_allocator_arena<S, A, UL>::ptr_() noexcept -> byte*&
 {
     return get<0>(data_);
 }
 
 
 template <size_t S, size_t A, bool UL>
-auto linear_allocator_arena<S, A, UL>::ptr_() const noexcept -> char* const&
+auto linear_allocator_arena<S, A, UL>::ptr_() const noexcept -> byte* const&
 {
     return get<0>(data_);
 }
@@ -309,7 +332,7 @@ size_t linear_allocator_arena<S, A, UL>::align_up(size_t n) noexcept
 
 
 template <size_t S, size_t A, bool UL>
-bool linear_allocator_arena<S, A, UL>::pointer_in_buffer(char* p) noexcept
+bool linear_allocator_arena<S, A, UL>::pointer_in_buffer(byte* p) noexcept
 {
     return (buf_ <= p) && (p <= buf_ + stack_size);
 }
@@ -418,7 +441,7 @@ template <typename T, size_t S, size_t A, bool UL>
 void linear_allocator<T, S, A, UL>::deallocate(pointer p, size_type n)
 {
     assert(arena_ && "Arena cannot be null.");
-    arena_->deallocate(reinterpret_cast<char*>(p), sizeof(T) * n);
+    arena_->deallocate(reinterpret_cast<byte*>(p), sizeof(T) * n);
 }
 
 

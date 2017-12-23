@@ -86,6 +86,8 @@ private:
     using slot_pointer_ = slot_*;
 };
 
+// TODO: specialize is_relocatable
+// TODO: add locked and unlocked variants
 
 // IMPLEMENTATION
 // --------------

@@ -122,7 +122,7 @@ protected:
     using istream::seekg;
 
 private:
-    filter_streambuf buffer;
+    mutable filter_streambuf buffer;
     istream* stream = nullptr;
 };
 
@@ -154,7 +154,7 @@ protected:
     using ostream::seekp;
 
 private:
-    filter_streambuf buffer;
+    mutable filter_streambuf buffer;
     ostream* stream = nullptr;
 };
 

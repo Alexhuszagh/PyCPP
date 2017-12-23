@@ -106,7 +106,7 @@ address_t::operator addrinfo() const
     info.ai_family = family;
     info.ai_socktype = socket_type;
     info.ai_protocol = protocol;
-    info.ai_addr = const_cast<sockaddr*>(&address);
+    info.ai_addr = &address;
     info.ai_addrlen = length;
 
     return info;

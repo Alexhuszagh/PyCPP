@@ -415,14 +415,14 @@ std::string connection_t<Adapter>::chunked()
 
 /**
  *  \brief Read non-chunked content of fixed length.
- */
+*/
 template <typename Adapter>
 std::string connection_t<Adapter>::body(long length)
 {
     std::string string;
     if (length > 0) {
         string.resize(length);
-        adaptor.read(const_cast<char*>(&string[0]), length);
+        adaptor.read(&string[0], length);
     } else if (length) {
         throw runtime_error("Asked to read negative bytes.");
     }

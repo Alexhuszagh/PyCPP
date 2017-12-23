@@ -66,7 +66,7 @@ private:
         }
     };
 
-    using ht = detail_ordered_hash::ordered_hash<Key, KeySelect, void, Hash, KeyEqual, Allocator, ValueTypeContainer<Key, Allocator>>;
+    using ht = detail_ordered_hash::ordered_hash<Key, Key, KeySelect, void, Hash, KeyEqual, Allocator, ValueTypeContainer<Key, Allocator>>;
 
 public:
     using key_type = typename ht::key_type;

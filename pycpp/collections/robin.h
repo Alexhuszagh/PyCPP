@@ -385,13 +385,14 @@ private:
  *    can thus potentially store the hash without any extra space
  *    (which would not be possible with 64 bits of the hash).
  */
-template <typename ValueType, bool StoreHash>
+template <typename ValueType, typename MutableValueType, bool StoreHash>
 class bucket_entry: public bucket_entry_hash<StoreHash>
 {
     using bucket_hash = bucket_entry_hash<StoreHash>;
 
 public:
     using value_type = ValueType;
+    using mutable_value_type = MutableValueType;
     using distance_type = int_least16_t;
 
     bucket_entry() noexcept:
@@ -402,13 +403,13 @@ public:
         assert(empty());
     }
 
-    bucket_entry(const bucket_entry& other) noexcept(is_nothrow_copy_constructible<value_type>::value):
+    bucket_entry(const bucket_entry& other) noexcept(is_nothrow_copy_constructible<mutable_value_type>::value):
         bucket_hash(other),
         m_dist_from_ideal_bucket(EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET),
         m_last_bucket(other.m_last_bucket)
     {
         if (!other.empty()) {
-            ::new (static_cast<void*>(addressof(m_value))) value_type(other.value());
+            ::new (static_cast<void*>(addressof(m_value))) mutable_value_type(other.value());
             m_dist_from_ideal_bucket = other.m_dist_from_ideal_bucket;
         }
     }
@@ -424,19 +425,19 @@ public:
         m_last_bucket(other.m_last_bucket)
     {
         if (!other.empty()) {
-            ::new (static_cast<void*>(addressof(m_value))) value_type(move(other.value()));
+            ::new (static_cast<void*>(addressof(m_value))) mutable_value_type(move(other.value()));
             m_dist_from_ideal_bucket = other.m_dist_from_ideal_bucket;
         }
     }
 
-    bucket_entry& operator=(const bucket_entry& other) noexcept(is_nothrow_copy_constructible<value_type>::value)
+    bucket_entry& operator=(const bucket_entry& other) noexcept(is_nothrow_copy_constructible<mutable_value_type>::value)
     {
         if (this != &other) {
             clear();
 
             bucket_hash::operator=(other);
             if (!other.empty()) {
-                ::new (static_cast<void*>(addressof(m_value))) value_type(other.value());
+                ::new (static_cast<void*>(addressof(m_value))) mutable_value_type(other.value());
             }
 
             m_dist_from_ideal_bucket = other.m_dist_from_ideal_bucket;
@@ -466,16 +467,18 @@ public:
         return m_dist_from_ideal_bucket == EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET;
     }
 
-    value_type& value() noexcept
+    // TODO: need overloads for `value()`
+
+    mutable_value_type& value() noexcept
     {
         assert(!empty());
-        return *reinterpret_cast<value_type*>(addressof(m_value));
+        return *reinterpret_cast<mutable_value_type*>(addressof(m_value));
     }
 
-    const value_type& value() const noexcept
+    const mutable_value_type& value() const noexcept
     {
         assert(!empty());
-        return *reinterpret_cast<const value_type*>(addressof(m_value));
+        return *reinterpret_cast<const mutable_value_type*>(addressof(m_value));
     }
 
     distance_type dist_from_ideal_bucket() const noexcept
@@ -500,7 +503,7 @@ public:
         assert(dist_from_ideal_bucket >= 0);
         assert(empty());
 
-        ::new (static_cast<void*>(addressof(m_value))) value_type(forward<Args>(value_type_args)...);
+        ::new (static_cast<void*>(addressof(m_value))) mutable_value_type(forward<Args>(value_type_args)...);
         this->set_hash(hash);
         m_dist_from_ideal_bucket = dist_from_ideal_bucket;
 
@@ -508,12 +511,13 @@ public:
     }
 
     void swap_with_value_in_bucket(distance_type& dist_from_ideal_bucket,
-                                   truncated_hash_type& hash, value_type& value)
+                                   truncated_hash_type& hash, mutable_value_type& value)
     {
         assert(!empty());
 
-        PYCPP_NAMESPACE::swap(value, this->value());
-        PYCPP_NAMESPACE::swap(dist_from_ideal_bucket, m_dist_from_ideal_bucket);
+        using PYCPP_NAMESPACE::swap;
+        swap(value, this->value());
+        swap(dist_from_ideal_bucket, m_dist_from_ideal_bucket);
 
         // Avoid warning of unused variable if StoreHash is false
         (void) hash;
@@ -533,11 +537,11 @@ private:
     void destroy_value() noexcept
     {
         assert(!empty());
-        value().~value_type();
+        value().~mutable_value_type();
     }
 
 private:
-    using storage = aligned_storage_t<sizeof(value_type), alignof(value_type)>;
+    using storage = aligned_storage_t<sizeof(mutable_value_type), alignof(mutable_value_type)>;
 
     static const distance_type EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET = -1;
 
@@ -565,6 +569,7 @@ private:
  */
 template <
     typename ValueType,
+    typename MutableValueType,
     typename KeySelect,
     typename ValueSelect,
     typename Hash,
@@ -585,6 +590,7 @@ public:
 
     using key_type = typename KeySelect::key_type;
     using value_type = ValueType;
+    using mutable_value_type = MutableValueType;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using hasher = Hash;
@@ -603,7 +609,7 @@ private:
      *  template parameter or store the hash because it doesn't cost us
      *  anything in size and can be used to speed up rehash.
      */
-    static constexpr bool STORE_HASH = StoreHash || ((sizeof(bucket_entry<value_type, true>) == sizeof(bucket_entry<value_type, false>)) &&
+    static constexpr bool STORE_HASH = StoreHash || ((sizeof(bucket_entry<ValueType, MutableValueType, true>) == sizeof(bucket_entry<ValueType, MutableValueType, false>)) &&
                                                      (sizeof(size_t) == sizeof(truncated_hash_type) || is_power_of_two_policy<GrowthPolicy>::value) &&
                                                      // Don't store the hash for primitive types with default hash.
                                                      (!is_arithmetic<key_type>::value || !is_same<Hash, hash<key_type>>::value)
@@ -635,9 +641,10 @@ private:
         }
     }
 
-    using bucket_entry_type = bucket_entry<value_type, STORE_HASH>;
+    using bucket_entry_type = bucket_entry<ValueType, MutableValueType, STORE_HASH>;
     using distance_type = typename bucket_entry_type::distance_type;
     using buckets_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<bucket_entry_type>;
+    // TODO: need to make sure this is the proper one
     using buckets_container_type = vector<bucket_entry_type, buckets_allocator>;
 
 public:
@@ -673,10 +680,13 @@ public:
 
     public:
         using iterator_category = forward_iterator_tag;
-        using value_type = const typename robin_hash::value_type;
+        using value_type = typename robin_hash::value_type;
+        using mutable_value_type = typename robin_hash::mutable_value_type;
         using difference_type = ptrdiff_t;
         using reference = value_type&;
+        using const_reference = const value_type&;
         using pointer = value_type*;
+        using const_pointer = const value_type*;
 
         robin_iterator() noexcept
         {}
@@ -685,34 +695,43 @@ public:
             m_iterator(other.m_iterator)
         {}
 
-        // TODO: remove these functions
-
         const typename robin_hash::key_type& key() const
         {
             return KeySelect()(m_iterator->value());
         }
 
         template <typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value && IsConst>* = nullptr>
-        const typename U::value_type& value() const
+        const typename U::mapped_type& value() const
         {
             return U()(m_iterator->value());
         }
 
         template <typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value && !IsConst>* = nullptr>
-        typename U::value_type& value()
+        typename U::mapped_type& value()
         {
             return U()(m_iterator->value());
         }
-        // TODO: end remove these functions
 
-        reference operator*() const
+        template <bool B = IsConst, enable_if_t<!B>* = nullptr>
+        reference operator*()
         {
-            return m_iterator->value();
+            return *reinterpret_cast<value_type*>(&m_iterator->value());
         }
 
-        pointer operator->() const
+        const_reference operator*() const
         {
-            return addressof(m_iterator->value());
+            return *reinterpret_cast<const value_type*>(&m_iterator->value());
+        }
+
+        template <bool B = IsConst, enable_if_t<!B>* = nullptr>
+        pointer operator->()
+        {
+            return &operator*();
+        }
+
+        const_pointer operator->() const
+        {
+            return &operator*();
         }
 
         robin_iterator& operator++()
@@ -950,13 +969,13 @@ public:
     template <typename... Args>
     pair<iterator, bool> emplace(Args&&... args)
     {
-        return insert(value_type(forward<Args>(args)...));
+        return insert(mutable_value_type(forward<Args>(args)...));
     }
 
     template <typename... Args>
     iterator emplace_hint(const_iterator hint, Args&&... args)
     {
-        return insert(hint, value_type(forward<Args>(args)...));
+        return insert(hint, mutable_value_type(forward<Args>(args)...));
     }
 
     template <typename K, typename... Args>
@@ -1086,25 +1105,13 @@ public:
     // LOOKUP
 
     template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
-    typename U::value_type& at(const K& key)
+    typename U::mapped_type& at(const K& key)
     {
         return at(key, hash_key(key));
     }
 
     template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
-    typename U::value_type& at(const K& key, size_t hash)
-    {
-        return const_cast<typename U::value_type&>(static_cast<const robin_hash*>(this)->at(key, hash));
-    }
-
-    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
-    const typename U::value_type& at(const K& key) const
-    {
-        return at(key, hash_key(key));
-    }
-
-    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
-    const typename U::value_type& at(const K& key, size_t hash) const
+    typename U::mapped_type& at(const K& key, size_t hash)
     {
         auto it = find(key, hash);
         if (it != cend()) {
@@ -1115,7 +1122,30 @@ public:
     }
 
     template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
-    typename U::value_type& operator[](K&& key)
+    const typename U::mapped_type& at(const K& key) const
+    {
+        return at(key, hash_key(key));
+    }
+
+    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
+    const typename U::mapped_type& at(const K& key, size_t hash) const
+    {
+        auto it = find(key, hash);
+        if (it != cend()) {
+            return it.value();
+        } else {
+            throw out_of_range("Couldn't find key.");
+        }
+    }
+
+    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
+    typename U::mapped_type& operator[](const K& key)
+    {
+        return insert_impl(key).first.value();
+    }
+
+    template <typename K, typename U = ValueSelect, enable_if_t<has_mapped_type<U>::value>* = nullptr>
+    typename U::mapped_type& operator[](K&& key)
     {
         return try_emplace(forward<K>(key)).first.value();
     }
@@ -1346,7 +1376,7 @@ private:
 
         while (dist_from_ideal_bucket <= m_buckets[ibucket].dist_from_ideal_bucket()) {
             if ((!USE_STORED_HASH_ON_LOOKUP || m_buckets[ibucket].bucket_hash_equal(hash)) &&
-               compare_keys(KeySelect()(m_buckets[ibucket].value()), key))
+                compare_keys(KeySelect()(m_buckets[ibucket].value()), key))
             {
                 return make_pair(iterator(m_buckets.begin() + ibucket), false);
             }
@@ -1381,16 +1411,15 @@ private:
         return make_pair(iterator(m_buckets.begin() + ibucket), true);
     }
 
-
     template <typename... Args>
     void insert_value(size_t ibucket, distance_type dist_from_ideal_bucket,
                       truncated_hash_type hash, Args&&... value_type_args)
     {
-        insert_value(ibucket, dist_from_ideal_bucket, hash, value_type(forward<Args>(value_type_args)...));
+        insert_value(ibucket, dist_from_ideal_bucket, hash, mutable_value_type(forward<Args>(value_type_args)...));
     }
 
     void insert_value(size_t ibucket, distance_type dist_from_ideal_bucket,
-                      truncated_hash_type hash, value_type&& value)
+                      truncated_hash_type hash, mutable_value_type&& value)
     {
         m_buckets[ibucket].swap_with_value_in_bucket(dist_from_ideal_bucket, hash, value);
         ibucket = next_bucket(ibucket);
@@ -1439,7 +1468,7 @@ private:
     }
 
     void insert_value_on_rehash(size_t ibucket, distance_type dist_from_ideal_bucket,
-                                truncated_hash_type hash, value_type&& value)
+                                truncated_hash_type hash, mutable_value_type&& value)
     {
         while (true) {
             if (dist_from_ideal_bucket > m_buckets[ibucket].dist_from_ideal_bucket()) {

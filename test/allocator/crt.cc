@@ -44,6 +44,15 @@ struct non_relocatable
 // -----
 
 
+TEST(crt, is_relocatable)
+{
+    using allocator_type = crt_allocator<char>;
+    using resource_type = crt_resource;
+    static_assert(is_relocatable<allocator_type>::value, "");
+    static_assert(is_relocatable<resource_type>::value, "");
+}
+
+
 TEST(crt_allocator, crt_allocator)
 {
     using allocator_type = crt_allocator<char>;

@@ -55,13 +55,15 @@ private:
     {
     public:
         using key_type = Key;
+        using mapped_type = T;
+        using mutable_value_type = pair<Key, T>;
 
-        const key_type& operator()(const pair<Key, T>& key_value) const
+        const key_type& operator()(const mutable_value_type& key_value) const
         {
             return key_value.first;
         }
 
-        key_type& operator()(pair<Key, T>& key_value)
+        key_type& operator()(mutable_value_type& key_value)
         {
             return key_value.first;
         }
@@ -70,20 +72,22 @@ private:
     class ValueSelect
     {
     public:
-        using value_type = T;
+        using key_type = Key;
+        using mapped_type = T;
+        using mutable_value_type = pair<Key, T>;
 
-        const value_type& operator()(const pair<Key, T>& key_value) const
+        const mapped_type& operator()(const mutable_value_type& key_value) const
         {
             return key_value.second;
         }
 
-        value_type& operator()(pair<Key, T>& key_value)
+        mapped_type& operator()(mutable_value_type& key_value)
         {
             return key_value.second;
         }
     };
 
-    using ht = detail_ordered_hash::ordered_hash<pair<Key, T>, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, ValueTypeContainer<pair<Key, T>, Allocator>>;
+    using ht = detail_ordered_hash::ordered_hash<pair<const Key, T>, pair<Key, T>, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, ValueTypeContainer<pair<Key, T>, Allocator>>;
 
 public:
     using key_type = typename ht::key_type;

@@ -211,7 +211,7 @@ void fstream::open(const u16string_view& name, ios_base::openmode mode)
 
 std::filebuf* fstream::rdbuf() const
 {
-    return const_cast<std::filebuf*>(&buffer);
+    return &buffer;
 }
 
 
@@ -240,9 +240,10 @@ void fstream::close()
 void fstream::swap(fstream &other)
 {
     // swap
+    using PYCPP_NAMESPACE::swap;
     iostream::swap(other);
-    PYCPP_NAMESPACE::swap(file, other.file);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    swap(file, other.file);
+    swap(buffer, other.buffer);
 
     // set filebuffers
     ios::rdbuf(&buffer);
@@ -330,13 +331,13 @@ void ifstream::open(const u16string_view& name, ios_base::openmode mode)
 #endif                                          // HAVE_WFOPEN
 
 
-std::filebuf* ifstream::rdbuf() const
+streambuf* ifstream::rdbuf() const
 {
-    return const_cast<std::filebuf*>(&buffer);
+    return &buffer;
 }
 
 
-void ifstream::rdbuf(std::filebuf *buffer)
+void ifstream::rdbuf(streambuf *buffer)
 {
     ios::rdbuf(buffer);
 }
@@ -361,9 +362,10 @@ void ifstream::close()
 void ifstream::swap(ifstream &other)
 {
     // swap
+    using PYCPP_NAMESPACE::swap;
     istream::swap(other);
-    PYCPP_NAMESPACE::swap(file, other.file);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    swap(file, other.file);
+    swap(buffer, other.buffer);
 
     // set filebuffers
     ios::rdbuf(&buffer);
@@ -448,13 +450,13 @@ void ofstream::open(const u16string_view& name, ios_base::openmode mode)
 #endif                                          // HAVE_WFOPEN
 
 
-std::filebuf* ofstream::rdbuf() const
+std::streambuf* ofstream::rdbuf() const
 {
-    return const_cast<std::filebuf*>(&buffer);
+    return &buffer;
 }
 
 
-void ofstream::rdbuf(std::filebuf *buffer)
+void ofstream::rdbuf(std::streambuf *buffer)
 {
     ios::rdbuf(buffer);
 }
@@ -479,9 +481,10 @@ void ofstream::close()
 void ofstream::swap(ofstream &other)
 {
     // swap
+    using PYCPP_NAMESPACE::swap;
     ostream::swap(other);
-    PYCPP_NAMESPACE::swap(file, other.file);
-    PYCPP_NAMESPACE::swap(buffer, other.buffer);
+    swap(file, other.file);
+    swap(buffer, other.buffer);
 
     // set filebuffers
     ios::rdbuf(&buffer);

@@ -107,17 +107,6 @@ using allocator = std::allocator<T>;
 // The following are from cstddef, so include them here
 using std::nullptr_t;
 
-#if defined(HAVE_CPP17)     // HAVE_CPP17
-
-using std::byte;
-
-#else                       // !HAVE_CPP17
-
-enum class byte: unsigned char
-{};
-
-#endif                      // HAVE_CPP17
-
 // FORWARD
 // -------
 

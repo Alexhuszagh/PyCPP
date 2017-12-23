@@ -68,7 +68,7 @@ template <
     typename T,
     typename Hash = hash<Key>,
     typename KeyEqual = equal_to<Key>,
-    typename Allocator = allocator<pair<Key, T>>,
+    typename Allocator = allocator<pair<const Key, T>>,
     bool StoreHash = false,
     typename GrowthPolicy = robin_detail::power_of_two_growth_policy<2>
 >
@@ -82,13 +82,15 @@ private:
     {
     public:
         using key_type = Key;
+        using mapped_type = T;
+        using mutable_value_type = pair<Key, T>;
 
-        const key_type& operator()(const pair<Key, T>& key_value) const noexcept
+        const key_type& operator()(const mutable_value_type& key_value) const noexcept
         {
             return key_value.first;
         }
 
-        key_type& operator()(pair<Key, T>& key_value) noexcept
+        key_type& operator()(mutable_value_type& key_value) noexcept
         {
             return key_value.first;
         }
@@ -97,25 +99,29 @@ private:
     class ValueSelect
     {
     public:
-        using value_type = T;
+        using key_type = Key;
+        using mapped_type = T;
+        using mutable_value_type = pair<Key, T>;
 
-        const value_type& operator()(const pair<Key, T>& key_value) const noexcept
+        const mapped_type& operator()(const mutable_value_type& key_value) const noexcept
         {
             return key_value.second;
         }
 
-        value_type& operator()(pair<Key, T>& key_value) noexcept
+        mapped_type& operator()(mutable_value_type& key_value) noexcept
         {
             return key_value.second;
         }
     };
 
-    using ht = robin_detail::robin_hash<pair<Key, T>, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy>;
+    using ht = robin_detail::robin_hash<pair<const Key, T>, pair<Key, T>, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy>;
 
 public:
+    // TODO: continue here...
     using key_type = typename ht::key_type;
     using mapped_type = T;
     using value_type = typename ht::value_type;
+    using mutable_value_type = typename ht::mutable_value_type;
     using size_type = typename ht::size_type;
     using difference_type = typename ht::difference_type;
     using hasher = typename ht::hasher;

@@ -10,6 +10,14 @@ PYCPP_USING_NAMESPACE
 // TESTS
 // -----
 
+TEST(standard, is_relocatable)
+{
+    using allocator_type = standard_allocator<char>;
+    using resource_type = standard_resource;
+    static_assert(is_relocatable<allocator_type>::value, "");
+    static_assert(is_relocatable<resource_type>::value, "");
+}
+
 
 TEST(standard_allocator, standard_allocator)
 {

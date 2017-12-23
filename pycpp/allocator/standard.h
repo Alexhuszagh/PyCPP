@@ -69,7 +69,14 @@ struct standard_allocator: private standard_allocator_base
 // ALIAS
 // -----
 
-using standard_resource = resource_adaptor<standard_allocator<char>>;
+using standard_resource = resource_adaptor<standard_allocator<byte>>;
+
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable<standard_allocator<T>>: true_type
+{};
 
 // IMPLEMENTATION
 // --------------

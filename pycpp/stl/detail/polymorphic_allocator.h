@@ -24,6 +24,20 @@
 
 PYCPP_BEGIN_NAMESPACE
 
+// ALIAS
+// -----
+
+#if defined(HAVE_CPP17)     // HAVE_CPP17
+
+using std::byte;
+
+#else                       // !HAVE_CPP17
+
+enum class byte: unsigned char
+{};
+
+#endif                      // HAVE_CPP17
+
 // MACROS
 // ------
 
@@ -116,13 +130,14 @@ size_t max_size(size_t align);
 struct memory_resource;
 template <typename T> struct polymorphic_allocator;
 template <typename Allocator> struct resource_adaptor_imp;
+template <typename Allocator> struct is_relocatable;
 
 // ALIAS
 // -----
 
 template <typename Allocator>
 using resource_adaptor = resource_adaptor_imp<
-    typename std::allocator_traits<Allocator>::template rebind_alloc<char>
+    typename std::allocator_traits<Allocator>::template rebind_alloc<byte>
 >;
 
 // FUNCTIONS
@@ -214,7 +229,7 @@ private:
     using traits_type = std::allocator_traits<Allocator>;
     using storage = typename std::aligned_storage<max_align, max_align>::type;
     using alloc = typename traits_type::template rebind_alloc<storage>;
-    static_assert(std::is_same<typename traits_type::value_type, char>::value, "");
+    static_assert(std::is_same<typename traits_type::value_type, byte>::value, "");
 
     alloc alloc_;
 };
@@ -267,6 +282,26 @@ private:
 // TODO: implement synchronized_pool_resource
 // TODO: implement unsynchronized_pool_resource
 // TODO: implement monotonic_buffer_resource
+
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<memory_resource>: std::true_type
+{};
+
+template <typename Allocator>
+struct is_relocatable<resource_adaptor_imp<Allocator>>: is_relocatable<Allocator>
+{};
+
+template <typename T>
+struct is_relocatable<polymorphic_allocator<T>>: std::true_type
+{};
+
+// TODO: specialize pool_options
+// TODO: specialize synchronized_pool_resource
+// TODO: specialize unsynchronized_pool_resource
+// TODO: specialize monotonic_buffer_resource
 
 // IMPLEMENTATION
 // --------------

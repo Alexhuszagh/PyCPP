@@ -70,7 +70,7 @@ using lexical_is_same = is_same<remove_cv_t<T>, U>;
 // Formatters are provided with overloads for `format()` and
 // `lexical()`, of which the latter is an alias of the former.
 
-PYCPP_LEXICAL_FORMATTER(std::nullptr_t, lexical_null_formatter)
+PYCPP_LEXICAL_FORMATTER(nullptr_t, lexical_null_formatter)
 PYCPP_LEXICAL_FORMATTER(bool, lexical_bool_formatter)
 PYCPP_LEXICAL_FORMATTER(char, lexical_char_formatter)
 PYCPP_LEXICAL_FORMATTER(unsigned char, lexical_char_formatter)
@@ -100,19 +100,19 @@ format(const T& value)
 }
 
 // EXTRACTORS
-// Cannot use functional-style casts with `std::nullptr_t` on
+// Cannot use functional-style casts with `nullptr_t` on
 // MSVC 2015 (and likely later), and therefore the method `value()`
 // is provided to avoid the cast.
 
 template <typename T>
-enable_if_t<lexical_is_same<T, std::nullptr_t>::value, T>
+enable_if_t<lexical_is_same<T, nullptr_t>::value, T>
 lexical(const string_view& value)
 {
     return lexical_null_extractor(value).value();
 }
 
 template <typename T>
-enable_if_t<lexical_is_same<T, std::nullptr_t>::value, std::string>
+enable_if_t<lexical_is_same<T, nullptr_t>::value, std::string>
 extract(const string_view& value)
 {
     return lexical_null_extractor(value).value();

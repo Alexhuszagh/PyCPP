@@ -259,13 +259,13 @@ void fd_stream::open(fd_t fd, bool c)
 }
 
 
-fd_streambuf* fd_stream::rdbuf() const
+streambuf* fd_stream::rdbuf() const
 {
-    return const_cast<fd_streambuf*>(&buffer);
+    return ios::rdbuf();
 }
 
 
-void fd_stream::rdbuf(fd_streambuf* buffer)
+void fd_stream::rdbuf(streambuf* buffer)
 {
     ios::rdbuf(buffer);
 }
@@ -343,13 +343,13 @@ void fd_istream::open(fd_t fd, bool c)
 }
 
 
-fd_streambuf* fd_istream::rdbuf() const
+streambuf* fd_istream::rdbuf() const
 {
-    return const_cast<fd_streambuf*>(&buffer);
+    return ios::rdbuf();
 }
 
 
-void fd_istream::rdbuf(fd_streambuf* buffer)
+void fd_istream::rdbuf(streambuf* buffer)
 {
     ios::rdbuf(buffer);
 }
@@ -431,13 +431,13 @@ void fd_ostream::open(fd_t fd, bool c)
 }
 
 
-fd_streambuf* fd_ostream::rdbuf() const
+streambuf* fd_ostream::rdbuf() const
 {
-    return const_cast<fd_streambuf*>(&buffer);
+    return ios::rdbuf();
 }
 
 
-void fd_ostream::rdbuf(fd_streambuf* buffer)
+void fd_ostream::rdbuf(streambuf* buffer)
 {
     ios::rdbuf(buffer);
 }

@@ -12,8 +12,6 @@
 
 PYCPP_USING_NAMESPACE
 
-// TODO: need to test mutable value types...
-
 // HELPERS
 // -------
 
@@ -110,6 +108,23 @@ TEST(ordered_map, iteration)
             EXPECT_EQ(it->first, keys[index]);
             EXPECT_EQ(it->second, values[index]);
         }
+    }
+}
+
+
+TEST(ordered_map, mutable_iteration)
+{
+    ordered_map<int, int> m1 = {
+        {-1, -1},
+        {1, 1},
+        {2, 2},
+    };
+
+    for (auto it = m1.begin(); it != m1.end(); ++it) {
+        it->second = 2 * it->first;
+    }
+    for (auto it = m1.begin(); it != m1.end(); ++it) {
+        EXPECT_EQ(it->second, 2 * it->first);
     }
 }
 

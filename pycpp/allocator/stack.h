@@ -42,7 +42,7 @@ template <
     size_t StackSize,
     size_t Alignment = alignof(max_align_t),
     bool UseFallback = true,
-    typename Fallback = std::allocator<char>,
+    typename Fallback = std::allocator<byte>,
     bool UseLocks = false
 >
 class stack_allocator_arena;
@@ -52,7 +52,7 @@ template <
     size_t StackSize,
     size_t Alignment = alignof(max_align_t),
     bool UseFallback = true,
-    typename Fallback = std::allocator<char>,
+    typename Fallback = std::allocator<byte>,
     bool UseLocks = false
 >
 class stack_allocator;
@@ -105,8 +105,8 @@ public:
     ~stack_allocator_arena() noexcept;
 
     // ALLOCATION
-    template <size_t RequiredAlignment> char* allocate(size_t n);
-    void deallocate(char* p, size_t n) noexcept;
+    template <size_t RequiredAlignment> byte* allocate(size_t n);
+    void deallocate(byte* p, size_t n) noexcept;
 
     // PROPERTIES
     static size_t size() noexcept;
@@ -117,17 +117,17 @@ private:
     // Although `tuple` uses EBO for all STL implementations,
     // it does not have `piecewise_construct`, so it cannot
     // hold a mutex value. Explicilty use `compressed_pair`.
-    alignas(Alignment) char buf_[StackSize];
-    compressed_pair<compressed_pair<char*, fallback_type>, mutex_type> data_;
+    alignas(Alignment) byte buf_[StackSize];
+    compressed_pair<compressed_pair<byte*, fallback_type>, mutex_type> data_;
 
-    char*& ptr_() noexcept;
-    char* const& ptr_() const noexcept;
+    byte*& ptr_() noexcept;
+    byte* const& ptr_() const noexcept;
     fallback_type& fallback_() noexcept;
     const fallback_type& fallback_() const noexcept;
     mutex_type& mutex_() noexcept;
     const mutex_type& mutex_() const noexcept;
     static size_t align_up(size_t n) noexcept;
-    bool pointer_in_buffer(char* p) noexcept;
+    bool pointer_in_buffer(byte* p) noexcept;
 };
 
 // ALLOCATOR
@@ -212,11 +212,11 @@ template <
     size_t StackSize,
     size_t Alignment = alignof(max_align_t),
     bool UseFallback = true,
-    typename Fallback = std::allocator<char>,
+    typename Fallback = std::allocator<byte>,
     bool UseLocks = false
 >
 using stack_resource = resource_adaptor<
-    stack_allocator<char, StackSize, Alignment, UseFallback, Fallback, UseLocks>
+    stack_allocator<byte, StackSize, Alignment, UseFallback, Fallback, UseLocks>
 >;
 
 
@@ -224,11 +224,11 @@ template <
     size_t StackSize,
     size_t Alignment = alignof(max_align_t),
     bool UseFallback = true,
-    typename Fallback = std::allocator<char>,
+    typename Fallback = std::allocator<byte>,
     bool UseLocks = false
 >
-using stack_resource_unlocked = resource_adaptor<
-    stack_allocator<char, StackSize, Alignment, UseFallback, Fallback, UseLocks>
+using stack_unlocked_resource = resource_adaptor<
+    stack_allocator<byte, StackSize, Alignment, UseFallback, Fallback, UseLocks>
 >;
 
 
@@ -236,32 +236,45 @@ template <
     size_t StackSize,
     size_t Alignment = alignof(max_align_t),
     bool UseFallback = true,
-    typename Fallback = std::allocator<char>,
+    typename Fallback = std::allocator<byte>,
     bool UseLocks = true
 >
-using stack_resource_locked = resource_adaptor<
-    stack_allocator<char, StackSize, Alignment, UseFallback, Fallback, UseLocks>
+using stack_locked_resource = resource_adaptor<
+    stack_allocator<byte, StackSize, Alignment, UseFallback, Fallback, UseLocks>
 >;
 
 
 template <
+    typename T,
     size_t StackSize,
     size_t Alignment = alignof(max_align_t),
     bool UseFallback = true,
-    typename Fallback = std::allocator<char>,
+    typename Fallback = std::allocator<byte>,
     bool UseLocks = false
 >
-using stack_allocator_unlocked = stack_allocator<char, StackSize, Alignment, UseFallback, Fallback, UseLocks>;
+using stack_unlocked_allocator = stack_allocator<T, StackSize, Alignment, UseFallback, Fallback, UseLocks>;
 
 
 template <
+    typename T,
     size_t StackSize,
     size_t Alignment = alignof(max_align_t),
     bool UseFallback = true,
-    typename Fallback = std::allocator<char>,
+    typename Fallback = std::allocator<byte>,
     bool UseLocks = true
 >
-using stack_allocator_locked = stack_allocator<char, StackSize, Alignment, UseFallback, Fallback, UseLocks>;
+using stack_locked_allocator = stack_allocator<T, StackSize, Alignment, UseFallback, Fallback, UseLocks>;
+
+// SPECIALIZATION
+// --------------
+
+template <size_t S, size_t A, bool UF, typename F, bool UL>
+struct is_relocatable<stack_allocator_arena<S, A, UF, F, UL>>: false_type
+{};
+
+template <typename T, size_t S, size_t A, bool UF, typename F, bool UL>
+struct is_relocatable<stack_allocator<T, S, A, UF, F, UL>>: true_type
+{};
 
 // IMPLEMENTATION
 // --------------
@@ -282,7 +295,7 @@ const bool stack_allocator_arena<S, A, UF, F, UL>::use_locks;
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
 stack_allocator_arena<S, A, UF, F, UL>::stack_allocator_arena(const fallback_type& fallback) noexcept:
-    data_({compressed_pair<char*, fallback_type>{buf_, fallback}})
+    data_({compressed_pair<byte*, fallback_type>{buf_, fallback}})
 {}
 
 
@@ -295,7 +308,7 @@ stack_allocator_arena<S, A, UF, F, UL>::~stack_allocator_arena() noexcept
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
 template <size_t RequiredAlignment>
-char* stack_allocator_arena<S, A, UF, F, UL>::allocate(size_t n)
+byte* stack_allocator_arena<S, A, UF, F, UL>::allocate(size_t n)
 {
     static_assert(RequiredAlignment <= alignment, "Alignment is too small for this arena");
     assert(pointer_in_buffer(ptr_()) && "Allocator has outlived arena.");
@@ -303,7 +316,7 @@ char* stack_allocator_arena<S, A, UF, F, UL>::allocate(size_t n)
     lock_guard<mutex_type> lock(mutex_());
     size_t aligned_n = align_up(n);
     if (static_cast<size_t>(buf_ + stack_size - ptr_()) >= aligned_n) {
-        char* r = ptr_();
+        byte* r = ptr_();
         ptr_() += aligned_n;
         return r;
     }
@@ -314,12 +327,12 @@ char* stack_allocator_arena<S, A, UF, F, UL>::allocate(size_t n)
     );
 
     assert(use_fallback && "Exceeding pre-allocated buffer.");
-    return static_cast<char*>(fallback_().allocate(n));
+    return static_cast<byte*>(fallback_().allocate(n));
 }
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-void stack_allocator_arena<S, A, UF, F, UL>::deallocate(char* p, size_t n) noexcept
+void stack_allocator_arena<S, A, UF, F, UL>::deallocate(byte* p, size_t n) noexcept
 {
     assert(pointer_in_buffer(ptr_()) && "Allocator has outlived arena.");
 
@@ -360,14 +373,14 @@ void stack_allocator_arena<S, A, UF, F, UL>::reset() noexcept
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-auto stack_allocator_arena<S, A, UF, F, UL>::ptr_() noexcept -> char*&
+auto stack_allocator_arena<S, A, UF, F, UL>::ptr_() noexcept -> byte*&
 {
     return get<0>(get<0>(data_));
 }
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-auto stack_allocator_arena<S, A, UF, F, UL>::ptr_() const noexcept -> char* const&
+auto stack_allocator_arena<S, A, UF, F, UL>::ptr_() const noexcept -> byte* const&
 {
     return get<0>(get<0>(data_));
 }
@@ -409,7 +422,7 @@ size_t stack_allocator_arena<S, A, UF, F, UL>::align_up(size_t n) noexcept
 
 
 template <size_t S, size_t A, bool UF, typename F, bool UL>
-bool stack_allocator_arena<S, A, UF, F, UL>::pointer_in_buffer(char* p) noexcept
+bool stack_allocator_arena<S, A, UF, F, UL>::pointer_in_buffer(byte* p) noexcept
 {
     return (buf_ <= p) && (p <= buf_ + stack_size);
 }
@@ -521,7 +534,7 @@ template <typename T, size_t S, size_t A, bool UF, typename F, bool UL>
 void stack_allocator<T, S, A, UF, F, UL>::deallocate(pointer p, size_type n)
 {
     assert(arena_ && "Arena cannot be null.");
-    arena_->deallocate(reinterpret_cast<char*>(p), sizeof(T) * n);
+    arena_->deallocate(reinterpret_cast<byte*>(p), sizeof(T) * n);
 }
 
 

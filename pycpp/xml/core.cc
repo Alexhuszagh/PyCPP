@@ -150,7 +150,7 @@ auto xml_node_iterator_t::operator--(int) -> self_t
 auto xml_node_iterator_t::operator*() -> reference
 {
     auto& it = *(xml_node_iterator_impl_t*) ptr_;
-    return const_cast<reference>(*it);
+    return reference(*it);
 }
 
 
@@ -164,7 +164,7 @@ auto xml_node_iterator_t::operator*() const -> const_reference
 auto xml_node_iterator_t::operator->() -> pointer
 {
     auto& it = *(xml_node_iterator_impl_t*) ptr_;
-    return const_cast<pointer>(&*it);
+    return pointer(&*it);
 }
 
 

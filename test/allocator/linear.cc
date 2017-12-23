@@ -11,6 +11,17 @@ PYCPP_USING_NAMESPACE
 // -----
 
 
+TEST(linear, is_relocatable)
+{
+    using allocator_type = linear_allocator<char, 200>;
+    using arena_type = typename allocator_type::arena_type;
+    using resource_type = linear_resource<200>;
+    static_assert(is_relocatable<allocator_type>::value, "");
+    static_assert(!is_relocatable<arena_type>::value, "");
+    static_assert(is_relocatable<resource_type>::value, "");
+}
+
+
 TEST(linear_allocator, linear_allocator)
 {
     using allocator_type = linear_allocator<char, 200>;

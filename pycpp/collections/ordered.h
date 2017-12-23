@@ -70,18 +70,19 @@ struct is_vector: false_type
 
 template <typename T>
 struct is_vector<T, enable_if_t<
-    is_same<T, vector<typename T::value_type, typename T::allocator_type>>::value
+    is_same<T, vector<typename T::mutable_value_type, typename T::allocator_type>>::value
     >>: true_type
 {};
 
 
-template <typename ValueType, typename KeySelect, typename ValueSelect, typename Hash,
-          typename KeyEqual, typename Allocator, typename ValueTypeContainer>
+// TODO: here...
+template <typename ValueType, typename MutableValueType, typename KeySelect, typename ValueSelect,
+          typename Hash, typename KeyEqual, typename Allocator, typename ValueTypeContainer>
 class ordered_hash
 {
 private:
-    static_assert(is_same<typename ValueTypeContainer::value_type, ValueType>::value,
-                  "ValueTypeContainer::value_type != ValueType.");
+    static_assert(is_same<typename ValueTypeContainer::value_type, MutableValueType>::value,
+                  "ValueTypeContainer::value_type != MutableValueType.");
     static_assert(is_same<typename ValueTypeContainer::allocator_type, Allocator>::value,
                   "ValueTypeContainer::allocator_type != Allocator.");
 
@@ -93,6 +94,7 @@ public:
 
     using key_type = Key;
     using value_type = ValueType;
+    using mutable_value_type = MutableValueType;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using hasher = Hash;
@@ -127,11 +129,13 @@ public:
 
     public:
         using iterator_category = random_access_iterator_tag;
-        using value_type = const typename ordered_hash::value_type;
+        using value_type = typename ordered_hash::value_type;
+        using mutable_value_type = typename ordered_hash::mutable_value_type;
         using difference_type = typename iterator::difference_type;
         using reference = value_type&;
+        using const_reference = const value_type&;
         using pointer = value_type*;
-
+        using const_pointer = const value_type*;
 
         ordered_iterator() noexcept
         {}
@@ -145,19 +149,31 @@ public:
         }
 
         template <typename U = ValueSelect, enable_if_t<!is_same<U, void>::value>* = nullptr>
-        conditional_t<is_const, const typename U::value_type&, typename U::value_type&> value() const
+        conditional_t<is_const, const typename U::mapped_type&, typename U::mapped_type&> value() const
         {
             return m_iterator->second;
         }
 
-        reference operator*() const
+        template <bool B = is_const, enable_if_t<!B>* = nullptr>
+        reference operator*()
         {
-            return *m_iterator;
+            return *reinterpret_cast<value_type*>(&*m_iterator);
         }
 
-        pointer operator->() const
+        const_reference operator*() const
         {
-            return m_iterator.operator->();
+            return *reinterpret_cast<const value_type*>(&*m_iterator);
+        }
+
+        template <bool B = is_const, enable_if_t<!B>* = nullptr>
+        pointer operator->()
+        {
+            return &operator*();
+        }
+
+        const_pointer operator->() const
+        {
+            return &operator*();
         }
 
         ordered_iterator& operator++()
@@ -469,7 +485,7 @@ public:
     template <typename... Args>
     pair<iterator,bool> emplace(Args&&... args)
     {
-        return insert(value_type(forward<Args>(args)...));
+        return insert(mutable_value_type(forward<Args>(args)...));
     }
 
     iterator erase(iterator pos)
@@ -667,13 +683,7 @@ public:
     }
 
     template <typename K, typename U = ValueSelect, enable_if_t<!is_same<U, void>::value>* = nullptr>
-    typename U::value_type& at(const K& key)
-    {
-        return const_cast<typename U::value_type&>(static_cast<const ordered_hash*>(this)->at(key));
-    }
-
-    template <typename K, typename U = ValueSelect, enable_if_t<!is_same<U, void>::value>* = nullptr>
-    const typename U::value_type& at(const K& key) const
+    typename U::mapped_type& at(const K& key)
     {
         auto it = find(key);
         if (it != end()) {
@@ -685,9 +695,21 @@ public:
     }
 
     template <typename K, typename U = ValueSelect, enable_if_t<!is_same<U, void>::value>* = nullptr>
-    typename U::value_type& operator[](K&& key)
+    const typename U::mapped_type& at(const K& key) const
     {
-        using T = typename U::value_type;
+        auto it = find(key);
+        if (it != end()) {
+            return it.value();
+        }
+        else {
+            throw out_of_range("Couldn't find the key.");
+        }
+    }
+
+    template <typename K, typename U = ValueSelect, enable_if_t<!is_same<U, void>::value>* = nullptr>
+    typename U::mapped_type& operator[](K&& key)
+    {
+        using T = typename U::mapped_type;
 
         auto it = find(key);
         if (it != end()) {

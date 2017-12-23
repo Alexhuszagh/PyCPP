@@ -77,15 +77,10 @@ public:
     bool empty() const noexcept;
 
     // ELEMENT ACCESS
-    reference operator[](size_type pos);
     const_reference operator[](size_type pos) const;
-    reference at(size_type pos);
     const_reference at(size_type pos) const;
-    reference front();
     const_reference front() const;
-    reference back();
     const_reference back() const;
-    pointer data() noexcept;
     const_pointer data() const noexcept;
 
     // MODIFIERS
@@ -435,14 +430,6 @@ bool vector_view<T>::empty() const noexcept
 
 
 template <typename T>
-auto vector_view<T>::operator[](size_type pos) -> reference
-{
-    assert(pos <= size() && "vector index out of bounds");
-    return *const_cast<pointer>(data_ + pos);
-}
-
-
-template <typename T>
 auto vector_view<T>::operator[](size_type pos) const -> const_reference
 {
     assert(pos <= size() && "vector index out of bounds");
@@ -451,24 +438,9 @@ auto vector_view<T>::operator[](size_type pos) const -> const_reference
 
 
 template <typename T>
-auto vector_view<T>::at(size_type pos) -> reference
-{
-    return operator[](pos);
-}
-
-
-template <typename T>
 auto vector_view<T>::at(size_type pos) const -> const_reference
 {
     return operator[](pos);
-}
-
-
-template <typename T>
-auto vector_view<T>::front() -> reference
-{
-    assert(!empty() && "vector::front(): vector is empty");
-    return *const_cast<pointer>(data_);
 }
 
 
@@ -481,25 +453,10 @@ auto vector_view<T>::front() const -> const_reference
 
 
 template <typename T>
-auto vector_view<T>::back() -> reference
-{
-    assert(!empty() && "vector::back(): vector is empty");
-    return *const_cast<pointer>(data_ + size_ - 1);
-}
-
-
-template <typename T>
 auto vector_view<T>::back() const -> const_reference
 {
     assert(!empty() && "vector::back(): vector is empty");
     return *(data_ + size_ - 1);
-}
-
-
-template <typename T>
-auto vector_view<T>::data() noexcept -> pointer
-{
-    return const_cast<pointer>(data_);
 }
 
 
@@ -513,8 +470,9 @@ auto vector_view<T>::data() const noexcept -> const_pointer
 template <typename T>
 void vector_view<T>::swap(vector_view<T>& rhs)
 {
-    PYCPP_NAMESPACE::swap(data_, rhs.data_);
-    PYCPP_NAMESPACE::swap(size_, rhs.size_);
+    using PYCPP_NAMESPACE::swap;
+    swap(data_, rhs.data_);
+    swap(size_, rhs.size_);
 }
 
 

@@ -69,7 +69,14 @@ struct secure_allocator: private secure_allocator_base
 // ALIAS
 // -----
 
-using secure_resource = resource_adaptor<secure_allocator<char>>;
+using secure_resource = resource_adaptor<secure_allocator<byte>>;
+
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable<secure_allocator<T>>: true_type
+{};
 
 // IMPLEMENTATION
 // --------------

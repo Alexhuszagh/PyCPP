@@ -10,6 +10,14 @@ PYCPP_USING_NAMESPACE
 // -----
 
 
+TEST(polymorphic, is_relocatable)
+{
+    using allocator_type = polymorphic_allocator<char>;
+    static_assert(is_relocatable<memory_resource>::value, "");
+    static_assert(is_relocatable<allocator_type>::value, "");
+}
+
+
 TEST(polymorphic_allocator, polymorphic_allocator)
 {
     using allocator_type = polymorphic_allocator<char>;

@@ -271,7 +271,7 @@ filter_istream & filter_istream::operator=(filter_istream&& rhs)
 
 filter_streambuf* filter_istream::rdbuf() const
 {
-    return const_cast<filter_streambuf*>(&buffer);
+    return &buffer;
 }
 
 
@@ -341,7 +341,7 @@ filter_ostream & filter_ostream::operator=(filter_ostream&& rhs)
 
 filter_streambuf* filter_ostream::rdbuf() const
 {
-    return const_cast<filter_streambuf*>(&buffer);
+    return &buffer;
 }
 
 

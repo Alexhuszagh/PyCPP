@@ -61,7 +61,7 @@ public:
 
 private:
     FILE *file = nullptr;
-    std::filebuf buffer;
+    mutable std::filebuf buffer;
 };
 
 
@@ -100,7 +100,7 @@ public:
 
 private:
     FILE *file = nullptr;
-    std::filebuf buffer;
+    mutable std::filebuf buffer;
 };
 
 
@@ -139,7 +139,7 @@ public:
 
 private:
     FILE *file = nullptr;
-    std::filebuf buffer;
+    mutable std::filebuf buffer;
 };
 
 #else                           // NON-GCC/MSVC COMPILER

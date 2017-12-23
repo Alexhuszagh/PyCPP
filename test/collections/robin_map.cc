@@ -13,8 +13,6 @@
 
 PYCPP_USING_NAMESPACE
 
-// TODO: need to test mutable value types...
-
 // HELPERS
 // -------
 
@@ -96,6 +94,23 @@ TEST(robin_map, iteration)
     for (auto it = rm1.begin(); it != rm1.end(); ++it) {
         EXPECT_TRUE(m1.find(it->first) != m1.end());
         EXPECT_EQ(m1.at(it->first), it->second);
+    }
+}
+
+
+TEST(robin_map, mutable_iteration)
+{
+    robin_map<int, int> rm1 = {
+        {-1, -1},
+        {1, 1},
+        {2, 2},
+    };
+
+    for (auto it = rm1.begin(); it != rm1.end(); ++it) {
+        it->second = 2 * it->first;
+    }
+    for (auto it = rm1.begin(); it != rm1.end(); ++it) {
+        EXPECT_EQ(it->second, 2 * it->first);
     }
 }
 

@@ -74,7 +74,7 @@ lexical_bool_extractor::lexical_bool_extractor(const string_view &string)
 bool lexical_bool_extractor::value() const
 {
     // WARNING: This is used as a patch for MSVC, where functional-style
-    // type-casts are not allowed with std::nullptr_t.
+    // type-casts are not allowed with nullptr_t.
     return data_;
 }
 
