@@ -35,7 +35,7 @@ extern const int sqlite_open_readonly;
 struct sqlite_exception: public exception
 {
 public:
-    sqlite_exception(int code);
+    sqlite_exception(int code) noexcept;
     virtual const char* what() const noexcept override;
 
 private:
@@ -52,7 +52,7 @@ private:
 struct sqlite_driver: sql_driver
 {
 public:
-    sqlite_driver(sqlite3* db);
+    sqlite_driver(sqlite3* db) noexcept;
     ~sqlite_driver();
 
     // STATEMENTS
@@ -78,10 +78,10 @@ public:
     sqlite_database(const string_wrapper& file_name,
                     const int flags = sqlite_open_readonly,
                     const string_wrapper& vfs = string_wrapper());
-    ~sqlite_database();
+    ~sqlite_database() noexcept;
 
     // DRIVERS
-    virtual sql_driver& driver() override;
+    virtual sql_driver& driver() override noexcept;
 
 private:
     sqlite3* db_ = nullptr;

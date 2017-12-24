@@ -21,7 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 struct sql_query
 {
 public:
-    sql_query(sql_database& db);
+    sql_query(sql_database& db) noexcept;
     sql_query(const sql_query&) = delete;
     sql_query & operator=(const sql_query&) = delete;
     // TODO: move???

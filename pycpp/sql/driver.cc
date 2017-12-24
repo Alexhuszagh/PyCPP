@@ -8,7 +8,7 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-sql_driver::sql_driver(void* db):
+sql_driver::sql_driver(void* db) noexcept:
     db_(db)
 {}
 

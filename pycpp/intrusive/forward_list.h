@@ -47,20 +47,20 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    intrusive_forward_list_iterator(T* node = nullptr);
-    intrusive_forward_list_iterator(const self_t&) = default;
-    self_t& operator=(const self_t&) = default;
+    intrusive_forward_list_iterator(T* node = nullptr) noexcept;
+    intrusive_forward_list_iterator(const self_t&) noexcept = default;
+    self_t& operator=(const self_t&) noexcept = default;
 //    template <typename U>
 //    enable_if_t<is_same<T, add_const_t<U>>::value, self_t&>
 //    operator=(const intrusive_forward_list_iterator<U, DifferenceType, Pointer, Reference>&);
 
     // OPERATORS
-    self_t& operator++();
-    self_t operator++(int);
-    pointer operator->();
-    const_pointer operator->() const;
-    reference operator*();
-    const_reference operator*() const;
+    self_t& operator++() noexcept;
+    self_t operator++(int) noexcept;
+    pointer operator->() noexcept;
+    const_pointer operator->() const noexcept;
+    reference operator*() noexcept;
+    const_reference operator*() const noexcept;
 
 //    // OTHER
 //    void swap(self_t&);
@@ -173,8 +173,16 @@ public:
 //    void reverse() noexcept;
 
 private:
+    static_assert(is_base_of<intrusive_forward_list_node, value_type>::value, "");
     intrusive_forward_list_node sentinel_;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable<intrusive_forward_list<T>>: true_type
+{};
 
 // IMPLEMENTATION
 // --------------
@@ -182,20 +190,20 @@ private:
 // ITERATOR
 
 template <typename T>
-intrusive_forward_list_iterator<T>::intrusive_forward_list_iterator(T* node):
+intrusive_forward_list_iterator<T>::intrusive_forward_list_iterator(T* node) noexcept:
     node_(node)
 {}
 
 
 template <typename T>
-auto intrusive_forward_list_iterator<T>::operator++() -> self_t&
+auto intrusive_forward_list_iterator<T>::operator++() noexcept -> self_t&
 {
     node_ = node_->next;
 }
 
 
 template <typename T>
-auto intrusive_forward_list_iterator<T>::operator++(int) -> self_t
+auto intrusive_forward_list_iterator<T>::operator++(int) noexcept -> self_t
 {
     self_t copy(*this);
     operator++();
@@ -204,28 +212,28 @@ auto intrusive_forward_list_iterator<T>::operator++(int) -> self_t
 
 
 template <typename T>
-auto intrusive_forward_list_iterator<T>::operator->() -> pointer
+auto intrusive_forward_list_iterator<T>::operator->() noexcept -> pointer
 {
     return addressof(operator*());
 }
 
 
 template <typename T>
-auto intrusive_forward_list_iterator<T>::operator->() const -> const_pointer
+auto intrusive_forward_list_iterator<T>::operator->() const noexcept -> const_pointer
 {
     return addressof(operator*());
 }
 
 
 template <typename T>
-auto intrusive_forward_list_iterator<T>::operator*() -> reference
+auto intrusive_forward_list_iterator<T>::operator*() noexcept -> reference
 {
     return *node_;
 }
 
 
 template <typename T>
-auto intrusive_forward_list_iterator<T>::operator*() const -> const_reference
+auto intrusive_forward_list_iterator<T>::operator*() const noexcept -> const_reference
 {
     return *node_;
 }

@@ -8,7 +8,7 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-sql_query::sql_query(sql_database& db)
+sql_query::sql_query(sql_database& db) noexcept
     db_(&db)
 {}
 

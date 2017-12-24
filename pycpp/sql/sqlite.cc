@@ -34,7 +34,7 @@ static int prepare_impl(sqlite3* db, const string_wrapper& query, sqlite3_stmt*&
 
 // EXCEPTION
 
-sqlite_exception::sqlite_exception(int code):
+sqlite_exception::sqlite_exception(int code) noexcept:
     code_(code)
 {}
 
@@ -46,7 +46,7 @@ const char* sqlite_exception::what() const noexcept
 
 // DRIVER
 
-sqlite_driver::sqlite_driver(sqlite3* db):
+sqlite_driver::sqlite_driver(sqlite3* db) noexcept:
     sql_driver(db)
 {}
 
@@ -97,14 +97,14 @@ sqlite_database::sqlite_database(const string_wrapper& file_name, const int flag
 }
 
 
-sqlite_database::~sqlite_database()
+sqlite_database::~sqlite_database() noexcept
 {
     // ignore the database error.
     sqlite3_close(db_);
 }
 
 
-sql_driver& sqlite_database::driver()
+sql_driver& sqlite_database::driver() noexcept
 {
     return driver_;
 }

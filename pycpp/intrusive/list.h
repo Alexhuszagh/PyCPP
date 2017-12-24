@@ -9,6 +9,7 @@
 
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/limits.h>
+#include <pycpp/stl/memory.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -46,22 +47,22 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    intrusive_list_iterator(T* node = nullptr);
-    intrusive_list_iterator(const self_t&) = default;
-    self_t& operator=(const self_t&) = default;
+    intrusive_list_iterator(T* node = nullptr) noexcept;
+    intrusive_list_iterator(const self_t&) noexcept = default;
+    self_t& operator=(const self_t&) noexcept = default;
 //    template <typename U>
 //    enable_if_t<is_same<T, add_const_t<U>>::value, self_t&>
 //    operator=(const intrusive_list_iterator<U, DifferenceType, Pointer, Reference>&);
 
     // OPERATORS
-    self_t& operator++();
-    self_t operator++(int);
-    self_t& operator--();
-    self_t operator--(int);
-    pointer operator->();
-    const_pointer operator->() const;
-    reference operator*();
-    const_reference operator*() const;
+    self_t& operator++() noexcept;
+    self_t operator++(int) noexcept;
+    self_t& operator--() noexcept;
+    self_t operator--(int) noexcept;
+    pointer operator->() noexcept;
+    const_pointer operator->() const noexcept;
+    reference operator*() noexcept;
+    const_reference operator*() const noexcept;
 
 //    // OTHER
 //    void swap(self_t&);
@@ -148,8 +149,16 @@ public:
     // LOTS MORE SHIT TO ADD
 
 private:
+    static_assert(is_base_of<intrusive_list_node, value_type>::value, "");
     intrusive_list_node sentinel_;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable<intrusive_list<T>>: true_type
+{};
 
 // IMPLEMENTATION
 // --------------

@@ -20,7 +20,7 @@ PYCPP_BEGIN_NAMESPACE
 struct sql_driver
 {
 public:
-    sql_driver(void* db);
+    sql_driver(void* db) noexcept;
 
     // STATEMENTS
     virtual bool exec(const string_wrapper& statement) = 0;
