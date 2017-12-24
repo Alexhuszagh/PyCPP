@@ -48,7 +48,7 @@ match_range re_finditer(const string_wrapper& pattern, const string_wrapper& str
 /**
  *  \brief Replace all matches of pattern in str with repl.
  */
-std::string re_sub(const string_wrapper& pattern, const string_wrapper& repl, const string_wrapper& str);
+string re_sub(const string_wrapper& pattern, const string_wrapper& repl, const string_wrapper& str);
 
 /**
  *  \brief Escape all characters except for ASCII numbers and letters.
@@ -56,7 +56,7 @@ std::string re_sub(const string_wrapper& pattern, const string_wrapper& repl, co
  *  Escapes all ASCII non-alphanumeric characters, assuming
  *  UTF-8 source encoding.
  */
-std::string re_escape(const string_wrapper& str);
+string re_escape(const string_wrapper& str);
 
 /**
  *  \brief Purge the regex cache.

@@ -7,7 +7,8 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/iterator.h>
+#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -29,8 +30,11 @@ template <
 double dot(XIter x_first,
     XIter x_last,
     YIter y_first,
-    YIter y_last)
+    YIter y_last) noexcept
 {
+    static_assert(is_arithmetic<typename iterator_traits<XIter>::value_type>::value, "");
+    static_assert(is_arithmetic<typename iterator_traits<YIter>::value_type>::value, "");
+
     double sum = 0;
     while (x_first != x_last && y_first != y_last) {
         sum += *x_first++ * *y_first++;
@@ -61,7 +65,7 @@ double dot(XIter x_first,
     YIter y_first,
     YIter y_last,
     XFun x_fun,
-    YFun y_fun)
+    YFun y_fun) noexcept
 {
     double sum = 0;
     while (x_first != x_last && y_first != y_last) {

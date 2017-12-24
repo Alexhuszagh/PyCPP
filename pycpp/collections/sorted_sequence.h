@@ -177,20 +177,20 @@ struct is_relocatable<sorted_sequence<T, Compare, Alloc, Container>>:
 // --------------
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-sorted_sequence<T, C, A, _>::sorted_sequence():
+inline sorted_sequence<T, C, A, _>::sorted_sequence():
     container_()
 {}
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-sorted_sequence<T, C, A, _>::sorted_sequence(const allocator_type& alloc):
+inline sorted_sequence<T, C, A, _>::sorted_sequence(const allocator_type& alloc):
     container_(alloc)
 {}
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename Iter>
-sorted_sequence<T, C, A, _>::sorted_sequence(Iter first, Iter last, const allocator_type& alloc):
+inline sorted_sequence<T, C, A, _>::sorted_sequence(Iter first, Iter last, const allocator_type& alloc):
     container_(alloc)
 {
     assign(first, last);
@@ -198,26 +198,26 @@ sorted_sequence<T, C, A, _>::sorted_sequence(Iter first, Iter last, const alloca
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-sorted_sequence<T, C, A, _>::sorted_sequence(const self_t& rhs, const allocator_type& alloc):
+inline sorted_sequence<T, C, A, _>::sorted_sequence(const self_t& rhs, const allocator_type& alloc):
     container_(rhs.container_, alloc)
 {}
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-sorted_sequence<T, C, A, _>::sorted_sequence(self_t&& rhs, const allocator_type& alloc):
+inline sorted_sequence<T, C, A, _>::sorted_sequence(self_t&& rhs, const allocator_type& alloc):
     container_(move(rhs.container_), alloc)
 {}
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-sorted_sequence<T, C, A, _>::sorted_sequence(initializer_list<value_type> list)
+inline sorted_sequence<T, C, A, _>::sorted_sequence(initializer_list<value_type> list)
 {
     assign(list.begin(), list.end());
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-sorted_sequence<T, C, A, _>::sorted_sequence(initializer_list<value_type> list, const allocator_type& alloc):
+inline sorted_sequence<T, C, A, _>::sorted_sequence(initializer_list<value_type> list, const allocator_type& alloc):
     container_(alloc)
 {
     assign(list.begin(), list.end());
@@ -225,7 +225,7 @@ sorted_sequence<T, C, A, _>::sorted_sequence(initializer_list<value_type> list, 
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::operator=(const self_t& rhs) -> self_t&
+inline auto sorted_sequence<T, C, A, _>::operator=(const self_t& rhs) -> self_t&
 {
     container_ = rhs.container_;
     return *this;
@@ -233,7 +233,7 @@ auto sorted_sequence<T, C, A, _>::operator=(const self_t& rhs) -> self_t&
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::operator=(self_t&& rhs) -> self_t&
+inline auto sorted_sequence<T, C, A, _>::operator=(self_t&& rhs) -> self_t&
 {
     container_ = move(rhs.container_);
     return *this;
@@ -241,7 +241,7 @@ auto sorted_sequence<T, C, A, _>::operator=(self_t&& rhs) -> self_t&
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::operator=(initializer_list<value_type> list) -> self_t&
+inline auto sorted_sequence<T, C, A, _>::operator=(initializer_list<value_type> list) -> self_t&
 {
     assign(list.begin(), list.end());
     return *this;
@@ -249,105 +249,105 @@ auto sorted_sequence<T, C, A, _>::operator=(initializer_list<value_type> list) -
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::begin() const noexcept -> const_iterator
+inline auto sorted_sequence<T, C, A, _>::begin() const noexcept -> const_iterator
 {
     return container_.begin();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::end() const noexcept -> const_iterator
+inline auto sorted_sequence<T, C, A, _>::end() const noexcept -> const_iterator
 {
     return container_.end();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::rbegin() const noexcept -> const_reverse_iterator
+inline auto sorted_sequence<T, C, A, _>::rbegin() const noexcept -> const_reverse_iterator
 {
     return container_.rbegin();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::rend() const noexcept -> const_reverse_iterator
+inline auto sorted_sequence<T, C, A, _>::rend() const noexcept -> const_reverse_iterator
 {
     return container_.rend();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::cbegin() const noexcept -> const_iterator
+inline auto sorted_sequence<T, C, A, _>::cbegin() const noexcept -> const_iterator
 {
     return container_.cbegin();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::cend() const noexcept -> const_iterator
+inline auto sorted_sequence<T, C, A, _>::cend() const noexcept -> const_iterator
 {
     return container_.cend();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::crbegin() const noexcept -> const_reverse_iterator
+inline auto sorted_sequence<T, C, A, _>::crbegin() const noexcept -> const_reverse_iterator
 {
     return container_.crbegin();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::crend() const noexcept -> const_reverse_iterator
+inline auto sorted_sequence<T, C, A, _>::crend() const noexcept -> const_reverse_iterator
 {
     return container_.crend();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::size() const noexcept -> size_type
+inline auto sorted_sequence<T, C, A, _>::size() const noexcept -> size_type
 {
     return container_.size();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::max_size() const noexcept -> size_type
+inline auto sorted_sequence<T, C, A, _>::max_size() const noexcept -> size_type
 {
     return container_.max_size();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-bool sorted_sequence<T, C, A, _>::empty() const noexcept
+inline bool sorted_sequence<T, C, A, _>::empty() const noexcept
 {
     return container_.empty();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::operator[](size_type pos) const -> const_reference
+inline auto sorted_sequence<T, C, A, _>::operator[](size_type pos) const -> const_reference
 {
     return container_[pos];
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::at(size_type pos) const -> const_reference
+inline auto sorted_sequence<T, C, A, _>::at(size_type pos) const -> const_reference
 {
     return container_.at(pos);
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::front() const -> const_reference
+inline auto sorted_sequence<T, C, A, _>::front() const -> const_reference
 {
     return container_.front();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::back() const -> const_reference
+inline auto sorted_sequence<T, C, A, _>::back() const -> const_reference
 {
     return container_.back();
 }
@@ -375,21 +375,23 @@ auto sorted_sequence<T, C, A, _>::count(const key_type& key) const -> size_type
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::lower_bound(const key_type& key) const -> const_iterator
+inline auto sorted_sequence<T, C, A, _>::lower_bound(const key_type& key) const -> const_iterator
 {
-    return PYCPP_NAMESPACE::lower_bound(begin(), end(), key, key_comp());
+    using PYCPP_NAMESPACE::lower_bound;
+    return lower_bound(begin(), end(), key, key_comp());
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::upper_bound(const key_type& key) const -> const_iterator
+inline auto sorted_sequence<T, C, A, _>::upper_bound(const key_type& key) const -> const_iterator
 {
-    return PYCPP_NAMESPACE::upper_bound(begin(), end(), key, key_comp());
+    using PYCPP_NAMESPACE::upper_bound;
+    return upper_bound(begin(), end(), key, key_comp());
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::equal_range(const key_type& key) const -> pair<const_iterator, const_iterator>
+inline auto sorted_sequence<T, C, A, _>::equal_range(const key_type& key) const -> pair<const_iterator, const_iterator>
 {
     return make_pair(lower_bound(key), upper_bound(key));
 }
@@ -397,7 +399,7 @@ auto sorted_sequence<T, C, A, _>::equal_range(const key_type& key) const -> pair
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename Iter>
-void sorted_sequence<T, C, A, _>::assign(Iter first, Iter last)
+inline void sorted_sequence<T, C, A, _>::assign(Iter first, Iter last)
 {
     container_.assign(first, last);
     sort(container_.begin(), container_.end(), key_comp());
@@ -405,7 +407,7 @@ void sorted_sequence<T, C, A, _>::assign(Iter first, Iter last)
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-void sorted_sequence<T, C, A, _>::assign(initializer_list<value_type> list)
+inline void sorted_sequence<T, C, A, _>::assign(initializer_list<value_type> list)
 {
     assign(list.begin(), list.end());
 }
@@ -456,10 +458,12 @@ auto sorted_sequence<T, C, A, _>::insert(const_iterator position, const key_type
         }
     } else if (key_comp()(key, *position)) {
         // key is less than hint
-        it = PYCPP_NAMESPACE::lower_bound(begin(), position, key, key_comp());
+        using PYCPP_NAMESPACE::lower_bound;
+        it = lower_bound(begin(), position, key, key_comp());
     } else {
         // key is greater than or equal to hint
-        it = PYCPP_NAMESPACE::lower_bound(position, end(), key, key_comp());
+        using PYCPP_NAMESPACE::lower_bound;
+        it = lower_bound(position, end(), key, key_comp());
     }
 
     // insert item
@@ -490,10 +494,12 @@ auto sorted_sequence<T, C, A, _>::insert(const_iterator position, U&& k) -> iter
         }
     } else if (key_comp()(key, *position)) {
         // key is less than hint
-        it = PYCPP_NAMESPACE::lower_bound(begin(), position, key, key_comp());
+        using PYCPP_NAMESPACE::lower_bound;
+        it = lower_bound(begin(), position, key, key_comp());
     } else {
         // key is greater than or equal to hint
-        it = PYCPP_NAMESPACE::lower_bound(position, end(), key, key_comp());
+        using PYCPP_NAMESPACE::lower_bound;
+        it = lower_bound(position, end(), key, key_comp());
     }
 
     // insert item
@@ -532,14 +538,14 @@ void sorted_sequence<T, C, A, _>::insert(Iter first, Iter last)
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-void sorted_sequence<T, C, A, _>::insert(initializer_list<value_type> list)
+inline void sorted_sequence<T, C, A, _>::insert(initializer_list<value_type> list)
 {
     insert(list.begin(), list.end());
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::erase(const_iterator position) -> iterator
+inline auto sorted_sequence<T, C, A, _>::erase(const_iterator position) -> iterator
 {
     return container_.erase(position);
 }
@@ -558,23 +564,22 @@ auto sorted_sequence<T, C, A, _>::erase(const key_type& key) -> size_type
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::erase(const_iterator first, const_iterator last) -> iterator
+inline auto sorted_sequence<T, C, A, _>::erase(const_iterator first, const_iterator last) -> iterator
 {
     return container_.erase(first, last);
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-void sorted_sequence<T, C, A, _>::swap(self_t& rhs)
+inline void sorted_sequence<T, C, A, _>::swap(self_t& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(container_, rhs.container_);
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-void sorted_sequence<T, C, A, _>::clear()
+inline void sorted_sequence<T, C, A, _>::clear()
 {
     container_.clear();
 }
@@ -582,7 +587,7 @@ void sorted_sequence<T, C, A, _>::clear()
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename... Ts>
-auto sorted_sequence<T, C, A, _>::emplace(Ts&&... ts) -> pair<iterator, bool>
+inline auto sorted_sequence<T, C, A, _>::emplace(Ts&&... ts) -> pair<iterator, bool>
 {
     return insert(key_type(forward<Ts>(ts)...));
 }
@@ -590,70 +595,70 @@ auto sorted_sequence<T, C, A, _>::emplace(Ts&&... ts) -> pair<iterator, bool>
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
 template <typename... Ts>
-auto sorted_sequence<T, C, A, _>::emplace_hint(const_iterator position, Ts&&... ts) -> iterator
+inline auto sorted_sequence<T, C, A, _>::emplace_hint(const_iterator position, Ts&&... ts) -> iterator
 {
     return insert(position, key_type(forward<Ts>(ts)...));
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::key_comp() const noexcept -> key_compare
+inline auto sorted_sequence<T, C, A, _>::key_comp() const noexcept -> key_compare
 {
     return key_compare();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::value_comp() const noexcept -> value_compare
+inline auto sorted_sequence<T, C, A, _>::value_comp() const noexcept -> value_compare
 {
     return value_compare();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-auto sorted_sequence<T, C, A, _>::get_allocator() const noexcept -> allocator_type
+inline auto sorted_sequence<T, C, A, _>::get_allocator() const noexcept -> allocator_type
 {
     return container_.get_allocator();
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-bool operator==(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+inline bool operator==(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ == rhs.container_;
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-bool operator!=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+inline bool operator!=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ != rhs.container_;
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-bool operator<(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+inline bool operator<(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ < rhs.container_;
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-bool operator<=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+inline bool operator<=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ <= rhs.container_;
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-bool operator>(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+inline bool operator>(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ > rhs.container_;
 }
 
 
 template <typename T, typename C, typename A, template <typename, typename> class _>
-bool operator>=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
+inline bool operator>=(const sorted_sequence<T, C, A, _>& lhs, const sorted_sequence<T, C, A, _>& rhs)
 {
     return lhs.container_ >= rhs.container_;
 }

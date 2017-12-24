@@ -17,7 +17,7 @@ PYCPP_USING_NAMESPACE
 
 TEST(re, re_search)
 {
-    std::string data = "These are a bunch of words";
+    string data = "These are a bunch of words";
     auto m = re_search("\\w+", data);
     ASSERT_TRUE(bool(m));
     EXPECT_EQ(m.start(), 0);
@@ -37,7 +37,7 @@ TEST(re, re_search)
 
 TEST(re, re_match)
 {
-    std::string data = "These are a bunch of words";
+    string data = "These are a bunch of words";
     auto m = re_match("\\w+", data);
     EXPECT_EQ(m.start(), 0);
     EXPECT_EQ(m.end(), 5);
@@ -55,7 +55,7 @@ TEST(re, syntax)
     // Need to check various assumptions made about the regular
     // expression are accurate.
 
-    std::string data = "These are a bunch of words";
+    string data = "These are a bunch of words";
     auto m = re_match("\\w+$", data);
     ASSERT_FALSE(bool(m));
 
@@ -66,7 +66,7 @@ TEST(re, syntax)
 
 TEST(re, re_findall)
 {
-    std::string data = "These are a bunch of words";
+    string data = "These are a bunch of words";
     auto words = re_findall("\\w+", data);
     EXPECT_EQ(words.size(), 6);
     EXPECT_EQ(words.front(), string_view("These"));
@@ -75,9 +75,9 @@ TEST(re, re_findall)
 
 TEST(re, re_finditer)
 {
-    std::string data = "These are a bunch of words";
-    deque<std::string> actual;
-    deque<std::string> expected = {
+    string data = "These are a bunch of words";
+    deque<string> actual;
+    deque<string> expected = {
         "These",
         "are",
         "a",
@@ -86,7 +86,7 @@ TEST(re, re_finditer)
         "words",
     };
     for (auto &match: re_finditer("\\w+", data)) {
-        actual.emplace_back(std::string(match.group(0)));
+        actual.emplace_back(string(match.group(0)));
     }
     EXPECT_EQ(actual, expected);
 }
@@ -94,7 +94,7 @@ TEST(re, re_finditer)
 
 TEST(re, re_split)
 {
-    std::string data = "These are a bunch of words";
+    string data = "These are a bunch of words";
 
     // first example
     auto whitespace = re_split("\\w+", data);
@@ -117,7 +117,7 @@ TEST(re, re_sub)
 
 TEST(re, re_escape)
 {
-    EXPECT_EQ(re_escape(string_view("\0", 1)), std::string("\\\0", 2));
+    EXPECT_EQ(re_escape(string_view("\0", 1)), string("\\\0", 2));
 }
 
 

@@ -28,9 +28,11 @@ PYCPP_BEGIN_NAMESPACE
 template <typename Iter>
 double variance(double mean,
     Iter first,
-    Iter last)
+    Iter last) noexcept
 {
     using value_type = typename iterator_traits<Iter>::value_type;
+    static_assert(is_arithmetic<value_type>::value, "");
+
     double sum = 0;
     for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
         sum += pow(value - mean, 2);
@@ -53,7 +55,7 @@ double variance(double mean,
 template <typename Iter>
 double stdev(double mean,
     Iter first,
-    Iter last)
+    Iter last) noexcept
 {
     return sqrt(variance(mean, first, last));
 }
@@ -70,7 +72,7 @@ double stdev(double mean,
  */
 template <typename Iter>
 double variance(Iter first,
-    Iter last)
+    Iter last) noexcept
 {
     return variance(average(first, last), first, last);
 }
@@ -87,7 +89,7 @@ double variance(Iter first,
  */
 template <typename Iter>
 double stdev(Iter first,
-    Iter last)
+    Iter last) noexcept
 {
     return stdev(average(first, last), first, last);
 }
@@ -111,9 +113,11 @@ template <
 double variance(double mean,
     Iter first,
     Iter last,
-    Summer summer)
+    Summer summer) noexcept
 {
     using value_type = typename iterator_traits<Iter>::value_type;
+    static_assert(is_arithmetic<value_type>::value, "");
+
     double sum = 0;
     for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
         sum += pow(summer(value) - mean, 2);
@@ -141,7 +145,7 @@ template <
 double stdev(double mean,
     Iter first,
     Iter last,
-    Sum sum)
+    Sum sum) noexcept
 {
     return sqrt(variance(mean, first, last, sum));
 }
@@ -163,7 +167,7 @@ template <
 >
 double variance(Iter first,
     Iter last,
-    Sum sum)
+    Sum sum) noexcept
 {
     return variance(average(first, last, sum), first, last, sum);
 }
@@ -211,8 +215,11 @@ double variance(double mean,
     ValueIter value_first,
     ValueIter value_last,
     WeightIter weight_first,
-    WeightIter weight_last)
+    WeightIter weight_last) noexcept
 {
+    static_assert(is_arithmetic<typename iterator_traits<ValueIter>::value_type>::value, "");
+    static_assert(is_arithmetic<typename iterator_traits<WeightIter>::value_type>::value, "");
+
     double sum = 0;
     double weight = 0;
     size_t dist = min(distance(value_first, value_last), distance(weight_first, weight_last));
@@ -248,7 +255,7 @@ double stdev(double mean,
     ValueIter value_first,
     ValueIter value_last,
     WeightIter weight_first,
-    WeightIter weight_last)
+    WeightIter weight_last) noexcept
 {
     return sqrt(variance(mean, value_first, value_last, weight_first, weight_last));
 }
@@ -272,7 +279,7 @@ template <
 double variance(ValueIter value_first,
     ValueIter value_last,
     WeightIter weight_first,
-    WeightIter weight_last)
+    WeightIter weight_last) noexcept
 {
     auto mean = average(value_first, value_last, weight_first, weight_last);
     return variance(mean, value_first, value_last, weight_first, weight_last);
@@ -297,7 +304,7 @@ template <
 double stdev(ValueIter value_first,
     ValueIter value_last,
     WeightIter weight_first,
-    WeightIter weight_last)
+    WeightIter weight_last) noexcept
 {
     return sqrt(variance(value_first, value_last, weight_first, weight_last));
 }
@@ -329,8 +336,11 @@ double variance(double mean,
     WeightIter weight_first,
     WeightIter weight_last,
     Summer summer,
-    Weighter weighter)
+    Weighter weighter) noexcept
 {
+    static_assert(is_arithmetic<typename iterator_traits<ValueIter>::value_type>::value, "");
+    static_assert(is_arithmetic<typename iterator_traits<WeightIter>::value_type>::value, "");
+
     double sum = 0;
     double weight = 0;
     size_t dist = min(distance(value_first, value_last), distance(weight_first, weight_last));
@@ -372,7 +382,7 @@ double stdev(double mean,
     WeightIter weight_first,
     WeightIter weight_last,
     Sum sum,
-    Weight weight)
+    Weight weight) noexcept
 {
     return sqrt(variance(mean, value_first, value_last, weight_first, weight_last, sum, weight));
 }
@@ -402,7 +412,7 @@ double variance(ValueIter value_first,
     WeightIter weight_first,
     WeightIter weight_last,
     Sum sum,
-    Weight weight)
+    Weight weight) noexcept
 {
     auto mean = average(value_first, value_last, weight_first, weight_last, sum, weight);
     return variance(mean, value_first, value_last, weight_first, weight_last, sum, weight);
@@ -433,7 +443,7 @@ double stdev(ValueIter value_first,
     WeightIter weight_first,
     WeightIter weight_last,
     Sum sum,
-    Weight weight)
+    Weight weight) noexcept
 {
     return sqrt(variance(value_first, value_last, weight_first, weight_last, sum, weight));
 }

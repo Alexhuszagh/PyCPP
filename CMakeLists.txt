@@ -931,6 +931,7 @@ if(BUILD_RE)
     list(APPEND HEADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re/match.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re/new.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re/re.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/re/regex.h"
     )

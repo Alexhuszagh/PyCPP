@@ -242,7 +242,7 @@ auto threshold_counter<K, H, P, A, M>::operator=(const self& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::threshold_counter(self&& rhs, const allocator_type& alloc):
+inline threshold_counter<K, H, P, A, M>::threshold_counter(self&& rhs, const allocator_type& alloc):
     map_(alloc)
 {
     swap(rhs);
@@ -250,7 +250,7 @@ threshold_counter<K, H, P, A, M>::threshold_counter(self&& rhs, const allocator_
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::operator=(self&& rhs) -> self&
+inline auto threshold_counter<K, H, P, A, M>::operator=(self&& rhs) -> self&
 {
     swap(rhs);
     return *this;
@@ -270,7 +270,7 @@ threshold_counter<K, H, P, A, M>::threshold_counter(const counter_type& rhs, flo
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::operator=(const counter_type& rhs) -> self&
+inline auto threshold_counter<K, H, P, A, M>::operator=(const counter_type& rhs) -> self&
 {
     update(rhs.begin(), rhs.end());
     return *this;
@@ -311,7 +311,7 @@ threshold_counter<K, H, P, A, M>::threshold_counter(const map_type& rhs, float t
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::operator=(const map_type& rhs) -> self&
+inline auto threshold_counter<K, H, P, A, M>::operator=(const map_type& rhs) -> self&
 {
     update(rhs.begin(), rhs.end());
     return *this;
@@ -377,56 +377,56 @@ threshold_counter<K, H, P, A, M>::threshold_counter(initializer_list<key_type> l
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::size() const noexcept -> size_type
+inline auto threshold_counter<K, H, P, A, M>::size() const noexcept -> size_type
 {
     return map_.size();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::max_size() const noexcept -> size_type
+inline auto threshold_counter<K, H, P, A, M>::max_size() const noexcept -> size_type
 {
     return map_.max_size();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-bool threshold_counter<K, H, P, A, M>::empty() const noexcept
+inline bool threshold_counter<K, H, P, A, M>::empty() const noexcept
 {
     return map_.empty();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::begin() const noexcept -> const_iterator
+inline auto threshold_counter<K, H, P, A, M>::begin() const noexcept -> const_iterator
 {
     return map_.begin();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::cbegin() const noexcept -> const_iterator
+inline auto threshold_counter<K, H, P, A, M>::cbegin() const noexcept -> const_iterator
 {
     return map_.cbegin();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::end() const noexcept -> const_iterator
+inline auto threshold_counter<K, H, P, A, M>::end() const noexcept -> const_iterator
 {
     return map_.end();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::cend() const noexcept -> const_iterator
+inline auto threshold_counter<K, H, P, A, M>::cend() const noexcept -> const_iterator
 {
     return map_.cend();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::at(const key_type& key) const -> const mapped_type&
+inline auto threshold_counter<K, H, P, A, M>::at(const key_type& key) const -> const mapped_type&
 {
     return map_.at(key);
 }
@@ -476,7 +476,7 @@ void threshold_counter<K, H, P, A, M>::update(Iter first, Iter last)
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void threshold_counter<K, H, P, A, M>::clear()
+inline void threshold_counter<K, H, P, A, M>::clear()
 {
     map_.clear();
     count_ = 0;
@@ -487,7 +487,6 @@ template <typename K, typename H, typename P, typename A, template <typename, ty
 void threshold_counter<K, H, P, A, M>::swap(self& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(map_, rhs.map_);
     swap(interval_, rhs.interval_);
     swap(count_, rhs.count_);
@@ -495,14 +494,14 @@ void threshold_counter<K, H, P, A, M>::swap(self& rhs)
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::most_common(size_t n) const -> counter_detail::mutable_pair_list<self>
+inline auto threshold_counter<K, H, P, A, M>::most_common(size_t n) const -> counter_detail::mutable_pair_list<self>
 {
     return counter_detail::most_common(map_, n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::elements() const -> counter_detail::key_list<self>
+inline auto threshold_counter<K, H, P, A, M>::elements() const -> counter_detail::key_list<self>
 {
     return counter_detail::elements(map_);
 }
@@ -519,14 +518,14 @@ count_t threshold_counter<K, H, P, A, M>::get_common_count() const
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-count_t threshold_counter<K, H, P, A, M>::get_uncommon_count() const
+inline count_t threshold_counter<K, H, P, A, M>::get_uncommon_count() const
 {
     return count_ - get_common_count();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-double threshold_counter<K, H, P, A, M>::get_commonality() const
+inline double threshold_counter<K, H, P, A, M>::get_commonality() const
 {
     return static_cast<double>(get_common_count()) / count_;
 }
@@ -552,7 +551,7 @@ void threshold_counter<K, H, P, A, M>::autocompact()
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void threshold_counter<K, H, P, A, M>::check_autocompact()
+inline void threshold_counter<K, H, P, A, M>::check_autocompact()
 {
     if (count_ % interval_ == 0) {
         autocompact();
@@ -561,98 +560,98 @@ void threshold_counter<K, H, P, A, M>::check_autocompact()
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::bucket_count() const noexcept -> size_type
+inline auto threshold_counter<K, H, P, A, M>::bucket_count() const noexcept -> size_type
 {
     return map_.bucket_count();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::max_bucket_count() const noexcept -> size_type
+inline auto threshold_counter<K, H, P, A, M>::max_bucket_count() const noexcept -> size_type
 {
     return map_.max_bucket_count();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::bucket_size(size_type n) const -> size_type
+inline auto threshold_counter<K, H, P, A, M>::bucket_size(size_type n) const -> size_type
 {
     return map_.bucket_size(n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::bucket(const key_type& key) const -> size_type
+inline auto threshold_counter<K, H, P, A, M>::bucket(const key_type& key) const -> size_type
 {
     return map_.bucket(key);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-float threshold_counter<K, H, P, A, M>::load_factor() const noexcept
+inline float threshold_counter<K, H, P, A, M>::load_factor() const noexcept
 {
     return map_.load_factor();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-float threshold_counter<K, H, P, A, M>::max_load_factor() const noexcept
+inline float threshold_counter<K, H, P, A, M>::max_load_factor() const noexcept
 {
     return map_.max_load_factor();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void threshold_counter<K, H, P, A, M>::max_load_factor(float n)
+inline void threshold_counter<K, H, P, A, M>::max_load_factor(float n)
 {
     map_.max_load_factor(n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void threshold_counter<K, H, P, A, M>::rehash(size_type n)
+inline void threshold_counter<K, H, P, A, M>::rehash(size_type n)
 {
     map_.rehash(n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void threshold_counter<K, H, P, A, M>::reserve(size_type n)
+inline void threshold_counter<K, H, P, A, M>::reserve(size_type n)
 {
     map_.reserve(n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::hash_function() const -> hasher
+inline auto threshold_counter<K, H, P, A, M>::hash_function() const -> hasher
 {
     return hasher();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::key_eq() const -> key_equal
+inline auto threshold_counter<K, H, P, A, M>::key_eq() const -> key_equal
 {
     return key_equal();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto threshold_counter<K, H, P, A, M>::get_allocator() const noexcept -> allocator_type
+inline auto threshold_counter<K, H, P, A, M>::get_allocator() const noexcept -> allocator_type
 {
     return map_.get_allocator();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::operator counter_type() const
+inline threshold_counter<K, H, P, A, M>::operator counter_type() const
 {
     return counter_type(map_);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-threshold_counter<K, H, P, A, M>::operator map_type() const
+inline threshold_counter<K, H, P, A, M>::operator map_type() const
 {
     return map_;
 }

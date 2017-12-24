@@ -7,13 +7,8 @@
         - csv
         - filesystem
         - iterator
-        - itertools
-        - json
         - lattice
-        - math
-        - preprocessor
         - random
-        - re
         - stream
         - string
         - windows
@@ -29,10 +24,14 @@
         - CSV
         - Filesystem
         - Iterator
+            - chunked
+            - input_iterator_facade
+            - range
+            - transform
+            - unique
+            - windowed
         - Lattice
-        - Math
         - Random
-        - Re
         - STL
         - Stream
         - String
@@ -51,6 +50,11 @@
             - LOLS
             - Change everything involving std::string to a typedef alias of it...
                 - string_tmp or something...
+
+    - Look at Howard Hinnant's Date library:
+        - https://github.com/HowardHinnant/date/blob/master/include/date/date.h
+        - ~7k lines of code
+        - See if I can adapt to a datetime interface for Python
 
     - Need custom allocators for the JSON and XML interfaces
     - Look at use woever rope.

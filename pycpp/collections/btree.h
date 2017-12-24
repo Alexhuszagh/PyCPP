@@ -2719,20 +2719,20 @@ void btree_iterator<N, R, P>::decrement_slow()
 
 // btree methods
 template <typename P>
-btree<P>::btree(const allocator_type& alloc):
+inline btree<P>::btree(const allocator_type& alloc):
     root_(alloc, nullptr)
 {}
 
 
 template <typename P>
-btree<P>::btree(const key_compare &comp, const allocator_type& alloc):
+inline btree<P>::btree(const key_compare &comp, const allocator_type& alloc):
     key_compare(comp),
     root_(alloc, nullptr)
 {}
 
 
 template <typename P>
-btree<P>::btree(const self_type& x):
+inline btree<P>::btree(const self_type& x):
     key_compare(x.key_comp()),
     root_(x.internal_allocator(), nullptr)
 {
@@ -2741,7 +2741,7 @@ btree<P>::btree(const self_type& x):
 
 
 template <typename P>
-btree<P>::btree(const self_type& x, const allocator_type& alloc):
+inline btree<P>::btree(const self_type& x, const allocator_type& alloc):
     key_compare(x.key_comp()),
     root_(alloc, nullptr)
 {
@@ -2750,7 +2750,7 @@ btree<P>::btree(const self_type& x, const allocator_type& alloc):
 
 
 template <typename P>
-btree<P>::btree(self_type&& x):
+inline btree<P>::btree(self_type&& x):
     key_compare(x.key_comp()),
     root_(x.internal_allocator(), nullptr)
 {
@@ -2759,7 +2759,7 @@ btree<P>::btree(self_type&& x):
 
 
 template <typename P>
-btree<P>::btree(self_type&& x, const allocator_type& alloc):
+inline btree<P>::btree(self_type&& x, const allocator_type& alloc):
     key_compare(x.key_comp()),
     root_(alloc, nullptr)
 {
@@ -2903,7 +2903,7 @@ btree<P>::find_insert_multi(const key_type &key)
 
 template <typename P> template <typename ValuePointer>
 typename btree<P>::iterator
-btree<P>::insert_multi(const key_type &key, ValuePointer value)
+inline btree<P>::insert_multi(const key_type &key, ValuePointer value)
 {
     return internal_insert(find_insert_multi(key), *value);
 }
@@ -2912,7 +2912,7 @@ btree<P>::insert_multi(const key_type &key, ValuePointer value)
 template <typename P>
 template <typename ... Ts>
 typename btree<P>::iterator
-btree<P>::emplace_multi(Ts&&... ts)
+inline btree<P>::emplace_multi(Ts&&... ts)
 {
     mutable_value_type v(forward<Ts>(ts)...);
     iterator it = find_insert_multi(params_type::key(v));
@@ -3113,12 +3113,10 @@ void btree<P>::clear()
 
 
 template <typename P>
-void btree<P>::swap(self_type &x)
+inline void btree<P>::swap(self_type &x)
 {
-    using PYCPP_NAMESPACE::swap;
-
-    swap(static_cast<key_compare&>(*this), static_cast<key_compare&>(x));
-    swap(root_, x.root_);
+    btree_swap_helper(static_cast<key_compare&>(*this), static_cast<key_compare&>(x));
+    btree_swap_helper(root_, x.root_);
 }
 
 

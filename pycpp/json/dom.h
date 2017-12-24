@@ -85,4 +85,15 @@ struct json_document_t: json_value_t
 #endif                                          // WINDOWS
 };
 
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<json_dom_handler>: is_virtual_relocatable
+{};
+
+template <>
+struct is_relocatable<json_document_t>: true_type
+{};
+
 PYCPP_END_NAMESPACE

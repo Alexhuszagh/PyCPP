@@ -303,25 +303,25 @@ struct is_relocatable<counter<Key, Hash, Pred, Alloc, Map>>:
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(const allocator_type& alloc):
     map_(alloc)
 {}
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(size_type n, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(size_type n, const allocator_type& alloc):
     map_(n, alloc)
 {}
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(const self& rhs, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(const self& rhs, const allocator_type& alloc):
     map_(rhs.map_, alloc)
 {}
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::operator=(const self& rhs) -> self&
+inline auto counter<K, H, P, A, M>::operator=(const self& rhs) -> self&
 {
     map_ = rhs.map_;
     return *this;
@@ -329,7 +329,7 @@ auto counter<K, H, P, A, M>::operator=(const self& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(self&& rhs, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(self&& rhs, const allocator_type& alloc):
     map_(alloc)
 {
     swap(rhs);
@@ -337,7 +337,7 @@ counter<K, H, P, A, M>::counter(self&& rhs, const allocator_type& alloc):
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::operator=(self&& rhs) -> self&
+inline auto counter<K, H, P, A, M>::operator=(self&& rhs) -> self&
 {
     swap(rhs);
     return *this;
@@ -345,13 +345,13 @@ auto counter<K, H, P, A, M>::operator=(self&& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(const map_type& rhs, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(const map_type& rhs, const allocator_type& alloc):
     map_(rhs, alloc)
 {}
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::operator=(const map_type& rhs) -> self&
+inline auto counter<K, H, P, A, M>::operator=(const map_type& rhs) -> self&
 {
     map_ = rhs;
     return *this;
@@ -359,13 +359,13 @@ auto counter<K, H, P, A, M>::operator=(const map_type& rhs) -> self&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(map_type&& rhs, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(map_type&& rhs, const allocator_type& alloc):
     map_(move(rhs), alloc)
 {}
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::operator=(map_type&& rhs) -> self&
+inline auto counter<K, H, P, A, M>::operator=(map_type&& rhs) -> self&
 {
     map_ = move(rhs);
     return *this;
@@ -374,7 +374,7 @@ auto counter<K, H, P, A, M>::operator=(map_type&& rhs) -> self&
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 template <typename Iter>
-counter<K, H, P, A, M>::counter(Iter first, Iter last, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(Iter first, Iter last, const allocator_type& alloc):
     map_(alloc)
 {
     update(first, last);
@@ -383,7 +383,7 @@ counter<K, H, P, A, M>::counter(Iter first, Iter last, const allocator_type& all
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 template <typename Iter>
-counter<K, H, P, A, M>::counter(Iter first, Iter last, size_type n, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(Iter first, Iter last, size_type n, const allocator_type& alloc):
     map_(n, alloc)
 {
     update(first, last);
@@ -391,7 +391,7 @@ counter<K, H, P, A, M>::counter(Iter first, Iter last, size_type n, const alloca
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(initializer_list<value_type> list, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(initializer_list<value_type> list, const allocator_type& alloc):
     map_(alloc)
 {
     update(list.begin(), list.end());
@@ -399,7 +399,7 @@ counter<K, H, P, A, M>::counter(initializer_list<value_type> list, const allocat
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(initializer_list<value_type> list, size_type n, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(initializer_list<value_type> list, size_type n, const allocator_type& alloc):
     map_(n, alloc)
 {
     update(list.begin(), list.end());
@@ -407,7 +407,7 @@ counter<K, H, P, A, M>::counter(initializer_list<value_type> list, size_type n, 
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(initializer_list<key_type> list, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(initializer_list<key_type> list, const allocator_type& alloc):
     map_(alloc)
 {
     update(list.begin(), list.end());
@@ -415,7 +415,7 @@ counter<K, H, P, A, M>::counter(initializer_list<key_type> list, const allocator
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::counter(initializer_list<key_type> list, size_type n, const allocator_type& alloc):
+inline counter<K, H, P, A, M>::counter(initializer_list<key_type> list, size_type n, const allocator_type& alloc):
     map_(n, alloc)
 {
     update(list.begin(), list.end());
@@ -423,63 +423,63 @@ counter<K, H, P, A, M>::counter(initializer_list<key_type> list, size_type n, co
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::size() const noexcept -> size_type
+inline auto counter<K, H, P, A, M>::size() const noexcept -> size_type
 {
     return map_.size();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::max_size() const noexcept -> size_type
+inline auto counter<K, H, P, A, M>::max_size() const noexcept -> size_type
 {
     return map_.max_size();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-bool counter<K, H, P, A, M>::empty() const noexcept
+inline bool counter<K, H, P, A, M>::empty() const noexcept
 {
     return map_.empty();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::begin() noexcept -> iterator
+inline auto counter<K, H, P, A, M>::begin() noexcept -> iterator
 {
     return map_.begin();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::begin() const noexcept -> const_iterator
+inline auto counter<K, H, P, A, M>::begin() const noexcept -> const_iterator
 {
     return map_.begin();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::cbegin() const noexcept -> const_iterator
+inline auto counter<K, H, P, A, M>::cbegin() const noexcept -> const_iterator
 {
     return map_.cbegin();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::end() noexcept -> iterator
+inline auto counter<K, H, P, A, M>::end() noexcept -> iterator
 {
     return map_.end();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::end() const noexcept -> const_iterator
+inline auto counter<K, H, P, A, M>::end() const noexcept -> const_iterator
 {
     return map_.end();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::cend() const noexcept -> const_iterator
+inline auto counter<K, H, P, A, M>::cend() const noexcept -> const_iterator
 {
     return map_.cend();
 }
@@ -510,14 +510,14 @@ auto counter<K, H, P, A, M>::operator[](key_type&& key) -> mapped_type&
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::at(const key_type& key) -> mapped_type&
+inline auto counter<K, H, P, A, M>::at(const key_type& key) -> mapped_type&
 {
     return map_.at(key);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::at(const key_type& key) const -> const mapped_type&
+inline auto counter<K, H, P, A, M>::at(const key_type& key) const -> const mapped_type&
 {
     return map_.at(key);
 }
@@ -535,14 +535,14 @@ count_t counter<K, H, P, A, M>::get(const key_type& key, count_t n) const
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void counter<K, H, P, A, M>::add(const key_type& key)
+inline void counter<K, H, P, A, M>::add(const key_type& key)
 {
     map_[key]++;
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void counter<K, H, P, A, M>::add(key_type&& key)
+inline void counter<K, H, P, A, M>::add(key_type&& key)
 {
     map_[forward<key_type>(key)]++;
 }
@@ -550,31 +550,30 @@ void counter<K, H, P, A, M>::add(key_type&& key)
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 template <typename Iter>
-void counter<K, H, P, A, M>::update(Iter first, Iter last)
+inline void counter<K, H, P, A, M>::update(Iter first, Iter last)
 {
     counter_detail::update(map_, first, last);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::erase(const key_type& key) -> size_type
+inline auto counter<K, H, P, A, M>::erase(const key_type& key) -> size_type
 {
     return map_.erase(key);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void counter<K, H, P, A, M>::clear()
+inline void counter<K, H, P, A, M>::clear()
 {
     map_.clear();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void counter<K, H, P, A, M>::swap(self& rhs)
+inline void counter<K, H, P, A, M>::swap(self& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(map_, rhs.map_);
 }
 
@@ -686,7 +685,7 @@ auto counter<K, H, P, A, M>::operator|(const self& rhs) const -> self
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::operator&=(const self& rhs) -> self&
+inline auto counter<K, H, P, A, M>::operator&=(const self& rhs) -> self&
 {
     operator=(*this & rhs);
     return *this;
@@ -716,105 +715,105 @@ auto counter<K, H, P, A, M>::operator&(const self& rhs) const -> self
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::most_common(size_t n) const -> counter_detail::mutable_pair_list<self>
+inline auto counter<K, H, P, A, M>::most_common(size_t n) const -> counter_detail::mutable_pair_list<self>
 {
     return counter_detail::most_common(map_, n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::elements() const -> counter_detail::key_list<self>
+inline auto counter<K, H, P, A, M>::elements() const -> counter_detail::key_list<self>
 {
     return counter_detail::elements(map_);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::bucket_count() const noexcept -> size_type
+inline auto counter<K, H, P, A, M>::bucket_count() const noexcept -> size_type
 {
     return map_.bucket_count();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::max_bucket_count() const noexcept -> size_type
+inline auto counter<K, H, P, A, M>::max_bucket_count() const noexcept -> size_type
 {
     return map_.max_bucket_count();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::bucket_size(size_type n) const -> size_type
+inline auto counter<K, H, P, A, M>::bucket_size(size_type n) const -> size_type
 {
     return map_.bucket_size(n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::bucket(const key_type& key) const -> size_type
+inline auto counter<K, H, P, A, M>::bucket(const key_type& key) const -> size_type
 {
     return map_.bucket(key);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-float counter<K, H, P, A, M>::load_factor() const noexcept
+inline float counter<K, H, P, A, M>::load_factor() const noexcept
 {
     return map_.load_factor();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-float counter<K, H, P, A, M>::max_load_factor() const noexcept
+inline float counter<K, H, P, A, M>::max_load_factor() const noexcept
 {
     return map_.max_load_factor();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void counter<K, H, P, A, M>::max_load_factor(float n)
+inline void counter<K, H, P, A, M>::max_load_factor(float n)
 {
     map_.max_load_factor(n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void counter<K, H, P, A, M>::rehash(size_type n)
+inline void counter<K, H, P, A, M>::rehash(size_type n)
 {
     map_.rehash(n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-void counter<K, H, P, A, M>::reserve(size_type n)
+inline void counter<K, H, P, A, M>::reserve(size_type n)
 {
     map_.reserve(n);
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::hash_function() const -> hasher
+inline auto counter<K, H, P, A, M>::hash_function() const -> hasher
 {
     return hasher();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::key_eq() const -> key_equal
+inline auto counter<K, H, P, A, M>::key_eq() const -> key_equal
 {
     return key_equal();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-auto counter<K, H, P, A, M>::get_allocator() const noexcept -> allocator_type
+inline auto counter<K, H, P, A, M>::get_allocator() const noexcept -> allocator_type
 {
     return map_.get_allocator();
 }
 
 
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
-counter<K, H, P, A, M>::operator map_type() const
+inline counter<K, H, P, A, M>::operator map_type() const
 {
     return map_;
 }

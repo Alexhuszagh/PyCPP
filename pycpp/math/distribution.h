@@ -31,7 +31,7 @@ static constexpr double NORM_PDF = 2.5066282746310002;          // sqrt(2*M_PI);
  *
  *  \param x                Position for normed PDF.
  */
-double norm_pdf(double x);
+double norm_pdf(double x) noexcept;
 
 /**
  *  \brief Calculate probability density function for gaussian.
@@ -40,7 +40,7 @@ double norm_pdf(double x);
  *  \param mean             Mean of Gaussian
  *  \param fwhm             Standard deviation of Gaussian.
  */
-double gaussian_pdf(double x, double mean, double sigma);
+double gaussian_pdf(double x, double mean, double sigma) noexcept;
 
 /**
  *  \brief Calculate Cauchy probability density function.
@@ -51,7 +51,7 @@ double gaussian_pdf(double x, double mean, double sigma);
  *
  *  \param x                Position for Cauchy PDF.
  */
-double cauchy_pdf(double x);
+double cauchy_pdf(double x) noexcept;
 
 /**
  *  \brief Calculate probability density function for Lorentzian.
@@ -60,7 +60,7 @@ double cauchy_pdf(double x);
  *  \param mean             Mean of Lorentzian
  *  \param fwhm             Full-width at half-max of function.
  */
-double lorentzian_pdf(double x, double mean, double fwhm);
+double lorentzian_pdf(double x, double mean, double fwhm) noexcept;
 
 // CDFS
 
@@ -69,7 +69,7 @@ double lorentzian_pdf(double x, double mean, double fwhm);
  *
  *  \param x                Position for normed CDF.
  */
-double norm_cdf(double x);
+double norm_cdf(double x) noexcept;
 
 /**
  *  \brief Calculate cumulative density function for gaussian.
@@ -78,7 +78,7 @@ double norm_cdf(double x);
  *  \param mean             Mean of Gaussian
  *  \param fwhm             Standard deviation of Gaussian.
  */
-double gaussian_cdf(double x, double mean, double sigma);
+double gaussian_cdf(double x, double mean, double sigma) noexcept;
 
 /**
  *  \brief Calculate Cauchy cumulative density function.
@@ -89,7 +89,7 @@ double gaussian_cdf(double x, double mean, double sigma);
  *
  *  \param x                Position for Cauchy CDF.
  */
-double cauchy_cdf(double x);
+double cauchy_cdf(double x) noexcept;
 
 /**
  *  \brief Calculate cumulative density function for Lorentzian.
@@ -98,7 +98,7 @@ double cauchy_cdf(double x);
  *  \param mean             Mean of Lorentzian
  *  \param fwhm             Full-width at half-max of function.
  */
-double lorentzian_cdf(double x, double mean, double fwhm);
+double lorentzian_cdf(double x, double mean, double fwhm) noexcept;
 
 // PDF -- RANGES -- OUTPUT ITERATOR
 
@@ -109,7 +109,7 @@ double lorentzian_cdf(double x, double mean, double fwhm);
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
-norm_pdf(SrcIter first, SrcIter last, DstIter dst)
+norm_pdf(SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     for (auto it = first; it != last; ++it) {
         *dst++ = norm_pdf(*it);
@@ -127,7 +127,7 @@ norm_pdf(SrcIter first, SrcIter last, DstIter dst)
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
-gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
+gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     for (auto it = first; it != last; ++it) {
         *dst++ = gaussian_pdf(*it, mean, sigma);
@@ -147,7 +147,7 @@ gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
-cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)
+cauchy_pdf(SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     for (auto it = first; it != last; ++it) {
         *dst++ = cauchy_pdf(*it);
@@ -165,7 +165,7 @@ cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
-lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
+lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     for (auto it = first; it != last; ++it) {
         *dst++ = lorentzian_pdf(*it, mean, fwhm);
@@ -183,7 +183,7 @@ lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter ds
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
-norm_cdf(SrcIter first, SrcIter last, DstIter dst)
+norm_cdf(SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     for (auto it = first; it != last; ++it) {
         *dst++ = norm_cdf(*it);
@@ -201,7 +201,7 @@ norm_cdf(SrcIter first, SrcIter last, DstIter dst)
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
-gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
+gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     for (auto it = first; it != last; ++it) {
         *dst++ = gaussian_cdf(*it, mean, sigma);
@@ -221,7 +221,7 @@ gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
-cauchy_cdf(SrcIter first, SrcIter last, DstIter dst)
+cauchy_cdf(SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     for (auto it = first; it != last; ++it) {
         *dst++ = cauchy_cdf(*it);
@@ -239,7 +239,7 @@ cauchy_cdf(SrcIter first, SrcIter last, DstIter dst)
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<!is_random_access_iterator<DstIter>::value, size_t>
-lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
+lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     for (auto it = first; it != last; ++it) {
         *dst++ = lorentzian_cdf(*it, mean, fwhm);
@@ -256,7 +256,7 @@ lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter ds
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
-norm_pdf(SrcIter first, SrcIter last, DstIter dst)
+norm_pdf(SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     size_t dist = distance(first, last);
     auto r = xrange<size_t>(0, dist, 1);
@@ -276,7 +276,7 @@ norm_pdf(SrcIter first, SrcIter last, DstIter dst)
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
-gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
+gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     size_t dist = distance(first, last);
     auto r = xrange<size_t>(0, dist, 1);
@@ -298,7 +298,7 @@ gaussian_pdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
-cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)
+cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)  noexcept
 {
     size_t dist = distance(first, last);
     auto r = xrange<size_t>(0, dist, 1);
@@ -318,7 +318,7 @@ cauchy_pdf(SrcIter first, SrcIter last, DstIter dst)
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
-lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
+lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)  noexcept
 {
     size_t dist = distance(first, last);
     auto r = xrange<size_t>(0, dist, 1);
@@ -338,7 +338,7 @@ lorentzian_pdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter ds
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
-norm_cdf(SrcIter first, SrcIter last, DstIter dst)
+norm_cdf(SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     size_t dist = distance(first, last);
     auto r = xrange<size_t>(0, dist, 1);
@@ -358,7 +358,7 @@ norm_cdf(SrcIter first, SrcIter last, DstIter dst)
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
-gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst)
+gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     size_t dist = distance(first, last);
     auto r = xrange<size_t>(0, dist, 1);
@@ -380,7 +380,7 @@ gaussian_cdf(double mean, double sigma, SrcIter first, SrcIter last, DstIter dst
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
-cauchy_cdf(SrcIter first, SrcIter last, DstIter dst)
+cauchy_cdf(SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     size_t dist = distance(first, last);
     auto r = xrange<size_t>(0, dist, 1);
@@ -400,7 +400,7 @@ cauchy_cdf(SrcIter first, SrcIter last, DstIter dst)
  */
 template <typename SrcIter, typename DstIter>
 enable_if_t<is_random_access_iterator<DstIter>::value, size_t>
-lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst)
+lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter dst) noexcept
 {
     size_t dist = distance(first, last);
     auto r = xrange<size_t>(0, dist, 1);
@@ -418,10 +418,10 @@ lorentzian_cdf(double mean, double fwhm, SrcIter first, SrcIter last, DstIter ds
  */
 struct norm
 {
-    double pdf(double x) const;
-    double cdf(double x) const;
-    template <typename It1, typename It2> size_t pdf(It1, It1, It2);
-    template <typename It1, typename It2> size_t cdf(It1, It1, It2);
+    double pdf(double x) const noexcept;
+    double cdf(double x) const noexcept;
+    template <typename It1, typename It2> size_t pdf(It1, It1, It2) noexcept;
+    template <typename It1, typename It2> size_t cdf(It1, It1, It2) noexcept;
 };
 
 /**
@@ -429,11 +429,11 @@ struct norm
  */
 struct gaussian
 {
-    gaussian(double mean, double sigma);
-    double pdf(double x) const;
-    double cdf(double x) const;
-    template <typename It1, typename It2> size_t pdf(It1, It1, It2);
-    template <typename It1, typename It2> size_t cdf(It1, It1, It2);
+    gaussian(double mean, double sigma) noexcept;
+    double pdf(double x) const noexcept;
+    double cdf(double x) const noexcept;
+    template <typename It1, typename It2> size_t pdf(It1, It1, It2) noexcept;
+    template <typename It1, typename It2> size_t cdf(It1, It1, It2) noexcept;
 
 private:
     double mean;
@@ -445,10 +445,10 @@ private:
  */
 struct cauchy
 {
-    double pdf(double x) const;
-    double cdf(double x) const;
-    template <typename It1, typename It2> size_t pdf(It1, It1, It2);
-    template <typename It1, typename It2> size_t cdf(It1, It1, It2);
+    double pdf(double x) const noexcept;
+    double cdf(double x) const noexcept;
+    template <typename It1, typename It2> size_t pdf(It1, It1, It2) noexcept;
+    template <typename It1, typename It2> size_t cdf(It1, It1, It2) noexcept;
 };
 
 /**
@@ -456,11 +456,11 @@ struct cauchy
  */
 struct lorentzian
 {
-    lorentzian(double mean, double fwhm);
-    double pdf(double x) const;
-    double cdf(double x) const;
-    template <typename It1, typename It2> size_t pdf(It1, It1, It2);
-    template <typename It1, typename It2> size_t cdf(It1, It1, It2);
+    lorentzian(double mean, double fwhm) noexcept;
+    double pdf(double x) const noexcept;
+    double cdf(double x) const noexcept;
+    template <typename It1, typename It2> size_t pdf(It1, It1, It2) noexcept;
+    template <typename It1, typename It2> size_t cdf(It1, It1, It2) noexcept;
 
 private:
     double mean;
@@ -473,56 +473,56 @@ private:
 
 
 template <typename It1, typename It2>
-size_t norm::pdf(It1 first, It1 last, It2 dst)
+size_t norm::pdf(It1 first, It1 last, It2 dst) noexcept
 {
     return norm_cdf(first, last, dst);
 }
 
 
 template <typename It1, typename It2>
-size_t norm::cdf(It1 first, It1 last, It2 dst)
+size_t norm::cdf(It1 first, It1 last, It2 dst) noexcept
 {
     return norm_cdf(first, last, dst);
 }
 
 
 template <typename It1, typename It2>
-size_t gaussian::pdf(It1 first, It1 last, It2 dst)
+size_t gaussian::pdf(It1 first, It1 last, It2 dst) noexcept
 {
     return gaussian_cdf(mean, sigma, first, last, dst);
 }
 
 
 template <typename It1, typename It2>
-size_t gaussian::cdf(It1 first, It1 last, It2 dst)
+size_t gaussian::cdf(It1 first, It1 last, It2 dst) noexcept
 {
     return gaussian_cdf(mean, sigma, first, last, dst);
 }
 
 
 template <typename It1, typename It2>
-size_t cauchy::pdf(It1 first, It1 last, It2 dst)
+size_t cauchy::pdf(It1 first, It1 last, It2 dst) noexcept
 {
     return cauchy_cdf(first, last, dst);
 }
 
 
 template <typename It1, typename It2>
-size_t cauchy::cdf(It1 first, It1 last, It2 dst)
+size_t cauchy::cdf(It1 first, It1 last, It2 dst) noexcept
 {
     return cauchy_cdf(first, last, dst);
 }
 
 
 template <typename It1, typename It2>
-size_t lorentzian::pdf(It1 first, It1 last, It2 dst)
+size_t lorentzian::pdf(It1 first, It1 last, It2 dst) noexcept
 {
     return lorentzian_cdf(mean, fwhm, first, last, dst);
 }
 
 
 template <typename It1, typename It2>
-size_t lorentzian::cdf(It1 first, It1 last, It2 dst)
+size_t lorentzian::cdf(It1 first, It1 last, It2 dst) noexcept
 {
     return lorentzian_cdf(mean, fwhm, first, last, dst);
 }

@@ -39,6 +39,8 @@ static std::string add_group0(const string_wrapper& view)
  */
 struct regex_impl_t
 {
+    // MEMBER VARIABLES
+    // ----------------
     re2::RE2 re2;
     re2::RE2 sub;
     size_t argc = 0;
@@ -46,6 +48,15 @@ struct regex_impl_t
     re2::RE2::Arg** argp = nullptr;
     re2::StringPiece* piece = nullptr;
 
+    // MEMBER TYPES
+    // ------------
+    using allocator_type = allocator<byte>;
+    using argv_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<re2::RE2::Arg>;
+    using argp_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<re2::RE2::Arg*>;
+    using piece_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<re2::StringPiece>;
+
+    // MEMBER FUNCTIONS
+    // ----------------
     regex_impl_t(const string_wrapper& view);
     ~regex_impl_t();
     void initialize();
@@ -69,14 +80,21 @@ regex_impl_t::~regex_impl_t()
 
 void regex_impl_t::initialize()
 {
-    argc = re2.NumberOfCapturingGroups();
-    // named capture groups
-    argv = new re2::RE2::Arg[argc];
-    argp = new re2::RE2::Arg*[argc];
-    piece = new re2::StringPiece[argc];
+    // get allocators
+    argv_allocator argv_alloc(re_allocator());
+    argp_allocator argp_alloc(re_allocator());
+    piece_allocator piece_alloc(re_allocator());
 
+    // allocate memory
+    argc = re2.NumberOfCapturingGroups();
+    argv = argv_alloc.allocate(argc);
+    argp = argp_alloc.allocate(argc);
+    piece = piece_alloc.allocate(argc);
+
+    // initialize memory
     for (size_t i = 0; i < argc; ++i) {
         // always have the 0-index piece as the whole group
+        new (&piece[i]) re2::StringPiece();
         argv[i] = &piece[i];
         argp[i] = &argv[i];
     }
@@ -85,9 +103,26 @@ void regex_impl_t::initialize()
 
 void regex_impl_t::clear()
 {
-    delete[] argv;
-    delete[] argp;
-    delete[] piece;
+    using piece_traits = allocator_traits<piece_allocator>;
+
+    // get allocators
+    argv_allocator argv_alloc(re_allocator());
+    argp_allocator argp_alloc(re_allocator());
+    piece_allocator piece_alloc(re_allocator());
+
+    if (argc > 0) {
+        // destroy memory
+        for (size_t i = 0; i < argc; ++i) {
+            piece_traits::destroy(piece_alloc, &piece[i]);
+        }
+
+        // deallocate memory
+        argv_alloc.deallocate(argv, argc);
+        argp_alloc.deallocate(argp, argc);
+        piece_alloc.deallocate(piece, argc);
+    }
+
+    // nullify
     argv = nullptr;
     argp = nullptr;
     piece = nullptr;
@@ -96,7 +131,7 @@ void regex_impl_t::clear()
 
 
 regexp_t::regexp_t(const string_wrapper& view):
-    ptr_(make_unique<regex_impl_t>(view))
+    ptr_(deleter_type::create(re_allocator(), view), deleter_type(re_allocator()))
 {
     if (!ptr_->re2.ok()) {
         throw runtime_error("Invalid regular expression pattern.");
@@ -104,19 +139,19 @@ regexp_t::regexp_t(const string_wrapper& view):
 }
 
 
-regexp_t::regexp_t(regexp_t&& rhs):
+regexp_t::regexp_t(regexp_t&& rhs) noexcept:
     ptr_(move(rhs.ptr_))
 {}
 
 
-regexp_t & regexp_t::operator=(regexp_t&& rhs)
+regexp_t & regexp_t::operator=(regexp_t&& rhs) noexcept
 {
     swap(ptr_, rhs.ptr_);
     return *this;
 }
 
 
-regexp_t::~regexp_t()
+regexp_t::~regexp_t() noexcept
 {}
 
 
@@ -182,13 +217,13 @@ match_range regexp_t::finditer(const string_wrapper& str, size_t pos, size_t end
 }
 
 
-std::string regexp_t::sub(const string_wrapper& repl, const string_wrapper& str)
+string regexp_t::sub(const string_wrapper& repl, const string_wrapper& str)
 {
     std::string data(str);
     re2::StringPiece repl_(repl.data(), repl.size());
     re2::RE2::GlobalReplace(&data, ptr_->sub, repl_);
 
-    return data;
+    return string(data.data(), data.size());
 }
 
 

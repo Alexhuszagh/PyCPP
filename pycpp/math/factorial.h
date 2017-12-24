@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
+#include <pycpp/stl/type_traits.h>
 #include <math.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -23,7 +23,7 @@ PYCPP_BEGIN_NAMESPACE
  *  0 is returned.
  */
 template <typename N = int>
-N factorial(N n)
+N factorial(N n) noexcept
 {
     if (n < 0) {
         return 0;

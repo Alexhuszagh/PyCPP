@@ -24,8 +24,11 @@ PYCPP_BEGIN_NAMESPACE
  *  \dx                     Spacing of values
  */
 template <typename Iter>
-double trapz(Iter first, Iter last, double dx = 1)
+double trapz(Iter first, Iter last, double dx = 1) noexcept
 {
+    using value_type = typename iterator_traits<Iter>::value_type;
+    static_assert(is_arithmetic<value_type>::value, "");
+
     double integral = 0;
     size_t dist = distance(first, last);
     auto r = xrange<size_t>(0, dist-1, 1);
@@ -56,6 +59,9 @@ double trapz(YIter y_first,
     XIter x_first,
     XIter x_last)
 {
+    static_assert(is_arithmetic<typename iterator_traits<XIter>::value_type>::value, "");
+    static_assert(is_arithmetic<typename iterator_traits<YIter>::value_type>::value, "");
+
     double integral = 0;
     size_t dist = min(distance(y_first, y_last), distance(x_first, x_last));
     auto r = xrange<size_t>(0, dist-1, 1);

@@ -15,7 +15,7 @@ PYCPP_BEGIN_NAMESPACE
 // GLOBALS
 // -------
 
-using regex_cache = lru_cache<std::string, regexp_t>;
+using regex_cache = lru_cache<string, regexp_t>;
 regex_cache REGEX_CACHE(REGEX_CACHE_SIZE);
 
 // HELPERS
@@ -27,7 +27,7 @@ regex_cache REGEX_CACHE(REGEX_CACHE_SIZE);
  */
 static regexp_t& compile(const string_wrapper& view)
 {
-    std::string pattern(view);
+    string pattern(view);
     auto it = REGEX_CACHE.find(pattern);
     if (it == REGEX_CACHE.end()) {
         it = REGEX_CACHE.insert(pattern, regexp_t(pattern)).first;
@@ -70,15 +70,15 @@ match_groups re_split(const string_wrapper& pattern, const string_wrapper& str, 
 }
 
 
-std::string re_sub(const string_wrapper& pattern, const string_wrapper& repl, const string_wrapper& str)
+string re_sub(const string_wrapper& pattern, const string_wrapper& repl, const string_wrapper& str)
 {
     return compile(pattern).sub(repl, str);
 }
 
 
-std::string re_escape(const string_wrapper& str)
+string re_escape(const string_wrapper& str)
 {
-    std::string output;
+    string output;
     output.reserve(str.size() * 2 + 1);
 
     for (const char c: str) {

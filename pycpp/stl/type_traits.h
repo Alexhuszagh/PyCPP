@@ -178,8 +178,7 @@ struct is_relocatable: bool_constant<
 // it is not standardized, so we assume they are **not** copyable.
 // If need be, specialize this to allow relocatable virtual classes,
 // using book-keeping to track compilers using vtables.
-template <typename T>
-using virtual_is_relocatable = false_type;
+using is_virtual_relocatable = false_type;
 
 // Destructible
 using std::is_destructible;

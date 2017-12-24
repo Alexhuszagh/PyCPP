@@ -56,9 +56,34 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Specialize memory manager for the unique heap PIMPL wrapper.
  *  Use inheritance for empty-base class optimization.
  */
-template <typename T, typename Allocator>
+template <
+    typename T,
+    typename Allocator = allocator<T>,
+    bool CheckNull = false
+>
 struct unique_heap_pimpl_manager: Allocator
 {
+    // MEMBER TEMPLATES
+    // ----------------
+    template <
+        typename T1,
+        typename A1 = typename allocator_traits<Allocator>::template rebind_alloc<T1>,
+        bool C1 = CheckNull
+    >
+    struct rebind { using other = unique_heap_pimpl_manager<T1, A1, C1>; };
+
+    // MEMBER TYPES
+    // ------------
+    using value_type = T;
+    using allocator_type = Allocator;
+
+    // MEMBER VARIABLES
+    // ----------------
+    static constexpr bool check_null = CheckNull;
+
+    // MEMBER FUNCTIONS
+    // ----------------
+
     unique_heap_pimpl_manager(const Allocator& alloc):
         Allocator(alloc)
     {}
@@ -75,7 +100,18 @@ struct unique_heap_pimpl_manager: Allocator
         return unique_heap_pimpl_manager::create(static_cast<const Allocator&>(*this), std::forward<Ts>(ts)...);
     }
 
-    static inline void destroy(const Allocator& alloc, T* p)
+    template <bool B = CheckNull>
+    enable_if_t<B, void>
+    static inline destroy(const Allocator& alloc, T* p)
+    {
+        if (p) {
+            destroy_and_deallocate(alloc, p);
+        }
+    }
+
+    template <bool B = CheckNull>
+    enable_if_t<!B, void>
+    static inline destroy(const Allocator& alloc, T* p)
     {
         destroy_and_deallocate(alloc, p);
     }
@@ -207,6 +243,11 @@ struct is_relocatable<shared_heap_pimpl<T>>: is_relocatable<shared_ptr<T>>
 
 // IMPLEMENTATION
 // --------------
+
+// MANAGER
+
+template <typename T, typename A, bool C>
+const bool unique_heap_pimpl_manager<T, A, C>::check_null;
 
 // UNIQUE
 

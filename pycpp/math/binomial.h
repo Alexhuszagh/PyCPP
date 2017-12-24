@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/stl/stdexcept.h>
+#include <pycpp/stl/type_traits.h>
 #include <math.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -28,6 +29,8 @@ PYCPP_BEGIN_NAMESPACE
 template <typename T>
 T binomial(T n, T k)
 {
+    static_assert(is_arithmetic<T>::value, "");
+
     if (!k || n == k) {
         return 1;
     } else if (n < 0) {

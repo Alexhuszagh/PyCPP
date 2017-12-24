@@ -137,4 +137,23 @@ struct json_string_reader:
     void swap(json_string_reader&) noexcept;
 };
 
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<json_sax_handler>: is_virtual_relocatable
+{};
+
+template <>
+struct is_relocatable<json_stream_reader>: true_type
+{};
+
+template <>
+struct is_relocatable<json_file_reader>: true_type
+{};
+
+template <>
+struct is_relocatable<json_string_reader>: true_type
+{};
+
 PYCPP_END_NAMESPACE

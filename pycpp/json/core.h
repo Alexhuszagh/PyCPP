@@ -137,4 +137,11 @@ private:
     void reset();
 };
 
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<json_value_t>: true_type
+{};
+
 PYCPP_END_NAMESPACE

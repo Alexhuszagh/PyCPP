@@ -145,4 +145,23 @@ struct json_string_writer:
     void swap(json_string_writer&) noexcept;
 };
 
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<json_writer>: is_virtual_relocatable
+{};
+
+template <>
+struct is_relocatable<json_stream_writer>: is_virtual_relocatable
+{};
+
+template <>
+struct is_relocatable<json_file_writer>: is_virtual_relocatable
+{};
+
+template <>
+struct is_relocatable<json_string_writer>: is_virtual_relocatable
+{};
+
 PYCPP_END_NAMESPACE

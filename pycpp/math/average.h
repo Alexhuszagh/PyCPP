@@ -27,9 +27,11 @@ PYCPP_BEGIN_NAMESPACE
  *  NAN or INF.
  */
 template <typename Iter>
-double average(Iter first, Iter last)
+double average(Iter first, Iter last) noexcept
 {
     using value_type = typename iterator_traits<Iter>::value_type;
+    static_assert(is_arithmetic<value_type>::value, "");
+
     double sum = 0;
     for_each(PARALLEL_EXECUTION first, last, [&sum](const value_type& value) {
         sum += value;
@@ -55,9 +57,11 @@ template <
 >
 double average(Iter first,
     Iter last,
-    Summer summer)
+    Summer summer) noexcept
 {
     using value_type = typename iterator_traits<Iter>::value_type;
+    static_assert(is_arithmetic<value_type>::value, "");
+
     double sum = 0;
     for_each(PARALLEL_EXECUTION first, last, [&](const value_type& value) {
         sum += summer(value);
@@ -85,8 +89,11 @@ template <
 double average(ValueIter value_first,
     ValueIter value_last,
     WeightIter weight_first,
-    WeightIter weight_last)
+    WeightIter weight_last) noexcept
 {
+    static_assert(is_arithmetic<typename iterator_traits<ValueIter>::value_type>::value, "");
+    static_assert(is_arithmetic<typename iterator_traits<WeightIter>::value_type>::value, "");
+
     double sum = 0;
     double weight = 0;
     size_t dist = min(distance(value_first, value_last), distance(weight_first, weight_last));
@@ -125,8 +132,11 @@ double average(ValueIter value_first,
     WeightIter weight_first,
     WeightIter weight_last,
     Summer summer,
-    Weighter weighter)
+    Weighter weighter) noexcept
 {
+    static_assert(is_arithmetic<typename iterator_traits<ValueIter>::value_type>::value, "");
+    static_assert(is_arithmetic<typename iterator_traits<WeightIter>::value_type>::value, "");
+
     double sum = 0;
     double weight = 0;
     size_t dist = min(distance(value_first, value_last), distance(weight_first, weight_last));
