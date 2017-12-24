@@ -15,10 +15,13 @@ endif()
 # -----
 
 # MODULES
+option(BUILD_BLOOM "Build bloom filters library" ON)
 option(BUILD_CIPHER "Build cipher library" ON)
 option(BUILD_COLLECTIONS "Build collections library" ON)
 option(BUILD_COMPRESSION "Build compression library" ON)
 option(BUILD_CSV "Build CSV library" ON)
+option(BUILD_CUCKOO "Build Cuckoo hash-table library" ON)
+option(BUILD_DATETIME "Build datetime library" ON)
 option(BUILD_FILESYSTEM "Build filesystem library" ON)
 option(BUILD_HASHLIB "Build hash library" ON)
 option(BUILD_JSON "Build JSON library" ON)
@@ -48,10 +51,13 @@ option(USE_SYSTEM_ZLIB "Use system ZLIB installation" OFF)
 
 # WITH MODULE
 option(WITH_CORE "Build (only) core library" OFF)
+option(WITH_BLOOM "Build (only) bloom filters library" OFF)
 option(WITH_CIPHER "Build (only) cipher library" OFF)
 option(WITH_COLLECTIONS "Build (only) collections library" OFF)
 option(WITH_COMPRESSION "Build (only) compression library" OFF)
 option(WITH_CSV "Build (only) CSV library" OFF)
+option(WITH_CUCKOO "Build (only) Cuckoo hash-table library" ON)
+option(WITH_DATETIME "Build (only) datetime library" OFF)
 option(WITH_FILESYSTEM "Build (only) filesystem library" OFF)
 option(WITH_HASHLIB "Build (only) hash library" OFF)
 option(WITH_JSON "Build (only) JSON library" OFF)
@@ -74,11 +80,14 @@ SET(PYCPP_NAMESPACE "pycpp" CACHE STRING "Name for PyCPP namespace (empty for no
 # The following options are only for program developers.
 option(USE_LIBCXX "Force the use of libcxx" OFF)
 
-if(WITH_CORE OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_MYSQL OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
+if(WITH_CORE WITH_BLOOM OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_CUCKOO OR WITH_DATETIME OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_MYSQL OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
+    set(BUILD_BLOOM ${WITH_BLOOM})
     set(BUILD_CIPHER ${WITH_CIPHER})
     set(BUILD_COLLECTIONS ${WITH_COLLECTIONS})
     set(BUILD_COMPRESSION ${WITH_COMPRESSION})
     set(BUILD_CSV ${WITH_CSV})
+    set(BUILD_CUCKOO ${WITH_CUCKOO})
+    set(BUILD_DATETIME ${WITH_DATETIME})
     set(BUILD_FILESYSTEM ${WITH_FILESYSTEM})
     set(BUILD_HASHLIB ${WITH_HASHLIB})
     set(BUILD_JSON ${WITH_JSON})
@@ -700,6 +709,12 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/windows/mman.cc"
 )
 
+if (BUILD_BLOOM)
+        list(APPEND HEADER_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/bloom.h"
+    )
+endif()
+
 if(BUILD_CACHE)
     list(APPEND HEADER_FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cache.h"
@@ -741,6 +756,7 @@ if(BUILD_COLLECTIONS)
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin_map.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/robin_set.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/rope.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/sorted_sequence.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/collections/threshold_counter.h"
     )
@@ -792,6 +808,18 @@ if (BUILD_CSV)
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/punct.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/reader.cc"
         "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/csv/writer.cc"
+    )
+endif()
+
+if (BUILD_CUCKOO)
+    list(APPEND HEADER_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/cuckoo.h"
+    )
+endif()
+
+if (BUILD_DATETIME)
+    list(APPEND HEADER_FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/datetime.h"
     )
 endif()
 
@@ -1153,6 +1181,9 @@ set(TEST_FILES
     test/random.cc
 )
 
+if (BUILD_BLOOM)
+endif()
+
 if (BUILD_CACHE)
     if(BUILD_KEYVALUE)
         list(APPEND TEST_FILES
@@ -1175,6 +1206,7 @@ if(BUILD_COLLECTIONS)
         test/collections/ordered_set.cc
         test/collections/robin_map.cc
         test/collections/robin_set.cc
+        test/collections/rope.cc
         test/collections/sorted_sequence.cc
         test/collections/threshold_counter.cc
     )
@@ -1196,6 +1228,12 @@ endif()
 
 if (BUILD_CSV)
     list(APPEND TEST_FILES test/csv.cc)
+endif()
+
+if (BUILD_CUCKOO)
+endif()
+
+if (BUILD_DATETIME)
 endif()
 
 if (BUILD_FILESYSTEM)

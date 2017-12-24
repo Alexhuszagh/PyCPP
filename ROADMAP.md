@@ -56,6 +56,12 @@
         - ~7k lines of code
         - See if I can adapt to a datetime interface for Python
 
+    - Look at Bloom filters
+        - https://github.com/mavam/libbf
+        
+    - Look at Cuckoo filters
+        - https://github.com/efficient/libcuckoo
+
     - Need custom allocators for the JSON and XML interfaces
     - Look at use woever rope.
 

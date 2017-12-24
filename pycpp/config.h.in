@@ -18,11 +18,14 @@
 // FEATURES
 // --------
 
+#cmakedefine01 BUILD_BLOOM
 #cmakedefine01 BUILD_CACHE
 #cmakedefine01 BUILD_CIPHER
 #cmakedefine01 BUILD_COLLECTIONS
 #cmakedefine01 BUILD_COMPRESSION
 #cmakedefine01 BUILD_CSV
+#cmakedefine01 BUILD_CUCKOO
+#cmakedefine01 BUILD_DATETIME
 #cmakedefine01 BUILD_FILESYSTEM
 #cmakedefine01 BUILD_HASHLIB
 #cmakedefine01 BUILD_COMPRESSION
