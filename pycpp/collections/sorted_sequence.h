@@ -160,6 +160,18 @@ private:
     container_type container_;
 };
 
+// SPECIALIZATION
+// --------------
+
+template <
+    typename T,
+    typename Compare,
+    typename Alloc,
+    template <typename, typename> class Container
+>
+struct is_relocatable<sorted_sequence<T, Compare, Alloc, Container>>:
+    is_relocatable<typename sorted_sequence<T, Compare, Alloc, Container>::container_type>
+{};
 
 // IMPLEMENTATION
 // --------------

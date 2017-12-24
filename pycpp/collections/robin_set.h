@@ -657,8 +657,23 @@ template <
     typename Hash = hash<Key>,
     typename KeyEqual = equal_to<Key>,
     typename Allocator = allocator<Key>,
-    bool StoreHash = false
+    bool StoreHash = false,
+    typename GrowthPolicy = robin_detail::prime_growth_policy
 >
-using robin_pg_set = robin_set<Key, Hash, KeyEqual, Allocator, StoreHash, robin_detail::prime_growth_policy>;
+using robin_pg_set = robin_set<Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy>;
+
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename Hash,
+    typename KeyEqual,
+    typename Allocator,
+    bool StoreHash,
+    typename GrowthPolicy
+>
+struct is_relocatable<robin_set<Key, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy>>: false_type
+{};
 
 PYCPP_END_NAMESPACE

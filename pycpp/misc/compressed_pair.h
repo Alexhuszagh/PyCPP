@@ -855,6 +855,15 @@ public:
    void swap(compressed_pair& y);
 };
 
+// SPECIALIZATION
+// --------------
+
+template <typename T1, typename T2>
+struct is_relocatable<compressed_pair<T1, T2>>: bool_constant<
+        is_relocatable<T1>::value && is_relocatable<T2>::value
+    >
+{};
+
 // IMPLEMENTATION
 // --------------
 

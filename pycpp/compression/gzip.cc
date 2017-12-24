@@ -107,7 +107,7 @@ struct gzip_compressor_impl: filter_impl<z_stream>
     size_t size = 0;
 
     gzip_compressor_impl(int level = 9);
-    ~gzip_compressor_impl();
+    ~gzip_compressor_impl() noexcept;
 
     void write_header();
     void write_footer(void*& dst);
@@ -125,11 +125,11 @@ gzip_compressor_impl::gzip_compressor_impl(int level)
     stream.zalloc = Z_NULL;
     stream.zfree = Z_NULL;
     stream.opaque = Z_NULL;
-    CHECK(deflateInit2(&stream, level, Z_DEFLATED, -WINDOW_BITS, 8, Z_DEFAULT_STRATEGY));
+    PYCPP_CHECK(deflateInit2(&stream, level, Z_DEFLATED, -WINDOW_BITS, 8, Z_DEFAULT_STRATEGY));
 }
 
 
-gzip_compressor_impl::~gzip_compressor_impl()
+gzip_compressor_impl::~gzip_compressor_impl() noexcept
 {
     deflateEnd(&stream);
 }
@@ -225,7 +225,7 @@ struct gzip_decompressor_impl: filter_impl<z_stream>
     size_t size = 0;
 
     gzip_decompressor_impl();
-    ~gzip_decompressor_impl();
+    ~gzip_decompressor_impl() noexcept;
 
     void read_header();
     void read_footer();
@@ -241,11 +241,11 @@ gzip_decompressor_impl::gzip_decompressor_impl()
     stream.zalloc = Z_NULL;
     stream.zfree = Z_NULL;
     stream.opaque = Z_NULL;
-    CHECK(inflateInit2(&stream, -WINDOW_BITS));
+    PYCPP_CHECK(inflateInit2(&stream, -WINDOW_BITS));
 }
 
 
-gzip_decompressor_impl::~gzip_decompressor_impl()
+gzip_decompressor_impl::~gzip_decompressor_impl() noexcept
 {
     inflateEnd(&stream);
 }
@@ -342,19 +342,19 @@ gzip_compressor::gzip_compressor(int level):
 {}
 
 
-gzip_compressor::gzip_compressor(gzip_compressor&& rhs):
+gzip_compressor::gzip_compressor(gzip_compressor&& rhs) noexcept:
     ptr_(move(rhs.ptr_))
 {}
 
 
-gzip_compressor & gzip_compressor::operator=(gzip_compressor&& rhs)
+gzip_compressor & gzip_compressor::operator=(gzip_compressor&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-gzip_compressor::~gzip_compressor()
+gzip_compressor::~gzip_compressor() noexcept
 {}
 
 
@@ -370,13 +370,13 @@ bool gzip_compressor::flush(void*& dst, size_t dstlen)
 }
 
 
-void gzip_compressor::close()
+void gzip_compressor::close() noexcept
 {
     ptr_.reset();
 }
 
 
-void gzip_compressor::swap(gzip_compressor& rhs)
+void gzip_compressor::swap(gzip_compressor& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(ptr_, rhs.ptr_);
@@ -388,19 +388,19 @@ gzip_decompressor::gzip_decompressor():
 {}
 
 
-gzip_decompressor::gzip_decompressor(gzip_decompressor&& rhs):
+gzip_decompressor::gzip_decompressor(gzip_decompressor&& rhs) noexcept:
     ptr_(move(rhs.ptr_))
 {}
 
 
-gzip_decompressor & gzip_decompressor::operator=(gzip_decompressor&& rhs)
+gzip_decompressor & gzip_decompressor::operator=(gzip_decompressor&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-gzip_decompressor::~gzip_decompressor()
+gzip_decompressor::~gzip_decompressor() noexcept
 {}
 
 
@@ -416,13 +416,13 @@ bool gzip_decompressor::flush(void*& dst, size_t dstlen)
 }
 
 
-void gzip_decompressor::close()
+void gzip_decompressor::close() noexcept
 {
     ptr_.reset();
 }
 
 
-void gzip_decompressor::swap(gzip_decompressor& rhs)
+void gzip_decompressor::swap(gzip_decompressor& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(ptr_, rhs.ptr_);

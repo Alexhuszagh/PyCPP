@@ -68,7 +68,7 @@ struct sha1_context
 /*
  *  Hash a single 512-bit block. This is the core of the algorithm.
  */
-static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
+static void sha1_transform(uint32_t state[5], const uint8_t buffer[64]) noexcept
 {
     uint32_t a, b, c, d, e;
     char64_union block[1];  /* use array to appear as a pointer */
@@ -185,7 +185,7 @@ static void sha1_transform(uint32_t state[5], const uint8_t buffer[64])
 /**
  *  \brief Initialize SHA1 context.
  */
-static void sha1_init(sha1_context* ctx)
+static void sha1_init(sha1_context* ctx) noexcept
 {
     ctx->state[0] = 0x67452301;
     ctx->state[1] = 0xefcdab89;
@@ -199,7 +199,7 @@ static void sha1_init(sha1_context* ctx)
 /**
  *  \brief Update hash with data.
  */
-static void sha1_update(void* ptr, const void* buf, size_t len)
+static void sha1_update(void* ptr, const void* buf, size_t len) noexcept
 {
     auto* ctx = (sha1_context*) ptr;
     auto* data = (const uint8_t*) buf;
@@ -227,7 +227,7 @@ static void sha1_update(void* ptr, const void* buf, size_t len)
 /**
  *  \brief Add padding and return the message digest.
  */
-static void sha1_final(void* ptr, void* buf)
+static void sha1_final(void* ptr, void* buf) noexcept
 {
     auto* ctx = (sha1_context*) ptr;
     auto* digest = (uint8_t*) buf;
@@ -286,19 +286,19 @@ sha1_hash::sha1_hash(const string_wrapper& str):
 }
 
 
-sha1_hash::~sha1_hash()
+sha1_hash::~sha1_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void sha1_hash::update(const void* src, size_t srclen)
+void sha1_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, sha1_update);
 }
 
 
-void sha1_hash::update(const string_wrapper& str)
+void sha1_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -329,6 +329,13 @@ secure_string sha1_hash::hexdigest() const
 {
     sha1_context copy = *ctx;
     return hash_hexdigest(&copy, SHA1_HASH_SIZE, sha1_final);
+}
+
+
+void sha1_hash::swap(sha1_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
 }
 
 // CLEANUP

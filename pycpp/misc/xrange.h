@@ -37,101 +37,110 @@ struct xrange_iterator: iterator<random_access_iterator_tag, T>
 
     // MEMBER FUNCTIONS
     // ----------------
-    xrange_iterator(T value = 0, T step = 1);
-    xrange_iterator(const xrange_iterator&) = default;
-    xrange_iterator& operator=(const xrange_iterator&) = default;
-    xrange_iterator(xrange_iterator&&) = default;
-    xrange_iterator& operator=(xrange_iterator&&) = default;
+    xrange_iterator(T value = 0, T step = 1) noexcept;
+    xrange_iterator(const xrange_iterator&) noexcept = default;
+    xrange_iterator& operator=(const xrange_iterator&) noexcept = default;
+    xrange_iterator(xrange_iterator&&) noexcept = default;
+    xrange_iterator& operator=(xrange_iterator&&) noexcept = default;
 
     // RELATIONAL OPERATORS
-    bool operator==(const self_t&) const;
-    bool operator!=(const self_t&) const;
-    bool operator<(const self_t&) const;
-    bool operator<=(const self_t&) const;
-    bool operator>(const self_t&) const;
-    bool operator>=(const self_t&) const;
+    bool operator==(const self_t&) const noexcept;
+    bool operator!=(const self_t&) const noexcept;
+    bool operator<(const self_t&) const noexcept;
+    bool operator<=(const self_t&) const noexcept;
+    bool operator>(const self_t&) const noexcept;
+    bool operator>=(const self_t&) const noexcept;
 
     // INCREMENTORS
-    self_t& operator++();
-    self_t operator++(int);
-    self_t& operator--();
-    self_t operator--(int);
-    self_t& operator+=(difference_type);
-    self_t& operator-=(difference_type);
-    self_t operator+(difference_type);
-    self_t operator-(difference_type);
-    difference_type operator-(const self_t&);
-    reference operator[](difference_type) const;
+    self_t& operator++() noexcept;
+    self_t operator++(int) noexcept;
+    self_t& operator--() noexcept;
+    self_t operator--(int) noexcept;
+    self_t& operator+=(difference_type) noexcept;
+    self_t& operator-=(difference_type) noexcept;
+    self_t operator+(difference_type) noexcept;
+    self_t operator-(difference_type) noexcept;
+    difference_type operator-(const self_t&) noexcept;
+    reference operator[](difference_type) const noexcept;
 
     // DEREFERENCE
-    reference operator*();
-    const_reference operator*() const;
-    pointer operator->();
-    const_pointer operator->() const;
+    reference operator*() noexcept;
+    const_reference operator*() const noexcept;
+    pointer operator->() noexcept;
+    const_pointer operator->() const noexcept;
 
     // OTHER
-    void swap(self_t&);
+    void swap(self_t&) noexcept;
 
 private:
+    static_assert(is_arithmetic<T>::value, "xrange must use numeric types.");
+
     T value = 0;
     T step = 1;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable<xrange_iterator<T>>: is_relocatable<T>
+{};
 
 // DEFINITION
 // ----------
 
 
 template <typename T>
-xrange_iterator<T>::xrange_iterator(T value, T step):
+xrange_iterator<T>::xrange_iterator(T value, T step) noexcept:
     value(value),
     step(step)
 {}
 
 
 template <typename T>
-bool xrange_iterator<T>::operator==(const self_t& rhs) const
+bool xrange_iterator<T>::operator==(const self_t& rhs) const noexcept
 {
     return value == rhs.value;
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator!=(const self_t& rhs) const
+bool xrange_iterator<T>::operator!=(const self_t& rhs) const noexcept
 {
     return ordering::not_equal_to(*this, rhs);
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator<(const self_t& rhs) const
+bool xrange_iterator<T>::operator<(const self_t& rhs) const noexcept
 {
     return value < rhs.value;
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator<=(const self_t& rhs) const
+bool xrange_iterator<T>::operator<=(const self_t& rhs) const noexcept
 {
     return ordering::less_equal(*this, rhs);
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator>(const self_t& rhs) const
+bool xrange_iterator<T>::operator>(const self_t& rhs) const noexcept
 {
     return ordering::greater(*this, rhs);
 }
 
 
 template <typename T>
-bool xrange_iterator<T>::operator>=(const self_t& rhs) const
+bool xrange_iterator<T>::operator>=(const self_t& rhs) const noexcept
 {
     return ordering::greater_equal(*this, rhs);
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator++() -> self_t&
+auto xrange_iterator<T>::operator++() noexcept -> self_t&
 {
     value += step;
     return *this;
@@ -139,7 +148,7 @@ auto xrange_iterator<T>::operator++() -> self_t&
 
 
 template <typename T>
-auto xrange_iterator<T>::operator++(int) -> self_t
+auto xrange_iterator<T>::operator++(int) noexcept -> self_t
 {
     self_t copy(*this);
     operator++();
@@ -148,7 +157,7 @@ auto xrange_iterator<T>::operator++(int) -> self_t
 
 
 template <typename T>
-auto xrange_iterator<T>::operator--() -> self_t&
+auto xrange_iterator<T>::operator--() noexcept -> self_t&
 {
     value -= step;
     return *this;
@@ -156,7 +165,7 @@ auto xrange_iterator<T>::operator--() -> self_t&
 
 
 template <typename T>
-auto xrange_iterator<T>::operator--(int) -> self_t
+auto xrange_iterator<T>::operator--(int) noexcept -> self_t
 {
     self_t copy(*this);
     operator--();
@@ -165,7 +174,7 @@ auto xrange_iterator<T>::operator--(int) -> self_t
 
 
 template <typename T>
-auto xrange_iterator<T>::operator+=(difference_type n) -> self_t&
+auto xrange_iterator<T>::operator+=(difference_type n) noexcept -> self_t&
 {
     value += step * n;
     return *this;
@@ -173,7 +182,7 @@ auto xrange_iterator<T>::operator+=(difference_type n) -> self_t&
 
 
 template <typename T>
-auto xrange_iterator<T>::operator-=(difference_type n) -> self_t&
+auto xrange_iterator<T>::operator-=(difference_type n) noexcept -> self_t&
 {
     value -= step * n;
     return *this;
@@ -181,7 +190,7 @@ auto xrange_iterator<T>::operator-=(difference_type n) -> self_t&
 
 
 template <typename T>
-auto xrange_iterator<T>::operator+(difference_type n) -> self_t
+auto xrange_iterator<T>::operator+(difference_type n) noexcept -> self_t
 {
     self_t copy(*this);
     copy += n;
@@ -190,7 +199,7 @@ auto xrange_iterator<T>::operator+(difference_type n) -> self_t
 
 
 template <typename T>
-auto xrange_iterator<T>::operator-(difference_type n) -> self_t
+auto xrange_iterator<T>::operator-(difference_type n) noexcept -> self_t
 {
     self_t copy(*this);
     copy -= n;
@@ -199,52 +208,53 @@ auto xrange_iterator<T>::operator-(difference_type n) -> self_t
 
 
 template <typename T>
-auto xrange_iterator<T>::operator-(const self_t& rhs) -> difference_type
+auto xrange_iterator<T>::operator-(const self_t& rhs) noexcept -> difference_type
 {
     return (value - rhs.value) / step;
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator[](difference_type n) const -> reference
+auto xrange_iterator<T>::operator[](difference_type n) const noexcept -> reference
 {
     return *(*this + n);
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator*() -> reference
+auto xrange_iterator<T>::operator*() noexcept -> reference
 {
     return value;
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator*() const -> const_reference
+auto xrange_iterator<T>::operator*() const noexcept -> const_reference
 {
     return value;
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator->() -> pointer
+auto xrange_iterator<T>::operator->() noexcept -> pointer
 {
     return &value;
 }
 
 
 template <typename T>
-auto xrange_iterator<T>::operator->() const -> const_pointer
+auto xrange_iterator<T>::operator->() const noexcept -> const_pointer
 {
     return &value;
 }
 
 
 template <typename T>
-void xrange_iterator<T>::swap(self_t& rhs)
+void xrange_iterator<T>::swap(self_t& rhs) noexcept
 {
-    PYCPP_NAMESPACE::swap(value, rhs.value);
-    PYCPP_NAMESPACE::swap(step, rhs.step);
+    using PYCPP_NAMESPACE::swap;
+    swap(value, rhs.value);
+    swap(step, rhs.step);
 }
 
 

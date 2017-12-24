@@ -54,7 +54,7 @@ struct lzma_compressor_impl: filter_impl<lzma_stream>
 {
     using base = filter_impl<lzma_stream>;
     lzma_compressor_impl(int level = LZMA_PRESET_DEFAULT);
-    ~lzma_compressor_impl();
+    ~lzma_compressor_impl() noexcept;
 
     virtual void call();
     bool flush(void*& dst, size_t dstlen);
@@ -67,11 +67,11 @@ lzma_compressor_impl::lzma_compressor_impl(int level)
 {
     stream = LZMA_STREAM_INIT;
     status = LZMA_OK;
-    CHECK(lzma_easy_encoder(&stream, level, LZMA_CHECK_CRC64));
+    PYCPP_CHECK(lzma_easy_encoder(&stream, level, LZMA_CHECK_CRC64));
 }
 
 
-lzma_compressor_impl::~lzma_compressor_impl()
+lzma_compressor_impl::~lzma_compressor_impl() noexcept
 {
     lzma_end(&stream);
 }
@@ -117,7 +117,7 @@ struct lzma_decompressor_impl: filter_impl<lzma_stream>
     static const uint32_t flags = LZMA_TELL_ANY_CHECK | LZMA_TELL_NO_CHECK;
 
     lzma_decompressor_impl();
-    ~lzma_decompressor_impl();
+    ~lzma_decompressor_impl() noexcept;
 
     virtual void call();
     bool flush(void*& dst, size_t dstlen);
@@ -129,11 +129,11 @@ lzma_decompressor_impl::lzma_decompressor_impl()
 {
     stream = LZMA_STREAM_INIT;
     status = LZMA_OK;
-    CHECK(lzma_stream_decoder(&stream, memlimit, flags));
+    PYCPP_CHECK(lzma_stream_decoder(&stream, memlimit, flags));
 }
 
 
-lzma_decompressor_impl::~lzma_decompressor_impl()
+lzma_decompressor_impl::~lzma_decompressor_impl() noexcept
 {
     lzma_end(&stream);
 }
@@ -174,19 +174,19 @@ lzma_compressor::lzma_compressor(int level):
 {}
 
 
-lzma_compressor::lzma_compressor(lzma_compressor&& rhs):
+lzma_compressor::lzma_compressor(lzma_compressor&& rhs) noexcept:
     ptr_(move(rhs.ptr_))
 {}
 
 
-lzma_compressor & lzma_compressor::operator=(lzma_compressor&& rhs)
+lzma_compressor& lzma_compressor::operator=(lzma_compressor&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-lzma_compressor::~lzma_compressor()
+lzma_compressor::~lzma_compressor() noexcept
 {}
 
 
@@ -202,13 +202,13 @@ bool lzma_compressor::flush(void*& dst, size_t dstlen)
 }
 
 
-void lzma_compressor::close()
+void lzma_compressor::close() noexcept
 {
     ptr_.reset();
 }
 
 
-void lzma_compressor::swap(lzma_compressor& rhs)
+void lzma_compressor::swap(lzma_compressor& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(ptr_, rhs.ptr_);
@@ -220,19 +220,19 @@ lzma_decompressor::lzma_decompressor():
 {}
 
 
-lzma_decompressor::lzma_decompressor(lzma_decompressor&& rhs):
+lzma_decompressor::lzma_decompressor(lzma_decompressor&& rhs) noexcept:
     ptr_(move(rhs.ptr_))
 {}
 
 
-lzma_decompressor & lzma_decompressor::operator=(lzma_decompressor&& rhs)
+lzma_decompressor& lzma_decompressor::operator=(lzma_decompressor&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-lzma_decompressor::~lzma_decompressor()
+lzma_decompressor::~lzma_decompressor() noexcept
 {}
 
 
@@ -248,13 +248,13 @@ bool lzma_decompressor::flush(void*& dst, size_t dstlen)
 }
 
 
-void lzma_decompressor::close()
+void lzma_decompressor::close() noexcept
 {
     ptr_.reset();
 }
 
 
-void lzma_decompressor::swap(lzma_decompressor& rhs)
+void lzma_decompressor::swap(lzma_decompressor& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(ptr_, rhs.ptr_);
@@ -270,11 +270,11 @@ void lzma_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
     static lzma_check check = LZMA_CHECK_CRC64;
     size_t dstpos = 0;
     if (srclen) {
-        CHECK(lzma_easy_buffer_encode(level, check, nullptr, (const uint8_t*) src, srclen, (uint8_t*) dst, &dstpos, dstlen));
+        PYCPP_CHECK(lzma_easy_buffer_encode(level, check, nullptr, (const uint8_t*) src, srclen, (uint8_t*) dst, &dstpos, dstlen));
     } else {
         // compression no bytes
         char c = 0;
-        CHECK(lzma_easy_buffer_encode(level, check, nullptr, (const uint8_t*) &c, 0, (uint8_t*) dst, &dstpos, dstlen));
+        PYCPP_CHECK(lzma_easy_buffer_encode(level, check, nullptr, (const uint8_t*) &c, 0, (uint8_t*) dst, &dstpos, dstlen));
     }
 
     // update pointers
@@ -304,11 +304,11 @@ void lzma_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
     size_t srcpos = 0;
     size_t dstpos = 0;
     if (srclen) {
-        CHECK(lzma_stream_buffer_decode(&memlimit, 0, nullptr, (const uint8_t*) src, &srcpos, srclen, (uint8_t*) dst, &dstpos, dstlen));
+        PYCPP_CHECK(lzma_stream_buffer_decode(&memlimit, 0, nullptr, (const uint8_t*) src, &srcpos, srclen, (uint8_t*) dst, &dstpos, dstlen));
     } else {
         // compression no bytes
         char c = 0;
-        CHECK(lzma_stream_buffer_decode(&memlimit, 0, nullptr, (const uint8_t*) &c, &srcpos, 0, (uint8_t*) dst, &dstpos, dstlen));
+        PYCPP_CHECK(lzma_stream_buffer_decode(&memlimit, 0, nullptr, (const uint8_t*) &c, &srcpos, 0, (uint8_t*) dst, &dstpos, dstlen));
     }
 
     // update pointers

@@ -15,6 +15,16 @@ PYCPP_USING_NAMESPACE
 // -----
 
 
+TEST(detect_compression, is_relocatable)
+{
+    static_assert(is_relocatable<is_bz2>::value, "");
+    static_assert(is_relocatable<is_zlib>::value, "");
+    static_assert(is_relocatable<is_gzip>::value, "");
+    static_assert(is_relocatable<is_lzma>::value, "");
+    static_assert(is_relocatable<is_blosc>::value, "");
+}
+
+
 TEST(detect_compression, is_bz2)
 {
     std::string buffer("\x42\x5a\x68\x39\x31\x41\x59\x26\x53\x59", 10);

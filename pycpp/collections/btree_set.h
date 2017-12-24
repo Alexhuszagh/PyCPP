@@ -231,4 +231,25 @@ inline void swap(btree_multiset<K, C, A, N>& x, btree_multiset<K, C, A, N>& y)
     x.swap(y);
 }
 
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename Compare,
+    typename Alloc,
+    int TargetNodeSize
+>
+struct is_relocatable<btree_set<Key, Compare, Alloc, TargetNodeSize>>: true_type
+{};
+
+template <
+    typename Key,
+    typename Compare,
+    typename Alloc,
+    int TargetNodeSize
+>
+struct is_relocatable<btree_multiset<Key, Compare, Alloc, TargetNodeSize>>: true_type
+{};
+
 PYCPP_END_NAMESPACE

@@ -94,7 +94,7 @@ using std::false_type;
 // Convertible
 using std::is_convertible;
 
-// Constructable
+// Constructible
 using std::is_constructible;
 using std::is_trivially_constructible;
 using std::is_nothrow_constructible;
@@ -159,12 +159,29 @@ using is_nothrow_swappable = is_nothrow_swappable_with<T, T>;
 // Inspired by Working Group paper P0023R0.
 template <typename T>
 struct is_relocatable: bool_constant<
+        // Empty classes rely on global, or no state,
+        // and therefore can always be relocated.
+        is_empty<T>::value ||
+        // Trivially copyable classes are guaranteed to be copyable
+        // via `memcpy`.
         is_trivially_copyable<T>::value ||
+        // Trivially move-constructible classes should also satisfy
+        // trivially copyable types.
         is_trivially_move_constructible<T>::value
     >
 {};
 
-// Destructable
+// Virtual classes using virtual tables **are** relocatable, since
+// they effectively contain a virtual table with a pointer to
+// a static table containing the virtual function pointers.
+// Almost every C++ virtual implementation uses vtables, however,
+// it is not standardized, so we assume they are **not** copyable.
+// If need be, specialize this to allow relocatable virtual classes,
+// using book-keeping to track compilers using vtables.
+template <typename T>
+using virtual_is_relocatable = false_type;
+
+// Destructible
 using std::is_destructible;
 using std::is_trivially_destructible;
 using std::is_nothrow_destructible;

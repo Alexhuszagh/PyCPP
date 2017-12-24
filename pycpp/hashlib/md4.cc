@@ -88,7 +88,7 @@ struct md4_context
  * This processes one or more 64-byte data blocks, but does NOT update the bit
  * counters.  There are no alignment requirements.
  */
-static const void* body(md4_context *ctx, const void* data, uint32_t size)
+static const void* body(md4_context *ctx, const void* data, uint32_t size) noexcept
 {
     const uint8_t *ptr;
     uint32_t a, b, c, d;
@@ -179,7 +179,7 @@ static const void* body(md4_context *ctx, const void* data, uint32_t size)
 }
 
 
-void md4_init(md4_context *ctx)
+void md4_init(md4_context *ctx) noexcept
 {
     ctx->a = 0x67452301;
     ctx->b = 0xefcdab89;
@@ -191,7 +191,7 @@ void md4_init(md4_context *ctx)
 }
 
 
-void md4_update(void *ptr, const void *data, size_t size)
+void md4_update(void *ptr, const void *data, size_t size) noexcept
 {
     auto* ctx = reinterpret_cast<md4_context*>(ptr);
 
@@ -235,7 +235,7 @@ void md4_update(void *ptr, const void *data, size_t size)
     (dst)[3] = (unsigned char)((src) >> 24);
 
 
-void md4_final(void *ptr, void* buf)
+void md4_final(void *ptr, void* buf) noexcept
 {
     auto* ctx = (md4_context*) ptr;
     auto* result = (uint8_t*) buf;
@@ -299,19 +299,19 @@ md4_hash::md4_hash(const string_wrapper& str):
 }
 
 
-md4_hash::~md4_hash()
+md4_hash::~md4_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void md4_hash::update(const void* src, size_t srclen)
+void md4_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, md4_update);
 }
 
 
-void md4_hash::update(const string_wrapper& str)
+void md4_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -342,6 +342,13 @@ secure_string md4_hash::hexdigest() const
 {
     md4_context copy = *ctx;
     return hash_hexdigest(&copy, MD4_HASH_SIZE, md4_final);
+}
+
+
+void md4_hash::swap(md4_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
 }
 
 // CLEANUP

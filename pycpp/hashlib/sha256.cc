@@ -269,19 +269,19 @@ sha2_224_hash::sha2_224_hash(const string_wrapper& str):
 }
 
 
-sha2_224_hash::~sha2_224_hash()
+sha2_224_hash::~sha2_224_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void sha2_224_hash::update(const void* src, size_t srclen)
+void sha2_224_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, sha256_update);
 }
 
 
-void sha2_224_hash::update(const string_wrapper& str)
+void sha2_224_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -315,6 +315,13 @@ secure_string sha2_224_hash::hexdigest() const
 }
 
 
+void sha2_224_hash::swap(sha2_224_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
+}
+
+
 sha2_256_hash::sha2_256_hash():
     ctx(make_unique<sha2_256_context>())
 {
@@ -338,19 +345,19 @@ sha2_256_hash::sha2_256_hash(const string_wrapper& str):
 }
 
 
-sha2_256_hash::~sha2_256_hash()
+sha2_256_hash::~sha2_256_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void sha2_256_hash::update(const void* src, size_t srclen)
+void sha2_256_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, sha256_update);
 }
 
 
-void sha2_256_hash::update(const string_wrapper& str)
+void sha2_256_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -381,6 +388,13 @@ secure_string sha2_256_hash::hexdigest() const
 {
     sha2_256_context copy = *ctx;
     return hash_hexdigest(&copy, SHA256_HASH_SIZE, sha256_final);
+}
+
+
+void sha2_256_hash::swap(sha2_256_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
 }
 
 PYCPP_END_NAMESPACE

@@ -120,7 +120,7 @@ struct lru_cache
 public:
     // MEMBER TYPES
     // ------------
-    using self = lru_cache<Key, Value, Hash, Pred, Alloc, List, Map>;
+    using self_t = lru_cache<Key, Value, Hash, Pred, Alloc, List, Map>;
     using key_type = Key;
     using mapped_type = Value;
     using value_type = pair<const key_type, mapped_type>;
@@ -134,17 +134,17 @@ public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     using list_type = List<value_type, allocator_type>;
-    using map_type = lru_detail::map<self, Map>;
+    using map_type = lru_detail::map<self_t, Map>;
     using iterator = lru_detail::iterator<typename list_type::iterator>;
     using const_iterator = lru_detail::const_iterator<typename list_type::iterator>;
 
     // MEMBER FUNCTIONS
     // ----------------
     lru_cache(int cache_size = 128, const allocator_type& alloc = allocator_type());
-    lru_cache(const self&, const allocator_type& alloc = allocator_type());
-    self& operator=(const self&);
-    lru_cache(self&&, const allocator_type& alloc = allocator_type());
-    self& operator=(self&&);
+    lru_cache(const self_t&, const allocator_type& alloc = allocator_type());
+    self_t& operator=(const self_t&);
+    lru_cache(self_t&&, const allocator_type& alloc = allocator_type());
+    self_t& operator=(self_t&&);
 
     // CAPACITY
     size_type size() const noexcept;
@@ -181,7 +181,7 @@ public:
     size_type erase(const key_type&);
     iterator erase(const_iterator, const_iterator);
     void clear();
-    void swap(self&);
+    void swap(self_t&);
 
     // BUCKET
     size_type bucket_count() const noexcept;
@@ -216,6 +216,24 @@ protected:
     size_type cache_size_;
 };
 
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename Value,
+    typename Hash,
+    typename Pred,
+    typename Alloc,
+    template <typename, typename> class List,
+    template <typename, typename, typename, typename, typename> class Map
+>
+struct is_relocatable<lru_cache<Key, Value, Hash, Pred, Alloc, List, Map>>: bool_constant<
+        is_relocatable<typename lru_cache<Key, Value, Hash, Pred, Alloc, List, Map>::list_type>::value &&
+        is_relocatable<typename lru_cache<Key, Value, Hash, Pred, Alloc, List, Map>::map_type>::value
+    >
+{};
+
 // IMPLEMENTATION
 // --------------
 
@@ -228,7 +246,7 @@ lru_cache<K, V, H, P, A, L, M>::lru_cache(int cache_size, const allocator_type& 
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-lru_cache<K, V, H, P, A, L, M>::lru_cache(const self& rhs, const allocator_type& alloc):
+lru_cache<K, V, H, P, A, L, M>::lru_cache(const self_t& rhs, const allocator_type& alloc):
     list_(rhs.list_, alloc),
     map_(alloc),
     cache_size_(rhs.cache_size_)
@@ -240,7 +258,7 @@ lru_cache<K, V, H, P, A, L, M>::lru_cache(const self& rhs, const allocator_type&
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::operator=(const self& rhs) -> self&
+auto lru_cache<K, V, H, P, A, L, M>::operator=(const self_t& rhs) -> self_t&
 {
     if (this != &rhs) {
         clear();
@@ -257,7 +275,7 @@ auto lru_cache<K, V, H, P, A, L, M>::operator=(const self& rhs) -> self&
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-lru_cache<K, V, H, P, A, L, M>::lru_cache(self&& rhs, const allocator_type& alloc):
+lru_cache<K, V, H, P, A, L, M>::lru_cache(self_t&& rhs, const allocator_type& alloc):
     list_(alloc),
     map_(alloc)
 {
@@ -266,7 +284,7 @@ lru_cache<K, V, H, P, A, L, M>::lru_cache(self&& rhs, const allocator_type& allo
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-auto lru_cache<K, V, H, P, A, L, M>::operator=(self&& rhs) -> self&
+auto lru_cache<K, V, H, P, A, L, M>::operator=(self_t&& rhs) -> self_t&
 {
     swap(rhs);
     return *this;
@@ -524,10 +542,9 @@ void lru_cache<K, V, H, P, A, L, M>::clear()
 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
-void lru_cache<K, V, H, P, A, L, M>::swap(self& rhs)
+void lru_cache<K, V, H, P, A, L, M>::swap(self_t& rhs)
 {
     using PYCPP_NAMESPACE::swap;
-
     swap(list_, rhs.list_);
     swap(map_, rhs.map_);
     swap(cache_size_, rhs.cache_size_);

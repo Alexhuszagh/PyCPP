@@ -97,7 +97,7 @@ struct bz2_compressor_impl: filter_impl<bz_stream>
     static const int verbosity = BZ2_VERBOSITY;
 
     bz2_compressor_impl(int block_size = BZ2_BLOCK_SIZE);
-    ~bz2_compressor_impl();
+    ~bz2_compressor_impl() noexcept;
 
     virtual void call() override;
     bool flush(void*& dst, size_t dstlen);
@@ -111,11 +111,11 @@ bz2_compressor_impl::bz2_compressor_impl(int block_size)
     stream.bzalloc = nullptr;
     stream.bzfree = nullptr;
     stream.opaque = nullptr;
-    CHECK(BZ2_bzCompressInit(&stream, block_size, verbosity, small));
+    PYCPP_CHECK(BZ2_bzCompressInit(&stream, block_size, verbosity, small));
 }
 
 
-bz2_compressor_impl::~bz2_compressor_impl()
+bz2_compressor_impl::~bz2_compressor_impl() noexcept
 {
     BZ2_bzCompressEnd(&stream);
 }
@@ -161,7 +161,7 @@ struct bz2_decompressor_impl: filter_impl<bz_stream>
     static const int verbosity = BZ2_VERBOSITY;
 
     bz2_decompressor_impl();
-    ~bz2_decompressor_impl();
+    ~bz2_decompressor_impl() noexcept;
 
     virtual void call();
     bool flush(void*& dst, size_t dstlen);
@@ -175,11 +175,11 @@ bz2_decompressor_impl::bz2_decompressor_impl()
     stream.bzalloc = nullptr;
     stream.bzfree = nullptr;
     stream.opaque = nullptr;
-    CHECK(BZ2_bzDecompressInit(&stream, verbosity, small));
+    PYCPP_CHECK(BZ2_bzDecompressInit(&stream, verbosity, small));
 }
 
 
-bz2_decompressor_impl::~bz2_decompressor_impl()
+bz2_decompressor_impl::~bz2_decompressor_impl() noexcept
 {
     BZ2_bzDecompressEnd(&stream);
 }
@@ -212,19 +212,19 @@ bz2_compressor::bz2_compressor(int compress_level):
 {}
 
 
-bz2_compressor::bz2_compressor(bz2_compressor&& rhs):
+bz2_compressor::bz2_compressor(bz2_compressor&& rhs) noexcept:
     ptr_(move(rhs.ptr_))
 {}
 
 
-bz2_compressor& bz2_compressor::operator=(bz2_compressor&& rhs)
+bz2_compressor& bz2_compressor::operator=(bz2_compressor&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-bz2_compressor::~bz2_compressor()
+bz2_compressor::~bz2_compressor() noexcept
 {}
 
 
@@ -240,13 +240,13 @@ bool bz2_compressor::flush(void*& dst, size_t dstlen)
 }
 
 
-void bz2_compressor::close()
+void bz2_compressor::close() noexcept
 {
     ptr_.reset();
 }
 
 
-void bz2_compressor::swap(bz2_compressor& rhs)
+void bz2_compressor::swap(bz2_compressor& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(ptr_, rhs.ptr_);
@@ -258,19 +258,19 @@ bz2_decompressor::bz2_decompressor():
 {}
 
 
-bz2_decompressor::bz2_decompressor(bz2_decompressor&& rhs):
+bz2_decompressor::bz2_decompressor(bz2_decompressor&& rhs) noexcept:
     ptr_(move(rhs.ptr_))
 {}
 
 
-bz2_decompressor & bz2_decompressor::operator=(bz2_decompressor&& rhs)
+bz2_decompressor & bz2_decompressor::operator=(bz2_decompressor&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-bz2_decompressor::~bz2_decompressor()
+bz2_decompressor::~bz2_decompressor() noexcept
 {}
 
 
@@ -286,13 +286,13 @@ bool bz2_decompressor::flush(void*& dst, size_t dstlen)
 }
 
 
-void bz2_decompressor::close()
+void bz2_decompressor::close() noexcept
 {
     ptr_.reset();
 }
 
 
-void bz2_decompressor::swap(bz2_decompressor& rhs)
+void bz2_decompressor::swap(bz2_decompressor& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(ptr_, rhs.ptr_);
@@ -312,11 +312,11 @@ void bz2_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
     unsigned int srclen_ = srclen;
     unsigned int dstlen_ = dstlen;
     if (srclen) {
-        CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) src, srclen_, block_size, verbosity, work_factor));
+        PYCPP_CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) src, srclen_, block_size, verbosity, work_factor));
     } else {
         // compression no bytes
         char c = 0;
-        CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) &c, 0, block_size, verbosity, work_factor));
+        PYCPP_CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) &c, 0, block_size, verbosity, work_factor));
     }
 
     // update pointers
@@ -349,11 +349,11 @@ void bz2_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, 
     unsigned int srclen_ = srclen;
     unsigned int dstlen_ = dstlen;
     if (srclen) {
-        CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) src, srclen_, small, verbosity));
+        PYCPP_CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) src, srclen_, small, verbosity));
     } else {
         // compression no bytes
         char c = 0;
-        CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) &c, 0, small, verbosity));
+        PYCPP_CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) &c, 0, small, verbosity));
     }
 
     // update pointers

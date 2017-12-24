@@ -11,7 +11,7 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-static bool detect_header(const string_wrapper& header, const magic_bytes& magic)
+static bool detect_header(const string_wrapper& header, const magic_bytes& magic) noexcept
 {
     if (header.size() < magic.front().size()) {
         return false;

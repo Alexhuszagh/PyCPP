@@ -33,14 +33,14 @@ struct zlib_compressor
 {
 public:
     zlib_compressor(int compress_level = 6);
-    zlib_compressor(zlib_compressor&&);
-    zlib_compressor & operator=(zlib_compressor&&);
-    ~zlib_compressor();
+    zlib_compressor(zlib_compressor&&) noexcept;
+    zlib_compressor & operator=(zlib_compressor&&) noexcept;
+    ~zlib_compressor() noexcept;
 
     compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
-    void close();
-    void swap(zlib_compressor&);
+    void close() noexcept;
+    void swap(zlib_compressor&) noexcept;
 
 private:
     unique_ptr<zlib_compressor_impl> ptr_;
@@ -54,18 +54,29 @@ struct zlib_decompressor
 {
 public:
     zlib_decompressor();
-    zlib_decompressor(zlib_decompressor&&);
-    zlib_decompressor & operator=(zlib_decompressor&&);
-    ~zlib_decompressor();
+    zlib_decompressor(zlib_decompressor&&) noexcept;
+    zlib_decompressor & operator=(zlib_decompressor&&) noexcept;
+    ~zlib_decompressor() noexcept;
 
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
-    void close();
-    void swap(zlib_decompressor&);
+    void close() noexcept;
+    void swap(zlib_decompressor&) noexcept;
 
 private:
     unique_ptr<zlib_decompressor_impl> ptr_;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<zlib_compressor>: is_relocatable<unique_ptr<zlib_compressor_impl>>
+{};
+
+template <>
+struct is_relocatable<zlib_decompressor>: is_relocatable<unique_ptr<zlib_decompressor_impl>>
+{};
 
 // FUNCTIONS
 // ---------

@@ -33,14 +33,14 @@ struct bz2_compressor
 {
 public:
     bz2_compressor(int compress_level = 9);
-    bz2_compressor(bz2_compressor&&);
-    bz2_compressor & operator=(bz2_compressor&&);
-    ~bz2_compressor();
+    bz2_compressor(bz2_compressor&&) noexcept;
+    bz2_compressor & operator=(bz2_compressor&&) noexcept;
+    ~bz2_compressor() noexcept;
 
     compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
-    void close();
-    void swap(bz2_compressor&);
+    void close() noexcept;
+    void swap(bz2_compressor&) noexcept;
 
 private:
     unique_ptr<bz2_compressor_impl> ptr_;
@@ -54,18 +54,29 @@ struct bz2_decompressor
 {
 public:
     bz2_decompressor();
-    bz2_decompressor(bz2_decompressor&&);
-    bz2_decompressor & operator=(bz2_decompressor&&);
-    ~bz2_decompressor();
+    bz2_decompressor(bz2_decompressor&&) noexcept;
+    bz2_decompressor & operator=(bz2_decompressor&&) noexcept;
+    ~bz2_decompressor() noexcept;
 
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
-    void close();
-    void swap(bz2_decompressor&);
+    void close() noexcept;
+    void swap(bz2_decompressor&) noexcept;
 
 private:
     unique_ptr<bz2_decompressor_impl> ptr_;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<bz2_compressor>: is_relocatable<unique_ptr<bz2_compressor_impl>>
+{};
+
+template <>
+struct is_relocatable<bz2_decompressor>: is_relocatable<unique_ptr<bz2_decompressor_impl>>
+{};
 
 // FUNCTIONS
 // ---------

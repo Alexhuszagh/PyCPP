@@ -19,7 +19,7 @@ PYCPP_BEGIN_NAMESPACE
 // MACROS
 // ------
 
-#define CHECK(EX) (void)((EX) >= 0 || (throw runtime_error(#EX), 0))
+#define PYCPP_CHECK(EX) (void)((EX) >= 0 || (throw runtime_error(#EX), 0))
 
 // CONSTANTS
 // ---------
@@ -41,22 +41,24 @@ struct filter_impl
     int status;
     Stream stream;
 
-    filter_impl();
+    filter_impl() noexcept;
 
-    void before(void* dst, size_t dstlen);
-    void before(const void* src, size_t srclen, void* dst, size_t dstlen);
-    void after(void*& dst);
-    void after(const void*& src, void*& dst);
+    void before(void* dst, size_t dstlen) noexcept;
+    void before(const void* src, size_t srclen, void* dst, size_t dstlen) noexcept;
+    void after(void*& dst) noexcept;
+    void after(const void*& src, void*& dst) noexcept;
 
     virtual void call() = 0;
-    compression_status check_status(const void* src, void* dst, int stream_end) const;
+    compression_status check_status(const void* src, void* dst, int stream_end) const noexcept;
     template <typename Cb> bool flush(void*& dst, size_t dstlen, Cb cb);
     compression_status operator()(const void*& src, size_t srclen, void*& dst, size_t dstlen, int stream_end);
 };
 
+// IMPLEMENTATION
+// --------------
 
 template <typename S>
-filter_impl<S>::filter_impl()
+filter_impl<S>::filter_impl() noexcept
 {
     stream.avail_in = 0;
     stream.next_in = nullptr;
@@ -66,34 +68,35 @@ filter_impl<S>::filter_impl()
 
 
 template <typename S>
-void filter_impl<S>::before(void* dst, size_t dstlen)
+void filter_impl<S>::before(void* dst, size_t dstlen) noexcept
 {
     stream.next_in = nullptr;
     stream.avail_in = 0;
-    stream.next_out = (out_type) dst;
+    stream.next_out = reinterpret_cast<out_type>(dst);
     stream.avail_out = dstlen;
 }
 
 
 template <typename S>
-void filter_impl<S>::before(const void* src, size_t srclen, void* dst, size_t dstlen)
+void filter_impl<S>::before(const void* src, size_t srclen, void* dst, size_t dstlen) noexcept
 {
-    stream.next_in = (in_type) src;
+    // use C-style cast, since bzip2 uses a non-const input type.
+    stream.next_in = (in_type) (src);
     stream.avail_in = srclen;
-    stream.next_out = (out_type) dst;
+    stream.next_out = reinterpret_cast<out_type>(dst);
     stream.avail_out = dstlen;
 }
 
 
 template <typename S>
-void filter_impl<S>::after(void*& dst)
+void filter_impl<S>::after(void*& dst) noexcept
 {
     dst = stream.next_out;
 }
 
 
 template <typename S>
-void filter_impl<S>::after(const void*& src, void*& dst)
+void filter_impl<S>::after(const void*& src, void*& dst) noexcept
 {
     src = stream.next_in;
     dst = stream.next_out;
@@ -101,7 +104,7 @@ void filter_impl<S>::after(const void*& src, void*& dst)
 
 
 template <typename S>
-compression_status filter_impl<S>::check_status(const void* src, void* dst, int stream_end) const
+compression_status filter_impl<S>::check_status(const void* src, void* dst, int stream_end) const noexcept
 {
     if (status == stream_end) {
         return compression_eof;

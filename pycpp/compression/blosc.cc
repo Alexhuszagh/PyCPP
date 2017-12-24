@@ -78,7 +78,7 @@ void blosc_compress(const void*& src, size_t srclen, void* &dst, size_t dstlen)
         char c = 0;
         dstlen_ = blosc_compress_ctx(clevel, doshuffle, typesize, 0, (void*) &c, dst, dstlen, compressor, blocksize, threads);
     }
-    CHECK(dstlen_);
+    PYCPP_CHECK(dstlen_);
 
     // update pointers
     src = ((char*) src) + srclen;
@@ -126,7 +126,7 @@ void blosc_decompress(const void*& src, size_t srclen, void* &dst, size_t dstlen
     } else {
         dstlen_ = 0;
     }
-    CHECK(dstlen_);
+    PYCPP_CHECK(dstlen_);
 
     // update pointers
     src = ((char*) src) + srclen;

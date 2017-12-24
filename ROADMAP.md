@@ -4,14 +4,8 @@
 
     - Specialized `is_relocatable` for a lot of types.
         - Basically everything can be specialized....
-        - cache
-        - cipher
-        - collections
-        - compression
         - csv
         - filesystem
-        - fixed
-        - hashlib
         - intrusive
         - iterator
         - itertools
@@ -20,7 +14,6 @@
         - lexical
         - math
         - memmap
-        - misc
         - multi_index
         - preprocessor
         - random
@@ -29,13 +22,10 @@
         - secure
         - sfinae
         - sql
-        - stl
-            - DO NEXT... (make sure STL containers are relocatable...)
         - stream
         - string
         - windows
         - xml
-
 
     - Get rid of naked new/delete
         - Change to use the global allocator generally speaking...
@@ -44,20 +34,14 @@
             - **HOW** (Pass the allocator always??)
 
     - Add noexcepts everywhere
-        - Compression
         - CSV
         - Filesystem
-        - Fixed
-        - Hashlib
         - Intrusive
         - Iterator
         - Lattice
         - Lexical
         - Math
         - Memmap
-        - Misc
-            - Safe Stdlib
-            - XRange
         - Random
         - Re
         - Runtime

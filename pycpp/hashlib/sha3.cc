@@ -54,7 +54,7 @@ struct sha3_context
 #define ROTL64(qword, n) ((qword) << (n) ^ ((qword) >> (64 - (n))))
 
 
-static void keccak_init(sha3_context* ctx, uint32_t bits)
+static void keccak_init(sha3_context* ctx, uint32_t bits) noexcept
 {
     /* NB: The Keccak capacity parameter = bits * 2 */
     uint32_t rate = 1600 - bits * 2;
@@ -65,25 +65,25 @@ static void keccak_init(sha3_context* ctx, uint32_t bits)
 }
 
 
-void sha3_224_init(sha3_context* ctx)
+void sha3_224_init(sha3_context* ctx) noexcept
 {
     keccak_init(ctx, 224);
 }
 
 
-void sha3_256_init(sha3_context* ctx)
+void sha3_256_init(sha3_context* ctx) noexcept
 {
     keccak_init(ctx, 256);
 }
 
 
-void sha3_384_init(sha3_context* ctx)
+void sha3_384_init(sha3_context* ctx) noexcept
 {
     keccak_init(ctx, 384);
 }
 
 
-void sha3_512_init(sha3_context* ctx)
+void sha3_512_init(sha3_context* ctx) noexcept
 {
     keccak_init(ctx, 512);
 }
@@ -92,7 +92,7 @@ void sha3_512_init(sha3_context* ctx)
 /*
  *  Keccak theta() transformation
  */
-static void keccak_theta(uint64_t *A)
+static void keccak_theta(uint64_t *A) noexcept
 {
     unsigned int x;
     uint64_t C[5], D[5];
@@ -118,7 +118,7 @@ static void keccak_theta(uint64_t *A)
 /*
  *  Keccak pi() transformation
  */
-static void keccak_pi(uint64_t *A)
+static void keccak_pi(uint64_t *A) noexcept
 {
     uint64_t A1;
     A1 = A[1];
@@ -150,7 +150,7 @@ static void keccak_pi(uint64_t *A)
 }
 
 /* Keccak chi() transformation */
-static void keccak_chi(uint64_t *A)
+static void keccak_chi(uint64_t *A) noexcept
 {
     int i;
     for (i = 0; i < 25; i += 5) {
@@ -164,7 +164,7 @@ static void keccak_chi(uint64_t *A)
 }
 
 
-static void sha3_permutation(uint64_t *state)
+static void sha3_permutation(uint64_t *state) noexcept
 {
     int r;
     for (r = 0; r < SHA3_ROUNDS; r++)
@@ -208,7 +208,7 @@ static void sha3_permutation(uint64_t *state)
 /**
  *  The core transformation. Process the specified block of data.
  */
-static void sha3_process_block(uint64_t* hash, const uint64_t* block, size_t block_size)
+static void sha3_process_block(uint64_t* hash, const uint64_t* block, size_t block_size) noexcept
 {
     /* expanded loop */
     hash[ 0] ^= le64toh(block[ 0]);
@@ -257,7 +257,7 @@ static void sha3_process_block(uint64_t* hash, const uint64_t* block, size_t blo
  *  Calculate message hash.
  *  Can be called repeatedly with chunks of the message to be hashed.
  */
-void sha3_update(void* ptr, const void *buf, size_t size)
+void sha3_update(void* ptr, const void *buf, size_t size) noexcept
 {
     auto* ctx = (sha3_context*) ptr;
     auto* msg = (const uint8_t*) buf;
@@ -304,7 +304,7 @@ void sha3_update(void* ptr, const void *buf, size_t size)
 /**
  *  Store calculated hash into the given array.
  */
-void sha3_final(void* ptr, void* buf)
+void sha3_final(void* ptr, void* buf) noexcept
 {
     auto* ctx = (sha3_context*) ptr;
     auto* result = (uint8_t*) buf;
@@ -359,19 +359,19 @@ sha3_224_hash::sha3_224_hash(const string_wrapper& str):
 }
 
 
-sha3_224_hash::~sha3_224_hash()
+sha3_224_hash::~sha3_224_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void sha3_224_hash::update(const void* src, size_t srclen)
+void sha3_224_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, sha3_update);
 }
 
 
-void sha3_224_hash::update(const string_wrapper& str)
+void sha3_224_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -405,6 +405,13 @@ secure_string sha3_224_hash::hexdigest() const
 }
 
 
+void sha3_224_hash::swap(sha3_224_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
+}
+
+
 sha3_256_hash::sha3_256_hash():
     ctx(make_unique<sha3_context>())
 {
@@ -428,19 +435,19 @@ sha3_256_hash::sha3_256_hash(const string_wrapper& str):
 }
 
 
-sha3_256_hash::~sha3_256_hash()
+sha3_256_hash::~sha3_256_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void sha3_256_hash::update(const void* src, size_t srclen)
+void sha3_256_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, sha3_update);
 }
 
 
-void sha3_256_hash::update(const string_wrapper& str)
+void sha3_256_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -474,6 +481,12 @@ secure_string sha3_256_hash::hexdigest() const
 }
 
 
+void sha3_256_hash::swap(sha3_256_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
+}
+
 
 sha3_384_hash::sha3_384_hash():
     ctx(make_unique<sha3_context>())
@@ -498,19 +511,19 @@ sha3_384_hash::sha3_384_hash(const string_wrapper& str):
 }
 
 
-sha3_384_hash::~sha3_384_hash()
+sha3_384_hash::~sha3_384_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void sha3_384_hash::update(const void* src, size_t srclen)
+void sha3_384_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, sha3_update);
 }
 
 
-void sha3_384_hash::update(const string_wrapper& str)
+void sha3_384_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -544,6 +557,13 @@ secure_string sha3_384_hash::hexdigest() const
 }
 
 
+void sha3_384_hash::swap(sha3_384_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
+}
+
+
 sha3_512_hash::sha3_512_hash():
     ctx(make_unique<sha3_context>())
 {
@@ -567,19 +587,19 @@ sha3_512_hash::sha3_512_hash(const string_wrapper& str):
 }
 
 
-sha3_512_hash::~sha3_512_hash()
+sha3_512_hash::~sha3_512_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void sha3_512_hash::update(const void* src, size_t srclen)
+void sha3_512_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, sha3_update);
 }
 
 
-void sha3_512_hash::update(const string_wrapper& str)
+void sha3_512_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -610,6 +630,13 @@ secure_string sha3_512_hash::hexdigest() const
 {
     sha3_context copy = *ctx;
     return hash_hexdigest(&copy, SHA3_512_HASH_SIZE, sha3_final);
+}
+
+
+void sha3_512_hash::swap(sha3_512_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
 }
 
 PYCPP_END_NAMESPACE

@@ -42,7 +42,6 @@ enum compression_status
     compression_need_output,
 };
 
-
 // EXCEPTIONS
 // ----------
 
@@ -52,10 +51,9 @@ enum compression_status
 class compression_error: exception
 {
 public:
-    compression_error(compression_code code);
-    virtual const char* what() const throw ();
-
-    compression_code code() const;
+    compression_error(compression_code code) noexcept;
+    virtual const char* what() const noexcept;
+    compression_code code() const noexcept;
 
 private:
     compression_code code_;

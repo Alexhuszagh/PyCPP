@@ -587,7 +587,7 @@ struct whirlpool_context
 /**
  *  The core transformation. Process a 512-bit block.
  */
-static void whirlpool_process_block(uint64_t* hash, uint64_t* block)
+static void whirlpool_process_block(uint64_t* hash, uint64_t* block) noexcept
 {
     int i;
     uint64_t k[2][8];
@@ -659,7 +659,7 @@ static void whirlpool_process_block(uint64_t* hash, uint64_t* block)
 }
 
 
-static void whirlpool_init(whirlpool_context* ctx)
+static void whirlpool_init(whirlpool_context* ctx) noexcept
 {
     ctx->length = 0;
     secure_zero(ctx->hash, sizeof(ctx->hash));
@@ -670,7 +670,7 @@ static void whirlpool_init(whirlpool_context* ctx)
  *  Calculate message hash.
  *  Can be called repeatedly with chunks of the message to be hashed.
  */
-static void whirlpool_update(void* ptr, const void* buf, size_t len)
+static void whirlpool_update(void* ptr, const void* buf, size_t len) noexcept
 {
     auto* ctx = (whirlpool_context*) ptr;
     auto* msg = (const uint8_t*) buf;
@@ -714,7 +714,7 @@ static void whirlpool_update(void* ptr, const void* buf, size_t len)
 /**
  *  Store calculated hash into the given array.
  */
-static void whirlpool_final(void* ptr, void* buf)
+static void whirlpool_final(void* ptr, void* buf) noexcept
 {
     auto* ctx = (whirlpool_context*) ptr;
     auto* result = (uint8_t*) buf;
@@ -776,19 +776,19 @@ whirlpool_hash::whirlpool_hash(const string_wrapper& str):
 }
 
 
-whirlpool_hash::~whirlpool_hash()
+whirlpool_hash::~whirlpool_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void whirlpool_hash::update(const void* src, size_t srclen)
+void whirlpool_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, whirlpool_update);
 }
 
 
-void whirlpool_hash::update(const string_wrapper& str)
+void whirlpool_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -819,6 +819,13 @@ secure_string whirlpool_hash::hexdigest() const
 {
     whirlpool_context copy = *ctx;
     return hash_hexdigest(&copy, WHIRLPOOL_HASH_SIZE, whirlpool_final);
+}
+
+
+void whirlpool_hash::swap(whirlpool_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
 }
 
 PYCPP_END_NAMESPACE

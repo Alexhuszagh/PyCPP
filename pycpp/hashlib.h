@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/misc/stack_pimpl.h>
 #include <pycpp/secure/string.h>
 #include <pycpp/stl/functional.h>
 #include <pycpp/stl/string.h>
@@ -35,7 +36,8 @@ struct whirlpool_context;
  */
 enum hash_algorithm
 {
-    md2_hash_algorithm = 0,
+    none_hash_algorithm = 0,
+    md2_hash_algorithm,
     md4_hash_algorithm,
     md5_hash_algorithm,
     sha1_hash_algorithm,
@@ -49,7 +51,6 @@ enum hash_algorithm
     sha3_512_hash_algorithm,
     whirlpool_hash_algorithm,
 };
-
 
 // MACROS
 // ------
@@ -66,16 +67,21 @@ enum hash_algorithm
     {                                                                   \
     public:                                                             \
         name##_hash();                                                  \
+        name##_hash(const name##_hash&) = delete;                       \
+        name##_hash& operator=(const name##_hash&) = delete;            \
+        name##_hash(name##_hash&&) noexcept = default;                  \
+        name##_hash& operator=(name##_hash&&) noexcept = default;       \
         name##_hash(const void* src, size_t srclen);                    \
         name##_hash(const string_wrapper& str);                         \
-        ~name##_hash();                                                 \
+        ~name##_hash() noexcept;                                        \
                                                                         \
-        void update(const void* src, size_t srclen);                    \
-        void update(const string_wrapper& str);                         \
+        void update(const void* src, size_t srclen) noexcept;           \
+        void update(const string_wrapper& str) noexcept;                \
         void digest(void*& dst, size_t dstlen) const;                   \
         void hexdigest(void*& dst, size_t dstlen) const;                \
         secure_string digest() const;                                   \
         secure_string hexdigest() const;                                \
+        void swap(name##_hash&) noexcept;                               \
                                                                         \
     private:                                                            \
         unique_ptr<cx##_context> ctx;                                   \
@@ -87,7 +93,7 @@ enum hash_algorithm
 /**
  *  \brief Update hash from buffer.
  */
-void hash_update(void* ctx, const void* src, size_t srclen, void (*cb)(void*, const void*, size_t));
+void hash_update(void* ctx, const void* src, size_t srclen, void (*cb)(void*, const void*, size_t)) noexcept;
 
 /**
  *  \brief Get digest from context.
@@ -120,25 +126,27 @@ secure_string hash_hexdigest(void* ctx, size_t hashlen, void (*cb)(void*, void*)
 struct cryptographic_hash
 {
 public:
+    cryptographic_hash() = delete;
+    cryptographic_hash(const cryptographic_hash&) = delete;
+    cryptographic_hash& operator=(const cryptographic_hash&) = delete;
+    cryptographic_hash(cryptographic_hash&&) noexcept;
+    cryptographic_hash& operator=(cryptographic_hash&&) noexcept;
+    ~cryptographic_hash() noexcept;
+
     cryptographic_hash(hash_algorithm algorithm);
     cryptographic_hash(hash_algorithm algorithm, const void* src, size_t srclen);
     cryptographic_hash(hash_algorithm algorithm, const string_wrapper& str);
-    ~cryptographic_hash();
 
-    cryptographic_hash(const cryptographic_hash&);
-    cryptographic_hash& operator=(const cryptographic_hash&);
-    cryptographic_hash(cryptographic_hash&&);
-    cryptographic_hash& operator=(cryptographic_hash&&);
-
-    void update(const void* src, size_t srclen);
-    void update(const string_wrapper& str);
+    void update(const void* src, size_t srclen) noexcept;
+    void update(const string_wrapper& str) noexcept;
     void digest(void*& dst, size_t dstlen) const;
     void hexdigest(void*& dst, size_t dstlen) const;
     secure_string digest() const;
     secure_string hexdigest() const;
+    void swap(cryptographic_hash&) noexcept;
 
 private:
-    using memory_type = aligned_storage_t<sizeof(uintptr_t)>;
+    using memory_type = aligned_storage_t<sizeof(uintptr_t), alignof(uintptr_t)>;
     hash_algorithm algorithm;
     memory_type mem;
 };
@@ -157,6 +165,65 @@ SPECIALIZED_HASH(sha3_256, sha3);
 SPECIALIZED_HASH(sha3_384, sha3);
 SPECIALIZED_HASH(sha3_512, sha3);
 SPECIALIZED_HASH(whirlpool, whirlpool);
+
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<md4_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<md5_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<sha1_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<sha2_224_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<sha2_256_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<sha2_384_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<sha2_512_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<sha3_224_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<sha3_256_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<sha3_384_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<sha3_512_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<whirlpool_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<md2_hash>: true_type
+{};
+
+template <>
+struct is_relocatable<cryptographic_hash>: true_type
+{};
 
 // CLEANUP
 // -------

@@ -44,24 +44,24 @@ struct default_map
 public:
     // MEMBER TYPES
     // ------------
-    using base_t = Map<Key, T, Compare, Alloc>;
+    using map_type = Map<Key, T, Compare, Alloc>;
     using self_t = default_map<Key, T, Compare, Alloc, Map>;
     using callback_type = default_map_callback<T>;
-    using key_type = typename base_t::key_type;
-    using mapped_type = typename base_t::mapped_type;
-    using value_type = typename base_t::value_type;
-    using key_compare = typename base_t::key_compare;
-    using value_compare = typename base_t::value_compare;
-    using allocator_type = typename base_t::allocator_type;
-    using reference = typename base_t::reference;
-    using const_reference = typename base_t::const_reference;
-    using const_pointer = typename base_t::const_pointer;
-    using iterator = typename base_t::iterator;
-    using const_iterator = typename base_t::const_iterator;
-    using reverse_iterator = typename base_t::reverse_iterator;
-    using const_reverse_iterator = typename base_t::const_reverse_iterator;
-    using difference_type = typename base_t::difference_type;
-    using size_type = typename base_t::size_type;
+    using key_type = typename map_type::key_type;
+    using mapped_type = typename map_type::mapped_type;
+    using value_type = typename map_type::value_type;
+    using key_compare = typename map_type::key_compare;
+    using value_compare = typename map_type::value_compare;
+    using allocator_type = typename map_type::allocator_type;
+    using reference = typename map_type::reference;
+    using const_reference = typename map_type::const_reference;
+    using const_pointer = typename map_type::const_pointer;
+    using iterator = typename map_type::iterator;
+    using const_iterator = typename map_type::const_iterator;
+    using reverse_iterator = typename map_type::reverse_iterator;
+    using const_reverse_iterator = typename map_type::const_reverse_iterator;
+    using difference_type = typename map_type::difference_type;
+    using size_type = typename map_type::size_type;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -134,7 +134,7 @@ public:
     bool operator!=(const self_t& rhs) const;
 
 private:
-    base_t map_;
+    map_type map_;
     callback_type callback_ = nullptr;
 
     // FRIEND
@@ -159,25 +159,25 @@ struct default_unordered_map
 public:
     // MEMBER TYPES
     // ------------
-    using base_t = Map<Key, T, Hash, Pred, Alloc>;
+    using map_type = Map<Key, T, Hash, Pred, Alloc>;
     using self_t = default_unordered_map<Key, T, Hash, Pred, Alloc, Map>;
     using callback_type = default_map_callback<T>;
-    using key_type = typename base_t::key_type;
-    using mapped_type = typename base_t::mapped_type;
-    using value_type = typename base_t::value_type;
-    using hasher = typename base_t::hasher;
-    using key_equal = typename base_t::key_equal;
-    using allocator_type = typename base_t::allocator_type;
-    using reference = typename base_t::reference;
-    using const_reference = typename base_t::const_reference;
-    using pointer = typename base_t::pointer;
-    using const_pointer = typename base_t::const_pointer;
-    using iterator = typename base_t::iterator;
-    using const_iterator = typename base_t::const_iterator;
-    using local_iterator = typename base_t::local_iterator;
-    using const_local_iterator = typename base_t::const_local_iterator;
-    using size_type = typename base_t::size_type;
-    using difference_type = typename base_t::difference_type;
+    using key_type = typename map_type::key_type;
+    using mapped_type = typename map_type::mapped_type;
+    using value_type = typename map_type::value_type;
+    using hasher = typename map_type::hasher;
+    using key_equal = typename map_type::key_equal;
+    using allocator_type = typename map_type::allocator_type;
+    using reference = typename map_type::reference;
+    using const_reference = typename map_type::const_reference;
+    using pointer = typename map_type::pointer;
+    using const_pointer = typename map_type::const_pointer;
+    using iterator = typename map_type::iterator;
+    using const_iterator = typename map_type::const_iterator;
+    using local_iterator = typename map_type::local_iterator;
+    using const_local_iterator = typename map_type::const_local_iterator;
+    using size_type = typename map_type::size_type;
+    using difference_type = typename map_type::difference_type;
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -259,13 +259,39 @@ public:
     bool operator!=(const self_t& rhs) const;
 
 private:
-    base_t map_;
+    map_type map_;
     callback_type callback_ = nullptr;
 
     // FRIEND
     template <typename K, typename U, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
     friend void swap(const default_unordered_map<K, U, H, P, A, M>& lhs, const default_unordered_map<K, U, H, P, A, M>& rhs);
 };
+
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename T,
+    typename Compare,
+    typename Alloc,
+    template <typename, typename, typename, typename> class Map
+>
+struct is_relocatable<default_map<Key, T, Compare, Alloc, Map>>:
+    is_relocatable<typename default_map<Key, T, Compare, Alloc, Map>::map_type>
+{};
+
+template <
+    typename Key,
+    typename T,
+    typename Hash,
+    typename Pred,
+    typename Alloc,
+    template <typename, typename, typename, typename, typename> class Map
+>
+struct is_relocatable<default_unordered_map<Key, T, Hash, Pred, Alloc, Map>>:
+    is_relocatable<typename default_unordered_map<Key, T, Hash, Pred, Alloc, Map>::map_type>
+{};
 
 // DEFINITION
 // ----------

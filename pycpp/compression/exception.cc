@@ -9,18 +9,18 @@ PYCPP_BEGIN_NAMESPACE
 // ----------
 
 
-compression_error::compression_error(compression_code code):
+compression_error::compression_error(compression_code code) noexcept:
     code_(code)
 {}
 
 
-compression_code compression_error::code() const
+compression_code compression_error::code() const noexcept
 {
     return code_;
 }
 
 
-const char* compression_error::what() const throw ()
+const char* compression_error::what() const noexcept
 {
     switch (code_) {
         case compression_no_error:

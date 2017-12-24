@@ -10,6 +10,7 @@
 #include <pycpp/stl/stdexcept.h>
 #include <pycpp/string/hex.h>
 #include <assert.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -17,7 +18,7 @@ PYCPP_BEGIN_NAMESPACE
 // ---------
 
 
-void hash_update(void* ctx, const void* src, size_t srclen, void (*cb)(void*, const void*, size_t))
+void hash_update(void* ctx, const void* src, size_t srclen, void (*cb)(void*, const void*, size_t)) noexcept
 {
     size_t length = srclen;
     const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
@@ -121,7 +122,7 @@ struct allocate_hash
 struct deallocate_hash
 {
     template <typename Hash>
-    void operator()(Hash& hash)
+    void operator()(Hash& hash) noexcept
     {
         hash.~Hash();
     }
@@ -136,7 +137,7 @@ struct update_hash
     string_wrapper str;
 
     template <typename Hash>
-    void operator()(Hash& hash)
+    void operator()(Hash& hash) noexcept
     {
         hash.update(str);
     }
@@ -224,6 +225,9 @@ template <typename Memory, typename Function>
 static void get_hash(Memory& mem, hash_algorithm algorithm, Function& function)
 {
     switch (algorithm) {
+        case none_hash_algorithm:
+            return;
+
         case md2_hash_algorithm:
             function(reinterpret_cast<hash_type<md2_hash, Memory>&>(mem));
             break;
@@ -311,48 +315,35 @@ cryptographic_hash::cryptographic_hash(hash_algorithm algorithm, const string_wr
 }
 
 
-cryptographic_hash::~cryptographic_hash()
+cryptographic_hash::~cryptographic_hash() noexcept
 {
     deallocate_hash hasher;
     get_hash(mem, algorithm, hasher);
 }
 
 
-cryptographic_hash::cryptographic_hash(const cryptographic_hash& other):
-    algorithm(other.algorithm),
-    mem(other.mem)
-{}
-
-
-cryptographic_hash& cryptographic_hash::operator=(const cryptographic_hash& other)
+cryptographic_hash::cryptographic_hash(cryptographic_hash&& rhs) noexcept
 {
-    algorithm = other.algorithm;
-    mem = other.mem;
+    memcpy((void*) &mem, (const void*) &rhs.mem, sizeof(memory_type));
+    algorithm = rhs.algorithm;
+    rhs.algorithm = none_hash_algorithm;
+}
+
+
+cryptographic_hash& cryptographic_hash::operator=(cryptographic_hash&& rhs) noexcept
+{
+    swap(rhs);
     return *this;
 }
 
 
-cryptographic_hash::cryptographic_hash(cryptographic_hash&& other):
-    algorithm(move(other.algorithm)),
-    mem(move(other.mem))
-{}
-
-
-cryptographic_hash& cryptographic_hash::operator=(cryptographic_hash&& other)
-{
-    algorithm = move(other.algorithm);
-    mem = move(other.mem);
-    return *this;
-}
-
-
-void cryptographic_hash::update(const void* src, size_t srclen)
+void cryptographic_hash::update(const void* src, size_t srclen) noexcept
 {
     update(string_wrapper(reinterpret_cast<const char*>(src), srclen));
 }
 
 
-void cryptographic_hash::update(const string_wrapper& str)
+void cryptographic_hash::update(const string_wrapper& str) noexcept
 {
     update_hash functor = {str};
     get_hash(mem, algorithm, functor);
@@ -386,6 +377,19 @@ secure_string cryptographic_hash::hexdigest() const
     hexdigest_stl functor;
     get_hash(mem, algorithm, functor);
     return move(functor.str);
+}
+
+
+void cryptographic_hash::swap(cryptographic_hash& rhs) noexcept
+{
+    // swap buffers
+    memory_type buffer;
+    memcpy((void*) &buffer, (const void*) &rhs.mem, sizeof(memory_type));
+    memcpy((void*) &rhs.mem, (const void*) &mem, sizeof(memory_type));
+    memcpy((void*) &mem, (const void*) &buffer, sizeof(memory_type));
+
+    using PYCPP_NAMESPACE::swap;
+    swap(algorithm, rhs.algorithm);
 }
 
 PYCPP_END_NAMESPACE

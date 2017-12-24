@@ -37,7 +37,7 @@ struct md2_context
 // ---------
 
 
-static void md2_transform(md2_context *ctx, uint8_t* data)
+static void md2_transform(md2_context *ctx, uint8_t* data) noexcept
 {
     int j,k,t;
 
@@ -63,7 +63,7 @@ static void md2_transform(md2_context *ctx, uint8_t* data)
 }
 
 
-static void md2_init(md2_context *ctx)
+static void md2_init(md2_context *ctx) noexcept
 {
     secure_zero(ctx->state, sizeof(ctx->state));
     secure_zero(ctx->checksum, sizeof(ctx->checksum));
@@ -71,7 +71,7 @@ static void md2_init(md2_context *ctx)
 }
 
 
-static void md2_update(void *ptr, const void* buf, size_t len)
+static void md2_update(void *ptr, const void* buf, size_t len) noexcept
 {
     auto* ctx = (md2_context*) ptr;
     auto* data = (const uint8_t*) buf;
@@ -87,7 +87,7 @@ static void md2_update(void *ptr, const void* buf, size_t len)
 }
 
 
-static void md2_final(void* ptr, void* buf)
+static void md2_final(void* ptr, void* buf) noexcept
 {
     auto* ctx = (md2_context*) ptr;
     auto* hash = (uint8_t*) buf;
@@ -134,19 +134,19 @@ md2_hash::md2_hash(const string_wrapper& str):
 }
 
 
-md2_hash::~md2_hash()
+md2_hash::~md2_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void md2_hash::update(const void* src, size_t srclen)
+void md2_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, md2_update);
 }
 
 
-void md2_hash::update(const string_wrapper& str)
+void md2_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -177,6 +177,13 @@ secure_string md2_hash::hexdigest() const
 {
     md2_context copy = *ctx;
     return hash_hexdigest(&copy, MD2_HASH_SIZE, md2_final);
+}
+
+
+void md2_hash::swap(md2_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
 }
 
 PYCPP_END_NAMESPACE

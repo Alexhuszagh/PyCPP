@@ -646,4 +646,18 @@ private:
     ht m_ht;
 };
 
+
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename Hash,
+    typename KeyEqual,
+    typename Allocator,
+    template <typename, typename> class ValueTypeContainer
+>
+struct is_relocatable<ordered_set<Key, Hash, KeyEqual, Allocator, ValueTypeContainer>>: false_type
+{};
+
 PYCPP_END_NAMESPACE

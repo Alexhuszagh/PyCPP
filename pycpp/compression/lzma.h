@@ -33,14 +33,14 @@ struct lzma_compressor
 {
 public:
     lzma_compressor(int compress_level = 6);
-    lzma_compressor(lzma_compressor&&);
-    lzma_compressor & operator=(lzma_compressor&&);
-    ~lzma_compressor();
+    lzma_compressor(lzma_compressor&&) noexcept;
+    lzma_compressor & operator=(lzma_compressor&&) noexcept;
+    ~lzma_compressor() noexcept;
 
     compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
-    void close();
-    void swap(lzma_compressor&);
+    void close() noexcept;
+    void swap(lzma_compressor&) noexcept;
 
 private:
     unique_ptr<lzma_compressor_impl> ptr_;
@@ -54,18 +54,29 @@ struct lzma_decompressor
 {
 public:
     lzma_decompressor();
-    lzma_decompressor(lzma_decompressor&&);
-    lzma_decompressor & operator=(lzma_decompressor&&);
-    ~lzma_decompressor();
+    lzma_decompressor(lzma_decompressor&&) noexcept;
+    lzma_decompressor & operator=(lzma_decompressor&&) noexcept;
+    ~lzma_decompressor() noexcept;
 
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
-    void close();
-    void swap(lzma_decompressor&);
+    void close() noexcept;
+    void swap(lzma_decompressor&) noexcept;
 
 private:
     unique_ptr<lzma_decompressor_impl> ptr_;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<lzma_compressor>: is_relocatable<unique_ptr<lzma_compressor_impl>>
+{};
+
+template <>
+struct is_relocatable<lzma_decompressor>: is_relocatable<unique_ptr<lzma_decompressor_impl>>
+{};
 
 // FUNCTIONS
 // ---------

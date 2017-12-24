@@ -33,14 +33,14 @@ struct gzip_compressor
 {
 public:
     gzip_compressor(int compress_level = 9);
-    gzip_compressor(gzip_compressor&&);
-    gzip_compressor & operator=(gzip_compressor&&);
-    ~gzip_compressor();
+    gzip_compressor(gzip_compressor&&) noexcept;
+    gzip_compressor & operator=(gzip_compressor&&) noexcept;
+    ~gzip_compressor() noexcept;
 
     compression_status compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
-    void close();
-    void swap(gzip_compressor&);
+    void close() noexcept;
+    void swap(gzip_compressor&) noexcept;
 
 private:
     unique_ptr<gzip_compressor_impl> ptr_;
@@ -54,18 +54,29 @@ struct gzip_decompressor
 {
 public:
     gzip_decompressor();
-    gzip_decompressor(gzip_decompressor&&);
-    gzip_decompressor & operator=(gzip_decompressor&&);
-    ~gzip_decompressor();
+    gzip_decompressor(gzip_decompressor&&) noexcept;
+    gzip_decompressor & operator=(gzip_decompressor&&) noexcept;
+    ~gzip_decompressor() noexcept;
 
     compression_status decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
     bool flush(void*& dst, size_t dstlen);
-    void close();
-    void swap(gzip_decompressor&);
+    void close() noexcept;
+    void swap(gzip_decompressor&) noexcept;
 
 private:
     unique_ptr<gzip_decompressor_impl> ptr_;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<gzip_compressor>: is_relocatable<unique_ptr<gzip_compressor_impl>>
+{};
+
+template <>
+struct is_relocatable<gzip_decompressor>: is_relocatable<unique_ptr<gzip_decompressor_impl>>
+{};
 
 // FUNCTIONS
 // ---------

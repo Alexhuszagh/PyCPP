@@ -141,6 +141,12 @@ private:
     memory_type mem_;
 };
 
+// SPECIALIZATION
+// --------------
+
+template <typename T, size_t Size, size_t Alignment>
+struct is_relocatable<stack_pimpl<T, Size, Alignment>>: is_relocatable<T>
+{};
 
 // IMPLEMENTATION
 // --------------

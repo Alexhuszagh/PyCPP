@@ -63,6 +63,20 @@ private:
     void reset();
 };
 
+// SPECIALIZATION
+// --------------
+
+template <
+    typename T,
+    size_t StackSize ,
+    template <typename, typename> class Container
+>
+struct is_relocatable<fixed_forward_list<T, StackSize, Container>>: bool_constant<
+        is_relocatable<typename fixed_forward_list<T, StackSize, Container>::arena_type>::value &&
+        is_relocatable<typename fixed_forward_list<T, StackSize, Container>::container_type>::value
+    >
+{};
+
 // IMPLEMENTATION
 // --------------
 

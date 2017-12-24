@@ -87,6 +87,35 @@ private:
     void reset();
 };
 
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename Hash,
+    typename Pred,
+    size_t StackSize,
+    template <typename, typename,typename, typename> class Container
+>
+struct is_relocatable<fixed_unordered_set<Key, Hash, Pred, StackSize, Container>>: bool_constant<
+        is_relocatable<typename fixed_unordered_set<Key, Hash, Pred, StackSize, Container>::arena_type>::value &&
+        is_relocatable<typename fixed_unordered_set<Key, Hash, Pred, StackSize, Container>::container_type>::value
+    >
+{};
+
+template <
+    typename Key,
+    typename Hash,
+    typename Pred,
+    size_t StackSize,
+    template <typename, typename,typename, typename> class Container
+>
+struct is_relocatable<fixed_unordered_multiset<Key, Hash, Pred, StackSize, Container>>: bool_constant<
+        is_relocatable<typename fixed_unordered_multiset<Key, Hash, Pred, StackSize, Container>::arena_type>::value &&
+        is_relocatable<typename fixed_unordered_multiset<Key, Hash, Pred, StackSize, Container>::container_type>::value
+    >
+{};
+
 // IMPLEMENTATION
 // --------------
 

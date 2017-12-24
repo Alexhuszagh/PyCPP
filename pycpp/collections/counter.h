@@ -163,7 +163,13 @@ key_list<Map> elements(const Map& map)
 // DECLARATION
 // -----------
 
-template <typename Key, typename Hash, typename Pred, typename Alloc, template <typename, typename, typename, typename, typename> class Map>
+template <
+    typename Key,
+    typename Hash,
+    typename Pred,
+    typename Alloc,
+    template <typename, typename, typename, typename, typename> class Map
+>
 struct counter
 {
 public:
@@ -277,6 +283,20 @@ protected:
 
     map_type map_;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename Hash,
+    typename Pred,
+    typename Alloc,
+    template <typename, typename, typename, typename, typename> class Map
+>
+struct is_relocatable<counter<Key, Hash, Pred, Alloc, Map>>:
+    is_relocatable<typename counter<Key, Hash, Pred, Alloc, Map>::map_type>
+{};
 
 // IMPLEMENTATION
 // --------------

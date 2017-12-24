@@ -85,6 +85,33 @@ private:
     void reset();
 };
 
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename Compare,
+    size_t StackSize,
+    template <typename, typename, typename> class Container
+>
+struct is_relocatable<fixed_set<Key, Compare, StackSize, Container>>: bool_constant<
+        is_relocatable<typename fixed_set<Key, Compare, StackSize, Container>::arena_type>::value &&
+        is_relocatable<typename fixed_set<Key, Compare, StackSize, Container>::container_type>::value
+    >
+{};
+
+template <
+    typename Key,
+    typename Compare,
+    size_t StackSize,
+    template <typename, typename, typename> class Container
+>
+struct is_relocatable<fixed_multiset<Key, Compare, StackSize, Container>>: bool_constant<
+        is_relocatable<typename fixed_multiset<Key, Compare, StackSize, Container>::arena_type>::value &&
+        is_relocatable<typename fixed_multiset<Key, Compare, StackSize, Container>::container_type>::value
+    >
+{};
+
 // IMPLEMENTATION
 // --------------
 

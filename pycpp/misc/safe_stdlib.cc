@@ -43,7 +43,7 @@ void* safe_calloc(size_t num, size_t size)
 }
 
 
-void safe_free(void* ptr)
+void safe_free(void* ptr) noexcept
 {
     free(ptr);
 }

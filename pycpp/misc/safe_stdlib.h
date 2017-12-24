@@ -33,6 +33,6 @@ void* safe_calloc(size_t num, size_t size);
 /**
  *  \brief Throws bad_alloc if memory cannot be allocated.
  */
-void safe_free(void* ptr);
+void safe_free(void* ptr) noexcept;
 
 PYCPP_END_NAMESPACE

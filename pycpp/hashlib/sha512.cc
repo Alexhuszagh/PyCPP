@@ -99,7 +99,7 @@ struct sha2_512_context
 /**
  *  The core transformation. Process a 512-bit block.
  */
-static void sha512_process_block(uint64_t* hash, uint64_t* block)
+static void sha512_process_block(uint64_t* hash, uint64_t* block) noexcept
 {
     uint64_t A, B, C, D, E, F, G, H;
     uint64_t W[16];
@@ -151,7 +151,7 @@ static void sha512_process_block(uint64_t* hash, uint64_t* block)
 }
 
 
-static void sha512_init(sha2_512_context *ctx)
+static void sha512_init(sha2_512_context *ctx) noexcept
 {
     /*
      *  Initial values. These words were obtained by taking the first 32
@@ -172,7 +172,7 @@ static void sha512_init(sha2_512_context *ctx)
 }
 
 
-static void sha384_init(sha2_512_context *ctx)
+static void sha384_init(sha2_512_context *ctx) noexcept
 {
     /**
      *  Initial values from FIPS 180-3. These words were obtained by taking
@@ -192,7 +192,7 @@ static void sha384_init(sha2_512_context *ctx)
 }
 
 
-static void sha512_update(void* ptr, const void* buf, size_t len)
+static void sha512_update(void* ptr, const void* buf, size_t len) noexcept
 {
     auto* ctx = (sha2_512_context*) ptr;
     auto* msg = (const uint8_t*) buf;
@@ -238,7 +238,7 @@ static void sha512_update(void* ptr, const void* buf, size_t len)
 /**
  *  Store calculated hash into the given array.
  */
-static void sha512_final(void* ptr, void* buf)
+static void sha512_final(void* ptr, void* buf) noexcept
 {
     auto* ctx = (sha2_512_context*) ptr;
     auto* result = (uint8_t*) buf;
@@ -301,13 +301,13 @@ sha2_384_hash::sha2_384_hash(const string_wrapper& str):
 }
 
 
-sha2_384_hash::~sha2_384_hash()
+sha2_384_hash::~sha2_384_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void sha2_384_hash::update(const void* src, size_t srclen)
+void sha2_384_hash::update(const void* src, size_t srclen) noexcept
 {
     size_t length = srclen;
     const uint8_t* first = reinterpret_cast<const uint8_t*>(src);
@@ -321,7 +321,7 @@ void sha2_384_hash::update(const void* src, size_t srclen)
 }
 
 
-void sha2_384_hash::update(const string_wrapper& str)
+void sha2_384_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -355,6 +355,13 @@ secure_string sha2_384_hash::hexdigest() const
 }
 
 
+void sha2_384_hash::swap(sha2_384_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
+}
+
+
 sha2_512_hash::sha2_512_hash():
     ctx(make_unique<sha2_512_context>())
 {
@@ -378,19 +385,19 @@ sha2_512_hash::sha2_512_hash(const string_wrapper& str):
 }
 
 
-sha2_512_hash::~sha2_512_hash()
+sha2_512_hash::~sha2_512_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void sha2_512_hash::update(const void* src, size_t srclen)
+void sha2_512_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, sha512_update);
 }
 
 
-void sha2_512_hash::update(const string_wrapper& str)
+void sha2_512_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -421,6 +428,13 @@ secure_string sha2_512_hash::hexdigest() const
 {
     sha2_512_context copy = *ctx;
     return hash_hexdigest(&copy, SHA512_HASH_SIZE, sha512_final);
+}
+
+
+void sha2_512_hash::swap(sha2_512_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
 }
 
 PYCPP_END_NAMESPACE

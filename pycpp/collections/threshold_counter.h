@@ -85,7 +85,13 @@ update_nonnegative(Map& map, Iter first, Iter last)
 // DECLARATION
 // -----------
 
-template <typename Key, typename Hash, typename Pred, typename Alloc, template <typename, typename, typename, typename, typename> class Map>
+template <
+    typename Key,
+    typename Hash,
+    typename Pred,
+    typename Alloc,
+    template <typename, typename, typename, typename, typename> class Map
+>
 struct threshold_counter
 {
 public:
@@ -189,6 +195,19 @@ protected:
     size_t count_ = 0;
 };
 
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename Hash,
+    typename Pred,
+    typename Alloc,
+    template <typename, typename, typename, typename, typename> class Map
+>
+struct is_relocatable<threshold_counter<Key, Hash, Pred, Alloc, Map>>:
+    is_relocatable<typename threshold_counter<Key, Hash, Pred, Alloc, Map>::map_type>
+{};
 
 // IMPLEMENTATION
 // --------------

@@ -91,7 +91,7 @@ struct md5_context
  * This processes one or more 64-byte data blocks, but does NOT update the bit
  * counters. There are no alignment requirements.
  */
-static const void* body(md5_context* ctx, const void* data, uint32_t size)
+static const void* body(md5_context* ctx, const void* data, uint32_t size) noexcept
 {
     const uint8_t* ptr;
     uint32_t a, b, c, d;
@@ -202,7 +202,7 @@ static const void* body(md5_context* ctx, const void* data, uint32_t size)
 /**
  *  \brief Initialize MD5 context.
  */
-void md5_init(md5_context* ctx)
+void md5_init(md5_context* ctx) noexcept
 {
     ctx->a = 0x67452301;
     ctx->b = 0xefcdab89;
@@ -217,7 +217,7 @@ void md5_init(md5_context* ctx)
 /**
  *  \brief Update hash with data.
  */
-static void md5_update(void* ptr, const void* data, size_t size)
+static void md5_update(void* ptr, const void* data, size_t size) noexcept
 {
     auto* ctx = (md5_context*) ptr;
 
@@ -264,7 +264,7 @@ static void md5_update(void* ptr, const void* data, size_t size)
 /**
  *  \brief Add padding and return the message digest.
  */
-static void md5_final(void* ptr, void* buf)
+static void md5_final(void* ptr, void* buf) noexcept
 {
     auto* ctx = (md5_context*) ptr;
     auto* result = (uint8_t*) buf;
@@ -328,19 +328,19 @@ md5_hash::md5_hash(const string_wrapper& str):
 }
 
 
-md5_hash::~md5_hash()
+md5_hash::~md5_hash() noexcept
 {
     secure_zero(ctx.get(), sizeof(*ctx));
 }
 
 
-void md5_hash::update(const void* src, size_t srclen)
+void md5_hash::update(const void* src, size_t srclen) noexcept
 {
     hash_update(ctx.get(), src, srclen, md5_update);
 }
 
 
-void md5_hash::update(const string_wrapper& str)
+void md5_hash::update(const string_wrapper& str) noexcept
 {
     update(str.data(), str.size());
 }
@@ -371,6 +371,13 @@ secure_string md5_hash::hexdigest() const
 {
     md5_context copy = *ctx;
     return hash_hexdigest(&copy, MD5_HASH_SIZE, md5_final);
+}
+
+
+void md5_hash::swap(md5_hash& rhs) noexcept
+{
+    using PYCPP_NAMESPACE::swap;
+    swap(ctx, rhs.ctx);
 }
 
 // CLEANUP

@@ -130,7 +130,7 @@ template <
     typename Key,
     typename Value,
     typename Compare = less<Key>,
-    typename Alloc = allocator<pair<const Key, Value> >,
+    typename Alloc = allocator<pair<const Key, Value>>,
     int TargetNodeSize = 256
 >
 class btree_multimap: public btree_detail::btree_multi_container<
@@ -237,5 +237,28 @@ inline void swap(btree_multimap<K, V, C, A, N>& x,
 {
     x.swap(y);
 }
+
+// SPECIALIZATION
+// --------------
+
+template <
+    typename Key,
+    typename Value,
+    typename Compare,
+    typename Alloc,
+    int TargetNodeSize
+>
+struct is_relocatable<btree_map<Key, Value, Compare, Alloc, TargetNodeSize>>: true_type
+{};
+
+template <
+    typename Key,
+    typename Value,
+    typename Compare,
+    typename Alloc,
+    int TargetNodeSize
+>
+struct is_relocatable<btree_multimap<Key, Value, Compare, Alloc, TargetNodeSize>>: true_type
+{};
 
 PYCPP_END_NAMESPACE

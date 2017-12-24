@@ -52,7 +52,7 @@ struct zlib_compressor_impl: filter_impl<z_stream>
 {
     using base = filter_impl<z_stream>;
     zlib_compressor_impl(int level = Z_DEFAULT_COMPRESSION);
-    ~zlib_compressor_impl();
+    ~zlib_compressor_impl() noexcept;
 
     virtual void call();
     bool flush(void*& dst, size_t dstlen);
@@ -66,11 +66,11 @@ zlib_compressor_impl::zlib_compressor_impl(int level)
     stream.zalloc = Z_NULL;
     stream.zfree = Z_NULL;
     stream.opaque = Z_NULL;
-    CHECK(deflateInit(&stream, level));
+    PYCPP_CHECK(deflateInit(&stream, level));
 }
 
 
-zlib_compressor_impl::~zlib_compressor_impl()
+zlib_compressor_impl::~zlib_compressor_impl() noexcept
 {
     deflateEnd(&stream);
 }
@@ -113,7 +113,7 @@ struct zlib_decompressor_impl: filter_impl<z_stream>
 {
     using base = filter_impl<z_stream>;
     zlib_decompressor_impl();
-    ~zlib_decompressor_impl();
+    ~zlib_decompressor_impl() noexcept;
 
     virtual void call();
     bool flush(void*& dst, size_t dstlen);
@@ -127,11 +127,11 @@ zlib_decompressor_impl::zlib_decompressor_impl()
     stream.zalloc = Z_NULL;
     stream.zfree = Z_NULL;
     stream.opaque = Z_NULL;
-    CHECK(inflateInit(&stream));
+    PYCPP_CHECK(inflateInit(&stream));
 }
 
 
-zlib_decompressor_impl::~zlib_decompressor_impl()
+zlib_decompressor_impl::~zlib_decompressor_impl() noexcept
 {
     inflateEnd(&stream);
 }
@@ -165,19 +165,19 @@ zlib_compressor::zlib_compressor(int level):
 {}
 
 
-zlib_compressor::zlib_compressor(zlib_compressor&& rhs):
+zlib_compressor::zlib_compressor(zlib_compressor&& rhs) noexcept:
     ptr_(move(rhs.ptr_))
 {}
 
 
-zlib_compressor & zlib_compressor::operator=(zlib_compressor&& rhs)
+zlib_compressor & zlib_compressor::operator=(zlib_compressor&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-zlib_compressor::~zlib_compressor()
+zlib_compressor::~zlib_compressor() noexcept
 {}
 
 
@@ -193,13 +193,13 @@ bool zlib_compressor::flush(void*& dst, size_t dstlen)
 }
 
 
-void zlib_compressor::close()
+void zlib_compressor::close() noexcept
 {
     ptr_.reset();
 }
 
 
-void zlib_compressor::swap(zlib_compressor& rhs)
+void zlib_compressor::swap(zlib_compressor& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(ptr_, rhs.ptr_);
@@ -211,19 +211,19 @@ zlib_decompressor::zlib_decompressor():
 {}
 
 
-zlib_decompressor::zlib_decompressor(zlib_decompressor&& rhs):
+zlib_decompressor::zlib_decompressor(zlib_decompressor&& rhs) noexcept:
     ptr_(move(rhs.ptr_))
 {}
 
 
-zlib_decompressor & zlib_decompressor::operator=(zlib_decompressor&& rhs)
+zlib_decompressor & zlib_decompressor::operator=(zlib_decompressor&& rhs) noexcept
 {
     swap(rhs);
     return *this;
 }
 
 
-zlib_decompressor::~zlib_decompressor()
+zlib_decompressor::~zlib_decompressor() noexcept
 {}
 
 
@@ -239,13 +239,13 @@ bool zlib_decompressor::flush(void*& dst, size_t dstlen)
 }
 
 
-void zlib_decompressor::close()
+void zlib_decompressor::close() noexcept
 {
     ptr_.reset();
 }
 
 
-void zlib_decompressor::swap(zlib_decompressor& rhs)
+void zlib_decompressor::swap(zlib_decompressor& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(ptr_, rhs.ptr_);
@@ -260,11 +260,11 @@ void zlib_compress(const void*& src, size_t srclen, void* &dst, size_t dstlen)
     uLong srclen_ = srclen;
     uLong dstlen_ = dstlen;
     if (srclen) {
-        CHECK(compress((Bytef*) dst, &dstlen_, (Bytef*) src, srclen_));
+        PYCPP_CHECK(compress((Bytef*) dst, &dstlen_, (Bytef*) src, srclen_));
     } else {
         // compression no bytes
         Bytef c = 0;
-        CHECK(compress((Bytef*) dst, &dstlen_, &c, 0));
+        PYCPP_CHECK(compress((Bytef*) dst, &dstlen_, &c, 0));
     }
 
     // update pointers
@@ -293,11 +293,11 @@ void zlib_decompress(const void*& src, size_t srclen, void* &dst, size_t dstlen,
     uLong srclen_ = srclen;
     uLong dstlen_ = dstlen;
     if (srclen) {
-        CHECK(uncompress((Bytef*) dst, &dstlen_, (Bytef*) src, srclen_));
+        PYCPP_CHECK(uncompress((Bytef*) dst, &dstlen_, (Bytef*) src, srclen_));
     } else {
         // compression no bytes
         Bytef c = 0;
-        CHECK(uncompress((Bytef*) dst, &dstlen_, &c, 0));
+        PYCPP_CHECK(uncompress((Bytef*) dst, &dstlen_, &c, 0));
     }
 
     // update pointers

@@ -106,21 +106,27 @@ private:
     kv_options options_;
 };
 
+// SPECIALIZATION
+// --------------
+
+template <typename Key, typename T, typename Compare, typename Allocator>
+struct is_relocatable<kv_cache<K, T, Compare, Allocator>>: true_type
+{};
 
 // IMPLEMENTATION
 // --------------
 
 
-template <typename K, typename T, typename C>
-kv_cache<K, T, C>::kv_cache(const path_view_t& path, kv_options options):
+template <typename K, typename T, typename C, typename A>
+kv_cache<K, T, C, A>::kv_cache(const path_view_t& path, kv_options options):
     options_(options)
 {
     kv_open(db_, path, options);
 }
 
 
-template <typename K, typename T, typename C>
-kv_cache<K, T, C>::~kv_cache()
+template <typename K, typename T, typename C, typename A>
+kv_cache<K, T, C, A>::~kv_cache()
 {
     kv_close(db_);
 }

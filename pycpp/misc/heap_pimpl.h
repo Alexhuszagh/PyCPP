@@ -193,6 +193,18 @@ private:
     shared_ptr<T> t_ = nullptr;
 };
 
+// SPECIALIZATION
+// --------------
+
+template <typename T, typename A>
+struct is_relocatable<unique_heap_pimpl<T, A>>:
+    is_relocatable<unique_ptr<T, unique_heap_pimpl_manager<T, A>>>
+{};
+
+template <typename T>
+struct is_relocatable<shared_heap_pimpl<T>>: is_relocatable<shared_ptr<T>>
+{};
+
 // IMPLEMENTATION
 // --------------
 
