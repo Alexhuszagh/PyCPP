@@ -20,19 +20,23 @@ PYCPP_BEGIN_NAMESPACE
 struct lexical_bool_formatter
 {
 public:
-    lexical_bool_formatter();
-    lexical_bool_formatter(bool value);
+    lexical_bool_formatter() noexcept;
+    lexical_bool_formatter(bool value) noexcept;
+    lexical_bool_formatter(const lexical_bool_formatter&) noexcept = default;
+    lexical_bool_formatter& operator=(const lexical_bool_formatter&) noexcept = default;
+    lexical_bool_formatter(lexical_bool_formatter&&) noexcept = default;
+    lexical_bool_formatter& operator=(lexical_bool_formatter&&) noexcept = default;
 
     // DATA
-    size_t size() const;
-    size_t length() const;
-    const char* data() const;
-    const char* c_str() const;
+    size_t size() const noexcept;
+    size_t length() const noexcept;
+    const char* data() const noexcept;
+    const char* c_str() const noexcept;
 
-    string_view string() const;
+    string_view string() const noexcept;
 
     // CONVERSIONS
-    operator string_view() const;
+    operator string_view() const noexcept;
 
 private:
     std::string* string_;
@@ -46,13 +50,28 @@ struct lexical_bool_extractor
 {
 public:
     lexical_bool_extractor(const string_view& string);
+    lexical_bool_extractor(const lexical_bool_extractor&) noexcept = default;
+    lexical_bool_extractor& operator=(const lexical_bool_extractor&) noexcept = default;
+    lexical_bool_extractor(lexical_bool_extractor&&) noexcept = default;
+    lexical_bool_extractor& operator=(lexical_bool_extractor&&) noexcept = default;
 
     // CONVERSIONS
-    bool value() const;
-    operator bool() const;
+    bool value() const noexcept;
+    operator bool() const noexcept;
 
 private:
     bool data_;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<lexical_bool_formatter>: true_type
+{};
+
+template <>
+struct is_relocatable<lexical_bool_extractor>: true_type
+{};
 
 PYCPP_END_NAMESPACE

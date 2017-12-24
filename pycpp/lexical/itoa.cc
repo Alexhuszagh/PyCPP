@@ -17,7 +17,7 @@ PYCPP_BEGIN_NAMESPACE
 // RANGE
 
 template <typename Int>
-inline uint32_t digits(Int value, uint8_t base)
+inline uint32_t digits(Int value, uint8_t base) noexcept
 {
     if (value == 0) {
         return 1;
@@ -31,11 +31,10 @@ inline uint32_t digits(Int value, uint8_t base)
  *  \brief Naive implementation for base-N numbers.
  */
 template <typename Int>
-static void itoa_naive(Int value, char* first, char*& last, uint8_t base)
+static void itoa_naive(Int value, char* first, char*& last, uint8_t base) noexcept
 {
-    if (base < 2 || base > 36) {
-        throw invalid_argument("Numerical base must be from 2-36");
-    }
+    // logic error, disable in release builds
+    assert((base >= 2 && base <= 36) && "Numerical base must be from 2-36");
 
     uint32_t rem;
     char* p = first;
@@ -58,7 +57,7 @@ static void itoa_naive(Int value, char* first, char*& last, uint8_t base)
  *  \brief Optimized implementation for base10 numbers.
  */
 template <typename Int, int base>
-static void itoa_optimized(Int value, char* first, char*& last, const char* table)
+static void itoa_optimized(Int value, char* first, char*& last, const char* table) noexcept
 {
     static int base2 = base * base;
 
@@ -89,7 +88,7 @@ static void itoa_optimized(Int value, char* first, char*& last, const char* tabl
 
 
 template <typename Int, typename Uint>
-void itoa_(Int value, char* first, char*& last, uint8_t base)
+void itoa_(Int value, char* first, char*& last, uint8_t base) noexcept
 {
     // disable this check in release builds, since it's a logic
     // error and extraordinarily expensive
@@ -157,7 +156,7 @@ void itoa_(Int value, char* first, char*& last, uint8_t base)
 // ---------
 
 
-void u8toa(uint8_t value, char* first, char*& last, uint8_t base)
+void u8toa(uint8_t value, char* first, char*& last, uint8_t base) noexcept
 {
     itoa_<uint8_t, uint8_t>(value, first, last, base);
 }
@@ -172,7 +171,7 @@ std::string u8toa(uint8_t value, uint8_t base)
 }
 
 
-void i8toa(int8_t value, char* first, char*& last, uint8_t base)
+void i8toa(int8_t value, char* first, char*& last, uint8_t base) noexcept
 {
     itoa_<int8_t, uint8_t>(value, first, last, base);
 }
@@ -187,7 +186,7 @@ std::string i8toa(int8_t value, uint8_t base)
 }
 
 
-void u16toa(uint16_t value, char* first, char*& last, uint8_t base)
+void u16toa(uint16_t value, char* first, char*& last, uint8_t base) noexcept
 {
     itoa_<uint16_t, uint16_t>(value, first, last, base);
 }
@@ -202,7 +201,7 @@ std::string u16toa(uint16_t value, uint8_t base)
 }
 
 
-void i16toa(int16_t value, char* first, char*& last, uint8_t base)
+void i16toa(int16_t value, char* first, char*& last, uint8_t base) noexcept
 {
     itoa_<int16_t, uint16_t>(value, first, last, base);
 }
@@ -217,7 +216,7 @@ std::string i16toa(int16_t value, uint8_t base)
 }
 
 
-void u32toa(uint32_t value, char* first, char*& last, uint8_t base)
+void u32toa(uint32_t value, char* first, char*& last, uint8_t base) noexcept
 {
     itoa_<uint32_t, uint32_t>(value, first, last, base);
 }
@@ -232,7 +231,7 @@ std::string u32toa(uint32_t value, uint8_t base)
 }
 
 
-void i32toa(int32_t value, char* first, char*& last, uint8_t base)
+void i32toa(int32_t value, char* first, char*& last, uint8_t base) noexcept
 {
     itoa_<int32_t, uint32_t>(value, first, last, base);
 }
@@ -247,7 +246,7 @@ std::string i32toa(int32_t value, uint8_t base)
 }
 
 
-void u64toa(uint64_t value, char* first, char*& last, uint8_t base)
+void u64toa(uint64_t value, char* first, char*& last, uint8_t base) noexcept
 {
     itoa_<uint64_t, uint64_t>(value, first, last, base);
 }
@@ -262,7 +261,7 @@ std::string u64toa(uint64_t value, uint8_t base)
 }
 
 
-void i64toa(int64_t value, char* first, char*& last, uint8_t base)
+void i64toa(int64_t value, char* first, char*& last, uint8_t base) noexcept
 {
     itoa_<int64_t, uint64_t>(value, first, last, base);
 }

@@ -22,8 +22,11 @@ PYCPP_BEGIN_NAMESPACE
  */
 struct lexical_enum_formatter: lexical_int_formatter
 {
-    template <typename Enum>
-    lexical_enum_formatter(Enum value);
+    template <typename Enum> lexical_enum_formatter(Enum value) noexcept;
+    lexical_enum_formatter(const lexical_enum_formatter&) noexcept = default;
+    lexical_enum_formatter& operator=(const lexical_enum_formatter&) noexcept = default;
+    lexical_enum_formatter(lexical_enum_formatter&&) noexcept = delete;
+    lexical_enum_formatter& operator=(lexical_enum_formatter&&) noexcept = delete;
 };
 
 
@@ -33,17 +36,32 @@ struct lexical_enum_formatter: lexical_int_formatter
 struct lexical_enum_extractor: protected lexical_int_extractor
 {
     using lexical_int_extractor::lexical_int_extractor;
+    lexical_enum_extractor(const lexical_enum_extractor&) noexcept = default;
+    lexical_enum_extractor& operator=(const lexical_enum_extractor&) noexcept = default;
+    lexical_enum_extractor(lexical_enum_extractor&&) noexcept = default;
+    lexical_enum_extractor& operator=(lexical_enum_extractor&&) noexcept = default;
 
     template <typename Enum>
-    explicit operator Enum() const;
+    explicit operator Enum() const noexcept;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<lexical_enum_formatter>: false_type
+{};
+
+template <>
+struct is_relocatable<lexical_enum_extractor>: true_type
+{};
 
 // DEFINITIONS
 // -----------
 
 
 template <typename Enum>
-lexical_enum_formatter::lexical_enum_formatter(const Enum value):
+lexical_enum_formatter::lexical_enum_formatter(Enum value) noexcept:
     lexical_int_formatter(static_cast<underlying_type_t<Enum>>(value))
 {
     static_assert(is_enum<Enum>::value, "Type must be an enumeration.");
@@ -51,7 +69,7 @@ lexical_enum_formatter::lexical_enum_formatter(const Enum value):
 
 
 template <typename Enum>
-lexical_enum_extractor::operator Enum() const
+lexical_enum_extractor::operator Enum() const noexcept
 {
     static_assert(is_enum<Enum>::value, "Type must be an enumeration.");
 

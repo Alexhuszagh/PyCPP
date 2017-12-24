@@ -5,37 +5,38 @@
 #include <pycpp/lexical/int.h>
 #include <pycpp/lexical/itoa.h>
 #include <pycpp/stl/limits.h>
+#include <string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
 
-lexical_int_formatter::lexical_int_formatter(short value)
+lexical_int_formatter::lexical_int_formatter(short value) noexcept
 {
     i16toa(value, buffer_, last_, 10);
 }
 
 
-lexical_int_formatter::lexical_int_formatter(unsigned short value)
+lexical_int_formatter::lexical_int_formatter(unsigned short value) noexcept
 {
     u16toa(value, buffer_, last_, 10);
 }
 
 
-lexical_int_formatter::lexical_int_formatter(int value)
+lexical_int_formatter::lexical_int_formatter(int value) noexcept
 {
     i32toa(value, buffer_, last_, 10);
 }
 
 
-lexical_int_formatter::lexical_int_formatter(unsigned int value)
+lexical_int_formatter::lexical_int_formatter(unsigned int value) noexcept
 {
     u32toa(value, buffer_, last_, 10);
 }
 
 
-lexical_int_formatter::lexical_int_formatter(long value)
+lexical_int_formatter::lexical_int_formatter(long value) noexcept
 {
     #if !defined(_WIN32) && SYSTEM_ARCHITECTURE == 64
         // longs are 64-bits on all 64-bit systems except Windows
@@ -48,7 +49,7 @@ lexical_int_formatter::lexical_int_formatter(long value)
 }
 
 
-lexical_int_formatter::lexical_int_formatter(unsigned long value)
+lexical_int_formatter::lexical_int_formatter(unsigned long value) noexcept
 {
     #if !defined(_WIN32) && SYSTEM_ARCHITECTURE == 64
         // longs are 64-bits on all 64-bit systems except Windows
@@ -61,55 +62,70 @@ lexical_int_formatter::lexical_int_formatter(unsigned long value)
 }
 
 
-lexical_int_formatter::lexical_int_formatter(long long value)
+lexical_int_formatter::lexical_int_formatter(long long value) noexcept
 {
     i64toa(value, buffer_, last_, 10);
 }
 
 
-lexical_int_formatter::lexical_int_formatter(unsigned long long value)
+lexical_int_formatter::lexical_int_formatter(unsigned long long value) noexcept
 {
     u64toa(value, buffer_, last_, 10);
 }
 
 
-size_t lexical_int_formatter::size() const
+lexical_int_formatter::lexical_int_formatter(const lexical_int_formatter& rhs) noexcept
+{
+    memcpy(buffer_, rhs.buffer_, MAX_INTEGER_SIZE);
+    last_ = buffer_ + rhs.size();
+}
+
+
+lexical_int_formatter& lexical_int_formatter::operator=(const lexical_int_formatter& rhs) noexcept
+{
+    memcpy(buffer_, rhs.buffer_, MAX_INTEGER_SIZE);
+    last_ = buffer_ + rhs.size();
+    return *this;
+}
+
+
+size_t lexical_int_formatter::size() const noexcept
 {
     return last_ - buffer_;
 }
 
 
-size_t lexical_int_formatter::length() const
+size_t lexical_int_formatter::length() const noexcept
 {
     return size();
 }
 
 
-const char* lexical_int_formatter::data() const
+const char* lexical_int_formatter::data() const noexcept
 {
     return c_str();
 }
 
 
-const char* lexical_int_formatter::c_str() const
+const char* lexical_int_formatter::c_str() const noexcept
 {
     return buffer_;
 }
 
 
-string_view lexical_int_formatter::string() const
+string_view lexical_int_formatter::string() const noexcept
 {
     return string_view(data(), size());
 }
 
 
-lexical_int_formatter::operator string_view() const
+lexical_int_formatter::operator string_view() const noexcept
 {
     return string();
 }
 
 
-lexical_int_extractor::lexical_int_extractor(const string_view& string)
+lexical_int_extractor::lexical_int_extractor(const string_view& string)noexcept
 {
     if (string.empty()) {
         // 0 condition
@@ -125,19 +141,19 @@ lexical_int_extractor::lexical_int_extractor(const string_view& string)
 }
 
 
-bool lexical_int_extractor::is_signed() const
+bool lexical_int_extractor::is_signed() const noexcept
 {
     return minus_;
 }
 
 
-bool lexical_int_extractor::is_unsigned() const
+bool lexical_int_extractor::is_unsigned() const noexcept
 {
     return !is_signed();
 }
 
 
-uint8_t lexical_int_extractor::bytes() const
+uint8_t lexical_int_extractor::bytes() const noexcept
 {
     if (is_signed()) {
         // must be negative
@@ -165,7 +181,7 @@ uint8_t lexical_int_extractor::bytes() const
 }
 
 
-lexical_int_extractor::operator int8_t() const
+lexical_int_extractor::operator int8_t() const noexcept
 {
     if (is_signed()) {
         return static_cast<int8_t>(data_.i);
@@ -175,7 +191,7 @@ lexical_int_extractor::operator int8_t() const
 }
 
 
-lexical_int_extractor::operator uint8_t() const
+lexical_int_extractor::operator uint8_t() const noexcept
 {
     if (is_signed()) {
         return static_cast<uint8_t>(data_.i);
@@ -185,7 +201,7 @@ lexical_int_extractor::operator uint8_t() const
 }
 
 
-lexical_int_extractor::operator short() const
+lexical_int_extractor::operator short() const noexcept
 {
     if (is_signed()) {
         return static_cast<short>(data_.i);
@@ -195,7 +211,7 @@ lexical_int_extractor::operator short() const
 }
 
 
-lexical_int_extractor::operator unsigned short() const
+lexical_int_extractor::operator unsigned short() const noexcept
 {
     if (is_signed()) {
         return static_cast<unsigned short>(data_.i);
@@ -205,7 +221,7 @@ lexical_int_extractor::operator unsigned short() const
 }
 
 
-lexical_int_extractor::operator int() const
+lexical_int_extractor::operator int() const noexcept
 {
     if (is_signed()) {
         return static_cast<int>(data_.i);
@@ -215,7 +231,7 @@ lexical_int_extractor::operator int() const
 }
 
 
-lexical_int_extractor::operator unsigned int() const
+lexical_int_extractor::operator unsigned int() const noexcept
 {
     if (is_signed()) {
         return static_cast<unsigned int>(data_.i);
@@ -225,7 +241,7 @@ lexical_int_extractor::operator unsigned int() const
 }
 
 
-lexical_int_extractor::operator long() const
+lexical_int_extractor::operator long() const noexcept
 {
     if (is_signed()) {
         return static_cast<long>(data_.i);
@@ -235,7 +251,7 @@ lexical_int_extractor::operator long() const
 }
 
 
-lexical_int_extractor::operator unsigned long() const
+lexical_int_extractor::operator unsigned long() const noexcept
 {
     if (is_signed()) {
         return static_cast<unsigned long>(data_.i);
@@ -245,7 +261,7 @@ lexical_int_extractor::operator unsigned long() const
 }
 
 
-lexical_int_extractor::operator long long() const
+lexical_int_extractor::operator long long() const noexcept
 {
     if (is_signed()) {
         return static_cast<long long>(data_.i);
@@ -255,7 +271,7 @@ lexical_int_extractor::operator long long() const
 }
 
 
-lexical_int_extractor::operator unsigned long long() const
+lexical_int_extractor::operator unsigned long long() const noexcept
 {
     if (is_signed()) {
         return static_cast<unsigned long long>(data_.i);

@@ -11,49 +11,49 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-lexical_bool_formatter::lexical_bool_formatter()
+lexical_bool_formatter::lexical_bool_formatter() noexcept
 {
     string_ = &FALSE_STRING;
 }
 
 
-lexical_bool_formatter::lexical_bool_formatter(bool value)
+lexical_bool_formatter::lexical_bool_formatter(bool value) noexcept
 {
     string_ = value ? &TRUE_STRING : &FALSE_STRING;
 }
 
 
-size_t lexical_bool_formatter::size() const
+size_t lexical_bool_formatter::size() const noexcept
 {
     return string_->size();
 }
 
 
-size_t lexical_bool_formatter::length() const
+size_t lexical_bool_formatter::length() const noexcept
 {
     return size();
 }
 
 
-const char* lexical_bool_formatter::data() const
+const char* lexical_bool_formatter::data() const noexcept
 {
     return c_str();
 }
 
 
-const char* lexical_bool_formatter::c_str() const
+const char* lexical_bool_formatter::c_str() const noexcept
 {
     return string_->c_str();
 }
 
 
-string_view lexical_bool_formatter::string() const
+string_view lexical_bool_formatter::string() const noexcept
 {
     return string_view(data(), size());
 }
 
 
-lexical_bool_formatter::operator string_view() const
+lexical_bool_formatter::operator string_view() const noexcept
 {
     return string();
 }
@@ -71,7 +71,7 @@ lexical_bool_extractor::lexical_bool_extractor(const string_view &string)
 }
 
 
-bool lexical_bool_extractor::value() const
+bool lexical_bool_extractor::value() const noexcept
 {
     // WARNING: This is used as a patch for MSVC, where functional-style
     // type-casts are not allowed with nullptr_t.
@@ -79,7 +79,7 @@ bool lexical_bool_extractor::value() const
 }
 
 
-lexical_bool_extractor::operator bool() const
+lexical_bool_extractor::operator bool() const noexcept
 {
     return data_;
 }

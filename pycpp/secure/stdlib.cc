@@ -89,7 +89,7 @@ PYCPP_BEGIN_NAMESPACE
  *  the data. Implement a slow memset version to ensure no SSE
  *  instructions are used.
  */
-WEAK_ATTRIBUTE void* memset_slow(void* dst, int c, size_t len)
+WEAK_ATTRIBUTE void* memset_slow(void* dst, int c, size_t len) noexcept
 {
     volatile char* d = (volatile char*) dst;
 
@@ -102,7 +102,7 @@ WEAK_ATTRIBUTE void* memset_slow(void* dst, int c, size_t len)
 
 #if defined(HAVE_MEMSET_S)              // MEMSET_S
 
-WEAK_ATTRIBUTE void* memset_s_impl(void* dst, int c, size_t len)
+WEAK_ATTRIBUTE void* memset_s_impl(void* dst, int c, size_t len) noexcept
 {
     memset_s(dst, len, c, len);
     return dst;
@@ -117,7 +117,7 @@ static void * (* const volatile memset_ptr)(void*, int, size_t) = memset_slow;
 #endif
 
 
-WEAK_ATTRIBUTE void* secure_memset(void* dst, int c, size_t len)
+WEAK_ATTRIBUTE void* secure_memset(void* dst, int c, size_t len) noexcept
 {
     return (memset_ptr)(dst, c, len);
 }
@@ -133,7 +133,7 @@ WEAK_ATTRIBUTE void* secure_memset(void* dst, int c, size_t len)
  *  the data. Implement a slow memcpy version to ensure no SSE
  *  instructions are used.
  */
-WEAK_ATTRIBUTE void* memcpy_slow(void* dst, const void* src, size_t len)
+WEAK_ATTRIBUTE void* memcpy_slow(void* dst, const void* src, size_t len) noexcept
 {
     volatile char* d = (volatile char*) dst;
     volatile const char* s = (volatile const char*) src;
@@ -147,7 +147,7 @@ WEAK_ATTRIBUTE void* memcpy_slow(void* dst, const void* src, size_t len)
 
 #if defined(HAVE_MEMCPY_S)              // MEMCPY_S
 
-WEAK_ATTRIBUTE void* memcpy_s_impl(void* dst, const void* src, size_t len)
+WEAK_ATTRIBUTE void* memcpy_s_impl(void* dst, const void* src, size_t len) noexcept
 {
     memcpy_s(dst, len, src, len);
     return dst;
@@ -162,7 +162,7 @@ static void * (* const volatile memcpy_ptr)(void*, const void*, size_t) = memcpy
 #endif
 
 
-WEAK_ATTRIBUTE void* secure_memcpy(void* dst, const void* src, size_t len)
+WEAK_ATTRIBUTE void* secure_memcpy(void* dst, const void* src, size_t len) noexcept
 {
     return (memcpy_ptr)(dst, src, len);
 }
@@ -176,7 +176,7 @@ WEAK_ATTRIBUTE void* secure_memcpy(void* dst, const void* src, size_t len)
  *  the data. Implement a slow memcpy version to ensure no SSE
  *  instructions are used.
  */
-WEAK_ATTRIBUTE void* memmove_slow(void* dst, const void* src, size_t len)
+WEAK_ATTRIBUTE void* memmove_slow(void* dst, const void* src, size_t len) noexcept
 {
     volatile char* d = (volatile char*) dst;
     volatile const char* s = (volatile const char*) src;
@@ -199,7 +199,7 @@ WEAK_ATTRIBUTE void* memmove_slow(void* dst, const void* src, size_t len)
 
 #if defined(HAVE_MEMMOVE_S)              // MEMMOVE_S
 
-WEAK_ATTRIBUTE void* memmove_s_impl(void* dst, const void* src, size_t len)
+WEAK_ATTRIBUTE void* memmove_s_impl(void* dst, const void* src, size_t len) noexcept
 {
     memmove_s(dst, len, src, len);
     return dst;
@@ -214,7 +214,7 @@ static void * (* const volatile memmove_ptr)(void*, const void*, size_t) = memmo
 #endif
 
 
-WEAK_ATTRIBUTE void* secure_memmove(void* dst, const void* src, size_t len)
+WEAK_ATTRIBUTE void* secure_memmove(void* dst, const void* src, size_t len) noexcept
 {
     return (memmove_ptr)(dst, src, len);
 }
@@ -223,7 +223,7 @@ WEAK_ATTRIBUTE void* secure_memmove(void* dst, const void* src, size_t len)
 // ------
 
 
-WEAK_ATTRIBUTE void memcmp_prevent_lto(volatile const uint8_t* lhs, volatile const uint8_t* rhs, size_t len)
+WEAK_ATTRIBUTE void memcmp_prevent_lto(volatile const uint8_t* lhs, volatile const uint8_t* rhs, size_t len) noexcept
 {
     (void) lhs;
     (void) rhs;
@@ -236,7 +236,7 @@ WEAK_ATTRIBUTE void memcmp_prevent_lto(volatile const uint8_t* lhs, volatile con
  *  the data. Implement a slow memcmp version to ensure no SSE
  *  instructions are used.
  */
-int memcmp_slow(const void* lhs, const void* rhs, size_t len)
+int memcmp_slow(const void* lhs, const void* rhs, size_t len) noexcept
 {
     volatile const uint8_t* s1 = (volatile const uint8_t*) lhs;
     volatile const uint8_t* s2 = (volatile const uint8_t*) rhs;
@@ -257,7 +257,7 @@ int memcmp_slow(const void* lhs, const void* rhs, size_t len)
 static int (* const volatile memcmp_ptr)(const void*, const void*, size_t) = memcmp_slow;
 
 
-WEAK_ATTRIBUTE int secure_memcmp(const void* lhs, const void* rhs, size_t len)
+WEAK_ATTRIBUTE int secure_memcmp(const void* lhs, const void* rhs, size_t len) noexcept
 {
     return (memcmp_ptr)(lhs, rhs, len);
 }
@@ -268,28 +268,28 @@ WEAK_ATTRIBUTE int secure_memcmp(const void* lhs, const void* rhs, size_t len)
 
 #if defined(OS_WINDOWS)                 // WINDOWS
 
-static void secure_zero_impl(void* ptr, size_t len)
+static void secure_zero_impl(void* ptr, size_t len) noexcept
 {
     SecureZeroMemory(ptr, len);
 }
 
 #elif defined(HAVE_EXPLICIT_BZERO)      // EXPLICIT_BZERO
 
-static void secure_zero_impl(void* ptr, size_t len)
+static void secure_zero_impl(void* ptr, size_t len) noexcept
 {
     explicit_bzero(ptr, len);
 }
 
 #elif defined(HAVE_MEMSET_S)            // MEMSET_S
 
-static void secure_zero_impl(void* ptr, size_t len)
+static void secure_zero_impl(void* ptr, size_t len) noexcept
 {
     memset_s(ptr, len, 0, len);
 }
 
 #else                                   // POSIX
 
-static void secure_zero_impl(void* ptr, size_t len)
+static void secure_zero_impl(void* ptr, size_t len) noexcept
 {
     (memset_ptr)(ptr, 0, len);
 }
@@ -297,7 +297,7 @@ static void secure_zero_impl(void* ptr, size_t len)
 #endif
 
 
-void secure_zero(void* dst, size_t bytes)
+void secure_zero(void* dst, size_t bytes) noexcept
 {
     secure_zero_impl(dst, bytes);
 }
@@ -308,17 +308,18 @@ void secure_zero(void* dst, size_t bytes)
 static uint8_t CANARY[CANARY_SIZE];
 
 
-static const uint8_t* get_canary_impl()
+static const uint8_t* get_canary_impl() noexcept
 {
     if (sysrandom(CANARY, CANARY_SIZE) != CANARY_SIZE) {
-        throw runtime_error("Cannot read from CSPRNG for canary.");
+        printf("Cannot read from CSPRNG for canary.");
+        abort();
     }
 
     return CANARY;
 }
 
 
-static const uint8_t* get_canary()
+static const uint8_t* get_canary() noexcept
 {
     static const uint8_t* canary = get_canary_impl();
     return canary;
@@ -330,10 +331,11 @@ static const uint8_t* get_canary()
 
 #if defined(HAVE_ALIGNED_ALLOC)                    // HAVE ALIGNED ALLOC
 
-static size_t check_page_size(size_t size)
+static size_t check_page_size(size_t size) noexcept
 {
     if (size < CANARY_SIZE || size < sizeof(size_t)) {
-        throw runtime_error("Cannot get page size");
+        printf("Cannot get page size");
+        abort();
     }
     return size;
 }
@@ -341,7 +343,7 @@ static size_t check_page_size(size_t size)
 
 #if defined(_SC_PAGESIZE)                           // SC_PAGESIZE
 
-static size_t get_page_size_impl()
+static size_t get_page_size_impl() noexcept
 {
     static long page_size = sysconf(_SC_PAGESIZE);
     if (page_size > 0L) {
@@ -352,7 +354,7 @@ static size_t get_page_size_impl()
 
 #elif defined(OS_WINAPI_DESKTOP)
 
-static size_t get_page_size_impl()
+static size_t get_page_size_impl() noexcept
 {
     SYSTEM_INFO info;
     GetSystemInfo(&info);
@@ -367,14 +369,14 @@ static size_t get_page_size_impl()
 #endif
 
 
-static size_t get_page_size()
+static size_t get_page_size() noexcept
 {
     static size_t page_size = get_page_size_impl();
     return page_size;
 }
 
 
-static size_t page_round(size_t size)
+static size_t page_round(size_t size) noexcept
 {
     size_t page_mask = get_page_size() - 1U;
     return (size + page_mask) & ~page_mask;
@@ -389,54 +391,54 @@ static size_t page_round(size_t size)
 
 #if defined(HAVE_MADVISE)                       // MADVISE
 
-static void madvise_impl(void* ptr, size_t length, int advice)
+static void madvise_impl(void* ptr, size_t length, int advice) noexcept
 {
     madvise(ptr, length, advice);
 }
 
 #else                                           // NO MADVISE
 
-static void madvise_impl(void* ptr, size_t length, int advice)
+static void madvise_impl(void* ptr, size_t length, int advice) noexcept
 {}
 
 #endif
 
 #if defined(HAVE_MLOCK)                         // MLOCK
 
-static int mlock_impl(void* ptr, size_t len)
+static int mlock_impl(void* ptr, size_t len) noexcept
 {
     return mlock(ptr, len);
 }
 
 
-static int munlock_impl(void* ptr, size_t len)
+static int munlock_impl(void* ptr, size_t len) noexcept
 {
     return munlock(ptr, len);
 }
 
 #elif defined(OS_WINAPI_DESKTOP)                 // WINDOWS API
 
-static int mlock_impl(void* ptr, size_t len)
+static int mlock_impl(void* ptr, size_t len) noexcept
 {
     return -(VirtualLock(ptr, len) == 0);
 }
 
 
-static int munlock_impl(void* ptr, size_t len)
+static int munlock_impl(void* ptr, size_t len) noexcept
 {
     return -(VirtualUnlock(ptr, len) == 0);
 }
 
 #else                                           // NO MLOCK
 
-static int mlock_impl(void* ptr, size_t len)
+static int mlock_impl(void* ptr, size_t len) noexcept
 {
     errno = ENOSYS;
     return -1;
 }
 
 
-static int munlock_impl(void* ptr, size_t len)
+static int munlock_impl(void* ptr, size_t len) noexcept
 {
     errno = ENOSYS;
     return -1;
@@ -445,14 +447,14 @@ static int munlock_impl(void* ptr, size_t len)
 #endif
 
 
-int secure_mlock(void* ptr, const size_t len)
+int secure_mlock(void* ptr, const size_t len) noexcept
 {
     madvise_impl(ptr, len, MADV_DONTDUMP);
     return mlock_impl(ptr, len);
 }
 
 
-int secure_munlock(void* ptr, const size_t len)
+int secure_munlock(void* ptr, const size_t len) noexcept
 {
     secure_zero(ptr, len);
     madvise_impl(ptr, len, MADV_DODUMP);
@@ -462,7 +464,7 @@ int secure_munlock(void* ptr, const size_t len)
 // PAGE PROTECTION
 // ---------------
 
-static uint8_t* unprotected_ptr_from_user_ptr(const void* ptr)
+static uint8_t* unprotected_ptr_from_user_ptr(const void* ptr) noexcept
 {
     uintptr_t unprotected_ptr_u;
     uint8_t* canary_ptr;
@@ -473,7 +475,8 @@ static uint8_t* unprotected_ptr_from_user_ptr(const void* ptr)
     page_mask = page_size - 1U;
     unprotected_ptr_u = ((uintptr_t) canary_ptr & (uintptr_t) ~page_mask);
     if (unprotected_ptr_u <= page_size * 2U) {
-        throw runtime_error("Unable to get unprotected ptr.");
+        printf("Unable to get unprotected ptr.");
+        abort();
     }
 
     return (uint8_t*) unprotected_ptr_u;
@@ -481,13 +484,13 @@ static uint8_t* unprotected_ptr_from_user_ptr(const void* ptr)
 
 #if defined(HAVE_PAGE_PROTECTION)
 
-static void* secure_memcpy_page_protection(void* dst, const void* src, size_t n)
+static void* secure_memcpy_page_protection(void* dst, const void* src, size_t n) noexcept
 {
     return dst;
 }
 
 
-static int secure_memcmp_page_protection(const void* lhs, const void* rhs, size_t n)
+static int secure_memcmp_page_protection(const void* lhs, const void* rhs, size_t n) noexcept
 {
     return 0;
 }
@@ -509,19 +512,19 @@ static int secure_protect(void *ptr, int (*cb)(void *ptr, size_t size))
 
 #else
 
-static void* secure_memcpy_page_protection(void* dst, const void* src, size_t n)
+static void* secure_memcpy_page_protection(void* dst, const void* src, size_t n) noexcept
 {
     return memcpy(dst, src, n);
 }
 
 
-static int secure_memcmp_page_protection(const void* lhs, const void* rhs, size_t n)
+static int secure_memcmp_page_protection(const void* lhs, const void* rhs, size_t n) noexcept
 {
     return secure_memcmp(lhs, rhs, n);
 }
 
 
-static int secure_protect(void *ptr, int (*cb)(void *ptr, size_t size))
+static int secure_protect(void *ptr, int (*cb)(void *ptr, size_t size)) noexcept
 {
     (void) ptr;
     (void) cb;
@@ -535,7 +538,7 @@ static int secure_protect(void *ptr, int (*cb)(void *ptr, size_t size))
 // --------
 
 
-static int secure_mprotect_noaccess_impl(void* ptr, size_t size)
+static int secure_mprotect_noaccess_impl(void* ptr, size_t size) noexcept
 {
 #ifdef HAVE_MPROTECT
     return mprotect(ptr, size, PROT_NONE);
@@ -549,7 +552,7 @@ static int secure_mprotect_noaccess_impl(void* ptr, size_t size)
 }
 
 
-int secure_mprotect_noaccess(void *ptr)
+int secure_mprotect_noaccess(void *ptr) noexcept
 {
     return secure_protect(ptr, secure_mprotect_noaccess_impl);
 }
@@ -557,7 +560,7 @@ int secure_mprotect_noaccess(void *ptr)
 // READONLY
 // --------
 
-static int secure_mprotect_readonly_impl(void* ptr, size_t size)
+static int secure_mprotect_readonly_impl(void* ptr, size_t size) noexcept
 {
 #ifdef HAVE_MPROTECT
     return mprotect(ptr, size, PROT_READ);
@@ -571,7 +574,7 @@ static int secure_mprotect_readonly_impl(void* ptr, size_t size)
 }
 
 
-int secure_mprotect_readonly(void *ptr)
+int secure_mprotect_readonly(void *ptr) noexcept
 {
     return secure_protect(ptr, secure_mprotect_readonly_impl);
 }
@@ -579,7 +582,7 @@ int secure_mprotect_readonly(void *ptr)
 // READWRITE
 // ---------
 
-static int secure_mprotect_readwrite_impl(void* ptr, size_t size)
+static int secure_mprotect_readwrite_impl(void* ptr, size_t size) noexcept
 {
 #ifdef HAVE_MPROTECT
     return mprotect(ptr, size, PROT_READ | PROT_WRITE);
@@ -593,7 +596,7 @@ static int secure_mprotect_readwrite_impl(void* ptr, size_t size)
 }
 
 
-int secure_mprotect_readwrite(void *ptr)
+int secure_mprotect_readwrite(void *ptr) noexcept
 {
     return secure_protect(ptr, secure_mprotect_readwrite_impl);
 }
@@ -604,7 +607,7 @@ int secure_mprotect_readwrite(void *ptr)
 
 #if defined(MAP_ANON) && defined(HAVE_MMAP)                 // MMAP
 
-static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size) noexcept
 {
     void* ptr;
     if ((ptr = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE | MAP_NOCORE, -1, 0)) == MAP_FAILED) {
@@ -615,7 +618,7 @@ static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
 
 #elif defined(HAVE_POSIX_MEMALIGN)                          // POSIX_MEMALIGN
 
-static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size) noexcept
 {
     static size_t page_size = get_page_size();
 
@@ -628,7 +631,7 @@ static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
 
 #elif defined(OS_WINAPI_DESKTOP)                           // WINDOWS
 
-static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size) noexcept
 {
     return VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
 }
@@ -636,7 +639,7 @@ static MALLOC_ATTRIBUTE void* aligned_alloc_impl(size_t size)
 #endif
 
 
-static MALLOC_ATTRIBUTE void* aligned_alloc(size_t size)
+static MALLOC_ATTRIBUTE void* aligned_alloc(size_t size) noexcept
 {
     return aligned_alloc_impl(size);
 }
@@ -644,7 +647,7 @@ static MALLOC_ATTRIBUTE void* aligned_alloc(size_t size)
 
 #if defined(HAVE_ALIGNED_ALLOC)                     // HAVE ALIGNED ALLOC
 
-static MALLOC_ATTRIBUTE void* secure_malloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* secure_malloc_impl(size_t size) noexcept
 {
     void* user_ptr;
     uint8_t* base_ptr;
@@ -695,7 +698,7 @@ static MALLOC_ATTRIBUTE void* secure_malloc_impl(size_t size)
 
 #else                                               // NO ALIGNED ALLOC
 
-static MALLOC_ATTRIBUTE void* secure_malloc_impl(size_t size)
+static MALLOC_ATTRIBUTE void* secure_malloc_impl(size_t size) noexcept
 {
     if (size > 0) {
         return malloc(size);
@@ -706,7 +709,7 @@ static MALLOC_ATTRIBUTE void* secure_malloc_impl(size_t size)
 #endif
 
 
-void*  MALLOC_ATTRIBUTE secure_malloc(size_t size)
+void*  MALLOC_ATTRIBUTE secure_malloc(size_t size) noexcept
 {
     void* ptr = secure_malloc_impl(size);
     if (size == 0) {
@@ -722,7 +725,7 @@ void*  MALLOC_ATTRIBUTE secure_malloc(size_t size)
 // CALLOC
 // ------
 
-void* secure_calloc(size_t num, size_t size)
+void* secure_calloc(size_t num, size_t size) noexcept
 {
     void* ptr = secure_malloc(num * size);
     secure_zero(ptr, num * size);
@@ -735,21 +738,21 @@ void* secure_calloc(size_t num, size_t size)
 
 #if defined(MAP_ANON) && defined(HAVE_MMAP)                 // MMAP
 
-static void aligned_free_impl(void* ptr, size_t size)
+static void aligned_free_impl(void* ptr, size_t size) noexcept
 {
     munmap(ptr, size);
 }
 
 #elif defined(HAVE_POSIX_MEMALIGN)                          // POSIX_MEMALIGN
 
-static void aligned_free_impl(void* ptr, size_t size)
+static void aligned_free_impl(void* ptr, size_t size) noexcept
 {
     free(ptr);
 }
 
 #elif defined(OS_WINAPI_DESKTOP)                            // WINDOWS
 
-static void aligned_free_impl(void* ptr, size_t size)
+static void aligned_free_impl(void* ptr, size_t size) noexcept
 {
     VirtualFree(ptr, 0U, MEM_RELEASE);
 }
@@ -760,13 +763,13 @@ static void aligned_free_impl(void* ptr, size_t size)
 #if defined(HAVE_ALIGNED_ALLOC)                     // HAVE ALIGNED ALLOC
 
 
-static void aligned_free(uint8_t* ptr, size_t size)
+static void aligned_free(uint8_t* ptr, size_t size) noexcept
 {
     aligned_free_impl(ptr, size);
 }
 
 
-static void secure_free_impl(void* ptr)
+static void secure_free_impl(void* ptr) noexcept
 {
     uint8_t* base_ptr;
     uint8_t* canary_ptr;
@@ -787,10 +790,12 @@ static void secure_free_impl(void* ptr)
     total_size = page_size + page_size + unprotected_size + page_size;
     secure_mprotect_readwrite_impl(base_ptr, total_size);
     if (secure_memcmp(canary_ptr, canary, CANARY_SIZE) != 0) {
-        throw out_of_range("Access out of bounds memory.");
+        printf("Access out of bounds memory.");
+        abort();
     }
     if (secure_memcmp_page_protection(unprotected_ptr + unprotected_size, canary, CANARY_SIZE) != 0) {
-        throw out_of_range("Access out of bounds memory.");
+        printf("Access out of bounds memory.");
+        abort();
     }
     secure_munlock(unprotected_ptr, unprotected_size);
     aligned_free(base_ptr, total_size);
@@ -798,14 +803,14 @@ static void secure_free_impl(void* ptr)
 
 #else                                               // NO ALIGNED ALLOC
 
-static void secure_free_impl(void* ptr)
+static void secure_free_impl(void* ptr) noexcept
 {
     free(ptr);
 }
 
 #endif
 
-void secure_free(void* ptr)
+void secure_free(void* ptr) noexcept
 {
     secure_free_impl(ptr);
 }

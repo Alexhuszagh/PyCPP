@@ -14,25 +14,28 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-
 /**
  *  \brief Generic formatter for NULL values.
  */
 struct lexical_null_formatter
 {
-    lexical_null_formatter();
-    lexical_null_formatter(nullptr_t nullp);
+    lexical_null_formatter() noexcept = default;
+    lexical_null_formatter(nullptr_t nullp) noexcept;
+    lexical_null_formatter(const lexical_null_formatter&) noexcept = default;
+    lexical_null_formatter& operator=(const lexical_null_formatter&) noexcept = default;
+    lexical_null_formatter(lexical_null_formatter&&) noexcept = default;
+    lexical_null_formatter& operator=(lexical_null_formatter&&) noexcept = default;
 
     // DATA
-    size_t size() const;
-    size_t length() const;
-    const char* data() const;
-    const char* c_str() const;
+    size_t size() const noexcept;
+    size_t length() const noexcept;
+    const char* data() const noexcept;
+    const char* c_str() const noexcept;
 
-    string_view string() const;
+    string_view string() const noexcept;
 
     // CONVERSIONS
-    operator string_view() const;
+    operator string_view() const noexcept;
 };
 
 /**
@@ -41,10 +44,25 @@ struct lexical_null_formatter
 struct lexical_null_extractor
 {
     lexical_null_extractor(const string_view& string);
+    lexical_null_extractor(const lexical_null_extractor&) noexcept = default;
+    lexical_null_extractor& operator=(const lexical_null_extractor&) noexcept = default;
+    lexical_null_extractor(lexical_null_extractor&&) noexcept = default;
+    lexical_null_extractor& operator=(lexical_null_extractor&&) noexcept = default;
 
     // CONVERSIONS
-    nullptr_t value() const;
-    operator nullptr_t() const;
+    nullptr_t value() const noexcept;
+    operator nullptr_t() const noexcept;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <>
+struct is_relocatable<lexical_null_formatter>: true_type
+{};
+
+template <>
+struct is_relocatable<lexical_null_extractor>: true_type
+{};
 
 PYCPP_END_NAMESPACE

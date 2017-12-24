@@ -18,13 +18,13 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Convert string to 32-bit IEE754 floating point value.
  */
-float atof32(const char* first, const char*& last, uint8_t base = 10);
-float atof32(const string_view& string, uint8_t base = 10);
+float atof32(const char* first, const char*& last, uint8_t base = 10) noexcept;
+float atof32(const string_view& string, uint8_t base = 10) noexcept;
 
 /**
  *  \brief Convert string to 64-bit IEE754 floating point value.
  */
-double atof64(const char* first, const char*& last, uint8_t base = 10);
-double atof64(const string_view& string, uint8_t base = 10);
+double atof64(const char* first, const char*& last, uint8_t base = 10) noexcept;
+double atof64(const string_view& string, uint8_t base = 10) noexcept;
 
 PYCPP_END_NAMESPACE

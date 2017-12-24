@@ -25,14 +25,14 @@ using atoi_function = function<Int(const char*, const char*&, uint8_t)>;
 // EXTERN
 // ------
 
-extern precise_float_t atoi_precise_float(const char* first, const char*& last, uint8_t base);
-extern bool is_valid_digit(char c, uint8_t base);
+extern precise_float_t atoi_precise_float(const char* first, const char*& last, uint8_t base) noexcept;
+extern bool is_valid_digit(char c, uint8_t base) noexcept;
 
 // HELPERS
 // -------
 
 template <typename Float, typename Int, int Significand>
-Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<Int> function)
+Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<Int> function) noexcept
 {
     static_assert(numeric_limits<Float>::is_iec559, "Must support IEC 559/IEEE 754 standard.");
 
@@ -93,7 +93,7 @@ Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<In
 // FUNCTIONS
 // ---------
 
-float atof32(const char* first, const char*& last, uint8_t base)
+float atof32(const char* first, const char*& last, uint8_t base) noexcept
 {
     int32_t (*f)(const char*, const char*&, uint8_t) = atoi32;
     // a 32-bit, base-36 number can encoded max 7 digits, so
@@ -102,7 +102,7 @@ float atof32(const char* first, const char*& last, uint8_t base)
 }
 
 
-float atof32(const string_view& string, uint8_t base)
+float atof32(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();
@@ -110,7 +110,7 @@ float atof32(const string_view& string, uint8_t base)
 }
 
 
-double atof64(const char* first, const char*& last, uint8_t base)
+double atof64(const char* first, const char*& last, uint8_t base) noexcept
 {
     int64_t (*f)(const char*, const char*&, uint8_t) = atoi64;
     // a 64-bit, base-36 number can encoded max 13 digits, so
@@ -119,7 +119,7 @@ double atof64(const char* first, const char*& last, uint8_t base)
 }
 
 
-double atof64(const string_view& string, uint8_t base)
+double atof64(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();

@@ -134,7 +134,7 @@ static constexpr fp_t POWERS_TEN[] = {
 
 // EXPONENT
 
-char e_notation_char(uint8_t base)
+char e_notation_char(uint8_t base) noexcept
 {
     // After radix of base15 and higher, 'E' and 'e' are
     // part of the controlled vocabulary.
@@ -145,7 +145,7 @@ char e_notation_char(uint8_t base)
 
 // FPCONV GRISU
 
-static fp_t find_cachedpow10(int exp, int* k)
+static fp_t find_cachedpow10(int exp, int* k) noexcept
 {
     const double one_log_ten = 0.30102999566398114;
 
@@ -172,14 +172,14 @@ static fp_t find_cachedpow10(int exp, int* k)
 }
 
 
-static inline uint64_t get_dbits(double d)
+static inline uint64_t get_dbits(double d) noexcept
 {
-    dbits_t dbl_bits = { d };
+    dbits_t dbl_bits = {d};
     return dbl_bits.i;
 }
 
 
-static inline double get_u64bits(uint64_t u64)
+static inline double get_u64bits(uint64_t u64) noexcept
 {
     dbits_t dbl_bits;
     dbl_bits.i = u64;
@@ -187,7 +187,7 @@ static inline double get_u64bits(uint64_t u64)
 }
 
 
-static fp_t build_fp(double d)
+static fp_t build_fp(double d) noexcept
 {
     uint64_t bits = get_dbits(d);
 
@@ -206,7 +206,7 @@ static fp_t build_fp(double d)
     return fp;
 }
 
-static void normalize(fp_t* fp)
+static void normalize(fp_t* fp) noexcept
 {
     while ((fp->frac & hiddenbit) == 0) {
         fp->frac <<= 1;
@@ -219,7 +219,7 @@ static void normalize(fp_t* fp)
 }
 
 
-static void get_normalized_boundaries(fp_t* fp, fp_t* lower, fp_t* upper)
+static void get_normalized_boundaries(fp_t* fp, fp_t* lower, fp_t* upper) noexcept
 {
     upper->frac = (fp->frac << 1) + 1;
     upper->exp  = fp->exp - 1;
@@ -246,7 +246,7 @@ static void get_normalized_boundaries(fp_t* fp, fp_t* lower, fp_t* upper)
 }
 
 
-static fp_t multiply(fp_t* a, fp_t* b)
+static fp_t multiply(fp_t* a, fp_t* b) noexcept
 {
     const uint64_t lomask = 0x00000000FFFFFFFF;
 
@@ -268,7 +268,7 @@ static fp_t multiply(fp_t* a, fp_t* b)
 }
 
 
-static void round_digit(char* digits, int ndigits, uint64_t delta, uint64_t rem, uint64_t kappa, uint64_t frac)
+static void round_digit(char* digits, int ndigits, uint64_t delta, uint64_t rem, uint64_t kappa, uint64_t frac) noexcept
 {
     while (rem < frac && delta - rem >= kappa &&
            (rem + kappa < frac || frac - rem > rem + kappa - frac)) {
@@ -279,7 +279,7 @@ static void round_digit(char* digits, int ndigits, uint64_t delta, uint64_t rem,
 }
 
 
-static int generate_digits(fp_t* fp, fp_t* upper, fp_t* lower, char* digits, int* K)
+static int generate_digits(fp_t* fp, fp_t* upper, fp_t* lower, char* digits, int* K) noexcept
 {
     uint64_t wfrac = upper->frac - fp->frac;
     uint64_t delta = upper->frac - lower->frac;
@@ -340,7 +340,7 @@ static int generate_digits(fp_t* fp, fp_t* upper, fp_t* lower, char* digits, int
     }
 }
 
-static int grisu2(double d, char* digits, int* K)
+static int grisu2(double d, char* digits, int* K) noexcept
 {
     fp_t w = build_fp(d);
 
@@ -365,7 +365,7 @@ static int grisu2(double d, char* digits, int* K)
 }
 
 
-static int emit_digits(char* digits, int ndigits, char* dest, int K)
+static int emit_digits(char* digits, int ndigits, char* dest, int K) noexcept
 {
     int exp = absv(K + ndigits - 1);
 
@@ -438,7 +438,7 @@ static int emit_digits(char* digits, int ndigits, char* dest, int K)
     return idx;
 }
 
-static int filter_special(double fp, char* dest)
+static int filter_special(double fp, char* dest) noexcept
 {
     if(fp == 0.0) {
         dest[0] = '0';
@@ -464,7 +464,7 @@ static int filter_special(double fp, char* dest)
 }
 
 
-int fpconv_dtoa(double d, char* dest)
+int fpconv_dtoa(double d, char* dest) noexcept
 {
     char digits[18];
     int str_len = 0;
@@ -487,7 +487,7 @@ int fpconv_dtoa(double d, char* dest)
 /**
  *  \brief Returns true if the double is a denormal.
  */
-bool v8_is_denormal(double d)
+bool v8_is_denormal(double d) noexcept
 {
     uint64_t d64 = get_dbits(d);
     return (d64 & EXPONENT_MASK) == 0;
@@ -497,35 +497,35 @@ bool v8_is_denormal(double d)
  *  We consider denormals not to be special.
  *  Hence only Infinity and NaN are special.
  */
-bool v8_is_special(double d)
+bool v8_is_special(double d) noexcept
 {
     uint64_t d64 = get_dbits(d);
     return (d64 & EXPONENT_MASK) == EXPONENT_MASK;
 }
 
 
-bool v8_is_nan(double d)
+bool v8_is_nan(double d) noexcept
 {
     uint64_t d64 = get_dbits(d);
     return ((d64 & EXPONENT_MASK) == EXPONENT_MASK) && ((d64 & SIGNIFICAND_MASK) != 0);
 }
 
 
-bool v8_is_infinite(double d)
+bool v8_is_infinite(double d) noexcept
 {
     uint64_t d64 = get_dbits(d);
     return ((d64 & EXPONENT_MASK) == EXPONENT_MASK) && ((d64 & SIGNIFICAND_MASK) == 0);
 }
 
 
-static int v8_sign(double d)
+static int v8_sign(double d) noexcept
 {
     uint64_t d64 = get_dbits(d);
     return (d64 & SIGN_MASK) == 0 ? 1 : -1;
 }
 
 
-int v8_exponent(double d)
+int v8_exponent(double d) noexcept
 {
     if (v8_is_denormal(d)) {
         return DENORMAL_EXPONENT;
@@ -537,7 +537,7 @@ int v8_exponent(double d)
 }
 
 
-static uint64_t v8_significand(double d)
+static uint64_t v8_significand(double d) noexcept
 {
     uint64_t d64 = get_dbits(d);
     uint64_t s = d64 & SIGNIFICAND_MASK;
@@ -552,7 +552,7 @@ static uint64_t v8_significand(double d)
 /**
  *  \brief Returns the next greater double. Returns +infinity on input +infinity.
  */
-static double v8_next_double(double d)
+static double v8_next_double(double d) noexcept
 {
     uint64_t d64 = get_dbits(d);
     if (d64 == U64_INFINITY) {
@@ -570,7 +570,7 @@ static double v8_next_double(double d)
 }
 
 
-static double v8_modulo(double x, double y)
+static double v8_modulo(double x, double y) noexcept
 {
 #if defined(OS_WINDOWS)
     // Workaround MS fmod bugs. ECMA-262 says:
@@ -593,7 +593,7 @@ static double v8_modulo(double x, double y)
 }
 
 
-static int naive_exponent(double d, uint8_t base)
+static int naive_exponent(double d, uint8_t base) noexcept
 {
     // floor returns the minimal value, which is our
     // desired exponent
@@ -603,7 +603,7 @@ static int naive_exponent(double d, uint8_t base)
 }
 
 
-static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
+static void ftoa_naive(double d, char* first, char*& last, uint8_t base) noexcept
 {
     assert(base >= 2 && base <= 36);
 
@@ -770,20 +770,20 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base)
 // BASEN
 
 
-static void ftoa_base10(double value, char* first, char*& last)
+static void ftoa_base10(double value, char* first, char*& last) noexcept
 {
     int len = fpconv_dtoa(value, first);
     last = first + len;
 }
 
 
-static void ftoa_basen(double value, char* first, char*& last, uint8_t base)
+static void ftoa_basen(double value, char* first, char*& last, uint8_t base) noexcept
 {
     ftoa_naive(value, first, last, base);
 }
 
 
-static void ftoa_impl(double value, char* first, char*& last, uint8_t base)
+static void ftoa_impl(double value, char* first, char*& last, uint8_t base) noexcept
 {
     // disable this check in release builds, since it's a logic error
     assert(last - first >= BUFFER_SIZE && "Need a larger buffer.");
@@ -808,7 +808,7 @@ static void ftoa_impl(double value, char* first, char*& last, uint8_t base)
 }
 
 
-void ftoa_(double value, char* first, char*& last, uint8_t base)
+void ftoa_(double value, char* first, char*& last, uint8_t base) noexcept
 {
     // sanity checks
     assert(first <= last);
@@ -841,7 +841,7 @@ void ftoa_(double value, char* first, char*& last, uint8_t base)
 // ---------
 
 
-void f32toa(float value, char* first, char*& last, uint8_t base)
+void f32toa(float value, char* first, char*& last, uint8_t base) noexcept
 {
     ftoa_(value, first, last, base);
 }
@@ -856,7 +856,7 @@ std::string f32toa(float value, uint8_t base)
 }
 
 
-void f64toa(double value, char* first, char*& last, uint8_t base)
+void f64toa(double value, char* first, char*& last, uint8_t base) noexcept
 {
     ftoa_(value, first, last, base);
 }

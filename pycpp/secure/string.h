@@ -116,7 +116,11 @@ insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
  *  STL-like string that wipes memory during all allocation events,
  *  to avoid leaving sensitvie information in memory.
  */
-template<typename Char, typename Traits = secure_char_traits<Char>, typename Allocator = secure_allocator<Char>>
+template<
+    typename Char,
+    typename Traits = secure_char_traits<Char>,
+    typename Allocator = secure_allocator<Char>
+>
 struct secure_basic_string
 {
 public:
@@ -152,7 +156,7 @@ public:
     secure_basic_string(self_t&& str);
     secure_basic_string(self_t&& str, const allocator_type& alloc);
     secure_basic_string& operator=(self_t&& str);
-    ~secure_basic_string();
+    ~secure_basic_string() noexcept;
 
     secure_basic_string(const self_t& str, size_t pos, size_t len = npos, const allocator_type& alloc = allocator_type());
     secure_basic_string(const_pointer s, const allocator_type& alloc = allocator_type());
@@ -162,28 +166,28 @@ public:
     secure_basic_string(initializer_list<value_type> list, const allocator_type& alloc = allocator_type());
 
     // MEMORY
-    void noaccess();
-    void readonly();
-    void readwrite();
-    void mlock();
-    void munlock();
+    void noaccess() noexcept;
+    void readonly() noexcept;
+    void readwrite() noexcept;
+    void mlock() noexcept;
+    void munlock() noexcept;
 
     // ITERATORS
-    iterator begin();
-    iterator end();
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_reverse_iterator rbegin() const;
-    const_reverse_iterator rend() const;
-    const_iterator cbegin() const;
-    const_iterator cend() const;
-    const_reverse_iterator crbegin() const;
-    const_reverse_iterator crend() const;
+    iterator begin() noexcept;
+    iterator end() noexcept;
+    const_iterator begin() const noexcept;
+    const_iterator end() const noexcept;
+    const_reverse_iterator rbegin() const noexcept;
+    const_reverse_iterator rend() const noexcept;
+    const_iterator cbegin() const noexcept;
+    const_iterator cend() const noexcept;
+    const_reverse_iterator crbegin() const noexcept;
+    const_reverse_iterator crend() const noexcept;
 
     // CAPACITY
-    size_type size() const;
-    size_type length() const;
-    size_type capacity() const;
+    size_type size() const noexcept;
+    size_type length() const noexcept;
+    size_type capacity() const noexcept;
     bool empty() const noexcept;
     size_type max_size() const noexcept;
     void clear();
@@ -193,14 +197,14 @@ public:
     void resize(size_type n, value_type c);
 
     // ELEMENT ACCESS
-    reference operator[](size_type pos);
-    const_reference operator[](size_type pos) const;
-    reference at(size_type pos);
-    const_reference at(size_type pos) const;
-    reference front();
-    const_reference front() const;
-    reference back();
-    const_reference back() const;
+    reference operator[](size_type pos) noexcept;
+    const_reference operator[](size_type pos) const noexcept;
+    reference at(size_type pos) noexcept;
+    const_reference at(size_type pos) const noexcept;
+    reference front() noexcept;
+    const_reference front() const noexcept;
+    reference back() noexcept;
+    const_reference back() const noexcept;
 
     // MODIFIERS
     self_t& operator+=(const self_t& str);
@@ -247,7 +251,7 @@ public:
     template <typename Iter> self_t& replace(const_iterator p1, const_iterator p2, Iter first, Iter last);
     self_t& replace(const_iterator p1, const_iterator p2, initializer_list<char> list);
     void pop_back();
-    void swap(self_t& other);
+    void swap(self_t&) noexcept;
 
     // STRING OPERATIONS
     const_pointer c_str() const noexcept;
@@ -312,8 +316,8 @@ public:
     self_t substr(size_type pos = 0, size_type len = npos) const;
 
     // CONVERSIONS
-    explicit operator bool() const;
-    explicit operator view_type() const;
+    explicit operator bool() const noexcept;
+    explicit operator view_type() const noexcept;
 
 private:
     size_type capacity_;
@@ -321,7 +325,7 @@ private:
     compressed_pair<pointer, allocator_type> data_;
 
     void init();
-    void reset();
+    void reset() noexcept;
     void reallocate(size_type n);
 
     // NON-MEMBER FUNCTIONS
@@ -478,6 +482,17 @@ private:
     friend secure_basic_string<C, T1, A> operator+(const basic_string_view<C, T2>& lhs, secure_basic_string<C, T1, A>&& rhs);
 };
 
+
+// SPECIALIZATION
+// --------------
+
+template<
+    typename Char,
+    typename Traits,
+    typename Allocator
+>
+struct is_relocatable<secure_basic_string<Char, Traits, Allocator>>: is_relocatable<Allocator>
+{};
 
 // IMPLEMENTATION
 // --------------
@@ -947,7 +962,7 @@ auto secure_basic_string<C, T, A>::operator=(self_t&& str) -> self_t&
 
 
 template <typename C, typename T, typename A>
-secure_basic_string<C, T, A>::~secure_basic_string()
+secure_basic_string<C, T, A>::~secure_basic_string() noexcept
 {
     reset();
 }
@@ -1035,126 +1050,126 @@ secure_basic_string<C, T, A>::secure_basic_string(initializer_list<value_type> l
 
 
 template <typename C, typename T, typename A>
-void secure_basic_string<C, T, A>::noaccess()
+void secure_basic_string<C, T, A>::noaccess() noexcept
 {
     secure_mprotect_noaccess(get<0>(data_));
 }
 
 
 template <typename C, typename T, typename A>
-void secure_basic_string<C, T, A>::readonly()
+void secure_basic_string<C, T, A>::readonly() noexcept
 {
     secure_mprotect_readonly(get<0>(data_));
 }
 
 
 template <typename C, typename T, typename A>
-void secure_basic_string<C, T, A>::readwrite()
+void secure_basic_string<C, T, A>::readwrite() noexcept
 {
     secure_mprotect_readwrite(get<0>(data_));
 }
 
 
 template <typename C, typename T, typename A>
-void secure_basic_string<C, T, A>::mlock()
+void secure_basic_string<C, T, A>::mlock() noexcept
 {
     secure_mlock(get<0>(data_), capacity_ * sizeof(value_type));
 }
 
 
 template <typename C, typename T, typename A>
-void secure_basic_string<C, T, A>::munlock()
+void secure_basic_string<C, T, A>::munlock() noexcept
 {
     secure_munlock(get<0>(data_), capacity_ * sizeof(value_type));
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::begin() -> iterator
+auto secure_basic_string<C, T, A>::begin() noexcept -> iterator
 {
     return iterator(get<0>(data_));
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::end() -> iterator
+auto secure_basic_string<C, T, A>::end() noexcept -> iterator
 {
     return begin() + length_;
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::begin() const -> const_iterator
+auto secure_basic_string<C, T, A>::begin() const noexcept -> const_iterator
 {
     return get<0>(data_);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::end() const -> const_iterator
+auto secure_basic_string<C, T, A>::end() const noexcept -> const_iterator
 {
     return get<0>(data_) + length_;
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::rbegin() const -> const_reverse_iterator
+auto secure_basic_string<C, T, A>::rbegin() const noexcept -> const_reverse_iterator
 {
     return const_reverse_iterator(end());
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::rend() const -> const_reverse_iterator
+auto secure_basic_string<C, T, A>::rend() const noexcept -> const_reverse_iterator
 {
     return const_reverse_iterator(begin());
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::cbegin() const -> const_iterator
+auto secure_basic_string<C, T, A>::cbegin() const noexcept -> const_iterator
 {
     return begin();
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::cend() const -> const_iterator
+auto secure_basic_string<C, T, A>::cend() const noexcept -> const_iterator
 {
     return end();
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::crbegin() const -> const_reverse_iterator
+auto secure_basic_string<C, T, A>::crbegin() const noexcept -> const_reverse_iterator
 {
     return rbegin();
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::crend() const -> const_reverse_iterator
+auto secure_basic_string<C, T, A>::crend() const noexcept -> const_reverse_iterator
 {
     return rend();
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::size() const -> size_type
+auto secure_basic_string<C, T, A>::size() const noexcept -> size_type
 {
     return length_;
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::length() const -> size_type
+auto secure_basic_string<C, T, A>::length() const noexcept -> size_type
 {
     return length_;
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::capacity() const -> size_type
+auto secure_basic_string<C, T, A>::capacity() const noexcept -> size_type
 {
     return capacity_;
 }
@@ -1225,7 +1240,7 @@ void secure_basic_string<C, T, A>::resize(size_type n, value_type c)
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator[](size_type pos) -> reference
+auto secure_basic_string<C, T, A>::operator[](size_type pos) noexcept -> reference
 {
     assert(pos <= size() && "string index out of bounds");
     return *(get<0>(data_) + pos);
@@ -1233,7 +1248,7 @@ auto secure_basic_string<C, T, A>::operator[](size_type pos) -> reference
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::operator[](size_type pos) const -> const_reference
+auto secure_basic_string<C, T, A>::operator[](size_type pos) const noexcept -> const_reference
 {
     assert(pos <= size() && "string index out of bounds");
     return *(get<0>(data_) + pos);
@@ -1241,21 +1256,21 @@ auto secure_basic_string<C, T, A>::operator[](size_type pos) const -> const_refe
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::at(size_type pos) -> reference
+auto secure_basic_string<C, T, A>::at(size_type pos) noexcept -> reference
 {
     return operator[](pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::at(size_type pos) const -> const_reference
+auto secure_basic_string<C, T, A>::at(size_type pos) const noexcept -> const_reference
 {
     return operator[](pos);
 }
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::front() -> reference
+auto secure_basic_string<C, T, A>::front() noexcept -> reference
 {
     assert(!empty() && "string::front(): string is empty");
     return *(get<0>(data_));
@@ -1263,7 +1278,7 @@ auto secure_basic_string<C, T, A>::front() -> reference
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::front() const -> const_reference
+auto secure_basic_string<C, T, A>::front() const noexcept -> const_reference
 {
     assert(!empty() && "string::front(): string is empty");
     return *get<0>(data_);
@@ -1271,7 +1286,7 @@ auto secure_basic_string<C, T, A>::front() const -> const_reference
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::back() -> reference
+auto secure_basic_string<C, T, A>::back() noexcept -> reference
 {
     assert(!empty() && "string::back(): string is empty");
     return *(get<0>(data_) + length_ - 1);
@@ -1279,7 +1294,7 @@ auto secure_basic_string<C, T, A>::back() -> reference
 
 
 template <typename C, typename T, typename A>
-auto secure_basic_string<C, T, A>::back() const -> const_reference
+auto secure_basic_string<C, T, A>::back() const noexcept -> const_reference
 {
     assert(!empty() && "string::back(): string is empty");
     return *(get<0>(data_) + length_ - 1);
@@ -1724,11 +1739,12 @@ void secure_basic_string<C, T, A>::pop_back()
 
 
 template <typename C, typename T, typename A>
-void secure_basic_string<C, T, A>::swap(self_t& other)
+void secure_basic_string<C, T, A>::swap(self_t& rhs) noexcept
 {
-    PYCPP_NAMESPACE::swap(capacity_, other.capacity_);
-    PYCPP_NAMESPACE::swap(length_, other.length_);
-    PYCPP_NAMESPACE::swap(data_, other.data_);
+    using PYCPP_NAMESPACE::swap;
+    swap(capacity_, rhs.capacity_);
+    swap(length_, rhs.length_);
+    swap(data_, rhs.data_);
 }
 
 
@@ -2057,14 +2073,14 @@ auto secure_basic_string<C, T, A>::substr(size_type pos, size_type len) const ->
 
 
 template <typename C, typename T, typename A>
-secure_basic_string<C, T, A>::operator bool() const
+secure_basic_string<C, T, A>::operator bool() const noexcept
 {
     return !empty();
 }
 
 
 template <typename C, typename T, typename A>
-secure_basic_string<C, T, A>::operator view_type() const
+secure_basic_string<C, T, A>::operator view_type() const noexcept
 {
     return view_type(get<0>(data_), length_);
 }
@@ -2080,7 +2096,7 @@ void secure_basic_string<C, T, A>::init()
 
 
 template <typename C, typename T, typename A>
-void secure_basic_string<C, T, A>::reset()
+void secure_basic_string<C, T, A>::reset() noexcept
 {
     allocator_traits<allocator_type>::deallocate(get<1>(data_), get<0>(data_), capacity_);
     capacity_ = length_ = 0;

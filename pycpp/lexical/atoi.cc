@@ -15,20 +15,20 @@ PYCPP_BEGIN_NAMESPACE
 
 // RANGE
 
-inline bool is_valid_num(char c, char upper)
+inline bool is_valid_num(char c, char upper) noexcept
 {
     return c >= '0' && c <= upper;
 }
 
 
-inline bool is_valid_alnum(char c, char upper)
+inline bool is_valid_alnum(char c, char upper) noexcept
 {
     c = ::toupper(c);
     return is_valid_num(c, '9') || (c >= 'A' && c <= upper);
 }
 
 
-bool is_valid_digit(char c, uint8_t base)
+bool is_valid_digit(char c, uint8_t base) noexcept
 {
     if (base <= 10) {
         return is_valid_num(c, BASEN[base-1]);
@@ -41,7 +41,7 @@ bool is_valid_digit(char c, uint8_t base)
 // GENERIC
 
 template <typename Int>
-static Int atoi_num(const char* first, const char*& last, uint8_t base)
+static Int atoi_num(const char* first, const char*& last, uint8_t base) noexcept
 {
     // Generic itao for bases of <= 10, where only
     // numerical characters are used.
@@ -59,7 +59,7 @@ static Int atoi_num(const char* first, const char*& last, uint8_t base)
 
 
 template <typename Int>
-static Int atoi_alnum(const char* first, const char*& last, uint8_t base)
+static Int atoi_alnum(const char* first, const char*& last, uint8_t base) noexcept
 {
     // Generic itao for bases of > 10, where
     // alphabetical characters are also used.
@@ -85,11 +85,12 @@ static Int atoi_alnum(const char* first, const char*& last, uint8_t base)
 
 
 template <typename Int>
-static Int atoi_impl(const char* first, const char*& last, uint8_t base)
+static Int atoi_impl(const char* first, const char*& last, uint8_t base) noexcept
 {
-    if (base < 2 || base > 36) {
-        throw invalid_argument("Numerical base must be from 2-36");
-    } else if (base <= 10) {
+    // logic error, disable in release builds
+    assert((base >= 2 && base <= 36) && "Numerical base must be from 2-36");
+
+    if (base <= 10) {
         return atoi_num<Int>(first, last, base);
     } else {
         return atoi_alnum<Int>(first, last, base);
@@ -98,7 +99,7 @@ static Int atoi_impl(const char* first, const char*& last, uint8_t base)
 
 
 template <typename Int>
-Int atoi_(const char* first, const char*& last, uint8_t base)
+Int atoi_(const char* first, const char*& last, uint8_t base) noexcept
 {
     if (first == last) {
         return Int(0);
@@ -115,13 +116,13 @@ Int atoi_(const char* first, const char*& last, uint8_t base)
 // FUNCTIONS
 // ---------
 
-uint8_t atou8(const char* first, const char*& last, uint8_t base)
+uint8_t atou8(const char* first, const char*& last, uint8_t base) noexcept
 {
     return atoi_<uint8_t>(first, last, base);
 }
 
 
-uint8_t atou8(const string_view& string, uint8_t base)
+uint8_t atou8(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();
@@ -129,13 +130,13 @@ uint8_t atou8(const string_view& string, uint8_t base)
 }
 
 
-int8_t atoi8(const char* first, const char*& last, uint8_t base)
+int8_t atoi8(const char* first, const char*& last, uint8_t base) noexcept
 {
     return atoi_<int8_t>(first, last, base);
 }
 
 
-int8_t atoi8(const string_view& string, uint8_t base)
+int8_t atoi8(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();
@@ -143,13 +144,13 @@ int8_t atoi8(const string_view& string, uint8_t base)
 }
 
 
-uint16_t atou16(const char* first, const char*& last, uint8_t base)
+uint16_t atou16(const char* first, const char*& last, uint8_t base) noexcept
 {
     return atoi_<uint16_t>(first, last, base);
 }
 
 
-uint16_t atou16(const string_view& string, uint8_t base)
+uint16_t atou16(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();
@@ -157,13 +158,13 @@ uint16_t atou16(const string_view& string, uint8_t base)
 }
 
 
-int16_t atoi16(const char* first, const char*& last, uint8_t base)
+int16_t atoi16(const char* first, const char*& last, uint8_t base) noexcept
 {
     return atoi_<int16_t>(first, last, base);
 }
 
 
-int16_t atoi16(const string_view& string, uint8_t base)
+int16_t atoi16(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();
@@ -171,13 +172,13 @@ int16_t atoi16(const string_view& string, uint8_t base)
 }
 
 
-uint32_t atou32(const char* first, const char*& last, uint8_t base)
+uint32_t atou32(const char* first, const char*& last, uint8_t base) noexcept
 {
     return atoi_<uint32_t>(first, last, base);
 }
 
 
-uint32_t atou32(const string_view& string, uint8_t base)
+uint32_t atou32(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();
@@ -185,13 +186,13 @@ uint32_t atou32(const string_view& string, uint8_t base)
 }
 
 
-int32_t atoi32(const char* first, const char*& last, uint8_t base)
+int32_t atoi32(const char* first, const char*& last, uint8_t base) noexcept
 {
     return atoi_<int32_t>(first, last, base);
 }
 
 
-int32_t atoi32(const string_view& string, uint8_t base)
+int32_t atoi32(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();
@@ -199,13 +200,13 @@ int32_t atoi32(const string_view& string, uint8_t base)
 }
 
 
-uint64_t atou64(const char* first, const char*& last, uint8_t base)
+uint64_t atou64(const char* first, const char*& last, uint8_t base) noexcept
 {
     return atoi_<uint64_t>(first, last, base);
 }
 
 
-uint64_t atou64(const string_view& string, uint8_t base)
+uint64_t atou64(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();
@@ -213,13 +214,13 @@ uint64_t atou64(const string_view& string, uint8_t base)
 }
 
 
-int64_t atoi64(const char* first, const char*& last, uint8_t base)
+int64_t atoi64(const char* first, const char*& last, uint8_t base) noexcept
 {
     return atoi_<int64_t>(first, last, base);
 }
 
 
-int64_t atoi64(const string_view& string, uint8_t base)
+int64_t atoi64(const string_view& string, uint8_t base) noexcept
 {
     const char* first = string.begin();
     const char* last = string.end();
@@ -231,7 +232,7 @@ int64_t atoi64(const string_view& string, uint8_t base)
 // We can have overflow with any integer type for
 // `float` and `double`, so we need to use `double`
 // for our str-to-int conversions in `ftoa.cc`.
-precise_float_t atoi_precise_float(const char* first, const char*& last, uint8_t base)
+precise_float_t atoi_precise_float(const char* first, const char*& last, uint8_t base) noexcept
 {
     return atoi_<precise_float_t>(first, last, base);
 }

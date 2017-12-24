@@ -11,45 +11,41 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-
-lexical_null_formatter::lexical_null_formatter()
+lexical_null_formatter::lexical_null_formatter(nullptr_t nullp) noexcept
 {}
 
 
-lexical_null_formatter::lexical_null_formatter(const nullptr_t nullp)
-{}
-
-size_t lexical_null_formatter::size() const
+size_t lexical_null_formatter::size() const noexcept
 {
     return NULL_STRING.size();
 }
 
 
-size_t lexical_null_formatter::length() const
+size_t lexical_null_formatter::length() const noexcept
 {
     return size();
 }
 
 
-const char* lexical_null_formatter::data() const
+const char* lexical_null_formatter::data() const noexcept
 {
     return c_str();
 }
 
 
-const char* lexical_null_formatter::c_str() const
+const char* lexical_null_formatter::c_str() const noexcept
 {
     return NULL_STRING.data();
 }
 
 
-string_view lexical_null_formatter::string() const
+string_view lexical_null_formatter::string() const noexcept
 {
     return string_view(data(), size());
 }
 
 
-lexical_null_formatter::operator string_view() const
+lexical_null_formatter::operator string_view() const noexcept
 {
     return string();
 }
@@ -63,7 +59,7 @@ lexical_null_extractor::lexical_null_extractor(const string_view &string)
 }
 
 
-nullptr_t lexical_null_extractor::value() const
+nullptr_t lexical_null_extractor::value() const noexcept
 {
     // WARNING: This is used as a patch for MSVC, where functional-style
     // type-casts are not allowed with nullptr_t.
@@ -71,7 +67,7 @@ nullptr_t lexical_null_extractor::value() const
 }
 
 
-lexical_null_extractor::operator nullptr_t() const
+lexical_null_extractor::operator nullptr_t() const noexcept
 {
     return nullptr;
 }
