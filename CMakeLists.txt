@@ -105,7 +105,7 @@ endif()
 set(BUILD_CACHE ${BUILD_KEYVALUE})
 set(BUILD_SQL BUILD_MYSQL OR BUILD_POSTGRES OR BUILD_SQLITE)
 
-if (BUILD_MATH OR MSVC)
+if (MSVC)
     if (CXX_STANDARD LESS "14")
         # libdynd needs C++14 support
         set(CXX_STANDARD 14)

@@ -151,3 +151,14 @@
 #       define HAVE_CPP11 1
 #   endif
 #endif
+
+// VERSION
+// -------
+
+#define COMPILER_VERSION(major, minor, patch)     \
+    ((major << 16) + (minor << 8) + patch)
+
+#define COMPILER_VERSION_CODE                     \
+    COMPILER_VERSION(COMPILER_MAJOR_VERSION,      \
+                     COMPILER_MINOR_VERSION,      \
+                     COMPILER_PATCH_VERSION)

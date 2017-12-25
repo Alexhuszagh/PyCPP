@@ -576,8 +576,8 @@ static double v8_modulo(double x, double y) noexcept
     // Workaround MS fmod bugs. ECMA-262 says:
     // dividend is finite and divisor is an infinity => result equals dividend
     // dividend is a zero and divisor is nonzero finite => result equals dividend
-    if (!(isfinite(x) && (!isfinite(y) && !isnan(y))) &&
-        !(x == 0 && (y != 0 && isfinite(y)))) {
+    if (!(std::isfinite(x) && (!std::isfinite(y) && !std::isnan(y))) &&
+        !(x == 0 && (y != 0 && std::isfinite(y)))) {
         x = fmod(x, y);
     }
     return x;
@@ -615,7 +615,7 @@ static void ftoa_naive(double d, char* first, char*& last, uint8_t base) noexcep
     }
 
     // assert no special cases remain
-    assert(isfinite(d));
+    assert(std::isfinite(d));
     assert(d != 0.0);
 
     /**

@@ -20,6 +20,7 @@
 #   include <new>
 #   include <stdexcept>
 #   include <type_traits>
+#   include <cstddef>
 #endif
 
 PYCPP_BEGIN_NAMESPACE
@@ -177,8 +178,8 @@ public:
     virtual ~memory_resource();
 
     // ALLOCATOR TRAITS
-    void* allocate(size_t n, size_t alignment = alignof(max_align_t));
-    void deallocate(void* p, size_t n, size_t alignment = alignof(max_align_t));
+    void* allocate(size_t n, size_t alignment = alignof(std::max_align_t));
+    void deallocate(void* p, size_t n, size_t alignment = alignof(std::max_align_t));
     bool is_equal(const memory_resource&) const noexcept;
 
 protected:
@@ -225,7 +226,7 @@ protected:
     virtual bool do_is_equal(const memory_resource&) const noexcept;
 
 private:
-    static constexpr size_t max_align = alignof(max_align_t);
+    static constexpr size_t max_align = alignof(std::max_align_t);
     using traits_type = std::allocator_traits<Allocator>;
     using storage = typename std::aligned_storage<max_align, max_align>::type;
     using alloc = typename traits_type::template rebind_alloc<storage>;

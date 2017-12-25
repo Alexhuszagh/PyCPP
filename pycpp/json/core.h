@@ -67,7 +67,7 @@ struct json_value_t
 public:
     // MEMBER TYPES
     // ------------
-    using allocator_type = allocator<void>;
+    using allocator_type = allocator<byte>;
 
     // MEMBER FUNCTIONS
     // ----------------

@@ -71,7 +71,7 @@ Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<In
             tmp_last = min(last, tmp_first + Significand);
             tmp_frac = function(tmp_first, tmp_last, base);
             digits += distance(tmp_first, tmp_last);
-            fraction += (tmp_frac / pow<double>(base, digits));
+            fraction += (tmp_frac / pow(static_cast<double>(base), static_cast<double>(digits)));
         } while (tmp_last != last && is_valid_digit(*tmp_last, base));
     }
     value = integer + fraction;

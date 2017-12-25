@@ -41,7 +41,7 @@ void response_t::parse_cookie(const string_wrapper& str)
     size_t delimiter = str.find_first_of("=");
     size_t end = str.find_first_of(";", delimiter);
     size_t count = end - delimiter;
-    cookies_.emplace(str.substr(0, delimiter), str.substr(delimiter, count));
+    cookies_.emplace(string(str.substr(0, delimiter)), string(str.substr(delimiter, count)));
 }
 
 
