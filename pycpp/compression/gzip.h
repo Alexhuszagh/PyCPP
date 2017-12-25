@@ -71,11 +71,11 @@ private:
 // --------------
 
 template <>
-struct is_relocatable<gzip_compressor>: is_relocatable<unique_ptr<gzip_compressor_impl>>
+struct is_relocatable<gzip_compressor>: true_type
 {};
 
 template <>
-struct is_relocatable<gzip_decompressor>: is_relocatable<unique_ptr<gzip_decompressor_impl>>
+struct is_relocatable<gzip_decompressor>: true_type
 {};
 
 // FUNCTIONS

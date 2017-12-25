@@ -174,7 +174,7 @@ match_t::match_t() noexcept:
 
 
 match_t::match_t(regexp_t& regex, const string_wrapper& view, size_t pos, size_t endpos):
-    ptr_(deleter_type::create(re_allocator()), deleter_type(re_allocator()))
+    ptr_(deleter_type::create_static(re_allocator()), deleter_type(re_allocator()))
 {
     // get our string wrapper allocator
     using string_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<string_wrapper>;

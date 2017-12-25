@@ -88,8 +88,10 @@ struct unique_heap_pimpl_manager: Allocator
         Allocator(alloc)
     {}
 
+    // WARNING: Naming static functions the same as non-static
+    // functions is prohibited by the standard.
     template <typename ... Ts>
-    static inline T* create(const Allocator& alloc, Ts&&... ts)
+    static inline T* create_static(const Allocator& alloc, Ts&&... ts)
     {
         return allocate_and_construct<T>(alloc, forward<Ts>(ts)...);
     }
@@ -97,12 +99,12 @@ struct unique_heap_pimpl_manager: Allocator
     template <typename ... Ts>
     inline T* create(Ts&&... ts) const
     {
-        return unique_heap_pimpl_manager::create(static_cast<const Allocator&>(*this), forward<Ts>(ts)...);
+        return unique_heap_pimpl_manager::create_static(static_cast<const Allocator&>(*this), forward<Ts>(ts)...);
     }
 
     template <bool B = CheckNull>
     enable_if_t<B, void>
-    static inline destroy(const Allocator& alloc, T* p)
+    static inline destroy_static(const Allocator& alloc, T* p)
     {
         if (p) {
             destroy_and_deallocate(alloc, p);
@@ -111,14 +113,14 @@ struct unique_heap_pimpl_manager: Allocator
 
     template <bool B = CheckNull>
     enable_if_t<!B, void>
-    static inline destroy(const Allocator& alloc, T* p)
+    static inline destroy_static(const Allocator& alloc, T* p)
     {
         destroy_and_deallocate(alloc, p);
     }
 
     inline void destroy(T* p) const
     {
-        unique_heap_pimpl_manager::destroy(static_cast<const Allocator&>(*this), p);
+        unique_heap_pimpl_manager::destroy_static(static_cast<const Allocator&>(*this), p);
     }
 
     inline void operator()(T* p) const
@@ -253,13 +255,13 @@ const bool unique_heap_pimpl_manager<T, A, C>::check_null;
 
 template <typename T, typename A>
 unique_heap_pimpl<T, A>::unique_heap_pimpl(const allocator_type& allocator):
-    t_(deleter_type::create(allocator), deleter_type(allocator))
+    t_(deleter_type::create_static(allocator), deleter_type(allocator))
 {}
 
 
 template <typename T, typename A>
 unique_heap_pimpl<T, A>::unique_heap_pimpl(const self_t& rhs, const allocator_type& allocator):
-    t_(deleter_type::create(allocator, rhs.get()), deleter_type(allocator))
+    t_(deleter_type::create_static(allocator, rhs.get()), deleter_type(allocator))
 {}
 
 
@@ -291,7 +293,7 @@ auto unique_heap_pimpl<T, A>::operator=(self_t&& rhs) noexcept -> self_t&
 
 template <typename T, typename A>
 unique_heap_pimpl<T, A>::unique_heap_pimpl(const value_type& rhs, const allocator_type& allocator):
-    t_(deleter_type::create(allocator, rhs), deleter_type(allocator))
+    t_(deleter_type::create_static(allocator, rhs), deleter_type(allocator))
 {}
 
 
@@ -305,7 +307,7 @@ auto unique_heap_pimpl<T, A>::operator=(const value_type& rhs) -> self_t&
 
 template <typename T, typename A>
 unique_heap_pimpl<T, A>::unique_heap_pimpl(value_type&& rhs, const allocator_type& allocator):
-    t_(deleter_type::create(allocator, move(rhs)), deleter_type(allocator))
+    t_(deleter_type::create_static(allocator, move(rhs)), deleter_type(allocator))
 {}
 
 

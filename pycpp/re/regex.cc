@@ -131,7 +131,7 @@ void regex_impl_t::clear()
 
 
 regexp_t::regexp_t(const string_wrapper& view):
-    ptr_(deleter_type::create(re_allocator(), view), deleter_type(re_allocator()))
+    ptr_(deleter_type::create_static(re_allocator(), view), deleter_type(re_allocator()))
 {
     if (!ptr_->re2.ok()) {
         throw runtime_error("Invalid regular expression pattern.");

@@ -331,13 +331,13 @@ void ifstream::open(const u16string_view& name, ios_base::openmode mode)
 #endif                                          // HAVE_WFOPEN
 
 
-streambuf* ifstream::rdbuf() const
+std::filebuf* ifstream::rdbuf() const
 {
     return &buffer;
 }
 
 
-void ifstream::rdbuf(streambuf *buffer)
+void ifstream::rdbuf(std::filebuf* buffer)
 {
     ios::rdbuf(buffer);
 }
@@ -450,13 +450,13 @@ void ofstream::open(const u16string_view& name, ios_base::openmode mode)
 #endif                                          // HAVE_WFOPEN
 
 
-std::streambuf* ofstream::rdbuf() const
+std::filebuf* ofstream::rdbuf() const
 {
     return &buffer;
 }
 
 
-void ofstream::rdbuf(std::streambuf *buffer)
+void ofstream::rdbuf(std::filebuf* buffer)
 {
     ios::rdbuf(buffer);
 }

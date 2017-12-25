@@ -12,7 +12,11 @@ PYCPP_BEGIN_NAMESPACE
 
 void* secure_allocator_base::allocate(size_t n, size_t size, const void*)
 {
-    return secure_calloc(n, size);
+    void* ptr = secure_calloc(n, size);
+    if (size > 0 && ptr == nullptr) {
+        throw bad_alloc();
+    }
+    return ptr;
 }
 
 

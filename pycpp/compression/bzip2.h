@@ -71,11 +71,11 @@ private:
 // --------------
 
 template <>
-struct is_relocatable<bz2_compressor>: is_relocatable<unique_ptr<bz2_compressor_impl>>
+struct is_relocatable<bz2_compressor>: true_type
 {};
 
 template <>
-struct is_relocatable<bz2_decompressor>: is_relocatable<unique_ptr<bz2_decompressor_impl>>
+struct is_relocatable<bz2_decompressor>: true_type
 {};
 
 // FUNCTIONS

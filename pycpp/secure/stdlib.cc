@@ -715,7 +715,7 @@ void*  MALLOC_ATTRIBUTE secure_malloc(size_t size) noexcept
     if (size == 0) {
         return ptr;
     } else if (ptr == nullptr) {
-        throw bad_alloc();
+        return nullptr;
     }
     secure_memset(ptr, (int) GARBAGE_VALUE, size);
 
