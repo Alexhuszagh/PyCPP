@@ -31,7 +31,7 @@ TEST(lexical, format)
     EXPECT_EQ(lexical(true), TRUE_STRING);
     EXPECT_EQ(lexical(false), FALSE_STRING);
     EXPECT_EQ(lexical('A'), "A");
-    EXPECT_EQ(lexical('\0'), std::string("\0", 1));
+    EXPECT_EQ(lexical('\0'), string("\0", 1));
     EXPECT_EQ(lexical(1), "1");
     EXPECT_EQ(lexical(1.0), "1");
 }

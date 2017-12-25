@@ -36,18 +36,18 @@ void response_t::parse_code(const string_wrapper& line)
 }
 
 
-void response_t::parse_cookie(const string_wrapper& string)
+void response_t::parse_cookie(const string_wrapper& str)
 {
-    size_t delimiter = string.find_first_of("=");
-    size_t end = string.find_first_of(";", delimiter);
+    size_t delimiter = str.find_first_of("=");
+    size_t end = str.find_first_of(";", delimiter);
     size_t count = end - delimiter;
-    cookies_.emplace(string.substr(0, delimiter), string.substr(delimiter, count));
+    cookies_.emplace(str.substr(0, delimiter), str.substr(delimiter, count));
 }
 
 
-void response_t::parse_transfer_encoding(const string_wrapper& string)
+void response_t::parse_transfer_encoding(const string_wrapper& str_)
 {
-    std::string str = ascii_tolower(string);
+    string str = ascii_tolower(str_);
     auto encodings = split(str, ",");
     for (auto &encoding: encodings) {
         encoding = trim(encoding);
@@ -66,9 +66,9 @@ void response_t::parse_transfer_encoding(const string_wrapper& string)
 }
 
 
-void response_t::parse_content_type(const string_wrapper& string)
+void response_t::parse_content_type(const string_wrapper& str_)
 {
-    std::string str = ascii_tolower(string);
+    string str = ascii_tolower(str_);
     auto values = split(str, ";");
     if (values.size()) {
         // get type, subtype
@@ -89,15 +89,15 @@ void response_t::parse_content_type(const string_wrapper& string)
 }
 
 
-void response_t::parse_type(const string_wrapper& string)
+void response_t::parse_type(const string_wrapper& str)
 {
-    if (string.empty()) {
+    if (str.empty()) {
         return;
     }
 
-    switch (string.front()) {
+    switch (str.front()) {
         case 'a': {
-            get<0>(mime) = string[1] == 'p' ? APPLICATION : AUDIO;
+            get<0>(mime) = str[1] == 'p' ? APPLICATION : AUDIO;
             break;
         }
         case 'i': {
@@ -105,7 +105,7 @@ void response_t::parse_type(const string_wrapper& string)
             break;
         }
         case 'm': {
-            get<0>(mime) = string[1] == 'e' ? MESSAGE : MULTIPART;
+            get<0>(mime) = str[1] == 'e' ? MESSAGE : MULTIPART;
             break;
         }
         case 't': {
@@ -119,7 +119,7 @@ void response_t::parse_type(const string_wrapper& string)
         case 'x': {
             // custom token, must store
             get<0>(mime) = XTOKEN;
-            string_wrapper token = string.substr(2, string.find("/") - 2);
+            string_wrapper token = str.substr(2, str.find("/") - 2);
             headers_["x-token"].append(token.data(), token.size());
             break;
         }
@@ -144,8 +144,8 @@ void response_t::parse_header_line(const string_wrapper& line)
             return;
         }
 
-        std::string key = ascii_tolower(line.substr(0, colon));
-        std::string value(line.substr(colon+1));
+        string key = ascii_tolower(line.substr(0, colon));
+        string value(line.substr(colon+1));
         value = trim(value);
 
         if (key == "set-cookie") {
@@ -166,8 +166,8 @@ void response_t::parse_header_line(const string_wrapper& line)
 
 void response_t::parse_header(const string_wrapper& lines)
 {
-    istringstream stream = istringstream(std::string(lines));
-    std::string line;
+    istringstream stream = istringstream(string(lines));
+    string line;
     while (getline(stream, line)) {
         if (!line.empty()) {
             // data() is used to fix a compiler optimization bug in MSYS2
@@ -183,7 +183,7 @@ const int response_t::status() const
 }
 
 
-const std::string& response_t::body() const
+const string& response_t::body() const
 {
     return body_;
 }
@@ -207,7 +207,7 @@ transfer_encoding_t response_t::transfer_encoding() const
 }
 
 
-std::string response_t::content_encoding() const
+string response_t::content_encoding() const
 {
     auto it = headers().find("content-encoding");
     if (it != headers().end()) {
@@ -449,7 +449,7 @@ bool response_t::xml() const
 }
 
 
-std::string response_t::encoding() const
+string response_t::encoding() const
 {
     return charset;
 }

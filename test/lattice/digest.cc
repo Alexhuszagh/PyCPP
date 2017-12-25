@@ -13,5 +13,5 @@ PYCPP_USING_NAMESPACE
 TEST(digest_t, encode)
 {
     digest_t digest = {"name", "password"};
-    EXPECT_EQ(digest.string(), "name:password");
+    EXPECT_EQ(digest.str(), "name:password");
 }

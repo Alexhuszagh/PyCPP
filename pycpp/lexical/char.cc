@@ -48,7 +48,7 @@ const char * lexical_char_formatter::c_str() const noexcept
 }
 
 
-string_view lexical_char_formatter::string() const noexcept
+string_view lexical_char_formatter::str() const noexcept
 {
     return string_view(data(), size());
 }
@@ -56,7 +56,7 @@ string_view lexical_char_formatter::string() const noexcept
 
 lexical_char_formatter::operator string_view() const noexcept
 {
-    return string();
+    return str();
 }
 
 

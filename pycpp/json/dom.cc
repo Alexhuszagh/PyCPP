@@ -227,13 +227,13 @@ json_document_t::json_document_t() noexcept:
 
 
 json_document_t::json_document_t(json_document_t&& rhs) noexcept:
-    json_value_t(std::move(rhs))
+    json_value_t(move(rhs))
 {}
 
 
 json_document_t& json_document_t::operator=(json_document_t&& rhs) noexcept
 {
-    json_value_t::operator=(std::move(rhs));
+    json_value_t::operator=(move(rhs));
     return *this;
 }
 

@@ -19,7 +19,7 @@ PYCPP_USING_NAMESPACE
 
 TEST(base16, encode_decode)
 {
-    vector<pair<std::string, std::string>> tests = {
+    vector<pair<string, string>> tests = {
         {
             "LOWER",
             "4C4F574552"
@@ -37,15 +37,15 @@ TEST(base16, encode_decode)
             "546869732069732061206C6F6E67206D657373616765"
         },
         {
-            std::string {-19, -107, -100, -22, -75, -83, -20, -106, -76},
+            string {-19, -107, -100, -22, -75, -83, -20, -106, -76},
             "ED959CEAB5ADEC96B4",
         },
         {
-            std::string {114, -61, -92, 107, 115, 109, -61, -74, 114, 103, -61, -91, 115},
+            string {114, -61, -92, 107, 115, 109, -61, -74, 114, 103, -61, -91, 115},
             "72C3A46B736DC3B67267C3A573",
         },
         {
-            std::string {77, -61, -86, 109, 101},
+            string {77, -61, -86, 109, 101},
             "4DC3AA6D65",
         },
     };
@@ -64,7 +64,7 @@ TEST(base16, fuzz)
     uniform_int_distribution<> dist(-128, 127);
     for (size_t i = 0; i < 50; i++) {
         const size_t length = rand() % 1000;
-        std::string input;
+        string input;
         input.reserve(length);
         for (size_t i = 0; i < length; ++i) {
             input.push_back(static_cast<char>(dist(engine)));

@@ -15,7 +15,7 @@ TEST(url_t, constructors)
     url_t url;
     url = url_t("http://example.com");
     url = url_t("http://example.com", 18);
-    url = url_t(std::string("http://example.com"));
+    url = url_t(string("http://example.com"));
     url = url_t {104, 116, 116, 112, 58, 47, 47, 101, 120, 97, 109, 112, 108, 101, 46, 99, 111, 109};
 }
 
@@ -66,24 +66,6 @@ TEST(url_t, properties)
     url = url_t("/path/to/file");
     EXPECT_TRUE(url.relative());
     EXPECT_FALSE(url.absolute());
-}
-
-
-static std::string string_to_hex(const std::string& input)
-{
-    static const char* const lut = "0123456789abcdef";
-
-    std::string output;
-    output.reserve(4 * input.length());
-    for (size_t i = 0; i < input.length(); ++i)
-    {
-        const unsigned char c = input[i];
-        output.push_back('\\');
-        output.push_back('x');
-        output.push_back(lut[c >> 4]);
-        output.push_back(lut[c & 15]);
-    }
-    return output;
 }
 
 

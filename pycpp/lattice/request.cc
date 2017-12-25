@@ -29,7 +29,7 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-std::string request_t::method_name() const
+string request_t::method_name() const
 {
     switch (method) {
         case GET:
@@ -56,33 +56,33 @@ std::string request_t::method_name() const
 }
 
 
-stringstream request_t::method_header() const
+string request_t::method_header() const
 {
-    stringstream data;
-    data << header.string();
+    string data;
+    data += header.str();
     if (!header.host() && url.absolute()) {
         // specify a default host
-        data << "Host: " + url.host() + "\r\n";
+        data += "Host: " + url.host() + "\r\n";
     }
     if (!header.user_agent()) {
         // specify a default user agent
-        data << "User-Agent: lattice/" + std::string(LATTICE_VERSION) + "\r\n";
+        data += "User-Agent: lattice/" + string(LATTICE_VERSION) + "\r\n";
     }
     if (!header.connection()) {
         // Keep-Alive by default
-        data << "Connection: keep-alive\r\n";
+        data += "Connection: keep-alive\r\n";
     }
     if (!header.accept()) {
         // accept everything by default
-        data << "Accept: */*\r\n";
+        data += "Accept: */*\r\n";
     }
     if (!header.cookie()) {
         // give a dummy cookie
-        data << "Cookie: fake=fake_value\r\n";
+        data += "Cookie: fake=fake_value\r\n";
     }
     if (!header.content_type() && is_unicode(parameters)) {
         // parameters must be UTF-8, are added to body
-        data << "Content-Type: text/x-www-form-urlencoded; charset=utf-8\r\n";
+        data += "Content-Type: text/x-www-form-urlencoded; charset=utf-8\r\n";
     }
 
     return data;
@@ -92,14 +92,14 @@ stringstream request_t::method_header() const
 /**
  *  Currently used only for digest authentication.
  */
-stringstream request_t::method_header(const response_t& response) const
+string request_t::method_header(const response_t& response) const
 {
-    auto data = method_header();
+    string data = method_header();
     if (digest) {
         try {
-            auto string = response.headers().at("www-authenticate");
-            digest_challenge_t challenge(string);
-            data << challenge.header(url, parameters, digest, response.body(), method_name());
+            auto str = response.headers().at("www-authenticate");
+            digest_challenge_t challenge(str);
+            data += challenge.header(url, parameters, digest, response.body(), method_name());
         } catch(exception) {
         }
     }
@@ -162,7 +162,7 @@ void request_t::set_timeout(const timeout_t& timeout)
 
 void request_t::set_auth(const authentication_t& auth)
 {
-    header["Authorization"] = "Basic " + base64_encode(auth.string());
+    header["Authorization"] = "Basic " + base64_encode(auth.str());
 }
 
 
@@ -335,7 +335,7 @@ void request_t::set_option(const timeout_t& timeout)
 
 void request_t::set_option(const authentication_t& auth)
 {
-    header["Authorization"] = "Basic " + base64_encode(auth.string());
+    header["Authorization"] = "Basic " + base64_encode(auth.str());
 }
 
 

@@ -13,10 +13,10 @@
  *  type whenever possible for Unicode support: narrow paths
  *  on Windows do not support Unicode characters.
  *
- *  UTF-8 strings are represented by `std::string`, while UTF-16
- *  strings are represented by `std::u16string`. However,
+ *  UTF-8 strings are represented by `string`, while UTF-16
+ *  strings are represented by `u16string`. However,
  *  for compatibility reasons with the Win32 API, all stream
- *  constructors also accept `std::wstring` as paths.
+ *  constructors also accept `wstring` as paths.
  */
 
 #pragma once

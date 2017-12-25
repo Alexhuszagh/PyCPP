@@ -80,54 +80,54 @@ static S2& to_narrow(const S1& s1, S2& s2, Function function)
 // ---------
 
 
-std::u16string codec_utf8_utf16(const string_view& str)
+u16string codec_utf8_utf16(const string_view& str)
 {
-    std::u16string u16;
+    u16string u16;
     return to_wide(str, u16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
         utf8_to_utf16(src, srclen, dst, dstlen);
     });
 }
 
 
-std::u32string codec_utf8_utf32(const string_view& str)
+u32string codec_utf8_utf32(const string_view& str)
 {
-    std::u32string u32;
+    u32string u32;
     return to_wide(str, u32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
         utf8_to_utf32(src, srclen, dst, dstlen);
     });
 }
 
 
-std::string codec_utf16_utf8(const u16string_view& str)
+string codec_utf16_utf8(const u16string_view& str)
 {
-    std::string u8;
+    string u8;
     return to_narrow(str, u8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
         utf16_to_utf8(src, srclen, dst, dstlen);
     });
 }
 
 
-std::u32string codec_utf16_utf32(const u16string_view& str)
+u32string codec_utf16_utf32(const u16string_view& str)
 {
-    std::u32string u32;
+    u32string u32;
     return to_wide(str, u32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
         utf16_to_utf32(src, srclen, dst, dstlen);
     });
 }
 
 
-std::string codec_utf32_utf8(const u32string_view& str)
+string codec_utf32_utf8(const u32string_view& str)
 {
-    std::string u8;
+    string u8;
     return to_narrow(str, u8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
         utf32_to_utf8(src, srclen, dst, dstlen);
     });
 }
 
 
-std::u16string codec_utf32_utf16(const u32string_view& str)
+u16string codec_utf32_utf16(const u32string_view& str)
 {
-    std::u16string u16;
+    u16string u16;
     return to_narrow(str, u16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
         utf32_to_utf16(src, srclen, dst, dstlen);
     });

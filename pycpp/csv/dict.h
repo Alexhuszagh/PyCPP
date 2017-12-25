@@ -17,8 +17,8 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using csv_indexes = ordered_map<std::string, size_t>;
-using csv_map = unordered_map<std::string, std::string>;
+using csv_indexes = ordered_map<string, size_t>;
+using csv_map = unordered_map<string, string>;
 
 // OBJECTS
 // -------
@@ -219,7 +219,7 @@ public:
     // STREAM
     csv_dict_string_writer(const csv_row& header, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
     void open(const csv_row& header, csv_quoting = CSV_QUOTE_MINIMAL, csvpunct_impl* = nullptr);
-    std::string str() const;
+    string str() const;
 
     // MODIFIERS
     void swap(csv_dict_string_writer&);

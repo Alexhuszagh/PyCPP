@@ -25,7 +25,6 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-
 /**
  *  \brief Timeout for a request object.
  */

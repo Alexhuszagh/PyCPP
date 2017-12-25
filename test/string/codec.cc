@@ -15,19 +15,19 @@ PYCPP_USING_NAMESPACE
 // ---------
 
 // 한국어
-static const std::string UTF8 = {-19, -107, -100, -22, -75, -83, -20, -106, -76};
-static const std::u16string UTF16 = {54620, 44397, 50612};
-static const std::u32string UTF32 = {54620, 44397, 50612};
+static const string UTF8 = {-19, -107, -100, -22, -75, -83, -20, -106, -76};
+static const u16string UTF16 = {54620, 44397, 50612};
+static const u32string UTF32 = {54620, 44397, 50612};
 
 // räksmörgås
-static const std::string UTF8_2 = {114, -61, -92, 107, 115, 109, -61, -74, 114, 103, -61, -91, 115};
-static const std::u16string UTF16_2 = {114,  228,  107,  115,  109,  246,  114,  103,  229,  115};
-static const std::u32string UTF32_2 = {114, 228, 107, 115, 109, 246, 114, 103, 229, 115};
+static const string UTF8_2 = {114, -61, -92, 107, 115, 109, -61, -74, 114, 103, -61, -91, 115};
+static const u16string UTF16_2 = {114,  228,  107,  115,  109,  246,  114,  103,  229,  115};
+static const u32string UTF32_2 = {114, 228, 107, 115, 109, 246, 114, 103, 229, 115};
 
 // "Même"
-static const std::string UTF8_3 = {77, -61, -86, 109, 101};
-static const std::u16string UTF16_3 = {77, 234, 109, 101};
-static const std::u32string UTF32_3 = {77, 234, 109, 101};
+static const string UTF8_3 = {77, -61, -86, 109, 101};
+static const u16string UTF16_3 = {77, 234, 109, 101};
+static const u32string UTF32_3 = {77, 234, 109, 101};
 
 // TESTS
 // -----

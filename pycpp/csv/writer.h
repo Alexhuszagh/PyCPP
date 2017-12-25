@@ -116,7 +116,7 @@ public:
     csv_string_writer& operator=(const csv_string_writer&) = delete;
     csv_string_writer(csv_string_writer&&);
     csv_string_writer& operator=(csv_string_writer&&);
-    std::string str() const;
+    string str() const;
 
     // MODIFIERS
     void swap(csv_string_writer&);

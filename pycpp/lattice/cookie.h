@@ -10,18 +10,17 @@
 
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/map.h>
-#include <pycpp/stl/string.h>
+#include <pycpp/string/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
 
-
 /**
  *  \brief Cookies to store user data for persistent sessions.
  */
-struct cookies_t: map<std::string, std::string>
+struct cookies_t: map<string, string>
 {
     cookies_t() = default;
     cookies_t(const cookies_t&) = default;
@@ -30,7 +29,7 @@ struct cookies_t: map<std::string, std::string>
     cookies_t& operator=(cookies_t&&) = default;
     cookies_t(initializer_list<typename cookies_t::value_type> list);
 
-    std::string encode() const;
+    string encode() const;
     explicit operator bool() const;
 };
 

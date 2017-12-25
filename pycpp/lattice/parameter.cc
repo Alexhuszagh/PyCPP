@@ -17,9 +17,9 @@ parameter_t::parameter_t(const char* key, const char* value):
 {}
 
 
-parameter_t::parameter_t(std::string&& key, std::string&& value):
-    key(forward<std::string>(key)),
-    value(forward<std::string>(value))
+parameter_t::parameter_t(string&& key, string&& value):
+    key(forward<string>(key)),
+    value(forward<string>(value))
 {}
 
 
@@ -55,18 +55,18 @@ parameters_t & parameters_t::add(const parameter_t& parameter)
 }
 
 
-std::string parameters_t::get() const
+string parameters_t::get() const
 {
     if (empty()) {
-        return static_cast<const std::string&>(*this);
+        return static_cast<const string&>(*this);
     }
-    return "?" + static_cast<const std::string&>(*this);
+    return "?" + static_cast<const string&>(*this);
 }
 
 
-const std::string& parameters_t::post() const
+const string& parameters_t::post() const
 {
-    return static_cast<const std::string&>(*this);
+    return static_cast<const string&>(*this);
 }
 
 

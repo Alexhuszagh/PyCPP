@@ -34,8 +34,8 @@ enum class enum_class_test
 
 TEST(lexical_enum_formatter, lexical_enum_formatter)
 {
-    EXPECT_EQ(lexical_enum_formatter(enum_first).string(), string_view("1"));
-    EXPECT_EQ(lexical_enum_formatter(enum_class_test::first).string(), string_view("1"));
+    EXPECT_EQ(lexical_enum_formatter(enum_first).str(), string_view("1"));
+    EXPECT_EQ(lexical_enum_formatter(enum_class_test::first).str(), string_view("1"));
 }
 
 

@@ -325,7 +325,7 @@ void bz2_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string bz2_compress(const string_wrapper& str)
+string bz2_compress(const string_wrapper& str)
 {
     size_t dstlen = bz2_compress_bound(str.size());
     return compress_bound(str, dstlen, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
@@ -334,7 +334,7 @@ std::string bz2_compress(const string_wrapper& str)
 }
 
 
-std::string bz2_decompress(const string_wrapper& str)
+string bz2_decompress(const string_wrapper& str)
 {
     return ctx_decompress<bz2_decompressor>(str);
 }
@@ -362,7 +362,7 @@ void bz2_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, 
 }
 
 
-std::string bz2_decompress(const string_wrapper& str, size_t bound)
+string bz2_decompress(const string_wrapper& str, size_t bound)
 {
     return decompress_bound(str, bound, [](const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound) {
         bz2_decompress(src, srclen, dst, dstlen, bound);

@@ -13,7 +13,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-static std::deque<int> DATA = {1, 2, 3, 4, 5};
+static deque<int> DATA = {1, 2, 3, 4, 5};
 
 // TESTS
 // -----
@@ -23,24 +23,23 @@ TEST(intrusive_deque, constructor)
 {
     using intrusive = intrusive_deque<int>;
 
-    intrusive deque;
-    EXPECT_EQ(deque.size(), 0);
+    intrusive d1;
+    EXPECT_EQ(d1.size(), 0);
 
-// TODO: this is segfaulting
-//    deque = intrusive(5, DATA[0]);
-//    EXPECT_EQ(deque.size(), 5);
+    d1 = intrusive(5, DATA[0]);
+    EXPECT_EQ(d1.size(), 5);
 
-//    intrusive copy(deque);
-//    EXPECT_EQ(copy.size(), 5);
-//
-//    copy = deque;
-//    EXPECT_EQ(copy.size(), 5);
+    intrusive d2(d1);
+    EXPECT_EQ(d2.size(), 5);
 
-//    intrusive moved(move(deque));
-//    EXPECT_EQ(moved.size(), 5);
-//
-//    moved = move(copy);
-//    EXPECT_EQ(moved.size(), 5);
+    d2 = d1;
+    EXPECT_EQ(d2.size(), 5);
+
+    intrusive moved(move(d1));
+    EXPECT_EQ(moved.size(), 5);
+
+    moved = move(d2);
+    EXPECT_EQ(moved.size(), 5);
 }
 
 
@@ -99,7 +98,7 @@ TEST(intrusive_deque, element)
 TEST(intrusive_deque, modifiers)
 {
     using intrusive = intrusive_deque<int>;
-    std::deque<int> data(DATA);
+    deque<int> data(DATA);
 
     // push_back
     intrusive deque;

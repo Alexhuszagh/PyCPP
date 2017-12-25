@@ -17,9 +17,9 @@ authentication_t::authentication_t(const char* username, const char* password):
 {}
 
 
-authentication_t::authentication_t(std::string &&username, std::string &&password):
-    username(forward<std::string>(username)),
-    password(forward<std::string>(password))
+authentication_t::authentication_t(string &&username, string &&password):
+    username(forward<string>(username)),
+    password(forward<string>(password))
 {}
 
 
@@ -29,7 +29,7 @@ authentication_t::authentication_t(const string_wrapper& username, const string_
 {}
 
 
-const std::string authentication_t::string() const noexcept
+const string authentication_t::str() const noexcept
 {
     return username + ":" + password;
 }

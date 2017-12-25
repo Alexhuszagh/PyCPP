@@ -847,12 +847,12 @@ void f32toa(float value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string f32toa(float value, uint8_t base)
+string f32toa(float value, uint8_t base)
 {
     char buffer[BUFFER_SIZE];
     char* last = buffer + BUFFER_SIZE;
     f32toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 
@@ -862,12 +862,12 @@ void f64toa(double value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string f64toa(double value, uint8_t base)
+string f64toa(double value, uint8_t base)
 {
     char buffer[BUFFER_SIZE];
     char* last = buffer + BUFFER_SIZE;
     f64toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 

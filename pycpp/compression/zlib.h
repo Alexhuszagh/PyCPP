@@ -89,12 +89,12 @@ void zlib_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief ZLIB-compress data.
  */
-std::string zlib_compress(const string_wrapper& str);
+string zlib_compress(const string_wrapper& str);
 
 /**
  *  \brief ZLIB-decompress data.
  */
-std::string zlib_decompress(const string_wrapper& str);
+string zlib_decompress(const string_wrapper& str);
 
 /**
  *  \brief ZLIB-decompress data.
@@ -108,7 +108,7 @@ void zlib_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
  *
  *  \param bound            Known size of decompressed buffer.
  */
-std::string zlib_decompress(const string_wrapper& str, size_t bound);
+string zlib_decompress(const string_wrapper& str, size_t bound);
 
 PYCPP_END_NAMESPACE
 

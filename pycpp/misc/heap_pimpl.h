@@ -91,13 +91,13 @@ struct unique_heap_pimpl_manager: Allocator
     template <typename ... Ts>
     static inline T* create(const Allocator& alloc, Ts&&... ts)
     {
-        return allocate_and_construct<T>(alloc, std::forward<Ts>(ts)...);
+        return allocate_and_construct<T>(alloc, forward<Ts>(ts)...);
     }
 
     template <typename ... Ts>
     inline T* create(Ts&&... ts) const
     {
-        return unique_heap_pimpl_manager::create(static_cast<const Allocator&>(*this), std::forward<Ts>(ts)...);
+        return unique_heap_pimpl_manager::create(static_cast<const Allocator&>(*this), forward<Ts>(ts)...);
     }
 
     template <bool B = CheckNull>

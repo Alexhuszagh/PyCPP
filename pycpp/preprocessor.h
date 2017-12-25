@@ -10,6 +10,7 @@
 #include <pycpp/preprocessor/architecture.h>
 #include <pycpp/preprocessor/byteorder.h>
 #include <pycpp/preprocessor/compiler.h>
+#include <pycpp/preprocessor/constexpr.h>
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/preprocessor/parallel.h>
 #include <pycpp/preprocessor/processor.h>

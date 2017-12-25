@@ -30,7 +30,7 @@ struct xml_node_iterator_t;
 // ALIAS
 // -----
 
-using xml_string_t = std::string;
+using xml_string_t = string;
 using xml_string_list_t = deque<xml_string_t>;
 using xml_attr_t = unordered_map<xml_string_t, xml_string_t>;
 

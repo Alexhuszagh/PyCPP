@@ -701,7 +701,7 @@ path_t expandvars(const path_view_t& path)
         return p;
     };
 
-    auto topath = [](const char* p) -> std::string
+    auto topath = [](const char* p) -> string
     {
         return path_t(p);
     };

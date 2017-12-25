@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include <pycpp/stl/string.h>
+#include <pycpp/string/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -46,12 +46,12 @@ enum certificate_format_t
 /**
  *  \brief Holds path to certificate bundle.
  */
-struct certificate_file_t: std::string
+struct certificate_file_t: string
 {
-    using base_t = std::string;
+    using base_t = string;
     using base_t::base_t;
 
-    std::string suffix() const;
+    string suffix() const;
     certificate_format_t format() const;
 
     explicit operator bool() const;
@@ -61,9 +61,9 @@ struct certificate_file_t: std::string
 /**
  *  \brief Holds path to certificate revocation lists.
  */
-struct revocation_lists_t: std::string
+struct revocation_lists_t: string
 {
-    using base_t = std::string;
+    using base_t = string;
     using base_t::base_t;
 
     explicit operator bool() const;

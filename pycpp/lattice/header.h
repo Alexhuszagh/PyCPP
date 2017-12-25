@@ -11,27 +11,26 @@
 #include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/map.h>
 #include <pycpp/stl/ostream.h>
-#include <pycpp/stl/string.h>
+#include <pycpp/string/string.h>
 
 PYCPP_BEGIN_NAMESPACE
 
 // OBJECTS
 // -------
 
-
 /**
- *  \brief Case-insensitive std::less for ASCII.
+ *  \brief Case-insensitive less for ASCII.
  */
 struct lowercase_less
 {
-    bool operator()(const std::string&, const std::string&) const noexcept;
+    bool operator()(const string&, const string&) const noexcept;
 };
 
 
 /**
  *  \brief Custom headers for the request.
  */
-struct header_t: map<std::string, std::string, lowercase_less>
+struct header_t: map<string, string, lowercase_less>
 {
     header_t() = default;
     header_t(const header_t&) = default;
@@ -40,7 +39,7 @@ struct header_t: map<std::string, std::string, lowercase_less>
     header_t& operator=(header_t&&) = default;
     header_t(initializer_list<typename header_t::value_type> list);
 
-    std::string string() const;
+    string str() const;
     bool accept() const;
     bool cookie() const;
     bool host() const;

@@ -130,13 +130,13 @@ size_t pseudorandom(void* dst, size_t dstlen, bool deterministic)
 }
 
 
-std::string pseudorandom(size_t length, bool deterministic)
+string pseudorandom(size_t length, bool deterministic)
 {
     char* dst = nullptr;
     try {
         dst = new char[length];
         pseudorandom(dst, length, deterministic);
-        std::string output(dst, length);
+        string output(dst, length);
         delete[] dst;
         return output;
     } catch (...) {

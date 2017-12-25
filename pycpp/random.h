@@ -44,7 +44,7 @@ size_t sysrandom(void* dst, size_t dstlen);
  *  cannot be cryptographically secure. Use only for non-cryptographic
  *  applications.
  */
-std::string sysrandom(size_t length);
+string sysrandom(size_t length);
 
 /**
  *  \brief Get psuedo-random bytes for general purposes.
@@ -58,7 +58,7 @@ size_t pseudorandom(void* dst, size_t dstlen, bool deterministic = false);
  *
  *  \param deterministic        Use deterministic seed.
  */
-std::string pseudorandom(size_t length, bool deterministic = false);
+string pseudorandom(size_t length, bool deterministic = false);
 
 /**
  *  \brief Get value from gammavariate() function.

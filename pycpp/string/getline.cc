@@ -8,10 +8,12 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-
-istream& getline(istream& stream, std::string& line)
+istream& getline(istream& stream, string& line, size_t initial_size)
 {
     line.clear();
+    if (initial_size != SIZE_MAX && line.capacity() < initial_size) {
+        line.reserve(initial_size);
+    }
 
     istream::sentry sentry(stream, true);
     streambuf* buffer = stream.rdbuf();

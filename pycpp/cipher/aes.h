@@ -26,9 +26,9 @@ public:
 
     void key_setup();
     void encrypt(const void* src, size_t srclen, void* dst, size_t dstlen) const;
-    std::string encrypt(const string_wrapper& str) const;
+    string encrypt(const string_wrapper& str) const;
     void decrypt(const void* src, size_t srclen, void* dst, size_t dstlen) const;
-    std::string decrypt(const string_wrapper& str) const;
+    string decrypt(const string_wrapper& str) const;
 
 private:
 // TODO?

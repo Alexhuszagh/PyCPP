@@ -16,8 +16,7 @@ PYCPP_USING_NAMESPACE
 // HELPERS
 // -------
 
-// TODO: change to json_string_t
-static std::string EXPECTED = "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}";
+static json_string_t EXPECTED = "{\n    \"k1\": \"v1\",\n    \"k2\": 5.0\n}";
 
 template <typename Writer, typename ... Ts>
 static Writer test_json_writer(bool move, Ts&&... ts)

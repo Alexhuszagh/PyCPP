@@ -47,7 +47,7 @@ const char* lexical_bool_formatter::c_str() const noexcept
 }
 
 
-string_view lexical_bool_formatter::string() const noexcept
+string_view lexical_bool_formatter::str() const noexcept
 {
     return string_view(data(), size());
 }
@@ -55,7 +55,7 @@ string_view lexical_bool_formatter::string() const noexcept
 
 lexical_bool_formatter::operator string_view() const noexcept
 {
-    return string();
+    return str();
 }
 
 

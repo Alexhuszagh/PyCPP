@@ -105,7 +105,7 @@ struct normpath_impl
         // get directory components
         auto tail_string = frompath(tail);
         auto dirs = split(tail_string, path_to_string(path_separators));
-        vector<std::string> buffer;
+        vector<string> buffer;
         for (auto it = dirs.begin(); it != dirs.end(); ++it) {
             if (*it == current_directory) {
                 if (root.empty() && buffer.empty() && distance(it, dirs.end()) == 1) {
@@ -195,7 +195,7 @@ struct relpath_impl
 // CONVERSIONS
 
 
-std::u16string ansi_to_utf16(const string_view& ansi)
+u16string ansi_to_utf16(const string_view& ansi)
 {
     // parameters
     auto srclen = ansi.size();
@@ -211,14 +211,14 @@ std::u16string ansi_to_utf16(const string_view& ansi)
     }
 
     // create output
-    std::u16string u16(reinterpret_cast<char16_t*>(dst), length);
+    u16string u16(reinterpret_cast<char16_t*>(dst), length);
     delete[] dst;
 
     return u16;
 }
 
 
-std::string utf16_to_ansi(const u16string_view& u16)
+string utf16_to_ansi(const u16string_view& u16)
 {
     // parameters
     auto srclen = u16.size();
@@ -234,7 +234,7 @@ std::string utf16_to_ansi(const u16string_view& u16)
     }
 
     // create output
-    std::string ansi(dst, length);
+    string ansi(dst, length);
     delete[] dst;
 
     return ansi;
@@ -275,9 +275,9 @@ path_t normpath(const path_view_t& path)
     {
         return path_t(string_to_path(str));
     };
-    auto frompath = [](const path_view_t& p) -> std::string
+    auto frompath = [](const path_view_t& p) -> string
     {
-        return std::string(path_to_string(p));
+        return string(path_to_string(p));
     };
 
     return normpath_impl<path_t>()(path, topath, frompath);
@@ -328,9 +328,9 @@ backup_path_t normpath(const backup_path_view_t& path)
     {
         return backup_path_t(string_to_backup_path(str));
     };
-    auto frompath = [](const backup_path_view_t& p) -> std::string
+    auto frompath = [](const backup_path_view_t& p) -> string
     {
-        return std::string(backup_path_to_string(p));
+        return string(backup_path_to_string(p));
     };
 
     return normpath_impl<backup_path_t>()(path, topath, frompath);

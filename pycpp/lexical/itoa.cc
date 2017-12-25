@@ -162,12 +162,12 @@ void u8toa(uint8_t value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string u8toa(uint8_t value, uint8_t base)
+string u8toa(uint8_t value, uint8_t base)
 {
     char buffer[9];
     char* last = buffer + 9;
     u8toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 
@@ -177,12 +177,12 @@ void i8toa(int8_t value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string i8toa(int8_t value, uint8_t base)
+string i8toa(int8_t value, uint8_t base)
 {
     char buffer[9];
     char* last = buffer + 9;
     i8toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 
@@ -192,12 +192,12 @@ void u16toa(uint16_t value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string u16toa(uint16_t value, uint8_t base)
+string u16toa(uint16_t value, uint8_t base)
 {
     char buffer[17];
     char* last = buffer + 17;
     u16toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 
@@ -207,12 +207,12 @@ void i16toa(int16_t value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string i16toa(int16_t value, uint8_t base)
+string i16toa(int16_t value, uint8_t base)
 {
     char buffer[17];
     char* last = buffer + 17;
     i16toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 
@@ -222,12 +222,12 @@ void u32toa(uint32_t value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string u32toa(uint32_t value, uint8_t base)
+string u32toa(uint32_t value, uint8_t base)
 {
     char buffer[33];
     char* last = buffer + 33;
     u32toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 
@@ -237,12 +237,12 @@ void i32toa(int32_t value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string i32toa(int32_t value, uint8_t base)
+string i32toa(int32_t value, uint8_t base)
 {
     char buffer[33];
     char* last = buffer + 33;
     i32toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 
@@ -252,12 +252,12 @@ void u64toa(uint64_t value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string u64toa(uint64_t value, uint8_t base)
+string u64toa(uint64_t value, uint8_t base)
 {
     char buffer[65];
     char* last = buffer + 65;
     u64toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 
@@ -267,12 +267,12 @@ void i64toa(int64_t value, char* first, char*& last, uint8_t base) noexcept
 }
 
 
-std::string i64toa(int64_t value, uint8_t base)
+string i64toa(int64_t value, uint8_t base)
 {
     char buffer[65];
     char* last = buffer + 65;
     i64toa(value, buffer, last, base);
-    return std::string(buffer, last);
+    return string(buffer, last);
 }
 
 PYCPP_END_NAMESPACE

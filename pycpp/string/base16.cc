@@ -86,9 +86,9 @@ size_t base16_encode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-std::string base16_encode(const string_wrapper& str)
+string base16_encode(const string_wrapper& str)
 {
-    std::string base16;
+    string base16;
     base16.reserve(encoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();
@@ -116,9 +116,9 @@ size_t base16_decode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-std::string base16_decode(const string_wrapper& str)
+string base16_decode(const string_wrapper& str)
 {
-    std::string base16;
+    string base16;
     base16.reserve(decoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();

@@ -135,7 +135,7 @@ void xml_stream_writer::set_indent(char c, int width)
     indent_width_ = width;
 
     if (writer_) {
-        std::string indent(indent_width_, indent_character_);
+        xml_string_t indent(indent_width_, indent_character_);
         xmlTextWriterSetIndent((xmlTextWriterPtr) writer_, indent_width_);
         xmlTextWriterSetIndentString((xmlTextWriterPtr) writer_, (const xmlChar*) indent.data());
     }
@@ -312,7 +312,7 @@ xml_string_writer& xml_string_writer::operator=(xml_string_writer&& rhs)
 }
 
 
-std::string xml_string_writer::str() const
+xml_string_t xml_string_writer::str() const
 {
     flush();
     return sstream_->str();

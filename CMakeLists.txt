@@ -56,7 +56,7 @@ option(WITH_CIPHER "Build (only) cipher library" OFF)
 option(WITH_COLLECTIONS "Build (only) collections library" OFF)
 option(WITH_COMPRESSION "Build (only) compression library" OFF)
 option(WITH_CSV "Build (only) CSV library" OFF)
-option(WITH_CUCKOO "Build (only) Cuckoo hash-table library" ON)
+option(WITH_CUCKOO "Build (only) Cuckoo hash-table library" OFF)
 option(WITH_DATETIME "Build (only) datetime library" OFF)
 option(WITH_FILESYSTEM "Build (only) filesystem library" OFF)
 option(WITH_HASHLIB "Build (only) hash library" OFF)
@@ -80,7 +80,7 @@ SET(PYCPP_NAMESPACE "pycpp" CACHE STRING "Name for PyCPP namespace (empty for no
 # The following options are only for program developers.
 option(USE_LIBCXX "Force the use of libcxx" OFF)
 
-if(WITH_CORE WITH_BLOOM OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_CUCKOO OR WITH_DATETIME OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_MYSQL OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
+if(WITH_CORE OR WITH_BLOOM OR WITH_CIPHER OR WITH_COLLECTIONS OR WITH_COMPRESSION OR WITH_CSV OR WITH_CUCKOO OR WITH_DATETIME OR WITH_FILESYSTEM OR WITH_HASHLIB OR WITH_JSON OR WITH_KEYVALUE OR WITH_LATTICE OR WITH_MATH OR WITH_MYSQL OR WITH_RE OR WITH_SQLITE OR WITH_STREAM OR WITH_XML)
     set(BUILD_BLOOM ${WITH_BLOOM})
     set(BUILD_CIPHER ${WITH_CIPHER})
     set(BUILD_COLLECTIONS ${WITH_COLLECTIONS})
@@ -537,6 +537,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/architecture.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/byteorder.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/compiler.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/compiler_traits.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/errno.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/os.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/preprocessor/parallel.h"
@@ -690,7 +691,6 @@ set(SOURCE_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/runtime/os.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/secure/stdlib.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/any.cc"
-    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/variant.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/fstream.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/polymorphic_allocator.cc"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash_c.c"

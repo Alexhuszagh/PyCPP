@@ -11,9 +11,8 @@
 
 #pragma once
 
-#include <pycpp/config.h>
 #include <pycpp/stl/functional.h>
-#include <pycpp/stl/initializer_list.h>
+#include <pycpp/stl/string.h>
 #include <pycpp/stl/string_view.h>
 #include <pycpp/stl/vector.h>
 
@@ -27,8 +26,8 @@ struct string_wrapper;
 // ALIAS
 // -----
 
-using string_t = std::string;
-using string_list_t = vector<std::string>;
+using string_t = string;
+using string_list_t = vector<string_t>;
 using string_wrapper_list_t = vector<string_wrapper>;
 using split_function = function<bool(char)>;
 
@@ -65,7 +64,7 @@ extern const string_t NEWLINE;
  *  routines like split and rsplit will not modify the underlying buffer,
  *  meaning this wrapper must be copied to a new buffer for any
  *  routine expecting a null-terminated string. Each wrapper can be
- *  explicitly converted to std::string.
+ *  explicitly converted to string.
  */
 struct string_wrapper: string_view
 {
@@ -78,11 +77,9 @@ struct string_wrapper: string_view
     string_wrapper& operator=(string_wrapper&& str) = default;
 
     string_wrapper(const string_t& str);
-    string_wrapper(const string& str);
     string_wrapper(const string_view& str);
     string_wrapper(const string_wrapper& str, size_type pos, size_type len = npos);
     string_wrapper(const string_t& str, size_type pos, size_type len = npos);
-    string_wrapper(const string& str, size_type pos, size_type len = npos);
     string_wrapper(const_pointer str);
     string_wrapper(const_pointer str, size_type n);
     string_wrapper(const_pointer first, const_pointer last);

@@ -137,7 +137,7 @@ dns_lookup_t::dns_lookup_t(const string_wrapper& host, const string_wrapper& ser
     const char *node = host.data();
     const char *port = service.data();
     const size_t index = host.find(":");
-    if (index != std::string::npos) {
+    if (index != string::npos) {
         node_string = host.substr(0, index);
         port_string = host.substr(index+1);
         node = node_string.data();
@@ -145,7 +145,8 @@ dns_lookup_t::dns_lookup_t(const string_wrapper& host, const string_wrapper& ser
     }
 
     if (getaddrinfo(node, port, &hints, &result)) {
-        throw runtime_error("Unable to get address from getaddrinfo(): " + std::string(host) + std::string(service));
+        string message("Unable to get address from getaddrinfo(): " + string(host) + string(service));
+        throw runtime_error(message.data());
     }
 
     info = result;

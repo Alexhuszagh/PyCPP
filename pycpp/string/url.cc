@@ -40,12 +40,12 @@ unsigned char from_hex(unsigned char x)
 /** Pre-allocate upper bound of the encoded-string, that is, ~3x the
  *  size of the original string, and re-allocate string once.
  */
-std::string url_encode(const string_wrapper& string)
+string url_encode(const string_wrapper& str)
 {
-    std::string result;
-    result.reserve(3 * string.size());
+    string result;
+    result.reserve(3 * str.size());
 
-    for (auto it = string.cbegin(); it != string.cend(); ++it)
+    for (auto it = str.cbegin(); it != str.cend(); ++it)
     {
         if ((*it >= 'a' && *it <= 'z')||
             (*it >= 'A' && *it <= 'Z')||
@@ -69,24 +69,24 @@ std::string url_encode(const string_wrapper& string)
 /** Pre-allocate upper bound of the encoded-string, that is, roughly the
  *  size of the original string, and re-allocate string once.
  */
-std::string url_decode(const string_wrapper& string)
+string url_decode(const string_wrapper& str)
 {
-    std::string result;
-    result.reserve(string.size());
+    string result;
+    result.reserve(str.size());
 
-    std::string::size_type i;
-    for (i = 0; i < string.size(); ++i)
+    typename string::size_type i;
+    for (i = 0; i < str.size(); ++i)
     {
-        if (string[i] == '+') {
+        if (str[i] == '+') {
             result += ' ';
-        } else if (string[i] == '%' && string.size() > i+2) {
-            const unsigned char ch1 = from_hex(string[i+1]);
-            const unsigned char ch2 = from_hex(string[i+2]);
+        } else if (str[i] == '%' && str.size() > i+2) {
+            const unsigned char ch1 = from_hex(str[i+1]);
+            const unsigned char ch2 = from_hex(str[i+2]);
             const unsigned char ch = (ch1 << 4) | ch2;
             result += ch;
             i += 2;
         } else {
-            result += string[i];
+            result += str[i];
         }
     }
 

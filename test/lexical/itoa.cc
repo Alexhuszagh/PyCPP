@@ -11,7 +11,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-static vector<pair<uint8_t, std::string>> DATA = {
+static vector<pair<uint8_t, string>> DATA = {
     {2, "100101"},
     {3, "1101"},
     {4, "211"},

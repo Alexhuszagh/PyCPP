@@ -118,20 +118,20 @@ void xml_dom_handler::swap(xml_dom_handler& rhs)
 // DOCUMENT
 
 xml_document_t::xml_document_t(xml_document_t&& rhs):
-    xml_node_t(std::move(rhs))
+    xml_node_t(move(rhs))
 {}
 
 
 xml_document_t& xml_document_t::operator=(xml_document_t&& rhs)
 {
-    xml_node_t::operator=(std::move(rhs));
+    xml_node_t::operator=(move(rhs));
     return *this;
 }
 
 
 void xml_document_t::loads(const string_wrapper& data)
 {
-    istringstream stream = istringstream(std::string(data));
+    istringstream stream = istringstream(string(data));
     load(stream);
 }
 
@@ -170,7 +170,7 @@ void xml_document_t::load(const u16string_view& path)
 #endif                                          // WINDOWS
 
 
-std::string xml_document_t::dumps(char c, int width)
+xml_string_t xml_document_t::dumps(char c, int width)
 {
     ostringstream stream;
     dump(stream, c, width);

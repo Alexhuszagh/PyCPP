@@ -21,32 +21,30 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-static std::string sha1_hex(const std::string& str)
+static string sha1_hex(const string_wrapper& view)
 {
-    string_wrapper view(str.data(), str.size());
     auto hex = sha1_hash(view).hexdigest();
-    return std::string(hex.data(), hex.size());
+    return string(hex.data(), hex.size());
 }
 
 
-static std::string md5_hex(const std::string& str)
+static string md5_hex(const string_wrapper& view)
 {
-    string_wrapper view(str.data(), str.size());
     auto hex = md5_hash(view).hexdigest();
-    return std::string(hex.data(), hex.size());
+    return string(hex.data(), hex.size());
 }
 
 // OBJECTS
 // -------
 
 
-size_t lowercase_hash::operator()(const std::string& str) const
+size_t lowercase_hash::operator()(const string& str) const
 {
-    return hash<std::string>()(ascii_tolower(str));
+    return hash<string>()(ascii_tolower(str));
 }
 
 
-bool lowercase_equal_to::operator()(const std::string& lhs, const std::string& rhs) const
+bool lowercase_equal_to::operator()(const string& lhs, const string& rhs) const
 {
     return lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin(), [](char l, char r) {
         return ascii_tolower(l) == ascii_tolower(r);
@@ -94,8 +92,8 @@ digest_challenge_t::digest_challenge_t(const string_wrapper& str)
         const char *begin = value.data();
         const char *ptr = strchr(begin, '=');
         if (ptr) {
-            std::string first(begin, ptr);
-            std::string second(ptr+1);
+            string first(begin, ptr);
+            string second(ptr+1);
 
             // remove quotes
             if (second.size() && second.front() == '"') {
@@ -110,19 +108,19 @@ digest_challenge_t::digest_challenge_t(const string_wrapper& str)
 }
 
 
-const std::string & digest_challenge_t::realm() const
+const string& digest_challenge_t::realm() const
 {
     return at("realm");
 }
 
 
-const std::string & digest_challenge_t::nonce() const
+const string& digest_challenge_t::nonce() const
 {
     return at("nonce");
 }
 
 
-const std::string & digest_challenge_t::cnonce()
+const string& digest_challenge_t::cnonce()
 {
     if (client_nonce.empty()) {
         client_nonce = hex_i32(sysrandom(8));
@@ -131,9 +129,9 @@ const std::string & digest_challenge_t::cnonce()
 }
 
 
-std::string digest_challenge_t::nc() const
+string digest_challenge_t::nc() const
 {
-    std::string str = u64toa(nonce_counter, 8);
+    string str = u64toa(nonce_counter, 8);
     str.insert(str.begin(), static_cast<size_t>(8 - str.size()), '0');
 
     return str;
@@ -147,7 +145,7 @@ digest_algorithm_t digest_challenge_t::algorithm() const
         return md5_digest_algorithm;
     }
 
-    std::string data = ascii_tolower(it->second);
+    string data = ascii_tolower(it->second);
 
     if (data == "md5") {
         return md5_digest_algorithm;
@@ -171,7 +169,7 @@ quality_of_protection_t digest_challenge_t::qop() const
 }
 
 
-std::string digest_challenge_t::header(const url_t& url,
+string digest_challenge_t::header(const url_t& url,
     const parameters_t& parameters,
     const digest_t& digest,
     const string_wrapper& body,
@@ -180,8 +178,8 @@ std::string digest_challenge_t::header(const url_t& url,
     // get string to hash
     auto quality = qop();
     auto path = url.path() + parameters.get();
-    std::string a1 = digest.username + ":" + realm() + ":" + digest.password;
-    std::string a2(method);
+    string a1 = digest.username + ":" + realm() + ":" + digest.password;
+    string a2(method);
     a2 += ":" + path;
     if (quality.authint()) {
         a2 += ":";
@@ -191,8 +189,8 @@ std::string digest_challenge_t::header(const url_t& url,
     // get our initial hash values
     auto algo = algorithm();
     auto hasher = (algo == sha1_digest_algorithm) ? sha1_hex : md5_hex;
-    std::string ha1 = hasher(a1);
-    std::string ha2 = hasher(a2);
+    string ha1 = hasher(a1);
+    string ha2 = hasher(a2);
 
     // MD5 session digests also hash the nonce
     if (algo == md5_sess_digest_algorithm) {
@@ -201,7 +199,7 @@ std::string digest_challenge_t::header(const url_t& url,
 
     // create the hex digest
     ++nonce_counter;
-    std::string response;
+    string response;
     if (quality.empty()) {
         response = hasher(ha1 + ":" + nonce() + ":" + ha2);
     } else {
@@ -209,7 +207,7 @@ std::string digest_challenge_t::header(const url_t& url,
     }
 
     // create our header
-    std::string header;
+    string header;
     header += "Authorization: Digest username=\"" + digest.username;
     header += "\", realm=\"" + realm();
     header += "\", nonce=\"" + nonce();

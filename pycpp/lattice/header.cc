@@ -13,7 +13,7 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-bool lowercase_less::operator()(const std::string &lhs, const std::string &rhs) const noexcept
+bool lowercase_less::operator()(const string &lhs, const string &rhs) const noexcept
 {
     return lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), [](unsigned char l, unsigned char r) {
             return ascii_tolower(l) < ascii_tolower(r);
@@ -29,18 +29,18 @@ header_t::header_t(initializer_list<typename header_t::value_type> list)
 }
 
 
-std::string header_t::string() const
+string header_t::str() const
 {
-    std::string string;
+    string str;
     for (const auto &pair: *this) {
         if (pair.second.empty()) {
-            string +=  pair.first + ";\r\n";
+            str +=  pair.first + ";\r\n";
         } else {
-            string += pair.first + ": " + pair.second + "\r\n";
+            str += pair.first + ": " + pair.second + "\r\n";
         }
     }
 
-    return string;
+    return str;
 }
 
 
@@ -102,9 +102,9 @@ bool header_t::content_type() const
 }
 
 
-ostream & operator<<(ostream &os, const header_t &header)
+ostream& operator<<(ostream &os, const header_t &header)
 {
-    os << header.string();
+    os << header.str();
     return os;
 }
 

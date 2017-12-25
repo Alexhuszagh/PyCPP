@@ -8,10 +8,10 @@ PYCPP_BEGIN_NAMESPACE
 // VARIABLES
 // ---------
 
-std::string NULL_STRING = "null";
-std::string TRUE_STRING = "true";
-std::string FALSE_STRING = "false";
-std::string NAN_STRING = "NaN";
-std::string INFINITY_STRING = "Infinity";
+string NULL_STRING = "null";
+string TRUE_STRING = "true";
+string FALSE_STRING = "false";
+string NAN_STRING = "NaN";
+string INFINITY_STRING = "Infinity";
 
 PYCPP_END_NAMESPACE

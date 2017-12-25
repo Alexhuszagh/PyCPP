@@ -21,8 +21,8 @@ PYCPP_BEGIN_NAMESPACE
  */
 struct parameter_t
 {
-    std::string key;
-    std::string value;
+    string key;
+    string value;
 
     parameter_t() = default;
     parameter_t(const parameter_t &other) = default;
@@ -31,7 +31,7 @@ struct parameter_t
     parameter_t & operator=(parameter_t&&) = default;
 
     parameter_t(const char* username, const char* password);
-    parameter_t(std::string&& key, std::string&& value);
+    parameter_t(string&& key, string&& value);
     parameter_t(const string_wrapper& key, const string_wrapper& value);
 };
 
@@ -39,9 +39,9 @@ struct parameter_t
 /**
  *  \brief HTTP parameters object.
  */
-struct parameters_t: std::string
+struct parameters_t: string
 {
-    using base_t = std::string;
+    using base_t = string;
     using base_t::base_t;
 
     parameters_t() = default;
@@ -52,8 +52,8 @@ struct parameters_t: std::string
     parameters_t(initializer_list<parameter_t> list);
 
     parameters_t& add(const parameter_t& parameter);
-    std::string get() const;
-    const std::string& post() const;
+    string get() const;
+    const string& post() const;
     explicit operator bool() const;
 };
 

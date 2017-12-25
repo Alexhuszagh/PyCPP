@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include <pycpp/preprocessor/compiler_traits.h>
 #include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/tuple.h>
 #include <pycpp/stl/type_traits.h>
@@ -125,10 +126,10 @@ public:
     compressed_pair_impl(second_type&& y);
 
     // ELEMENT ACCESS
-    constexpr first_type& first() noexcept;
-    constexpr const first_type& first() const noexcept;
-    constexpr second_type& second() noexcept;
-    constexpr const second_type& second() const noexcept;
+    CPP14_CONSTEXPR first_type& first() noexcept;
+    CPP14_CONSTEXPR const first_type& first() const noexcept;
+    CPP14_CONSTEXPR second_type& second() noexcept;
+    CPP14_CONSTEXPR const second_type& second() const noexcept;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -160,10 +161,10 @@ public:
     compressed_pair_impl(second_type&& y);
 
     // ELEMENT ACCESS
-    constexpr first_type& first() noexcept;
-    constexpr const first_type& first() const noexcept;
-    constexpr second_type& second() noexcept;
-    constexpr const second_type& second() const noexcept;
+    CPP14_CONSTEXPR first_type& first() noexcept;
+    CPP14_CONSTEXPR const first_type& first() const noexcept;
+    CPP14_CONSTEXPR second_type& second() noexcept;
+    CPP14_CONSTEXPR const second_type& second() const noexcept;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -194,10 +195,10 @@ public:
     compressed_pair_impl(second_type&& y);
 
     // ELEMENT ACCESS
-    constexpr first_type& first() noexcept;
-    constexpr const first_type& first() const noexcept;
-    constexpr second_type& second() noexcept;
-    constexpr const second_type& second() const noexcept;
+    CPP14_CONSTEXPR first_type& first() noexcept;
+    CPP14_CONSTEXPR const first_type& first() const noexcept;
+    CPP14_CONSTEXPR second_type& second() noexcept;
+    CPP14_CONSTEXPR const second_type& second() const noexcept;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -230,10 +231,10 @@ public:
     compressed_pair_impl(second_type&& y);
 
     // ELEMENT ACCESS
-    constexpr first_type& first() noexcept;
-    constexpr const first_type& first() const noexcept;
-    constexpr second_type& second() noexcept;
-    constexpr const second_type& second() const noexcept;
+    CPP14_CONSTEXPR first_type& first() noexcept;
+    CPP14_CONSTEXPR const first_type& first() const noexcept;
+    CPP14_CONSTEXPR second_type& second() noexcept;
+    CPP14_CONSTEXPR const second_type& second() const noexcept;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y) noexcept;
@@ -264,10 +265,10 @@ public:
     compressed_pair_impl(first_type&& x);
 
     // ELEMENT ACCESS
-    constexpr first_type& first() noexcept;
-    constexpr const first_type& first() const noexcept;
-    constexpr second_type& second() noexcept;
-    constexpr const second_type& second() const noexcept;
+    CPP14_CONSTEXPR first_type& first() noexcept;
+    CPP14_CONSTEXPR const first_type& first() const noexcept;
+    CPP14_CONSTEXPR second_type& second() noexcept;
+    CPP14_CONSTEXPR const second_type& second() const noexcept;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y) noexcept;
@@ -295,10 +296,10 @@ public:
     compressed_pair_impl(first_type&& x);
 
     // ELEMENT ACCESS
-    constexpr first_type& first() noexcept;
-    constexpr const first_type& first() const noexcept;
-    constexpr second_type& second() noexcept;
-    constexpr const second_type& second() const noexcept;
+    CPP14_CONSTEXPR first_type& first() noexcept;
+    CPP14_CONSTEXPR const first_type& first() const noexcept;
+    CPP14_CONSTEXPR second_type& second() noexcept;
+    CPP14_CONSTEXPR const second_type& second() const noexcept;
 
     // MODIFIERS
     void swap(compressed_pair<T1, T2>& y);
@@ -365,28 +366,28 @@ compressed_pair_impl<T1, T2, 0>::compressed_pair_impl(second_type&& y):
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 0>::first() noexcept -> first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 0>::first() noexcept -> first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 0>::first() const noexcept -> const first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 0>::first() const noexcept -> const first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 0>::second() noexcept -> second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 0>::second() noexcept -> second_type&
 {
     return second_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 0>::second() const noexcept -> const second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 0>::second() const noexcept -> const second_type&
 {
     return second_;
 }
@@ -446,28 +447,28 @@ compressed_pair_impl<T1, T2, 1>::compressed_pair_impl(second_type&& y):
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 1>::first() noexcept -> first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 1>::first() noexcept -> first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 1>::first() const noexcept -> const first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 1>::first() const noexcept -> const first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 1>::second() noexcept -> second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 1>::second() noexcept -> second_type&
 {
     return second_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 1>::second() const noexcept -> const second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 1>::second() const noexcept -> const second_type&
 {
     return second_;
 }
@@ -527,28 +528,28 @@ compressed_pair_impl<T1, T2, 2>::compressed_pair_impl(second_type&& y):
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 2>::first() noexcept -> first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 2>::first() noexcept -> first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 2>::first() const noexcept -> const first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 2>::first() const noexcept -> const first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 2>::second() noexcept -> second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 2>::second() noexcept -> second_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 2>::second() const noexcept -> const second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 2>::second() const noexcept -> const second_type&
 {
     return *this;
 }
@@ -608,28 +609,28 @@ compressed_pair_impl<T1, T2, 3>::compressed_pair_impl(second_type&& y):
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 3>::first() noexcept -> first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 3>::first() noexcept -> first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 3>::first() const noexcept -> const first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 3>::first() const noexcept -> const first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 3>::second() noexcept -> second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 3>::second() noexcept -> second_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 3>::second() const noexcept -> const second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 3>::second() const noexcept -> const second_type&
 {
     return *this;
 }
@@ -677,28 +678,28 @@ compressed_pair_impl<T1, T2, 4>::compressed_pair_impl(first_type&& x):
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 4>::first() noexcept -> first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 4>::first() noexcept -> first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 4>::first() const noexcept -> const first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 4>::first() const noexcept -> const first_type&
 {
     return *this;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 4>::second() noexcept -> second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 4>::second() noexcept -> second_type&
 {
     return second_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 4>::second() const noexcept -> const second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 4>::second() const noexcept -> const second_type&
 {
     return second_;
 }
@@ -746,28 +747,28 @@ compressed_pair_impl<T1, T2, 5>::compressed_pair_impl(first_type&& x):
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 5>::first() noexcept -> first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 5>::first() noexcept -> first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 5>::first() const noexcept -> const first_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 5>::first() const noexcept -> const first_type&
 {
     return first_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 5>::second() noexcept -> second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 5>::second() noexcept -> second_type&
 {
     return second_;
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair_impl<T1, T2, 5>::second() const noexcept -> const second_type&
+CPP14_CONSTEXPR auto compressed_pair_impl<T1, T2, 5>::second() const noexcept -> const second_type&
 {
     return second_;
 }
@@ -810,10 +811,10 @@ public:
     explicit compressed_pair(second_type&& y);
 
     // ELEMENT ACCESS
-   constexpr first_reference first() noexcept;
-   constexpr first_const_reference first() const noexcept;
-   constexpr second_reference second() noexcept;
-   constexpr second_const_reference second() const noexcept;
+   CPP14_CONSTEXPR first_reference first() noexcept;
+   CPP14_CONSTEXPR first_const_reference first() const noexcept;
+   CPP14_CONSTEXPR second_reference second() noexcept;
+   CPP14_CONSTEXPR second_const_reference second() const noexcept;
 
     // MODIFIERS
    void swap(compressed_pair& y);
@@ -846,10 +847,10 @@ public:
     explicit compressed_pair(first_type&& x);
 
     // ELEMENT ACCESS
-   constexpr first_reference first() noexcept;
-   constexpr first_const_reference first() const noexcept;
-   constexpr second_reference second() noexcept;
-   constexpr second_const_reference second() const noexcept;
+   CPP14_CONSTEXPR first_reference first() noexcept;
+   CPP14_CONSTEXPR first_const_reference first() const noexcept;
+   CPP14_CONSTEXPR second_reference second() noexcept;
+   CPP14_CONSTEXPR second_const_reference second() const noexcept;
 
     // MODIFIERS
    void swap(compressed_pair& y);
@@ -911,28 +912,28 @@ compressed_pair<T1, T2>::compressed_pair(second_type&& y):
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair<T1, T2>::first() noexcept -> first_reference
+CPP14_CONSTEXPR auto compressed_pair<T1, T2>::first() noexcept -> first_reference
 {
     return base_t::first();
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair<T1, T2>::first() const noexcept -> first_const_reference
+CPP14_CONSTEXPR auto compressed_pair<T1, T2>::first() const noexcept -> first_const_reference
 {
     return base_t::first();
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair<T1, T2>::second() noexcept -> second_reference
+CPP14_CONSTEXPR auto compressed_pair<T1, T2>::second() noexcept -> second_reference
 {
     return base_t::second();
 }
 
 
 template <typename T1, typename T2>
-constexpr auto compressed_pair<T1, T2>::second() const noexcept -> second_const_reference
+CPP14_CONSTEXPR auto compressed_pair<T1, T2>::second() const noexcept -> second_const_reference
 {
     return base_t::second();
 }
@@ -976,28 +977,28 @@ compressed_pair<T, T>::compressed_pair(first_type&& x):
 
 
 template <typename T>
-constexpr auto compressed_pair<T, T>::first() noexcept -> first_reference
+CPP14_CONSTEXPR auto compressed_pair<T, T>::first() noexcept -> first_reference
 {
     return base_t::first();
 }
 
 
 template <typename T>
-constexpr auto compressed_pair<T, T>::first() const noexcept -> first_const_reference
+CPP14_CONSTEXPR auto compressed_pair<T, T>::first() const noexcept -> first_const_reference
 {
     return base_t::first();
 }
 
 
 template <typename T>
-constexpr auto compressed_pair<T, T>::second() noexcept -> second_reference
+CPP14_CONSTEXPR auto compressed_pair<T, T>::second() noexcept -> second_reference
 {
     return base_t::second();
 }
 
 
 template <typename T>
-constexpr auto compressed_pair<T, T>::second() const noexcept -> second_const_reference
+CPP14_CONSTEXPR auto compressed_pair<T, T>::second() const noexcept -> second_const_reference
 {
     return base_t::second();
 }
@@ -1027,25 +1028,25 @@ template <>
 struct get_pair<0>
 {
     template <typename T1, typename T2>
-    inline constexpr T1& operator()(compressed_pair<T1, T2>& p) noexcept
+    inline CPP14_CONSTEXPR T1& operator()(compressed_pair<T1, T2>& p) noexcept
     {
         return p.first();
     }
 
     template <typename T1, typename T2>
-    inline constexpr const T1& operator()(const compressed_pair<T1, T2>& p) noexcept
+    inline CPP14_CONSTEXPR const T1& operator()(const compressed_pair<T1, T2>& p) noexcept
     {
         return p.first();
     }
 
     template <typename T1, typename T2>
-    inline constexpr T1&& operator()(compressed_pair<T1, T2>&& p) noexcept
+    inline CPP14_CONSTEXPR T1&& operator()(compressed_pair<T1, T2>&& p) noexcept
     {
         return forward<T1>(p.first());
     }
 
     template <typename T1, typename T2>
-    inline constexpr const T1&& operator()(const compressed_pair<T1, T2>&& p) noexcept
+    inline CPP14_CONSTEXPR const T1&& operator()(const compressed_pair<T1, T2>&& p) noexcept
     {
         return forward<const T1>(p.first());
     }
@@ -1056,25 +1057,25 @@ template <>
 struct get_pair<1>
 {
     template <typename T1, typename T2>
-    inline constexpr T2& operator()(compressed_pair<T1, T2>& p) noexcept
+    inline CPP14_CONSTEXPR T2& operator()(compressed_pair<T1, T2>& p) noexcept
     {
         return p.second();
     }
 
     template <typename T1, typename T2>
-    inline constexpr const T2& operator()(const compressed_pair<T1, T2>& p) noexcept
+    inline CPP14_CONSTEXPR const T2& operator()(const compressed_pair<T1, T2>& p) noexcept
     {
         return p.second();
     }
 
     template <typename T1, typename T2>
-    inline constexpr T2&& operator()(compressed_pair<T1, T2>&& p) noexcept
+    inline CPP14_CONSTEXPR T2&& operator()(compressed_pair<T1, T2>&& p) noexcept
     {
         return forward<T2>(p.second());
     }
 
     template <typename T1, typename T2>
-    inline constexpr const T2&& operator()(const compressed_pair<T1, T2>&& p) noexcept
+    inline CPP14_CONSTEXPR const T2&& operator()(const compressed_pair<T1, T2>&& p) noexcept
     {
         return forward<const T2>(p.second());
     }
@@ -1084,7 +1085,7 @@ struct get_pair<1>
 
 
 template <size_t I, typename T1, typename T2>
-inline constexpr tuple_element_t<I, compressed_pair<T1, T2>>&
+inline CPP14_CONSTEXPR tuple_element_t<I, compressed_pair<T1, T2>>&
 get(compressed_pair<T1, T2>& p) noexcept
 {
     return compressed_detail::get_pair<I>()(p);
@@ -1092,7 +1093,7 @@ get(compressed_pair<T1, T2>& p) noexcept
 
 
 template <size_t I, typename T1, typename T2>
-inline constexpr const tuple_element_t<I, compressed_pair<T1, T2>>&
+inline CPP14_CONSTEXPR const tuple_element_t<I, compressed_pair<T1, T2>>&
 get(const compressed_pair<T1, T2>& p) noexcept
 {
     return compressed_detail::get_pair<I>()(p);
@@ -1100,7 +1101,7 @@ get(const compressed_pair<T1, T2>& p) noexcept
 
 
 template <size_t I, typename T1, typename T2>
-inline constexpr tuple_element_t<I, compressed_pair<T1, T2>>&&
+inline CPP14_CONSTEXPR tuple_element_t<I, compressed_pair<T1, T2>>&&
 get(compressed_pair<T1, T2>&& p) noexcept
 {
     return compressed_detail::get_pair<I>()(move(p));
@@ -1108,7 +1109,7 @@ get(compressed_pair<T1, T2>&& p) noexcept
 
 
 template <size_t I, typename T1, typename T2>
-inline constexpr const tuple_element_t<I, compressed_pair<T1, T2>>&&
+inline CPP14_CONSTEXPR const tuple_element_t<I, compressed_pair<T1, T2>>&&
 get(const compressed_pair<T1, T2>&& p) noexcept
 {
     return compressed_detail::get_pair<I>()(move(p));
@@ -1116,55 +1117,55 @@ get(const compressed_pair<T1, T2>&& p) noexcept
 
 
 template <typename T1, typename T2>
-inline constexpr T1& get(compressed_pair<T1, T2>& p) noexcept
+inline CPP14_CONSTEXPR T1& get(compressed_pair<T1, T2>& p) noexcept
 {
     return compressed_detail::get_pair<0>()(p);
 }
 
 template <typename T1, typename T2>
-inline constexpr const T1& get(const compressed_pair<T1, T2>& p) noexcept
+inline CPP14_CONSTEXPR const T1& get(const compressed_pair<T1, T2>& p) noexcept
 {
     return compressed_detail::get_pair<0>()(p);
 }
 
 
 template <typename T1, typename T2>
-inline constexpr T1&& get(compressed_pair<T1, T2>&& p) noexcept
+inline CPP14_CONSTEXPR T1&& get(compressed_pair<T1, T2>&& p) noexcept
 {
     return compressed_detail::get_pair<0>()(move(p));
 }
 
 
 template <typename T1, typename T2>
-inline constexpr const T1&& get(const compressed_pair<T1, T2>&& p) noexcept
+inline CPP14_CONSTEXPR const T1&& get(const compressed_pair<T1, T2>&& p) noexcept
 {
     return compressed_detail::get_pair<0>()(move(p));
 }
 
 
 template <typename T1, typename T2>
-inline constexpr T1& get(compressed_pair<T2, T1>& p) noexcept
+inline CPP14_CONSTEXPR T1& get(compressed_pair<T2, T1>& p) noexcept
 {
     return compressed_detail::get_pair<1>()(p);
 }
 
 
 template <typename T1, typename T2>
-inline constexpr const T1& get(const compressed_pair<T2, T1>& p) noexcept
+inline CPP14_CONSTEXPR const T1& get(const compressed_pair<T2, T1>& p) noexcept
 {
     return compressed_detail::get_pair<1>()(p);
 }
 
 
 template <typename T1, typename T2>
-inline constexpr T1&& get(compressed_pair<T2, T1>&& p) noexcept
+inline CPP14_CONSTEXPR T1&& get(compressed_pair<T2, T1>&& p) noexcept
 {
     return compressed_detail::get_pair<1>()(move(p));
 }
 
 
 template <typename T1, typename T2>
-inline constexpr const T1&& get(const compressed_pair<T2, T1>&& p) noexcept
+inline CPP14_CONSTEXPR const T1&& get(const compressed_pair<T2, T1>&& p) noexcept
 {
     return compressed_detail::get_pair<1>()(move(p));
 }

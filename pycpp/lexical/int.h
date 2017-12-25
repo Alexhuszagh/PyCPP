@@ -57,7 +57,7 @@ public:
     const char* data() const noexcept;
     const char* c_str() const noexcept;
 
-    string_view string() const noexcept;
+    string_view str() const noexcept;
 
     // CONVERSIONS
     explicit operator string_view() const noexcept;

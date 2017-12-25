@@ -224,7 +224,7 @@ csv_dict_string_reader::csv_dict_string_reader(const string_wrapper& str, size_t
 
 void csv_dict_string_reader::open(const string_wrapper& str, size_t skip, csvpunct_impl* punct)
 {
-    sstream_ = istringstream(std::string(str), ios_base::binary);
+    sstream_ = istringstream(string(str), ios_base::binary);
     csv_dict_stream_reader::open(sstream_, skip, punct);
 }
 
@@ -447,7 +447,7 @@ void csv_dict_string_writer::open(const csv_row& header, csv_quoting quoting, cs
 }
 
 
-std::string csv_dict_string_writer::str() const
+string csv_dict_string_writer::str() const
 {
     return sstream_.str();
 }

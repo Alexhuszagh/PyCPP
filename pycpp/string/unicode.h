@@ -24,7 +24,7 @@ using unicode_lowlevel_callback = function<void(
     void*& dst, size_t dstlen)
 >;
 
-using unicode_highlevel_callback = function<std::string(const string_wrapper&)>;
+using unicode_highlevel_callback = function<string(const string_wrapper&)>;
 
 // FUNCTIONS
 // ---------
@@ -121,7 +121,7 @@ void utf8_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-8 string to UTF-16.
  */
-std::string utf8_to_utf16(const string_wrapper& str);
+string utf8_to_utf16(const string_wrapper& str);
 
 /**
  *  \brief Convert UTF-8 to UTF-32. Returns number of bytes converted.
@@ -131,7 +131,7 @@ void utf8_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-8 string to UTF-32.
  */
-std::string utf8_to_utf32(const string_wrapper& str);
+string utf8_to_utf32(const string_wrapper& str);
 
 /**
  *  \brief Convert UTF-16 to UTF-8. Returns number of bytes converted.
@@ -141,7 +141,7 @@ void utf16_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-16 string to UTF-8.
  */
-std::string utf16_to_utf8(const string_wrapper& str);
+string utf16_to_utf8(const string_wrapper& str);
 
 /**
  *  \brief Convert UTF-16 to UTF-32. Returns number of bytes converted.
@@ -151,7 +151,7 @@ void utf16_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-16 string to UTF-32.
  */
-std::string utf16_to_utf32(const string_wrapper& str);
+string utf16_to_utf32(const string_wrapper& str);
 
 /**
  *  \brief Convert UTF-32 to UTF-8. Returns number of bytes converted.
@@ -161,7 +161,7 @@ void utf32_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-32 string to UTF-8.
  */
-std::string utf32_to_utf8(const string_wrapper& str);
+string utf32_to_utf8(const string_wrapper& str);
 
 /**
  *  \brief Convert UTF-32 to UTF-16. Returns number of bytes converted.
@@ -171,6 +171,6 @@ void utf32_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief Convert UTF-32 string to UTF-16.
  */
-std::string utf32_to_utf16(const string_wrapper& str);
+string utf32_to_utf16(const string_wrapper& str);
 
 PYCPP_END_NAMESPACE

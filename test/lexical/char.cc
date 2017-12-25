@@ -30,28 +30,28 @@ static vector<pair<char, std::string>> DATA = {
 TEST(lexical_char_formatter, lexical_char_formatter)
 {
     auto TEST_CHAR  = [](char c, const string_view& expected) {
-        EXPECT_EQ(lexical_char_formatter(c).string(), expected);
+        EXPECT_EQ(lexical_char_formatter(c).str(), expected);
     };
     auto TEST_CONST_CHAR  = [](const char b, const string_view& expected) {
-        EXPECT_EQ(lexical_char_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_char_formatter(b).str(), expected);
     };
     auto TEST_VOLATILE_CHAR  = [](volatile char b, const string_view& expected) {
-        EXPECT_EQ(lexical_char_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_char_formatter(b).str(), expected);
     };
     auto TEST_CV_CHAR  = [](volatile char b, const string_view& expected) {
-        EXPECT_EQ(lexical_char_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_char_formatter(b).str(), expected);
     };
     auto TEST_UCHAR  = [](unsigned char c, const string_view& expected) {
-        EXPECT_EQ(lexical_char_formatter(c).string(), expected);
+        EXPECT_EQ(lexical_char_formatter(c).str(), expected);
     };
     auto TEST_CONST_UCHAR  = [](const unsigned char b, const string_view& expected) {
-        EXPECT_EQ(lexical_char_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_char_formatter(b).str(), expected);
     };
     auto TEST_VOLATILE_UCHAR  = [](volatile unsigned char b, const string_view& expected) {
-        EXPECT_EQ(lexical_char_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_char_formatter(b).str(), expected);
     };
     auto TEST_CV_UCHAR  = [](volatile unsigned char b, const string_view& expected) {
-        EXPECT_EQ(lexical_char_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_char_formatter(b).str(), expected);
     };
 
     for (const auto& pair: DATA) {

@@ -34,12 +34,12 @@ static size_t gzip_compress_bound(size_t size)
  *  and just mess up reproducibility of the produced bytes
  *  for testing purposes.
  */
-static std::string gzip_header(int level,
+static string gzip_header(int level,
     time_t mtime = 0,
-    const std::string& filename = "",
-    const std::string& comment = "")
+    const string& filename = "",
+    const string& comment = "")
 {
-    std::string header;
+    string header;
     bool has_filename = !filename.empty();
     bool has_comment = !comment.empty();
     size_t length = 10;
@@ -102,7 +102,7 @@ struct gzip_compressor_impl: filter_impl<z_stream>
 {
     using base = filter_impl<z_stream>;
 
-    std::string header;
+    string header;
     uLong crc = 0;
     size_t size = 0;
 
@@ -440,7 +440,7 @@ void gzip_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string gzip_compress(const string_wrapper& str)
+string gzip_compress(const string_wrapper& str)
 {
     size_t dstlen = gzip_compress_bound(str.size());
     return compress_bound(str, dstlen, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
@@ -449,7 +449,7 @@ std::string gzip_compress(const string_wrapper& str)
 }
 
 
-std::string gzip_decompress(const string_wrapper& str)
+string gzip_decompress(const string_wrapper& str)
 {
     return ctx_decompress<gzip_decompressor>(str);
 }
@@ -462,7 +462,7 @@ void gzip_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
 }
 
 
-std::string gzip_decompress(const string_wrapper& str, size_t bound)
+string gzip_decompress(const string_wrapper& str, size_t bound)
 {
     return decompress_bound(str, bound, [](const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t bound) {
         gzip_decompress(src, srclen, dst, dstlen, bound);

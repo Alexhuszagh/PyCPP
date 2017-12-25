@@ -40,7 +40,7 @@ struct get_qual
 struct concat
 {
     template <typename... Args>
-    std::string operator()(const Args &... args) const
+    string operator()(const Args &... args) const
     {
         ostringstream strm;
         initializer_list<int>({(strm << args, 0)...});
@@ -78,22 +78,22 @@ struct dtor
 
 TEST(variant, basic)
 {
-    variant<int, std::string> v("hello world!");
-    EXPECT_EQ("hello world!", get<std::string>(v));
+    variant<int, string> v("hello world!");
+    EXPECT_EQ("hello world!", get<string>(v));
 
     EXPECT_THROW(get<int>(v), bad_variant_access);
 
-    variant<int, std::string> w(v);
+    variant<int, string> w(v);
 
     EXPECT_FALSE(get_if<int>(&w));
-    EXPECT_TRUE(get_if<std::string>(&w));
+    EXPECT_TRUE(get_if<string>(&w));
 
     v = 42;
 
     struct unary
     {
       int operator()(int) const { return 0; }
-      int operator()(const std::string &) const { return 1; }
+      int operator()(const string &) const { return 1; }
     };
 
     EXPECT_EQ(0, visit(unary{}, v));
@@ -109,9 +109,9 @@ TEST(variant, basic)
     struct binary
     {
       int operator()(int, int) const { return 0; }
-      int operator()(int, const std::string &) const { return 1; }
-      int operator()(const std::string &, int) const { return 2; }
-      int operator()(const std::string &, const std::string &) const { return 3; }
+      int operator()(int, const string &) const { return 1; }
+      int operator()(const string &, int) const { return 2; }
+      int operator()(const string &, const string &) const { return 3; }
     };
 
     EXPECT_EQ(0, visit(binary{}, v, w));
@@ -173,7 +173,7 @@ TEST(variant, visit_zero)
 
 TEST(variant, visit_homogeneous_double)
 {
-    variant<int, std::string> v("hello"), w("world!");
+    variant<int, string> v("hello"), w("world!");
     EXPECT_EQ("helloworld!", visit(concat{}, v, w));
 
 #if !defined(HAVE_GCC) || COMPILER_MAJOR_VERSION >= 5
@@ -197,14 +197,14 @@ TEST(variant, visit_homogeneous_double)
 
 TEST(variant, visit_homogenous_quintuple)
 {
-    variant<int, std::string> v(101), w("+"), x(202), y("="), z(303);
+    variant<int, string> v(101), w("+"), x(202), y("="), z(303);
     EXPECT_EQ("101+202=303", visit(concat{}, v, w, x, y, z));
 }
 
 
 TEST(variant, visit_heterogeneous_double)
 {
-    variant<int, std::string> v("hello");
+    variant<int, string> v("hello");
     variant<double, const char *> w("world!");
     EXPECT_EQ("helloworld!", visit(concat{}, v, w));
 }
@@ -213,8 +213,8 @@ TEST(variant, visit_heterogeneous_quintuple)
 {
     variant<int, double> v(101);
     variant<const char *> w("+");
-    variant<bool, std::string, int> x(202);
-    variant<char, std::string, const char *> y('=');
+    variant<bool, string, int> x(202);
+    variant<char, string, const char *> y('=');
     variant<long, short> z(303L);
     EXPECT_EQ("101+202=303", visit(concat{}, v, w, x, y, z));
 }
@@ -222,7 +222,7 @@ TEST(variant, visit_heterogeneous_quintuple)
 
 TEST(variant, relops_same_type_same_value)
 {
-    variant<int, std::string> v(0), w(0);
+    variant<int, string> v(0), w(0);
     // `v` op `w`
     EXPECT_TRUE(v == w);
     EXPECT_FALSE(v != w);
@@ -260,7 +260,7 @@ TEST(variant, relops_same_type_same_value)
 
 TEST(variant, relops_same_type_diff_value)
 {
-    variant<int, std::string> v(0), w(1);
+    variant<int, string> v(0), w(1);
     // `v` op `w`
     EXPECT_FALSE(v == w);
     EXPECT_TRUE(v != w);
@@ -409,30 +409,30 @@ TEST(variant, relops_both_valueless_by_exception)
 
 TEST(variant, swap_same)
 {
-    variant<int, std::string> v("hello");
-    variant<int, std::string> w("world");
+    variant<int, string> v("hello");
+    variant<int, string> w("world");
 
-    EXPECT_EQ("hello", get<std::string>(v));
-    EXPECT_EQ("world", get<std::string>(w));
+    EXPECT_EQ("hello", get<string>(v));
+    EXPECT_EQ("world", get<string>(w));
 
     swap(v, w);
 
-    EXPECT_EQ("world", get<std::string>(v));
-    EXPECT_EQ("hello", get<std::string>(w));
+    EXPECT_EQ("world", get<string>(v));
+    EXPECT_EQ("hello", get<string>(w));
 }
 
 
 TEST(variant, swap_diff)
 {
-    variant<int, std::string> v(42);
-    variant<int, std::string> w("hello");
+    variant<int, string> v(42);
+    variant<int, string> w("hello");
 
     EXPECT_EQ(42, get<int>(v));
-    EXPECT_EQ("hello", get<std::string>(w));
+    EXPECT_EQ("hello", get<string>(w));
 
     swap(v, w);
 
-    EXPECT_EQ("hello", get<std::string>(v));
+    EXPECT_EQ("hello", get<string>(v));
     EXPECT_EQ(42, get<int>(w));
 }
 
@@ -470,7 +470,7 @@ TEST(variant, swap_both_valueless_by_exception)
 
 TEST(variant, modifier_emplace_index_direct)
 {
-    variant<int, std::string> v;
+    variant<int, string> v;
     v.emplace<1>("42");
     EXPECT_EQ("42", get<1>(v));
 }
@@ -486,7 +486,7 @@ TEST(variant, modifier_emplace_index_direct_duplicate)
 
 TEST(variant, modifier_emplace_index_conversion)
 {
-    variant<int, std::string> v;
+    variant<int, string> v;
     v.emplace<1>("42");
     EXPECT_EQ("42", get<1>(v));
 }
@@ -502,7 +502,7 @@ TEST(variant, modifier_emplace_index_conversion_duplicate)
 
 TEST(variant, modifier_emplace_index_initializer_list)
 {
-    variant<int, std::string> v;
+    variant<int, string> v;
     v.emplace<1>({'4', '2'});
     EXPECT_EQ("42", get<1>(v));
 }
@@ -510,15 +510,15 @@ TEST(variant, modifier_emplace_index_initializer_list)
 
 TEST(variant, modifier_emplace_type_direct)
 {
-    variant<int, std::string> v;
-    v.emplace<std::string>("42");
-    EXPECT_EQ("42", get<std::string>(v));
+    variant<int, string> v;
+    v.emplace<string>("42");
+    EXPECT_EQ("42", get<string>(v));
 }
 
 
 TEST(variant, modifier_emplace_type_conversion)
 {
-    variant<int, std::string> v;
+    variant<int, string> v;
     v.emplace<int>(1.1);
     EXPECT_EQ(1, get<int>(v));
 }
@@ -526,9 +526,9 @@ TEST(variant, modifier_emplace_type_conversion)
 
 TEST(variant, modifier_emplace_type_initializer_list)
 {
-    variant<int, std::string> v;
-    v.emplace<std::string>({'4', '2'});
-    EXPECT_EQ("42", get<std::string>(v));
+    variant<int, string> v;
+    v.emplace<string>({'4', '2'});
+    EXPECT_EQ("42", get<string>(v));
 }
 
 
@@ -631,11 +631,11 @@ TEST(variant, dtor)
 
 TEST(variant, ctor_move_value)
 {
-    variant<int, std::string> v("hello");
-    EXPECT_EQ("hello", get<std::string>(v));
-    variant<int, std::string> w(move(v));
-    EXPECT_EQ("hello", get<std::string>(w));
-    EXPECT_TRUE(get<std::string>(v).empty());
+    variant<int, string> v("hello");
+    EXPECT_EQ("hello", get<string>(v));
+    variant<int, string> w(move(v));
+    EXPECT_EQ("hello", get<string>(w));
+    EXPECT_TRUE(get<string>(v).empty());
 
     constexpr variant<int, const char *> cv(42);
     static_assert(42 == get<int>(cv), "");
@@ -656,7 +656,7 @@ TEST(variant, ctor_move_valueless_by_exception)
 
 TEST(variant, ctor_inplace_index_direct)
 {
-    variant<int, std::string> v(in_place_index_t<0>{}, 42);
+    variant<int, string> v(in_place_index_t<0>{}, 42);
     EXPECT_EQ(42, get<0>(v));
 
     constexpr variant<int, const char *> cv(in_place_index_t<0>{}, 42);
@@ -676,7 +676,7 @@ TEST(variant, ctor_inplace_index_direct_duplicate)
 
 TEST(variant, ctor_inplace_index_conversion)
 {
-    variant<int, std::string> v(in_place_index_t<1>{}, "42");
+    variant<int, string> v(in_place_index_t<1>{}, "42");
     EXPECT_EQ("42", get<1>(v));
 
     constexpr variant<int, const char *> cv(in_place_index_t<0>{}, 1.1);
@@ -686,15 +686,15 @@ TEST(variant, ctor_inplace_index_conversion)
 
 TEST(variant, ctor_inplace_index_initializer_list)
 {
-    variant<int, std::string> v(in_place_index_t<1>{}, {'4', '2'});
+    variant<int, string> v(in_place_index_t<1>{}, {'4', '2'});
     EXPECT_EQ("42", get<1>(v));
 }
 
 
 TEST(variant, ctor_inplace_type_direct)
 {
-    variant<int, std::string> v(in_place_type_t<std::string>{}, "42");
-    EXPECT_EQ("42", get<std::string>(v));
+    variant<int, string> v(in_place_type_t<string>{}, "42");
+    EXPECT_EQ("42", get<string>(v));
 
     constexpr variant<int, const char *> cv(in_place_type_t<int>{}, 42);
     static_assert(42 == get<int>(cv), "");
@@ -703,7 +703,7 @@ TEST(variant, ctor_inplace_type_direct)
 
 TEST(variant, ctor_inplace_type_conversion)
 {
-    variant<int, std::string> v(in_place_type_t<int>{}, 42.5);
+    variant<int, string> v(in_place_type_t<int>{}, 42.5);
     EXPECT_EQ(42, get<int>(v));
 
     constexpr variant<int, const char *> cv(in_place_type_t<int>{}, 42.5);
@@ -713,14 +713,14 @@ TEST(variant, ctor_inplace_type_conversion)
 
 TEST(variant, ctor_inplace_type_initializer_list)
 {
-    variant<int, std::string> v(in_place_type_t<std::string>{}, {'4', '2'});
-    EXPECT_EQ("42", get<std::string>(v));
+    variant<int, string> v(in_place_type_t<string>{}, {'4', '2'});
+    EXPECT_EQ("42", get<string>(v));
 }
 
 
 TEST(variant, ctor_fwd_direct)
 {
-    variant<int, std::string> v(42);
+    variant<int, string> v(42);
     EXPECT_EQ(42, get<int>(v));
 
     constexpr variant<int, const char *> cv(42);
@@ -730,8 +730,8 @@ TEST(variant, ctor_fwd_direct)
 
 TEST(variant, ctor_fwd_direct_conversion)
 {
-    variant<int, std::string> v("42");
-    EXPECT_EQ("42", get<std::string>(v));
+    variant<int, string> v("42");
+    EXPECT_EQ("42", get<string>(v));
 
     constexpr variant<int, const char *> cv(1.1);
     static_assert(1 == get<int>(cv), "");
@@ -740,7 +740,7 @@ TEST(variant, ctor_fwd_direct_conversion)
 
 TEST(variant, ctor_fwd_copy_initialization)
 {
-    variant<int, std::string> v = 42;
+    variant<int, string> v = 42;
     EXPECT_EQ(42, get<int>(v));
 
     constexpr variant<int, const char *> cv = 42;
@@ -750,8 +750,8 @@ TEST(variant, ctor_fwd_copy_initialization)
 
 TEST(variant, ctor_fwd_copy_initialization_conversion)
 {
-    variant<int, std::string> v = "42";
-    EXPECT_EQ("42", get<std::string>(v));
+    variant<int, string> v = "42";
+    EXPECT_EQ("42", get<string>(v));
 
     constexpr variant<int, const char *> cv = 1.1;
     static_assert(1 == get<int>(cv), "");
@@ -760,7 +760,7 @@ TEST(variant, ctor_fwd_copy_initialization_conversion)
 
 TEST(variant, ctor_default)
 {
-    variant<int, std::string> v;
+    variant<int, string> v;
     EXPECT_EQ(0, get<0>(v));
 
     constexpr variant<int> cv{};
@@ -770,11 +770,11 @@ TEST(variant, ctor_default)
 
 TEST(variant, ctor_copy)
 {
-    variant<int, std::string> v("hello");
-    EXPECT_EQ("hello", get<std::string>(v));
-    variant<int, std::string> w(v);
-    EXPECT_EQ("hello", get<std::string>(w));
-    EXPECT_EQ("hello", get<std::string>(v));
+    variant<int, string> v("hello");
+    EXPECT_EQ("hello", get<string>(v));
+    variant<int, string> w(v);
+    EXPECT_EQ("hello", get<string>(w));
+    EXPECT_EQ("hello", get<string>(v));
 
     constexpr variant<int, const char *> cv(42);
     static_assert(42 == get<int>(cv), "");
@@ -794,7 +794,7 @@ TEST(variant, ctor_copy_valueless_by_exception)
 
 TEST(variant, assign_fwd_same_type)
 {
-    variant<int, std::string> v(101);
+    variant<int, string> v(101);
     EXPECT_EQ(101, get<int>(v));
     v = 202;
     EXPECT_EQ(202, get<int>(v));
@@ -803,7 +803,7 @@ TEST(variant, assign_fwd_same_type)
 
 TEST(variant, assign_fwd_same_type_fwd)
 {
-    variant<int, std::string> v(1.1);
+    variant<int, string> v(1.1);
     EXPECT_EQ(1, get<int>(v));
     v = 2.2;
     EXPECT_EQ(2, get<int>(v));
@@ -812,27 +812,27 @@ TEST(variant, assign_fwd_same_type_fwd)
 
 TEST(variant, assign_fwd_diff_type)
 {
-    variant<int, std::string> v(42);
+    variant<int, string> v(42);
     EXPECT_EQ(42, get<int>(v));
     v = "42";
-    EXPECT_EQ("42", get<std::string>(v));
+    EXPECT_EQ("42", get<string>(v));
 }
 
 
 TEST(variant, assign_fwd_diff_type_fwd)
 {
-    variant<int, std::string> v(42);
+    variant<int, string> v(42);
     EXPECT_EQ(42, get<int>(v));
     v = "42";
-    EXPECT_EQ("42", get<std::string>(v));
+    EXPECT_EQ("42", get<string>(v));
 }
 
 
 TEST(variant, assign_fwd_exact_match)
 {
-    variant<const char *, std::string> v;
-    v = std::string("hello");
-    EXPECT_EQ("hello", get<std::string>(v));
+    variant<const char *, string> v;
+    v = string("hello");
+    EXPECT_EQ("hello", get<string>(v));
 }
 
 TEST(variant, assign_fwd_better_match)
@@ -846,7 +846,7 @@ TEST(variant, assign_fwd_better_match)
 TEST(variant, assign_fwd_nomatch)
 {
     struct x {};
-    static_assert(!is_assignable<variant<int, std::string>, x>{}, "variant<int, std::string> v; v = x;");
+    static_assert(!is_assignable<variant<int, string>, x>{}, "variant<int, string> v; v = x;");
 }
 
 
@@ -858,12 +858,12 @@ TEST(variant, assign_fwd_ambiguous)
 
 TEST(variant, assign_fwd_same_type_optimization)
 {
-    variant<int, std::string> v("hello world!");
-    const std::string &x = get<std::string>(v);
+    variant<int, string> v("hello world!");
+    const string &x = get<string>(v);
     EXPECT_EQ("hello world!", x);
     auto capacity = x.capacity();
     v = "hello";
-    const std::string &y = get<std::string>(v);
+    const string &y = get<string>(v);
     EXPECT_EQ("hello", y);
     EXPECT_EQ(capacity, y.capacity());
 }

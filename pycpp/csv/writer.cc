@@ -22,10 +22,10 @@ static bool is_minimal(const string_view& value, csvpunct_impl& punct)
 }
 
 
-static std::string quote_all(const string_view& value, csvpunct_impl& punct)
+static string quote_all(const string_view& value, csvpunct_impl& punct)
 {
     // initialize parameters
-    std::string quoted, sub, repl;
+    string quoted, sub, repl;
     sub += punct.quote();
     repl += punct.escape();
     repl += punct.quote();
@@ -39,13 +39,13 @@ static std::string quote_all(const string_view& value, csvpunct_impl& punct)
 }
 
 
-static std::string quote_none(const string_view& value, csvpunct_impl& punct)
+static string quote_none(const string_view& value, csvpunct_impl& punct)
 {
-    return std::string(value);
+    return string(value);
 }
 
 
-static std::string quote_minimal(const string_view& value, csvpunct_impl& punct)
+static string quote_minimal(const string_view& value, csvpunct_impl& punct)
 {
     if (is_minimal(value, punct)) {
         return quote_none(value, punct);
@@ -55,7 +55,7 @@ static std::string quote_minimal(const string_view& value, csvpunct_impl& punct)
 }
 
 
-static std::string quote_value(const string_view& value, csvpunct_impl& punct, csv_quoting quoting)
+static string quote_value(const string_view& value, csvpunct_impl& punct, csv_quoting quoting)
 {
     switch (quoting) {
         case CSV_QUOTE_ALL:
@@ -145,7 +145,7 @@ void csv_stream_writer::swap(csv_stream_writer& rhs)
 
 void csv_stream_writer::operator()(const value_type& row)
 {
-    std::string output;
+    string output;
     for (const auto& item: row) {
         output += quote_value(item, *punct_, quoting_);
         output += punct_->delimiter();
@@ -266,7 +266,7 @@ csv_string_writer& csv_string_writer::operator=(csv_string_writer&& rhs)
 }
 
 
-std::string csv_string_writer::str() const
+string csv_string_writer::str() const
 {
     return sstream_.str();
 }

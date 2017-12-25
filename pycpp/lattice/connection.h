@@ -37,7 +37,7 @@ static constexpr size_t BUFFER_SIZE = 8092;
  *  \brief Open connection without a cache.
  */
 template <typename Adapter>
-void open_connection(Adapter& adaptor, const std::string& host, const std::string& service)
+void open_connection(Adapter& adaptor, const string& host, const string& service)
 {
     // perform DNS lookup
     for (auto &&info: dns_lookup_t(host, service)) {
@@ -56,8 +56,8 @@ void open_connection(Adapter& adaptor, const std::string& host, const std::strin
  */
 template <typename Adapter>
 void open_connection(Adapter& adaptor,
-    const std::string& host,
-    const std::string& service,
+    const string& host,
+    const string& service,
     address_cache_t& cache)
 {
     // try cached results
@@ -113,10 +113,10 @@ public:
     void set_cache(const dns_cache_t& cache);
 
     // RESPONSE
-    std::string headers();
-    std::string chunked();
-    std::string body(long length);
-    std::string read();
+    string headers();
+    string chunked();
+    string body(long length);
+    string read();
 
     // OPTIONAL
     template <typename T = Adapter>
@@ -331,7 +331,8 @@ void connection_t<Adapter>::write(const string_wrapper& data)
 {
     int sent = adaptor.write(data.data(), data.size());
     if (sent != static_cast<int>(data.size())) {
-        throw runtime_error("Unable to make request, sent " + lexical(sent) + " bytes.");
+        string message("Unable to make request, sent " + lexical(sent) + " bytes.");
+        throw runtime_error(message.data());
     }
 }
 
@@ -342,20 +343,20 @@ void connection_t<Adapter>::write(const string_wrapper& data)
  *  Slowly read from buffer until a double carriage return is found.
  */
 template <typename Adapter>
-std::string connection_t<Adapter>::headers()
+string connection_t<Adapter>::headers()
 {
-    std::string string;
+    string str;
     int result;
     char src;
     while ((result = adaptor.read(&src, 1))) {
-        string += src;
-        size_t size = string.size() - 4;
-        if (size > 0 && src == '\n' && string.substr(size) == "\r\n\r\n") {
+        str += src;
+        size_t size = str.size() - 4;
+        if (size > 0 && src == '\n' && str.substr(size) == "\r\n\r\n") {
             break;
         }
     }
 
-    return string;
+    return str;
 }
 
 
@@ -366,10 +367,10 @@ std::string connection_t<Adapter>::headers()
  *  long the message is, in hex.
  */
 template <typename Adapter>
-std::string connection_t<Adapter>::chunked()
+string connection_t<Adapter>::chunked()
 {
     // initialize alloc
-    std::string hex;
+    string hex;
     int result, offset = 0;
     char* buffer = nullptr;
     char byte, *src;
@@ -406,7 +407,7 @@ std::string connection_t<Adapter>::chunked()
     }
 
     // create string output
-    std::string output(buffer, offset);
+    string output(buffer, offset);
     safe_free(buffer);
 
     return output;
@@ -417,17 +418,17 @@ std::string connection_t<Adapter>::chunked()
  *  \brief Read non-chunked content of fixed length.
 */
 template <typename Adapter>
-std::string connection_t<Adapter>::body(long length)
+string connection_t<Adapter>::body(long length)
 {
-    std::string string;
+    string str;
     if (length > 0) {
-        string.resize(length);
-        adaptor.read(&string[0], length);
+        str.resize(length);
+        adaptor.read(&str[0], length);
     } else if (length) {
         throw runtime_error("Asked to read negative bytes.");
     }
 
-    return string;
+    return str;
 }
 
 
@@ -435,7 +436,7 @@ std::string connection_t<Adapter>::body(long length)
  *  \brief Read non-chunked content of unknown length.
  */
 template <typename Adapter>
-std::string connection_t<Adapter>::read()
+string connection_t<Adapter>::read()
 {
     // read from connection
     int result, offset = 0;
@@ -456,7 +457,7 @@ std::string connection_t<Adapter>::read()
     }
 
     // create string output
-    std::string output(buffer, offset);
+    string output(buffer, offset);
     safe_free(buffer);
 
     return output;

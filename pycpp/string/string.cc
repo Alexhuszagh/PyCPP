@@ -175,7 +175,7 @@ string_list_t quoted_split_impl(Iter first, Iter last, char delimiter, char quot
                 word[j] = c;            // append quoted character to word
                 j++;
             } else if (c == delimiter) {
-                data.emplace_back(std::string(word, j));
+                data.emplace_back(string(word, j));
                 memset(word, 0, j);     // write null values to line
                 j = 0;
                 k++;
@@ -189,7 +189,7 @@ string_list_t quoted_split_impl(Iter first, Iter last, char delimiter, char quot
         throw;
     }
 
-    data.emplace_back(std::string(word, j));
+    data.emplace_back(string(word, j));
     delete[] word;
 
     return data;
@@ -252,8 +252,8 @@ string_t replace_impl(const string_wrapper& str, const string_wrapper& sub, cons
 
 string_t expandtabs_impl(const string_wrapper& str, size_t tabsize)
 {
-    std::string sub("\t");
-    std::string repl(tabsize, ' ');
+    string sub("\t");
+    string repl(tabsize, ' ');
 
     return replace_impl(str, sub, repl, SIZE_MAX);
 }
@@ -512,11 +512,6 @@ string_wrapper::string_wrapper(const string_t& str):
 {}
 
 
-string_wrapper::string_wrapper(const string& str):
-    string_view(str.data(), str.length())
-{}
-
-
 string_wrapper::string_wrapper(const string_view& str):
     string_view(str)
 {}
@@ -528,11 +523,6 @@ string_wrapper::string_wrapper(const string_wrapper& str, size_type pos, size_ty
 
 
 string_wrapper::string_wrapper(const string_t& str, size_type pos, size_type len):
-    string_view(string_view(str).substr(pos, len))
-{}
-
-
-string_wrapper::string_wrapper(const string& str, size_type pos, size_type len):
     string_view(string_view(str).substr(pos, len))
 {}
 

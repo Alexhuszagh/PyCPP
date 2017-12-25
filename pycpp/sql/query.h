@@ -33,7 +33,7 @@ public:
 
 private:
     sql_database *db_;
-    std::string statement_;
+    string statement_;
 };
 // TODO: implement...
 

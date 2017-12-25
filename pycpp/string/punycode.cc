@@ -336,7 +336,7 @@ void utf8_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstlen
 }
 
 
-std::string utf8_to_punycode(const string_wrapper& str)
+string utf8_to_punycode(const string_wrapper& str)
 {
     return utf32_to_punycode(utf8_to_utf32(str));
 }
@@ -358,7 +358,7 @@ void utf16_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstle
 }
 
 
-std::string utf16_to_punycode(const string_wrapper& str)
+string utf16_to_punycode(const string_wrapper& str)
 {
     return utf32_to_punycode(utf16_to_utf32(str));
 }
@@ -381,7 +381,7 @@ void utf32_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstle
 }
 
 
-std::string utf32_to_punycode(const string_wrapper& str)
+string utf32_to_punycode(const string_wrapper& str)
 {
     // arguments
     const size_t srclen = str.size();
@@ -398,7 +398,7 @@ std::string utf32_to_punycode(const string_wrapper& str)
         throw;
     }
     size_t length = distance(dst, (char*) dst_first);
-    std::string output(dst, length);
+    string output(dst, length);
     safe_free(dst);
 
     return output;
@@ -420,7 +420,7 @@ void punycode_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen
 }
 
 
-std::string punycode_to_utf8(const string_wrapper& str)
+string punycode_to_utf8(const string_wrapper& str)
 {
     return utf32_to_utf8(punycode_to_utf32(str));
 }
@@ -441,7 +441,7 @@ void punycode_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstle
 }
 
 
-std::string punycode_to_utf16(const string_wrapper& str)
+string punycode_to_utf16(const string_wrapper& str)
 {
     return utf32_to_utf16(punycode_to_utf32(str));
 }
@@ -462,7 +462,7 @@ void punycode_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstle
 }
 
 
-std::string punycode_to_utf32(const string_wrapper& str)
+string punycode_to_utf32(const string_wrapper& str)
 {
     // arguments
     size_t srclen = str.size();
@@ -479,7 +479,7 @@ std::string punycode_to_utf32(const string_wrapper& str)
         throw;
     }
     size_t length = distance((char*) dst, (char*) dst_first);
-    std::string output((char*) dst, length);
+    string output((char*) dst, length);
     safe_free(dst);
 
     return output;

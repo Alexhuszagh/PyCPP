@@ -135,7 +135,7 @@ struct xml_string_writer:
     xml_string_writer& operator=(const xml_string_writer&) = delete;
     xml_string_writer(xml_string_writer&&);
     xml_string_writer& operator=(xml_string_writer&&);
-    std::string str() const;
+    xml_string_t str() const;
 
     // MODIFIERS
     void swap(xml_string_writer&);

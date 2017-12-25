@@ -89,12 +89,12 @@ void gzip_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief GZIP-compress data.
  */
-std::string gzip_compress(const string_wrapper& str);
+string gzip_compress(const string_wrapper& str);
 
 /**
  *  \brief GZIP-decompress data.
  */
-std::string gzip_decompress(const string_wrapper& str);
+string gzip_decompress(const string_wrapper& str);
 
 /**
  *  \brief GZIP-decompress data. Returns number of bytes converted.
@@ -108,7 +108,7 @@ void gzip_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen,
  *
  *  \param bound            Known size of decompressed buffer.
  */
-std::string gzip_decompress(const string_wrapper& str, size_t bound);
+string gzip_decompress(const string_wrapper& str, size_t bound);
 
 PYCPP_END_NAMESPACE
 

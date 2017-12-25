@@ -86,7 +86,7 @@ void blosc_compress(const void*& src, size_t srclen, void* &dst, size_t dstlen)
 }
 
 
-std::string blosc_compress(const string_wrapper& str)
+string blosc_compress(const string_wrapper& str)
 {
     size_t dstlen = blosc_compress_bound(str.size());
     return compress_bound(str, dstlen, [](const void*& src, size_t srclen, void* &dst, size_t dstlen) {
@@ -95,7 +95,7 @@ std::string blosc_compress(const string_wrapper& str)
 }
 
 
-std::string blosc_decompress(const string_wrapper& str)
+string blosc_decompress(const string_wrapper& str)
 {
     if (str.size() < BLOSC_MIN_HEADER_LENGTH) {
         return "";
@@ -134,7 +134,7 @@ void blosc_decompress(const void*& src, size_t srclen, void* &dst, size_t dstlen
 }
 
 
-std::string blosc_decompress(const string_wrapper& str, size_t bound)
+string blosc_decompress(const string_wrapper& str, size_t bound)
 {
     return decompress_bound(str, bound, [](const void*& src, size_t srclen, void* &dst, size_t dstlen, size_t bound) {
         blosc_decompress(src, srclen, dst, dstlen, bound);

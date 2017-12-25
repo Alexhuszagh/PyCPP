@@ -18,28 +18,28 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Representation of `nullptr`.
  */
-extern std::string NULL_STRING;
+extern string NULL_STRING;
 
 /**
  *  \brief Representation of `true`.
  */
-extern std::string TRUE_STRING;
+extern string TRUE_STRING;
 
 /**
  *  \brief Representation of `false`.
  */
-extern std::string FALSE_STRING;
+extern string FALSE_STRING;
 
 /**
  *  \brief Representation of IEEE754 NaN.
  *  This must be <= 23 characters, or else may cause buffer overflow.
  */
-extern std::string NAN_STRING;
+extern string NAN_STRING;
 
 /**
  *  \brief Representation of IEEE754 INF (-INF prepends a minus sign).
  *  This must be <= 23 characters, or else may cause buffer overflow.
  */
-extern std::string INFINITY_STRING;
+extern string INFINITY_STRING;
 
 PYCPP_END_NAMESPACE

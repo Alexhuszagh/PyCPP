@@ -123,7 +123,7 @@ enum content_t
 };
 
 
-using mime_t = tuple<content_t, std::string>;
+using mime_t = tuple<content_t, string>;
 
 template <typename T>
 using is_response = is_same<T, response_t>;
@@ -148,13 +148,13 @@ struct response_t
 
     // DATA
     const int status() const;
-    const std::string& body() const;
+    const string& body() const;
     const header_t& headers() const;
     const cookies_t& cookies() const;
 
     // DATA ENCODING
     transfer_encoding_t transfer_encoding() const;
-    std::string content_encoding() const;
+    string content_encoding() const;
 
     // COMPRESSION
     bool compressed() const;
@@ -188,7 +188,7 @@ struct response_t
     bool xtoken() const;
     bool json() const;
     bool xml() const;
-    std::string encoding() const;
+    string encoding() const;
 
     // STATUS
     bool ok() const;
@@ -204,14 +204,14 @@ protected:
     cookies_t cookies_;
     transfer_encoding_t transfer = static_cast<transfer_encoding_t>(0);
     mime_t mime;
-    std::string charset;
-    std::string body_;
+    string charset;
+    string body_;
 
     void parse_code(const string_wrapper& line);
-    void parse_cookie(const string_wrapper& string);
-    void parse_transfer_encoding(const string_wrapper& string);
-    void parse_content_type(const string_wrapper& string);
-    void parse_type(const string_wrapper& string);
+    void parse_cookie(const string_wrapper& str);
+    void parse_transfer_encoding(const string_wrapper& str);
+    void parse_content_type(const string_wrapper& str);
+    void parse_type(const string_wrapper& str);
     void parse_header_line(const string_wrapper& line);
     void parse_header(const string_wrapper& lines);
 };

@@ -141,7 +141,7 @@ string_wrapper match_t::lastgroup() const noexcept
 }
 
 
-const string_wrapper& match_t::string() const noexcept
+const string_wrapper& match_t::str() const noexcept
 {
     return ptr_->input;
 }

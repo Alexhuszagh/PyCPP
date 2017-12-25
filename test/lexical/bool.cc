@@ -18,7 +18,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-static vector<pair<bool, reference_wrapper<const std::string>>> DATA = {
+static vector<pair<bool, reference_wrapper<const string>>> DATA = {
     {true, TRUE_STRING},
     {false, FALSE_STRING},
 };
@@ -30,16 +30,16 @@ static vector<pair<bool, reference_wrapper<const std::string>>> DATA = {
 TEST(lexical_bool_formatter, lexical_bool_formatter)
 {
     auto TEST_BOOL  = [](bool b, const string_view& expected) {
-        EXPECT_EQ(lexical_bool_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_bool_formatter(b).str(), expected);
     };
     auto TEST_CONST_BOOL  = [](const bool b, const string_view& expected) {
-        EXPECT_EQ(lexical_bool_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_bool_formatter(b).str(), expected);
     };
     auto TEST_VOLATILE_BOOL  = [](volatile bool b, const string_view& expected) {
-        EXPECT_EQ(lexical_bool_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_bool_formatter(b).str(), expected);
     };
     auto TEST_CV_BOOL  = [](volatile bool b, const string_view& expected) {
-        EXPECT_EQ(lexical_bool_formatter(b).string(), expected);
+        EXPECT_EQ(lexical_bool_formatter(b).str(), expected);
     };
 
     for (const auto& pair: DATA) {

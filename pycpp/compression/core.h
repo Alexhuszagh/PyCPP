@@ -169,7 +169,7 @@ compression_status filter_impl<S>::operator()(const void*& src, size_t srclen, v
 
 
 template <typename Ctx>
-std::string ctx_decompress(const string_wrapper& str)
+string ctx_decompress(const string_wrapper& str)
 {
     // configurations
     size_t dstlen = BUFFER_SIZE;
@@ -204,7 +204,7 @@ std::string ctx_decompress(const string_wrapper& str)
 
     // create our output string
     size_t out = distance(buffer, (char*) dst);
-    std::string output(buffer, out);
+    string output(buffer, out);
     safe_free(buffer);
 
     return output;
@@ -212,7 +212,7 @@ std::string ctx_decompress(const string_wrapper& str)
 
 
 template <typename Function>
-std::string compress_bound(const string_wrapper& str, size_t dstlen, Function function)
+string compress_bound(const string_wrapper& str, size_t dstlen, Function function)
 {
     const char* src = str.data();
     char *dst = (char*) safe_malloc(dstlen);
@@ -226,7 +226,7 @@ std::string compress_bound(const string_wrapper& str, size_t dstlen, Function fu
         throw;
     }
     size_t length = distance(dst, (char*) dst_first);
-    std::string output(dst, length);
+    string output(dst, length);
     safe_free(dst);
 
     return output;
@@ -234,7 +234,7 @@ std::string compress_bound(const string_wrapper& str, size_t dstlen, Function fu
 
 
 template <typename Function>
-std::string decompress_bound(const string_wrapper& str, size_t bound, Function function)
+string decompress_bound(const string_wrapper& str, size_t bound, Function function)
 {
     const char* src = str.data();
     char *dst = (char*) safe_malloc(bound);
@@ -248,7 +248,7 @@ std::string decompress_bound(const string_wrapper& str, size_t bound, Function f
         throw;
     }
     size_t length = distance(dst, (char*) dst_first);
-    std::string output(dst, length);
+    string output(dst, length);
     safe_free(dst);
 
     return output;

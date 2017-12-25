@@ -781,7 +781,10 @@ VARIANT_RECURSIVE_UNION(Trait::Unavailable, ~recursive_union() = delete;);
 
 struct bad_variant_access: exception
 {
-    virtual const char *what() const noexcept;
+    virtual const char *what() const noexcept
+    {
+        return "bad_variant_access";
+    }
 };
 
 template <typename T>

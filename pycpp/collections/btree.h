@@ -203,18 +203,18 @@ struct btree_key_compare_to_adapter: Compare
 
 
 template <>
-struct btree_key_compare_to_adapter<less<std::string>>: public btree_key_compare_to_tag
+struct btree_key_compare_to_adapter<less<string>>: public btree_key_compare_to_tag
 {
     btree_key_compare_to_adapter() noexcept
     {}
 
-    btree_key_compare_to_adapter(const less<std::string>&) noexcept
+    btree_key_compare_to_adapter(const less<string>&) noexcept
     {}
 
-    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<less<std::string>>&) noexcept
+    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<less<string>>&) noexcept
     {}
 
-    int operator()(const std::string& a, const std::string& b) const noexcept
+    int operator()(const string& a, const string& b) const noexcept
     {
         return a.compare(b);
     }
@@ -222,18 +222,18 @@ struct btree_key_compare_to_adapter<less<std::string>>: public btree_key_compare
 
 
 template <>
-struct btree_key_compare_to_adapter<greater<std::string>>: public btree_key_compare_to_tag
+struct btree_key_compare_to_adapter<greater<string>>: public btree_key_compare_to_tag
 {
     btree_key_compare_to_adapter()
     {}
 
-    btree_key_compare_to_adapter(const greater<std::string>&)
+    btree_key_compare_to_adapter(const greater<string>&)
     {}
 
-    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<greater<std::string>>&)
+    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<greater<string>>&)
     {}
 
-    int operator()(const std::string& a, const std::string& b) const
+    int operator()(const string& a, const string& b) const
     {
         return b.compare(a);
     }

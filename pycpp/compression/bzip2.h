@@ -89,12 +89,12 @@ void bz2_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief BZIP2-compress data.
  */
-std::string bz2_compress(const string_wrapper& str);
+string bz2_compress(const string_wrapper& str);
 
 /**
  *  \brief BZIP2-decompress data.
  */
-std::string bz2_decompress(const string_wrapper& str);
+string bz2_decompress(const string_wrapper& str);
 
 /**
  *  \brief BZIP2-decompress data.
@@ -108,7 +108,7 @@ void bz2_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, 
  *
  *  \param bound            Known size of decompressed buffer.
  */
-std::string bz2_decompress(const string_wrapper& str, size_t bound);
+string bz2_decompress(const string_wrapper& str, size_t bound);
 
 PYCPP_END_NAMESPACE
 

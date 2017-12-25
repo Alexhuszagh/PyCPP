@@ -12,6 +12,7 @@
 
 #include <pycpp/misc/safe_stdlib.h>
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/utility.h>
 #include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -96,12 +97,12 @@ T* crt_reallocate_impl(T* p, size_t old_size, size_t new_size, const void* hint,
 {
     T* ptr = reinterpret_cast<T*>(crt_allocator_base::allocate(new_size, sizeof(T), hint));
     // use placement new to construct-in-place
-    // Don't use `std::move`, since that move assigns into
+    // Don't use `move`, since that move assigns into
     // uninitialized memory.
     for (size_t i = 0; i < old_size; ++i) {
         T& src = p[i];
         T* dst = &ptr[i];
-        new (static_cast<void*>(dst)) T(std::move(src));
+        new (static_cast<void*>(dst)) T(move(src));
     }
     crt_allocator_base::deallocate(p, old_size * sizeof(T));
     return ptr;

@@ -185,7 +185,7 @@ using std::make_unique;
 template <typename T, typename ... Ts >
 unique_ptr<T> make_unique(Ts&&... ts)
 {
-    return unique_ptr<T>(new T(forward<Ts>(ts)...));
+    return unique_ptr<T>(new T(std::forward<Ts>(ts)...));
 }
 
 template <typename T>

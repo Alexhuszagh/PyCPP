@@ -17,13 +17,13 @@ PYCPP_USING_NAMESPACE
 
 TEST(re, match_iterator_t)
 {
-    std::string data = "These are a bunch of words";
+    string data = "These are a bunch of words";
     regexp_t regex("\\w+");
     match_iterator_t first(regex, data);
     match_iterator_t last;
 
-    deque<std::string> actual;
-    deque<std::string> expected = {
+    deque<string> actual;
+    deque<string> expected = {
         "These",
         "are",
         "a",
@@ -33,7 +33,7 @@ TEST(re, match_iterator_t)
     };
     EXPECT_NE(first, last);
     for (; first != last; ++first) {
-        actual.emplace_back(std::string(first->group(0)));
+        actual.emplace_back(string(first->group(0)));
     }
     EXPECT_EQ(actual, expected);
 }

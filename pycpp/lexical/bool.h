@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <pycpp/stl/string.h>
 #include <pycpp/stl/string_view.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -33,13 +34,13 @@ public:
     const char* data() const noexcept;
     const char* c_str() const noexcept;
 
-    string_view string() const noexcept;
+    string_view str() const noexcept;
 
     // CONVERSIONS
     operator string_view() const noexcept;
 
 private:
-    std::string* string_;
+    string* string_;
 };
 
 

@@ -23,7 +23,7 @@ namespace detail
 /**
  *  \brief Lookup table for common application types.
  */
-unordered_map<std::string, std::string> CONTENT_TYPES = {
+unordered_map<string, string> CONTENT_TYPES = {
     // TEXT
     {"css", "text/css"},
     {"csv", "text/csv"},
@@ -84,31 +84,31 @@ unordered_map<std::string, std::string> CONTENT_TYPES = {
 // ---------
 
 
-std::string get_boundary()
+string get_boundary()
 {
     auto bytes = pseudorandom(8);
     string_wrapper view(bytes.data(), bytes.size());
     auto hex = sha1_hash(view).hexdigest();
-    return std::string(hex.data(), hex.size());
+    return string(hex.data(), hex.size());
 }
 
 
 /**
  *  \brief Read file using custom fstream
  */
-static std::string read_fstream(const string_wrapper& filename)
+static string read_fstream(const string_wrapper& filename)
 {
     ifstream file(filename, ios_base::in | ios_base::binary);
-    ostringstream stream;
+    basic_ostringstream<char, char_traits<char>, allocator<char>> stream;
     stream << file.rdbuf();
 
     return stream.str();
 }
 
 
-static std::string detect_content_type(const string_wrapper& filename)
+static string detect_content_type(const string_wrapper& filename)
 {
-    std::string suffix(path_splitext(filename)[1]);
+    string suffix(path_splitext(filename)[1]);
     auto it = CONTENT_TYPES.find(suffix);
     if (it != CONTENT_TYPES.end()) {
         return it->second;
@@ -127,8 +127,8 @@ part_value_t::part_value_t(const char* filename, const char* content_type):
 {}
 
 
-part_value_t::part_value_t(std::string&& filename, std::string&& content_type):
-    filename(forward<std::string>(filename))
+part_value_t::part_value_t(string&& filename, string&& content_type):
+    filename(forward<string>(filename))
 {
     if (content_type.empty()) {
         this->content_type_ = detect_content_type(this->filename);
@@ -144,20 +144,20 @@ part_value_t::part_value_t(const string_wrapper& filename, const string_wrapper&
     if (content_type.empty()) {
         this->content_type_ = detect_content_type(this->filename);
     } else {
-        this->content_type_ = std::string(content_type);
+        this->content_type_ = string(content_type);
     }
 }
 
 
-std::string part_value_t::basename() const
+string part_value_t::basename() const
 {
-    return std::string(base_name(filename));
+    return string(base_name(filename));
 }
 
 
-std::string part_value_t::name() const
+string part_value_t::name() const
 {
-    return std::string(path_splitext(basename())[0]);
+    return string(path_splitext(basename())[0]);
 }
 
 
@@ -171,34 +171,34 @@ string_wrapper part_value_t::content_type() const
  *  RFC-7231 clearly states, if the content type is unknown, do not
  *  send it.
  */
-std::string part_value_t::string() const
+string part_value_t::str() const
 {
-    std::string string;
-    string += "Content-Disposition: form-data; ";
-    string += "name=\"" + name() + "\"; ";
-    string += "filename=\"" + basename() + "\"\r\n";
+    string str;
+    str += "Content-Disposition: form-data; ";
+    str += "name=\"" + name() + "\"; ";
+    str += "filename=\"" + basename() + "\"\r\n";
 
     if (!content_type().empty()) {
-       string += "Content-Type: " + std::string(content_type()) + "\r\n";
+       str += "Content-Type: " + string(content_type()) + "\r\n";
     }
-    string += "\r\n";
+    str += "\r\n";
 
-    return string;
+    return str;
 }
 
 
-std::string file_value_t::buffer() const
+string file_value_t::buffer() const
 {
     return read_fstream(filename);
 }
 
 
-std::string file_value_t::string() const
+string file_value_t::str() const
 {
-    std::string string;
-    string += part_value_t::string() + buffer() + "\r\n";
+    string str;
+    str += part_value_t::str() + buffer() + "\r\n";
 
-    return string;
+    return str;
 }
 
 
@@ -209,11 +209,11 @@ buffer_value_t::buffer_value_t(const char* filename,
 {}
 
 
-buffer_value_t::buffer_value_t(std::string&& filename,
-                               std::string&& buffer,
-                               std::string&& content_type):
-    part_value_t(forward<std::string>(filename), forward<std::string>(content_type)),
-    buffer_(forward<std::string>(buffer))
+buffer_value_t::buffer_value_t(string&& filename,
+                               string&& buffer,
+                               string&& content_type):
+    part_value_t(forward<string>(filename), forward<string>(content_type)),
+    buffer_(forward<string>(buffer))
 {}
 
 
@@ -225,18 +225,18 @@ buffer_value_t::buffer_value_t(const string_wrapper& filename,
 {}
 
 
-std::string buffer_value_t::buffer() const
+string buffer_value_t::buffer() const
 {
     return buffer_;
 }
 
 
-std::string buffer_value_t::string() const
+string buffer_value_t::str() const
 {
-    std::string string;
-    string += part_value_t::string() + buffer() + "\r\n";
+    string str;
+    str += part_value_t::str() + buffer() + "\r\n";
 
-    return string;
+    return str;
 }
 
 }   /* detail */
@@ -268,25 +268,25 @@ string_wrapper multipart_t::boundary() const
 }
 
 
-std::string multipart_t::string() const
+string multipart_t::str() const
 {
-    std::string string;
+    string str;
     for (const auto &item: *this) {
-        string += "--" + std::string(boundary()) + "\r\n" + item->string();
+        str += "--" + string(boundary()) + "\r\n" + item->str();
     }
 
     // if any elements were written, write a trailing separator.
     if (*this) {
-        string += "--" + std::string(boundary()) + "--\r\n";
+        str += "--" + string(boundary()) + "--\r\n";
     }
 
-    return string;
+    return str;
 }
 
 
-std::string multipart_t::header() const
+string multipart_t::header() const
 {
-    return "multipart/form-data; boundary=" + std::string(boundary());
+    return "multipart/form-data; boundary=" + string(boundary());
 }
 
 

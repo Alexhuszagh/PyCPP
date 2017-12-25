@@ -146,13 +146,13 @@ size_t sysrandom(void* dst, size_t dstlen)
  *  STL wrapper. You should not use this function unless you do not
  *  need cryptographically secure bytes.
  */
-std::string sysrandom(size_t length)
+string sysrandom(size_t length)
 {
     char* dst = nullptr;
     try {
         dst = new char[length];
         sysrandom(dst, length);
-        std::string output(dst, length);
+        string output(dst, length);
         delete[] dst;
         return output;
     } catch (...) {

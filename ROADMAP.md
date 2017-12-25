@@ -44,13 +44,6 @@
     - Interprocess
         - Some sort of interprocess library like Boost would be great
 
-    - Remove all superflous std:: shit
-        - (ALMOST, ALMOST DONE)
-        - Just need std::string...
-            - LOLS
-            - Change everything involving std::string to a typedef alias of it...
-                - string_tmp or something...
-
     - Look at Howard Hinnant's Date library:
         - https://github.com/HowardHinnant/date/blob/master/include/date/date.h
         - ~7k lines of code
@@ -58,7 +51,7 @@
 
     - Look at Bloom filters
         - https://github.com/mavam/libbf
-        
+
     - Look at Cuckoo filters
         - https://github.com/efficient/libcuckoo
 
@@ -117,8 +110,6 @@
         - unordered_multiset
         - unordered_map
         - unordered_multimap
-
-    - Ordered set unittests
 
     - Add custom memory allocators
         - https://github.com/mtrebi/memory-allocators

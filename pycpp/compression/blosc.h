@@ -26,12 +26,12 @@ void blosc_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen);
 /**
  *  \brief BLOSC-compress data.
  */
-std::string blosc_compress(const string_wrapper& str);
+string blosc_compress(const string_wrapper& str);
 
 /**
  *  \brief BLOSC-decompress data.
  */
-std::string blosc_decompress(const string_wrapper& str);
+string blosc_decompress(const string_wrapper& str);
 
 /**
  *  \brief BLOSC-decompress data. Returns number of bytes converted.
@@ -45,7 +45,7 @@ void blosc_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen
  *
  *  \param bound            Known size of decompressed buffer.
  */
-std::string blosc_decompress(const string_wrapper& str, size_t bound);
+string blosc_decompress(const string_wrapper& str, size_t bound);
 
 PYCPP_END_NAMESPACE
 

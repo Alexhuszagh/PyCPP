@@ -32,17 +32,17 @@ using lexical_is_same = is_same<remove_cv_t<T>, U>;
  */
 #define PYCPP_LEXICAL_FORMATTER(type_, formatter)                                   \
     template <typename T>                                                           \
-    enable_if_t<lexical_is_same<T, type_>::value, std::string>                      \
+    enable_if_t<lexical_is_same<T, type_>::value, string>                           \
     lexical(const T& value)                                                         \
     {                                                                               \
-        return std::string(formatter(value).string());                              \
+        return string(formatter(value).str());                                      \
     }                                                                               \
                                                                                     \
     template <typename T>                                                           \
-    enable_if_t<lexical_is_same<T, type_>::value, std::string>                      \
+    enable_if_t<lexical_is_same<T, type_>::value, string>                           \
     format(const T& value)                                                          \
     {                                                                               \
-        return std::string(formatter(value).string());                              \
+        return string(formatter(value).str());                                      \
     }
 
 /**
@@ -86,17 +86,17 @@ PYCPP_LEXICAL_FORMATTER(float, lexical_float_formatter)
 PYCPP_LEXICAL_FORMATTER(double, lexical_float_formatter)
 
 template <typename T>
-enable_if_t<is_enum<T>::value, std::string>
+enable_if_t<is_enum<T>::value, string>
 lexical(const T& value)
 {
-    return std::string(lexical_enum_formatter(value).string());
+    return string(lexical_enum_formatter(value).str());
 }
 
 template <typename T>
-enable_if_t<is_enum<T>::value, std::string>
+enable_if_t<is_enum<T>::value, string>
 format(const T& value)
 {
-    return std::string(lexical_enum_formatter(value).string());
+    return string(lexical_enum_formatter(value).str());
 }
 
 // EXTRACTORS
@@ -112,7 +112,7 @@ lexical(const string_view& value)
 }
 
 template <typename T>
-enable_if_t<lexical_is_same<T, nullptr_t>::value, std::string>
+enable_if_t<lexical_is_same<T, nullptr_t>::value, string>
 extract(const string_view& value)
 {
     return lexical_null_extractor(value).value();

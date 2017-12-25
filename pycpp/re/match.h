@@ -68,7 +68,7 @@ public:
     size_t endpos() const noexcept;
     size_t lastindex() const noexcept;
     string_wrapper lastgroup() const noexcept;
-    const string_wrapper& string() const noexcept;
+    const string_wrapper& str() const noexcept;
 
     bool operator==(const match_t&) const noexcept;
     bool operator!=(const match_t&) const noexcept;

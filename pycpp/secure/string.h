@@ -43,55 +43,55 @@ namespace string_detail
 // Slow route for input iterators
 template <typename String, typename ConstIter, typename Iter>
 enable_if_t<is_input_iterator<Iter>::value, String&>
-replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
+replace(String& str, ConstIter p1, ConstIter p2, Iter first, Iter last)
 {
-    std::string str(first, last);
-    return string.replace(p1, p2, str);
+    String tmp(first, last);
+    return str.replace(p1, p2, tmp);
 }
 
 
 // Optimization for forward iterable iterables
 template <typename String, typename ConstIter, typename Iter>
 enable_if_t<is_forward_iterable<Iter>::value, String&>
-replace(String& string, ConstIter p1, ConstIter p2, Iter first, Iter last)
+replace(String& str, ConstIter p1, ConstIter p2, Iter first, Iter last)
 {
-    ConstIter it = string.erase(p1, p2);
-    string.insert(it, first, last);
-    return string;
+    ConstIter it = str.erase(p1, p2);
+    str.insert(it, first, last);
+    return str;
 }
 
 
 // Slow route for input iterators
 template <typename String, typename ConstIter, typename Iter>
 enable_if_t<is_input_iterator<Iter>::value, typename String::iterator>
-insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
+insert(String& str, ConstIter p, size_t& size, Iter first, Iter last)
 {
-    size_t pos = p - string.begin();
-    std::string str(first, last);
-    string.insert(p, str);
+    size_t pos = p - str.begin();
+    String tmp(first, last);
+    str.insert(p, tmp);
 
-    return string.begin() + pos;
+    return str.begin() + pos;
 }
 
 
 // Optimization for forward iterable iterables
 template <typename String, typename ConstIter, typename Iter>
 enable_if_t<is_forward_iterable<Iter>::value, typename String::iterator>
-insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
+insert(String& str, ConstIter p, size_t& size, Iter first, Iter last)
 {
     using traits_type = typename String::traits_type;
 
     // reallocate if necessary
     size_t n = distance(first, last);
-    size_t pos = p - string.begin();
-    size_t move = string.size() - pos;
-    size_t new_size = string.size() + n;
-    if (new_size >= string.capacity()) {
-        string.reserve(max(new_size+1, 2 * string.capacity()));
+    size_t pos = p - str.begin();
+    size_t move = str.size() - pos;
+    size_t new_size = str.size() + n;
+    if (new_size >= str.capacity()) {
+        str.reserve(max(new_size+1, 2 * str.capacity()));
     }
 
     // move
-    char* src = &string[0] + pos;
+    char* src = &str[0] + pos;
     char* dst = src + n;
     traits_type::move(dst, src, move);
 
@@ -102,7 +102,7 @@ insert(String& string, ConstIter p, size_t& size, Iter first, Iter last)
     // update size
     size = new_size;
 
-    return string.begin() + pos;
+    return str.begin() + pos;
 }
 
 }   /* string_detail*/
@@ -431,7 +431,7 @@ private:
     friend bool operator>=(const secure_basic_string<C, T, A>& lhs, const C* rhs);
 
     // CONCATENATION OPERATORS
-    // Do not overload `std::string`, since it cannot securely
+    // Do not overload `string`, since it cannot securely
     // store data.
     template <typename C, typename T, typename A>
     friend secure_basic_string<C, T, A> operator+(const secure_basic_string<C, T, A>& lhs, const secure_basic_string<C, T, A>& rhs);

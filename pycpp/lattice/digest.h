@@ -28,13 +28,12 @@ struct url_t;
 // OBJECTS
 // -------
 
-
 /**
  *  \brief Case-insensitive hash for ASCII.
  */
 struct lowercase_hash
 {
-    size_t operator()(const std::string& string) const;
+    size_t operator()(const string&) const;
 };
 
 
@@ -43,7 +42,7 @@ struct lowercase_hash
  */
 struct lowercase_equal_to
 {
-    bool operator()(const std::string&, const std::string&) const;
+    bool operator()(const string&, const string&) const;
 };
 
 
@@ -59,7 +58,7 @@ struct digest_t: authentication_t
 /**
  *  \brief Quality of protection directive.
  */
-struct quality_of_protection_t: public vector<std::string>
+struct quality_of_protection_t: public vector<string>
 {
     quality_of_protection_t() = default;
     quality_of_protection_t(const quality_of_protection_t&) = default;
@@ -81,8 +80,8 @@ struct quality_of_protection_t: public vector<std::string>
  *      Digest nonce="42148a112dd92b7e5b6ac4769c2a6693", opaque="35fa82343c10f5a83c7d9b8bb29d8518", realm="me@kennethreitz.com", qop=auth
  */
 struct digest_challenge_t: public unordered_map<
-        std::string,
-        std::string,
+        string,
+        string,
         lowercase_hash,
         lowercase_equal_to
     >
@@ -96,13 +95,13 @@ public:
     digest_challenge_t(const string_wrapper&);
 
     // DATA
-    const std::string& realm() const;
-    const std::string& nonce() const;
-    const std::string& cnonce();
-    std::string nc() const;
+    const string& realm() const;
+    const string& nonce() const;
+    const string& cnonce();
+    string nc() const;
     digest_algorithm_t algorithm() const;
     quality_of_protection_t qop() const;
-    std::string header(const url_t& url,
+    string header(const url_t& url,
         const parameters_t& parameters,
         const digest_t& digest,
         const string_wrapper& body,
@@ -112,7 +111,7 @@ public:
 
 protected:
     uint32_t nonce_counter = 0;
-    std::string client_nonce;
+    string client_nonce;
 };
 
 PYCPP_END_NAMESPACE

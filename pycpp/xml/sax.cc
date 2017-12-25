@@ -27,8 +27,8 @@ static xml_attr_t parse_attributes(const xmlChar** attrs)
         }
 
         for (; first < last; ) {
-            std::string key((char*) *first++);
-            std::string value((char*) *first++);
+            xml_string_t key((char*) *first++);
+            xml_string_t value((char*) *first++);
             attrib[move(key)] = move(value);
         }
     }
@@ -444,7 +444,7 @@ xml_string_reader::xml_string_reader(const string_wrapper& str)
 
 void xml_string_reader::open(const string_wrapper& str)
 {
-    sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
+    sstream_ = istringstream(string(str), ios_base::in | ios_base::binary);
     xml_stream_reader::open(*sstream_);
 }
 

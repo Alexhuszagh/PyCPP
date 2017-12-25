@@ -21,8 +21,8 @@ PYCPP_BEGIN_NAMESPACE
  */
 struct authentication_t
 {
-    std::string username;
-    std::string password;
+    string username;
+    string password;
 
     authentication_t() = default;
     authentication_t(const authentication_t&) = default;
@@ -31,10 +31,10 @@ struct authentication_t
     authentication_t & operator=(authentication_t&&) = default;
 
     authentication_t(const char* username, const char* password);
-    authentication_t(std::string&& username, std::string&& password);
+    authentication_t(string&& username, string&& password);
     authentication_t(const string_wrapper& username, const string_wrapper& password);
 
-    const std::string string() const noexcept;
+    const string str() const noexcept;
     explicit operator bool() const;
 };
 

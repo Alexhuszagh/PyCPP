@@ -17,7 +17,7 @@ PYCPP_USING_NAMESPACE
 TEST(regex, search)
 {
     regexp_t regex("\\w+");
-    std::string data = "These are a bunch of words";
+    string data = "These are a bunch of words";
 
     // first example
     auto m = regex.search(data);
@@ -39,7 +39,7 @@ TEST(regex, search)
 TEST(regex, match)
 {
     regexp_t regex("\\w+");
-    std::string data = "These are a bunch of words";
+    string data = "These are a bunch of words";
 
     // first example
     auto m = regex.match(data);
@@ -57,7 +57,7 @@ TEST(regex, match)
 TEST(regex, split)
 {
     regexp_t regex("\\w+");
-    std::string data = "These are a bunch of words";
+    string data = "These are a bunch of words";
 
     // first example
     auto whitespace = regex.split(data);

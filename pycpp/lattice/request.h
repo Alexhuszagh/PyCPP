@@ -24,6 +24,7 @@
 #include <pycpp/lattice/ssl.h>
 #include <pycpp/lattice/timeout.h>
 #include <pycpp/lattice/url.h>
+#include <pycpp/lexical.h>
 #include <pycpp/stl/sstream.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -118,8 +119,8 @@ public:
 
     // CONNECTIONS
     template <typename... Ts>
-    std::string message(Ts&&... ts) const;
-    std::string method_name() const;
+    string message(Ts&&... ts) const;
+    string method_name() const;
 
     response_t exec();
 
@@ -148,8 +149,8 @@ protected:
     verify_peer_t verifypeer;
     dns_cache_t cache = nullptr;
 
-    stringstream method_header() const;
-    stringstream method_header(const response_t&) const;
+    string method_header() const;
+    string method_header(const response_t&) const;
 };
 
 
@@ -257,44 +258,44 @@ response_t Trace(Ts&&... ts)
 
 
 template <typename... Ts>
-std::string request_t::message(Ts&&... ts) const
+string request_t::message(Ts&&... ts) const
 {
-    stringstream stream;
+    string data;
 
     // get our formatted body
-    std::string body;
+    string body;
     if (method == POST && parameters) {
         body += parameters.post();
     } else if (multipart) {
-        body += multipart.string();
+        body += multipart.str();
     }
 
     // get formatted headers
     auto headers = method_header(forward<Ts>(ts)...);
     if (!body.empty()) {
-        headers << "Content-Length: " << body.size() << "\r\n";
+        headers += "Content-Length: " + lexical(body.size()) + "\r\n";
     }
 
     // get first line
     if (method == POST) {
-        stream << method_name() << " " << url.path()
-               << " HTTP/1.1\r\n"
-               << headers.str()
-               << "\r\n" << body;
+        data += method_name() + " " + url.path()
+             + " HTTP/1.1\r\n"
+             + headers
+             + "\r\n" + body;
     } else {
-        stream << method_name() << " " << url.path() << parameters.get()
-               << " HTTP/1.1\r\n"
-               << headers.str()
-               << "\r\n" << body;
+        data += method_name() + " " + url.path() + parameters.get()
+             + " HTTP/1.1\r\n"
+             + headers
+             + "\r\n" + body;
     }
 
     // end message with double CRLF
-    stream << "\r\n";
+    data += "\r\n";
     if (!body.empty()) {
-        stream << "\r\n";
+        data += "\r\n";
     }
 
-    return stream.str();
+    return data;
 }
 
 
@@ -314,7 +315,8 @@ inline response_t request_t::exec()
         https_connection_t connection;
         return exec(connection);
     } else {
-        throw runtime_error("Network scheme " + service + " is not supported.");
+        string message("Network scheme " + service + " is not supported.");
+        throw runtime_error(message.data());
     }
 
     return response_t();

@@ -623,7 +623,7 @@ template <typename Char1, typename Char2>
 struct to_wide_impl
 {
     template <typename Function>
-    std::string operator()(const string_wrapper& str, Function function)
+    string operator()(const string_wrapper& str, Function function)
     {
         // types
         constexpr size_t size1 = sizeof(Char1);
@@ -646,7 +646,7 @@ struct to_wide_impl
             throw;
         }
         size_t length = distance((char*) dst, (char*) dst_first);
-        std::string output((const char*) dst, length);
+        string output((const char*) dst, length);
         safe_free(dst);
 
         return output;
@@ -661,7 +661,7 @@ template <typename Char1, typename Char2>
 struct to_narrow_impl
 {
     template <typename Function>
-    std::string operator()(const string_wrapper& str, Function function)
+    string operator()(const string_wrapper& str, Function function)
     {
         // types
         constexpr size_t size1 = sizeof(Char1);
@@ -684,7 +684,7 @@ struct to_narrow_impl
             throw;
         }
         size_t length = distance((char*) dst, (char*) dst_first);
-        std::string output((const char*) dst, length);
+        string output((const char*) dst, length);
         safe_free(dst);
 
         return output;
@@ -800,7 +800,7 @@ void utf8_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_to_utf16(const string_wrapper& str)
+string utf8_to_utf16(const string_wrapper& str)
 {
     return to_wide_impl<uint8_t, uint16_t>()(str, utf8_to_utf16_ptr);
 }
@@ -823,7 +823,7 @@ void utf8_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf8_to_utf32(const string_wrapper& str)
+string utf8_to_utf32(const string_wrapper& str)
 {
     return to_wide_impl<uint8_t, uint32_t>()(str, utf8_to_utf32_ptr);
 }
@@ -846,7 +846,7 @@ void utf16_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf16_to_utf8(const string_wrapper& str)
+string utf16_to_utf8(const string_wrapper& str)
 {
     return to_narrow_impl<uint16_t, uint8_t>()(str, utf16_to_utf8_ptr);
 }
@@ -869,7 +869,7 @@ void utf16_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf16_to_utf32(const string_wrapper& str)
+string utf16_to_utf32(const string_wrapper& str)
 {
     return to_wide_impl<uint16_t, uint32_t>()(str, utf16_to_utf32_ptr);
 }
@@ -892,7 +892,7 @@ void utf32_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf32_to_utf8(const string_wrapper& str)
+string utf32_to_utf8(const string_wrapper& str)
 {
     return to_narrow_impl<uint32_t, uint8_t>()(str, utf32_to_utf8_ptr);
 }
@@ -915,7 +915,7 @@ void utf32_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string utf32_to_utf16(const string_wrapper& str)
+string utf32_to_utf16(const string_wrapper& str)
 {
     return to_narrow_impl<uint32_t, uint16_t>()(str, utf32_to_utf16_ptr);
 }

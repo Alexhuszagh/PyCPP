@@ -73,7 +73,7 @@ void hex(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t widt
 }
 
 
-std::string hex(const string_wrapper& str, size_t width)
+string hex(const string_wrapper& str, size_t width)
 {
     size_t srclen = str.size();
     size_t dstlen = 2 * str.size();
@@ -89,7 +89,7 @@ std::string hex(const string_wrapper& str, size_t width)
         // create STL container and return
         hex(src_first, srclen, dst_first, dstlen, width);
         size_t size = distance(dst, (char*) dst_first);
-        std::string output(dst, size);
+        string output(dst, size);
         delete[] dst;
 
         return output;
@@ -106,7 +106,7 @@ void hex_i8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string hex_i8(const string_wrapper& str)
+string hex_i8(const string_wrapper& str)
 {
     return hex(str, 1);
 }
@@ -117,7 +117,7 @@ void hex_i16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string hex_i16(const string_wrapper& str)
+string hex_i16(const string_wrapper& str)
 {
     return hex(str, 2);
 }
@@ -128,7 +128,7 @@ void hex_i32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string hex_i32(const string_wrapper& str)
+string hex_i32(const string_wrapper& str)
 {
     return hex(str, 4);
 }
@@ -139,7 +139,7 @@ void hex_i64(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string hex_i64(const string_wrapper& str)
+string hex_i64(const string_wrapper& str)
 {
     return hex(str, 8);
 }
@@ -162,7 +162,7 @@ void unhex(const void*& src, size_t srclen, void*& dst, size_t dstlen, size_t wi
 }
 
 
-std::string unhex(const string_wrapper& str, size_t width)
+string unhex(const string_wrapper& str, size_t width)
 {
     size_t srclen = str.size();
     size_t dstlen = str.size() / 2;
@@ -178,7 +178,7 @@ std::string unhex(const string_wrapper& str, size_t width)
         // create STL container and return
         unhex(src_first, srclen, dst_first, dstlen, width);
         size_t size = distance(dst, (char*) dst_first);
-        std::string output(dst, size);
+        string output(dst, size);
         delete[] dst;
 
         return output;
@@ -195,7 +195,7 @@ void unhex_i8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string unhex_i8(const string_wrapper& str)
+string unhex_i8(const string_wrapper& str)
 {
     return unhex(str, 1);
 }
@@ -207,7 +207,7 @@ void unhex_i16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string unhex_i16(const string_wrapper& str)
+string unhex_i16(const string_wrapper& str)
 {
     return unhex(str, 2);
 }
@@ -218,7 +218,7 @@ void unhex_i32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string unhex_i32(const string_wrapper& str)
+string unhex_i32(const string_wrapper& str)
 {
     return unhex(str, 4);
 }
@@ -230,7 +230,7 @@ void unhex_i64(const void*& src, size_t srclen, void*& dst, size_t dstlen)
 }
 
 
-std::string unhex_i64(const string_wrapper& str)
+string unhex_i64(const string_wrapper& str)
 {
     return unhex(str, 8);
 }

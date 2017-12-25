@@ -13,5 +13,5 @@ PYCPP_USING_NAMESPACE
 TEST(authentication_t, encode)
 {
     authentication_t auth = {"name", "password"};
-    EXPECT_EQ(auth.string(), "name:password");
+    EXPECT_EQ(auth.str(), "name:password");
 }

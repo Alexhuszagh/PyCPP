@@ -25,38 +25,38 @@ inline bool is_punycode(const string_wrapper& str)
 }
 
 
-static std::string to_idna(const string_wrapper& str)
+static string to_idna(const string_wrapper& str)
 {
     return "xn--" + utf8_to_punycode(str);
 }
 
 
-static std::string from_idna(const string_wrapper& str)
+static string from_idna(const string_wrapper& str)
 {
     return punycode_to_utf8(str.substr(4));
 }
 
 
-static void set_service_impl(std::string& url, const string_wrapper& service)
+static void set_service_impl(string& url, const string_wrapper& service)
 {
     assert(!is_relative(url));
     size_t index = url.find("://");
-    if (index != std::string::npos) {
+    if (index != string::npos) {
         // replace service
         url.replace(0, index, service.data(), service.size());
     } else {
         // set a service
-        std::string str(service);
+        string str(service);
         str += "://";
         url.insert(0, str);
     }
 }
 
 
-static void set_host_impl(std::string& url, const string_wrapper& host)
+static void set_host_impl(string& url, const string_wrapper& host)
 {
     size_t start = url.find("://");
-    if (start == std::string::npos) {
+    if (start == string::npos) {
         url.replace(0, url.find_first_of('/'), host.data(), host.size());
     } else {
         size_t end = url.find_first_of('/', start+4);
@@ -65,42 +65,42 @@ static void set_host_impl(std::string& url, const string_wrapper& host)
 }
 
 
-static void set_path_impl(std::string& url, const string_wrapper& path)
+static void set_path_impl(string& url, const string_wrapper& path)
 {
     if (is_relative(url)) {
         url.assign(path.data(), path.size());
     } else {
         size_t separator = url.find("://");
-        if (separator == std::string::npos) {
-            url.replace(url.find_first_of('/'), std::string::npos, path.data(), path.size());
+        if (separator == string::npos) {
+            url.replace(url.find_first_of('/'), string::npos, path.data(), path.size());
         } else {
-            url.replace(url.find_first_of('/', separator+4), std::string::npos, path.data(), path.size());
+            url.replace(url.find_first_of('/', separator+4), string::npos, path.data(), path.size());
         }
     }
 }
 
 
-static void set_directory_impl(std::string& url, const string_wrapper& directory)
+static void set_directory_impl(string& url, const string_wrapper& directory)
 {
     size_t separator, start, end;
     end = url.find_last_of('/');
-    if ((separator = url.find("://")) != std::string::npos) {
+    if ((separator = url.find("://")) != string::npos) {
         start = url.find_first_of('/', separator+4);
     } else {
         start = url.find_first_of('/');
     }
 
-    if (start != std::string::npos && ++start < end) {
+    if (start != string::npos && ++start < end) {
         const size_t length = end - start;
         url.replace(start, length, directory.data(), directory.size());
     }
 }
 
 
-static void set_file_impl(std::string& url, const string_wrapper& file)
+static void set_file_impl(string& url, const string_wrapper& file)
 {
     size_t index = url.find_last_of('/');
-    url.replace(index + 1, std::string::npos, file.data(), file.size());
+    url.replace(index + 1, string::npos, file.data(), file.size());
 }
 
 
@@ -137,11 +137,11 @@ void unicode_encode_url(unicode_idna_t& url)
 
 
 
-std::string url_impl_t::service() const noexcept
+string url_impl_t::service() const noexcept
 {
     assert(absolute());
     size_t index = find("://");
-    if (index == std::string::npos) {
+    if (index == string::npos) {
 #ifdef PYCPP_HAVE_SSL
         return "https";
 #else
@@ -152,22 +152,22 @@ std::string url_impl_t::service() const noexcept
 }
 
 
-std::string url_impl_t::host() const noexcept
+string url_impl_t::host() const noexcept
 {
     assert(absolute());
     size_t start = find("://");
-    if (start == std::string::npos) {
+    if (start == string::npos) {
         return substr(0, find_first_of('/')).data();
     }
     size_t end = find_first_of('/', start+4);
-    if (end == std::string::npos) {
+    if (end == string::npos) {
         substr(start+3).data();
     }
     return substr(start+3, end-start-3).data();
 }
 
 
-std::string url_impl_t::path() const noexcept
+string url_impl_t::path() const noexcept
 {
     if (relative()) {
         return *this;
@@ -175,23 +175,23 @@ std::string url_impl_t::path() const noexcept
 
     const size_t separator = find("://");
     size_t start;
-    if (separator == std::string::npos) {
+    if (separator == string::npos) {
         start = find_first_of('/');
     } else {
         start = find_first_of('/', separator+4);
     }
-    if (start == std::string::npos) {
+    if (start == string::npos) {
         return "/";
     }
     return substr(start).data();
 }
 
 
-std::string url_impl_t::directory() const noexcept
+string url_impl_t::directory() const noexcept
 {
     auto data = path();
     const size_t separator = data.find_last_of('/');
-    if (separator == std::string::npos) {
+    if (separator == string::npos) {
         return data.substr(1);
     }
 
@@ -199,11 +199,11 @@ std::string url_impl_t::directory() const noexcept
 }
 
 
-std::string url_impl_t::file() const noexcept
+string url_impl_t::file() const noexcept
 {
     auto data = path();
     const size_t separator = data.find_last_of('/');
-    if (separator == std::string::npos) {
+    if (separator == string::npos) {
         return data;
     }
 
@@ -234,8 +234,8 @@ punycode_idna_t::punycode_idna_t(const char* p, size_t s):
 {}
 
 
-punycode_idna_t::punycode_idna_t(const string_wrapper& string):
-    url_impl_t(string.data(), string.size())
+punycode_idna_t::punycode_idna_t(const string_wrapper& str):
+    url_impl_t(str.data(), str.size())
 {
     punycode_encode_url(*this);
 }
@@ -293,8 +293,8 @@ unicode_idna_t::unicode_idna_t(const char* p, size_t s):
 {}
 
 
-unicode_idna_t::unicode_idna_t(const string_wrapper& string):
-    url_impl_t(string.data(), string.size())
+unicode_idna_t::unicode_idna_t(const string_wrapper& str):
+    url_impl_t(str.data(), str.size())
 {
     unicode_encode_url(*this);
 }

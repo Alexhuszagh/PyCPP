@@ -16,7 +16,7 @@ PYCPP_USING_NAMESPACE
 // HELPERS
 // -------
 
-static std::string EXPECTED = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<name>Alex</name>\n";
+static string EXPECTED = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<name>Alex</name>\n";
 
 template <typename Writer, typename ... Ts>
 static Writer test_xml_writer(bool move, Ts&&... ts)
@@ -37,7 +37,7 @@ static Writer test_xml_writer(bool move, Ts&&... ts)
 }
 
 
-static void check_result(const std::string& str)
+static void check_result(const string& str)
 {
     EXPECT_EQ(replace(str, NEWLINE, POSIX_NEWLINE), EXPECTED);
 }

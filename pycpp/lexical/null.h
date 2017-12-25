@@ -32,7 +32,7 @@ struct lexical_null_formatter
     const char* data() const noexcept;
     const char* c_str() const noexcept;
 
-    string_view string() const noexcept;
+    string_view str() const noexcept;
 
     // CONVERSIONS
     operator string_view() const noexcept;

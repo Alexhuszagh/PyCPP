@@ -9,9 +9,6 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/os.h>
-#include <pycpp/stl/initializer_list.h>
-#include <pycpp/stl/memory.h>
-#include <pycpp/stl/string.h>
 #include <pycpp/stl/unordered_map.h>
 #include <pycpp/string/string.h>
 
@@ -100,7 +97,7 @@ struct address_t
 /**
  *  \brief Cache for DNS lookups.
  */
-struct address_cache_t: unordered_multimap<std::string, address_t>
+struct address_cache_t: unordered_multimap<string, address_t>
 {
     address_cache_t() = default;
     address_cache_t(const address_cache_t&) = default;

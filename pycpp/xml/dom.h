@@ -68,7 +68,7 @@ struct xml_document_t: xml_node_t
 #endif                                          // WINDOWS
 
     // WRITERS
-    std::string dumps(char = ' ', int = 4);
+    xml_string_t dumps(char = ' ', int = 4);
     void dump(ostream&, char = ' ', int = 4);
     void dump(const string_view&, char = ' ', int = 4);
 #if defined(HAVE_WFOPEN)                        // WINDOWS

@@ -39,7 +39,7 @@ public:
     virtual sql_driver& driver() = 0;
 
 private:
-    std::string connection_name_;
+    string connection_name_;
 };
 // TODO: implement...
 

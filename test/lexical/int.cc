@@ -18,16 +18,16 @@ PYCPP_USING_NAMESPACE
 TEST(lexical_int_formatter, unsigned_int)
 {
     auto TEST_USHORT = [](const unsigned short value, const string_view& expected) {
-        EXPECT_EQ(lexical_int_formatter(value).string(), expected);
+        EXPECT_EQ(lexical_int_formatter(value).str(), expected);
     };
     auto TEST_UINT = [](const unsigned int value, const string_view& expected) {
-        EXPECT_EQ(lexical_int_formatter(value).string(), expected);
+        EXPECT_EQ(lexical_int_formatter(value).str(), expected);
     };
     auto TEST_ULONG = [](const unsigned long value, const string_view& expected) {
-        EXPECT_EQ(lexical_int_formatter(value).string(), expected);
+        EXPECT_EQ(lexical_int_formatter(value).str(), expected);
     };
     auto TEST_ULONGLONG = [](const unsigned long long value, const string_view& expected) {
-        EXPECT_EQ(lexical_int_formatter(value).string(), expected);
+        EXPECT_EQ(lexical_int_formatter(value).str(), expected);
     };
 
     TEST_USHORT(1, "1");
@@ -40,16 +40,16 @@ TEST(lexical_int_formatter, unsigned_int)
 TEST(lexical_int_formatter, signed_int)
 {
     auto TEST_SHORT = [](const short value, const string_view& expected) {
-        EXPECT_EQ(lexical_int_formatter(value).string(), expected);
+        EXPECT_EQ(lexical_int_formatter(value).str(), expected);
     };
     auto TEST_INT = [](const int value, const string_view& expected) {
-        EXPECT_EQ(lexical_int_formatter(value).string(), expected);
+        EXPECT_EQ(lexical_int_formatter(value).str(), expected);
     };
     auto TEST_LONG = [](const long value, const string_view& expected) {
-        EXPECT_EQ(lexical_int_formatter(value).string(), expected);
+        EXPECT_EQ(lexical_int_formatter(value).str(), expected);
     };
     auto TEST_LONGLONG = [](const long long value, const string_view& expected) {
-        EXPECT_EQ(lexical_int_formatter(value).string(), expected);
+        EXPECT_EQ(lexical_int_formatter(value).str(), expected);
     };
 
     TEST_SHORT(-1, "-1");

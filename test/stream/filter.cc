@@ -9,6 +9,7 @@
 #include <pycpp/stl/sstream.h>
 #include <pycpp/stl/string.h>
 #include <pycpp/stream/filter.h>
+#include <pycpp/string/getline.h>
 #include <gtest/gtest.h>
 #if BUILD_FILESYSTEM
 #   include <pycpp/filesystem.h>
@@ -76,8 +77,8 @@ struct test_istream
     void standard(T &t, Checker checker, Ts... ts)
     {
         IStream s1(t, ts...);
-        std::string line;
-        std::getline(s1, line);
+        string line;
+        getline(s1, line);
         checker(line);
     }
 
@@ -86,8 +87,8 @@ struct test_istream
     {
         IStream s1(t, ts...), s2;
         s1.swap(s2);
-        std::string line;
-        std::getline(s2, line);
+        string line;
+        getline(s2, line);
         checker(line);
     }
 
@@ -146,8 +147,8 @@ TEST(filter_istream, nocallback)
     using tester = test_istream<filter_istream_wrapper>;
 
     istringstream sstream("This is a message");
-    std::string actual = "This is a message";
-    tester()(sstream, [&sstream, &actual](const std::string& result) {
+    string actual = "This is a message";
+    tester()(sstream, [&sstream, &actual](const string& result) {
         EXPECT_EQ(result, actual);
         sstream.seekg(0);
     }, nullptr);
@@ -159,8 +160,8 @@ TEST(filter_istream, doublechars)
     using tester = test_istream<filter_istream_wrapper>;
 
     istringstream sstream("This is a message");
-    std::string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
-    tester()(sstream, [&sstream, &actual](const std::string& result) {
+    string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
+    tester()(sstream, [&sstream, &actual](const string& result) {
         EXPECT_EQ(result, actual);
         sstream.seekg(0);
     }, doublechars);
@@ -173,8 +174,8 @@ TEST(filter_ostream, nocallback)
     using tester = test_ostream<filter_ostream_wrapper>;
 
     ostringstream sstream;
-    std::string message = "This is a message";
-    std::string actual = message;
+    string message = "This is a message";
+    string actual = message;
     tester()(sstream, message, [&sstream, &actual]() {
         EXPECT_EQ(sstream.str(), actual);
         sstream.seekp(0);
@@ -187,8 +188,8 @@ TEST(filter_ostream, doublechars)
     using tester = test_ostream<filter_ostream_wrapper>;
 
     ostringstream sstream;
-    std::string message = "This is a message";
-    std::string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
+    string message = "This is a message";
+    string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
     tester()(sstream, message, [&sstream, &actual]() {
         EXPECT_EQ(sstream.str(), actual);
         sstream.seekp(0);
@@ -219,8 +220,8 @@ TEST(filter_ifstream, doublechars)
 
     // read data
     using tester = test_istream<filter_ifstream>;
-    std::string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
-    tester()(path, [&actual](const std::string& result) {
+    string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
+    tester()(path, [&actual](const string& result) {
         EXPECT_EQ(result, actual);
     }, ios_base::in, doublechars);
 
@@ -242,14 +243,14 @@ TEST(filter_ofstream, doublechars)
     // read data
     using tester = test_ostream<filter_ofstream>;
     string path("sample_filter_ofstream.txt");
-    std::string message = "This is a message";
-    std::string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
+    string message = "This is a message";
+    string actual = "TThhiiss  iiss  aa  mmeessssaaggee";
     tester()(path, message, [&path, &actual]() {
         // check contents
         {
             ifstream ifs(path);
-            std::string line;
-            std::getline(ifs, line);
+            string line;
+            getline(ifs, line);
             EXPECT_EQ(line, actual);
         }
         // cleanup

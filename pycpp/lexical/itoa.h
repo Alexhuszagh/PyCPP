@@ -25,48 +25,48 @@ PYCPP_BEGIN_NAMESPACE
  *  \brief Convert unsigned 8-bit value to string.
  */
 void u8toa(uint8_t value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string u8toa(uint8_t value, uint8_t base = 10);
+string u8toa(uint8_t value, uint8_t base = 10);
 
 /**
  *  \brief Convert signed 8-bit value to string.
  */
 void i8toa(int8_t value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string i8toa(int8_t value, uint8_t base = 10);
+string i8toa(int8_t value, uint8_t base = 10);
 
 /**
  *  \brief Convert unsigned 16-bit value to string.
  */
 void u16toa(uint16_t value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string u16toa(uint16_t value, uint8_t base = 10);
+string u16toa(uint16_t value, uint8_t base = 10);
 
 /**
  *  \brief Convert signed 16-bit value to string.
  */
 void i16toa(int16_t value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string i16toa(int16_t value, uint8_t base = 10);
+string i16toa(int16_t value, uint8_t base = 10);
 
 /**
  *  \brief Convert unsigned 32-bit value to string.
  */
 void u32toa(uint32_t value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string u32toa(uint32_t value, uint8_t base = 10);
+string u32toa(uint32_t value, uint8_t base = 10);
 
 /**
  *  \brief Convert signed 32-bit value to string.
  */
 void i32toa(int32_t value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string i32toa(int32_t value, uint8_t base = 10);
+string i32toa(int32_t value, uint8_t base = 10);
 
 /**
  *  \brief Convert unsigned 64-bit value to string.
  */
 void u64toa(uint64_t value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string u64toa(uint64_t value, uint8_t base = 10);
+string u64toa(uint64_t value, uint8_t base = 10);
 
 /**
  *  \brief Convert signed 64-bit value to string.
  */
 void i64toa(int64_t value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string i64toa(int64_t value, uint8_t base = 10);
+string i64toa(int64_t value, uint8_t base = 10);
 
 PYCPP_END_NAMESPACE

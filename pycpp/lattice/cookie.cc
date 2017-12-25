@@ -11,11 +11,10 @@ PYCPP_BEGIN_NAMESPACE
 // OBJECTS
 // -------
 
-
 /**
  *  \brief Special case of type 1 cookies, with leading and trailing quotes.
  */
-bool encode_version_one_cookie(const std::string &cookie)
+bool encode_version_one_cookie(const string &cookie)
 {
     if (!cookie.empty()) {
         return (cookie.front() == '"' && cookie.back() == '"');
@@ -32,20 +31,20 @@ cookies_t::cookies_t(initializer_list<typename cookies_t::value_type> list)
 }
 
 
-std::string cookies_t::encode() const
+string cookies_t::encode() const
 {
-    std::string string;
+    string str;
     for (const auto &item: *this) {
-        string += url_encode(item.first) + "=";
+        str += url_encode(item.first) + "=";
         if (encode_version_one_cookie(item.second)) {
-            string += item.second;
+            str += item.second;
         } else {
-            string += url_encode(item.second);
+            str += url_encode(item.second);
         }
-        string += "; ";
+        str += "; ";
     }
 
-    return string;
+    return str;
 }
 
 

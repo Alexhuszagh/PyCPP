@@ -11,10 +11,10 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-std::string certificate_file_t::suffix() const
+string certificate_file_t::suffix() const
 {
     const size_t index = find_last_of('.');
-    if (index != 0 || index != std::string::npos) {
+    if (index != 0 || index != string::npos) {
         return substr(index+1);
     }
     return "";

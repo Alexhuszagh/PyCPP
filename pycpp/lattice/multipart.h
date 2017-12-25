@@ -9,7 +9,6 @@
 #pragma once
 
 #include <pycpp/stl/deque.h>
-#include <pycpp/stl/initializer_list.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/string/string.h>
 
@@ -23,7 +22,7 @@ namespace detail
 /**
  *  \brief Get boundary value for MIME message.
  */
-std::string get_boundary();
+string get_boundary();
 
 // OBJECTS
 // -------
@@ -34,8 +33,8 @@ std::string get_boundary();
  */
 struct part_value_t
 {
-    std::string filename;
-    std::string content_type_;
+    string filename;
+    string content_type_;
 
     part_value_t() = default;
     part_value_t(const part_value_t &other) = default;
@@ -44,13 +43,13 @@ struct part_value_t
     part_value_t & operator=(part_value_t&&) = default;
 
     part_value_t(const char* filename, const char* content_type);
-    part_value_t(std::string&& filename, std::string&& content_type);
+    part_value_t(string&& filename, string&& content_type);
     part_value_t(const string_wrapper& filename, const string_wrapper& content_type);
 
-    std::string basename() const;
-    std::string name() const;
+    string basename() const;
+    string name() const;
     string_wrapper content_type() const;
-    virtual std::string string() const;
+    virtual string str() const;
 };
 
 
@@ -61,8 +60,8 @@ struct file_value_t: part_value_t
 {
     using part_value_t::part_value_t;
 
-    std::string buffer() const;
-    std::string string() const override;
+    string buffer() const;
+    string str() const override;
 };
 
 
@@ -71,7 +70,7 @@ struct file_value_t: part_value_t
  */
 struct buffer_value_t: part_value_t
 {
-    std::string buffer_;
+    string buffer_;
 
     buffer_value_t() = default;
     buffer_value_t(const buffer_value_t &other) = default;
@@ -82,15 +81,15 @@ struct buffer_value_t: part_value_t
     buffer_value_t(const char* filename,
                    const char* buffer,
                    const char* content_type = "");
-    buffer_value_t(std::string&& filename,
-                   std::string&& buffer,
-                   std::string&& content_type);
+    buffer_value_t(string&& filename,
+                   string&& buffer,
+                   string&& content_type);
     buffer_value_t(const string_wrapper& filename,
                    const string_wrapper& buffer,
                    const string_wrapper& content_type);
 
-    std::string buffer() const;
-    std::string string() const override;
+    string buffer() const;
+    string str() const override;
 };
 
 }   /* detail */
@@ -142,13 +141,13 @@ public:
     void add(const part_ptr_t& part);
     void add(part_ptr_t&& part);
     string_wrapper boundary() const;
-    std::string header() const;
+    string header() const;
 
-    std::string string() const;
+    string str() const;
     explicit operator bool() const;
 
 private:
-    std::string boundary_ = detail::get_boundary();
+    string boundary_ = detail::get_boundary();
 };
 
 PYCPP_END_NAMESPACE

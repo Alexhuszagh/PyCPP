@@ -7,6 +7,7 @@
 #include <pycpp/stl/fstream.h>
 #include <pycpp/stl/sstream.h>
 #include <pycpp/stl/string_view.h>
+#include <pycpp/string/getline.h>
 #if defined(OS_WINDOWS)
 #   include <pycpp/windows/winapi.h>
 #endif
@@ -66,8 +67,8 @@ static bool read_pid1()
 {
     // this **has** to exist.
     ifstream input("/proc/1/sched");
-    std::string line;
-    std::getline(input, line);
+    string line;
+    getline(input, line, 20);
 
     // init system takes the following format for the native host
     // init (1, #threads: 1)

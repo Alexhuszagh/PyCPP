@@ -17,7 +17,7 @@ PYCPP_USING_NAMESPACE
 // DATA
 // ----
 
-static vector<pair<std::nullptr_t, reference_wrapper<const std::string>>> DATA = {
+static vector<pair<nullptr_t, reference_wrapper<const string>>> DATA = {
     {nullptr, NULL_STRING},
 };
 
@@ -27,8 +27,8 @@ static vector<pair<std::nullptr_t, reference_wrapper<const std::string>>> DATA =
 
 TEST(lexical_null_formatter, lexical_null_formatter)
 {
-    auto TEST_NULL  = [](std::nullptr_t b, const string_view& expected) {
-        EXPECT_EQ(lexical_null_formatter(b).string(), expected);
+    auto TEST_NULL  = [](nullptr_t b, const string_view& expected) {
+        EXPECT_EQ(lexical_null_formatter(b).str(), expected);
     };
 
     for (const auto& pair: DATA) {

@@ -22,25 +22,24 @@ struct url_t;
 // OBJECTS
 // -------
 
-
 /**
  *  \brief Base class for a URL.
  */
-struct url_impl_t: std::string
+struct url_impl_t: string
 {
     url_impl_t() = default;
     url_impl_t(const url_impl_t&) = default;
     url_impl_t & operator=(const url_impl_t&) = default;
     url_impl_t(url_impl_t&&) = default;
     url_impl_t & operator=(url_impl_t&&) = default;
-    using std::string::string;
+    using string::string;
 
     // GETTERS
-    std::string service() const noexcept;
-    std::string host() const noexcept;
-    std::string path() const noexcept;
-    std::string directory() const noexcept;
-    std::string file() const noexcept;
+    string service() const noexcept;
+    string host() const noexcept;
+    string path() const noexcept;
+    string directory() const noexcept;
+    string file() const noexcept;
 
     // PROPERTIES
     bool relative() const noexcept;

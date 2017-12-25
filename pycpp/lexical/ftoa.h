@@ -25,12 +25,12 @@ char e_notation_char(uint8_t base) noexcept;
  *  \brief Convert unsigned 8-bit value to string.
  */
 void f32toa(float value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string f32toa(float value, uint8_t base = 10);
+string f32toa(float value, uint8_t base = 10);
 
 /**
  *  \brief Convert signed 8-bit value to string.
  */
 void f64toa(double value, char* first, char*& last, uint8_t base = 10) noexcept;
-std::string f64toa(double value, uint8_t base = 10);
+string f64toa(double value, uint8_t base = 10);
 
 PYCPP_END_NAMESPACE

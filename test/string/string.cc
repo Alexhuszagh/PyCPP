@@ -122,7 +122,7 @@ TEST(string, capitalize)
 
 TEST(string, expandtabs)
 {
-    std::string str = "This is a message";
+    string str = "This is a message";
     EXPECT_EQ(expandtabs(str), str);
 
     str = "This\t";

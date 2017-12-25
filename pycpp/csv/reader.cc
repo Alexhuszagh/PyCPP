@@ -10,9 +10,9 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-static std::string readline(istream& stream)
+static string readline(istream& stream)
 {
-    std::string line;
+    string line;
     getline(stream, line);
     return line;
 }
@@ -21,7 +21,7 @@ static std::string readline(istream& stream)
 static csv_row parse_csv_row(istream& stream, csvpunct_impl& punct, size_t size)
 {
     csv_row row;
-    std::string line = readline(stream);
+    string line = readline(stream);
     row.reserve(size);
 
     bool quote = false;
@@ -43,7 +43,7 @@ static csv_row parse_csv_row(istream& stream, csvpunct_impl& punct, size_t size)
             word[j] = c;            // append quoted character to word
             j++;
         } else if (c == punct.delimiter()) {
-            row.emplace_back(std::string(word.data(), j));
+            row.emplace_back(string(word.data(), j));
             j = 0;
             k++;
         } else {
@@ -52,7 +52,7 @@ static csv_row parse_csv_row(istream& stream, csvpunct_impl& punct, size_t size)
         }
     }
 
-    row.emplace_back(std::string(word.data(), j));
+    row.emplace_back(string(word.data(), j));
 
     return row;
 }
@@ -88,7 +88,7 @@ csv_stream_reader::csv_stream_reader(istream& stream, size_t skip, csvpunct_impl
 void csv_stream_reader::open(istream& stream, size_t skip, csvpunct_impl* punct)
 {
     // skip lines
-    std::string line;
+    string line;
     while (skip--) {
         getline(stream, line);
     }
@@ -266,7 +266,7 @@ csv_string_reader::csv_string_reader(const string_wrapper& str, size_t skip, csv
 
 void csv_string_reader::open(const string_wrapper& str, size_t skip, csvpunct_impl* punct)
 {
-    sstream_ = istringstream(std::string(str), ios_base::in | ios_base::binary);
+    sstream_ = istringstream(string(str), ios_base::in | ios_base::binary);
     csv_stream_reader::open(sstream_, skip, punct);
 }
 

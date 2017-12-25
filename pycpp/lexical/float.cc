@@ -62,7 +62,7 @@ const char* lexical_float_formatter::c_str() const noexcept
 }
 
 
-string_view lexical_float_formatter::string() const noexcept
+string_view lexical_float_formatter::str() const noexcept
 {
     return string_view(data(), size());
 }
@@ -70,7 +70,7 @@ string_view lexical_float_formatter::string() const noexcept
 
 lexical_float_formatter::operator string_view() const noexcept
 {
-    return string();
+    return str();
 }
 
 
