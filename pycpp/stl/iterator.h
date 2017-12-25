@@ -16,8 +16,6 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-// TODO: more stuff to add...
-
 using std::advance;
 using std::distance;
 using std::next;

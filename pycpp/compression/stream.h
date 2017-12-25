@@ -25,19 +25,19 @@ PYCPP_BEGIN_NAMESPACE
  */
 #if defined(HAVE_WFOPEN)                    // WINDOWS
 
-#   define WIDE_PATH_IFSTREAM(name)                                                                 \
-        name##_ifstream(const wstring_view& name, ios_base::openmode = ios_base::in);               \
-        void open(const wstring_view& name, ios_base::openmode = ios_base::in);                     \
-        name##_ifstream(const u16string_view& name, ios_base::openmode = ios_base::in);             \
-        void open(const u16string_view& name, ios_base::openmode = ios_base::in);
+#   define WIDE_PATH_IFSTREAM(name)                                                                                     \
+        name##_ifstream(const wstring_view& name, ios_base::openmode = ios_base::in | ios_base::binary);                \
+        void open(const wstring_view& name, ios_base::openmode = ios_base::in | ios_base::binary);                      \
+        name##_ifstream(const u16string_view& name, ios_base::openmode = ios_base::in | ios_base::binary);              \
+        void open(const u16string_view& name, ios_base::openmode = ios_base::in | ios_base::binary);
 
-#   define WIDE_PATH_OFSTREAM(name)                                                                 \
-        name##_ofstream(const wstring_view& name, ios_base::openmode = ios_base::out);              \
-        name##_ofstream(const wstring_view& name, int level, ios_base::openmode = ios_base::out);   \
-        void open(const wstring_view& name, ios_base::openmode = ios_base::out);                    \
-        name##_ofstream(const u16string_view& name, ios_base::openmode = ios_base::out);            \
-        name##_ofstream(const u16string_view& name, int level, ios_base::openmode = ios_base::out); \
-        void open(const u16string_view& name, ios_base::openmode = ios_base::out);
+#   define WIDE_PATH_OFSTREAM(name)                                                                                     \
+        name##_ofstream(const wstring_view& name, ios_base::openmode = ios_base::out | ios_base::binary);               \
+        name##_ofstream(const wstring_view& name, int level, ios_base::openmode = ios_base::out | ios_base::binary);    \
+        void open(const wstring_view& name, ios_base::openmode = ios_base::out | ios_base::binary);                     \
+        name##_ofstream(const u16string_view& name, ios_base::openmode = ios_base::out | ios_base::binary);             \
+        name##_ofstream(const u16string_view& name, int level, ios_base::openmode = ios_base::out | ios_base::binary);  \
+        void open(const u16string_view& name, ios_base::openmode = ios_base::out | ios_base::binary);
 
 #else                                       // POSIX
 
@@ -102,50 +102,50 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Macro to define a filtering ifstream base.
  */
-#define COMPRESSED_IFSTREAM(name)                                                               \
-    struct name##_ifstream: filter_ifstream                                                     \
-    {                                                                                           \
-    public:                                                                                     \
-        name##_ifstream() = default;                                                            \
-        name##_ifstream(const name##_ifstream&) = delete;                                       \
-        name##_ifstream & operator=(const name##_ifstream&) = delete;                           \
-        name##_ifstream(name##_ifstream&&);                                                     \
-        name##_ifstream & operator=(name##_ifstream&&);                                         \
-        ~name##_ifstream();                                                                     \
-                                                                                                \
-        name##_ifstream(const string_view& name, ios_base::openmode = ios_base::in);            \
-        void open(const string_view& name, ios_base::openmode = ios_base::in);                  \
-        WIDE_PATH_IFSTREAM(name)                                                                \
-        void swap(name##_ifstream&);                                                            \
-                                                                                                \
-    private:                                                                                    \
-        name##_decompressor ctx;                                                                \
+#define COMPRESSED_IFSTREAM(name)                                                                               \
+    struct name##_ifstream: filter_ifstream                                                                     \
+    {                                                                                                           \
+    public:                                                                                                     \
+        name##_ifstream() = default;                                                                            \
+        name##_ifstream(const name##_ifstream&) = delete;                                                       \
+        name##_ifstream & operator=(const name##_ifstream&) = delete;                                           \
+        name##_ifstream(name##_ifstream&&);                                                                     \
+        name##_ifstream & operator=(name##_ifstream&&);                                                         \
+        ~name##_ifstream();                                                                                     \
+                                                                                                                \
+        name##_ifstream(const string_view& name, ios_base::openmode = ios_base::in | ios_base::binary);         \
+        void open(const string_view& name, ios_base::openmode = ios_base::in | ios_base::binary);               \
+        WIDE_PATH_IFSTREAM(name)                                                                                \
+        void swap(name##_ifstream&);                                                                            \
+                                                                                                                \
+    private:                                                                                                    \
+        name##_decompressor ctx;                                                                                \
     }
 
 
 /**
  *  \brief Macro to define a filtering ofstream base.
  */
-#define COMPRESSED_OFSTREAM(name)                                                                   \
-    struct name##_ofstream: filter_ofstream                                                         \
-    {                                                                                               \
-    public:                                                                                         \
-        name##_ofstream() = default;                                                                \
-        name##_ofstream(int level);                                                                 \
-        name##_ofstream(const name##_ofstream&) = delete;                                           \
-        name##_ofstream & operator=(const name##_ofstream&) = delete;                               \
-        name##_ofstream(name##_ofstream&&);                                                         \
-        name##_ofstream & operator=(name##_ofstream&&);                                             \
-        ~name##_ofstream();                                                                         \
-                                                                                                    \
-        name##_ofstream(const string_view& name, ios_base::openmode = ios_base::out);               \
-        name##_ofstream(const string_view& name, int level, ios_base::openmode = ios_base::out);    \
-        void open(const string_view& name, ios_base::openmode = ios_base::out);                     \
-        WIDE_PATH_OFSTREAM(name)                                                                    \
-        void swap(name##_ofstream&);                                                                \
-                                                                                                    \
-    private:                                                                                        \
-        name##_compressor ctx;                                                                      \
+#define COMPRESSED_OFSTREAM(name)                                                                                       \
+    struct name##_ofstream: filter_ofstream                                                                             \
+    {                                                                                                                   \
+    public:                                                                                                             \
+        name##_ofstream() = default;                                                                                    \
+        name##_ofstream(int level);                                                                                     \
+        name##_ofstream(const name##_ofstream&) = delete;                                                               \
+        name##_ofstream & operator=(const name##_ofstream&) = delete;                                                   \
+        name##_ofstream(name##_ofstream&&);                                                                             \
+        name##_ofstream & operator=(name##_ofstream&&);                                                                 \
+        ~name##_ofstream();                                                                                             \
+                                                                                                                        \
+        name##_ofstream(const string_view& name, ios_base::openmode = ios_base::out | ios_base::binary);                \
+        name##_ofstream(const string_view& name, int level, ios_base::openmode = ios_base::out | ios_base::binary);     \
+        void open(const string_view& name, ios_base::openmode = ios_base::out | ios_base::binary);                      \
+        WIDE_PATH_OFSTREAM(name)                                                                                        \
+        void swap(name##_ofstream&);                                                                                    \
+                                                                                                                        \
+    private:                                                                                                            \
+        name##_compressor ctx;                                                                                          \
     }
 
 
@@ -215,13 +215,13 @@ public:
     ~decompressing_ifstream();
 
     // STREAM
-    decompressing_ifstream(const string_view& name, ios_base::openmode = ios_base::in);
-    void open(const string_view& name, ios_base::openmode = ios_base::in);
+    decompressing_ifstream(const string_view& name, ios_base::openmode = ios_base::in | ios_base::binary);
+    void open(const string_view& name, ios_base::openmode = ios_base::in | ios_base::binary);
 #if defined(HAVE_WFOPEN)                    // WINDOWS
-    decompressing_ifstream(const wstring_view& name, ios_base::openmode = ios_base::in);
-    void open(const wstring_view& name, ios_base::openmode = ios_base::in);
-    decompressing_ifstream(const u16string_view& name, ios_base::openmode = ios_base::in);
-    void open(const u16string_view& name, ios_base::openmode = ios_base::in);
+    decompressing_ifstream(const wstring_view& name, ios_base::openmode = ios_base::in | ios_base::binary);
+    void open(const wstring_view& name, ios_base::openmode = ios_base::in | ios_base::binary);
+    decompressing_ifstream(const u16string_view& name, ios_base::openmode = ios_base::in | ios_base::binary);
+    void open(const u16string_view& name, ios_base::openmode = ios_base::in | ios_base::binary);
 #endif                                      // WINDOWS
 
     // MODIFIERS

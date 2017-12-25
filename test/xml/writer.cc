@@ -75,6 +75,7 @@ TEST(xml, xml_file_writer)
         ifstream ifs(path);
         sstream << ifs.rdbuf();
         check_result(sstream.str());
+        ifs.close();
         EXPECT_TRUE(remove_file(path));
     };
 

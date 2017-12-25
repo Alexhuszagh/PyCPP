@@ -5,10 +5,6 @@
  *  \brief Core XML definitions.
  */
 
-// TODO: change from shared_ptrs to unique_ptrs
-// TODO: add in allocators
-// TODO: remove new/delete....
-
 #pragma once
 
 #include <pycpp/stl/deque.h>
@@ -136,7 +132,6 @@ public:
     bool operator!=(const self_t&) const;
 
     // LOOKUP
-    // TODO: this should really be a string view....
     iterator find(const xml_string_t&) const;
     pair<iterator, iterator> findall(const xml_string_t&) const;
 

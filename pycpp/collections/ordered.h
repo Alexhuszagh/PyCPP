@@ -75,7 +75,6 @@ struct is_vector<T, enable_if_t<
 {};
 
 
-// TODO: here...
 template <typename ValueType, typename MutableValueType, typename KeySelect, typename ValueSelect,
           typename Hash, typename KeyEqual, typename Allocator, typename ValueTypeContainer>
 class ordered_hash

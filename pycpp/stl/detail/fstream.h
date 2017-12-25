@@ -42,14 +42,14 @@ public:
     fstream(fstream &&other);
     fstream & operator=(fstream &&other);
 
-    fstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
-    void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    fstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    fstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
-    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
-    fstream(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
-    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    fstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
+    fstream(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
 #endif                                          // WINDOWS
 
     // DATA
@@ -82,14 +82,14 @@ public:
     ifstream(ifstream &&other);
     ifstream & operator=(ifstream &&other);
 
-    ifstream(const string_view& name, ios_base::openmode mode = ios_base::in);
-    void open(const string_view& name, ios_base::openmode mode = ios_base::in);
+    ifstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    ifstream(const wstring_view& name, ios_base::openmode mode = ios_base::in);
-    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in);
-    ifstream(const u16string_view& name, ios_base::openmode mode = ios_base::in);
-    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in);
+    ifstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
+    ifstream(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
 #endif                                          // WINDOWS
 
     bool is_open() const;
@@ -121,14 +121,14 @@ public:
     ofstream(ofstream &&other);
     ofstream & operator=(ofstream &&other);
 
-    ofstream(const string_view& name, ios_base::openmode mode = ios_base::out);
-    void open(const string_view& name, ios_base::openmode mode = ios_base::out);
+    ofstream(const string_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    ofstream(const wstring_view& name, ios_base::openmode mode = ios_base::out);
-    void open(const wstring_view& name, ios_base::openmode mode = ios_base::out);
-    ofstream(const u16string_view& name, ios_base::openmode mode = ios_base::out);
-    void open(const u16string_view& name, ios_base::openmode mode = ios_base::out);
+    ofstream(const wstring_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
+    ofstream(const u16string_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
 #endif                                          // WINDOWS
 
     bool is_open() const;
@@ -160,14 +160,14 @@ public:
     fstream(fstream &&other);
     fstream & operator=(fstream &&other);
 
-    fstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
-    void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    fstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    fstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
-    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
-    fstream(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
-    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out);
+    fstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
+    fstream(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::out | ios_base::binary);
 #endif                                          // WINDOWS
 };
 
@@ -188,14 +188,14 @@ public:
     ifstream(ifstream &&other);
     ifstream & operator=(ifstream &&other);
 
-    ifstream(const string_view& name, ios_base::openmode mode = ios_base::in);
-    void open(const string_view& name, ios_base::openmode mode = ios_base::in);
+    ifstream(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    ifstream(const wstring_view& name, ios_base::openmode mode = ios_base::in);
-    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in);
-    ifstream(const u16string_view& name, ios_base::openmode mode = ios_base::in);
-    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in);
+    ifstream(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
+    ifstream(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::in | ios_base::binary);
 #endif                                          // WINDOWS
 };
 
@@ -216,14 +216,14 @@ public:
     ofstream(ofstream &&other);
     ofstream & operator=(ofstream &&other);
 
-    ofstream(const string_view& name, ios_base::openmode mode = ios_base::out);
-    void open(const string_view& name, ios_base::openmode mode = ios_base::out);
+    ofstream(const string_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
+    void open(const string_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
 
 #if defined(HAVE_WFOPEN)                        // WINDOWS
-    ofstream(const wstring_view& name, ios_base::openmode mode = ios_base::out);
-    void open(const wstring_view& name, ios_base::openmode mode = ios_base::out);
-    ofstream(const u16string_view& name, ios_base::openmode mode = ios_base::out);
-    void open(const u16string_view& name, ios_base::openmode mode = ios_base::out);
+    ofstream(const wstring_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
+    void open(const wstring_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
+    ofstream(const u16string_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
+    void open(const u16string_view& name, ios_base::openmode mode = ios_base::out | ios_base::binary);
 #endif                                          // WINDOWS
 };
 

@@ -171,10 +171,6 @@ public:
         return *this;
     }
 
-    // TODO: need move constructors
-    // TODO: need copy assignemnt
-    // TODO: need move assignment
-
     allocator_type get_allocator() const
     {
         return m_ht.get_allocator();

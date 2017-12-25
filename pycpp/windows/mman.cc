@@ -25,7 +25,6 @@ static int map_mman_error(const DWORD err, const int deferr) noexcept
     if (err == 0) {
         return 0;
     }
-    //TODO: implement
     return err;
 }
 

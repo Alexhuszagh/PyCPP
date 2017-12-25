@@ -181,10 +181,6 @@ public:
         ordered_map(init.begin(), init.end(), bucket_count, hash, KeyEqual(), alloc)
     {}
 
-    // TODO: need move constructors
-    // TODO: need copy assignemnt
-    // TODO: need move assignment
-
     ordered_map& operator=(initializer_list<value_type> ilist)
     {
         m_ht.clear();

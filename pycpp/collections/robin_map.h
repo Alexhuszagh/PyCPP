@@ -117,7 +117,6 @@ private:
     using ht = robin_detail::robin_hash<pair<const Key, T>, pair<Key, T>, KeySelect, ValueSelect, Hash, KeyEqual, Allocator, StoreHash, GrowthPolicy>;
 
 public:
-    // TODO: continue here...
     using key_type = typename ht::key_type;
     using mapped_type = T;
     using value_type = typename ht::value_type;
@@ -146,8 +145,6 @@ public:
                        const Allocator& alloc = Allocator()):
         m_ht(bucket_count, hash, equal, alloc, ht::DEFAULT_MAX_LOAD_FACTOR)
     {}
-
-    // TODO: here...
 
     robin_map(size_type bucket_count,
               const Allocator& alloc):

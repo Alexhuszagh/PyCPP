@@ -2,6 +2,9 @@
 
 **Short-Term**
 
+    - Bug on Windows with the compressed streams....
+        - CARRIAGE RETURN....
+
     - Specialized `is_relocatable` for a lot of types.
         - Basically everything can be specialized....
         - csv
@@ -66,6 +69,9 @@
         - Bitmapped block
         - Pool
         - Segregator
+        - Heap allocator
+            - Linear and preallocated allocators on the heap (which can grow)
+            - This is great when requesting large quantities of small data...
 
     - Make allocators non-optional, use a polymorphic allocator by default...
     - Allow a CMake flag to use polymorphic or the standard allocator by default

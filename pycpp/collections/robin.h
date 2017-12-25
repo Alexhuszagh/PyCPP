@@ -467,8 +467,6 @@ public:
         return m_dist_from_ideal_bucket == EMPTY_MARKER_DIST_FROM_IDEAL_BUCKET;
     }
 
-    // TODO: need overloads for `value()`
-
     mutable_value_type& value() noexcept
     {
         assert(!empty());
