@@ -112,7 +112,7 @@ void product_(BidirIter first, BidirIter last, F &f)
     val.reserve(size);
 
     for_each(first, last, [&](const value_type& value) {
-        buf.emplace_back(--helper::begin(value));
+        buf.emplace_back(helper::begin(value));
         val.emplace_back(*helper::begin(value));
         ++k;
     });
@@ -127,11 +127,12 @@ void product_(BidirIter first, BidirIter last, F &f)
                 break;
             }
             --it;
-        } else if (buf[k] != --helper::end(*it)) {
-            val[k] = *++buf[k];
+        } else if (buf[k] != helper::end(*it)) {
+            val[k] = *buf[k];
+            ++buf[k];
             ++it;
         } else {
-            buf[k] = --helper::begin(*it);
+            buf[k] = helper::begin(*it);
             --it;
         }
     }
