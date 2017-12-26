@@ -4,6 +4,7 @@ Building is mostly straightforward, with a few quirks on MSVC. The following des
 
 **Table of Contents**
 
+- [Supported Compilers](#supported-compilers)
 - [Optional Modules](#optional-modules)
 - [Optional Targets](#optional-targets)
 - [Generators](#generators)
@@ -11,6 +12,18 @@ Building is mostly straightforward, with a few quirks on MSVC. The following des
 - [Shared Libraries](#shared-libraries)
 - [System Libraries](#system-libraries)
 - [LZMA](#lzma)
+
+## Supported Compilers
+
+PyCPP is built and tested with the following compilers and compiler versions:
+    - GCC 6.4.0
+    - GCC 7.2.1
+    - (Add Clang)
+    - (Add MSVC)
+    - (Add flags)....
+
+Testing GCC and Clang versions is easy on Linux, using Docker. To test a custom Docker version, run `docker run -it gcc:$VERSION bash`, where `VERSION` is the desired [GCC version](https://hub.docker.com/r/library/gcc/tags/).
+
 
 ## Optional Modules
 
