@@ -190,6 +190,48 @@ public:
         return *this;
     }
 
+    // COPY CONSTRUCTORS
+
+    ordered_map(const ordered_map& rhs):
+        ordered_map(rhs.cbegin(), rhs.cend())
+    {}
+
+    ordered_map(const ordered_map& rhs, const allocator_type& alloc):
+        ordered_map(rhs.cbegin(), rhs.cend(), ht::DEFAULT_INIT_BUCKETS_SIZE, alloc)
+    {}
+
+    // MOVE CONSTRUCTORS
+
+    ordered_map(ordered_map&& rhs):
+        ordered_map()
+    {
+        swap(rhs);
+    }
+
+    ordered_map(ordered_map&& rhs, const allocator_type& alloc):
+        ordered_map(alloc)
+    {
+        swap(rhs);
+    }
+
+    // ASSIGNMENT
+
+    ordered_map& operator=(const ordered_map& rhs)
+    {
+        m_ht.clear();
+
+        m_ht.reserve(rhs.size());
+        m_ht.insert(rhs.begin(), rhs.end());
+
+        return *this;
+    }
+
+    ordered_map& operator=(ordered_map&& rhs)
+    {
+        swap(rhs);
+        return *this;
+    }
+
     allocator_type get_allocator() const
     {
         return m_ht.get_allocator();

@@ -162,6 +162,48 @@ public:
         ordered_set(init.begin(), init.end(), bucket_count, hash, KeyEqual(), alloc)
     {}
 
+    // COPY CONSTRUCTORS
+
+    ordered_set(const ordered_set& rhs):
+        ordered_set(rhs.cbegin(), rhs.cend())
+    {}
+
+    ordered_set(const ordered_set& rhs, const allocator_type& alloc):
+        ordered_set(rhs.cbegin(), rhs.cend(), ht::DEFAULT_INIT_BUCKETS_SIZE, alloc)
+    {}
+
+    // MOVE CONSTRUCTORS
+
+    ordered_set(ordered_set&& rhs):
+        ordered_set()
+    {
+        swap(rhs);
+    }
+
+    ordered_set(ordered_set&& rhs, const allocator_type& alloc):
+        ordered_set(alloc)
+    {
+        swap(rhs);
+    }
+
+    // ASSIGNMENT
+
+    ordered_set& operator=(const ordered_set& rhs)
+    {
+        m_ht.clear();
+
+        m_ht.reserve(rhs.size());
+        m_ht.insert(rhs.begin(), rhs.end());
+
+        return *this;
+    }
+
+    ordered_set& operator=(ordered_set&& rhs)
+    {
+        swap(rhs);
+        return *this;
+    }
+
     ordered_set& operator=(initializer_list<value_type> ilist)
     {
         m_ht.clear();

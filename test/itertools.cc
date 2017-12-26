@@ -91,7 +91,6 @@ TEST(itertools, count_each_combination)
 }
 
 
-#if 0           // TODO: restore, MSVC bug
 TEST(itertools, product)
 {
     using ll = vector<vector<int>>;
@@ -106,6 +105,7 @@ TEST(itertools, product)
 }
 
 
+#if 0           // TODO: restore, MSVC bug
 TEST(itertools, cartesian_product)
 {
     int c = 0;
