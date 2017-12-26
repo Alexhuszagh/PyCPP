@@ -4,6 +4,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Any implementation for C++11.
+ *
+ *  For GCC and Clang, you may use the C++17 syntax with the `any`
+ *  implementation from C++11 onwards, for MSVC, at least until C++17,
+ *  you must explicitly specify the type overloads to `make_any`.
+ *  For example:
+ *
+ *  \code
+ *      any p0 = 1;                     // works on all but MSVC
+ *      any p1 = make_any<int>(1);      // works on all compilers
  */
 
 #pragma once

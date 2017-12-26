@@ -137,12 +137,10 @@ TEST(any, reference_count)
     EXPECT_EQ(weak.use_count(), 2);
     p2 = make_any<big_type>();
     EXPECT_EQ(weak.use_count(), 1);
-    p1.emplace<shared_ptr<int>>(ptr_count);
+    p1 = make_any<shared_ptr<int>>(ptr_count);
     EXPECT_EQ(weak.use_count(), 2);
     ptr_count = nullptr;
     EXPECT_EQ(weak.use_count(), 1);
     p1 = any();
     EXPECT_EQ(weak.use_count(), 0);
-
-    exit(0);
 }
