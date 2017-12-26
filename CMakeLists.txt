@@ -2,7 +2,7 @@
 #  :license: MIT, see licenses/mit.md for more details.
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 1)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
 project(pycpp CXX)
 enable_testing()
 
