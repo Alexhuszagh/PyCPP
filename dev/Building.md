@@ -16,6 +16,7 @@ Building is mostly straightforward, with a few quirks on MSVC. The following des
 ## Supported Compilers
 
 PyCPP is built and tested with the following compilers and compiler versions:
+    - GCC 5.4.0
     - GCC 6.4.0
     - GCC 7.2.1
     - (Add Clang)

@@ -72,3 +72,11 @@
 #   define CPP17_NODISCARD
 #   define CPP17_UNUSED
 #endif                      // HAVE_CPP17
+
+// COMPATABILITY
+// -------------
+
+// Define compatability for compilers with partial
+// C++11 support. Most notably, this includes GCC 5.4,
+// TODO: add here...
+#define CPP11_PARTIAL_COMPATIBILITY 1

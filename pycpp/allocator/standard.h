@@ -45,12 +45,15 @@ struct standard_allocator: private standard_allocator_base
     // ------------
     using self_t = standard_allocator<T>;
     using value_type = T;
-    using pointer = T*;
-    using const_pointer = const T*;
-    using reference = T&;
-    using const_reference = const T&;
+#if defined(CPP11_PARTIAL_COMPATIBILITY)
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
+    template <typename U> struct rebind { using other = polymorphic_allocator<U>; };
+#endif      // CPP11_PARTIAL_COMPATIBILITY
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -64,6 +67,12 @@ struct standard_allocator: private standard_allocator_base
     // ALLOCATOR TRAITS
     pointer allocate(size_type, const void* = nullptr);
     void deallocate(pointer, size_type);
+#if defined(CPP11_PARTIAL_COMPATIBILITY)
+    template <typename ... Ts>
+    void construct(T* p, Ts&&... ts) { ::new (static_cast<void*>(p)) T(std::forward<Ts>(ts)...); }
+    void destroy(T* p) { p->~T(); }
+    size_type max_size() { return std::numeric_limits<size_type>::max(); }
+#endif      // CPP11_PARTIAL_COMPATIBILITY
 };
 
 // ALIAS

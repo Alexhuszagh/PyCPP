@@ -17,9 +17,9 @@
 #include <pycpp/stl/algorithm.h>
 #include <pycpp/stl/string_view.h>
 #include <assert.h>
-#include <math.h>
 #include <stdint.h>
 #include <string.h>
+#include <cmath>
 
 PYCPP_BEGIN_NAMESPACE
 

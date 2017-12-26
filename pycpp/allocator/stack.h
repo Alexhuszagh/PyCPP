@@ -162,16 +162,18 @@ public:
     // ------------
     using self_t = stack_allocator<T, StackSize, Alignment, UseFallback, Fallback, UseLocks>;
     using value_type = T;
-    using pointer = T*;
-    using const_pointer = const T*;
-    using reference = T&;
-    using const_reference = const T&;
-    using size_type = size_t;
-    using difference_type = ptrdiff_t;
     using fallback_type = Fallback;
     using arena_type = stack_allocator_arena<stack_size, alignment>;
     using mutex_type = typename arena_type::mutex_type;
     using propagate_on_container_move_assignment = true_type;
+#if defined(CPP11_PARTIAL_COMPATIBILITY)
+    using reference = value_type&;
+    using const_reference = const value_type&;
+    using pointer = value_type*;
+    using const_pointer = const value_type*;
+    using size_type = size_t;
+    using difference_type = ptrdiff_t;
+#endif      // CPP11_PARTIAL_COMPATIBILITY
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -190,6 +192,12 @@ public:
     // ALLOCATOR TRAITS
     pointer allocate(size_type, const void* = nullptr);
     void deallocate(pointer, size_type);
+#if defined(CPP11_PARTIAL_COMPATIBILITY)
+    template <typename ... Ts>
+    void construct(T* p, Ts&&... ts) { ::new (static_cast<void*>(p)) T(std::forward<Ts>(ts)...); }
+    void destroy(T* p) { p->~T(); }
+    size_type max_size() { return std::numeric_limits<size_type>::max(); }
+#endif      // CPP11_PARTIAL_COMPATIBILITY
 
 private:
     template <typename T1, size_t S, size_t A, bool UL, typename F, bool UF>
