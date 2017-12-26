@@ -187,11 +187,11 @@ public:
     // COPY CONSTRUCTORS
 
     robin_set(const robin_set& rhs):
-        robin_set(rhs.begin(), rhs.end())
+        robin_set(rhs.cbegin(), rhs.cend())
     {}
 
     robin_set(const robin_set& rhs, const allocator_type& alloc):
-        robin_set(rhs.begin(), rhs.end(), ht::DEFAULT_INIT_BUCKETS_SIZE, alloc)
+        robin_set(rhs.cbegin(), rhs.cend(), ht::DEFAULT_INIT_BUCKETS_SIZE, alloc)
     {}
 
     // MOVE CONSTRUCTORS

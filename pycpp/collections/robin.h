@@ -1443,8 +1443,12 @@ private:
     void emplace_value(size_t ibucket, distance_type dist_from_ideal_bucket,
                        truncated_hash_type hash, Args&&... value_type_args)
     {
-// TODO: restore
-//        insert_value(ibucket, dist_from_ideal_bucket, hash, mutable_value_type(forward<Args>(value_type_args)...));
+        // Bug Fix: MSVC, 2015,  19.00.24215.1 for x64.
+        // The `move is required to avoid a `cannot convert int to int&&`
+        // for a binding an lvalue to an rvalue reference. Since the type
+        // is forwarded and the mutable value type constructed, it should
+        // be fine.
+        insert_value(ibucket, dist_from_ideal_bucket, hash, move(mutable_value_type(forward<Args>(value_type_args)...)));
     }
 
     void rehash_impl(size_type count)

@@ -40,7 +40,6 @@ TEST(ordered_set, constructor_null)
 }
 
 
-#if 0           // TODO: restore, MSVC bug fix
 TEST(ordered_set, constructor_iterable)
 {
     ordered_set<string> os1;
@@ -48,7 +47,7 @@ TEST(ordered_set, constructor_iterable)
 
     ordered_set<string> os2(os1.begin(), os1.end());
     EXPECT_EQ(os2.size(), 1);
-    EXPECT_TRUE(os2.find("key") != os1.end());
+    EXPECT_TRUE(os2.find("key") != os2.end());
 }
 
 
@@ -60,7 +59,7 @@ TEST(ordered_set, constructor_copy)
     ordered_set<string> os2(os1);
     EXPECT_EQ(os1.size(), 1);
     EXPECT_EQ(os2.size(), 1);
-    EXPECT_TRUE(os2.find("key") != os1.end());
+    EXPECT_TRUE(os2.find("key") != os2.end());
 }
 
 
@@ -71,7 +70,7 @@ TEST(ordered_set, constructor_move)
 
     ordered_set<string> os2(move(os1));
     EXPECT_EQ(os2.size(), 1);
-    EXPECT_TRUE(os2.find("key") != os1.end());
+    EXPECT_TRUE(os2.find("key") != os2.end());
 }
 
 
@@ -180,4 +179,3 @@ TEST(ordered_set, bad_hash)
     EXPECT_TRUE(os1.find(2) != os1.end());
     EXPECT_TRUE(os1.find(3) == os1.end());
 }
-#endif

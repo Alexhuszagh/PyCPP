@@ -49,7 +49,7 @@ TEST(robin_set, constructor_iterable)
     auto last = rs1.end();
     robin_set<string> rs2(rs1.begin(), rs1.end());
     EXPECT_EQ(rs2.size(), 1);
-    EXPECT_TRUE(rs2.find("key") != rs1.end());
+    EXPECT_TRUE(rs2.find("key") != rs2.end());
 }
 
 
@@ -61,11 +61,10 @@ TEST(robin_set, constructor_copy)
     robin_set<string> rs2(rs1);
     EXPECT_EQ(rs1.size(), 1);
     EXPECT_EQ(rs2.size(), 1);
-//    EXPECT_TRUE(rs2.find("key") != rs2.end());
+    EXPECT_TRUE(rs2.find("key") != rs2.end());
 }
 
 
-#if 0           // TODO: restore, MSVC bug
 TEST(robin_set, constructor_move)
 {
     robin_set<string> rs1;
@@ -180,4 +179,3 @@ TEST(robin_set, bad_hash)
     EXPECT_TRUE(rs1.find(2) != rs1.end());
     EXPECT_TRUE(rs1.find(3) == rs1.end());
 }
-#endif
