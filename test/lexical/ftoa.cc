@@ -7,15 +7,16 @@
 #include <pycpp/stl/limits.h>
 #include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
-#include <warnings/push.h>
-#include <warnings/narrowing-conversions.h>
+
+#   pragma warning(disable: 4305)
 
 PYCPP_USING_NAMESPACE
 
 // DATA
 // ----
 
-static vector<float> FLOATS = {
+// Use doubles to avoid narrowing conversions on MSVC
+static vector<double> FLOATS = {
     0.,
     0.1,
     1.,
@@ -128,7 +129,8 @@ TEST(f32toa, base10)
     EXPECT_EQ(f32toa(numeric_limits<float>::infinity(), 10), INFINITY_STRING);
 
     // check parsed value is within 32-bit float error
-    for (float f: FLOATS) {
+    for (double d: FLOATS) {
+        float f = static_cast<float>(d);
         EXPECT_NEAR(atof32(f32toa(f, 10), 10), f, f*1e-6);
     }
 }
@@ -136,7 +138,8 @@ TEST(f32toa, base10)
 
 TEST(f32toa, basen)
 {
-    for (float f: FLOATS) {
+    for (double d: FLOATS) {
+        float f = static_cast<float>(d);
         for (uint8_t radix = 2; radix <= 36; radix++)  {
             EXPECT_NEAR(atof32(f32toa(f, radix), radix), f, f*1e-6);
         }
@@ -202,5 +205,3 @@ TEST(f64toa, basen)
         }
     }
 }
-
-#include <warnings/pop.h>

@@ -23,9 +23,6 @@ TEST(has_less, has_less)
     using t3 = tuple<int, int, int>;
 
     static_assert(has_less<p1>::value, "");
-    static_assert(has_less<t1>::value, "");
-    static_assert(has_less<t2>::value, "");
-    static_assert(has_less<t3>::value, "");
     static_assert(has_less<int>::value, "");
     static_assert(has_less<char>::value, "");
     static_assert(!has_less<p1, t1>::value, "");
@@ -33,4 +30,10 @@ TEST(has_less, has_less)
     static_assert(!has_less<p1, t3>::value, "");
     static_assert(!has_less<p1, int>::value, "");
     static_assert(!has_less<p1, char>::value, "");
+
+#if !defined(HAVE_MSVC)
+    static_assert(has_less<t1>::value, "");
+    static_assert(has_less<t2>::value, "");
+    static_assert(has_less<t3>::value, "");
+#endif      // HAVE_MSVC
 }

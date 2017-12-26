@@ -9,8 +9,6 @@
 
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
-#include <warnings/push.h>
-#include <warnings/narrowing-conversions.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -38,15 +36,13 @@ add_lvalue_reference_t<T> decl_lvalue() noexcept;
     {                                                                           \
     protected:                                                                  \
         template <typename T1 = T, typename U1 = U>                             \
-        static char &test(decltype(decl_lvalue<T1>() op declval<U1>()));        \
+        static char& test(decltype(decl_lvalue<T1>() op declval<U1>()));        \
                                                                                 \
         template <typename T1 = T, typename U1 = U>                             \
-        static long &test(...);                                                 \
+        static long& test(...);                                                 \
                                                                                 \
     public:                                                                     \
         enum { value = sizeof(test<T, U>(decl_lvalue<int>())) == sizeof(char) };\
     }
 
 PYCPP_END_NAMESPACE
-
-#include <warnings/pop.h>

@@ -23,9 +23,6 @@ TEST(has_greater_equal, has_greater_equal)
     using t3 = tuple<int, int, int>;
 
     static_assert(has_greater_equal<p1>::value, "");
-    static_assert(has_greater_equal<t1>::value, "");
-    static_assert(has_greater_equal<t2>::value, "");
-    static_assert(has_greater_equal<t3>::value, "");
     static_assert(has_greater_equal<int>::value, "");
     static_assert(has_greater_equal<char>::value, "");
     static_assert(!has_greater_equal<p1, t1>::value, "");
@@ -33,4 +30,10 @@ TEST(has_greater_equal, has_greater_equal)
     static_assert(!has_greater_equal<p1, t3>::value, "");
     static_assert(!has_greater_equal<p1, int>::value, "");
     static_assert(!has_greater_equal<p1, char>::value, "");
+
+#if !defined(HAVE_MSVC)
+    static_assert(has_greater_equal<t1>::value, "");
+    static_assert(has_greater_equal<t2>::value, "");
+    static_assert(has_greater_equal<t3>::value, "");
+#endif      // HAVE_MSVC
 }

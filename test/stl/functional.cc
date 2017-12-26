@@ -17,4 +17,5 @@ TEST(hash, hash)
 {
     using hash_type = hash<int>;
     hash_type hsh;
+    (void) hsh;
 }

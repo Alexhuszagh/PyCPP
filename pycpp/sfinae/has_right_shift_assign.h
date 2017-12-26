@@ -9,6 +9,8 @@
 
 #include <pycpp/preprocessor/os.h>
 #include <pycpp/sfinae/has_op.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -28,3 +30,5 @@ constexpr bool has_right_shift_assign_v = has_right_shift_assign<T, U>::value;
 #endif
 
 PYCPP_END_NAMESPACE
+
+#include <warnings/pop.h>

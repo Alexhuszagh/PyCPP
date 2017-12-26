@@ -151,6 +151,7 @@ TEST(vector_view, operations)
 {
     vector_view<int> vec(VEC);
     int* buffer[6];
+    (void) buffer;
 }
 
 

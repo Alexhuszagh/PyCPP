@@ -38,7 +38,6 @@
 #include <pycpp/sfinae/has_multiplies.h>
 #include <pycpp/sfinae/has_multiplies_assign.h>
 #include <pycpp/sfinae/has_not_equal_to.h>
-#include <pycpp/sfinae/has_op.h>
 #include <pycpp/sfinae/has_plus.h>
 #include <pycpp/sfinae/has_plus_assign.h>
 #include <pycpp/sfinae/has_right_shift.h>

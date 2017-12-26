@@ -1409,8 +1409,7 @@ private:
         return make_pair(iterator(m_buckets.begin() + ibucket), true);
     }
 
-    // TODO: WELL SHIT.....
-    template <typename... Args>
+    template <typename... Args, typename enable_if_t<is_safe_overload<mutable_value_type, Args...>::value>* = nullptr>
     void insert_value(size_t ibucket, distance_type dist_from_ideal_bucket,
                       truncated_hash_type hash, Args&&... value_type_args)
     {

@@ -17,4 +17,5 @@ TEST(array, array)
 {
     using array_type = array<int, 4>;
     array_type arr;
+    (void) arr;
 }
