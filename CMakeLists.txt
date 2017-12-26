@@ -661,6 +661,9 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/vector_view.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/fstream.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/hash_specialize.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/is_relocatable.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/is_safe_overload.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/is_swappable.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/polymorphic_allocator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash_c.h"
@@ -1164,6 +1167,10 @@ set(TEST_FILES
     test/stl/variant.cc
     test/stl/vector.cc
     test/stl/vector_view.cc
+    test/stl/detail/fstream.cc
+    test/stl/detail/is_relocatable.cc
+    test/stl/detail/is_safe_overload.cc
+    test/stl/detail/is_swappable.cc
     test/stl/detail/polymorphic_allocator.cc
     test/string/base16.cc
     test/string/base32.cc
@@ -1238,7 +1245,6 @@ endif()
 
 if (BUILD_FILESYSTEM)
     list(APPEND TEST_FILES
-        test/stl/detail/fstream.cc      # remove_file
         test/filesystem.cc
     )
 endif()

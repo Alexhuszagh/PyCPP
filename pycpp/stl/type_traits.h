@@ -9,8 +9,9 @@
 
 #include <pycpp/config.h>
 #include <pycpp/preprocessor/compiler.h>
-#include <type_traits>
-#include <utility>
+#include <pycpp/stl/detail/is_relocatable.h>
+#include <pycpp/stl/detail/is_safe_overload.h>
+#include <pycpp/stl/detail/is_swappable.h>
 #include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -118,67 +119,6 @@ using std::is_nothrow_copy_assignable;
 using std::is_move_assignable;
 using std::is_trivially_move_assignable;
 using std::is_nothrow_move_assignable;
-
-// Swappable (C++17 backport)
-template <typename T1, typename T2>
-struct is_swappable_with_impl
-{
-private:
-    template <typename U1, typename U2, typename = decltype(swap(std::declval<U1&>(), std::declval<U2&>()))>
-    inline static true_type test(int);
-
-    template <typename U1, typename U2>
-    inline static false_type test(...);
-
-public:
-    using type = decltype(test<T1, T2>(0));
-};
-
-template <typename T1, typename T2>
-using is_swappable_with = typename is_swappable_with_impl<T1, T2>::type;
-
-template <typename T1, typename T2, bool = is_swappable_with<T1, T2>::value>
-struct is_nothrow_swappable_with
-{
-    static constexpr bool value = noexcept(swap(std::declval<T1&>(), std::declval<T2&>()));
-};
-
-template <typename T1, typename T2>
-struct is_nothrow_swappable_with<T1, T2, false>: false_type
-{};
-
-template <typename T>
-using is_swappable = is_swappable_with<T, T>;
-
-template <typename T>
-using is_nothrow_swappable = is_nothrow_swappable_with<T, T>;
-
-// Relocatable (Proposed extension)
-// `is_relocatable` should be specialized for any types if possible,
-// since it allows raw bitwise copies.
-// Inspired by Working Group paper P0023R0.
-template <typename T>
-struct is_relocatable: bool_constant<
-        // Empty classes rely on global, or no state,
-        // and therefore can always be relocated.
-        is_empty<T>::value ||
-        // Trivially copyable classes are guaranteed to be copyable
-        // via `memcpy`.
-        is_trivially_copyable<T>::value ||
-        // Trivially move-constructible classes should also satisfy
-        // trivially copyable types.
-        is_trivially_move_constructible<T>::value
-    >
-{};
-
-// Virtual classes using virtual tables **are** relocatable, since
-// they effectively contain a virtual table with a pointer to
-// a static table containing the virtual function pointers.
-// Almost every C++ virtual implementation uses vtables, however,
-// it is not standardized, so we assume they are **not** copyable.
-// If need be, specialize this to allow relocatable virtual classes,
-// using book-keeping to track compilers using vtables.
-using is_virtual_relocatable = false_type;
 
 // Destructible
 using std::is_destructible;
@@ -403,6 +343,9 @@ constexpr bool is_nothrow_swappable_with_v = is_nothrow_swappable_with<T, U>::va
 
 template <typename T>
 constexpr bool is_swappable_v = is_swappable<T>::value;
+
+template <typename T, typename ... Ts>
+constexpr bool is_safe_overload_v = is_safe_overload<T, Ts...>::value;
 
 template <typename T>
 constexpr bool is_nothrow_swappable_v = is_nothrow_swappable<T>::value;
