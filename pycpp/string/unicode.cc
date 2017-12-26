@@ -109,7 +109,7 @@ static uint32_t assert_strict(bool strict)
 
 static bool is_nth_bit_set(uint8_t c, int n)
 {
-    return (1 << n) & c;
+    return ((1 << n) & c) != 0;
 }
 
 
@@ -351,22 +351,22 @@ size_t utf8_to_utf32(uint32_t& c, Iter8 &first, Iter8 last, bool strict)
             c = assert_strict(strict);
             c <<= 6;
         case 3:
-            if (!is_valid_byte(*first, c, strict))
+            if (!is_valid_byte(*first, c != 0, strict))
                 goto fail;
             c += *first++;
             c <<= 6;
         case 2:
-            if (!is_valid_byte(*first, c, strict))
+            if (!is_valid_byte(*first, c != 0, strict))
                 goto fail;
             c += *first++;
             c <<= 6;
         case 1:
-            if (!is_valid_byte(*first, c, strict))
+            if (!is_valid_byte(*first, c != 0, strict))
                 goto fail;
             c += *first++;
             c <<= 6;
         case 0:
-            if (!is_valid_byte(*first, c, strict))
+            if (!is_valid_byte(*first, c != 0, strict))
                 goto fail;
             c += *first++;
     }

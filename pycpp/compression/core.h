@@ -35,12 +35,20 @@ static constexpr int BUFFER_SIZE = 8092;
 template <typename Stream>
 struct filter_impl
 {
-    using in_type = remove_reference_t<decltype(declval<Stream>().next_in)>;
-    using out_type = remove_reference_t<decltype(declval<Stream>().next_out)>;
+    // MEMBER TYPES
+    // ------------
+    using next_in_type = remove_reference_t<decltype(declval<Stream>().next_in)>;
+    using avail_in_type = remove_reference_t<decltype(declval<Stream>().avail_in)>;
+    using next_out_type = remove_reference_t<decltype(declval<Stream>().next_out)>;
+    using avail_out_type = remove_reference_t<decltype(declval<Stream>().avail_out)>;
 
+    // MEMBER VARIABLES
+    // ----------------
     int status;
     Stream stream;
 
+    // MEMBER FUNCTIONS
+    // ----------------
     filter_impl() noexcept;
 
     void before(void* dst, size_t dstlen) noexcept;
@@ -72,34 +80,36 @@ void filter_impl<S>::before(void* dst, size_t dstlen) noexcept
 {
     stream.next_in = nullptr;
     stream.avail_in = 0;
-    stream.next_out = reinterpret_cast<out_type>(dst);
-    stream.avail_out = dstlen;
+    stream.next_out = (next_out_type) dst;
+    stream.avail_out = (avail_out_type) dstlen;
 }
 
 
 template <typename S>
 void filter_impl<S>::before(const void* src, size_t srclen, void* dst, size_t dstlen) noexcept
 {
-    // use C-style cast, since bzip2 uses a non-const input type.
-    stream.next_in = (in_type) (src);
-    stream.avail_in = srclen;
-    stream.next_out = reinterpret_cast<out_type>(dst);
-    stream.avail_out = dstlen;
+    // Use C-style cast, since we need to avoid spurious warnings
+    // about integer size changes and bzip2 uses a non-const
+    // input byte array.
+    stream.next_in = (next_in_type) (src);
+    stream.avail_in = (avail_in_type) srclen;
+    stream.next_out = (next_out_type) dst;
+    stream.avail_out = (avail_out_type) dstlen;
 }
 
 
 template <typename S>
 void filter_impl<S>::after(void*& dst) noexcept
 {
-    dst = stream.next_out;
+    dst = static_cast<void*>(stream.next_out);
 }
 
 
 template <typename S>
 void filter_impl<S>::after(const void*& src, void*& dst) noexcept
 {
-    src = stream.next_in;
-    dst = stream.next_out;
+    src = static_cast<const void*>(stream.next_in);
+    dst = static_cast<void*>(stream.next_out);
 }
 
 
@@ -108,9 +118,9 @@ compression_status filter_impl<S>::check_status(const void* src, void* dst, int 
 {
     if (status == stream_end) {
         return compression_eof;
-    } else if (stream.next_out == dst) {
+    } else if (static_cast<void*>(stream.next_out) == dst) {
         return compression_need_input;
-    } else if (stream.next_in == src) {
+    } else if (static_cast<const void*>(stream.next_in) == src) {
         return compression_need_output;
     }
     return compression_ok;

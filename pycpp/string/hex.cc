@@ -23,7 +23,7 @@ static void hex_impl(Iter1 &src_first, Iter1 src_last,
         size_t shift = 2 * width;
         while (src_first < src_last && dst_first + shift <= dst_last) {
             memcpy(buffer, src_first, width);
-            bswap(buffer, width);
+            bswap(buffer, static_cast<int>(width));
             base16_encode(buffer, width, dst_first, shift);
 
             src_first += width;
@@ -45,7 +45,7 @@ static void unhex_impl(Iter1 &src_first, Iter1 src_last,
     size_t shift = 2 * width;
     while (src_first + shift <= src_last && dst_first < dst_last) {
         base16_decode(src_first, shift, dst_first, width);
-        bswap(dst_first, width);
+        bswap(dst_first, static_cast<int>(width));
 
         src_first += shift;
         dst_first += width;

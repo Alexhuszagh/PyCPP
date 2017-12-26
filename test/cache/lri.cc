@@ -133,7 +133,7 @@ TEST(lri_cache, modifiers)
     cache_type cache(50);
     EXPECT_EQ(cache.size(), 0);
 
-    for (size_t i = 0; i < 50; ++i) {
+    for (int i = 0; i < 50; ++i) {
         cache.insert(i, 2*i);
     }
     EXPECT_EQ(cache.size(), 50);
@@ -198,13 +198,13 @@ TEST(lri_cache, cache_size)
     using cache_type = lri_cache<int, int>;
     cache_type cache(50);
 
-    for (size_t i = 0; i < 50; ++i) {
+    for (int i = 0; i < 50; ++i) {
         cache.insert(i, 2*i);
     }
     EXPECT_EQ(cache.size(), 50);
     EXPECT_EQ(cache.at(0), 0);
 
-    for (size_t i = 50; i < 60; ++i) {
+    for (int i = 50; i < 60; ++i) {
         cache.insert(i, 2*i);
     }
     EXPECT_EQ(cache.size(), 50);

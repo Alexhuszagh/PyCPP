@@ -282,7 +282,7 @@ bool directory_data::operator==(const directory_data& rhs) const
 
 directory_data::operator bool() const
 {
-    return bool(data);
+    return data != nullptr;
 }
 
 
@@ -378,7 +378,7 @@ bool recursive_directory_data::operator==(const recursive_directory_data& rhs) c
 
 recursive_directory_data::operator bool() const
 {
-    return data_list.empty() ? false : bool(data_list.front());
+    return data_list.empty() ? false : (data_list.front() != nullptr);
 }
 
 

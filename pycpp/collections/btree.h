@@ -205,16 +205,16 @@ struct btree_key_compare_to_adapter: Compare
 template <>
 struct btree_key_compare_to_adapter<less<string>>: public btree_key_compare_to_tag
 {
-    btree_key_compare_to_adapter() noexcept
+    btree_key_compare_to_adapter()
     {}
 
-    btree_key_compare_to_adapter(const less<string>&) noexcept
+    btree_key_compare_to_adapter(const less<string>&)
     {}
 
-    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<less<string>>&) noexcept
+    btree_key_compare_to_adapter(const btree_key_compare_to_adapter<less<string>>&)
     {}
 
-    int operator()(const string& a, const string& b) const noexcept
+    int operator()(const string& a, const string& b) const
     {
         return a.compare(b);
     }
@@ -275,7 +275,7 @@ struct btree_key_comparer<Key, Compare, true>
     btree_key_comparer()
     {}
 
-    btree_key_comparer(Compare c) noexcept(noexcept(Compare(c))):
+    btree_key_comparer(Compare c):
         comp(c)
     {}
 
@@ -1065,8 +1065,8 @@ class btree : public Params::key_compare
     using root_fields = typename node_type::root_fields;
     using is_key_compare_to = typename Params::is_key_compare_to;
 
-    friend class btree_internal_locate_plain_compare;
-    friend class btree_internal_locate_compare_to;
+    friend struct btree_internal_locate_plain_compare;
+    friend struct btree_internal_locate_compare_to;
 
     using internal_locate_type = conditional_t<
         is_key_compare_to::value,

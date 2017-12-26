@@ -13,6 +13,7 @@ PYCPP_BEGIN_NAMESPACE
 // -----
 
 using rapidjson_ostream = rapidjson::OStreamWrapper;
+using rapidjson_size_t = rapidjson::SizeType;
 using rapidjson_prettywriter = rapidjson::PrettyWriter<
     rapidjson_ostream,
     rapidjson::UTF8<>,
@@ -175,7 +176,7 @@ void json_stream_writer::key(const string_wrapper& value)
 {
     auto w = (rapidjson_prettywriter*) writer_;
     assert(w && "Writer pointer cannot be null.");
-    w->Key(value.data(), value.size());
+    w->Key(value.data(), static_cast<rapidjson_size_t>(value.size()));
 }
 
 
@@ -207,7 +208,7 @@ void json_stream_writer::string(const string_wrapper& value)
 {
     auto w = (rapidjson_prettywriter*) writer_;
     assert(w && "Writer pointer cannot be null.");
-    w->String(value.data(), value.size());
+    w->String(value.data(), static_cast<rapidjson_size_t>(value.size()));
 }
 
 

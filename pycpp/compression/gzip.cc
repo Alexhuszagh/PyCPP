@@ -141,7 +141,7 @@ void gzip_compressor_impl::write_header()
     if (!header.empty() && header.size() < stream.avail_out) {
         memcpy(stream.next_out, header.data(), header.size());
         stream.next_out += header.size();
-        stream.avail_out -= header.size();
+        stream.avail_out -= static_cast<uInt>(header.size());
         header.clear();
     }
 }
@@ -255,7 +255,7 @@ static void read_string(z_stream& stream)
 {
     // no filename nor comment
     void* tmp = memchr(stream.next_in, 0, stream.avail_in);
-    stream.avail_in -= distance(stream.next_in, (Bytef*) tmp);
+    stream.avail_in -= static_cast<uInt>(distance(stream.next_in, (Bytef*) tmp));
     if (!stream.avail_in) {
         throw runtime_error("Unable to read header.");
     }
@@ -317,7 +317,7 @@ void gzip_decompressor_impl::call()
         // store out CRC and length information
         size_t length = distance(dst, stream.next_out);
         size += length;
-        crc = crc32(crc, dst, length);
+        crc = static_cast<uLong>(crc32(crc, dst, static_cast<uInt>(length)));
     }
 
     read_footer();

@@ -5,6 +5,8 @@
 #include <pycpp/stl/utility.h>
 #include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 
 PYCPP_USING_NAMESPACE
 
@@ -138,3 +140,5 @@ TEST(i8toa, basen)
         EXPECT_EQ(i8toa(37, pair.first), pair.second);
     }
 }
+
+#include <warnings/pop.h>

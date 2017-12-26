@@ -149,7 +149,7 @@ static fp_t find_cachedpow10(int exp, int* k) noexcept
 {
     const double one_log_ten = 0.30102999566398114;
 
-    int approx = -(exp + npowers) * one_log_ten;
+    int approx = static_cast<int>(-(exp + npowers) * one_log_ten);
     int idx = (approx - firstpower) / steppowers;
 
     while(true) {
@@ -297,7 +297,7 @@ static int generate_digits(fp_t* fp, fp_t* upper, fp_t* lower, char* digits, int
     for(divp = TENS + 10; kappa > 0; divp++) {
 
         uint64_t div = *divp;
-        unsigned digit = part1 / div;
+        unsigned digit = static_cast<unsigned>(part1 / div);
 
         if (digit || idx) {
             digits[idx++] = digit + '0';
@@ -323,7 +323,7 @@ static int generate_digits(fp_t* fp, fp_t* upper, fp_t* lower, char* digits, int
         delta *= 10;
         kappa--;
 
-        unsigned digit = part2 >> -one.exp;
+        unsigned digit = static_cast<unsigned>(part2 >> -one.exp);
         if (digit || idx) {
             digits[idx++] = digit + '0';
         }

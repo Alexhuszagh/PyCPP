@@ -9,6 +9,8 @@
 
 #include <pycpp/stl/type_traits.h>
 #include <pycpp/stl/utility.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -46,3 +48,5 @@ add_lvalue_reference_t<T> decl_lvalue() noexcept;
     }
 
 PYCPP_END_NAMESPACE
+
+#include <warnings/pop.h>

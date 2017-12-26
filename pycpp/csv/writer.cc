@@ -65,7 +65,8 @@ static string quote_value(const string_view& value, csvpunct_impl& punct, csv_qu
         case CSV_QUOTE_NONE:
             return quote_none(value, punct);
         default:
-            assert(false && "Unrecognized CSV quoting option.");
+            printf("Unrecognized CSV quoting option.");
+            abort();
     }
 }
 

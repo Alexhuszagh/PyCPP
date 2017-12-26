@@ -99,7 +99,7 @@ bool is_wine() noexcept
     if (!hntdll) {
         return false;
     }
-    return bool(GetProcAddress(hntdll, "wine_get_version"));
+    return GetProcAddress(hntdll, "wine_get_version") != nullptr;
 
 #else                                   // POSIX
     return false;

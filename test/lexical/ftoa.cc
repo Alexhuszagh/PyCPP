@@ -7,6 +7,8 @@
 #include <pycpp/stl/limits.h>
 #include <pycpp/stl/vector.h>
 #include <gtest/gtest.h>
+#include <warnings/push.h>
+#include <warnings/narrowing-conversions.h>
 
 PYCPP_USING_NAMESPACE
 
@@ -177,8 +179,8 @@ TEST(f64toa, base10)
     EXPECT_EQ(f64toa(-1.2345678901234567890e3, 10).substr(0, 17), "-1234.56789012345");
 
     // special
-    EXPECT_EQ(f32toa(numeric_limits<double>::quiet_NaN()), NAN_STRING);
-    EXPECT_EQ(f32toa(numeric_limits<double>::infinity()), INFINITY_STRING);
+    EXPECT_EQ(f32toa(numeric_limits<float>::quiet_NaN()), NAN_STRING);
+    EXPECT_EQ(f32toa(numeric_limits<float>::infinity()), INFINITY_STRING);
 
 
     // check parsed value is within 64-bit float error
@@ -200,3 +202,5 @@ TEST(f64toa, basen)
         }
     }
 }
+
+#include <warnings/pop.h>

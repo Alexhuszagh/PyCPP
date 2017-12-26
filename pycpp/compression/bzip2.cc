@@ -309,8 +309,8 @@ void bz2_compress(const void*& src, size_t srclen, void*& dst, size_t dstlen)
     auto verbosity = BZ2_VERBOSITY;
     auto work_factor = BZ2_WORK_FACTOR;
 
-    unsigned int srclen_ = srclen;
-    unsigned int dstlen_ = dstlen;
+    unsigned int srclen_ = static_cast<unsigned int>(srclen);
+    unsigned int dstlen_ = static_cast<unsigned int>(dstlen);
     if (srclen) {
         PYCPP_CHECK(BZ2_bzBuffToBuffCompress((char*) dst, &dstlen_, (char*) src, srclen_, block_size, verbosity, work_factor));
     } else {
@@ -346,8 +346,8 @@ void bz2_decompress(const void*& src, size_t srclen, void*& dst, size_t dstlen, 
     auto small = BZ2_SMALL;
     auto verbosity = BZ2_VERBOSITY;
 
-    unsigned int srclen_ = srclen;
-    unsigned int dstlen_ = dstlen;
+    unsigned int srclen_ = static_cast<unsigned int>(srclen);
+    unsigned int dstlen_ = static_cast<unsigned int>(dstlen);
     if (srclen) {
         PYCPP_CHECK(BZ2_bzBuffToBuffDecompress((char*) dst, &dstlen_, (char*) src, srclen_, small, verbosity));
     } else {

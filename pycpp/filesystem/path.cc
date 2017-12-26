@@ -198,9 +198,9 @@ struct relpath_impl
 u16string ansi_to_utf16(const string_view& ansi)
 {
     // parameters
-    auto srclen = ansi.size();
-    auto src = ansi.data();
-    auto dstlen = srclen * 2;       // need 4 bytes per ANSI character
+    int srclen = static_cast<int>(ansi.size());
+    const char* src = ansi.data();
+    int dstlen = srclen * 2;       // need 4 bytes per ANSI character
     wchar_t* dst = new wchar_t[dstlen];
 
     // conversion
@@ -221,9 +221,9 @@ u16string ansi_to_utf16(const string_view& ansi)
 string utf16_to_ansi(const u16string_view& u16)
 {
     // parameters
-    auto srclen = u16.size();
-    auto src = reinterpret_cast<const wchar_t*>(u16.data());
-    auto dstlen = srclen * 3;       // need 1.5 bytes per UTF-16 character
+    int srclen = static_cast<int>(u16.size());
+    const wchar_t* src = reinterpret_cast<const wchar_t*>(u16.data());
+    int dstlen = srclen * 3;       // need 1.5 bytes per UTF-16 character
     char* dst = new char[dstlen];
 
     // conversion

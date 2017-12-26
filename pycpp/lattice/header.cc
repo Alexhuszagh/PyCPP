@@ -104,7 +104,8 @@ bool header_t::content_type() const
 
 ostream& operator<<(ostream &os, const header_t &header)
 {
-    os << header.str();
+    auto str = header.str();
+    os.write(str.data(), str.length());
     return os;
 }
 

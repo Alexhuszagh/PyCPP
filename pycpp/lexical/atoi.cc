@@ -97,6 +97,8 @@ static Int atoi_impl(const char* first, const char*& last, uint8_t base) noexcep
     }
 }
 
+#include <warnings/push.h>
+#include <warnings/unary-minus-unsigned.h>
 
 template <typename Int>
 Int atoi_(const char* first, const char*& last, uint8_t base) noexcept
@@ -112,6 +114,7 @@ Int atoi_(const char* first, const char*& last, uint8_t base) noexcept
     }
 }
 
+#include <warnings/pop.h>
 
 // FUNCTIONS
 // ---------

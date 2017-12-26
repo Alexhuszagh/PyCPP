@@ -43,7 +43,7 @@ struct regex_impl_t
     // ----------------
     re2::RE2 re2;
     re2::RE2 sub;
-    size_t argc = 0;
+    int argc = 0;
     re2::RE2::Arg* argv = nullptr;
     re2::RE2::Arg** argp = nullptr;
     re2::StringPiece* piece = nullptr;

@@ -140,9 +140,9 @@ key_list<Map> elements(const Map& map)
     using value_type = typename Map::value_type;
 
     // create values
-    size_t count = accumulate(map.begin(), map.end(), 0, [](size_t l, const value_type& rhs) {
+    size_t count = accumulate(map.begin(), map.end(), size_t(0), [](size_t l, const value_type& rhs) {
         count_t r = rhs.second;
-        return r > 0 ? l + r : l;
+        return r > 0 ? l + static_cast<size_t>(r) : l;
     });
     list_type values;
     values.reserve(count);

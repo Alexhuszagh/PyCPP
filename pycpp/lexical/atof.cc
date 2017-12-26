@@ -87,7 +87,7 @@ Float atof_(const char* first, const char*& last, uint8_t base, atoi_function<In
         value *= pow(base, exponent);
     }
 
-    return value;
+    return static_cast<Float>(value);
 }
 
 // FUNCTIONS

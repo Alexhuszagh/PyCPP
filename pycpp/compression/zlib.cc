@@ -14,7 +14,7 @@ PYCPP_BEGIN_NAMESPACE
 
 static size_t zlib_compress_bound(size_t size)
 {
-    return compressBound(size);
+    return compressBound(static_cast<uLong>(size));
 }
 
 
@@ -257,8 +257,8 @@ void zlib_decompressor::swap(zlib_decompressor& rhs) noexcept
 
 void zlib_compress(const void*& src, size_t srclen, void* &dst, size_t dstlen)
 {
-    uLong srclen_ = srclen;
-    uLong dstlen_ = dstlen;
+    uLong srclen_ = static_cast<uLong>(srclen);
+    uLong dstlen_ = static_cast<uLong>(dstlen);
     if (srclen) {
         PYCPP_CHECK(compress((Bytef*) dst, &dstlen_, (Bytef*) src, srclen_));
     } else {
@@ -290,8 +290,8 @@ string zlib_decompress(const string_wrapper& str)
 
 void zlib_decompress(const void*& src, size_t srclen, void* &dst, size_t dstlen, size_t bound)
 {
-    uLong srclen_ = srclen;
-    uLong dstlen_ = dstlen;
+    uLong srclen_ = static_cast<uLong>(srclen);
+    uLong dstlen_ = static_cast<uLong>(dstlen);
     if (srclen) {
         PYCPP_CHECK(uncompress((Bytef*) dst, &dstlen_, (Bytef*) src, srclen_));
     } else {

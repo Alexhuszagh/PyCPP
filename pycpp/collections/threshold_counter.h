@@ -42,9 +42,9 @@ template <typename Map>
 void update_from_map(const Map& map, size_t& count)
 {
     using value_type = typename Map::value_type;
-    count = accumulate(map.begin(), map.end(), 0, [](size_t l, const value_type& rhs) {
+    count = accumulate(map.begin(), map.end(), size_t(0), [](size_t l, const value_type& rhs) {
         count_t r = rhs.second;
-        return r > 0 ? l + r : l;
+        return r > 0 ? l + static_cast<size_t>(r) : l;
     });
 }
 
@@ -510,7 +510,7 @@ inline auto threshold_counter<K, H, P, A, M>::elements() const -> counter_detail
 template <typename K, typename H, typename P, typename A, template <typename, typename, typename, typename, typename> class M>
 count_t threshold_counter<K, H, P, A, M>::get_common_count() const
 {
-    return accumulate(begin(), end(), 0, [](count_t l, const value_type& rhs) {
+    return accumulate(begin(), end(), count_t(0), [](count_t l, const value_type& rhs) {
         count_t r = rhs.second;
         return l + r;
     });

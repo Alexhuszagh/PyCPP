@@ -86,7 +86,7 @@ inline PYCPP_NAMESPACE::underlying_type_t<T> int_t(T t)
     /*  \brief Negation operator. */                                    \
     inline bool operator!(enum_t value) noexcept                        \
     {                                                                   \
-        return !bool(int_t(value));                                     \
+        return int_t(value) != 0;                                       \
     }
 
 /**

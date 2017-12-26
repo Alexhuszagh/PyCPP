@@ -121,9 +121,11 @@ elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
     endif()
 elseif(MSVC)
-    list(APPEND PYCPP_COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -WX -wd4018 /std:c++${CXX_STANDARD}")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /O0 /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+    list(APPEND PYCPP_COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS _SCL_SECURE_NO_WARNINGS)
+    # Don't add "-WX" since external projects should be free to have
+    # warnings: only add after.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -wd4018 -wd4503 /std:c++${CXX_STANDARD}")
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MTd /Od /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MT /Ox /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
     set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} /MT /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
     set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /MT /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
@@ -260,8 +262,8 @@ elseif(MINGW OR MSYS OR CYGWIN)
     list(APPEND PYCPP_LIBRARIES -lws2_32 -lcrypt32 -lkernel32)
 endif()
 
-# LIBRARY
-# -------
+# EXTERNAL PROJECTS
+# -----------------
 
 set(PYCPP_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/include")
 set(WARNINGS_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/warnings/src")
@@ -461,6 +463,34 @@ if(BUILD_XML)
         list(APPEND PYCPP_LIBRARIES ${LIBXML2_LIBRARIES})
         list(APPEND PYCPP_INCLUDE_DIRS ${LIBXML2_INCLUDE_DIRS})
     endif()
+endif()
+
+if (BUILD_TESTS)
+    if (NOT MINGW)
+        find_package(Threads)
+    endif()
+
+    if(NOT TARGET gtest)
+        add_external_project(googletest_external third_party/googletest)
+        add_external_target(gtest third_party/googletest/googletest/include third_party/googletest/googlemock/gtest STATIC googletest_external)
+        add_external_target(gtest_main third_party/googletest/googletest/include third_party/googletest/googlemock/gtest STATIC googletest_external)
+    endif()
+endif()
+
+if (BUILD_BENCHMARKS)
+    if (NOT TARGET benchmark)
+        add_external_project(benchmark_external third_party/benchmark)
+        add_external_target(benchmark third_party/benchmark/include third_party/benchmark/src STATIC benchmark_external)
+        include_directories(${benchmark_INCLUDE_DIR})
+    endif()
+endif()
+
+# LIBRARY
+# -------
+
+# Only suppress all warnings for our project.
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -WX")
 endif()
 
 set(HEADER_FILES
@@ -1164,6 +1194,7 @@ set(TEST_FILES
     test/stl/variant.cc
     test/stl/vector.cc
     test/stl/vector_view.cc
+    test/stl/detail/fstream.cc
     test/stl/detail/polymorphic_allocator.cc
     test/string/base16.cc
     test/string/base32.cc
@@ -1238,7 +1269,6 @@ endif()
 
 if (BUILD_FILESYSTEM)
     list(APPEND TEST_FILES
-        test/stl/detail/fstream.cc      # remove_file
         test/filesystem.cc
     )
 endif()
@@ -1314,15 +1344,6 @@ endif()
 
 
 if(BUILD_TESTS)
-    if (NOT MINGW)
-        find_package(Threads)
-    endif()
-
-    if(NOT TARGET gtest)
-        add_external_project(googletest_external third_party/googletest)
-        add_external_target(gtest third_party/googletest/googletest/include third_party/googletest/googlemock/gtest STATIC googletest_external)
-        add_external_target(gtest_main third_party/googletest/googletest/include third_party/googletest/googlemock/gtest STATIC googletest_external)
-    endif()
     include_directories(${gtest_INCLUDE_DIR})
 
     add_executable(pycpp_tests ${TEST_FILES})
@@ -1355,12 +1376,6 @@ set(BENCHMARK_FILES
 )
 
 if(BUILD_BENCHMARKS)
-    if (NOT TARGET benchmark)
-        add_external_project(benchmark_external third_party/benchmark)
-        add_external_target(benchmark third_party/benchmark/include third_party/benchmark/src STATIC benchmark_external)
-        include_directories(${benchmark_INCLUDE_DIR})
-    endif()
-
     set(BENCHMARK_LIBRARIES benchmark ${CMAKE_THREAD_LIBS_INIT})
     if(MSVC)
         list(APPEND BENCHMARK_LIBRARIES shlwapi.lib)

@@ -157,7 +157,7 @@ void encode_impl(Iter32 &src_first, Iter32 src_last,
     }
 
     // get number processed
-    uint32_t basic = dst - dst_first;
+    uint32_t basic = static_cast<uint32_t>(dst - dst_first);
     uint32_t h = basic;
     if (basic) {
         *dst++ = '-';
@@ -185,8 +185,8 @@ void encode_impl(Iter32 &src_first, Iter32 src_last,
             throw overflow_error("Overflow detected in encoding.\n");
         }
 
-        delta += (m - n) * (h + 1);
-        n = m;
+        delta += static_cast<uint32_t>((m - n) * (h + 1));
+        n = static_cast<uint32_t>(m);
 
         // add values
         for (src = src_first; src < src_last; ++src) {
@@ -273,7 +273,7 @@ void decode_impl(Iter8 &src, size_t srclen,
         }
 
         size_t x = di + 1;
-        bias = adapt_bias(i - oldi, x, oldi == 0);
+        bias = adapt_bias(static_cast<uint32_t>(i - oldi), static_cast<uint32_t>(x), oldi == 0);
         if (i / x > INT32_MAX - n) {
             throw overflow_error("Overflow in Punycode decode.");
         }
@@ -281,7 +281,7 @@ void decode_impl(Iter8 &src, size_t srclen,
         n += i / x;
         i %= x;
         memmove(dst + i + 1, dst + i, (di - i) * 4);
-        dst[i++] = n;
+        dst[i++] = static_cast<uint32_t>(n);
     }
 
     src += si;

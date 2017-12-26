@@ -272,7 +272,7 @@ public:
     polymorphic_allocator<T>& operator=(polymorphic_allocator<T>&&) noexcept;
 
     template <typename U>
-    friend class polymorphic_allocator;
+    friend struct polymorphic_allocator;
 #endif      // PYCPP_NON_STANDARD_POLYMORPHIC_ALLOCATOR
 
 private:

@@ -180,7 +180,7 @@ bool mmap_fstream::is_open() const
 
 bool mmap_fstream::has_mapping() const
 {
-    return bool(data_);
+    return data_ != nullptr;
 }
 
 
@@ -369,7 +369,7 @@ bool mmap_ifstream::is_open() const
 
 bool mmap_ifstream::has_mapping() const
 {
-    return bool(data_);
+    return data_ != nullptr;
 }
 
 
@@ -550,7 +550,7 @@ bool mmap_ofstream::is_open() const
 
 bool mmap_ofstream::has_mapping() const
 {
-    return bool(data_);
+    return data_ != nullptr;
 }
 
 

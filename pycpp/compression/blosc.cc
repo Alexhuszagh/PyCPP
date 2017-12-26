@@ -71,7 +71,7 @@ void blosc_compress(const void*& src, size_t srclen, void* &dst, size_t dstlen)
     static const int threads = THREADS;
 
     // compress bytes
-    int dstlen_ = dstlen;
+    int dstlen_ = static_cast<int>(dstlen);
     if (srclen) {
         dstlen_ = blosc_compress_ctx(clevel, doshuffle, typesize, srclen, src, dst, dstlen, compressor, blocksize, threads);
     } else {
@@ -120,7 +120,7 @@ void blosc_decompress(const void*& src, size_t srclen, void* &dst, size_t dstlen
     static const int threads = THREADS;
 
     // decompress bytes
-    int dstlen_ = dstlen;
+    int dstlen_ = static_cast<int>(dstlen);
     if (srclen) {
         dstlen_ = blosc_decompress_ctx(src, dst, dstlen_, threads);
     } else {

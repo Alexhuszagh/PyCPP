@@ -86,6 +86,8 @@ static void itoa_optimized(Int value, char* first, char*& last, const char* tabl
     last = p;
 }
 
+#include <warnings/push.h>
+#include <warnings/unary-minus-unsigned.h>
 
 template <typename Int, typename Uint>
 void itoa_(Int value, char* first, char*& last, uint8_t base) noexcept
@@ -151,6 +153,8 @@ void itoa_(Int value, char* first, char*& last, uint8_t base) noexcept
     *tmp = '\0';
     last = tmp;
 }
+
+#include <warnings/pop.h>
 
 // FUNCTIONS
 // ---------

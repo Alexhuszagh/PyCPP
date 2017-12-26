@@ -22,8 +22,8 @@ PYCPP_USING_NAMESPACE
 
 #define EXPECT_FLOAT_NEAR(f1, f2)                                       \
     {                                                                   \
-        float f1_val = f1;                                              \
-        float f2_val = f2;                                              \
+        float f1_val = static_cast<float>(f1);                          \
+        float f2_val = static_cast<float>(f2);                          \
         if (f2_val == 0) {                                              \
             EXPECT_TRUE(abs(f1_val) < 1.176e-38);                       \
         } else {                                                        \
@@ -34,8 +34,8 @@ PYCPP_USING_NAMESPACE
 
 #define EXPECT_DOUBLE_NEAR(f1, f2)                                      \
     {                                                                   \
-        double f1_val = f1;                                             \
-        double f2_val = f2;                                             \
+        double f1_val = static_cast<double>(f1);                        \
+        double f2_val = static_cast<double>(f2);                        \
         if (f2_val == 0) {                                              \
             EXPECT_TRUE(abs(f1_val) < 2.226e-308);                      \
         } else {                                                        \
@@ -50,23 +50,23 @@ PYCPP_USING_NAMESPACE
 
 TEST(atof32, base10)
 {
-    EXPECT_FLOAT_NEAR(atof32("0", 10), 0);
-    EXPECT_FLOAT_NEAR(atof32("1", 10), 1);
-    EXPECT_FLOAT_NEAR(atof32("12", 10), 12);
-    EXPECT_FLOAT_NEAR(atof32("123", 10), 123);
-    EXPECT_FLOAT_NEAR(atof32("1234", 10), 1234);
-    EXPECT_FLOAT_NEAR(atof32("12345", 10), 12345);
-    EXPECT_FLOAT_NEAR(atof32("123456", 10), 123456);
-    EXPECT_FLOAT_NEAR(atof32("1234567", 10), 1234567);
-    EXPECT_FLOAT_NEAR(atof32("12345678", 10), 12345678);
-    EXPECT_FLOAT_NEAR(atof32("123456789", 10), 123456789);
+    EXPECT_FLOAT_NEAR(atof32("0", 10), 0.);
+    EXPECT_FLOAT_NEAR(atof32("1", 10), 1.);
+    EXPECT_FLOAT_NEAR(atof32("12", 10), 12.);
+    EXPECT_FLOAT_NEAR(atof32("123", 10), 123.);
+    EXPECT_FLOAT_NEAR(atof32("1234", 10), 1234.);
+    EXPECT_FLOAT_NEAR(atof32("12345", 10), 12345.);
+    EXPECT_FLOAT_NEAR(atof32("123456", 10), 123456.);
+    EXPECT_FLOAT_NEAR(atof32("1234567", 10), 1234567.);
+    EXPECT_FLOAT_NEAR(atof32("12345678", 10), 12345678.);
+    EXPECT_FLOAT_NEAR(atof32("123456789", 10), 123456789.);
     EXPECT_FLOAT_NEAR(atof32("123456789.1", 10), 123456789.1);
     EXPECT_FLOAT_NEAR(atof32("123456789.12", 10), 123456789.12);
     EXPECT_FLOAT_NEAR(atof32("123456789.123", 10), 123456789.123);
     EXPECT_FLOAT_NEAR(atof32("123456789.1234", 10), 123456789.1234);
     EXPECT_FLOAT_NEAR(atof32("123456789.12345", 10), 123456789.12345);
     EXPECT_FLOAT_NEAR(atof32("1.2345678912345e8", 10), 123456789.12345);
-    EXPECT_FLOAT_NEAR(atof32("1.2345e+8", 10), 123450000);
+    EXPECT_FLOAT_NEAR(atof32("1.2345e+8", 10), 123450000.);
     EXPECT_FLOAT_NEAR(atof32("1.2345e+11", 10), 1.2345e+11);
     EXPECT_FLOAT_NEAR(atof32("123450000000", 10), 1.2345e+11);
     EXPECT_FLOAT_NEAR(atof32("1.2345e+38", 10), 1.2345e+38);

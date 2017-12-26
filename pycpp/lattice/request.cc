@@ -51,7 +51,8 @@ string request_t::method_name() const
         case CONNECT:
             return "CONNECT";
         default:
-            assert(false && "HTTP request method unknown.\n");
+            printf("HTTP request method unknown.\n");
+            abort();
     }
 }
 

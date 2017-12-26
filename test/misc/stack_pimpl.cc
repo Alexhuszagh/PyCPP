@@ -144,12 +144,12 @@ TEST(stack_pimpl, int_wrapper)
     pint_wrapper b;
 
     // check null value is properly initalized
-    ASSERT_TRUE(bool(b->x_));
+    ASSERT_TRUE(b->x_ != nullptr);
     b = int_wrapper {1};                // move assignment
 
     // check values are properly initialized
-    ASSERT_TRUE(bool(a->x_));
-    ASSERT_TRUE(bool(b->x_));
+    ASSERT_TRUE(a->x_ != nullptr);
+    ASSERT_TRUE(b->x_ != nullptr);
     EXPECT_EQ(*a->x_, 2);
     EXPECT_EQ(*b->x_, 1);
     EXPECT_NE(a->x_, b->x_);
@@ -157,8 +157,8 @@ TEST(stack_pimpl, int_wrapper)
     // check copy assignment and ctor
     b = a;
     pint_wrapper c(b);
-    ASSERT_TRUE(bool(b->x_));
-    ASSERT_TRUE(bool(c->x_));
+    ASSERT_TRUE(b->x_ != nullptr);
+    ASSERT_TRUE(c->x_ != nullptr);
     EXPECT_EQ(*b->x_, 2);
     EXPECT_EQ(*c->x_, 2);
     EXPECT_NE(a->x_, b->x_);
