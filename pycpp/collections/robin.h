@@ -906,13 +906,13 @@ public:
         m_grow_on_next_insert = false;
     }
 
-    template <typename P>
+    template <typename P, enable_if_t<is_convertible<P, mutable_value_type>::value>* = nullptr>
     pair<iterator, bool> insert(P&& value)
     {
         return insert_impl(KeySelect()(value), forward<P>(value));
     }
 
-    template <typename P>
+    template <typename P, enable_if_t<is_convertible<P, mutable_value_type>::value>* = nullptr>
     iterator insert(const_iterator hint, P&& value)
     {
         if (hint != cend() && compare_keys(KeySelect()(*hint), KeySelect()(value))) {

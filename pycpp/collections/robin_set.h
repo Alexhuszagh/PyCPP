@@ -109,8 +109,6 @@ public:
     using iterator = typename ht::iterator;
     using const_iterator = typename ht::const_iterator;
 
-    // TODO: no copy constructor? No nothing????
-
     // CONSTRUCTORS
 
     robin_set():
@@ -185,6 +183,48 @@ public:
               const Allocator& alloc):
         robin_set(init.begin(), init.end(), bucket_count, hash, KeyEqual(), alloc)
     {}
+
+    // COPY CONSTRUCTORS
+
+    robin_set(const robin_set& rhs):
+        robin_set(rhs.begin(), rhs.end())
+    {}
+
+    robin_set(const robin_set& rhs, const allocator_type& alloc):
+        robin_set(rhs.begin(), rhs.end(), ht::DEFAULT_INIT_BUCKETS_SIZE, alloc)
+    {}
+
+    // MOVE CONSTRUCTORS
+
+    robin_set(robin_set&& rhs):
+        robin_set()
+    {
+        swap(rhs);
+    }
+
+    robin_set(robin_set&& rhs, const allocator_type& alloc):
+        robin_set(alloc)
+    {
+        swap(rhs);
+    }
+
+    // ASSIGNMENT
+
+    robin_set& operator=(const robin_set& rhs)
+    {
+        m_ht.clear();
+
+        m_ht.reserve(rhs.size());
+        m_ht.insert(rhs.begin(), rhs.end());
+
+        return *this;
+    }
+
+    robin_set& operator=(robin_set&& rhs)
+    {
+        swap(rhs);
+        return *this;
+    }
 
     robin_set& operator=(initializer_list<value_type> ilist)
     {

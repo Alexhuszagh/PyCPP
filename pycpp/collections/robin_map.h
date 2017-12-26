@@ -133,10 +133,10 @@ public:
     using iterator = typename ht::iterator;
     using const_iterator = typename ht::const_iterator;
 
-public:
     // CONSTRUCTORS
 
-    robin_map(): robin_map(ht::DEFAULT_INIT_BUCKETS_SIZE)
+    robin_map():
+        robin_map(ht::DEFAULT_INIT_BUCKETS_SIZE)
     {}
 
     explicit robin_map(size_type bucket_count,
@@ -207,6 +207,48 @@ public:
               const Allocator& alloc):
         robin_map(init.begin(), init.end(), bucket_count, hash, KeyEqual(), alloc)
     {}
+
+    // COPY CONSTRUCTORS
+
+    robin_map(const robin_map& rhs):
+        robin_map(rhs.begin(), rhs.end())
+    {}
+
+    robin_map(const robin_map& rhs, const allocator_type& alloc):
+        robin_map(rhs.begin(), rhs.end(), ht::DEFAULT_INIT_BUCKETS_SIZE, alloc)
+    {}
+
+    // MOVE CONSTRUCTORS
+
+    robin_map(robin_map&& rhs):
+        robin_map()
+    {
+        swap(rhs);
+    }
+
+    robin_map(robin_map&& rhs, const allocator_type& alloc):
+        robin_map(alloc)
+    {
+        swap(rhs);
+    }
+
+    // ASSIGNMENT
+
+    robin_map& operator=(const robin_map& rhs)
+    {
+        m_ht.clear();
+
+        m_ht.reserve(rhs.size());
+        m_ht.insert(rhs.begin(), rhs.end());
+
+        return *this;
+    }
+
+    robin_map& operator=(robin_map&& rhs)
+    {
+        swap(rhs);
+        return *this;
+    }
 
     robin_map& operator=(initializer_list<value_type> ilist)
     {
