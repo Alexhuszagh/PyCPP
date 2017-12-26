@@ -125,8 +125,8 @@ template <typename Key, typename Hash, typename Pred, size_t StackSize, template
 void fixed_unordered_set<Key, Hash, Pred, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
+    // do not reset the arena, since that is **undefined behavior**
     this->clear();
-    this->arena_.reset();
 }
 
 // unordered_multiset
@@ -135,8 +135,8 @@ template <typename Key, typename Hash, typename Pred, size_t StackSize, template
 void fixed_unordered_multiset<Key, Hash, Pred, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
+    // do not reset the arena, since that is **undefined behavior**
     this->clear();
-    this->arena_.reset();
 }
 
 PYCPP_END_NAMESPACE

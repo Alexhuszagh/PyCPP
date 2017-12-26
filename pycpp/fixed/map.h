@@ -126,8 +126,8 @@ template <typename Key, typename T, typename Compare, size_t StackSize, template
 void fixed_map<Key, T, Compare, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
+    // do not reset the arena, since that is **undefined behavior**
     this->clear();
-    this->arena_.reset();
 }
 
 // multimap
@@ -136,8 +136,8 @@ template <typename Key, typename T, typename Compare, size_t StackSize, template
 void fixed_multimap<Key, T, Compare, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
+    // do not reset the arena, since that is **undefined behavior**
     this->clear();
-    this->arena_.reset();
 }
 
 PYCPP_END_NAMESPACE

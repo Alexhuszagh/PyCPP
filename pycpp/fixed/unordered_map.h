@@ -129,8 +129,8 @@ template <typename Key, typename T, typename Hash, typename Pred, size_t StackSi
 void fixed_unordered_map<Key, T, Hash, Pred, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
+    // do not reset the arena, since that is **undefined behavior**
     this->clear();
-    this->arena_.reset();
 }
 
 // unordered_multimap
@@ -139,8 +139,8 @@ template <typename Key, typename T, typename Hash, typename Pred, size_t StackSi
 void fixed_unordered_multimap<Key, T, Hash, Pred, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
+    // do not reset the arena, since that is **undefined behavior**
     this->clear();
-    this->arena_.reset();
 }
 
 PYCPP_END_NAMESPACE

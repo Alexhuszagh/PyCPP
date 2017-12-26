@@ -33,6 +33,8 @@ TEST(fixed_deque, ctor)
     d2 = d1;
     EXPECT_EQ(d1.size(), 1);
     EXPECT_EQ(d2.size(), 1);
+    EXPECT_EQ(d1[0], 1);
+    EXPECT_EQ(d2[0], 1);
     EXPECT_EQ(d1, d2);
 
     // check the arena is working well

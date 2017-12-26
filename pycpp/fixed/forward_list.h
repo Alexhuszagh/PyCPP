@@ -141,8 +141,8 @@ template <typename T, size_t StackSize, template <typename, typename> class _>
 void fixed_forward_list<T, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
+    // do not reset the arena, since that is **undefined behavior**
     this->clear();
-    this->arena_.reset();
 }
 
 PYCPP_END_NAMESPACE

@@ -121,8 +121,8 @@ template <typename Key, typename Compare, size_t StackSize, template <typename, 
 void fixed_set<Key, Compare, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
+    // do not reset the arena, since that is **undefined behavior**
     this->clear();
-    this->arena_.reset();
 }
 
 // multiset
@@ -131,8 +131,8 @@ template <typename Key, typename Compare, size_t StackSize, template <typename, 
 void fixed_multiset<Key, Compare, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
+    // do not reset the arena, since that is **undefined behavior**
     this->clear();
-    this->arena_.reset();
 }
 
 PYCPP_END_NAMESPACE

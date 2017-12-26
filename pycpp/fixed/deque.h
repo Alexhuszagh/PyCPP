@@ -114,7 +114,7 @@ auto fixed_deque<T, StackSize, _>::operator=(const self_t& rhs) -> self_t&
 {
     if (this != &rhs) {
         reset();
-        this->assign(rhs.begin(), rhs.end());
+        container_type::assign(rhs.begin(), rhs.end());
     }
     return *this;
 }
@@ -124,7 +124,7 @@ template <typename T, size_t StackSize, template <typename, typename> class _>
 auto fixed_deque<T, StackSize, _>::operator=(initializer_list<value_type> list) -> self_t&
 {
     reset();
-    this->assign(list.begin(), list.end());
+    container_type::assign(list.begin(), list.end());
     return *this;
 }
 
@@ -133,9 +133,9 @@ template <typename T, size_t StackSize, template <typename, typename> class _>
 void fixed_deque<T, StackSize, _>::reset()
 {
     // clear the existing container and reset the allocator for efficiency
-    this->clear();
-    this->shrink_to_fit();
-    this->arena_.reset();
+    // do not reset the arena, since that is **undefined behavior**
+    container_type::clear();
+    container_type::shrink_to_fit();
 }
 
 PYCPP_END_NAMESPACE
