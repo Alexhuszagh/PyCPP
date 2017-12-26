@@ -303,7 +303,7 @@ cmake .                         # `-DBUILD_TESTS=ON`
 make -j 5                       # "msbuild pycpp.sln" for MSVC
 ```
 
-> **WARNING** Linking with libc++ (LLVM) causes issues with the LZMA compressors and decompressors. Any patches would be wonderful, in the meantime, please use GCC or link with libstdc++.
+For more advanced information, please see [Building](/pycpp/dev/Building.md).
 
 ## Advanced
 

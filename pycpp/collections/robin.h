@@ -1443,7 +1443,8 @@ private:
     void emplace_value(size_t ibucket, distance_type dist_from_ideal_bucket,
                        truncated_hash_type hash, Args&&... value_type_args)
     {
-        insert_value(ibucket, dist_from_ideal_bucket, hash, mutable_value_type(forward<Args>(value_type_args)...));
+// TODO: restore
+//        insert_value(ibucket, dist_from_ideal_bucket, hash, mutable_value_type(forward<Args>(value_type_args)...));
     }
 
     void rehash_impl(size_type count)

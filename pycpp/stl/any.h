@@ -109,7 +109,8 @@ struct vtable_dynamic
 
     static void swap(storage_union& lhs, storage_union& rhs) noexcept
     {
-        PYCPP_NAMESPACE::swap(lhs.dynamic, rhs.dynamic);
+        using PYCPP_NAMESPACE::swap;
+        swap(lhs.dynamic, rhs.dynamic);
     }
 };
 
@@ -144,7 +145,8 @@ struct vtable_stack
 
     static void swap(storage_union& lhs, storage_union& rhs) noexcept
     {
-        PYCPP_NAMESPACE::swap(reinterpret_cast<T&>(lhs.stack), reinterpret_cast<T&>(rhs.stack));
+        using PYCPP_NAMESPACE::swap;
+        swap(reinterpret_cast<T&>(lhs.stack), reinterpret_cast<T&>(rhs.stack));
     }
 };
 
@@ -226,13 +228,13 @@ public:
     template <typename V, typename... Ts>
     explicit any(in_place_type_t<V>, Ts&&... ts)
     {
-        construct(forward<V>(ts...));
+        construct(V(forward<Ts>(ts)...));
     }
 
     template <typename V, typename U, typename... Ts>
     explicit any(in_place_type_t<V>, initializer_list<U> list, Ts&&... ts)
     {
-        construct(forward<V>(list, ts...));
+        construct(V(move(list), forward<Ts>(ts)...));
     }
 
     // MODIFIERS
