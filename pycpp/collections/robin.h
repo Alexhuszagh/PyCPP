@@ -1409,13 +1409,6 @@ private:
         return make_pair(iterator(m_buckets.begin() + ibucket), true);
     }
 
-    template <typename... Args, enable_if_t<is_safe_overload<false, mutable_value_type&&, Args...>::value>* = nullptr>
-    void insert_value(size_t ibucket, distance_type dist_from_ideal_bucket,
-                      truncated_hash_type hash, Args&&... value_type_args)
-    {
-        insert_value(ibucket, dist_from_ideal_bucket, hash, mutable_value_type(forward<Args>(value_type_args)...));
-    }
-
     void insert_value(size_t ibucket, distance_type dist_from_ideal_bucket,
                       truncated_hash_type hash, mutable_value_type&& value)
     {
@@ -1446,6 +1439,12 @@ private:
         m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket, hash, move(value));
     }
 
+    template <typename... Args>
+    void insert_value(size_t ibucket, distance_type dist_from_ideal_bucket,
+                      truncated_hash_type hash, Args&&... value_type_args)
+    {
+        insert_value(ibucket, dist_from_ideal_bucket, hash, mutable_value_type(forward<Args>(value_type_args)...));
+    }
 
     void rehash_impl(size_type count)
     {
