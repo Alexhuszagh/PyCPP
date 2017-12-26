@@ -133,6 +133,9 @@ void product_(BidirIter first, BidirIter last, F &f)
             ++it;
         } else {
             buf[k] = helper::begin(*it);
+            if (it == first) {
+                return;
+            }
             --it;
         }
     }
