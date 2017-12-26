@@ -9,7 +9,7 @@
 
 #include <pycpp/stl/iterator.h>
 #include <pycpp/stl/memory.h>
-#include <pycpp/stl/string.h>
+#include <string>
 #if defined(USE_XXHASH) || defined(USE_POLYMORPHIC_ALLOCATOR)
 #   include <pycpp/stl/detail/xxhash.h>
 #endif
