@@ -105,7 +105,6 @@ TEST(itertools, product)
 }
 
 
-#if 0           // TODO: restore, MSVC bug
 TEST(itertools, cartesian_product)
 {
     int c = 0;
@@ -158,5 +157,3 @@ TEST(itertools, cartesian_product)
     EXPECT_EQ(c, 27);
     EXPECT_EQ(sum, 405);
 }
-
-#endif
