@@ -133,7 +133,10 @@ TEST(atoi64, base10)
 {
     EXPECT_EQ(atoi64("0", 10), 0);
     EXPECT_EQ(atoi64("9223372036854775807", 10), 9223372036854775807ULL);
-    EXPECT_EQ(atoi64("9223372036854775808", 10), -9223372036854775808LL);
+// Disable, since Clang correctly states the value is too large for an
+// an integer literal, and MSVC also correctly forces a signed literal
+// since the unary minus is an issue with unsigned literals.
+//    EXPECT_EQ(atoi64("9223372036854775808", 10), -9223372036854775808LL);
     EXPECT_EQ(atoi64("18446744073709551615", 10), -1);
     EXPECT_EQ(atoi64("-1", 10), -1);
     EXPECT_EQ(atoi64("1a", 10), 1);

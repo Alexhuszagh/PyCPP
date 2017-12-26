@@ -22,15 +22,15 @@ struct derived: base {};
 TEST(is_safe_overload, is_safe_overload)
 {
     // 2 args
-    static_assert(is_safe_overload<base, int>::value, "");
-    static_assert(!is_safe_overload<base, base>::value, "");
-    static_assert(!is_safe_overload<base, derived>::value, "");
-    static_assert(is_safe_overload<derived, base>::value, "");
-    static_assert(!is_safe_overload<derived, derived>::value, "");
+    static_assert(is_safe_overload<true, base, int>::value, "");
+    static_assert(!is_safe_overload<true, base, base>::value, "");
+    static_assert(!is_safe_overload<true, base, derived>::value, "");
+    static_assert(is_safe_overload<true, derived, base>::value, "");
+    static_assert(!is_safe_overload<true, derived, derived>::value, "");
 
     // 3 args, only check a few
-    static_assert(is_safe_overload<base, int, int>::value, "");
-    static_assert(!is_safe_overload<base, base, int>::value, "");
-    static_assert(!is_safe_overload<base, derived, int>::value, "");
-    static_assert(is_safe_overload<base, int, base>::value, "");
+    static_assert(is_safe_overload<true, base, int, int>::value, "");
+    static_assert(!is_safe_overload<true, base, base, int>::value, "");
+    static_assert(!is_safe_overload<true, base, derived, int>::value, "");
+    static_assert(is_safe_overload<true, base, int, base>::value, "");
 }

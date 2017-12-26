@@ -344,8 +344,8 @@ constexpr bool is_nothrow_swappable_with_v = is_nothrow_swappable_with<T, U>::va
 template <typename T>
 constexpr bool is_swappable_v = is_swappable<T>::value;
 
-template <typename T, typename ... Ts>
-constexpr bool is_safe_overload_v = is_safe_overload<T, Ts...>::value;
+template <bool RemoveReference, typename T, typename ... Ts>
+constexpr bool is_safe_overload_v = is_safe_overload<RemoveReference, T, Ts...>::value;
 
 template <typename T>
 constexpr bool is_nothrow_swappable_v = is_nothrow_swappable<T>::value;

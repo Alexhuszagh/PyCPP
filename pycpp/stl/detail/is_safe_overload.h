@@ -18,7 +18,7 @@
  *          my_struct() = default;
  *          my_struct(const my_struct&) = default;
  *
- *          template <typename ... Ts, typename = is_safe_overload<my_struct, Ts...>>
+ *          template <typename ... Ts, typename = is_safe_overload<true, my_struct, Ts...>>
  *          my_struct(Ts&&... ts);
  *      };
  */
@@ -35,7 +35,7 @@ PYCPP_BEGIN_NAMESPACE
 
 
 // By default, the overload is safe.
-template <typename, typename...>
+template <bool, typename, typename...>
 struct is_safe_overload_impl
 {
     using type = std::true_type;
@@ -62,24 +62,31 @@ struct is_safe_overload_impl
 //          my_struct() = default;
 //          my_struct(const my_struct&, const allocator_type& alloc = allocator_type());
 //
-//          template <typename ... Ts, typename = is_safe_overload<my_struct, Ts...>>
+//          template <typename ... Ts, typename = is_safe_overload<true, my_struct, Ts...>>
 //          my_struct(Ts&&... ts);
 //      };
 //
-template <typename Class, typename T, typename ... Ts>
-struct is_safe_overload_impl<Class, T, Ts...>
+template <bool RemoveReference, typename Class, typename T, typename ... Ts>
+struct is_safe_overload_impl<RemoveReference, Class, T, Ts...>
 {
     using type = std::integral_constant<
         bool,
         !std::is_base_of<
             Class,
-            typename std::remove_cv<typename std::remove_reference<T>::type>::type
+            typename std::remove_cv<
+                typename std::conditional<
+                    RemoveReference,
+                    typename std::remove_reference<T>::type,
+                    T
+                >::type
+            >::type
         >::value
     >;
 };
 
 
-template <typename T, typename ... Ts>
-using is_safe_overload = typename is_safe_overload_impl<T, Ts...>::type;
+template <bool RemoveReference, typename T, typename ... Ts>
+struct is_safe_overload: is_safe_overload_impl<RemoveReference, T, Ts...>::type
+{};
 
 PYCPP_END_NAMESPACE
