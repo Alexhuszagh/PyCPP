@@ -37,10 +37,5 @@ TEST(xrange, xrange_mismatch)
     r = xrange(5, 10, 2);
     EXPECT_EQ(accumulate(r.begin(), r.end(), 0), 21);
 
-    try {
-        r = xrange(5, 10, 0);
-    } catch(...) {
-        return;
-    }
-    EXPECT_TRUE(false);
+    EXPECT_THROW(xrange(5, 10, 0), runtime_error);
 }

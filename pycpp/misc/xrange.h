@@ -114,7 +114,7 @@ bool xrange_iterator<T>::operator!=(const self_t& rhs) const noexcept
 template <typename T>
 bool xrange_iterator<T>::operator<(const self_t& rhs) const noexcept
 {
-    return value < rhs.value;
+    return step > 0 ? value < rhs.value : rhs.value < value;
 }
 
 

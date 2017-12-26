@@ -143,4 +143,6 @@ TEST(any, reference_count)
     EXPECT_EQ(weak.use_count(), 1);
     p1 = any();
     EXPECT_EQ(weak.use_count(), 0);
+
+    exit(0);
 }
