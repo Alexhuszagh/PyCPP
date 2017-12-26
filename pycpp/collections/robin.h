@@ -1397,8 +1397,8 @@ private:
             m_buckets[ibucket].set_value_of_empty_bucket(dist_from_ideal_bucket, bucket_entry_type::truncate_hash(hash),
                                                          forward<Args>(value_type_args)...);
         } else {
-            insert_value(ibucket, dist_from_ideal_bucket, bucket_entry_type::truncate_hash(hash),
-                         forward<Args>(value_type_args)...);
+            emplace_value(ibucket, dist_from_ideal_bucket, bucket_entry_type::truncate_hash(hash),
+                          forward<Args>(value_type_args)...);
         }
 
         m_nb_elements++;
@@ -1440,8 +1440,8 @@ private:
     }
 
     template <typename... Args>
-    void insert_value(size_t ibucket, distance_type dist_from_ideal_bucket,
-                      truncated_hash_type hash, Args&&... value_type_args)
+    void emplace_value(size_t ibucket, distance_type dist_from_ideal_bucket,
+                       truncated_hash_type hash, Args&&... value_type_args)
     {
         insert_value(ibucket, dist_from_ideal_bucket, hash, mutable_value_type(forward<Args>(value_type_args)...));
     }
