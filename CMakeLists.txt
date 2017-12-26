@@ -2,7 +2,7 @@
 #  :license: MIT, see licenses/mit.md for more details.
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 1)
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 2.8)
 project(pycpp CXX)
 enable_testing()
 
@@ -1056,11 +1056,16 @@ if(BUILD_XML)
     )
 endif()
 
-add_library(pycpp "")
-target_sources(pycpp
-    PRIVATE ${SOURCE_FILES}
-    PUBLIC ${HEADER_FILES}
-)
+if(${CMAKE_VERSION} VERSION_LESS "3.1.0")
+    # No `target_sources`, improvise
+    add_library(pycpp ${SOURCE_FILES})
+else()
+    add_library(pycpp "")
+    target_sources(pycpp
+        PRIVATE ${SOURCE_FILES}
+        PUBLIC ${HEADER_FILES}
+    )
+endif()
 
 # INTERFACE
 # ---------
