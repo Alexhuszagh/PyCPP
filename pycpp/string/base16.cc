@@ -23,13 +23,13 @@ static constexpr char DECODING[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
  *  unencoded size, since base16 == 2^4, which means two hexadecimal
  *  digits are required for a single byte (2^8).
  */
-static size_t encoded_size(size_t length)
+static size_t encoded_size(size_t length) noexcept
 {
     return OUTPUT_INTERVAL * length;
 }
 
 
-static size_t decoded_size(size_t length)
+static size_t decoded_size(size_t length) noexcept
 {
     return length / OUTPUT_INTERVAL;
 }
@@ -40,7 +40,7 @@ static size_t decoded_size(size_t length)
  *  \brief Encode 1 byte to base16.
  */
 template <typename Iter1, typename Iter2>
-static void encode_base16_message(Iter1 &src, Iter2 &dst)
+static void encode_base16_message(Iter1 &src, Iter2 &dst) noexcept
 {
     *dst++ = ENCODING[(*src & 0xf0) >> 4];          // First: 11110000
     *dst++ = ENCODING[(*src & 0x0f)];               // First: 00001111
@@ -51,7 +51,9 @@ static void encode_base16_message(Iter1 &src, Iter2 &dst)
  *  \brief Decode 2 bytes from base16.
  */
 template <typename Iter1, typename Iter2>
-static void decode_base16_message(Iter1 &src_first, Iter1 src_last, Iter2 &dst)
+static void decode_base16_message(Iter1 &src_first,
+    Iter1 src_last,
+    Iter2 &dst) noexcept
 {
     char buffer[OUTPUT_INTERVAL];
     size_t i = 0;
@@ -71,7 +73,11 @@ static void decode_base16_message(Iter1 &src_first, Iter1 src_last, Iter2 &dst)
 // ---------
 
 
-size_t base16_encode(const void* src, size_t srclen, void* dst, size_t dstlen)
+size_t base16_encode(const void* src,
+    size_t srclen,
+    void* dst,
+    size_t dstlen,
+    const byte_allocator&) noexcept
 {
     auto src_first = reinterpret_cast<const char*>(src);
     auto src_last = src_first + srclen;
@@ -86,9 +92,13 @@ size_t base16_encode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-string base16_encode(const string_wrapper& str)
+string base16_encode(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    string base16;
+    using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
+    char_allocator alloc(allocator);
+
+    string base16(alloc);
     base16.reserve(encoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();
@@ -101,7 +111,11 @@ string base16_encode(const string_wrapper& str)
 }
 
 
-size_t base16_decode(const void* src, size_t srclen, void* dst, size_t dstlen)
+size_t base16_decode(const void* src,
+    size_t srclen,
+    void* dst,
+    size_t dstlen,
+    const byte_allocator&) noexcept
 {
     auto src_first = reinterpret_cast<const char*>(src);
     auto src_last = src_first + srclen;
@@ -116,9 +130,13 @@ size_t base16_decode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-string base16_decode(const string_wrapper& str)
+string base16_decode(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    string base16;
+    using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
+    char_allocator alloc(allocator);
+
+    string base16(alloc);
     base16.reserve(decoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();

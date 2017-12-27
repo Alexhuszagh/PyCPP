@@ -30,6 +30,11 @@
  *      [3, 4, ]
  *      [3, 5, ]
  *      [3, 6, ]
+ *
+ *  \synopsis
+ *      template <typename Container, typename Callback>
+ *      void product(const Container& container,
+ *          Callback callback);
  */
 
 #pragma once
@@ -87,18 +92,22 @@ struct iterator_reference
 /**
  *  \brief Calculate cartesian product with zero data copies.
  */
-template < typename BidirIter, typename F>
-void product_(BidirIter first, BidirIter last, F &f)
+template <typename BidirIter, typename F, typename Allocator>
+void product_(BidirIter first, BidirIter last, F &f, const Allocator& allocator)
 {
     using traits_type = iterator_traits<BidirIter>;
     using value_type = typename traits_type::value_type;
     using helper = iterator_reference<value_type>;
     using iterator_type = typename helper::iterator;
     using reference_type = typename helper::reference_type;
+    using iterator_allocator = typename allocator_traits<Allocator>::template rebind_alloc<iterator_type>;
+    using reference_allocator = typename allocator_traits<Allocator>::template rebind_alloc<reference_type>;
 
     size_t size, k;
-    vector<iterator_type> buf;
-    vector<reference_type> val;
+    iterator_allocator iterator_alloc(allocator);
+    reference_allocator reference_alloc(allocator);
+    vector<iterator_type, iterator_allocator> buf(iterator_alloc);
+    vector<reference_type, reference_allocator> val(reference_alloc);
 
     // sanity check
     if (first == last) {
@@ -155,8 +164,11 @@ struct list_list_product
     using first_type = typename T::value_type;
     using second_type = typename first_type::value_type;
     using reference_type = reference_wrapper<const second_type>;
-    using list_type = vector<reference_type>;
-    using matrix_type = vector<list_type>;
+    using byte_allocator = typename allocator_traits<typename T::allocator_type>::template rebind_alloc<byte>;
+    using list_allocator = typename allocator_traits<byte_allocator>::template rebind_alloc<reference_type>;
+    using list_type = vector<reference_type, list_allocator>;
+    using matrix_allocator = typename allocator_traits<byte_allocator>::template rebind_alloc<list_type>;
+    using matrix_type = vector<list_type, matrix_allocator>;
 };
 
 
@@ -169,11 +181,20 @@ void list_list(const T& t, F &f)
     using helper = list_list_product<T>;
     using list_type = typename helper::list_type;
     using matrix_type = typename helper::matrix_type;
+    using byte_allocator = typename helper::byte_allocator;
+    using list_allocator = typename helper::list_allocator;
+    using matrix_allocator = typename helper::matrix_allocator;
 
-    matrix_type matrix;
+    // get the allocator
+    byte_allocator byte_alloc(t.get_allocator());
+    list_allocator list_alloc(t.get_allocator());
+    matrix_allocator matrix_alloc(t.get_allocator());
+
+    // initialize the wrapper matrix
+    matrix_type matrix(matrix_alloc);
     matrix.reserve(t.size());
     for (const auto &outer: t) {
-        list_type list;
+        list_type list(list_alloc);
         list.reserve(outer.size());
         for (const auto &inner: outer) {
             list.emplace_back(inner);
@@ -181,7 +202,8 @@ void list_list(const T& t, F &f)
         matrix.emplace_back(move(list));
     }
 
-    product_(matrix.begin(), matrix.end(), f);
+    // call the product
+    product_(matrix.begin(), matrix.end(), f, byte_alloc);
 }
 
 
@@ -197,8 +219,11 @@ struct list_map_product
     using first_type = typename T::value_type;
     using second_type = typename first_type::value_type;
     using reference_type = reference_wrapper<const second_type>;
-    using list_type = vector<reference_type>;
-    using matrix_type = vector<list_type>;
+    using byte_allocator = typename allocator_traits<typename T::allocator_type>::template rebind_alloc<byte>;
+    using list_allocator = typename allocator_traits<byte_allocator>::template rebind_alloc<reference_type>;
+    using list_type = vector<reference_type, list_allocator>;
+    using matrix_allocator = typename allocator_traits<byte_allocator>::template rebind_alloc<list_type>;
+    using matrix_type = vector<list_type, matrix_allocator>;
 };
 
 
@@ -211,11 +236,20 @@ void list_map(const T& t, F &f)
     using helper = list_map_product<T>;
     using list_type = typename helper::list_type;
     using matrix_type = typename helper::matrix_type;
+    using byte_allocator = typename helper::byte_allocator;
+    using list_allocator = typename helper::list_allocator;
+    using matrix_allocator = typename helper::matrix_allocator;
 
-    matrix_type matrix;
+    // get the allocator
+    byte_allocator byte_alloc(t.get_allocator());
+    list_allocator list_alloc(t.get_allocator());
+    matrix_allocator matrix_alloc(t.get_allocator());
+
+    // initialize the wrapper matrix
+    matrix_type matrix(matrix_alloc);
     matrix.reserve(t.size());
     for (const auto &outer: t) {
-        list_type list;
+        list_type list(list_alloc);
         list.reserve(outer.size());
         for (const auto &inner: outer) {
             list.emplace_back(inner);
@@ -223,6 +257,7 @@ void list_map(const T& t, F &f)
         matrix.emplace_back(move(list));
     }
 
+    // call the product
     product_(matrix.begin(), matrix.end(), f);
 }
 
@@ -240,8 +275,11 @@ struct map_list_product
     using first_type = typename T::mapped_type;
     using second_type = typename first_type::value_type;
     using reference_type = reference_wrapper<const second_type>;
-    using list_type = vector<reference_type>;
-    using matrix_type = vector<list_type>;
+    using byte_allocator = typename allocator_traits<typename T::allocator_type>::template rebind_alloc<byte>;
+    using list_allocator = typename allocator_traits<byte_allocator>::template rebind_alloc<reference_type>;
+    using list_type = vector<reference_type, list_allocator>;
+    using matrix_allocator = typename allocator_traits<byte_allocator>::template rebind_alloc<list_type>;
+    using matrix_type = vector<list_type, matrix_allocator>;
 };
 
 
@@ -254,11 +292,20 @@ void map_list(const T& t, F &f)
     using helper = map_list_product<T>;
     using list_type = typename helper::list_type;
     using matrix_type = typename helper::matrix_type;
+    using byte_allocator = typename helper::byte_allocator;
+    using list_allocator = typename helper::list_allocator;
+    using matrix_allocator = typename helper::matrix_allocator;
 
-    matrix_type matrix;
+    // get the allocator
+    byte_allocator byte_alloc(t.get_allocator());
+    list_allocator list_alloc(t.get_allocator());
+    matrix_allocator matrix_alloc(t.get_allocator());
+
+    // initialize the wrapper matrix
+    matrix_type matrix(matrix_alloc);
     matrix.reserve(t.size());
     for (const auto &outer: t) {
-        list_type list;
+        list_type list(list_alloc);
         list.reserve(outer.second.size());
         for (const auto &inner: outer.second) {
             list.emplace_back(inner);
@@ -266,6 +313,7 @@ void map_list(const T& t, F &f)
         matrix.emplace_back(move(list));
     }
 
+    // call the product
     product_(matrix.begin(), matrix.end(), f);
 }
 
@@ -275,7 +323,7 @@ void map_list(const T& t, F &f)
 
 
 /**
- 8  \brief Type detection for map of maps.
+ *  \brief Type detection for map of maps.
  */
 template <typename T>
 struct map_map_product
@@ -283,8 +331,11 @@ struct map_map_product
     using first_type = typename T::mapped_type;
     using second_type = typename first_type::value_type;
     using reference_type = reference_wrapper<const second_type>;
-    using list_type = vector<reference_type>;
-    using matrix_type = vector<list_type>;
+    using byte_allocator = typename allocator_traits<typename T::allocator_type>::template rebind_alloc<byte>;
+    using list_allocator = typename allocator_traits<byte_allocator>::template rebind_alloc<reference_type>;
+    using list_type = vector<reference_type, list_allocator>;
+    using matrix_allocator = typename allocator_traits<byte_allocator>::template rebind_alloc<list_type>;
+    using matrix_type = vector<list_type, matrix_allocator>;
 };
 
 
@@ -297,11 +348,20 @@ void map_map(const T& t, F &f)
     using helper = map_map_product<T>;
     using list_type = typename helper::list_type;
     using matrix_type = typename helper::matrix_type;
+    using byte_allocator = typename helper::byte_allocator;
+    using list_allocator = typename helper::list_allocator;
+    using matrix_allocator = typename helper::matrix_allocator;
 
-    matrix_type matrix;
+    // get the allocator
+    byte_allocator byte_alloc(t.get_allocator());
+    list_allocator list_alloc(t.get_allocator());
+    matrix_allocator matrix_alloc(t.get_allocator());
+
+    // initialize the wrapper matrix
+    matrix_type matrix(matrix_alloc);
     matrix.reserve(t.size());
     for (const auto &outer: t) {
-        list_type list;
+        list_type list(list_alloc);
         list.reserve(outer.second.size());
         for (const auto &inner: outer.second) {
             list.emplace_back(inner);
@@ -309,6 +369,7 @@ void map_map(const T& t, F &f)
         matrix.emplace_back(move(list));
     }
 
+    // call the product
     product_(matrix.begin(), matrix.end(), f);
 }
 
@@ -411,12 +472,16 @@ struct cartesian_product
 }   /* prod_detail */
 
 /**
- *  \brief Call cartesian product for container.
+ *  \brief Call cartesian product over container.
+ *
+ *  \param container            Container of containers for product.
+ *  \param callback             Callback for each product result.
  */
-template <typename T, typename F>
-void product(const T& t, F f)
+template <typename Container, typename Callback>
+void product(const Container& container,
+    Callback callback)
 {
-    prod_detail::cartesian_product()(t, f);
+    prod_detail::cartesian_product()(container, callback);
 }
 
 PYCPP_END_NAMESPACE

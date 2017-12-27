@@ -20,7 +20,7 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Bias adaption function.
  */
-uint32_t adapt_bias(uint32_t delta, uint32_t points, bool first)
+uint32_t adapt_bias(uint32_t delta, uint32_t points, bool first) noexcept
 {
     // variables
     static constexpr uint32_t base = 36;
@@ -45,7 +45,7 @@ uint32_t adapt_bias(uint32_t delta, uint32_t points, bool first)
 /**
  *  \brief Get threshold, t(j) from RFC3492.
  */
-uint32_t threshold(uint32_t k, uint32_t bias)
+uint32_t threshold(uint32_t k, uint32_t bias) noexcept
 {
     // limits
     static constexpr uint32_t tmin = 1;
@@ -84,7 +84,7 @@ static uint8_t encode_byte(uint8_t c)
 /**
  *  \brief Decode single byte from Punycode.
  */
-static uint32_t decode_byte(uint8_t c)
+static uint32_t decode_byte(uint8_t c) noexcept
 {
     // limits
     static constexpr uint32_t base = 36;

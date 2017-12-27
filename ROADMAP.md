@@ -7,7 +7,6 @@
         - csv
         - filesystem
         - lattice
-        - stream
         - string
         - xml
 
@@ -21,8 +20,13 @@
         - CSV
         - Filesystem
         - Lattice
-        - Stream
         - String
+            - TODO: should be able to pass allocators...
+                - For any function that allocates memory....
+            - codec
+            - string
+            - unicode
+            - url
         - XML
 
     - Make moves always non-throwing
@@ -57,6 +61,8 @@
         - Heap allocator
             - Linear and preallocated allocators on the heap (which can grow)
             - This is great when requesting large quantities of small data...
+        - GC allocator (wrap to an STL allocator)
+            - https://github.com/ivmai/bdwgc
 
     - Make allocators non-optional, use a polymorphic allocator by default...
     - Allow a CMake flag to use polymorphic or the standard allocator by default

@@ -23,9 +23,9 @@ PYCPP_BEGIN_NAMESPACE
  *  change the underlying `resource` so it is copy
  *  constructed into all JSON data.
  */
-inline allocator<byte>& json_allocator() noexcept
+inline byte_allocator& json_allocator() noexcept
 {
-    static allocator<byte> singleton;
+    static byte_allocator singleton;
     return singleton;
 }
 
@@ -33,8 +33,8 @@ inline allocator<byte>& json_allocator() noexcept
 template <typename T, typename ... Ts>
 T* json_new(Ts&&... ts)
 {
-    static allocator<byte>& alloc = json_allocator();
-    using traits_type = allocator_traits<allocator<byte>>;
+    static byte_allocator& alloc = json_allocator();
+    using traits_type = allocator_traits<byte_allocator>;
 
     byte* p = traits_type::allocate(alloc, sizeof(T));
     new(p) T(forward<Ts>(ts)...);
@@ -45,8 +45,8 @@ T* json_new(Ts&&... ts)
 template <typename T>
 void json_delete(T* t) noexcept
 {
-    static allocator<byte>& alloc = json_allocator();
-    using traits_type = allocator_traits<allocator<byte>>;
+    static byte_allocator& alloc = json_allocator();
+    using traits_type = allocator_traits<byte_allocator>;
 
     if (t != nullptr) {
         t->~T();
@@ -73,8 +73,8 @@ struct json_backend_allocator
 
 inline void* json_backend_allocator::Malloc(size_t size)
 {
-    static allocator<byte>& alloc = json_allocator();
-    using traits_type = allocator_traits<allocator<byte>>;
+    static byte_allocator& alloc = json_allocator();
+    using traits_type = allocator_traits<byte_allocator>;
 
     // special case for rapidjson compliance
     if (size == 0) {
@@ -117,8 +117,8 @@ inline void* json_backend_allocator::Realloc(void* pin, size_t old_size, size_t 
 
 inline void json_backend_allocator::Free(void* p) noexcept
 {
-    static allocator<byte>& alloc = json_allocator();
-    using traits_type = allocator_traits<allocator<byte>>;
+    static byte_allocator& alloc = json_allocator();
+    using traits_type = allocator_traits<byte_allocator>;
 
     if (p != nullptr) {
         size_t* s = reinterpret_cast<size_t*>(p);

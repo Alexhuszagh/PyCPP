@@ -19,7 +19,7 @@ static constexpr char DECODING[] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 
 // LENGTH
 
-static size_t encoded_byte_count(const size_t length)
+static size_t encoded_byte_count(const size_t length) noexcept
 {
     static constexpr double input = static_cast<double>(INPUT_INTERVAL);
     static constexpr double output = static_cast<double>(OUTPUT_INTERVAL);
@@ -27,7 +27,7 @@ static size_t encoded_byte_count(const size_t length)
 }
 
 
-static size_t decoded_byte_count(const size_t length)
+static size_t decoded_byte_count(const size_t length) noexcept
 {
     static constexpr double input = static_cast<double>(INPUT_INTERVAL);
     static constexpr double output = static_cast<double>(OUTPUT_INTERVAL);
@@ -42,13 +42,13 @@ static size_t decoded_byte_count(const size_t length)
  *  and each bit is transformed into 6-bit character groups to be
  *  transformed into the base64 dictionary (2^6 == 64).
  */
-static size_t encoded_size(size_t length)
+static size_t encoded_size(size_t length) noexcept
 {
     return ((4 * length / 3) + 3) & ~3;
 }
 
 
-static size_t decoded_size(size_t length)
+static size_t decoded_size(size_t length) noexcept
 {
     static constexpr double input = static_cast<double>(INPUT_INTERVAL);
     static constexpr double output = static_cast<double>(OUTPUT_INTERVAL);
@@ -60,10 +60,11 @@ static size_t decoded_size(size_t length)
  *  \brief Pad buffer to a fixed length.
  */
 template <typename Iter, typename Array>
-static size_t pad_buffer(Iter& first, Iter last,
+static size_t pad_buffer(Iter& first,
+    Iter last,
     Array& array,
     size_t size,
-    char pad = '\0')
+    char pad = '\0') noexcept
 {
     // fill
     size_t index = 0;
@@ -83,11 +84,12 @@ static size_t pad_buffer(Iter& first, Iter last,
  *  \brief Pad buffer to a fixed length.
  */
 template <typename Iter, typename Array, typename Function>
-static size_t pad_buffer(Iter& first, Iter last,
+static size_t pad_buffer(Iter& first,
+    Iter last,
     Array& array,
     size_t size,
     Function function,
-    char pad = '=')
+    char pad = '=') noexcept
 {
     // fill
     size_t index = 0;
@@ -113,7 +115,9 @@ static size_t pad_buffer(Iter& first, Iter last,
  *  \brief Encode 3 bytes to base64.
  */
 template <typename Iter1, typename Iter2>
-static void encode_base64_message(Iter1& src_first, Iter1 src_last, Iter2 &dst)
+static void encode_base64_message(Iter1& src_first,
+    Iter1 src_last,
+    Iter2 &dst) noexcept
 {
     char b1[INPUT_INTERVAL];
     char b2[OUTPUT_INTERVAL];
@@ -141,7 +145,9 @@ static void encode_base64_message(Iter1& src_first, Iter1 src_last, Iter2 &dst)
  *  \brief Decode 4 bytes from base64.
  */
 template <typename Iter1, typename Iter2>
-static void decode_base64_message(Iter1 &src_first, Iter1 src_last, Iter2 &dst)
+static void decode_base64_message(Iter1 &src_first,
+    Iter1 src_last,
+    Iter2 &dst) noexcept
 {
     char b1[OUTPUT_INTERVAL];
     char b2[INPUT_INTERVAL];
@@ -166,7 +172,11 @@ static void decode_base64_message(Iter1 &src_first, Iter1 src_last, Iter2 &dst)
 // ---------
 
 
-size_t base64_encode(const void* src, size_t srclen, void* dst, size_t dstlen)
+size_t base64_encode(const void* src,
+    size_t srclen,
+    void* dst,
+    size_t dstlen,
+    const byte_allocator&) noexcept
 {
     auto src_first = reinterpret_cast<const char*>(src);
     auto src_last = src_first + srclen;
@@ -181,9 +191,13 @@ size_t base64_encode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-string base64_encode(const string_wrapper& str)
+string base64_encode(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    string base64;
+    using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
+    char_allocator alloc(allocator);
+
+    string base64(alloc);
     base64.reserve(encoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();
@@ -196,7 +210,11 @@ string base64_encode(const string_wrapper& str)
 }
 
 
-size_t base64_decode(const void* src, size_t srclen, void* dst, size_t dstlen)
+size_t base64_decode(const void* src,
+    size_t srclen,
+    void* dst,
+    size_t dstlen,
+    const byte_allocator&) noexcept
 {
     auto src_first = reinterpret_cast<const char*>(src);
     auto src_last = src_first + srclen;
@@ -211,9 +229,13 @@ size_t base64_decode(const void* src, size_t srclen, void* dst, size_t dstlen)
 }
 
 
-string base64_decode(const string_wrapper& str)
+string base64_decode(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    string base64;
+    using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
+    char_allocator alloc(allocator);
+
+    string base64(alloc);
     base64.reserve(decoded_size(str.size()));
     auto first = str.begin();
     auto last = str.end();

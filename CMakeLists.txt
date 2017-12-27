@@ -513,6 +513,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/crt.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/linear.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/null.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/pool.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/secure.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/allocator/stack.h"
@@ -1101,6 +1102,7 @@ set(TEST_FILES
     test/algorithm/interpolation_search.cc
     test/allocator/crt.cc
     test/allocator/linear.cc
+    test/allocator/null.cc
     test/allocator/pool.cc
     test/allocator/secure.cc
     test/allocator/stack.cc

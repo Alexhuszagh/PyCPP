@@ -251,19 +251,19 @@ static void casemap_conversion(const void*& src, size_t srclen, void*& dst, size
 }
 
 
-static char lowercase_ascii(char c)
+static char lowercase_ascii(char c) noexcept
 {
     return ::tolower(c);
 }
 
 
-static char uppercase_ascii(char c)
+static char uppercase_ascii(char c) noexcept
 {
     return ::toupper(c);
 }
 
 
-static bool is_ascii_boundary(char c)
+static bool is_ascii_boundary(char c) noexcept
 {
     if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c<= 'Z')) {
         return false;

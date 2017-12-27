@@ -21,6 +21,9 @@
  *  lower and upper bounds.
  *  Keith Schwarz's implementation may be found here:
  *      http://www.keithschwarz.com/interesting/code/?dir=interpolation-search
+ *
+ *  \synopsis
+ *      // TODO: implement...
  */
 
 #pragma once
@@ -34,8 +37,8 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-//// LOWER
-//
+// LOWER
+
 ///**
 // *
 // */

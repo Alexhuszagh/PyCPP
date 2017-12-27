@@ -26,9 +26,9 @@ PYCPP_BEGIN_NAMESPACE
  *  This can only change the memory allocated internally by the RE2
  *  wrappers, as RE2 uses the global memory allocator.
  */
-inline allocator<byte>& re_allocator() noexcept
+inline byte_allocator& re_allocator() noexcept
 {
-    static allocator<byte> singleton;
+    static byte_allocator singleton;
     return singleton;
 }
 
@@ -36,8 +36,8 @@ inline allocator<byte>& re_allocator() noexcept
 template <typename T, typename ... Ts>
 T* re_new(Ts&&... ts)
 {
-    static allocator<byte>& alloc = re_allocator();
-    using traits_type = allocator_traits<allocator<byte>>;
+    static byte_allocator& alloc = re_allocator();
+    using traits_type = allocator_traits<byte_allocator>;
 
     byte* p = traits_type::allocate(alloc, sizeof(T));
     new(p) T(forward<Ts>(ts)...);
@@ -48,8 +48,8 @@ T* re_new(Ts&&... ts)
 template <typename T>
 void re_delete(T* t) noexcept
 {
-    static allocator<byte>& alloc = re_allocator();
-    using traits_type = allocator_traits<allocator<byte>>;
+    static byte_allocator& alloc = re_allocator();
+    using traits_type = allocator_traits<byte_allocator>;
 
     if (t != nullptr) {
         t->~T();

@@ -1,43 +1,46 @@
-//  :copyright: (c) 2016 Mariano Trebino.
 //  :copyright: (c) 2017 Alex Huszagh.
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Standard allocator analogous to `std::allocator`.
+ *  \brief Null memory allocator.
  *
- *  A shallow wrapper around `new` and `delete`. This allocator
- *  has poor performance, and therefore should be used sparingly.
+ *  An allocator that throws if memory is allocated or deallocated.
+ *  `null_allocator` is useful for chaining allocators, where a
+ *  condition is raised that should not occur: rather than use an
+ *  inefficient fallback (such as malloc), the logic may be
+ *  reworked later for a more efficient allocator.
  *
  *  \synopsis
  *      template <typename T>
- *      struct standard_allocator
+ *      struct null_allocator
  *      {
  *          using value_type = T;
  *
- *          standard_allocator() noexcept;
- *          standard_allocator(const self_t&) noexcept;
- *          template <typename U> standard_allocator(const standard_allocator<U>&) noexcept;
+ *          null_allocator() noexcept;
+ *          null_allocator(const self_t&) noexcept;
+ *          template <typename U> null_allocator(const null_allocator<U>&) noexcept;
  *          self_t& operator=(const self_t&) noexcept;
- *          template <typename U> self_t& operator=(const standard_allocator<U>&) noexcept;
- *          ~standard_allocator() = default;
+ *          template <typename U> self_t& operator=(const null_allocator<U>&) noexcept;
+ *          ~null_allocator() = default;
  *
  *          value_type* allocate(size_t n, const void* hint = nullptr);
  *          value_type* reallocate(value_type* p, size_t old_size, size_t new_size, const void* hint = nullptr);
  *          void deallocate(value_type* p, size_t n);
  *      };
  *
- *      using standard_resource = resource_adaptor<standard_allocator<byte>>;
+ *      using null_resource = resource_adaptor<null_allocator<byte>>;
  *
  *      template <typename T, typename U>
- *      inline bool operator==(const standard_allocator<T>&, const standard_allocator<U>&) noexcept;
+ *      inline bool operator==(const null_allocator<T>&, const null_allocator<U>&) noexcept;
  *
  *      template <typename T, typename U>
- *      inline bool operator!=(const standard_allocator<T>&, const standard_allocator<U>&) noexcept
+ *      inline bool operator!=(const null_allocator<T>&, const null_allocator<U>&) noexcept
  */
 
 #pragma once
 
 #include <pycpp/stl/memory.h>
+#include <pycpp/stl/utility.h>
 #include <stddef.h>
 
 PYCPP_BEGIN_NAMESPACE
@@ -46,30 +49,20 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 template <typename T>
-struct standard_allocator;
+struct null_allocator;
 
 // OBJECTS
 // -------
 
 /**
- *  \brief Base for standard memory allocator.
- */
-struct standard_allocator_base
-{
-    static void* allocate(size_t n, size_t size, const void* hint = nullptr);
-    static void deallocate(void* p, size_t n);
-};
-
-
-/**
  *  \brief Standard memory allocator.
  */
 template <typename T>
-struct standard_allocator: private standard_allocator_base
+struct null_allocator
 {
     // MEMBER TYPES
     // ------------
-    using self_t = standard_allocator<T>;
+    using self_t = null_allocator<T>;
     using value_type = T;
 #if defined(CPP11_PARTIAL_ALLOCATOR_TRAITS)
     using reference = value_type&;
@@ -78,22 +71,25 @@ struct standard_allocator: private standard_allocator_base
     using const_pointer = const value_type*;
     using size_type = size_t;
     using difference_type = ptrdiff_t;
-    template <typename U> struct rebind { using other = polymorphic_allocator<U>; };
+    template <typename U> struct rebind { using other = null_allocator<U>; };
 #endif      // CPP11_PARTIAL_ALLOCATOR_TRAITS
 
     // MEMBER FUNCTIONS
     // ----------------
-    standard_allocator() noexcept = default;
-    standard_allocator(const self_t&) noexcept = default;
+
+    // CONSTRUCTORS
+
+    null_allocator() noexcept = default;
+    null_allocator(const self_t&) noexcept = default;
     self_t& operator=(const self_t&) noexcept = default;
-    ~standard_allocator() noexcept = default;
+    ~null_allocator() = default;
 
     template <typename U>
-    standard_allocator(const standard_allocator<U>&) noexcept
+    null_allocator(const null_allocator<U>&) noexcept
     {}
 
     template <typename U>
-    self_t& operator=(const standard_allocator<U>&) noexcept
+    self_t& operator=(const null_allocator<U>&) noexcept
     {
         return *this;
     }
@@ -102,13 +98,11 @@ struct standard_allocator: private standard_allocator_base
 
     value_type* allocate(size_t n, const void* hint = nullptr)
     {
-        return reinterpret_cast<value_type*>(standard_allocator_base::allocate(n, sizeof(value_type), hint));
+        throw bad_alloc();
     }
 
     void deallocate(value_type* p, size_t n)
-    {
-        standard_allocator_base::deallocate(p, sizeof(value_type) * n);
-    }
+    {}
 
 #if defined(CPP11_PARTIAL_ALLOCATOR_TRAITS)
 
@@ -134,27 +128,27 @@ struct standard_allocator: private standard_allocator_base
 // ALIAS
 // -----
 
-using standard_resource = resource_adaptor<standard_allocator<byte>>;
+using null_resource = resource_adaptor<null_allocator<byte>>;
 
 // SPECIALIZATION
 // --------------
 
 template <typename T>
-struct is_relocatable<standard_allocator<T>>: true_type
+struct is_relocatable<null_allocator<T>>: true_type
 {};
 
-// IMPLEMENTATION
-// --------------
+// NON-MEMBER FUNCTIONS
+// --------------------
 
 template <typename T, typename U>
-inline bool operator==(const standard_allocator<T>&, const standard_allocator<U>&) noexcept
+inline bool operator==(const null_allocator<T>&, const null_allocator<U>&) noexcept
 {
     return true;
 }
 
 
 template <typename T, typename U>
-inline bool operator!=(const standard_allocator<T>& lhs, const standard_allocator<U>& rhs) noexcept
+inline bool operator!=(const null_allocator<T>& lhs, const null_allocator<U>& rhs) noexcept
 {
     return !(lhs == rhs);
 }

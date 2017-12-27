@@ -5,7 +5,63 @@
  *  \addtogroup PyCPP
  *  \brief Polymorphic allocator as described in N3525.
  *
+ *  A polymorphic allocator that wraps a virtual, byte-based resource
+ *  that abstracts general bytes. The polymorphic allocator is a single
+ *  type that may have different allocation properties depending
+ *  on the underlying resource.
+ *
  *  http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3525.pdf
+ *
+ *  \synopsis
+ *      memory_resource* new_delete_resource() noexcept;
+ *      memory_resource* null_memory_resource() noexcept;
+ *      memory_resource* get_default_resource() noexcept;
+ *      memory_resource* set_default_resource(memory_resource* r) noexcept;
+ *
+ *      struct memory_resource
+ *      {
+ *      public:
+ *          virtual ~memory_resource();
+ *
+ *          void* allocate(size_t n, size_t alignment = implementation-defined);
+ *          void deallocate(void* p, size_t n, size_t alignment = implementation-defined);
+ *          bool is_equal(const memory_resource&) const noexcept;
+ *
+ *      protected:
+ *          virtual void* do_allocate(size_t n, size_t alignment) = 0;
+ *          virtual void do_deallocate(void* p, size_t n, size_t alignment) = 0;
+ *          virtual bool do_is_equal(const memory_resource&) const noexcept = 0;
+ *
+ *      private:
+ *          static std::atomic<memory_resource*> default_resource_;
+ *
+ *          friend memory_resource* set_default_resource(memory_resource*) noexcept;
+ *          friend memory_resource* get_default_resource() noexcept;
+ *      };
+ *
+ *      template <typename Allocator>
+ *      struct resource_adaptor_imp;
+ *
+ *      template <typename Allocator>
+ *      using resource_adaptor = resource_adaptor_imp<
+ *          typename std::allocator_traits<Allocator>::template rebind_alloc<byte>
+ *      >;
+ *
+ *      template <typename T>
+ *      struct polymorphic_allocator
+ *      {
+ *          using value_type = T;
+ *          polymorphic_allocator() noexcept;
+ *          polymorphic_allocator(memory_resource *r);
+ *          polymorphic_allocator(const polymorphic_allocator<T>& rhs);
+ *          template <typename U> polymorphic_allocator(const polymorphic_allocator<U>& rhs) noexcept;
+ *          polymorphic_allocator<T>& operator=(const polymorphic_allocator<T>& rhs) = delete;
+ *
+ *          T* allocate(size_t n);
+ *          void deallocate(T* p, size_t n);
+ *          polymorphic_allocator select_on_container_copy_construction() const;
+ *          memory_resource* resource() const;
+ *      };
  */
 
 #pragma once
@@ -210,21 +266,55 @@ struct resource_adaptor_imp: memory_resource
 
     // MEMBER FUNCTIONS
     // ----------------
+
+    // CONSTRUCTORS
+
     resource_adaptor_imp() = default;
     resource_adaptor_imp(const resource_adaptor_imp&) = default;
     resource_adaptor_imp(resource_adaptor_imp&&) = default;
     resource_adaptor_imp& operator=(const resource_adaptor_imp&) = default;
-    explicit resource_adaptor_imp(const allocator_type&);
-    explicit resource_adaptor_imp(allocator_type&&);
+
+    explicit resource_adaptor_imp(const allocator_type& alloc):
+        alloc_(alloc)
+    {}
+
+    explicit resource_adaptor_imp(allocator_type&& alloc):
+        alloc_(std::move(alloc))
+    {}
 
     // ALLOCATOR TRAITS
-    allocator_type get_allocator() const;
+
+    allocator_type get_allocator() const
+    {
+        return alloc_;
+    }
 
 protected:
     // MEMORY TRAITS
-    virtual void* do_allocate(size_t n, size_t alignment);
-    virtual void do_deallocate(void* p, size_t n, size_t alignment);
-    virtual bool do_is_equal(const memory_resource&) const noexcept;
+
+    virtual void* do_allocate(size_t n, size_t alignment)
+    {
+        if (n > polymorphic_detail::max_size(max_align)) {
+            throw std::bad_alloc();
+        }
+
+        size_t s = polymorphic_detail::aligned_allocation_size(n, max_align) / max_align;
+        return alloc_.allocate(s);
+    }
+
+    virtual void do_deallocate(void* p, size_t n, size_t alignment)
+    {
+        using value_type = typename std::allocator_traits<alloc>::value_type;
+        size_t s = polymorphic_detail::aligned_allocation_size(n, max_align) / max_align;
+        alloc_.deallocate(reinterpret_cast<value_type*>(p), s);
+    }
+
+    virtual bool do_is_equal(const memory_resource& rhs) const noexcept
+    {
+        using self = resource_adaptor_imp<Allocator>;
+        const self* p = dynamic_cast<const self*>(&rhs);
+        return p ? alloc_ == p->alloc_ : false;
+    }
 
 private:
     static constexpr size_t max_align = alignof(std::max_align_t);
@@ -260,35 +350,94 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    polymorphic_allocator() noexcept;
-    polymorphic_allocator(memory_resource *r);
     polymorphic_allocator(const polymorphic_allocator<T>&) = default;
-    template <typename U> polymorphic_allocator(const polymorphic_allocator<U>&) noexcept;
     polymorphic_allocator<T>& operator=(const polymorphic_allocator<T>&) = delete;
 
+    polymorphic_allocator() noexcept:
+        resource_(get_default_resource())
+    {}
+
+    polymorphic_allocator(memory_resource *r):
+        resource_(r ? r : get_default_resource())
+    {}
+
+    template <typename U>
+    polymorphic_allocator(const polymorphic_allocator<U>& rhs) noexcept:
+        resource_(rhs.resource())
+    {}
+
     // ALLOCATOR TRAITS
-    T* allocate(size_t n);
-    void deallocate(T* p, size_t n);
+
+    T* allocate(size_t n)
+    {
+        return static_cast<T*>(resource_->allocate(n * sizeof(T), alignof(T)));
+    }
+
+    void deallocate(T* p, size_t n)
+    {
+        resource_->deallocate(p, n * sizeof(T), alignof(T));
+    }
+
 #if defined(CPP11_PARTIAL_ALLOCATOR_TRAITS)
+
     template <typename ... Ts>
-    void construct(T* p, Ts&&... ts) { ::new (static_cast<void*>(p)) T(std::forward<Ts>(ts)...); }
-    void destroy(T* p) { p->~T(); }
-    size_type max_size() { return std::numeric_limits<size_type>::max(); }
+    void construct(T* p, Ts&&... ts)
+    {
+        ::new (static_cast<void*>(p)) T(std::forward<Ts>(ts)...);
+    }
+
+    void destroy(T* p)
+    {
+        p->~T();
+    }
+
+    size_type max_size()
+    {
+        return std::numeric_limits<size_type>::max();
+    }
+
 #endif      // CPP11_PARTIAL_ALLOCATOR_TRAITS
 
     // PROPERTIES
-    polymorphic_allocator select_on_container_copy_construction() const;
-    memory_resource* resource() const;
+
+    polymorphic_allocator select_on_container_copy_construction() const
+    {
+        return polymorphic_allocator<T>();
+    }
+
+    memory_resource* resource() const
+    {
+        return resource_;
+    }
 
 #if PYCPP_NON_STANDARD_POLYMORPHIC_ALLOCATOR
+
     using propagate_on_container_move_assignment = std::true_type;
 
-    polymorphic_allocator(polymorphic_allocator<T>&&) noexcept;
-    template <typename U> polymorphic_allocator(polymorphic_allocator<U>&&) noexcept;
-    polymorphic_allocator<T>& operator=(polymorphic_allocator<T>&&) noexcept;
+    polymorphic_allocator(polymorphic_allocator<T>&& rhs) noexcept:
+        polymorphic_allocator()
+    {
+        // let resource use the default constructor
+        std::swap(resource_, rhs.resource_);
+    }
+
+    template <typename U>
+    polymorphic_allocator(polymorphic_allocator<U>&& rhs) noexcept:
+        polymorphic_allocator()
+    {
+        // let resource use the default constructor
+        std::swap(resource_, rhs.resource_);
+    }
+
+    polymorphic_allocator<T>& operator=(polymorphic_allocator<T>&& rhs) noexcept
+    {
+        std::swap(resource_, rhs.resource_);
+        return *this;
+    }
 
     template <typename U>
     friend struct polymorphic_allocator;
+
 #endif      // PYCPP_NON_STANDARD_POLYMORPHIC_ALLOCATOR
 
 private:
@@ -328,136 +477,7 @@ struct is_relocatable<polymorphic_allocator<T>>: std::true_type
 bool operator==(const memory_resource& lhs, const memory_resource& rhs);
 bool operator!=(const memory_resource& lhs, const memory_resource& rhs);
 
-// RESOURCE ADAPTOR
-
-
-template <typename Allocator>
-resource_adaptor_imp<Allocator>::resource_adaptor_imp(const allocator_type& alloc):
-    alloc_(alloc)
-{}
-
-
-template <typename Allocator>
-resource_adaptor_imp<Allocator>::resource_adaptor_imp(allocator_type&& alloc):
-    alloc_(std::move(alloc))
-{}
-
-
-template <typename Allocator>
-void* resource_adaptor_imp<Allocator>::do_allocate(size_t n, size_t alignment)
-{
-    if (n > polymorphic_detail::max_size(max_align)) {
-            throw std::bad_alloc();
-        }
-
-    size_t s = polymorphic_detail::aligned_allocation_size(n, max_align) / max_align;
-    return alloc_.allocate(s);
-}
-
-
-template <typename Allocator>
-void resource_adaptor_imp<Allocator>::do_deallocate(void* p, size_t n, size_t alignment)
-{
-    using value_type = typename std::allocator_traits<alloc>::value_type;
-    size_t s = polymorphic_detail::aligned_allocation_size(n, max_align) / max_align;
-    alloc_.deallocate(reinterpret_cast<value_type*>(p), s);
-}
-
-
-template <typename Allocator>
-bool resource_adaptor_imp<Allocator>::do_is_equal(const memory_resource& other) const noexcept
-{
-    using self = resource_adaptor_imp<Allocator>;
-    const self* p = dynamic_cast<const self*>(&other);
-    return p ? alloc_ == p->alloc_ : false;
-}
-
-
-template <typename Allocator>
-auto resource_adaptor_imp<Allocator>::get_allocator() const -> allocator_type
-{
-    return alloc_;
-}
-
 // POLYMORPHIC ALLOCATOR
-
-template <typename T>
-polymorphic_allocator<T>::polymorphic_allocator() noexcept:
-    resource_(get_default_resource())
-{}
-
-
-template <typename T>
-polymorphic_allocator<T>::polymorphic_allocator(memory_resource* r):
-    resource_(r ? r : get_default_resource())
-{}
-
-
-template <typename T>
-template <typename U>
-polymorphic_allocator<T>::polymorphic_allocator(const polymorphic_allocator<U>& rhs) noexcept:
-    resource_(rhs.resource())
-{}
-
-
-template <typename T>
-T* polymorphic_allocator<T>::allocate(size_t n)
-{
-    return static_cast<T*>(resource_->allocate(n * sizeof(T), alignof(T)));
-}
-
-
-template <typename T>
-void polymorphic_allocator<T>::deallocate(T *p, size_t n)
-{
-    resource_->deallocate(p, n * sizeof(T), alignof(T));
-}
-
-
-template <typename T>
-polymorphic_allocator<T> polymorphic_allocator<T>::select_on_container_copy_construction() const
-{
-    return polymorphic_allocator<T>();
-}
-
-
-template <typename T>
-memory_resource* polymorphic_allocator<T>::resource() const
-{
-    return resource_;
-}
-
-
-#if PYCPP_NON_STANDARD_POLYMORPHIC_ALLOCATOR
-
-template <typename T>
-polymorphic_allocator<T>::polymorphic_allocator(polymorphic_allocator<T>&& rhs) noexcept:
-    polymorphic_allocator()
-{
-    // let resource use the default constructor
-    std::swap(resource_, rhs.resource_);
-}
-
-
-template <typename T>
-template <typename U>
-polymorphic_allocator<T>::polymorphic_allocator(polymorphic_allocator<U>&& rhs) noexcept:
-    polymorphic_allocator()
-{
-    // let resource use the default constructor
-    std::swap(resource_, rhs.resource_);
-}
-
-
-template <typename T>
-polymorphic_allocator<T>& polymorphic_allocator<T>::operator=(polymorphic_allocator<T>&& rhs) noexcept
-{
-    std::swap(resource_, rhs.resource_);
-    return *this;
-}
-
-#endif              // PYCPP_NON_STANDARD_POLYMORPHIC_ALLOCATOR
-
 
 template <typename T1, typename T2>
 bool operator==(const polymorphic_allocator<T1>& lhs, const polymorphic_allocator<T2>& rhs)

@@ -50,7 +50,7 @@ struct regex_impl_t
 
     // MEMBER TYPES
     // ------------
-    using allocator_type = allocator<byte>;
+    using allocator_type = byte_allocator;
     using argv_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<re2::RE2::Arg>;
     using argp_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<re2::RE2::Arg*>;
     using piece_allocator = typename allocator_traits<allocator_type>::template rebind_alloc<re2::StringPiece>;

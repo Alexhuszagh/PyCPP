@@ -7,6 +7,77 @@
  *
  *  High-performance permutation and combination algorithms
  *  from iterator pairs.
+ *
+ *  \synopsis
+ *      template <class BidirIter, class Function>
+ *      Function for_each_permutation(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last,
+ *          Function f);
+ *
+ *      template <class BidirIter, class Function>
+ *      Function for_each_reversible_permutation(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last,
+ *          Function f);
+ *
+ *      template <class BidirIter, class Function>
+ *      Function for_each_circular_permutation(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last,
+ *          Function f);
+ *
+ *      template <class BidirIter, class Function>
+ *      Function for_each_reversible_circular_permutation(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last,
+ *          Function f);
+ *
+ *      template <class BidirIter, class Function>
+ *      Function for_each_combination(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last,
+ *          Function f);
+ *
+ *      template <class UInt>
+ *      UInt count_each_combination(UInt d1, UInt d2);
+ *
+ *      template <class UInt>
+ *      UInt count_each_permutation(UInt d1, UInt d2);
+ *
+ *      template <class UInt>
+ *      UInt count_each_circular_permutation(UInt d1, UInt d2);
+ *
+ *      template <class UInt>
+ *      UInt count_each_reversible_permutation(UInt d1, UInt d2);
+ *
+ *      template <class UInt>
+ *      UInt count_each_reversible_circular_permutation(UInt d1, UInt d2);
+ *
+ *      template <class BidirIter>
+ *      uintmax_t count_each_combination(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last);
+ *
+ *      template <class BidirIter>
+ *      uintmax_t count_each_permutation(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last);
+ *
+ *      template <class BidirIter>
+ *      uintmax_t count_each_circular_permutation(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last);
+ *
+ *      template <class BidirIter>
+ *      uintmax_t count_each_reversible_permutation(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last);
+ *
+ *      template <class BidirIter>
+ *      uintmax_t count_each_reversible_circular_permutation(BidirIter first,
+ *          BidirIter mid,
+ *          BidirIter last);
  */
 
 #pragma once

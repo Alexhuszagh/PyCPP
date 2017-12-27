@@ -3,6 +3,25 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Base16 encoding and decoding routines.
+ *
+ *  \synopsis
+ *      size_t base16_encode(const void* src,
+ *          size_t srclen,
+ *          void* dst,
+ *          size_t dstlen,
+ *          const byte_allocator& allocator = byte_allocator()) noexcept;
+ *
+ *      string base16_encode(const string_wrapper& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      size_t base16_decode(const void* src,
+ *          size_t srclen,
+ *          void* dst,
+ *          size_t dstlen,
+ *          const byte_allocator& allocator = byte_allocator()) noexcept;
+ *
+ *      string base16_decode(const string_wrapper& str,
+ *          const byte_allocator& allocator = byte_allocator());
  */
 
 #pragma once
@@ -16,22 +35,50 @@ PYCPP_BEGIN_NAMESPACE
 
 /**
   *\brief Encode buffer to base16. Returns number of bytes converted.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
-size_t base16_encode(const void* src, size_t srclen, void* dst, size_t dstlen);
+size_t base16_encode(const void* src,
+    size_t srclen,
+    void* dst,
+    size_t dstlen,
+    const byte_allocator& allocator = byte_allocator()) noexcept;
 
 /**
   *\brief Encode string to base16.
+ *
+ *  \param str              Source string to encode.
+ *  \param allocator        Allocator for output string.
  */
-string base16_encode(const string_wrapper& str);
+string base16_encode(const string_wrapper& str,
+    const byte_allocator& allocator = byte_allocator());
 
 /**
   *\brief Decode buffer from base16. Returns number of bytes converted.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
-size_t base16_decode(const void* src, size_t srclen, void* dst, size_t dstlen);
+size_t base16_decode(const void* src,
+    size_t srclen,
+    void* dst,
+    size_t dstlen,
+    const byte_allocator& allocator = byte_allocator()) noexcept;
 
 /**
   *\brief Decode string from base16.
+ *
+ *  \param str              Source string to encode.
+ *  \param allocator        Allocator for output string.
  */
-string base16_decode(const string_wrapper& str);
+string base16_decode(const string_wrapper& str,
+    const byte_allocator& allocator = byte_allocator());
 
 PYCPP_END_NAMESPACE

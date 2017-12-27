@@ -104,6 +104,9 @@ using allocator = std::allocator<T>;
 
 #endif                                  // POLYMOPRHIC
 
+// Create an alias for a universal allocator.
+using byte_allocator = allocator<byte>;
+
 // The following are from cstddef, so include them here
 using std::nullptr_t;
 
