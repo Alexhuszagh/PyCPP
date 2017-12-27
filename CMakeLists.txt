@@ -707,6 +707,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/is_relocatable.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/is_safe_overload.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/is_swappable.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/is_trivial.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/polymorphic_allocator.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/stl/detail/xxhash_c.h"

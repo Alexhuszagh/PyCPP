@@ -45,7 +45,7 @@ struct standard_allocator: private standard_allocator_base
     // ------------
     using self_t = standard_allocator<T>;
     using value_type = T;
-#if defined(CPP11_PARTIAL_COMPATIBILITY)
+#if defined(CPP11_PARTIAL_ALLOCATOR_TRAITS)
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -53,7 +53,7 @@ struct standard_allocator: private standard_allocator_base
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     template <typename U> struct rebind { using other = polymorphic_allocator<U>; };
-#endif      // CPP11_PARTIAL_COMPATIBILITY
+#endif      // CPP11_PARTIAL_ALLOCATOR_TRAITS
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -65,14 +65,14 @@ struct standard_allocator: private standard_allocator_base
     ~standard_allocator() noexcept = default;
 
     // ALLOCATOR TRAITS
-    pointer allocate(size_type, const void* = nullptr);
-    void deallocate(pointer, size_type);
-#if defined(CPP11_PARTIAL_COMPATIBILITY)
+    value_type* allocate(size_t, const void* = nullptr);
+    void deallocate(value_type*, size_t);
+#if defined(CPP11_PARTIAL_ALLOCATOR_TRAITS)
     template <typename ... Ts>
     void construct(T* p, Ts&&... ts) { ::new (static_cast<void*>(p)) T(std::forward<Ts>(ts)...); }
     void destroy(T* p) { p->~T(); }
     size_type max_size() { return std::numeric_limits<size_type>::max(); }
-#endif      // CPP11_PARTIAL_COMPATIBILITY
+#endif      // CPP11_PARTIAL_ALLOCATOR_TRAITS
 };
 
 // ALIAS
@@ -93,41 +93,41 @@ struct is_relocatable<standard_allocator<T>>: true_type
 
 template <typename T>
 template <typename U>
-standard_allocator<T>::standard_allocator(const standard_allocator<U>&) noexcept
+inline standard_allocator<T>::standard_allocator(const standard_allocator<U>&) noexcept
 {}
 
 
 template <typename T>
 template <typename U>
-auto standard_allocator<T>::operator=(const standard_allocator<U>&) noexcept -> self_t&
+inline auto standard_allocator<T>::operator=(const standard_allocator<U>&) noexcept -> self_t&
 {
     return *this;
 }
 
 
 template <typename T>
-auto standard_allocator<T>::allocate(size_type n, const void* hint) -> pointer
+inline auto standard_allocator<T>::allocate(size_t n, const void* hint) -> value_type*
 {
-    return reinterpret_cast<pointer>(standard_allocator_base::allocate(n, sizeof(value_type), hint));
+    return reinterpret_cast<value_type*>(standard_allocator_base::allocate(n, sizeof(value_type), hint));
 }
 
 
 template <typename T>
-void standard_allocator<T>::deallocate(pointer p, size_type n)
+inline void standard_allocator<T>::deallocate(value_type* p, size_t n)
 {
     standard_allocator_base::deallocate(p, sizeof(value_type) * n);
 }
 
 
 template <typename T, typename U>
-bool operator==(const standard_allocator<T>&, const standard_allocator<U>&) noexcept
+inline bool operator==(const standard_allocator<T>&, const standard_allocator<U>&) noexcept
 {
     return true;
 }
 
 
 template <typename T, typename U>
-bool operator!=(const standard_allocator<T>& lhs, const standard_allocator<U>& rhs) noexcept
+inline bool operator!=(const standard_allocator<T>& lhs, const standard_allocator<U>& rhs) noexcept
 {
     return !(lhs == rhs);
 }

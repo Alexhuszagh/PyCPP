@@ -46,7 +46,7 @@ struct crt_allocator: private crt_allocator_base
     // ------------
     using self_t = crt_allocator<T>;
     using value_type = T;
-#if defined(CPP11_PARTIAL_COMPATIBILITY)
+#if defined(CPP11_PARTIAL_ALLOCATOR_TRAITS)
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -54,7 +54,7 @@ struct crt_allocator: private crt_allocator_base
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     template <typename U> struct rebind { using other = crt_allocator<U>; };
-#endif      // CPP11_PARTIAL_COMPATIBILITY
+#endif      // CPP11_PARTIAL_ALLOCATOR_TRAITS
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -66,15 +66,15 @@ struct crt_allocator: private crt_allocator_base
     ~crt_allocator() = default;
 
     // ALLOCATOR TRAITS
-    pointer allocate(size_type, const void* = nullptr);
-    pointer reallocate(pointer, size_type, size_type, const void* = nullptr);
-    void deallocate(pointer, size_type);
-#if defined(CPP11_PARTIAL_COMPATIBILITY)
+    value_type* allocate(size_t, const void* = nullptr);
+    value_type* reallocate(value_type*, size_t, size_t, const void* = nullptr);
+    void deallocate(value_type*, size_t);
+#if defined(CPP11_PARTIAL_ALLOCATOR_TRAITS)
     template <typename ... Ts>
     void construct(T* p, Ts&&... ts) { ::new (static_cast<void*>(p)) T(std::forward<Ts>(ts)...); }
     void destroy(T* p) { p->~T(); }
     size_type max_size() { return std::numeric_limits<size_type>::max(); }
-#endif      // CPP11_PARTIAL_COMPATIBILITY
+#endif      // CPP11_PARTIAL_ALLOCATOR_TRAITS
 };
 
 // ALIAS
@@ -123,48 +123,48 @@ T* crt_reallocate_impl(T* p, size_t old_size, size_t new_size, const void* hint,
 
 template <typename T>
 template <typename U>
-crt_allocator<T>::crt_allocator(const crt_allocator<U>&) noexcept
+inline crt_allocator<T>::crt_allocator(const crt_allocator<U>&) noexcept
 {}
 
 
 template <typename T>
 template <typename U>
-auto crt_allocator<T>::operator=(const crt_allocator<U>&) noexcept -> self_t&
+inline auto crt_allocator<T>::operator=(const crt_allocator<U>&) noexcept -> self_t&
 {
     return *this;
 }
 
 
 template <typename T>
-auto crt_allocator<T>::allocate(size_type n, const void* hint) -> pointer
+inline auto crt_allocator<T>::allocate(size_t n, const void* hint) -> value_type*
 {
-    return reinterpret_cast<pointer>(crt_allocator_base::allocate(n, sizeof(value_type), hint));
+    return reinterpret_cast<value_type*>(crt_allocator_base::allocate(n, sizeof(value_type), hint));
 }
 
 
 template <typename T>
-auto crt_allocator<T>::reallocate(pointer p, size_type old_size, size_type new_size, const void* hint) -> pointer
+inline auto crt_allocator<T>::reallocate(value_type* p, size_t old_size, size_t new_size, const void* hint) -> value_type*
 {
-    return reinterpret_cast<pointer>(crt_reallocate_impl(p, old_size, new_size, hint, is_relocatable<T> {}));
+    return reinterpret_cast<value_type*>(crt_reallocate_impl(p, old_size, new_size, hint, is_relocatable<T> {}));
 }
 
 
 template <typename T>
-void crt_allocator<T>::deallocate(pointer p, size_type n)
+inline void crt_allocator<T>::deallocate(value_type* p, size_t n)
 {
     crt_allocator_base::deallocate(p, sizeof(value_type) * n);
 }
 
 
 template <typename T, typename U>
-bool operator==(const crt_allocator<T>&, const crt_allocator<U>&) noexcept
+inline bool operator==(const crt_allocator<T>&, const crt_allocator<U>&) noexcept
 {
     return true;
 }
 
 
 template <typename T, typename U>
-bool operator!=(const crt_allocator<T>& lhs, const crt_allocator<U>& rhs) noexcept
+inline bool operator!=(const crt_allocator<T>& lhs, const crt_allocator<U>& rhs) noexcept
 {
     return !(lhs == rhs);
 }

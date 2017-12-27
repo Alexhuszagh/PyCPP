@@ -15,8 +15,7 @@
 
 #pragma once
 
-#include <pycpp/config.h>
-#include <type_traits>
+#include <pycpp/stl/detail/is_trivial.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -35,10 +34,10 @@ struct is_relocatable: std::integral_constant<
         std::is_empty<T>::value ||
         // Trivially copyable classes are guaranteed to be copyable
         // via `memcpy`.
-        std::is_trivially_copyable<T>::value ||
+        is_trivially_copyable<T>::value ||
         // Trivially move-constructible classes should also satisfy
         // trivially copyable types.
-        std::is_trivially_move_constructible<T>::value
+        is_trivially_move_constructible<T>::value
     >
 {};
 

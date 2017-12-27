@@ -248,7 +248,7 @@ public:
     // MEMBER TYPES
     // ------------
     using value_type = T;
-#if defined(CPP11_PARTIAL_COMPATIBILITY)
+#if defined(CPP11_PARTIAL_ALLOCATOR_TRAITS)
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -256,7 +256,7 @@ public:
     using size_type = size_t;
     using difference_type = ptrdiff_t;
     template <typename U> struct rebind { using other = polymorphic_allocator<U>; };
-#endif      // CPP11_PARTIAL_COMPATIBILITY
+#endif      // CPP11_PARTIAL_ALLOCATOR_TRAITS
 
     // MEMBER FUNCTIONS
     // ----------------
@@ -269,12 +269,12 @@ public:
     // ALLOCATOR TRAITS
     T* allocate(size_t n);
     void deallocate(T* p, size_t n);
-#if defined(CPP11_PARTIAL_COMPATIBILITY)
+#if defined(CPP11_PARTIAL_ALLOCATOR_TRAITS)
     template <typename ... Ts>
     void construct(T* p, Ts&&... ts) { ::new (static_cast<void*>(p)) T(std::forward<Ts>(ts)...); }
     void destroy(T* p) { p->~T(); }
     size_type max_size() { return std::numeric_limits<size_type>::max(); }
-#endif      // CPP11_PARTIAL_COMPATIBILITY
+#endif      // CPP11_PARTIAL_ALLOCATOR_TRAITS
 
     // PROPERTIES
     polymorphic_allocator select_on_container_copy_construction() const;

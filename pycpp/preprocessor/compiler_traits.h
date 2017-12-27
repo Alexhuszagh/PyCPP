@@ -76,7 +76,27 @@
 // COMPATABILITY
 // -------------
 
-// Define compatability for compilers with partial
-// C++11 support. Most notably, this includes GCC 5.4,
-// TODO: add here...
-#define CPP11_PARTIAL_COMPATIBILITY 1
+// Define compatibility for partial `allocator_traits` support,
+// where most STL types still use allocator methods rather
+// than the `allocator_traits` wrapper. GCC did not update
+// the STL containers to use `allocator_traits` until
+// ~GCC 6.0.0. Clang supports these since before Clang
+// 3.0.0, which is well before C++11 support (Clang 3.3).
+#if (defined(HAVE_GCC) && (COMPILER_VERSION_CODE < COMPILER_VERSION(6, 0, 0))) || \
+    (defined(HAVE_CLANG) && COMPILER_VERSION_CODE < COMPILER_VERSION(3, 0, 0))
+#   define CPP11_PARTIAL_ALLOCATOR_TRAITS 1
+#endif
+
+
+// Define comaptibility for C++11 compilers with partial <type_traits>
+// support. GCC did not support `is_trivially_copyable`,
+// `is_trivially_constructible`, `is_trivially_default_constructible`,
+// `is_trivially_assignable`, `is_trivially_copy_assignable`,
+// and `is_trivially_move_assignable` until GCC 5.0.0. Clang
+// implements these in terms of the underlying compiler,
+// and has supported wrappers for these methods since before
+// Clang 3.0.0, which is well before C++11 support (Clang 3.3).
+#if (defined(HAVE_GCC) && (COMPILER_VERSION_CODE < COMPILER_VERSION(5, 1, 0))) || \
+    (defined(HAVE_CLANG) && COMPILER_VERSION_CODE < COMPILER_VERSION(3, 0, 0))
+#   define CPP11_PARTIAL_TYPE_TRAITS 1
+#endif
