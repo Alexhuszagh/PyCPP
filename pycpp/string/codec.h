@@ -3,6 +3,27 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Codecs to convert between string types.
+ *
+ *  \TODO long description
+ *
+ *  \synopsis
+ *      u16string codec_utf8_utf16(const string_view& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      u32string codec_utf8_utf32(const string_view& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      string codec_utf16_utf8(const u16string_view& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      u32string codec_utf16_utf32(const u16string_view& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      string codec_utf32_utf8(const u32string_view& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      u16string codec_utf32_utf16(const u32string_view& str,
+ *          const byte_allocator& allocator = byte_allocator());
  */
 
 #pragma once
@@ -17,31 +38,37 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief Convert UTF-8 string to UTF-16.
  */
-u16string codec_utf8_utf16(const string_view& str);
+u16string codec_utf8_utf16(const string_view& str,
+    const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Convert UTF-8 string to UTF-32.
  */
-u32string codec_utf8_utf32(const string_view& str);
+u32string codec_utf8_utf32(const string_view& str,
+    const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Convert UTF-16 string to UTF-8.
  */
-string codec_utf16_utf8(const u16string_view& str);
+string codec_utf16_utf8(const u16string_view& str,
+    const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Convert UTF-16 string to UTF-32.
  */
-u32string codec_utf16_utf32(const u16string_view& str);
+u32string codec_utf16_utf32(const u16string_view& str,
+    const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Convert UTF-32 string to UTF-8.
  */
-string codec_utf32_utf8(const u32string_view& str);
+string codec_utf32_utf8(const u32string_view& str,
+    const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Convert UTF-32 string to UTF-16.
  */
-u16string codec_utf32_utf16(const u32string_view& str);
+u16string codec_utf32_utf16(const u32string_view& str,
+    const byte_allocator& allocator = byte_allocator());
 
 PYCPP_END_NAMESPACE

@@ -3,6 +3,8 @@
 STL-compatible allocators for custom memory management.
 
 // TODO: document
+// TODO: need to chain a few of these to create an efficient allocator...
+// Document that....
 
 **Table of Contents**
 
