@@ -31,7 +31,7 @@ using random_int_list_t = vector<random_int_t>;
 /**
  *  \brief Seed random number generator.
  */
-void seed(seed_t value);
+void seed(seed_t value) noexcept;
 
 /**
  *  \brief Get random bytes for cryptographic applications.

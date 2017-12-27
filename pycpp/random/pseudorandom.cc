@@ -4,6 +4,7 @@
 #include <pycpp/random.h>
 #include <pycpp/preprocessor/tls.h>
 #include <pycpp/stl/algorithm.h>
+#include <pycpp/stl/atomic.h>
 #include <pycpp/stl/chrono.h>
 #include <pycpp/stl/memory.h>
 #include <pycpp/stl/random.h>
@@ -27,7 +28,7 @@ using memory_type = aligned_storage_t<sizeof(T)>;
 // GLOBALS
 // -------
 
-seed_t GLOBAL_SEED = 0;
+atomic<seed_t> GLOBAL_SEED = ATOMIC_VAR_INIT(0);
 thread_local_storage seed_t SEED = 0;
 thread_local_storage bool MERSENE_TWISTER_INIT = false;
 thread_local_storage memory_type<mersene_twister> MERSENE_TWISTER;
@@ -37,17 +38,18 @@ thread_local_storage memory_type<default_random> DEFAULT_RANDOM;
 // HELPERS
 // -------
 
-static mersene_twister& get_mersene_twister()
+static mersene_twister& get_mersene_twister() noexcept
 {
     auto& generator = reinterpret_cast<mersene_twister&>(MERSENE_TWISTER);
+    seed_t global_seed = GLOBAL_SEED.load();
     if (!MERSENE_TWISTER_INIT) {
         MERSENE_TWISTER_INIT = true;
         generator = mersene_twister();
-        generator.seed(GLOBAL_SEED);
+        generator.seed(global_seed);
     }
 
-    if (SEED != GLOBAL_SEED) {
-        SEED = GLOBAL_SEED;
+    if (SEED != global_seed) {
+        SEED = global_seed;
         generator.seed(SEED);
     }
 
@@ -55,19 +57,20 @@ static mersene_twister& get_mersene_twister()
 }
 
 
-static default_random& get_default_random()
+static default_random& get_default_random() noexcept
 {
     using uint = typename default_random::result_type;
 
     auto& generator = reinterpret_cast<default_random&>(DEFAULT_RANDOM);
+    seed_t global_seed = GLOBAL_SEED.load();
     if (!DEFAULT_RANDOM_INIT) {
         DEFAULT_RANDOM_INIT = true;
         generator = default_random();
-        generator.seed(static_cast<uint>(GLOBAL_SEED));
+        generator.seed(static_cast<uint>(global_seed));
     }
 
-    if (SEED != GLOBAL_SEED) {
-        SEED = GLOBAL_SEED;
+    if (SEED != global_seed) {
+        SEED = global_seed;
         generator.seed(static_cast<uint>(SEED));
     }
 
@@ -101,9 +104,9 @@ static auto random_list(Distribution& distribution, size_t n) -> vector<typename
 // ---------
 
 
-void seed(seed_t value)
+void seed(seed_t value) noexcept
 {
-    GLOBAL_SEED = value;
+    GLOBAL_SEED.store(value);
 }
 
 

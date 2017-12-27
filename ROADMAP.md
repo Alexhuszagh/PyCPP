@@ -2,18 +2,13 @@
 
 **Short-Term**
 
-    - Bug on Windows with the compressed streams....
-        - CARRIAGE RETURN....
-
     - Specialized `is_relocatable` for a lot of types.
         - Basically everything can be specialized....
         - csv
         - filesystem
         - lattice
-        - random
         - stream
         - string
-        - windows
         - xml
 
     - Get rid of naked new/delete
@@ -26,7 +21,6 @@
         - CSV
         - Filesystem
         - Lattice
-        - Random
         - Stream
         - String
         - XML
