@@ -29,9 +29,9 @@
 #include <pycpp/stl/vector.h>
 #include <assert.h>
 #include <limits.h>
-#include <math.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <cmath>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -167,7 +167,7 @@ public:
         }
 
         double next_bucket_count = ceil(double(m_bucket_count) * REHASH_SIZE_MULTIPLICATION_FACTOR);
-        if (!isnormal(next_bucket_count)) {
+        if (!std::isnormal(next_bucket_count)) {
             throw length_error("The hash table exceeds its maxmimum size.");
         }
 
