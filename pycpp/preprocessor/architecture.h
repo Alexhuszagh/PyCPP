@@ -48,15 +48,25 @@
 #ifndef SYSTEM_ARCHITECTURE
 #   if UINTPTR_MAX == 0xffff
 #       define SYSTEM_ARCHITECTURE 16
-#   elif UINTPTR_MAX == 0xffffffff
-#       define SYSTEM_ARCHITECTURE 32
-#   elif UINTPTR_MAX == 0xffffffffffffffff
-#       define SYSTEM_ARCHITECTURE 64
-#   elif UINTPTR_MAX == 0xffffffffffffffffffffffffffffffff
-#       define SYSTEM_ARCHITECTURE 128
-#   else
-#       error "Unknown system architecture."
 #   endif
+#endif
+#ifndef SYSTEM_ARCHITECTURE
+#   if UINTPTR_MAX == 0xffffffff
+#       define SYSTEM_ARCHITECTURE 32
+#   endif
+#endif
+#ifndef SYSTEM_ARCHITECTURE
+#   if UINTPTR_MAX == 0xffffffffffffffff
+#       define SYSTEM_ARCHITECTURE 64
+#   endif
+#endif
+#ifndef SYSTEM_ARCHITECTURE
+#   if UINTPTR_MAX == 0xffffffffffffffffffffffffffffffff
+#       define SYSTEM_ARCHITECTURE 128
+#   endif
+#endif
+#ifndef SYSTEM_ARCHITECTURE
+#   error "Unknown system architecture."
 #endif
 
 // MEMORY ARCHITECTURE
@@ -70,15 +80,25 @@
 #ifndef MEMORY_ARCHITECTURE
 #   if SIZE_MAX == 0xffff
 #       define MEMORY_ARCHITECTURE 16
-#   elif SIZE_MAX == 0xffffffff
-#       define MEMORY_ARCHITECTURE 32
-#   elif SIZE_MAX == 0xffffffffffffffff
-#       define MEMORY_ARCHITECTURE 64
-#   elif SIZE_MAX == 0xffffffffffffffffffffffffffffffff
-#       define MEMORY_ARCHITECTURE 128
-#   else
-#       error "Unknown memory architecture."
 #   endif
+#endif
+#ifndef MEMORY_ARCHITECTURE
+#   if SIZE_MAX == 0xffffffff
+#       define MEMORY_ARCHITECTURE 32
+#   endif
+#endif
+#ifndef MEMORY_ARCHITECTURE
+#   if SIZE_MAX == 0xffffffffffffffff
+#       define MEMORY_ARCHITECTURE 64
+#   endif
+#endif
+#ifndef MEMORY_ARCHITECTURE
+#   if SIZE_MAX == 0xffffffffffffffffffffffffffffffff
+#       define MEMORY_ARCHITECTURE 128
+#   endif
+#endif
+#ifndef MEMORY_ARCHITECTURE
+#   error "Unknown memory architecture."
 #endif
 
 // ALIGNMENT

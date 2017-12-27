@@ -8,6 +8,7 @@
 #pragma once
 
 #include <pycpp/config.h>
+#include <pycpp/preprocessor/compiler_traits.h>
 #include <ios>
 
 PYCPP_BEGIN_NAMESPACE
@@ -22,14 +23,8 @@ using std::ios_base;
 using std::basic_ios;
 using std::ios;
 using std::wios;
-using std::io_errc;
-using std::is_error_code_enum;
 using std::streamoff;
 using std::streamsize;
-using std::iostream_category;
-using std::iostream_category;
-using std::make_error_code;
-using std::make_error_condition;
 using std::boolalpha;
 using std::noboolalpha;
 using std::showbase;
@@ -52,7 +47,17 @@ using std::hex;
 using std::oct;
 using std::fixed;
 using std::scientific;
+
+#if !defined(CPP11_PARTIAL_IOS)
+
+using std::io_errc;
+using std::is_error_code_enum;
+using std::iostream_category;
+using std::make_error_code;
+using std::make_error_condition;
 using std::hexfloat;
 using std::defaultfloat;
+
+#endif          // !CPP11_PARTIAL_IOS
 
 PYCPP_END_NAMESPACE

@@ -100,3 +100,14 @@
     (defined(HAVE_CLANG) && COMPILER_VERSION_CODE < COMPILER_VERSION(3, 0, 0))
 #   define CPP11_PARTIAL_TYPE_TRAITS 1
 #endif
+
+// Define compatibility for C++11 compilers with partial <ios>
+// support. GCC did not support `io_errc`, `is_error_code_enum`,
+// `iostream_category`, `make_error_code`, `make_error_condition`,
+// `hexfloat`, `defaultfloat` until  GCC 5.0.0. Clang supports
+// these since before Clang 3.0.0, which is well before C++11
+// support (Clang 3.3).
+#if (defined(HAVE_GCC) && (COMPILER_VERSION_CODE < COMPILER_VERSION(5, 1, 0))) || \
+    (defined(HAVE_CLANG) && COMPILER_VERSION_CODE < COMPILER_VERSION(3, 0, 0))
+#   define CPP11_PARTIAL_IOS 1
+#endif
