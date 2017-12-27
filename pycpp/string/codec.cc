@@ -6,19 +6,6 @@
 
 PYCPP_BEGIN_NAMESPACE
 
-// ALIAS
-// -----
-
-using lowlevel_callback = void(*)(
-    const void*& src, size_t srclen,
-    void*& dst, size_t dstlen,
-    const byte_allocator& allocator
-);
-
-using highlevel_callback = string(*)(
-    const string_view&, const byte_allocator& allocator
-);
-
 // HELPERS
 // -------
 
@@ -58,7 +45,9 @@ static S2& to_wide(const S1& s1,
         alloc.deallocate(dst, dstlen);
         return s2;
     } catch (...) {
-        alloc.deallocate(dst, dstlen);
+        if (dst) {
+            alloc.deallocate(dst, dstlen);
+        }
         throw;
     }
 }
@@ -102,7 +91,9 @@ static S2& to_narrow(const S1& s1,
         alloc.deallocate(dst, dstlen);
         return s2;
     } catch (...) {
-        alloc.deallocate(dst, dstlen);
+        if (dst) {
+            alloc.deallocate(dst, dstlen);
+        }
         throw;
     }
 }
@@ -118,7 +109,7 @@ u16string codec_utf8_utf16(const string_view& str,
     char_allocator alloc(allocator);
 
     u16string u16(alloc);
-    lowlevel_callback cb(utf8_to_utf16);
+    unicode_lowlevel_callback cb(utf8_to_utf16);
     return to_wide(str, u16, allocator, cb);
 }
 
@@ -130,7 +121,7 @@ u32string codec_utf8_utf32(const string_view& str,
     char_allocator alloc(allocator);
 
     u32string u32(alloc);
-    lowlevel_callback cb(utf8_to_utf32);
+    unicode_lowlevel_callback cb(utf8_to_utf32);
     return to_wide(str, u32, allocator, cb);
 }
 
@@ -142,7 +133,7 @@ string codec_utf16_utf8(const u16string_view& str,
     char_allocator alloc(allocator);
 
     string u8(alloc);
-    lowlevel_callback cb(utf16_to_utf8);
+    unicode_lowlevel_callback cb(utf16_to_utf8);
     return to_narrow(str, u8, allocator, cb);
 }
 
@@ -154,7 +145,7 @@ u32string codec_utf16_utf32(const u16string_view& str,
     char_allocator alloc(allocator);
 
     u32string u32(alloc);
-    lowlevel_callback cb(utf16_to_utf32);
+    unicode_lowlevel_callback cb(utf16_to_utf32);
     return to_wide(str, u32, allocator, cb);
 }
 
@@ -166,7 +157,7 @@ string codec_utf32_utf8(const u32string_view& str,
     char_allocator alloc(allocator);
 
     string u8(alloc);
-    lowlevel_callback cb(utf32_to_utf8);
+    unicode_lowlevel_callback cb(utf32_to_utf8);
     return to_narrow(str, u8, allocator, cb);
 }
 
@@ -178,7 +169,7 @@ u16string codec_utf32_utf16(const u32string_view& str,
     char_allocator alloc(allocator);
 
     u16string u16(alloc);
-    lowlevel_callback cb(utf32_to_utf16);
+    unicode_lowlevel_callback cb(utf32_to_utf16);
     return to_narrow(str, u16, allocator, cb);
 }
 

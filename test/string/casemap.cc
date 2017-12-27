@@ -13,8 +13,6 @@
 
 PYCPP_USING_NAMESPACE
 
-// TODO: restore....
-#if 0
 // HELPERS
 // -------
 
@@ -22,22 +20,26 @@ static void test_lowlevel(const string& input,
     const string& expected,
     casemap_lowlevel_callback cb)
 {
+    byte_allocator alloc;
     const char* src = input.data();
     char* dst = nullptr;
+    size_t dstlen = 20;
 
     try {
-        dst = new char[20];
+        dst = (char*) alloc.allocate(dstlen);
         const void* src_first = src;
         void* dst_first = dst;
-        cb(src_first, input.size(), dst_first, 20);
+        cb(src_first, input.size(), dst_first, dstlen, alloc);
         EXPECT_EQ(distance(dst, (char*) dst_first), expected.size());
         EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
     } catch (...) {
-        delete[] dst;
+        if (dst) {
+            alloc.deallocate((byte*) dst, dstlen);
+        }
         throw;
     }
 
-    delete[] dst;
+    alloc.deallocate((byte*) dst, dstlen);
 }
 
 // TESTS
@@ -52,9 +54,7 @@ TEST(casemap, ascii_tolower)
     EXPECT_EQ(ascii_tolower("-/LOW+"), "-/low+");
 
     // low-level
-    test_lowlevel("LOWER", "lower", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        ascii_tolower(src, srclen, dst, dstlen);
-    });
+    test_lowlevel("LOWER", "lower", casemap_lowlevel_callback(ascii_tolower));
 }
 
 
@@ -67,9 +67,7 @@ TEST(casemap, ascii_toupper)
     EXPECT_EQ(ascii_toupper("-/low+"), "-/LOW+");
 
     // low-level
-    test_lowlevel("lower", "LOWER", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        ascii_toupper(src, srclen, dst, dstlen);
-    });
+    test_lowlevel("lower", "LOWER", casemap_lowlevel_callback(ascii_toupper));
 }
 
 
@@ -84,9 +82,7 @@ TEST(casemap, ascii_totitle)
     EXPECT_EQ(ascii_totitle("aaaAA.aa"), "Aaaaa.Aa");
 
     // low-level
-    test_lowlevel("lower", "Lower", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        ascii_totitle(src, srclen, dst, dstlen);
-    });
+    test_lowlevel("lower", "Lower", casemap_lowlevel_callback(ascii_totitle));
 }
 
 
@@ -101,9 +97,7 @@ TEST(casemap, ascii_capitalize)
     EXPECT_EQ(ascii_capitalize("aaaAA.aa"), "Aaaaa.aa");
 
     // low-level
-    test_lowlevel("aaaAA.aa", "Aaaaa.aa", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        ascii_capitalize(src, srclen, dst, dstlen);
-    });
+    test_lowlevel("aaaAA.aa", "Aaaaa.aa", casemap_lowlevel_callback(ascii_capitalize));
 }
 
 
@@ -226,9 +220,7 @@ TEST(casemap, utf8_tolower)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf8_tolower(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf8_tolower));
 }
 
 
@@ -379,9 +371,7 @@ TEST(casemap, utf8_toupper)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf8_toupper(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf8_toupper));
 }
 
 
@@ -407,9 +397,7 @@ TEST(casemap, utf8_totitle)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf8_totitle(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf8_totitle));
 }
 
 
@@ -435,9 +423,7 @@ TEST(casemap, utf8_capitalize)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf8_capitalize(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf8_capitalize));
 }
 
 
@@ -478,9 +464,7 @@ TEST(casemap, utf16_tolower)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf16_tolower(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf16_tolower));
 }
 
 
@@ -521,9 +505,7 @@ TEST(casemap, utf16_toupper)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf16_toupper(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf16_toupper));
 }
 
 
@@ -564,9 +546,7 @@ TEST(casemap, utf16_totitle)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf16_totitle(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf16_totitle));
 }
 
 
@@ -608,9 +588,7 @@ TEST(casemap, utf32_tolower)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf32_tolower(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf32_tolower));
 }
 
 
@@ -652,9 +630,7 @@ TEST(casemap, utf32_toupper)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf32_toupper(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf32_toupper));
 }
 
 
@@ -696,9 +672,5 @@ TEST(casemap, utf32_totitle)
     }
 
     // low-level
-    test_lowlevel(tests[0].first, tests[0].second, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf32_totitle(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(tests[0].first, tests[0].second, casemap_lowlevel_callback(utf32_totitle));
 }
-
-#endif

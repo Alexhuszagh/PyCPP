@@ -53,26 +53,30 @@ static const string UTF32_3 = {0, 0, 0, 109, 0, 0, 0, -22, 0, 0, 0, 109, 0, 0, 0
 // HELPERS
 // -------
 
-// TODO: restore
-#if 0
-static void test_lowlevel(const string& input, const string& expected, unicode_lowlevel_callback cb)
+static void test_lowlevel(const string& input,
+    const string& expected,
+    unicode_lowlevel_callback cb)
 {
+    byte_allocator alloc;
     const char* src = input.data();
     char* dst = nullptr;
+    size_t dstlen = 20;
 
     try {
-        dst = new char[20];
+        dst = (char*) alloc.allocate(dstlen);
         const void* src_first = src;
         void* dst_first = dst;
-        cb(src_first, input.size(), dst_first, 20);
+        cb(src_first, input.size(), dst_first, dstlen, alloc);
         EXPECT_EQ(distance(dst, (char*) dst_first), expected.size());
         EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
     } catch (...) {
-        delete[] dst;
+        if (dst) {
+            alloc.deallocate((byte*) dst, dstlen);
+        }
         throw;
     }
 
-    delete[] dst;
+    alloc.deallocate((byte*) dst, dstlen);
 }
 
 // TESTS
@@ -283,24 +287,12 @@ TEST(unicode, codepoint_conversions)
 
 TEST(unicode, lowlevel)
 {
-    test_lowlevel(UTF8, UTF16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf8_to_utf16(src, srclen, dst, dstlen);
-    });
-    test_lowlevel(UTF8, UTF32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf8_to_utf32(src, srclen, dst, dstlen);
-    });
-    test_lowlevel(UTF16, UTF8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf16_to_utf8(src, srclen, dst, dstlen);
-    });
-    test_lowlevel(UTF16, UTF32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf16_to_utf32(src, srclen, dst, dstlen);
-    });
-    test_lowlevel(UTF32, UTF8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf32_to_utf8(src, srclen, dst, dstlen);
-    });
-    test_lowlevel(UTF32, UTF16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf32_to_utf16(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(UTF8, UTF16, unicode_lowlevel_callback(utf8_to_utf16));
+    test_lowlevel(UTF8, UTF32, unicode_lowlevel_callback(utf8_to_utf32));
+    test_lowlevel(UTF16, UTF8, unicode_lowlevel_callback(utf16_to_utf8));
+    test_lowlevel(UTF16, UTF32, unicode_lowlevel_callback(utf16_to_utf32));
+    test_lowlevel(UTF32, UTF8, unicode_lowlevel_callback(utf32_to_utf8));
+    test_lowlevel(UTF32, UTF16, unicode_lowlevel_callback(utf32_to_utf16));
 }
 
 
@@ -540,4 +532,3 @@ TEST(unicode, sequences)
         }
     }
 }
-#endif

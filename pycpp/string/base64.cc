@@ -172,9 +172,9 @@ static void decode_base64_message(Iter1 &src_first,
 // ---------
 
 
-size_t base64_encode(const void* src,
+void base64_encode(const void*& src,
     size_t srclen,
-    void* dst,
+    void*& dst,
     size_t dstlen,
     const byte_allocator&) noexcept
 {
@@ -187,7 +187,8 @@ size_t base64_encode(const void* src,
         encode_base64_message(src_first, src_last, dst_first);
     }
 
-    return dst_first - reinterpret_cast<char*>(dst);
+    src = static_cast<const void*>(src_first);
+    dst = static_cast<void*>(dst_first);
 }
 
 
@@ -210,9 +211,9 @@ string base64_encode(const string_wrapper& str,
 }
 
 
-size_t base64_decode(const void* src,
+void base64_decode(const void*& src,
     size_t srclen,
-    void* dst,
+    void*& dst,
     size_t dstlen,
     const byte_allocator&) noexcept
 {
@@ -225,7 +226,8 @@ size_t base64_decode(const void* src,
         decode_base64_message(src_first, src_last, dst_first);
     }
 
-    return dst_first - reinterpret_cast<char*>(dst);
+    src = static_cast<const void*>(src_first);
+    dst = static_cast<void*>(dst_first);
 }
 
 

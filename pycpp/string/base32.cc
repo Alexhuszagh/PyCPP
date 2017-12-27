@@ -179,9 +179,9 @@ static void decode_base32_message(Iter1 &src_first,
 // ---------
 
 
-size_t base32_encode(const void* src,
+void base32_encode(const void*& src,
     size_t srclen,
-    void* dst,
+    void*& dst,
     size_t dstlen,
     const byte_allocator&) noexcept
 {
@@ -194,7 +194,8 @@ size_t base32_encode(const void* src,
         encode_base32_message(src_first, src_last, dst_first);
     }
 
-    return dst_first - reinterpret_cast<char*>(dst);
+    src = static_cast<const void*>(src_first);
+    dst = static_cast<void*>(dst_first);
 }
 
 
@@ -217,9 +218,9 @@ string base32_encode(const string_wrapper& str,
 }
 
 
-size_t base32_decode(const void* src,
+void base32_decode(const void*& src,
     size_t srclen,
-    void* dst,
+    void*& dst,
     size_t dstlen,
     const byte_allocator&) noexcept
 {
@@ -232,7 +233,8 @@ size_t base32_decode(const void* src,
         decode_base32_message(src_first, src_last, dst_first);
     }
 
-    return dst_first - reinterpret_cast<char*>(dst);
+    src = static_cast<const void*>(src_first);
+    dst = static_cast<void*>(dst_first);
 }
 
 

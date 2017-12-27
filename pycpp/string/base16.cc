@@ -73,9 +73,9 @@ static void decode_base16_message(Iter1 &src_first,
 // ---------
 
 
-size_t base16_encode(const void* src,
+void base16_encode(const void*& src,
     size_t srclen,
-    void* dst,
+    void*& dst,
     size_t dstlen,
     const byte_allocator&) noexcept
 {
@@ -88,7 +88,8 @@ size_t base16_encode(const void* src,
         encode_base16_message(src_first, dst_first);
     }
 
-    return dst_first - reinterpret_cast<char*>(dst);
+    src = static_cast<const void*>(src_first);
+    dst = static_cast<void*>(dst_first);
 }
 
 
@@ -111,9 +112,9 @@ string base16_encode(const string_wrapper& str,
 }
 
 
-size_t base16_decode(const void* src,
+void base16_decode(const void*& src,
     size_t srclen,
-    void* dst,
+    void*& dst,
     size_t dstlen,
     const byte_allocator&) noexcept
 {
@@ -126,7 +127,8 @@ size_t base16_decode(const void* src,
         decode_base16_message(src_first, src_last, dst_first);
     }
 
-    return dst_first - reinterpret_cast<char*>(dst);
+    src = static_cast<const void*>(src_first);
+    dst = static_cast<void*>(dst_first);
 }
 
 

@@ -86,10 +86,28 @@ void regex_impl_t::initialize()
     piece_allocator piece_alloc(re_allocator());
 
     // allocate memory
-    argc = re2.NumberOfCapturingGroups();
-    argv = argv_alloc.allocate(argc);
-    argp = argp_alloc.allocate(argc);
-    piece = piece_alloc.allocate(argc);
+    try {
+        argc = re2.NumberOfCapturingGroups();
+        argv = argv_alloc.allocate(argc);
+        argp = argp_alloc.allocate(argc);
+        piece = piece_alloc.allocate(argc);
+    } catch (...) {
+        // free any allocation failures
+        if (argv) {
+            argv_alloc.deallocate(argv, argc);
+        }
+        if (argp) {
+            argp_alloc.deallocate(argp, argc);
+        }
+        if (piece) {
+            piece_alloc.deallocate(piece, argc);
+        }
+        argc = 0;
+        argv = nullptr;
+        argp = nullptr;
+        piece = nullptr;
+        throw;
+    }
 
     // initialize memory
     for (size_t i = 0; i < argc; ++i) {

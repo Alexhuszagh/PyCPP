@@ -14,24 +14,30 @@ PYCPP_USING_NAMESPACE
 // HELPERS
 // -------
 
-static void test_lowlevel(const string& input, const string& expected, hex_lowlevel_callback cb)
+static void test_lowlevel(const string& input,
+    const string& expected,
+    hex_lowlevel_callback cb)
 {
+    byte_allocator alloc;
     const char* src = input.data();
     char* dst = nullptr;
+    size_t dstlen = 20;
 
     try {
-        dst = new char[20];
+        dst = (char*) alloc.allocate(dstlen);
         const void* src_first = src;
         void* dst_first = dst;
-        cb(src_first, input.size(), dst_first, 20);
+        cb(src_first, input.size(), dst_first, dstlen, alloc);
         EXPECT_EQ(distance(dst, (char*) dst_first), expected.size());
         EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
     } catch (...) {
-        delete[] dst;
+        if (dst) {
+            alloc.deallocate((byte*) dst, dstlen);
+        }
         throw;
     }
 
-    delete[] dst;
+    alloc.deallocate((byte*) dst, dstlen);
 }
 
 // TESTS
@@ -47,9 +53,7 @@ TEST(hex, hex8)
     EXPECT_EQ(hex_i8(bytes), expected);
 
     // low-level
-    test_lowlevel(bytes, expected, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        hex_i8(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(bytes, expected, hex_lowlevel_callback(hex_i8));
 }
 
 
@@ -62,9 +66,7 @@ TEST(hex, hex32)
     EXPECT_EQ(hex_i32(bytes), expected);
 
     // low-level
-    test_lowlevel(bytes, expected, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        hex_i32(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(bytes, expected, hex_lowlevel_callback(hex_i32));
 }
 
 
@@ -77,9 +79,7 @@ TEST(unhex, unhex8)
     EXPECT_EQ(unhex_i8(bytes), expected);
 
     // low-level
-    test_lowlevel(bytes, expected, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        unhex_i8(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(bytes, expected, hex_lowlevel_callback(unhex_i8));
 }
 
 
@@ -92,7 +92,5 @@ TEST(unhex, unhex32)
     EXPECT_EQ(unhex_i32(bytes), expected);
 
     // low-level
-    test_lowlevel(bytes, expected, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        unhex_i32(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(bytes, expected, hex_lowlevel_callback(unhex_i32));
 }

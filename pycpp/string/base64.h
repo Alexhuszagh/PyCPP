@@ -5,18 +5,18 @@
  *  \brief Base64 encoding and decoding routines.
  *
  *  \synopsis
- *      size_t base64_encode(const void* src,
+ *      void base64_encode(const void*& src,
  *          size_t srclen,
- *          void* dst,
+ *          void*& dst,
  *          size_t dstlen,
  *          const byte_allocator& allocator = byte_allocator()) noexcept;
  *
  *      string base64_encode(const string_wrapper& str,
  *          const byte_allocator& allocator = byte_allocator());
  *
- *      size_t base64_decode(const void* src,
+ *      void base64_decode(const void*& src,
  *          size_t srclen,
- *          void* dst,
+ *          void*& dst,
  *          size_t dstlen,
  *          const byte_allocator& allocator = byte_allocator()) noexcept;
  *
@@ -33,8 +33,10 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
+// TODO: change to have pointers to source and dest buffers...
+
 /**
- *  \brief Encode buffer to base64. Returns number of bytes converted.
+ *  \brief Encode buffer to base64.
  *
  *  \param src              Pointer to source buffer.
  *  \param srclen           Length of source buffer.
@@ -42,9 +44,9 @@ PYCPP_BEGIN_NAMESPACE
  *  \param dstlen           Length of destination buffer.
  *  \param allocator        Allocator for internal allocations (unused).
  */
-size_t base64_encode(const void* src,
+void base64_encode(const void*& src,
     size_t srclen,
-    void* dst,
+    void*& dst,
     size_t dstlen,
     const byte_allocator& allocator = byte_allocator()) noexcept;
 
@@ -58,7 +60,7 @@ string base64_encode(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
- *  \brief Decode buffer from base64. Returns number of bytes converted.
+ *  \brief Decode buffer from base64.
  *
  *  \param src              Pointer to source buffer.
  *  \param srclen           Length of source buffer.
@@ -66,9 +68,9 @@ string base64_encode(const string_wrapper& str,
  *  \param dstlen           Length of destination buffer.
  *  \param allocator        Allocator for internal allocations (unused).
  */
-size_t base64_decode(const void* src,
+void base64_decode(const void*& src,
     size_t srclen,
-    void* dst,
+    void*& dst,
     size_t dstlen,
     const byte_allocator& allocator = byte_allocator()) noexcept;
 

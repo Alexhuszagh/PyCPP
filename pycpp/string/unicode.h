@@ -8,78 +8,93 @@
  *  \addtogroup PyCPP
  *  \brief Unicode code point conversions and detection.
  *
- *  \TODO long description
+ *  Routines to detect character type (if the character is numeric,
+ *  alphanumeric, alphabetical, lowercase, etc.) and convert between
+ *  Unicode code points (UTF-8, UTF-16, and UTF-32). Each conversion
+ *  routine takes a memory allocator which allocates memory internally
+ *  for the high-level interfaces, and dictate the memory allocation
+ *  properties of the output string.
  *
  *  \synopsis
-        bool is_ascii(uint32_t c);
-        bool is_unicode(uint32_t c);
-        bool is_alnum(uint32_t c);
-        bool is_alpha(uint32_t c);
-        bool is_digit(uint32_t c);
-        bool is_lower(uint32_t c);
-        bool is_upper(uint32_t c);
-        bool is_space(uint32_t c);
-        bool is_blank(uint32_t c);
-        bool is_punctuation(uint32_t c);
-        bool is_ascii_byte(uint8_t c);
-        bool is_start_byte(uint8_t c);
-        bool is_continuation_byte(uint8_t c);
-        bool is_ascii(const string_wrapper& str);
-        bool is_unicode(const string_wrapper& str);
-
-        void utf8_to_utf16(const void*& src,
-            size_t srclen,
-            void*& dst,
-            size_t dstlen,
-            const byte_allocator& allocator = byte_allocator());
-
-        string utf8_to_utf16(const string_wrapper& str,
-            const byte_allocator& allocator = byte_allocator());
-
-        void utf8_to_utf32(const void*& src,
-            size_t srclen,
-            void*& dst,
-            size_t dstlen,
-            const byte_allocator& allocator = byte_allocator());
-
-        string utf8_to_utf32(const string_wrapper& str,
-            const byte_allocator& allocator = byte_allocator());
-
-        void utf16_to_utf8(const void*& src,
-            size_t srclen,
-            void*& dst,
-            size_t dstlen,
-            const byte_allocator& allocator = byte_allocator());
-
-        string utf16_to_utf8(const string_wrapper& str,
-            const byte_allocator& allocator = byte_allocator());
-
-        void utf16_to_utf32(const void*& src,
-            size_t srclen,
-            void*& dst,
-            size_t dstlen,
-            const byte_allocator& allocator = byte_allocator());
-
-        string utf16_to_utf32(const string_wrapper& str,
-            const byte_allocator& allocator = byte_allocator());
-
-        void utf32_to_utf8(const void*& src,
-            size_t srclen,
-            void*& dst,
-            size_t dstlen,
-            const byte_allocator& allocator = byte_allocator());
-
-        string utf32_to_utf8(const string_wrapper& str,
-            const byte_allocator& allocator = byte_allocator());
-
-        void utf32_to_utf16(const void*& src,
-            size_t srclen,
-            void*& dst,
-            size_t dstlen,
-            const byte_allocator& allocator = byte_allocator());
-
-        string utf32_to_utf16(const string_wrapper& str,
-            const byte_allocator& allocator = byte_allocator());
+ *      using unicode_lowlevel_callback = void(*)(
+ *          const void*& src, size_t srclen,
+ *          void*& dst, size_t dstlen,
+ *          const byte_allocator& allocator
+ *      );
+ *
+ *      using unicode_highlevel_callback = string(*)(
+ *          const string_view&, const byte_allocator& allocator
+ *      );
+ *
+ *      bool is_ascii(uint32_t c);
+ *      bool is_unicode(uint32_t c);
+ *      bool is_alnum(uint32_t c);
+ *      bool is_alpha(uint32_t c);
+ *      bool is_digit(uint32_t c);
+ *      bool is_lower(uint32_t c);
+ *      bool is_upper(uint32_t c);
+ *      bool is_space(uint32_t c);
+ *      bool is_blank(uint32_t c);
+ *      bool is_punctuation(uint32_t c);
+ *      bool is_ascii_byte(uint8_t c);
+ *      bool is_start_byte(uint8_t c);
+ *      bool is_continuation_byte(uint8_t c);
+ *      bool is_ascii(const string_wrapper& str);
+ *      bool is_unicode(const string_wrapper& str);
+ *
+ *      void utf8_to_utf16(const void*& src,
+ *          size_t srclen,
+ *          void*& dst,
+ *          size_t dstlen,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      string utf8_to_utf16(const string_wrapper& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      void utf8_to_utf32(const void*& src,
+ *          size_t srclen,
+ *          void*& dst,
+ *          size_t dstlen,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      string utf8_to_utf32(const string_wrapper& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      void utf16_to_utf8(const void*& src,
+ *          size_t srclen,
+ *          void*& dst,
+ *          size_t dstlen,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      string utf16_to_utf8(const string_wrapper& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      void utf16_to_utf32(const void*& src,
+ *          size_t srclen,
+ *          void*& dst,
+ *          size_t dstlen,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      string utf16_to_utf32(const string_wrapper& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      void utf32_to_utf8(const void*& src,
+ *          size_t srclen,
+ *          void*& dst,
+ *          size_t dstlen,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      string utf32_to_utf8(const string_wrapper& str,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      void utf32_to_utf16(const void*& src,
+ *          size_t srclen,
+ *          void*& dst,
+ *          size_t dstlen,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      string utf32_to_utf16(const string_wrapper& str,
+ *          const byte_allocator& allocator = byte_allocator());
  */
 
 #pragma once
@@ -92,15 +107,15 @@ PYCPP_BEGIN_NAMESPACE
 // ALIAS
 // -----
 
-using unicode_lowlevel_callback = function<void(
+using unicode_lowlevel_callback = void(*)(
     const void*& src, size_t srclen,
     void*& dst, size_t dstlen,
     const byte_allocator& allocator
-)>;
+);
 
-using unicode_highlevel_callback = function<string(
-    const string_wrapper&, const byte_allocator& allocator
-)>;
+using unicode_highlevel_callback = string(*)(
+    const string_view&, const byte_allocator& allocator
+);
 
 // FUNCTIONS
 // ---------
@@ -190,7 +205,13 @@ bool is_unicode(const string_wrapper& str);
 // CONVERSIONS
 
 /**
- *  \brief Convert UTF-8 to UTF-16. Returns number of bytes converted.
+ *  \brief Convert UTF-8 to UTF-16.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
 void utf8_to_utf16(const void*& src,
     size_t srclen,
@@ -200,12 +221,21 @@ void utf8_to_utf16(const void*& src,
 
 /**
  *  \brief Convert UTF-8 string to UTF-16.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string utf8_to_utf16(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
- *  \brief Convert UTF-8 to UTF-32. Returns number of bytes converted.
+ *  \brief Convert UTF-8 to UTF-32.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
 void utf8_to_utf32(const void*& src,
     size_t srclen,
@@ -215,12 +245,21 @@ void utf8_to_utf32(const void*& src,
 
 /**
  *  \brief Convert UTF-8 string to UTF-32.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string utf8_to_utf32(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
- *  \brief Convert UTF-16 to UTF-8. Returns number of bytes converted.
+ *  \brief Convert UTF-16 to UTF-8.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
 void utf16_to_utf8(const void*& src,
     size_t srclen,
@@ -235,7 +274,13 @@ string utf16_to_utf8(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
- *  \brief Convert UTF-16 to UTF-32. Returns number of bytes converted.
+ *  \brief Convert UTF-16 to UTF-32.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
 void utf16_to_utf32(const void*& src,
     size_t srclen,
@@ -245,12 +290,15 @@ void utf16_to_utf32(const void*& src,
 
 /**
  *  \brief Convert UTF-16 string to UTF-32.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string utf16_to_utf32(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
- *  \brief Convert UTF-32 to UTF-8. Returns number of bytes converted.
+ *  \brief Convert UTF-32 to UTF-8.
  */
 void utf32_to_utf8(const void*& src,
     size_t srclen,
@@ -265,7 +313,13 @@ string utf32_to_utf8(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
- *  \brief Convert UTF-32 to UTF-16. Returns number of bytes converted.
+ *  \brief Convert UTF-32 to UTF-16.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
 void utf32_to_utf16(const void*& src,
     size_t srclen,
@@ -275,6 +329,9 @@ void utf32_to_utf16(const void*& src,
 
 /**
  *  \brief Convert UTF-32 string to UTF-16.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string utf32_to_utf16(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());

@@ -21,11 +21,9 @@
         - Filesystem
         - Lattice
         - String
-            - TODO: should be able to pass allocators...
-                - For any function that allocates memory....
-            - codec
+            - hex
+            - punycode
             - string
-            - unicode
             - url
         - XML
 
