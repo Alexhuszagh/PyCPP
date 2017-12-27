@@ -111,7 +111,7 @@ template <
     typename Value,
     typename Hash = hash<Key>,
     typename Pred = equal_to<Key>,
-    typename Alloc = allocator<pair<const Key, Value>>,
+    typename Alloc = allocator<pair<Key, Value>>,
     template <typename, typename> class List = list,
     template <typename, typename, typename, typename, typename> class Map = unordered_map
 >
@@ -123,7 +123,7 @@ public:
     using self_t = lru_cache<Key, Value, Hash, Pred, Alloc, List, Map>;
     using key_type = Key;
     using mapped_type = Value;
-    using value_type = pair<const key_type, mapped_type>;
+    using value_type = pair<key_type, mapped_type>;
     using reference = value_type&;
     using const_reference = const value_type&;
     using pointer = value_type*;
@@ -247,10 +247,13 @@ lru_cache<K, V, H, P, A, L, M>::lru_cache(int cache_size, const allocator_type& 
 
 template <typename K, typename V, typename H, typename P, typename A, template <typename, typename> class L, template <typename, typename, typename, typename, typename> class M>
 lru_cache<K, V, H, P, A, L, M>::lru_cache(const self_t& rhs, const allocator_type& alloc):
-    list_(rhs.list_, alloc),
+    list_(alloc),
     map_(alloc),
     cache_size_(rhs.cache_size_)
 {
+    // Workaround: old C++11 compilers don't have take copy constructors
+    // with an allocator, this has no overhead.
+    list_ = rhs.list_;
     for (auto it = list_.begin(); it != list_.end(); ++it) {
         map_.emplace(make_pair(cref(it->first), it));
     }
