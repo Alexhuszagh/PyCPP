@@ -13,6 +13,8 @@
  *  \code
  *      any p0 = 1;                     // works on all but MSVC
  *      any p1 = make_any<int>(1);      // works on all compilers
+ *
+ *  \synopsis
  */
 
 #pragma once

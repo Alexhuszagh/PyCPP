@@ -4,6 +4,16 @@
 /**
  *  \addtogroup PyCPP
  *  \brief URL encoding and decoding.
+ *
+ *  Convert strings to encode or decode characters to a special character
+ *  set so they are suitable to be sent to web servers as a URL.
+ *
+ *  \synopsis
+ *      string url_encode(const string_wrapper& string,
+ *          const byte_allocator& allocator = byte_allocator());
+ *
+ *      string url_decode(const string_wrapper& string,
+ *          const byte_allocator& allocator = byte_allocator());
  */
 
 #pragma once
@@ -18,17 +28,19 @@ PYCPP_BEGIN_NAMESPACE
 /**
  *  \brief URL-encode string.
  *
- *  \param string       String to encode
- *  \return             URL-encoded string
+ *  \param string           String to encode.
+ *  \param allocator        Allocator for output string.
  */
-string url_encode(const string_wrapper& string);
+string url_encode(const string_wrapper& string,
+    const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief URL-decode string.
  *
- *  \param string       String to encode
- *  \return             URL-decoded string
+ *  \param string           String to encode.
+ *  \param allocator        Allocator for output string.
  */
-string url_decode(const string_wrapper& string);
+string url_decode(const string_wrapper& string,
+    const byte_allocator& allocator = byte_allocator());
 
 PYCPP_END_NAMESPACE

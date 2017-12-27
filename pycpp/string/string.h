@@ -7,6 +7,8 @@
  *  Provides an API similar to Python's string module and string class,
  *  allowing facile string conversions and replacement with a clean
  *  API.
+ *
+ *  \synopsis
  */
 
 #pragma once

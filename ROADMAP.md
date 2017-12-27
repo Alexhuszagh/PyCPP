@@ -22,8 +22,16 @@
         - Lattice
         - String
             - string
-            - url
         - XML
+
+    - Add synopsis and everything
+        - (Denotes things I've finished)
+            - String (all but /string.h)
+            - Allocator
+            - STL
+                - detail
+                    - polymorphic_allocator.h
+                    - fstream.h
 
     - Make moves always non-throwing
         - Check if copies can be non-throwing too

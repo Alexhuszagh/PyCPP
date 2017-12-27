@@ -10,16 +10,18 @@ PYCPP_BEGIN_NAMESPACE
 // -------
 
 
-/** Convert character to hex.
+/**
+ *  Convert character to hex.
  */
-unsigned char to_hex(unsigned char x)
+unsigned char to_hex(unsigned char x) noexcept
 {
     return x + (x > 9 ? ('A'-10) : '0');
 }
 
-/** Convert all ASCII character ranges back to bytes.
+/**
+ *  Convert all ASCII character ranges back to bytes.
  */
-unsigned char from_hex(unsigned char x)
+unsigned char from_hex(unsigned char x) noexcept
 {
     if (x <= '9' && x >= '0') {
         x -= '0';
@@ -37,12 +39,17 @@ unsigned char from_hex(unsigned char x)
 // ---------
 
 
-/** Pre-allocate upper bound of the encoded-string, that is, ~3x the
+/**
+ *  Pre-allocate upper bound of the encoded-string, that is, ~3x the
  *  size of the original string, and re-allocate string once.
  */
-string url_encode(const string_wrapper& str)
+string url_encode(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    string result;
+    using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
+    char_allocator alloc(allocator);
+
+    string result(alloc);
     result.reserve(3 * str.size());
 
     for (auto it = str.cbegin(); it != str.cend(); ++it)
@@ -69,9 +76,13 @@ string url_encode(const string_wrapper& str)
 /** Pre-allocate upper bound of the encoded-string, that is, roughly the
  *  size of the original string, and re-allocate string once.
  */
-string url_decode(const string_wrapper& str)
+string url_decode(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    string result;
+    using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
+    char_allocator alloc(allocator);
+
+    string result(alloc);
     result.reserve(str.size());
 
     typename string::size_type i;
