@@ -15,16 +15,20 @@ Building is mostly straightforward, with a few quirks on MSVC. The following des
 
 ## Supported Compilers
 
+**Minimum**
+
+PyCPP requires at minimum a partially compliant C++11 compiler, requiring at least the following compiler versions:
+    - GCC 5.0.0
+
 PyCPP is built and tested with the following compilers and compiler versions:
+    - GCC 5.2.0
     - GCC 5.4.0
     - GCC 6.4.0
     - GCC 7.2.1
     - (Add Clang)
     - (Add MSVC)
-    - (Add flags)....
 
 Testing GCC and Clang versions is easy on Linux, using Docker. To test a custom Docker version, run `docker run -it gcc:$VERSION bash`, where `VERSION` is the desired [GCC version](https://hub.docker.com/r/library/gcc/tags/).
-
 
 ## Optional Modules
 

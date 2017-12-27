@@ -87,7 +87,6 @@
 #   define CPP11_PARTIAL_ALLOCATOR_TRAITS 1
 #endif
 
-
 // Define comaptibility for C++11 compilers with partial <type_traits>
 // support. GCC did not support `is_trivially_copyable`,
 // `is_trivially_constructible`, `is_trivially_default_constructible`,
