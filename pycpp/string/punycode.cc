@@ -290,8 +290,18 @@ void decode_impl(Iter8 &src, size_t srclen,
 
 
 template <typename Cb1, typename Cb2>
-static void punycode_conversion(const void*& src, size_t srclen, void*& dst, size_t dstlen, Cb1 cb1, Cb2 cb2)
+static void punycode_conversion(const void*& src,
+    size_t srclen,
+    void*& dst,
+    size_t dstlen,
+    const byte_allocator& allocator,
+    Cb1 cb1,
+    Cb2 cb2)
 {
+    // get allocator
+    using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
+    char_allocator alloc(allocator);
+
     // get preferred formats
     size_t u32_size = srclen * 4;
     char* u32 = nullptr;
@@ -299,72 +309,74 @@ static void punycode_conversion(const void*& src, size_t srclen, void*& dst, siz
     // convert
     try {
         // allocate memory
-        u32 = new char[u32_size];
+        u32 = alloc.allocate(u32_size);
         const void* u32_src = (const void*) u32;
         void* u32_dst = (void*) u32;
 
         // convert string
-        cb1(src, srclen, u32_dst, u32_size);
+        cb1(src, srclen, u32_dst, u32_size, allocator);
         u32_size = distance(u32, (char*) u32_dst);
-        cb2(u32_src, u32_size, dst, dstlen);
+        cb2(u32_src, u32_size, dst, dstlen, allocator);
     } catch (...) {
-        delete[] u32;
+        if (u32) {
+            alloc.deallocate(u32, u32_size);
+        }
         throw;
     }
 
     // free
-    delete[] u32;
+    alloc.deallocate(u32, u32_size);
 }
 
 // FUNCTIONS
 // ---------
 
 
-void utf8_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+void utf8_to_punycode(const void*& src,
+    size_t srclen,
+    void*& dst,
+    size_t dstlen,
+    const byte_allocator& allocator)
 {
-    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
-    {
-        utf8_to_utf32(src, srclen, dst, dstlen);
-    };
-
-    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
-    {
-        utf32_to_punycode(src, srclen, dst, dstlen);
-    };
-
-    punycode_conversion(src, srclen, dst, dstlen, cb1, cb2);
+    unicode_lowlevel_callback cb1(utf8_to_utf32);
+    punycode_lowlevel_callback cb2(utf32_to_punycode);
+    punycode_conversion(src, srclen, dst, dstlen, allocator, cb1, cb2);
 }
 
 
-string utf8_to_punycode(const string_wrapper& str)
+string utf8_to_punycode(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    return utf32_to_punycode(utf8_to_utf32(str));
+    auto utf32 = utf8_to_utf32(str, allocator);
+    return utf32_to_punycode(utf32, allocator);
 }
 
 
-void utf16_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+void utf16_to_punycode(const void*& src,
+    size_t srclen,
+    void*& dst,
+    size_t dstlen,
+    const byte_allocator& allocator)
 {
-    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
-    {
-        utf16_to_utf32(src, srclen, dst, dstlen);
-    };
-
-    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
-    {
-        utf32_to_punycode(src, srclen, dst, dstlen);
-    };
-
-    punycode_conversion(src, srclen, dst, dstlen, cb1, cb2);
+    unicode_lowlevel_callback cb1(utf16_to_utf32);
+    punycode_lowlevel_callback cb2(utf32_to_punycode);
+    punycode_conversion(src, srclen, dst, dstlen, allocator, cb1, cb2);
 }
 
 
-string utf16_to_punycode(const string_wrapper& str)
+string utf16_to_punycode(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    return utf32_to_punycode(utf16_to_utf32(str));
+    auto utf32 = utf16_to_utf32(str, allocator);
+    return utf32_to_punycode(utf32, allocator);
 }
 
 
-void utf32_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+void utf32_to_punycode(const void*& src,
+    size_t srclen,
+    void*& dst,
+    size_t dstlen,
+    const byte_allocator&)
 {
     // get preferred formats
     const uint32_t* src_first = (const uint32_t*) src;
@@ -381,73 +393,86 @@ void utf32_to_punycode(const void*& src, size_t srclen, void*& dst, size_t dstle
 }
 
 
-string utf32_to_punycode(const string_wrapper& str)
+string utf32_to_punycode(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
+    // get allocator
+    using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
+    char_allocator alloc(allocator);
+
     // arguments
     const size_t srclen = str.size();
     const size_t dstlen = srclen * 6 / 4;
     const char* src = str.data();
-    char* dst = (char*) safe_malloc(dstlen);
-    const void* src_first = (const void*) src;
-    void* dst_first = (void*) dst;
+    char* dst = nullptr;
 
     try {
+        // initialize memory for output
+        dst = alloc.allocate(dstlen);
+        void* dst_first = static_cast<void*>(dst);
+        const void* src_first = static_cast<const void*>(src);
+
+        // create STL container and return
         utf32_to_punycode(src_first, srclen, dst_first, dstlen);
+        size_t length = distance(dst, static_cast<char*>(dst_first));
+        string output(dst, length, alloc);
+        alloc.deallocate(dst, dstlen);
+
+        return output;
     } catch (...) {
-        safe_free(dst);
+        if (dst) {
+            alloc.deallocate(dst, dstlen);
+        }
         throw;
     }
-    size_t length = distance(dst, (char*) dst_first);
-    string output(dst, length);
-    safe_free(dst);
-
-    return output;
 }
 
 
-void punycode_to_utf8(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+void punycode_to_utf8(const void*& src,
+    size_t srclen,
+    void*& dst,
+    size_t dstlen,
+    const byte_allocator& allocator)
 {
-    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
-    {
-        punycode_to_utf32(src, srclen, dst, dstlen);
-    };
-    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
-    {
-        utf32_to_utf8(src, srclen, dst, dstlen);
-    };
-
-    punycode_conversion(src, srclen, dst, dstlen, cb1, cb2);
+    punycode_lowlevel_callback cb1(punycode_to_utf32);
+    unicode_lowlevel_callback cb2(utf32_to_utf8);
+    punycode_conversion(src, srclen, dst, dstlen, allocator, cb1, cb2);
 }
 
 
-string punycode_to_utf8(const string_wrapper& str)
+string punycode_to_utf8(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    return utf32_to_utf8(punycode_to_utf32(str));
+    auto utf32 = punycode_to_utf32(str, allocator);
+    return utf32_to_utf8(utf32, allocator);
 }
 
 
-void punycode_to_utf16(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+void punycode_to_utf16(const void*& src,
+    size_t srclen,
+    void*& dst,
+    size_t dstlen,
+    const byte_allocator& allocator)
 {
-    auto cb1 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
-    {
-        punycode_to_utf32(src, srclen, dst, dstlen);
-    };
-    auto cb2 = [](const void*& src, size_t srclen, void*& dst, size_t dstlen)
-    {
-        utf32_to_utf16(src, srclen, dst, dstlen);
-    };
-
-    punycode_conversion(src, srclen, dst, dstlen, cb1, cb2);
+    punycode_lowlevel_callback cb1(punycode_to_utf32);
+    unicode_lowlevel_callback cb2(utf32_to_utf16);
+    punycode_conversion(src, srclen, dst, dstlen, allocator, cb1, cb2);
 }
 
 
-string punycode_to_utf16(const string_wrapper& str)
+string punycode_to_utf16(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
-    return utf32_to_utf16(punycode_to_utf32(str));
+    auto utf32 = punycode_to_utf32(str, allocator);
+    return utf32_to_utf16(utf32, allocator);
 }
 
 
-void punycode_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstlen)
+void punycode_to_utf32(const void*& src,
+    size_t srclen,
+    void*& dst,
+    size_t dstlen,
+    const byte_allocator&)
 {
     // get preferred formats
     const char* src_first = (const char*) src;
@@ -462,27 +487,38 @@ void punycode_to_utf32(const void*& src, size_t srclen, void*& dst, size_t dstle
 }
 
 
-string punycode_to_utf32(const string_wrapper& str)
+string punycode_to_utf32(const string_wrapper& str,
+    const byte_allocator& allocator)
 {
+    // get allocator
+    using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
+    char_allocator alloc(allocator);
+
     // arguments
     size_t srclen = str.size();
     size_t dstlen = srclen * 4;
     const char* src = str.data();
-    uint32_t* dst = (uint32_t*) safe_malloc(dstlen);
-    const void* src_first = (const void*) src;
-    void* dst_first = (void*) dst;
+    uint32_t* dst = nullptr;
 
     try {
+        // initialize memory for output
+        dst = reinterpret_cast<uint32_t*>(alloc.allocate(dstlen));
+        void* dst_first = static_cast<void*>(dst);
+        const void* src_first = static_cast<const void*>(src);
+
+        // create STL container and return
         punycode_to_utf32(src_first, srclen, dst_first, dstlen);
+        size_t length = distance((char*) dst, (char*) dst_first);
+        string output(reinterpret_cast<char*>(dst), length, alloc);
+        alloc.deallocate(reinterpret_cast<char*>(dst), dstlen);
+
+        return output;
     } catch (...) {
-        safe_free(dst);
+        if (dst) {
+            alloc.deallocate(reinterpret_cast<char*>(dst), dstlen);
+        }
         throw;
     }
-    size_t length = distance((char*) dst, (char*) dst_first);
-    string output((char*) dst, length);
-    safe_free(dst);
-
-    return output;
 }
 
 PYCPP_END_NAMESPACE

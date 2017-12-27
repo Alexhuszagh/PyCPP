@@ -17,8 +17,8 @@ static void hex_impl(Iter1 &src_first,
     Iter1 src_last,
     Iter2 &dst_first,
     Iter2 dst_last,
-    size_t width,
-    const byte_allocator& allocator)
+    const byte_allocator& allocator,
+    size_t width)
 {
     // get allocator
     using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
@@ -54,8 +54,8 @@ static void unhex_impl(Iter1 &src_first,
     Iter1 src_last,
     Iter2 &dst_first,
     Iter2 dst_last,
-    size_t width,
-    const byte_allocator&)
+    const byte_allocator&,
+    size_t width)
 {
     size_t shift = 2 * width;
     const void* b16_src = static_cast<const void*>(src_first);
@@ -77,8 +77,8 @@ void hex(const void*& src,
     size_t srclen,
     void*& dst,
     size_t dstlen,
-    size_t width,
-    const byte_allocator& allocator)
+    const byte_allocator& allocator,
+    size_t width)
 {
     // convert to preferred formats
     auto src_first = (const char*) src;
@@ -87,7 +87,7 @@ void hex(const void*& src,
     auto dst_last = dst_first + dstlen;
 
     // convert
-    hex_impl(src_first, src_last, dst_first, dst_last, width, allocator);
+    hex_impl(src_first, src_last, dst_first, dst_last, allocator, width);
 
     // store buffer
     src = src_first;
@@ -96,8 +96,8 @@ void hex(const void*& src,
 
 
 string hex(const string_wrapper& str,
-    size_t width,
-    const byte_allocator& allocator)
+    const byte_allocator& allocator,
+    size_t width)
 {
     // get allocator
     using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
@@ -116,7 +116,7 @@ string hex(const string_wrapper& str,
         void* dst_first = static_cast<void*>(dst);
 
         // create STL container and return
-        hex(src_first, srclen, dst_first, dstlen, width);
+        hex(src_first, srclen, dst_first, dstlen, allocator, width);
         size_t size = distance(dst, static_cast<char*>(dst_first));
         string output(dst, size, alloc);
         alloc.deallocate(dst, dstlen+1);
@@ -137,14 +137,14 @@ void hex_i8(const void*& src,
     size_t dstlen,
     const byte_allocator& allocator)
 {
-    hex(src, srclen, dst, dstlen, 1, allocator);
+    hex(src, srclen, dst, dstlen, allocator, 1);
 }
 
 
 string hex_i8(const string_wrapper& str,
     const byte_allocator& allocator)
 {
-    return hex(str, 1, allocator);
+    return hex(str, allocator, 1);
 }
 
 
@@ -154,14 +154,14 @@ void hex_i16(const void*& src,
     size_t dstlen,
     const byte_allocator& allocator)
 {
-    hex(src, srclen, dst, dstlen, 2, allocator);
+    hex(src, srclen, dst, dstlen, allocator, 2);
 }
 
 
 string hex_i16(const string_wrapper& str,
     const byte_allocator& allocator)
 {
-    return hex(str, 2);
+    return hex(str, allocator, 2);
 }
 
 void hex_i32(const void*& src,
@@ -170,14 +170,14 @@ void hex_i32(const void*& src,
     size_t dstlen,
     const byte_allocator& allocator)
 {
-    hex(src, srclen, dst, dstlen, 4, allocator);
+    hex(src, srclen, dst, dstlen, allocator, 4);
 }
 
 
 string hex_i32(const string_wrapper& str,
     const byte_allocator& allocator)
 {
-    return hex(str, 4, allocator);
+    return hex(str, allocator, 4);
 }
 
 void hex_i64(const void*& src,
@@ -186,14 +186,14 @@ void hex_i64(const void*& src,
     size_t dstlen,
     const byte_allocator& allocator)
 {
-    hex(src, srclen, dst, dstlen, 8, allocator);
+    hex(src, srclen, dst, dstlen, allocator, 8);
 }
 
 
 string hex_i64(const string_wrapper& str,
     const byte_allocator& allocator)
 {
-    return hex(str, 8, allocator);
+    return hex(str, allocator, 8);
 }
 
 
@@ -201,8 +201,8 @@ void unhex(const void*& src,
     size_t srclen,
     void*& dst,
     size_t dstlen,
-    size_t width,
-    const byte_allocator& allocator)
+    const byte_allocator& allocator,
+    size_t width)
 {
     // convert to preferred formats
     auto src_first = (const char*) src;
@@ -211,7 +211,7 @@ void unhex(const void*& src,
     auto dst_last = dst_first + dstlen;
 
     // convert
-    unhex_impl(src_first, src_last, dst_first, dst_last, width, allocator);
+    unhex_impl(src_first, src_last, dst_first, dst_last, allocator, width);
 
     // store buffer
     src = src_first;
@@ -220,8 +220,8 @@ void unhex(const void*& src,
 
 
 string unhex(const string_wrapper& str,
-    size_t width,
-    const byte_allocator& allocator)
+    const byte_allocator& allocator,
+    size_t width)
 {
     // get allocator
     using char_allocator = allocator_traits<byte_allocator>::template rebind_alloc<char>;
@@ -240,7 +240,7 @@ string unhex(const string_wrapper& str,
         void* dst_first = static_cast<void*>(dst);
 
         // create STL container and return
-        unhex(src_first, srclen, dst_first, dstlen, width);
+        unhex(src_first, srclen, dst_first, dstlen, allocator, width);
         size_t size = distance(dst, static_cast<char*>(dst_first));
         string output(dst, size, alloc);
         alloc.deallocate(dst, dstlen+1);
@@ -261,14 +261,14 @@ void unhex_i8(const void*& src,
     size_t dstlen,
     const byte_allocator& allocator)
 {
-    unhex(src, srclen, dst, dstlen, 1, allocator);
+    unhex(src, srclen, dst, dstlen, allocator, 1);
 }
 
 
 string unhex_i8(const string_wrapper& str,
     const byte_allocator& allocator)
 {
-    return unhex(str, 1, allocator);
+    return unhex(str, allocator, 1);
 }
 
 
@@ -278,14 +278,14 @@ void unhex_i16(const void*& src,
     size_t dstlen,
     const byte_allocator& allocator)
 {
-    unhex(src, srclen, dst, dstlen, 2, allocator);
+    unhex(src, srclen, dst, dstlen, allocator, 2);
 }
 
 
 string unhex_i16(const string_wrapper& str,
     const byte_allocator& allocator)
 {
-    return unhex(str, 2, allocator);
+    return unhex(str, allocator, 2);
 }
 
 void unhex_i32(const void*& src,
@@ -294,14 +294,14 @@ void unhex_i32(const void*& src,
     size_t dstlen,
     const byte_allocator& allocator)
 {
-    unhex(src, srclen, dst, dstlen, 4, allocator);
+    unhex(src, srclen, dst, dstlen, allocator, 4);
 }
 
 
 string unhex_i32(const string_wrapper& str,
     const byte_allocator& allocator)
 {
-    return unhex(str, 4, allocator);
+    return unhex(str, allocator, 4);
 }
 
 
@@ -311,14 +311,14 @@ void unhex_i64(const void*& src,
     size_t dstlen,
     const byte_allocator& allocator)
 {
-    unhex(src, srclen, dst, dstlen, 8, allocator);
+    unhex(src, srclen, dst, dstlen, allocator, 8);
 }
 
 
 string unhex_i64(const string_wrapper& str,
     const byte_allocator& allocator)
 {
-    return unhex(str, 8, allocator);
+    return unhex(str, allocator, 8);
 }
 
 PYCPP_END_NAMESPACE

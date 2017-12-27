@@ -51,24 +51,30 @@ static const string UTF32_3 = {0, 0, 0, 109, 0, 0, 0, -22, 0, 0, 0, 109, 0, 0, 0
 // HELPERS
 // -------
 
-static void test_lowlevel(const string& input, const string& expected, punycode_lowlevel_callback cb)
+static void test_lowlevel(const string& input,
+    const string& expected,
+    punycode_lowlevel_callback cb)
 {
+    byte_allocator alloc;
     const char* src = input.data();
+    size_t dstlen = 20;
     char* dst = nullptr;
 
     try {
-        dst = new char[20];
+        dst = (char*) alloc.allocate(dstlen);
         const void* src_first = src;
         void* dst_first = dst;
-        cb(src_first, input.size(), dst_first, 20);
+        cb(src_first, input.size(), dst_first, dstlen, alloc);
         EXPECT_EQ(distance(dst, (char*) dst_first), expected.size());
         EXPECT_EQ(strncmp(dst, expected.data(), expected.size()), 0);
     } catch (...) {
-        delete[] dst;
+        if (dst) {
+            alloc.deallocate((byte*) dst, dstlen);
+        }
         throw;
     }
 
-    delete[] dst;
+    alloc.deallocate((byte*) dst, dstlen);
 }
 
 // TESTS
@@ -108,49 +114,37 @@ TEST(punycode, punycode)
 
 TEST(punycode, utf8_to_punycode)
 {
-    test_lowlevel(UTF8, "3e0bk47br7k", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf8_to_punycode(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(UTF8, "3e0bk47br7k", punycode_lowlevel_callback(utf8_to_punycode));
 }
 
 
 TEST(punycode, utf16_to_punycode)
 {
-    test_lowlevel(UTF16, "3e0bk47br7k", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf16_to_punycode(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(UTF16, "3e0bk47br7k", punycode_lowlevel_callback(utf16_to_punycode));
 }
 
 
 TEST(punycode, utf32_to_punycode)
 {
-    test_lowlevel(UTF32, "3e0bk47br7k", [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        utf32_to_punycode(src, srclen, dst, dstlen);
-    });
+    test_lowlevel(UTF32, "3e0bk47br7k", punycode_lowlevel_callback(utf32_to_punycode));
 }
 
 
 TEST(punycode, punycode_to_utf8)
 {
-    test_lowlevel("3e0bk47br7k", UTF8, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        punycode_to_utf8(src, srclen, dst, dstlen);
-    });
+    test_lowlevel("3e0bk47br7k", UTF8, punycode_lowlevel_callback(punycode_to_utf8));
 }
 
 
 TEST(punycode, punycode_to_utf16)
 {
-    test_lowlevel("3e0bk47br7k", UTF16, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        punycode_to_utf16(src, srclen, dst, dstlen);
-    });
+    test_lowlevel("3e0bk47br7k", UTF16, punycode_lowlevel_callback(punycode_to_utf16));
 }
 
 
 TEST(punycode, punycode_to_utf32)
 {
-    test_lowlevel("3e0bk47br7k", UTF32, [](const void*& src, size_t srclen, void*& dst, size_t dstlen) {
-        punycode_to_utf32(src, srclen, dst, dstlen);
-    });
+    test_lowlevel("3e0bk47br7k", UTF32, punycode_lowlevel_callback(punycode_to_utf32));
 }
 
 

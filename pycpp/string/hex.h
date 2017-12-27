@@ -144,27 +144,35 @@ using hex_highlevel_callback = string(*)(
  *  \param srclen           Length of source buffer.
  *  \param src              Pointer to destination buffer.
  *  \param dstlen           Length of destination buffer.
- *  \param width            Size of the input in bytes.
  *  \param allocator        Allocator for internal allocations.
+ *  \param width            Size of the input in bytes.
  */
 void hex(const void*& src,
     size_t srclen,
     void*& dst,
     size_t dstlen,
-    size_t width = 1,
-    const byte_allocator& allocator = byte_allocator());
+    const byte_allocator& allocator = byte_allocator(),
+    size_t width = 1);
 
 /**
  *  \brief Convert source string to hex representation.
  *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  *  \param width            Size of the input in bytes.
  */
 string hex(const string_wrapper& str,
-    size_t width = 1,
-    const byte_allocator& allocator = byte_allocator());
+    const byte_allocator& allocator = byte_allocator(),
+    size_t width = 1);
 
 /**
  *  \brief Get hex representation of 8-bit signed type.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations.
  */
 void hex_i8(const void*& src,
     size_t srclen,
@@ -174,12 +182,21 @@ void hex_i8(const void*& src,
 
 /**
  *  \brief Get hex representation of 8-bit signed type.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string hex_i8(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Get hex representation of 16-bit signed type.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations.
  */
 void hex_i16(const void*& src,
     size_t srclen,
@@ -189,12 +206,21 @@ void hex_i16(const void*& src,
 
 /**
  *  \brief Get hex representation of 16-bit signed type.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string hex_i16(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Get hex representation of 32-bit signed type.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations.
  */
 void hex_i32(const void*& src,
     size_t srclen,
@@ -204,12 +230,21 @@ void hex_i32(const void*& src,
 
 /**
  *  \brief Get hex representation of 32-bit signed type.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string hex_i32(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Get hex representation of 64-bit signed type.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations.
  */
 void hex_i64(const void*& src,
     size_t srclen,
@@ -219,6 +254,9 @@ void hex_i64(const void*& src,
 
 /**
  *  \brief Get hex representation of 64-bit signed type.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string hex_i64(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
@@ -226,26 +264,39 @@ string hex_i64(const string_wrapper& str,
 /**
  *  \brief Undo hex representation. Increments the src and dst buffers.
  *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  *  \param width            Size of the input in bytes.
  */
 void unhex(const void*& src,
     size_t srclen,
     void*& dst,
     size_t dstlen,
-    size_t width = 1,
-    const byte_allocator& allocator = byte_allocator());
+    const byte_allocator& allocator = byte_allocator(),
+    size_t width = 1);
 
 /**
  *  \brief Convert source string to undo hex representation.
  *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  *  \param width            Size of the input in bytes.
  */
 string unhex(const string_wrapper& str,
-    size_t width = 1,
-    const byte_allocator& allocator = byte_allocator());
+    const byte_allocator& allocator = byte_allocator(),
+    size_t width = 1);
 
 /**
  *  \brief Undo hex representation of 8-bit signed type.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
 void unhex_i8(const void*& src,
     size_t srclen,
@@ -255,12 +306,21 @@ void unhex_i8(const void*& src,
 
 /**
  *  \brief Undo hex representation of 8-bit signed type.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string unhex_i8(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Undo hex representation of 16-bit signed type.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
 void unhex_i16(const void*& src,
     size_t srclen,
@@ -270,12 +330,21 @@ void unhex_i16(const void*& src,
 
 /**
  *  \brief Undo hex representation of 16-bit signed type.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string unhex_i16(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Undo hex representation of 32-bit signed type.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
 void unhex_i32(const void*& src,
     size_t srclen,
@@ -285,12 +354,21 @@ void unhex_i32(const void*& src,
 
 /**
  *  \brief Undo hex representation of 32-bit signed type.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string unhex_i32(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());
 
 /**
  *  \brief Undo hex representation of 64-bit signed type.
+ *
+ *  \param src              Pointer to source buffer.
+ *  \param srclen           Length of source buffer.
+ *  \param src              Pointer to destination buffer.
+ *  \param dstlen           Length of destination buffer.
+ *  \param allocator        Allocator for internal allocations (unused).
  */
 void unhex_i64(const void*& src,
     size_t srclen,
@@ -300,6 +378,9 @@ void unhex_i64(const void*& src,
 
 /**
  *  \brief Undo hex representation of 64-bit signed type.
+ *
+ *  \param str              Source string to convert.
+ *  \param allocator        Allocator for output string.
  */
 string unhex_i64(const string_wrapper& str,
     const byte_allocator& allocator = byte_allocator());

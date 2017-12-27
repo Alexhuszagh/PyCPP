@@ -21,8 +21,6 @@
         - Filesystem
         - Lattice
         - String
-            - hex
-            - punycode
             - string
             - url
         - XML
