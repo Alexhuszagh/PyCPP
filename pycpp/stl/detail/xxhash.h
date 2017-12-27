@@ -40,7 +40,7 @@ PYCPP_BEGIN_NAMESPACE
 // FUNCTIONS
 // ---------
 
-inline hash_result_t xxhash_string(const void* buffer, size_t size)
+inline hash_result_t xxhash_string(const void* buffer, size_t size) noexcept
 {
 #if defined(PYCPP_USE_HASH32)               // 32-bit
     return XXH32(buffer, size, HASH_SEED);
@@ -66,7 +66,7 @@ inline hash_result_t xxhash_string(const void* buffer, size_t size)
         using argument_type = type;                                                         \
         using result_type = size_t;                                                         \
                                                                                             \
-        inline size_t operator()(const argument_type& x) const                              \
+        inline size_t operator()(const argument_type& x) const noexcept                     \
         {                                                                                   \
             using value_type = typename argument_type::value_type;                          \
             return PYCPP_NAMESPACE::xxhash_string(x.data(), x.size() * sizeof(value_type)); \

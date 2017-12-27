@@ -54,10 +54,10 @@ public:
     // OPERATORS
     bool operator==(const self_t&) const;
     bool operator!=(const self_t&) const;
-    value_type& operator*();
-    const value_type& operator*() const;
-    value_type* operator->();
-    const value_type* operator->() const;
+    value_type& operator*() noexcept;
+    const value_type& operator*() const noexcept;
+    value_type* operator->() noexcept;
+    const value_type* operator->() const noexcept;
     self_t& operator++();
     self_t operator++(int);
 
@@ -96,28 +96,28 @@ bool input_iterator_facade<G, V>::operator!=(const self_t& rhs) const
 
 
 template <typename G, typename V>
-auto input_iterator_facade<G, V>::operator*() -> value_type&
+auto input_iterator_facade<G, V>::operator*() noexcept -> value_type&
 {
     return value_;
 }
 
 
 template <typename G, typename V>
-auto input_iterator_facade<G, V>::operator*() const -> const value_type&
+auto input_iterator_facade<G, V>::operator*() const noexcept -> const value_type&
 {
     return value_;
 }
 
 
 template <typename G, typename V>
-auto input_iterator_facade<G, V>::operator->() -> value_type*
+auto input_iterator_facade<G, V>::operator->() noexcept -> value_type*
 {
     return &value_;
 }
 
 
 template <typename G, typename V>
-auto input_iterator_facade<G, V>::operator->() const -> const value_type*
+auto input_iterator_facade<G, V>::operator->() const noexcept -> const value_type*
 {
     return &value_;
 }

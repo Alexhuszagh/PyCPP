@@ -243,8 +243,9 @@ const It& transform_iterator<It, F>::base() const
 template <typename It, typename F>
 void transform_iterator<It, F>::swap(self_t& other)
 {
-    PYCPP_NAMESPACE::swap(it, other.it);
-    PYCPP_NAMESPACE::swap(function, other.function);
+    using PYCPP_NAMESPACE::swap;
+    swap(it, other.it);
+    swap(function, other.function);
 }
 
 

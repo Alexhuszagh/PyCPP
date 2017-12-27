@@ -98,23 +98,23 @@ public:
     // ----------------
     basic_string_view() noexcept = default;
     basic_string_view(const basic_string_view<Char, Traits>& str) noexcept = default;
-    basic_string_view(const_pointer str, size_type count);
-    basic_string_view(const_pointer str);
-    basic_string_view<Char, Traits>& operator=(const basic_string_view<Char, Traits>& str) = default;
+    basic_string_view(const_pointer str, size_type count) noexcept;
+    basic_string_view(const_pointer str) noexcept;
+    basic_string_view<Char, Traits>& operator=(const basic_string_view<Char, Traits>& str) noexcept = default;
 
     // We cannot extend std::basic_string, so provide overloads for
     // `basic_string_view(const basic_string&)`.
-    template <typename A> basic_string_view(const basic_string<Char, Traits, A>& str);
+    template <typename A> basic_string_view(const basic_string<Char, Traits, A>& str) noexcept;
 
     // ITERATORS
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_reverse_iterator rbegin() const;
-    const_reverse_iterator rend() const;
-    const_iterator cbegin() const;
-    const_iterator cend() const;
-    const_reverse_iterator crbegin() const;
-    const_reverse_iterator crend() const;
+    const_iterator begin() const noexcept;
+    const_iterator end() const noexcept;
+    const_reverse_iterator rbegin() const noexcept;
+    const_reverse_iterator rend() const noexcept;
+    const_iterator cbegin() const noexcept;
+    const_iterator cend() const noexcept;
+    const_reverse_iterator crbegin() const noexcept;
+    const_reverse_iterator crend() const noexcept;
 
     // CAPACITY
     size_type size() const noexcept;
@@ -130,8 +130,8 @@ public:
     const_pointer data() const noexcept;
 
     // MODIFIERS
-    void remove_prefix(size_type n);
-    void remove_suffix(size_type n);
+    void remove_prefix(size_type n) noexcept;
+    void remove_suffix(size_type n) noexcept;
     void swap(basic_string_view<Char, Traits>& rhs) noexcept;
 
     // OPERATIONS
@@ -142,55 +142,55 @@ public:
     int compare(basic_string_view<Char, Traits> s) const noexcept;
     int compare(size_type pos1, size_type n1, basic_string_view<Char, Traits> s) const;
     int compare(size_type pos1, size_type n1, basic_string_view<Char, Traits> s, size_type pos2, size_type n2) const;
-    int compare(const_pointer s) const;
+    int compare(const_pointer s) const noexcept;
     int compare(size_type pos1, size_type n1, const_pointer s) const;
     int compare(size_type pos1, size_type n1, const_pointer s, size_type n2) const;
 
     // STARTS WITH
     bool starts_with(basic_string_view<Char, Traits> x) const noexcept;
     bool starts_with(value_type x) const noexcept;
-    bool starts_with(const_pointer x) const;
+    bool starts_with(const_pointer x) const noexcept;
 
     // ENDS WITH
     bool ends_width(basic_string_view<Char, Traits> x) const noexcept;
     bool ends_width(value_type x) const noexcept;
-    bool ends_width(const_pointer x) const;
+    bool ends_width(const_pointer x) const noexcept;
 
     // FIND
     size_type find(basic_string_view<Char, Traits> s, size_type pos = 0) const noexcept;
     size_type find(value_type c, size_type pos = 0) const noexcept;
-    size_type find(const_pointer s, size_type pos, size_type n) const;
-    size_type find(const_pointer s, size_type pos = 0) const;
+    size_type find(const_pointer s, size_type pos, size_type n) const noexcept;
+    size_type find(const_pointer s, size_type pos = 0) const noexcept;
 
     // RFIND
     size_type rfind(basic_string_view<Char, Traits> s, size_type pos = npos) const noexcept;
     size_type rfind(value_type c, size_type pos = npos) const noexcept;
-    size_type rfind(const_pointer s, size_type pos, size_type n) const;
-    size_type rfind(const_pointer s, size_type pos = npos) const;
+    size_type rfind(const_pointer s, size_type pos, size_type n) const noexcept;
+    size_type rfind(const_pointer s, size_type pos = npos) const noexcept;
 
     // FIND FIRST OF
     size_type find_first_of(basic_string_view<Char, Traits> s, size_type pos = 0) const noexcept;
     size_type find_first_of(value_type c, size_type pos = 0) const noexcept;
-    size_type find_first_of(const_pointer s, size_type pos, size_type n) const;
-    size_type find_first_of(const_pointer s, size_type pos = 0) const;
+    size_type find_first_of(const_pointer s, size_type pos, size_type n) const noexcept;
+    size_type find_first_of(const_pointer s, size_type pos = 0) const noexcept;
 
     // FIND LAST OF
     size_type find_last_of(basic_string_view<Char, Traits> s, size_type pos = npos) const noexcept;
     size_type find_last_of(value_type c, size_type pos = npos) const noexcept;
-    size_type find_last_of(const_pointer s, size_type pos, size_type n) const;
-    size_type find_last_of(const_pointer s, size_type pos = npos) const;
+    size_type find_last_of(const_pointer s, size_type pos, size_type n) const noexcept;
+    size_type find_last_of(const_pointer s, size_type pos = npos) const noexcept;
 
     // FIND FIRST NOT OF
     size_type find_first_not_of(basic_string_view<Char, Traits> s, size_type pos = 0) const noexcept;
     size_type find_first_not_of(value_type c, size_type pos = 0) const noexcept;
-    size_type find_first_not_of(const_pointer s, size_type pos, size_type n) const;
-    size_type find_first_not_of(const_pointer s, size_type pos = 0) const;
+    size_type find_first_not_of(const_pointer s, size_type pos, size_type n) const noexcept;
+    size_type find_first_not_of(const_pointer s, size_type pos = 0) const noexcept;
 
     // FIND LAST NOT OF
     size_type find_last_not_of(basic_string_view<Char, Traits> s, size_type pos = npos) const noexcept;
     size_type find_last_not_of(value_type c, size_type pos = npos) const noexcept;
-    size_type find_last_not_of(const_pointer s, size_type pos, size_type n) const;
-    size_type find_last_not_of(const_pointer s, size_type pos = npos) const;
+    size_type find_last_not_of(const_pointer s, size_type pos, size_type n) const noexcept;
+    size_type find_last_not_of(const_pointer s, size_type pos = npos) const noexcept;
 
     // CONVERSION
     // In C++17, `basic_string` has a constructor from
@@ -201,6 +201,13 @@ private:
     const_pointer data_ = nullptr;
     size_t length_ = 0;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <typename C, typename T>
+struct is_relocatable<basic_string_view<C, T>>: true_type
+{};
 
 // IMPLEMENTATION
 // --------------
@@ -231,13 +238,13 @@ template <typename C, typename T>
 const typename basic_string_view<C, T>::size_type basic_string_view<C, T>::npos;
 
 template <typename C, typename T>
-basic_string_view<C, T>::basic_string_view(const_pointer str, size_type count):
+basic_string_view<C, T>::basic_string_view(const_pointer str, size_type count) noexcept:
     data_(str),
     length_(count)
 {}
 
 template <typename C, typename T>
-basic_string_view<C, T>::basic_string_view(const_pointer str):
+basic_string_view<C, T>::basic_string_view(const_pointer str) noexcept:
     data_(str),
     length_(traits_type::length(str))
 {}
@@ -245,63 +252,63 @@ basic_string_view<C, T>::basic_string_view(const_pointer str):
 
 template <typename C, typename T>
 template <typename A>
-basic_string_view<C, T>::basic_string_view(const basic_string<C, T, A>& str):
+basic_string_view<C, T>::basic_string_view(const basic_string<C, T, A>& str) noexcept:
     data_(str.data()),
     length_(str.length())
 {}
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::begin() const -> const_iterator
+auto basic_string_view<C, T>::begin() const noexcept -> const_iterator
 {
     return data_;
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::end() const -> const_iterator
+auto basic_string_view<C, T>::end() const noexcept -> const_iterator
 {
     return data_ + length_;
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::rbegin() const -> const_reverse_iterator
+auto basic_string_view<C, T>::rbegin() const noexcept -> const_reverse_iterator
 {
     return const_reverse_iterator(end());
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::rend() const -> const_reverse_iterator
+auto basic_string_view<C, T>::rend() const noexcept -> const_reverse_iterator
 {
     return const_reverse_iterator(begin());
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::cbegin() const -> const_iterator
+auto basic_string_view<C, T>::cbegin() const noexcept -> const_iterator
 {
     return begin();
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::cend() const -> const_iterator
+auto basic_string_view<C, T>::cend() const noexcept -> const_iterator
 {
     return end();
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::crbegin() const -> const_reverse_iterator
+auto basic_string_view<C, T>::crbegin() const noexcept -> const_reverse_iterator
 {
     return rbegin();
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::crend() const -> const_reverse_iterator
+auto basic_string_view<C, T>::crend() const noexcept -> const_reverse_iterator
 {
     return rend();
 }
@@ -356,7 +363,7 @@ auto basic_string_view<C, T>::at(size_type pos) const -> const_reference
 template <typename C, typename T>
 auto basic_string_view<C, T>::front() const -> const_reference
 {
-    assert(!empty() && "string::front(): string is empty");
+    assert(!empty() && "basic_string_view::front(): string is empty");
     return *data_;
 }
 
@@ -364,7 +371,7 @@ auto basic_string_view<C, T>::front() const -> const_reference
 template <typename C, typename T>
 auto basic_string_view<C, T>::back() const -> const_reference
 {
-    assert(!empty() && "string::back(): string is empty");
+    assert(!empty() && "basic_string_view::back(): string is empty");
     return *(data_ + length_ - 1);
 }
 
@@ -378,18 +385,18 @@ auto basic_string_view<C, T>::data() const noexcept -> const_pointer
 
 
 template <typename C, typename T>
-void basic_string_view<C, T>::remove_prefix(size_type n)
+void basic_string_view<C, T>::remove_prefix(size_type n) noexcept
 {
-    assert(n <= size() && "vector_view::remove_prefix greater than size.");
+    assert(n <= size() && "basic_string_view::remove_prefix greater than size.");
     data_ += n;
     length_ -= n;
 }
 
 
 template <typename C, typename T>
-void basic_string_view<C, T>::remove_suffix(size_type n)
+void basic_string_view<C, T>::remove_suffix(size_type n) noexcept
 {
-    assert(n <= size() && "vector_view::remove_suffix greater than size.");
+    assert(n <= size() && "basic_string_view::remove_suffix greater than size.");
     length_ -= n;
 }
 
@@ -397,8 +404,9 @@ void basic_string_view<C, T>::remove_suffix(size_type n)
 template <typename C, typename T>
 void basic_string_view<C, T>::swap(basic_string_view<C, T>& rhs) noexcept
 {
-    PYCPP_NAMESPACE::swap(data_, rhs.data_);
-    PYCPP_NAMESPACE::swap(length_, rhs.length_);
+    using PYCPP_NAMESPACE::swap;
+    swap(data_, rhs.data_);
+    swap(length_, rhs.length_);
 }
 
 
@@ -459,7 +467,7 @@ int basic_string_view<C, T>::compare(size_type pos1, size_type n1, basic_string_
 
 
 template <typename C, typename T>
-int basic_string_view<C, T>::compare(const_pointer s) const
+int basic_string_view<C, T>::compare(const_pointer s) const noexcept
 {
     return compare(basic_string_view<C, T>(s));
 }
@@ -494,7 +502,7 @@ bool basic_string_view<C, T>::starts_with(value_type x) const noexcept
 
 
 template <typename C, typename T>
-bool basic_string_view<C, T>::starts_with(const_pointer x) const
+bool basic_string_view<C, T>::starts_with(const_pointer x) const noexcept
 {
     return starts_with(basic_string_view<C, T>(x));
 }
@@ -515,7 +523,7 @@ bool basic_string_view<C, T>::ends_width(value_type x) const noexcept
 
 
 template <typename C, typename T>
-bool basic_string_view<C, T>::ends_width(const_pointer x) const
+bool basic_string_view<C, T>::ends_width(const_pointer x) const noexcept
 {
     return ends_width(basic_string_view<C, T>(x));
 }
@@ -548,14 +556,14 @@ auto basic_string_view<C, T>::find(value_type c, size_type pos) const noexcept -
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find(const_pointer s, size_type pos, size_type n) const -> size_type
+auto basic_string_view<C, T>::find(const_pointer s, size_type pos, size_type n) const noexcept -> size_type
 {
     return find(basic_string_view<C, T>(s, n), pos);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find(const_pointer s, size_type pos) const -> size_type
+auto basic_string_view<C, T>::find(const_pointer s, size_type pos) const noexcept -> size_type
 {
     return find(basic_string_view<C, T>(s), pos);
 }
@@ -597,14 +605,14 @@ auto basic_string_view<C, T>::rfind(value_type c, size_type pos) const noexcept 
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::rfind(const_pointer s, size_type pos, size_type n) const -> size_type
+auto basic_string_view<C, T>::rfind(const_pointer s, size_type pos, size_type n) const noexcept -> size_type
 {
     return rfind(basic_string_view<C, T>(s, n), pos);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::rfind(const_pointer s, size_type pos) const -> size_type
+auto basic_string_view<C, T>::rfind(const_pointer s, size_type pos) const noexcept -> size_type
 {
     return rfind(basic_string_view<C, T>(s), pos);
 }
@@ -635,14 +643,14 @@ auto basic_string_view<C, T>::find_first_of(value_type c, size_type pos) const n
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_first_of(const_pointer s, size_type pos, size_type n) const -> size_type
+auto basic_string_view<C, T>::find_first_of(const_pointer s, size_type pos, size_type n) const noexcept -> size_type
 {
     return find_first_of(basic_string_view<C, T>(s, n), pos);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_first_of(const_pointer s, size_type pos) const -> size_type
+auto basic_string_view<C, T>::find_first_of(const_pointer s, size_type pos) const noexcept -> size_type
 {
     return find_first_of(basic_string_view<C, T>(s), pos);
 }
@@ -681,14 +689,14 @@ auto basic_string_view<C, T>::find_last_of(value_type c, size_type pos) const no
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_last_of(const_pointer s, size_type pos, size_type n) const -> size_type
+auto basic_string_view<C, T>::find_last_of(const_pointer s, size_type pos, size_type n) const noexcept -> size_type
 {
     return find_last_of(basic_string_view<C, T>(s, n), pos);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_last_of(const_pointer s, size_type pos) const -> size_type
+auto basic_string_view<C, T>::find_last_of(const_pointer s, size_type pos) const noexcept -> size_type
 {
     return find_last_of(basic_string_view<C, T>(s), pos);
 }
@@ -721,14 +729,14 @@ auto basic_string_view<C, T>::find_first_not_of(value_type c, size_type pos) con
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_first_not_of(const_pointer s, size_type pos, size_type n) const -> size_type
+auto basic_string_view<C, T>::find_first_not_of(const_pointer s, size_type pos, size_type n) const noexcept -> size_type
 {
     return find_first_not_of(basic_string_view<C, T>(s, n), pos);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_first_not_of(const_pointer s, size_type pos) const -> size_type
+auto basic_string_view<C, T>::find_first_not_of(const_pointer s, size_type pos) const noexcept -> size_type
 {
     return find_first_not_of(basic_string_view<C, T>(s), pos);
 }
@@ -766,14 +774,14 @@ auto basic_string_view<C, T>::find_last_not_of(value_type c, size_type pos) cons
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_last_not_of(const_pointer s, size_type pos, size_type n) const -> size_type
+auto basic_string_view<C, T>::find_last_not_of(const_pointer s, size_type pos, size_type n) const noexcept -> size_type
 {
     return find_last_not_of(basic_string_view<C, T>(s, n), pos);
 }
 
 
 template <typename C, typename T>
-auto basic_string_view<C, T>::find_last_not_of(const_pointer s, size_type pos) const -> size_type
+auto basic_string_view<C, T>::find_last_not_of(const_pointer s, size_type pos) const noexcept -> size_type
 {
     return find_last_not_of(basic_string_view<C, T>(s), pos);
 }

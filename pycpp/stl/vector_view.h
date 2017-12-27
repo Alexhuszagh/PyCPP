@@ -51,29 +51,29 @@ public:
 
     // MEMBER FUNCTIONS
     // ----------------
-    vector_view() = default;
-    vector_view(const vector_view<T>& vec);
-    vector_view<T>& operator=(const vector_view<T>& vec);
-    vector_view(vector_view<T>&& vec);
-    vector_view<T>& operator=(vector_view<T>&& vec);
+    vector_view() noexcept = default;
+    vector_view(const vector_view<T>& vec) noexcept;
+    vector_view<T>& operator=(const vector_view<T>& vec) noexcept;
+    vector_view(vector_view<T>&& vec) noexcept;
+    vector_view<T>& operator=(vector_view<T>&& vec) noexcept;
 
-    template <typename A> vector_view(const vector<T, A>& vec);
-    template <typename A> vector_view<T>& operator=(const vector<T, A>& vec);
-    vector_view(pointer t, size_type n);
-    vector_view(pointer first, pointer last);
+    template <typename A> vector_view(const vector<T, A>& vec) noexcept;
+    template <typename A> vector_view<T>& operator=(const vector<T, A>& vec) noexcept;
+    vector_view(pointer t, size_type n) noexcept;
+    vector_view(pointer first, pointer last) noexcept;
 
     // ITERATORS
-    const_iterator begin() const;
-    const_iterator end() const;
-    const_reverse_iterator rbegin() const;
-    const_reverse_iterator rend() const;
-    const_iterator cbegin() const;
-    const_iterator cend() const;
-    const_reverse_iterator crbegin() const;
-    const_reverse_iterator crend() const;
+    const_iterator begin() const noexcept;
+    const_iterator end() const noexcept;
+    const_reverse_iterator rbegin() const noexcept;
+    const_reverse_iterator rend() const noexcept;
+    const_iterator cbegin() const noexcept;
+    const_iterator cend() const noexcept;
+    const_reverse_iterator crbegin() const noexcept;
+    const_reverse_iterator crend() const noexcept;
 
     // CAPACITY
-    size_t size() const;
+    size_t size() const noexcept;
     bool empty() const noexcept;
 
     // ELEMENT ACCESS
@@ -84,15 +84,15 @@ public:
     const_pointer data() const noexcept;
 
     // MODIFIERS
-    void swap(vector_view<T>& rhs);
-    void remove_prefix(size_type n);
-    void remove_suffix(size_type n);
+    void swap(vector_view<T>& rhs) noexcept;
+    void remove_prefix(size_type n) noexcept;
+    void remove_suffix(size_type n) noexcept;
 
     // OPERATIONS
     size_type copy(value_type* dst, size_type count, size_type pos = 0);
 
     // CONVERSIONS
-    explicit operator bool() const;
+    explicit operator bool() const noexcept;
     template <typename A> explicit operator vector<T, A>() const;
 
 private:
@@ -159,6 +159,13 @@ private:
     template <typename U, typename A>
     friend bool operator>=(const vector_view<U>& lhs, const vector<U, A>& right) noexcept;
 };
+
+// SPECIALIZATION
+// --------------
+
+template <typename T>
+struct is_relocatable<vector_view<T>>: true_type
+{};
 
 // IMPLEMENTATION
 // --------------
@@ -298,14 +305,14 @@ bool operator>=(const vector_view<T> &lhs, const vector<T, A> &rhs) noexcept
 
 
 template <typename T>
-vector_view<T>::vector_view(const vector_view<T>& vec):
+vector_view<T>::vector_view(const vector_view<T>& vec) noexcept:
     data_(vec.data()),
     size_(vec.size())
 {}
 
 
 template <typename T>
-auto vector_view<T>::operator=(const vector_view<T>& vec) -> vector_view<T>&
+auto vector_view<T>::operator=(const vector_view<T>& vec) noexcept -> vector_view<T>&
 {
     data_ = vec.data();
     size_ = vec.size();
@@ -314,14 +321,14 @@ auto vector_view<T>::operator=(const vector_view<T>& vec) -> vector_view<T>&
 
 
 template <typename T>
-vector_view<T>::vector_view(vector_view<T>&& vec)
+vector_view<T>::vector_view(vector_view<T>&& vec) noexcept
 {
     swap(vec);
 }
 
 
 template <typename T>
-auto vector_view<T>::operator=(vector_view<T>&& vec) -> vector_view<T>&
+auto vector_view<T>::operator=(vector_view<T>&& vec) noexcept -> vector_view<T>&
 {
     swap(vec);
     return *this;
@@ -329,7 +336,7 @@ auto vector_view<T>::operator=(vector_view<T>&& vec) -> vector_view<T>&
 
 template <typename T>
 template <typename A>
-vector_view<T>::vector_view(const vector<T, A>& vec):
+vector_view<T>::vector_view(const vector<T, A>& vec) noexcept:
     data_(vec.data()),
     size_(vec.size())
 {}
@@ -337,7 +344,7 @@ vector_view<T>::vector_view(const vector<T, A>& vec):
 
 template <typename T>
 template <typename A>
-auto vector_view<T>::operator=(const vector<T, A>& vec) -> vector_view<T>&
+auto vector_view<T>::operator=(const vector<T, A>& vec) noexcept -> vector_view<T>&
 {
     data_ = vec.data();
     size_ = vec.size();
@@ -346,77 +353,77 @@ auto vector_view<T>::operator=(const vector<T, A>& vec) -> vector_view<T>&
 
 
 template <typename T>
-vector_view<T>::vector_view(pointer t, size_type n):
+vector_view<T>::vector_view(pointer t, size_type n) noexcept:
     data_(t),
     size_(n)
 {}
 
 
 template <typename T>
-vector_view<T>::vector_view(pointer first, pointer last):
+vector_view<T>::vector_view(pointer first, pointer last) noexcept:
     data_(first),
     size_(last - first)
 {}
 
 
 template <typename T>
-auto vector_view<T>::begin() const -> const_iterator
+auto vector_view<T>::begin() const noexcept -> const_iterator
 {
     return data_;
 }
 
 
 template <typename T>
-auto vector_view<T>::end() const -> const_iterator
+auto vector_view<T>::end() const noexcept -> const_iterator
 {
     return data_ + size_;
 }
 
 
 template <typename T>
-auto vector_view<T>::rbegin() const -> const_reverse_iterator
+auto vector_view<T>::rbegin() const noexcept -> const_reverse_iterator
 {
     return const_reverse_iterator(end());
 }
 
 
 template <typename T>
-auto vector_view<T>::rend() const -> const_reverse_iterator
+auto vector_view<T>::rend() const noexcept -> const_reverse_iterator
 {
     return const_reverse_iterator(begin());
 }
 
 
 template <typename T>
-auto vector_view<T>::cbegin() const -> const_iterator
+auto vector_view<T>::cbegin() const noexcept -> const_iterator
 {
     return begin();
 }
 
 
 template <typename T>
-auto vector_view<T>::cend() const -> const_iterator
+auto vector_view<T>::cend() const noexcept -> const_iterator
 {
     return end();
 }
 
 
 template <typename T>
-auto vector_view<T>::crbegin() const -> const_reverse_iterator
+auto vector_view<T>::crbegin() const noexcept -> const_reverse_iterator
 {
     return rbegin();
 }
 
 
 template <typename T>
-auto vector_view<T>::crend() const -> const_reverse_iterator
+auto vector_view<T>::crend() const noexcept -> const_reverse_iterator
 {
     return rend();
 }
 
 
 template <typename T>
-size_t vector_view<T>::size() const
+size_t vector_view<T>::size() const noexcept
 {
     return size_;
 }
@@ -468,7 +475,7 @@ auto vector_view<T>::data() const noexcept -> const_pointer
 
 
 template <typename T>
-void vector_view<T>::swap(vector_view<T>& rhs)
+void vector_view<T>::swap(vector_view<T>& rhs) noexcept
 {
     using PYCPP_NAMESPACE::swap;
     swap(data_, rhs.data_);
@@ -477,7 +484,7 @@ void vector_view<T>::swap(vector_view<T>& rhs)
 
 
 template <typename T>
-void vector_view<T>::remove_prefix(size_type n)
+void vector_view<T>::remove_prefix(size_type n) noexcept
 {
     assert(n <= size() && "vector_view::remove_prefix greater than size.");
     data_ += n;
@@ -486,7 +493,7 @@ void vector_view<T>::remove_prefix(size_type n)
 
 
 template <typename T>
-void vector_view<T>::remove_suffix(size_type n)
+void vector_view<T>::remove_suffix(size_type n) noexcept
 {
     assert(n <= size() && "vector_view::remove_suffix greater than size.");
     size_ -= n;
@@ -509,7 +516,7 @@ auto vector_view<T>::copy(value_type* dst, size_type count, size_type pos) -> si
 
 
 template <typename T>
-vector_view<T>::operator bool() const
+vector_view<T>::operator bool() const noexcept
 {
     return !empty();
 }

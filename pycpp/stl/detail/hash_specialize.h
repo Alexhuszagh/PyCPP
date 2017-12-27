@@ -46,7 +46,7 @@ PYCPP_BEGIN_NAMESPACE
         using argument_type = type;                                     \
         using result_type = size_t;                                     \
                                                                         \
-        inline size_t operator()(const argument_type& x) const          \
+        inline size_t operator()(const argument_type& x) const noexcept \
         {                                                               \
             return std::hash<argument_type>()(x);                       \
         }                                                               \

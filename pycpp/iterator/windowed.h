@@ -269,8 +269,9 @@ auto windowed_iterator<Iterator, C>::operator*() const -> const_reference
 template <typename Iterator, template <typename...> class C>
 void windowed_iterator<Iterator, C>::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(it_, rhs.it_);
-    PYCPP_NAMESPACE::swap(value_, rhs.value_);
+    using PYCPP_NAMESPACE::swap;
+    swap(it_, rhs.it_);
+    swap(value_, rhs.value_);
 }
 
 
@@ -318,8 +319,9 @@ auto windowed_range<Iterator, C>::end() -> iterator
 template <typename Iterator, template <typename...> class C>
 void windowed_range<Iterator, C>::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(first_, rhs.first_);
-    PYCPP_NAMESPACE::swap(last_, rhs.last_);
+    using PYCPP_NAMESPACE::swap;
+    swap(first_, rhs.first_);
+    swap(last_, rhs.last_);
 }
 
 

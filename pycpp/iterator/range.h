@@ -103,7 +103,8 @@ bool range<Iterator>::empty() const
 template <typename Iterator>
 size_t range<Iterator>::distance() const
 {
-    return PYCPP_NAMESPACE::distance(first_, last_);
+    using PYCPP_NAMESPACE::distance;
+    return distance(first_, last_);
 }
 
 PYCPP_END_NAMESPACE

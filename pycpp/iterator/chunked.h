@@ -235,9 +235,10 @@ auto chunked_iterator<Iterator, C>::operator*() const -> const_reference
 template <typename Iterator, template <typename...> class C>
 void chunked_iterator<Iterator, C>::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(range_, rhs.range_);
-    PYCPP_NAMESPACE::swap(it_, rhs.it_);
-    PYCPP_NAMESPACE::swap(value_, rhs.value_);
+    using PYCPP_NAMESPACE::swap;
+    swap(range_, rhs.range_);
+    swap(it_, rhs.it_);
+    swap(value_, rhs.value_);
 }
 
 
@@ -287,8 +288,9 @@ auto chunked_range<Iterator, C>::end() -> iterator
 template <typename Iterator, template <typename...> class C>
 void chunked_range<Iterator, C>::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(first_, rhs.first_);
-    PYCPP_NAMESPACE::swap(last_, rhs.last_);
+    using PYCPP_NAMESPACE::swap;
+    swap(first_, rhs.first_);
+    swap(last_, rhs.last_);
 }
 
 

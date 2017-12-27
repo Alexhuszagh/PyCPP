@@ -252,10 +252,11 @@ auto unique_iterator<Iterator, Hash>::operator*() const -> const_reference
 template <typename Iterator, typename Hash>
 void unique_iterator<Iterator, Hash>::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(range_, rhs.range_);
-    PYCPP_NAMESPACE::swap(it_, rhs.it_);
-    PYCPP_NAMESPACE::swap(memo_, rhs.memo_);
-    PYCPP_NAMESPACE::swap(mit_, rhs.mit_);
+    using PYCPP_NAMESPACE::swap;
+    swap(range_, rhs.range_);
+    swap(it_, rhs.it_);
+    swap(memo_, rhs.memo_);
+    swap(mit_, rhs.mit_);
 }
 
 
@@ -300,8 +301,9 @@ auto unique_range<Iterator, Hash>::end() -> iterator
 template <typename Iterator, typename Hash>
 void unique_range<Iterator, Hash>::swap(self_t& rhs)
 {
-    PYCPP_NAMESPACE::swap(first_, rhs.first_);
-    PYCPP_NAMESPACE::swap(last_, rhs.last_);
+    using PYCPP_NAMESPACE::swap;
+    swap(first_, rhs.first_);
+    swap(last_, rhs.last_);
 }
 
 
