@@ -26,12 +26,15 @@
 
     - Add synopsis and everything
         - (Denotes things I've finished)
-            - String (all but /string.h)
             - Allocator
+            - Preprocessor
+            - Runtime
+            - Secure
+            - SFINAE
+                - At has_left_shift
             - STL
                 - detail
-                    - polymorphic_allocator.h
-                    - fstream.h
+            - String (all but /string.h)
 
     - Make moves always non-throwing
         - Check if copies can be non-throwing too

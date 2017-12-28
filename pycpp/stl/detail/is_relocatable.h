@@ -11,6 +11,12 @@
  *  for increased performance when moving objects via a direct `memcpy`,
  *  rather than calling a move constructor and destructor for each
  *  object.
+ *
+ *  \synopsis
+ *      template <typename T>
+ *      struct is_relocatable;
+ *
+ *      using is_virtual_relocatable = implementation-defined;
  */
 
 #pragma once

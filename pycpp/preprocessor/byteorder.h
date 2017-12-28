@@ -4,6 +4,71 @@
 /**
  *  \addtogroup PyCPP
  *  \brief System endianess detection macros and byteswap routines.
+ *
+ *  Cross-platform definitions similar to Linux's `<endian.h>`,
+ *  defining routines to detect the system byte-order, convert
+ *  types from host-to-endian and endian-to-host, and memcpy
+ *  routines that swap the underlying byte order.
+ *
+ *  \synopsis
+ *      // CONVERSION
+ *      void bswap(void* buf, int width) noexcept;
+ *      void bswap(void* dst, void* src, int width) noexcept;
+ *      void memcpy_bswap16(void* dst, void* src, size_t bytes) noexcept;
+ *      void memcpy_bswap32(void* dst, void* src, size_t bytes) noexcept;
+ *      void memcpy_bswap64(void* dst, void* src, size_t bytes) noexcept;
+ *      void memcpy_bswap(void* dst, void* src, size_t bytes, int width) noexcept;
+ *
+ *      // DETECTION
+ *      #define __BYTE_ORDER                implementation-defined
+ *      #define BYTE_ORDER                  implementation-defined
+ *      #define __BIG_ENDIAN                implementation-defined
+ *      #define BIG_ENDIAN                  implementation-defined
+ *      #define __LITTLE_ENDIAN             implementation-defined
+ *      #define LITTLE_ENDIAN               implementation-defined
+ *      #define __PDP_ENDIAN                implementation-defined
+ *      #define PDP_ENDIAN                  implementation-defined
+ *      #define __FLOAT_WORD_ORDER          implementation-defined
+ *      #define FLOAT_WORD_ORDER            implementation-defined
+ *
+ *      // IN-PLACE BYTESWAP
+ *      #define bswap16(x)                  implementation-defined
+ *      #define bswap32(x)                  implementation-defined
+ *      #define bswap64(x)                  implementation-defined
+ *      #define htobe16(x)                  implementation-defined
+ *      #define htole16(x)                  implementation-defined
+ *      #define be16toh(x)                  implementation-defined
+ *      #define le16toh(x)                  implementation-defined
+ *      #define htobe32(x)                  implementation-defined
+ *      #define htole32(x)                  implementation-defined
+ *      #define be32toh(x)                  implementation-defined
+ *      #define le32toh(x)                  implementation-defined
+ *      #define htobe64(x)                  implementation-defined
+ *      #define htole64(x)                  implementation-defined
+ *      #define be64toh(x)                  implementation-defined
+ *      #define le64toh(x)                  implementation-defined
+ *      #define htobe(x, i)                 implementation-defined
+ *      #define htole(x, i)                 implementation-defined
+ *      #define betoh(x, i)                 implementation-defined
+ *      #define letoh(x, i)                 implementation-defined
+ *
+ *      // COPY AND BYTESWAP
+ *      #define memcpy_htobe16(d, s, n)     implementation-defined
+ *      #define memcpy_htole16(d, s, n)     implementation-defined
+ *      #define memcpy_be16toh(d, s, n)     implementation-defined
+ *      #define memcpy_le16toh(d, s, n)     implementation-defined
+ *      #define memcpy_htobe32(d, s, n)     implementation-defined
+ *      #define memcpy_htole32(d, s, n)     implementation-defined
+ *      #define memcpy_be32toh(d, s, n)     implementation-defined
+ *      #define memcpy_le32toh(d, s, n)     implementation-defined
+ *      #define memcpy_htobe64(d, s, n)     implementation-defined
+ *      #define memcpy_htole64(d, s, n)     implementation-defined
+ *      #define memcpy_be64toh(d, s, n)     implementation-defined
+ *      #define memcpy_le64toh(d, s, n)     implementation-defined
+ *      #define memcpy_htobe(d, s, n, i)    implementation-defined
+ *      #define memcpy_htole(d, s, n, i)    implementation-defined
+ *      #define memcpy_betoh(d, s, n, i)    implementation-defined
+ *      #define memcpy_letoh(d, s, n, i)    implementation-defined
  */
 
 #pragma once

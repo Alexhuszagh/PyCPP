@@ -4,6 +4,63 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Cross-platform errno definitions.
+ *
+ *  Reasonable defaults for non-standard errno constants.
+ *
+ *  \synopsis
+ *      #define EADDRINFO       implementation-defined
+ *      #define EADDRINUSE      implementation-defined
+ *      #define EADDRNOTAVAIL   implementation-defined
+ *      #define EAFNOSUPPORT    implementation-defined
+ *      #define EAGAIN          implementation-defined
+ *      #define EALREADY        implementation-defined
+ *      #define EBADF           implementation-defined
+ *      #define EBUSY           implementation-defined
+ *      #define ECANCELED       implementation-defined
+ *      #define ECHARSET        implementation-defined
+ *      #define ECONNABORTED    implementation-defined
+ *      #define ECONNREFUSED    implementation-defined
+ *      #define ECONNRESET      implementation-defined
+ *      #define EDESTADDRREQ    implementation-defined
+ *      #define EEXIST          implementation-defined
+ *      #define EFAULT          implementation-defined
+ *      #define EHOSTUNREACH    implementation-defined
+ *      #define EINTR           implementation-defined
+ *      #define EINVAL          implementation-defined
+ *      #define EIO             implementation-defined
+ *      #define EISCONN         implementation-defined
+ *      #define EISDIR          implementation-defined
+ *      #define ELOOP           implementation-defined
+ *      #define EMFILE          implementation-defined
+ *      #define EMSGSIZE        implementation-defined
+ *      #define ENAMETOOLONG    implementation-defined
+ *      #define ENETDOWN        implementation-defined
+ *      #define ENETUNREACH     implementation-defined
+ *      #define ENFILE          implementation-defined
+ *      #define ENOBUFS         implementation-defined
+ *      #define ENODEV          implementation-defined
+ *      #define ENOENT          implementation-defined
+ *      #define ENOMEM          implementation-defined
+ *      #define ENONET          implementation-defined
+ *      #define ENOSPC          implementation-defined
+ *      #define ENOSYS          implementation-defined
+ *      #define ENOTCONN        implementation-defined
+ *      #define ENOTDIR         implementation-defined
+ *      #define ENOTEMPTY       implementation-defined
+ *      #define ENOTSOCK        implementation-defined
+ *      #define ENOTSUP         implementation-defined
+ *      #define EPERM           implementation-defined
+ *      #define EPIPE           implementation-defined
+ *      #define EPROTO          implementation-defined
+ *      #define EPROTONOSUPPORT implementation-defined
+ *      #define EPROTOTYPE      implementation-defined
+ *      #define EROFS           implementation-defined
+ *      #define ESHUTDOWN       implementation-defined
+ *      #define ESPIPE          implementation-defined
+ *      #define ESRCH           implementation-defined
+ *      #define ETIMEDOUT       implementation-defined
+ *      #define EUNKNOWN        implementation-defined
+ *      #define EXDEV           implementation-defined
  */
 
 #pragma once

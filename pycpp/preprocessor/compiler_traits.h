@@ -3,6 +3,21 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Compiler-specific traits.
+ *
+ *  Contains workarounds for C++11 and C++14 compilers, as well as
+ *  compiler versions with partial or incomplete C++11 support.
+ *
+ *  \synopsis
+ *      #define CPP11_PARTIAL_ALLOCATOR_TRAITS  implementation-defined
+ *      #define CPP11_PARTIAL_IOS               implementation-defined
+ *      #define CPP11_PARTIAL_TYPE_TRAITS       implementation-defined
+ *      #define CPP14_CONSTEXPR                 implementation-defined
+ *      #define CPP14_DEPRECATED                implementation-defined
+ *      #define CPP17_CONSTEXPR                 implementation-defined
+ *      #define CPP17_FALLTHROUGH               implementation-defined
+ *      #define CPP17_INLINE_VARIABLES          implementation-defined
+ *      #define CPP17_NODISCARD                 implementation-defined
+ *      #define CPP17_UNUSED                    implementation-defined
  */
 
 #pragma once

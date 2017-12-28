@@ -21,6 +21,10 @@
  *          template <typename ... Ts, typename = is_safe_overload<true, my_struct, Ts...>>
  *          my_struct(Ts&&... ts);
  *      };
+ *
+ *  \synopsis
+ *      template <bool RemoveReference, typename T, typename ... Ts>
+ *      struct is_safe_overload;
  */
 
 #pragma once

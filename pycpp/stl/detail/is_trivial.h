@@ -3,6 +3,34 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Type traits for trivial constructors and assignment operators.
+ *
+ *  Reasonable default implementations of `is_trivially_*` type traits
+ *  for compilers with partial C++11 support.
+ *
+ *  \synopsis
+ *      template <typename T>
+ *      using is_trivially_copyable = implementation-defined;
+ *
+ *      template <typename T>
+ *      using is_trivially_constructible = implementation-defined;
+ *
+ *      template <typename T>
+ *      using is_trivially_default_constructible = implementation-defined;
+ *
+ *      template <typename T>
+ *      using is_trivially_copy_constructible = implementation-defined;
+ *
+ *      template <typename T>
+ *      using is_trivially_move_constructible = implementation-defined;
+ *
+ *      template <typename T>
+ *      using is_trivially_assignable = implementation-defined;
+ *
+ *      template <typename T>
+ *      using is_trivially_copy_assignable = implementation-defined;
+ *
+ *      template <typename T>
+ *      using is_trivially_move_assignable = implementation-defined;
  */
 
 #pragma once

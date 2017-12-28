@@ -3,6 +3,13 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Cross-platform <sys/stat.h> definitions.
+ *
+ *  Defines reasonable defaults for <sys/stat.h> constants that are
+ *  frequently absent on common platforms.
+ *
+ *  \synopsis
+ *      #define S_IRUSR     implementation-defined
+ *      #define S_IWUSR     implementation-defined
  */
 
 #pragma once

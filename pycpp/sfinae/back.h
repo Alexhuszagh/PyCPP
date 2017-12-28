@@ -3,6 +3,18 @@
 /**
  *  \addtogroup PyCPP
  *  \brief SFINAE detection for `back` and fail-safe implementation.
+ *
+ *  Return the last item in the container.
+ *
+ *  \synopsis
+ *      struct back
+ *      {
+ *          template <typename T>
+ *          typename T::reference operator()(T& t);
+ *
+ *          template <typename T>
+ *          typename T::const_reference operator()(const T& t);
+ *      };
  */
 
 #pragma once

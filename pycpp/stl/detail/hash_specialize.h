@@ -3,6 +3,13 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Lightweight include to specialize hash functions.
+ *
+ *  Lightweight wrapper to specialize a custom hash function in terms
+ *  of `std::hash`.
+ *
+ *  \synopsis
+ *      #define PYCPP_SPECIALIZE_HASH_VALUE(name, type)     implementation-defined
+ *      #define PYCPP_SPECIALIZE_HASH_REFERENCE(name, type) implementation-defined
  */
 
 #pragma once

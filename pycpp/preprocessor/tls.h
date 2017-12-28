@@ -3,6 +3,17 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Cross-compiler thread-local storage.
+ *
+ *  Keyword-like macro for thread-local storage duration specifiers,
+ *  similar to the C++11 keyword `thread_local`. Variables declared
+ *  with thread-local storage will have a separate instance in each
+ *  thread, at the cost of slower data access.
+ *
+ *  \code
+ *      thread_local_storage int x = 5;
+ *
+ *  \synopsis
+ *      #define thread_local_storage implementation-defined
  */
 
 #pragma once

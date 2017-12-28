@@ -7,6 +7,10 @@
  *
  *  Provides wrappers assign(), copy(), and move() to call
  *  memory-safe routines.
+ *
+ *  \synopsis
+ *      template <typename Char>
+ *      using secure_char_traits = implementation-defined;
  */
 
 #pragma once

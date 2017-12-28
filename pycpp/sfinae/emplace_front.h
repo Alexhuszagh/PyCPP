@@ -3,6 +3,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief SFINAE detection for `emplace_front` and fail-safe implementation.
+ *
+ *  Construct item in-place at the start of the container.
+ *
+ *  \synopsis
+ *      struct emplace_front
+ *      {
+ *          template <typename T, typename... Ts>
+ *          void operator()(T& t, Ts&&... ts);
+ *      };
  */
 
 #pragma once

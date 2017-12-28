@@ -2,7 +2,13 @@
 //  :license: MIT, see licenses/mit.md for more details.
 /**
  *  \addtogroup PyCPP
- *  \brief Check if types support `>` comparison.
+ *  \brief Check if types support `>=` comparison.
+ *
+ *  Detect if two types support a greater or equal operator ('>=').
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_greater_equal<T, U> = implementation-defined;
  */
 
 #pragma once

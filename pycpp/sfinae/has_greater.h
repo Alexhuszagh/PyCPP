@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `>` comparison.
+ *
+ *  Detect if two types support a greater operator ('>').
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_greater<T, U> = implementation-defined;
  */
 
 #pragma once

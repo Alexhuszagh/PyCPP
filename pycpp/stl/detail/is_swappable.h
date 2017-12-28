@@ -6,6 +6,19 @@
  *
  *  Backport of `is_swappable_with`, `is_nothrow_swappable_with`,
  *  `is_swappable`, and `is_nothrow_swappable` for C++11.
+ *
+ *  \synopsis
+ *      template <typename T1, typename T2>
+ *      using is_swappable_with = implementation-defined;
+ *
+ *      template <typename T1, typename T2>
+ *      using is_nothrow_swappable_with = implementation-defined;
+ *
+ *      template <typename T>
+ *      using is_swappable = is_swappable_with<T, T>;
+ *
+ *      template <typename T>
+ *      using is_nothrow_swappable = is_nothrow_swappable_with<T, T>;
  */
 
 #pragma once

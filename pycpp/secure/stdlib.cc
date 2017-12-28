@@ -447,14 +447,14 @@ static int munlock_impl(void* ptr, size_t len) noexcept
 #endif
 
 
-int secure_mlock(void* ptr, const size_t len) noexcept
+int secure_mlock(void* ptr, size_t len) noexcept
 {
     madvise_impl(ptr, len, MADV_DONTDUMP);
     return mlock_impl(ptr, len);
 }
 
 
-int secure_munlock(void* ptr, const size_t len) noexcept
+int secure_munlock(void* ptr, size_t len) noexcept
 {
     secure_zero(ptr, len);
     madvise_impl(ptr, len, MADV_DODUMP);

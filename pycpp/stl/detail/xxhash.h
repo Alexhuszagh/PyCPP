@@ -3,6 +3,26 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Wrapper of the fast xxHash algorithm as an STL hash function.
+ *
+ *  Wrapper of the xxHash algorithm to be a drop-in replacement for
+ *  `std::hash`. The STL hash function differs compiler to compiler,
+ *  and although some compilers use the fairly fast MurmurHash2,
+ *  other compilers such as MSVC use the glacial FNV 1a hash function.
+ *  xxHash is faster than all existing STL hash functions, at the cost
+ *  of some additional memory overhead [1].
+ *
+ *  1. https://github.com/Cyan4973/xxHash
+ *
+ *  \synopsis
+ *      using hash_result_t = implementation-defined;
+ *      static constexpr hash_result_t HASH_SEED = implementation-defined;
+ *
+ *      #define PYCPP_SPECIALIZE_HASH_STRING(name, type)    implementation-defined
+ *
+ *      hash_result_t xxhash_string(const void* buffer, size_t size) noexcept;
+ *
+ *      template <typename T>
+ *      struct xxhash;
  */
 
 #pragma once

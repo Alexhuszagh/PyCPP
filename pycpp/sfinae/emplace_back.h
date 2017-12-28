@@ -3,6 +3,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief SFINAE detection for `emplace_back` and fail-safe implementation.
+ *
+ *  Construct item in-place at the end of the container.
+ *
+ *  \synopsis
+ *      struct emplace_back
+ *      {
+ *          template <typename T, typename... Ts>
+ *          void operator()(T& t, Ts&&... ts);
+ *      };
  */
 
 #pragma once

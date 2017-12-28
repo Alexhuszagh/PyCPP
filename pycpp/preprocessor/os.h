@@ -6,6 +6,89 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Detect operating system for build.
+ *
+ *  Macros to detect the operating system and potentially the operating
+ *  system version. If the operating system is detected, `OS_DETECTED`
+ *  will be defined. If a POSIX-like system is detected, `OS_POSIX`
+ *  will be defined (**not** `OS_UNIX`, which is for Unixware). If
+ *  PyCPP is able to detect the operating system version, it will also
+ *  define `OS_VERSION_MAJOR`, `OS_VERSION_MINOR`, and `OS_VERSION_PATCH`.
+ *
+ *  \synopsis
+ *      #define OS_DETECTED         implementation-defined
+ *      #define OS_VERSION_MAJOR    implementation-defined
+ *      #define OS_VERSION_MINOR    implementation-defined
+ *      #define OS_VERSION_PATCH    implementation-defined
+ *      #define OS_AEGIS            implementation-defined
+ *      #define OS_AIX              implementation-defined
+ *      #define OS_AMDAHL           implementation-defined
+ *      #define OS_AMIGAOS          implementation-defined
+ *      #define OS_ANDROID          implementation-defined
+ *      #define OS_APOLLO           implementation-defined
+ *      #define OS_BEOS             implementation-defined
+ *      #define OS_BLUEGENE         implementation-defined
+ *      #define OS_BSD              implementation-defined
+ *      #define OS_BSD4_2           implementation-defined
+ *      #define OS_BSD4_3           implementation-defined
+ *      #define OS_BSD4_4           implementation-defined
+ *      #define OS_BSDI             implementation-defined
+ *      #define OS_CONVEX           implementation-defined
+ *      #define OS_CRAY             implementation-defined
+ *      #define OS_CYGWIN           implementation-defined
+ *      #define OS_DARWIN           implementation-defined
+ *      #define OS_DGUX             implementation-defined
+ *      #define OS_DYNIX            implementation-defined
+ *      #define OS_ECOS             implementation-defined
+ *      #define OS_EMX              implementation-defined
+ *      #define OS_FREEBSD          implementation-defined
+ *      #define OS_HAIKU            implementation-defined
+ *      #define OS_HPUX             implementation-defined
+ *      #define OS_HURD             implementation-defined
+ *      #define OS_INTEGRITY        implementation-defined
+ *      #define OS_INTERIX          implementation-defined
+ *      #define OS_IOS              implementation-defined
+ *      #define OS_IRIX             implementation-defined
+ *      #define OS_LINUX            implementation-defined
+ *      #define OS_LYNX             implementation-defined
+ *      #define OS_MACOS            implementation-defined
+ *      #define OS_MACOSX           implementation-defined
+ *      #define OS_MICROWARE        implementation-defined
+ *      #define OS_MINIX            implementation-defined
+ *      #define OS_MORPHOS          implementation-defined
+ *      #define OS_MPEIX            implementation-defined
+ *      #define OS_MSDOS            implementation-defined
+ *      #define OS_NACL             implementation-defined
+ *      #define OS_NETBSD           implementation-defined
+ *      #define OS_NONSTOP          implementation-defined
+ *      #define OS_NUCLEUS          implementation-defined
+ *      #define OS_OPENBSD          implementation-defined
+ *      #define OS_OS2              implementation-defined
+ *      #define OS_OS400            implementation-defined
+ *      #define OS_OSF              implementation-defined
+ *      #define OS_PALM             implementation-defined
+ *      #define OS_PLAN9            implementation-defined
+ *      #define OS_POSIX            implementation-defined
+ *      #define OS_PYRAMID          implementation-defined
+ *      #define OS_QNX              implementation-defined
+ *      #define OS_RELIANT          implementation-defined
+ *      #define OS_SCO              implementation-defined
+ *      #define OS_SOLARIS          implementation-defined
+ *      #define OS_SVR4             implementation-defined
+ *      #define OS_SYLLABLE         implementation-defined
+ *      #define OS_SYMBIAN          implementation-defined
+ *      #define OS_ULTRIX           implementation-defined
+ *      #define OS_UNICOS           implementation-defined
+ *      #define OS_UNICOSMP         implementation-defined
+ *      #define OS_UNIX             implementation-defined
+ *      #define OS_UNIXWARE         implementation-defined
+ *      #define OS_VMS              implementation-defined
+ *      #define OS_VOS              implementation-defined
+ *      #define OS_VXWORKS          implementation-defined
+ *      #define OS_WINAPI_DESKTOP   implementation-defined
+ *      #define OS_WINDOWS          implementation-defined
+ *      #define OS_WINDOWS_CE       implementation-defined
+ *      #define OS_WINDU            implementation-defined
+ *      #define OS_ZOS              implementation-defined
  */
 
 #pragma once
@@ -26,10 +109,15 @@
 // -----
 
 #if !defined(OS_DETECTED)
-// DETECTION
 #   if defined(__linux__) || defined(linux) || defined(__linux)
+// DETECTION
 #       define OS_LINUX
 #       define OS_DETECTED
+// VERSION
+#       include <linux/version.h>
+#       define OS_VERSION_MAJOR (LINUX_VERSION_CODE >> 16)
+#       define OS_VERSION_MINOR ((LINUX_VERSION_CODE - (OS_VERSION_MAJOR << 16)) >> 8)
+#       define OS_VERSION_PATCH ((LINUX_VERSION_CODE - ((OS_VERSION_MAJOR << 16) + (OS_VERSION_MINOR << 8))))
 #   endif
 #endif
 

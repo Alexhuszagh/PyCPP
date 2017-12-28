@@ -3,6 +3,51 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Compiler detection macros.
+ *
+ *  Macros to detect the compiler type, version, and the C++ ISO standard
+ *  supported by the compiler. To check a given compiler version against
+ *  a desired version, use the `COMPILER_VERSION` macro against
+ *  `COMPILER_VERSION_CODE`.
+ *
+ *  \synopsis
+ *      #define COMPILER_DETECTED           implementation-defined
+ *      #define COMPILER_MAJOR_VERSION      implementation-defined
+ *      #define COMPILER_MINOR_VERSION      implementation-defined
+ *      #define COMPILER_PATCH_VERSION      implementation-defined
+ *      #define COMPILER_VERSION(a, b, c)   implementation-defined
+ *      #define COMPILER_VERSION_CODE       implementation-defined
+ *      #define GNUC_MAJOR_VERSION          implementation-defined
+ *      #define GNUC_MINOR_VERSION          implementation-defined
+ *      #define GNUC_PATCH_VERSION          implementation-defined
+ *      #define HAVE_CLANG                  implementation-defined
+ *      #define HAVE_CLANG_2                implementation-defined
+ *      #define HAVE_CLANG_3                implementation-defined
+ *      #define HAVE_CLANG_4                implementation-defined
+ *      #define HAVE_CLANG_5                implementation-defined
+ *      #define HAVE_CPP11                  implementation-defined
+ *      #define HAVE_CPP14                  implementation-defined
+ *      #define HAVE_CPP17                  implementation-defined
+ *      #define HAVE_CPP20                  implementation-defined
+ *      #define HAVE_GCC                    implementation-defined
+ *      #define HAVE_GCC_3                  implementation-defined
+ *      #define HAVE_GCC_4                  implementation-defined
+ *      #define HAVE_GCC_5                  implementation-defined
+ *      #define HAVE_GCC_6                  implementation-defined
+ *      #define HAVE_GCC_7                  implementation-defined
+ *      #define HAVE_GCC_8                  implementation-defined
+ *      #define HAVE_GNUC                   implementation-defined
+ *      #define HAVE_INTEL                  implementation-defined
+ *      #define HAVE_MSVC                   implementation-defined
+ *      #define HAVE_MSVC_10                implementation-defined
+ *      #define HAVE_MSVC_11                implementation-defined
+ *      #define HAVE_MSVC_12                implementation-defined
+ *      #define HAVE_MSVC_14                implementation-defined
+ *      #define HAVE_MSVC_5                 implementation-defined
+ *      #define HAVE_MSVC_6                 implementation-defined
+ *      #define HAVE_MSVC_7                 implementation-defined
+ *      #define HAVE_MSVC_7                 implementation-defined
+ *      #define HAVE_MSVC_8                 implementation-defined
+ *      #define HAVE_MSVC_9                 implementation-defined
  */
 
 #pragma once
@@ -106,7 +151,9 @@
 #   define COMPILER_MAJOR_VERSION __clang_major__
 #   define COMPILER_MINOR_VERSION __clang_minor__
 #   define COMPILER_PATCH_VERSION __clang_patchlevel__
-#   if COMPILER_MAJOR_VERSION == 4
+#   if COMPILER_MAJOR_VERSION == 5
+#      define HAVE_CLANG_5 1
+#   elif COMPILER_MAJOR_VERSION == 4
 #      define HAVE_CLANG_4 1
 #   elif COMPILER_MAJOR_VERSION == 3
 #      define HAVE_CLANG_3 1
@@ -124,7 +171,9 @@
 #   define COMPILER_MAJOR_VERSION GNUC_MAJOR_VERSION
 #   define COMPILER_MINOR_VERSION GNUC_MINOR_VERSION
 #   define COMPILER_PATCH_VERSION GNUC_PATCH_VERSION
-#   if COMPILER_MAJOR_VERSION == 7
+#   if COMPILER_MAJOR_VERSION == 8
+#      define HAVE_GCC_8 1
+#   elif COMPILER_MAJOR_VERSION == 7
 #      define HAVE_GCC_7 1
 #   elif COMPILER_MAJOR_VERSION == 6
 #      define HAVE_GCC_6 1
@@ -141,6 +190,10 @@
 // ---
 
 #if defined(__cplusplus)
+// TODO: C++20 has not yet been standardized, refine when ratified.
+#   if __cplusplus >= 202099L
+#       define HAVE_CPP20 1
+#   endif
 #   if __cplusplus >= 201703L
 #       define HAVE_CPP17 1
 #   endif

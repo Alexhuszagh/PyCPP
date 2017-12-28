@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `&` operator.
+ *
+ *  Detect if two types support a bitwise and operator ('&').
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_bit_and<T, U> = implementation-defined;
  */
 
 #pragma once
