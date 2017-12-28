@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `&&` operator.
+ *
+ *  Detect if two types support a logical and operator (`&&`).
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_logical_and<T, U> = implementation-defined;
  */
 
 #pragma once

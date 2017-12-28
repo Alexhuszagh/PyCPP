@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `%` operator.
+ *
+ *  Detect if two types support a modulus operator (`%`).
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_modulus<T, U> = implementation-defined;
  */
 
 #pragma once

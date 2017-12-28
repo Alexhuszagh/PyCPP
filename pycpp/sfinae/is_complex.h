@@ -4,11 +4,16 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if the type is a complex number.
+ *
+ *  Detect if the type is a specialization of `std::complex`.
+ *
+ *  \synopsis
+ *      template <typename T
+ *      using is_complex<T> = implementation-defined;
  */
 
-#include <pycpp/preprocessor/os.h>
+#include <pycpp/sfinae/is_specialization.h>
 #include <pycpp/stl/complex.h>
-#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -16,24 +21,7 @@ PYCPP_BEGIN_NAMESPACE
 // ------
 
 template <typename T>
-struct is_complex: false_type
-{};
-
-template <typename T>
-struct is_complex<const T>: is_complex<T>
-{};
-
-template <typename T>
-struct is_complex<volatile const T>: is_complex<T>
-{};
-
-template <typename T>
-struct is_complex<volatile T>: is_complex<T>
-{};
-
-template <typename T>
-struct is_complex<complex<T>>: true_type
-{};
+using is_complex = is_specialization<T, complex>;
 
 #ifdef HAVE_CPP14
 

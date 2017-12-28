@@ -3,6 +3,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief SFINAE detection for `reserve` and fail-safe implementation.
+ *
+ *  Increase container capacity to desired size.
+ *
+ *  \synopsis
+ *      struct reserve
+ *      {
+ *          template <typename T>
+ *          void operator()(T& t, size_t size);
+ *      };
  */
 
 #pragma once

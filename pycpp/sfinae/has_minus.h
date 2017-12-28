@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `-` operator.
+ *
+ *  Detect if two types support a minus operator (`-`).
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_minus<T, U> = implementation-defined;
  */
 
 #pragma once

@@ -3,6 +3,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief SFINAE detection for `pop_back` and fail-safe implementation.
+ *
+ *  Remove item from back of container.
+ *
+ *  \synopsis
+ *      struct pop_back
+ *      {
+ *          template <typename T>
+ *          void operator()(T& t);
+ *      };
  */
 
 #pragma once

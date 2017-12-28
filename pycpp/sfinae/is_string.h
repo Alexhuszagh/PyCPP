@@ -3,6 +3,39 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Type detection for strings.
+ *
+ *  Detect if type is one of many string types.
+ *
+ *  \synopsis
+ *      template <typename T
+ *      using is_charp<T> = implementation-defined;
+ *
+ *      template <typename T
+ *      using is_const_charp<T> = implementation-defined;
+ *
+ *      template <typename T
+ *      using is_wcharp<T> = implementation-defined;
+ *
+ *      template <typename T
+ *      using is_const_wcharp<T> = implementation-defined;
+ *
+ *      template <typename T
+ *      using is_char16p<T> = implementation-defined;
+ *
+ *      template <typename T
+ *      using is_const_char16p<T> = implementation-defined;
+ *
+ *      template <typename T
+ *      using is_char32p<T> = implementation-defined;
+ *
+ *      template <typename T
+ *      using is_const_char32p<T> = implementation-defined;
+ *
+ *      template <typename T
+ *      using is_stl_string<T> = implementation-defined;
+ *
+ *      template <typename T
+ *      using is_string<T> = implementation-defined;
  */
 
 #pragma once
@@ -19,7 +52,7 @@ namespace str_detail
 // ------
 
 template <typename CharP, typename T>
-using is_char_t = is_same<CharP, remove_cv_t<decay_t<T>>>;
+using is_char_t = is_same<CharP, remove_cv_t<remove_reference_t<decay_t<T>>>>;
 
 }   /* str_detail */
 

@@ -3,6 +3,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief SFINAE detection for `push_front` and fail-safe implementation.
+ *
+ *  Copy and add item to front of container.
+ *
+ *  \synopsis
+ *      struct push_front
+ *      {
+ *          template <typename T>
+ *          void operator()(T& t, typename T::const_reference v);
+ *      };
  */
 
 #pragma once

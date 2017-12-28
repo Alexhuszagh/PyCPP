@@ -3,13 +3,18 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Type detection for `reference_wrapper`.
+ *
+ *  Detect if a type is a `std::reference_wrapper`.
+ *
+ *  \synopsis
+ *      template <typename T
+ *      using is_reference_wrapper<T> = implementation-defined;
  */
 
 #pragma once
 
-#include <pycpp/preprocessor/os.h>
+#include <pycpp/sfinae/is_specialization.h>
 #include <pycpp/stl/functional.h>
-#include <pycpp/stl/type_traits.h>
 
 PYCPP_BEGIN_NAMESPACE
 
@@ -17,12 +22,7 @@ PYCPP_BEGIN_NAMESPACE
 // ------
 
 template <typename T>
-struct is_reference_wrapper: false_type
-{};
-
-template <typename T>
-struct is_reference_wrapper<reference_wrapper<T>>: true_type
-{};
+using is_reference_wrapper = is_specialization<T, reference_wrapper>;
 
 #ifdef HAVE_CPP14
 

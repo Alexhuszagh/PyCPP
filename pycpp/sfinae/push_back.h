@@ -3,6 +3,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief SFINAE detection for `push_back` and fail-safe implementation.
+ *
+ *  Copy and add item to back of container.
+ *
+ *  \synopsis
+ *      struct push_back
+ *      {
+ *          template <typename T>
+ *          void operator()(T& t, typename T::const_reference v);
+ *      };
  */
 
 #pragma once

@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `*` operator.
+ *
+ *  Detect if two types support a multiplies operator (`*`).
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_multiplies<T, U> = implementation-defined;
  */
 
 #pragma once

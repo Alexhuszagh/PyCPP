@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `<=` comparison.
+ *
+ *  Detect if two types support a less than or equal to operator (`<=`).
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_less_equal<T, U> = implementation-defined;
  */
 
 #pragma once

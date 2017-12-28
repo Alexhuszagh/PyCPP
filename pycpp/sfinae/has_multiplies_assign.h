@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `*=` operator.
+ *
+ *  Detect if two types support a multiplies assignment operator (`*=`).
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_multiplies_assign<T, U> = implementation-defined;
  */
 
 #pragma once

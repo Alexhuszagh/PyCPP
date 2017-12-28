@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `<<` operator.
+ *
+ *  Detect if two types support a left shift operator (`<<`).
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_left_shift<T, U> = implementation-defined;
  */
 
 #pragma once

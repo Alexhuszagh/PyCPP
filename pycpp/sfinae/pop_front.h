@@ -3,6 +3,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief SFINAE detection for `pop_front` and fail-safe implementation.
+ *
+ *  Remove item from front of container.
+ *
+ *  \synopsis
+ *      struct pop_front
+ *      {
+ *          template <typename T>
+ *          void operator()(T& t);
+ *      };
  */
 
 #pragma once

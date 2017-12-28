@@ -3,6 +3,15 @@
 /**
  *  \addtogroup PyCPP
  *  \brief SFINAE detection for `shrink_to_fit` and fail-safe implementation.
+ *
+ *  Shrink container capacity to current size.
+ *
+ *  \synopsis
+ *      struct shrink_to_fit
+ *      {
+ *          template <typename T>
+ *          void operator()(T& t);
+ *      };
  */
 
 #pragma once

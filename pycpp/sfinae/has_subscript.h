@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if container supports `[]` with subscript.
+ *
+ *  Detect if the `C` supports subscripting with `I` (`C[I]`).
+ *
+ *  \synopsis
+ *      template <typename C, typename I>
+ *      using has_subscript<T, I> = implementation-defined;
  */
 
 #pragma once
@@ -16,12 +22,15 @@ PYCPP_BEGIN_NAMESPACE
 // ------
 
 template <typename C, typename I, typename = void>
-struct has_subscript: false_type
+struct has_subscript_impl: false_type
 {};
 
 template <typename C, typename I>
-struct has_subscript<C, I, void_t<decltype(declval<C>()[declval<I>()])>>: true_type
+struct has_subscript_impl<C, I, void_t<decltype(declval<C>()[declval<I>()])>>: true_type
 {};
+
+template <typename C, typename I>
+using has_subscript = has_subscript_impl<C, I>;
 
 #ifdef HAVE_CPP14
 

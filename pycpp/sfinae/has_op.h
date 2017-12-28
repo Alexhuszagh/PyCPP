@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support a specific operator.
+ *
+ *  Macro to detect if two types support a desired operation, expanding
+ *  to a struct similar to `bool_constant`.
+ *
+ *  \synopsis
+ *      #define PYCPP_HAS_OPERATION(name, op)   implementation-defined
  */
 
 #pragma once

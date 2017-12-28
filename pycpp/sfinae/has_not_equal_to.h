@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `!=` comparison.
+ *
+ *  Detect if two types support an inequality operator ('!=').
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_not_equal_to<T, U> = implementation-defined;
  */
 
 #pragma once

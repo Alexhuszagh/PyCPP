@@ -3,6 +3,13 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Type detection for specialized types.
+ *
+ *  Detect if a type is a specialization of a class (including reference-
+ *  or CV-qualified variants of the type).
+ *
+ *  \synopsis
+ *      template <typename T, template <typename...> class C>
+ *      using is_specialization = implementation-defined;
  */
 
 #pragma once
@@ -24,12 +31,15 @@ PYCPP_BEGIN_NAMESPACE
  *  std::basic_string>` will work.
  */
 template <typename T, template <typename...> class C>
-struct is_specialization: false_type
+struct is_specialization_impl: false_type
 {};
 
 template <template <typename...> class C, typename... Ts>
-struct is_specialization<C<Ts...>, C>: true_type
+struct is_specialization_impl<C<Ts...>, C>: true_type
 {};
+
+template <typename T, template <typename...> class C>
+using is_specialization = is_specialization_impl<remove_cv_t<remove_reference_t<T>>, C>;
 
 #ifdef HAVE_CPP14
 

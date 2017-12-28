@@ -637,6 +637,7 @@ set(HEADER_FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/is_reference_wrapper.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/is_specialization.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/is_string.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/is_tuple.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/pop_back.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/pop_front.h"
     "${CMAKE_CURRENT_SOURCE_DIR}/pycpp/sfinae/push_back.h"
@@ -1191,6 +1192,7 @@ set(TEST_FILES
     test/sfinae/is_pair.cc
     test/sfinae/is_reference_wrapper.cc
     test/sfinae/is_string.cc
+    test/sfinae/is_tuple.cc
     test/sfinae/pop_back.cc
     test/sfinae/pop_front.cc
     test/sfinae/push_back.cc

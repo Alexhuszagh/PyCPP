@@ -31,7 +31,8 @@
             - Runtime
             - Secure
             - SFINAE
-                - At has_left_shift
+                - At is_specialization
+                - Done the synopsis for all, add to README
             - STL
                 - detail
             - String (all but /string.h)

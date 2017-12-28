@@ -3,6 +3,12 @@
 /**
  *  \addtogroup PyCPP
  *  \brief Check if types support `>>=` operator.
+ *
+ *  Detect if two types support a right shift assignment operator (`>>=`).
+ *
+ *  \synopsis
+ *      template <typename T, typename U>
+ *      using has_right_shift_assign<T, U> = implementation-defined;
  */
 
 #pragma once
